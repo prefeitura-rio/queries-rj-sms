@@ -1,0 +1,40 @@
+{
+    "example": {
+        "my_second_dbt_model": {
+            "title": "example: example",
+            "short_description": "example",
+            "long_description": "example",
+            "update_frequency": "Nunca",
+            "temporal_coverage": "example",
+            "data_owner": "example",
+            "publisher_name": "example",
+            "publisher_email": "example@gmail.com",
+            "tags": [],
+            "categories": [],
+            "columns": [
+                {
+                    "name": "id",
+                    "description": "The primary key for this table"
+                }
+            ]
+        },
+        "my_first_dbt_model": {
+            "title": "example: example",
+            "short_description": "example",
+            "long_description": "example",
+            "update_frequency": "Nunca",
+            "temporal_coverage": "example",
+            "data_owner": "example",
+            "publisher_name": "example",
+            "publisher_email": "example@gmail.com",
+            "tags": [],
+            "categories": [],
+            "columns": [
+                {
+                    "name": "id",
+                    "description": "The primary key for this table"
+                }
+            ]
+        }
+    }
+}
