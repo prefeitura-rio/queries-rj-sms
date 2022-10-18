@@ -1,0 +1,44 @@
+name: Metadata Automation
+
+on:
+  push:
+    branches:
+      - "*"
+
+env:
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+
+jobs:
+  update-metadata:
+    name: Update metadata from Google Sheets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python version
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install Python dependencies for actions
+        run: |-
+          pip install -r requirements-actions.txt
+
+      - name: Checkout to the head ref
+        run: |-
+          git fetch --depth=1
+          git checkout ${{ github.head_ref }}
+
+      - name: Fetch updated metadata from API
+        run: |-
+          python3 .github/workflows/scripts/fetch_metadata.py
+
+      - name: Update DBT schemas
+        run: |-
+          python3 .github/workflows/scripts/metadata_to_dbt_schema.py
+
+      - name: Commit changed files
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Update metadata"
