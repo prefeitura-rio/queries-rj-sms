@@ -43,6 +43,13 @@ spec:
             - "0.0.0.0"
             - "--port"
             - "8580"
+          resources:
+            requests:
+              cpu: 125m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
       volumes:
         - name: credentials-dev
           secret:
