@@ -1,0 +1,1 @@
+SELECT * FROM `rj-sms.sms_covid_staging.srag`
