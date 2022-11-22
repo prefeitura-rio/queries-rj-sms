@@ -39,5 +39,5 @@ models:
       +materialized: table # Materialization type (view, table or incremental)
       +schema: example # Overrides the default schema (defaults to what is set on profiles.yml)
     sms_covid:
-      +materialized: table # Materialization type (view, table or incremental)
-      +schema: sms_covid # Overrides the default schema (defaults to what is set on profiles.yml)
+      +materialized: table # 
+      +schema: sms_covid #
