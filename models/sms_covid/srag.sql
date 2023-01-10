@@ -178,5 +178,6 @@ SELECT
     SAFE_CAST(uti AS STRING) uti,
     SAFE_CAST(vacina AS STRING) vacina_gripe,
     SAFE_CAST(vacina_cov AS STRING) vacina_covid,
-    SAFE_CAST(vomito AS STRING) sintoma_vomito
+    SAFE_CAST(vomito AS STRING) sintoma_vomito,
+    SAFE_CAST(cap_residencia AS STRING) cap_residencia
 FROM `rj-sms.sms_covid_staging.srag`
