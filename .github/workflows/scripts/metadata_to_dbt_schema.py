@@ -33,14 +33,14 @@ def dump_metadata_into_schema_yaml(
 
     ruamel = load_ruamel()
     ruamel.dump(
-        schema, open(Path(schema_yaml_path), "w", encoding="utf-8"),
+        schema,
+        open(Path(schema_yaml_path), "w", encoding="utf-8"),
     )
 
 
 def format_table_description(table_info: dict) -> str:
     """
     Formats the table description.
-
     Input format:
     {
         "title": "some-title-here",
@@ -63,7 +63,6 @@ def format_table_description(table_info: dict) -> str:
             ...
         ]
     }
-
     Output format:
     **Descrição**: some long description here
     **Frequência de atualização**: some update frequency here
@@ -133,12 +132,17 @@ if __name__ == "__main__":
         # Iterate over tables
         for table_id in metadata[dataset_id]:
 
-            print(f"  - Table {table_id}")
+            if metadata[dataset_id][table_id].get("columns") is not None:
+                print(f"  - Table {table_id}")
 
-            table_metadata = {
-                "name": table_id,
-                "description": format_table_description(metadata[dataset_id][table_id]),
-                "columns": metadata[dataset_id][table_id]["columns"],
-            }
-
-            dump_metadata_into_schema_yaml(dataset_id, table_id, table_metadata)
+                table_metadata = {
+                    "name": table_id,
+                    "description": format_table_description(
+                        metadata[dataset_id][table_id]
+                    ),
+                    "columns": metadata[dataset_id][table_id]["columns"],
+                }
+                dump_metadata_into_schema_yaml(
+                    dataset_id, table_id, table_metadata)
+            else:
+                print(f"No columns for {table_id} in dataset {dataset_id}")
