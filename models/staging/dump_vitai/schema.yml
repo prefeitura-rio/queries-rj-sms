@@ -1,0 +1,10 @@
+models:
+  - name: vitai__estoque_posicao
+    description: "Posição diária dos estoques de medicamentos e insumos\
+      \ das unidades de saúde que utilizam o prontuário Timed (Vitai) para \
+      \ gestão de estoque de farmácia e almoxarifado \n"
+    columns:
+      - name: id_cnes
+        description: Código identificador do CNES da unidade de saude
+        meta:
+            sensitive: true
