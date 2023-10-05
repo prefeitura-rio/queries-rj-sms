@@ -4,7 +4,7 @@ default:
     dev:
       type: bigquery
       method: service-account
-      project: rj-sms
+      project: rj-sms-dev
       dataset: dbt
       location: US
       threads: 2
