@@ -1,3 +1,4 @@
+version: 2
 models:
   - name: dump_vitai__estoque_posicao
     description: "Posição diária dos estoques de medicamentos e insumos\
