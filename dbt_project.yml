@@ -37,8 +37,6 @@ models:
     sms_covid:
         +materialized: table # 
         +schema: sms_covid #
-    staging:
-      dump_vitai:
-        +materialized: table
-        +schema: dump_vitai
- 
+    dump_vitai:
+      +materialized: table
+      +schema: dump_vitai
