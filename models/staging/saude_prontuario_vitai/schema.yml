@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: dump_vitai__estoque_posicao
+  - name: saude_prontuario_vitai__estoque_posicao
     description: "Posição diária dos estoques de medicamentos e insumos\
       \ das unidades de saúde que utilizam o prontuário Timed (Vitai) para \
       \ gestão de estoque de farmácia e almoxarifado \n"
