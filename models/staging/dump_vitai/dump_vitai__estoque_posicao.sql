@@ -1,4 +1,4 @@
-{{ config(alias='estoque_posicao', schema='dump_vitai') }}
+{{ config(alias='estoque_posicao', schema='saude_prontuario_vitai') }}
 
 select
     cnes as id_cnes,
