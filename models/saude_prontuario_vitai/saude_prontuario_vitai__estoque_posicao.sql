@@ -2,7 +2,7 @@
     config(
         alias="estoque_posicao",
         schema="saude_prontuario_vitai",
-        labels = {'contains_pii': 'no'}
+        labels = {'contains_pii': 'no'},
         materialized="incremental",
         partition_by={
             "field": "data_particao",
