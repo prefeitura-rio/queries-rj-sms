@@ -2,7 +2,7 @@
     config(
         alias="estoque_posicao",
         schema="saude_prontuario_vitai",
-        labels = {'contains_pii': 'no'},
+        labels={"contains_pii": "no"},
         materialized="incremental",
         partition_by={
             "field": "data_particao",
@@ -37,14 +37,12 @@ select
     safe_cast(_data_carga as date) as data_carga,
 
 from `rj-sms-dev.saude_prontuario_vitai_staging.estoque_posicao`
-where
-    safe_cast(data_particao as date) <= current_date('America/Sao_Paulo')
 
-    {% if is_incremental() %}
-
+{% if is_incremental() %}
+    where
         {% set max_partition = (
             run_query(
-                "SELECT gr FROM (SELECT IF(max(data_particao) > CURRENT_DATE('America/Sao_Paulo'), CURRENT_DATE('America/Sao_Paulo'), max(data_particao)) as gr FROM "
+                "SELECT gr FROM (SELECT max(data_particao) as gr FROM "
                 ~ this
                 ~ ")"
             )
@@ -52,6 +50,6 @@ where
             .values()[0]
         ) %}
 
-        and safe_cast(data_particao as date) > ("{{ max_partition }}")
+        safe_cast(data_particao as date) > ("{{ max_partition }}")
 
-    {% endif %}
+{% endif %}
