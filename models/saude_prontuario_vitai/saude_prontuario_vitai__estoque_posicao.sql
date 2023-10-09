@@ -39,17 +39,7 @@ select
 from `rj-sms-dev.saude_prontuario_vitai_staging.estoque_posicao`
 
 {% if is_incremental() %}
-    where
-        {% set max_partition = (
-            run_query(
-                "SELECT gr FROM (SELECT max(data_particao) as gr FROM "
-                ~ this
-                ~ ")"
-            )
-            .columns[0]
-            .values()[0]
-        ) %}
 
-        safe_cast(data_particao as date) > ("{{ max_partition }}")
+    where safe_cast(data_particao as date) > (select max(data_particao) from {{ this }})
 
 {% endif %}
