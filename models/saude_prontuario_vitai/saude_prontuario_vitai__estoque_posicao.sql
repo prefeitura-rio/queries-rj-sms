@@ -34,7 +34,6 @@ select
     -- metadata
     safe_cast(data_particao as date) as data_particao,
     safe_cast(datahora as datetime) as data_snapshot,
-    safe_cast(_data_carga as date) as data_carga,
 
 from `rj-sms-dev.saude_prontuario_vitai_staging.estoque_posicao`
 

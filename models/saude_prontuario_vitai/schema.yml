@@ -5,8 +5,32 @@ models:
       \ das unidades de saúde que utilizam o prontuário Timed (Vitai) para \
       \ gestão de estoque de farmácia e almoxarifado \n"
     columns:
+      - name: id_estoque_posicao
+        description: Identificador interno do sistema para o registro
       - name: id_cnes
-        description: Código identificador do CNES da unidade de saude
-        tags: [ "pii"]
-        meta:
-            sensitive: true
+        description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
+          unidade de saúde onde o item está localizado
+      - name: id_lote
+        description: Identificador do lote do medicamento/insumo
+      - name: id_produto
+        description: Identificador do medicamento/insumo
+      - name: estoque_secao
+        description: Local dentro da unidade de saúde onde está armazenado o
+          medicamento/insumo
+      - name: produto_descricao
+        description: Descrição do medicamento/insumo
+      - name: produto_unidade
+        description: Unidade de estocagem do medicamento/insumo
+      - name: lote_data_vencimento
+        description: Data de vecimento do lote
+      - name: produto_quantidade
+        description: Quantidade disponível do medicamento/insumo
+      - name: produto_valor_unitario
+        description: Valor em reais de uma unidade do medicamento/insumo
+      - name: produto_valor_total
+        description: Valor em reais somando todas as unidades disponíveis do
+          medicamento/insumo
+      - name: data_particao
+        description: Data da posição do estoque
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
