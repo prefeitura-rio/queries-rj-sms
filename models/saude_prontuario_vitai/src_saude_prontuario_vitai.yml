@@ -6,7 +6,7 @@ sources:
     schema: saude_prontuario_vitai_staging
     tables:
       - name: estoque_posicao
-        loaded_at_field: _data_carga
+        loaded_at_field: "CAST(_data_carga AS TIMESTAMP)"
         freshness:
           warn_after: {count: 24, period: hour}
           error_after: {count: 48, period: hour}
