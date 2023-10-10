@@ -7,8 +7,8 @@ sources:
     tables:
       - name: estoque_posicao
         loaded_at_field: _data_carga
-          freshness:
-            warn_after: {count: 24, period: hour}
-            error_after: {count: 48, period: hour}
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
       - name: estodo_movimento
       
