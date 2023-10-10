@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: saude_prontuario_vitai_staging
+    database: rj-sms-dev
+    schema: saude_prontuario_vitai_staging
+    tables:
+      - name: estoque_posicao
+        loaded_at_field: _data_carga
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
+      - name: estodo_movimento
+      

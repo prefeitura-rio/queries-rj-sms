@@ -35,7 +35,7 @@ select
     safe_cast(data_particao as date) as data_particao,
     safe_cast(datahora as datetime) as data_snapshot,
 
-from `rj-sms-dev.saude_prontuario_vitai_staging.estoque_posicao`
+from {{ source("saude_prontuario_vitai", "estoque_posicao") }}
 
 {% if is_incremental() %}
 
