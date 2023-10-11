@@ -1,7 +1,7 @@
 {{
     config(
         alias="estoque_posicao",
-        schema="saude_prontuario_vitai",
+        schema="raw_prontuario_vitai",
         labels={"contains_pii": "no"},
         materialized="incremental",
         partition_by={
@@ -19,7 +19,7 @@ select
     -- Foreign Keys
     safe_cast(cnes as string) as id_cnes,
     safe_cast(lote as string) as id_lote,
-    safe_cast(regexp_replace(produtocodigo, r'[^0-9]', '') as string) as id_produto,
+    safe_cast(regexp_replace(produtocodigo, r'[^a-zA-Z0-9]', '') as string) as id_produto,
 
     -- Logical Info
     safe_cast(secao as string) as estoque_secao,
@@ -34,8 +34,9 @@ select
     -- metadata
     safe_cast(data_particao as date) as data_particao,
     safe_cast(datahora as datetime) as data_snapshot,
+    safe_cast(_data_carga as datetime) as data_carga,
 
-from {{ source("saude_prontuario_vitai_staging", "estoque_posicao") }}
+from {{ source("raw_prontuario_vitai_staging", "estoque_posicao") }}
 
 {% if is_incremental() %}
 

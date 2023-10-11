@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: saude_prontuario_vitai__estoque_posicao
+  - name: raw_prontuario_vitai__estoque_posicao
     description: "Posição diária dos estoques de medicamentos e insumos\
       \ das unidades de saúde que utilizam o prontuário Timed (Vitai) para \
       \ gestão de estoque de farmácia e almoxarifado \n"
@@ -34,3 +34,5 @@ models:
         description: Data da posição do estoque
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset

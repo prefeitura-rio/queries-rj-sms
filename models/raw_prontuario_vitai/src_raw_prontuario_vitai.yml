@@ -1,14 +1,20 @@
 version: 2
 
 sources:
-  - name: saude_prontuario_vitai_staging
+  - name: raw_prontuario_vitai_staging
     database: rj-sms-dev
-    schema: saude_prontuario_vitai_staging
+    schema: raw_prontuario_vitai_staging
     tables:
       - name: estoque_posicao
         loaded_at_field: "CAST(_data_carga AS TIMESTAMP)"
         freshness:
           warn_after: {count: 24, period: hour}
           error_after: {count: 48, period: hour}
-      - name: estodo_movimento
-      
+        columns:
+          - name: cnes
+            tests:
+              - not_null
+          - name: produtoCodigo
+            tests:
+              - not_null
+          

@@ -37,6 +37,6 @@ models:
     sms_covid:
         +materialized: table # 
         +schema: sms_covid #
-    saude_prontuario_vitai:
-      +materialized: table
-      +schema: dump_vitai
+    raw_prontuario_vitai:
+      +materialized: view
+
