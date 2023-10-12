@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: raw_prontuario_vitai_staging
+  - name: brutos_prontuario_vitai_staging
     database: rj-sms-dev
-    schema: raw_prontuario_vitai_staging
+    schema: brutos_prontuario_vitai_staging
     tables:
       - name: estoque_posicao
         loaded_at_field: "CAST(_data_carga AS TIMESTAMP)"
@@ -17,4 +17,15 @@ sources:
           - name: produtoCodigo
             tests:
               - not_null
-          
+      - name: estoque_movimento
+        loaded_at_field: "CAST(_data_carga AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
+        columns:
+          - name: cnes
+            tests:
+              - not_null
+          - name: produtoCodigo
+            tests:
+              - not_null    

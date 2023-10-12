@@ -34,9 +34,11 @@ models:
     relation: true
     columns: true
   rj_sms:
+    saude_estoque:
+      +materialized: table  
     sms_covid:
         +materialized: table # 
         +schema: sms_covid #
-    raw_prontuario_vitai:
+    brutos_prontuario_vitai:
       +materialized: view
 
