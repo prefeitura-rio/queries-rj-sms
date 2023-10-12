@@ -1,6 +1,6 @@
 {{
     config(
-        alias="fct_estoque_posicao",
+        alias="estoque_posicao",
         schema="saude_estoque",
         labels={"contains_pii": "no"},
         materialized="table",
