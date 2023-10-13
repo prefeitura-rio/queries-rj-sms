@@ -6,8 +6,6 @@ models:
       saúde que utilizam o prontuário Timed (Vitai) para  gestão de estoque de
       farmácia e almoxarifado 
     columns:
-      - name: id_estoque_posicao
-        description: Identificador interno do sistema para o registro
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado

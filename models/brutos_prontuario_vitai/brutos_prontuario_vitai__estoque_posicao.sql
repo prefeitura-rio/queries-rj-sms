@@ -14,7 +14,6 @@
 
 select
     -- Primary Key
-    id as id_estoque_posicao,
 
     -- Foreign Keys
     safe_cast(cnes as string) as id_cnes,

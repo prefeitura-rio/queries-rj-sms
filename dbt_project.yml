@@ -41,4 +41,3 @@ models:
         +schema: sms_covid #
     brutos_prontuario_vitai:
       +materialized: view
-
