@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_sheets_staging
+    database: rj-sms-dev
+    schema: brutos_sheets_staging
+    tables:
+      - name: unidade_saude_auxiliar

@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: sigma
+    database: rj-sms-dev
+    schema: brutos_sigma_staging
+    tables:
+      - name: material
+      - name: grupo
+      - name: classe
+      - name: subclasse

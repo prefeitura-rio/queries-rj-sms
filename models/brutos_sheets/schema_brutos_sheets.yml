@@ -1,0 +1,19 @@
+models:
+  - name: estabelecimento_auxiliar
+    description: Tabela contendo informações complementares das unidades de saúde
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: nome_fantasia
+        description: Nome fantasia de unidade de saúde
+      - name: nome_limpo
+        description: Nome fantasia removido o prefixo SMS e o sufixo contendo a área
+          programática
+      - name: nome_sigla
+        description: Sigla da unidade de saúde
+      - name: area_programatica
+        description: Area programática da unidade de saúde
+      - name: prontuario
+        description: Prontuario que roda na unidade de saúde
+      - name: administracao
+        description: Administradora da unidade de saúde.
