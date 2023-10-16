@@ -5,4 +5,4 @@ sources:
     database: rj-sms-dev
     schema: brutos_sheets_staging
     tables:
-      - name: unidade_saude_auxiliar
+      - name: estabelecimento_auxiliar

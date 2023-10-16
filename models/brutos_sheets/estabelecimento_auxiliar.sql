@@ -7,7 +7,7 @@
 
 with
     source as (
-        select * from {{ source("brutos_sheets_staging", "unidade_saude_auxiliar") }}
+        select * from {{ source("brutos_sheets_staging", "estabelecimento_auxiliar") }}
     )
 
 select
