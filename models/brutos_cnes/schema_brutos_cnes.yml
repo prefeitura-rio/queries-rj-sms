@@ -1,11 +1,11 @@
 models:
-  - name: estabelecimento
+  - name: brutos_cnes__estabelecimento
     description: |-
       Tabela com a relação dos estabelecimentos de saúde
       Granularidade: estabelecimento de saúde
       Atualização: mensal
     columns:
-      - name: id_estabelecimento
+      - name: id_unidade
         description: Código do Estabelecimento de Saúde
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde

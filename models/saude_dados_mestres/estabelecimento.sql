@@ -47,6 +47,7 @@ select
     est.id_distrito_sanitario_corrigido as area_programatica,
 
     -- Common fields
+    IF (est.id_motivo_desativacao is null, "sim", "não") as ativa,
     unidade.descricao as tipo,
     est.nome_limpo,
     est.nome_sigla,
@@ -80,4 +81,4 @@ from estab_final as est
 left join turno using (id_turno_atendimento)
 left join unidade using (id_tipo_unidade)
 
-order by est.id_tipo_unidade, area_programatica, est.endereco_bairro, est.nome_fantasia
+order by ativa desc, est.id_tipo_unidade asc, area_programatica asc, est.endereco_bairro asc, est.nome_fantasia asc
