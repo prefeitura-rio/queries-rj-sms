@@ -55,3 +55,6 @@ models:
     brutos_sheets:
       +materialized: view
       +schema: brutos_sheets
+    prep_estoque:
+      +materialized: view
+      +schema: prep_estoque

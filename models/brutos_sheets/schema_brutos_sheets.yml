@@ -13,7 +13,12 @@ models:
         description: Sigla da unidade de saúde
       - name: area_programatica
         description: Area programática da unidade de saúde
-      - name: prontuario
-        description: Prontuario que roda na unidade de saúde
+      - name: prontuario_tem
+        description: Indica se unidade utiliza prontuario
+      - name: prontuario_versao
+        description: Para as unidades que utilizam pronturio, indica qual sistema de
+          prontuario é utilizado
+      - name: responsavel_sms
+        description: Subcretaria responsável dentro da SMS
       - name: administracao
         description: Administradora da unidade de saúde.

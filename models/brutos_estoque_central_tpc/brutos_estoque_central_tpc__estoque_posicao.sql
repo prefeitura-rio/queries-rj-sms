@@ -19,7 +19,7 @@ select
     safe_cast(id_lote as string) as id_lote,
     safe_cast(
         regexp_replace(cod_depositante, r'[^a-zA-Z0-9]', '') as string
-    ) as id_produto,
+    ) as id_material,
 
     -- Logical Info
     safe_cast(local_nome as string) as estoque_secao,

@@ -19,7 +19,9 @@ select
     if(nome_limpo = "nan", null, nome_limpo) as nome_limpo,
     if(sigla = "nan", null, sigla) as nome_sigla,
     if(distrito_sanitario = "nan", null, distrito_sanitario) as area_programatica,
-    if(prontuario = "nan", null, prontuario) as prontuario,
+    if(prontuario_tem = "nan", null, prontuario_tem) as prontuario_tem,
+    if(prontuario_versao = "nan", null, prontuario_versao) as prontuario_versao,
+    if(responsavel_sms = "nan", null, responsavel_sms) as responsavel_sms,
     if(administracao = "nan", null, administracao) as administracao,
 
 from source

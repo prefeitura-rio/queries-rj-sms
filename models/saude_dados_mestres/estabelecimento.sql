@@ -12,7 +12,7 @@ with
         where
             cnpj_mantenedora = "29468055000102"  -- SMS-RIO
             or id_cnes = "5456932"  -- Fio Cruz
-            or (id_municipio_gestor = "330455" and id_natureza_juridica = "2011")  -- Rio de Janeiro & Empresa Publica
+            or (id_municipio_gestor = "330455" and id_natureza_juridica = "2011")  -- Rio de Janeiro & Empresa Publica (Rio Saúde)
             or (id_municipio_gestor = "330455" and id_natureza_juridica = "1031")  -- Rio de Janeiro & Orgao Publico do Poder Executivo Municipal
     ),
     estab_aux as (select * from {{ ref("estabelecimento_auxiliar") }}),
@@ -21,7 +21,9 @@ with
             estab_sms.*,
             estab_aux.nome_limpo,
             estab_aux.nome_sigla,
-            estab_aux.prontuario,
+            estab_aux.prontuario_tem,
+            estab_aux.prontuario_versao,
+            estab_aux.responsavel_sms,
             estab_aux.administracao,
             coalesce(
                 estab_aux.area_programatica, estab_sms.id_distrito_sanitario
@@ -52,8 +54,10 @@ select
     est.nome_limpo,
     est.nome_sigla,
     est.nome_fantasia,
+    est.responsavel_sms,
     est.administracao,
-    est.prontuario,
+    est.prontuario_tem,
+    est.prontuario_versao,
     est.endereco_bairro,
     est.endereco_logradouro,
     est.endereco_numero,

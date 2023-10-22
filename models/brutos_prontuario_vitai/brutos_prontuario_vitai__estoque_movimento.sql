@@ -19,7 +19,7 @@ select
     safe_cast(cnes as string) as id_cnes,
     safe_cast(
         regexp_replace(produtocodigo, r'[^a-zA-Z0-9]', '') as string
-    ) as id_produto,
+    ) as id_material,
 
     -- Logical Info
     safe_cast(descricao as string) as material_descricao,
