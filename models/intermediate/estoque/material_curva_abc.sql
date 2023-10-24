@@ -1,6 +1,6 @@
 with
     inventory as (
-        select * from {{ref("dispensacao_agrupado_grupo_abc_e_material")}}  -- curva ABC é calculada a partir dos materiais com maior valor total dispensados
+        select * from {{ref("dispensacao_agrupada_por_unidade_abc_e_material")}}  -- curva ABC é calculada a partir dos materiais com maior valor total dispensados
         where material_valor_total > 0
     ),
     total as (

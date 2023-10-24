@@ -1,5 +1,5 @@
 models:
-  - name: saude_estoque__estoque_posicao
+  - name: estoque_posicao
     description: >
       Posição diária dos estoques de medicamentos e insumos da SMS
     columns:

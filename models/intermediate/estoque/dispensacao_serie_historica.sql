@@ -1,5 +1,3 @@
-{{ config(materialized="view") }}
-
 
 with
     dispensacao_diaria as (

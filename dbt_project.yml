@@ -34,27 +34,29 @@ models:
     relation: true
     columns: true
   rj_sms:
-    saude_dados_mestres:
-      +materialized: table
-      +schema: saude_dados_mestres
-    saude_estoque:
-      +materialized: table
-      +schema: saude_estoque
+    staging:
+      +materialized: view
+      brutos_cnes:
+          +schema: brutos_cnes
+      brutos_estoque_central_tpc:
+          +schema: brutos_estoque_central_tpc
+      brutos_prontuario_vitai:
+          +schema: brutos_prontuario_vitai
+      brutos_sheets:
+          +schema: brutos_sheets
+    intermediate:
+      +materialized: ephemeral
+    marts:
+        +materialized: table
+        core:
+          saude_dados_mestres:
+              +schema: saude_dados_mestres
+          saude_estoque:
+              +schema: saude_estoque
+        analytics:
+          dashboard_estoque:
+              +materialized: view
+              +schema: dashboard_estoque
     sms_covid:
         +materialized: table # 
         +schema: sms_covid #
-    brutos_cnes:
-      +materialized: view
-      +schema: brutos_cnes
-    brutos_estoque_central_tpc:
-      +materialized: view
-      +schema: brutos_estoque_central_tpc
-    brutos_prontuario_vitai:
-      +materialized: view
-      +schema: brutos_prontuario_vitai
-    brutos_sheets:
-      +materialized: view
-      +schema: brutos_sheets
-    prep_estoque:
-      +materialized: view
-      +schema: prep_estoque
