@@ -20,7 +20,7 @@ jobs:
 
     - name: Mount credentials
       env:
-        DBT_CREDENTIALS: ${{ secrets.DBT_CREDENTIALS_DEV }}
+        DBT_CREDENTIALS_DEV: ${{ secrets.DBT_CREDENTIALS_DEV }}
       run: echo "$DBT_CREDENTIALS_DEV" > credentials/dev.json
 
     - name: Install dbt
