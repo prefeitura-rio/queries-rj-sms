@@ -15,20 +15,17 @@ jobs:
       with:
         python-version: 3.x
 
-    - name: Create /credentials-dev directory
-      run: mkdir -p credentials-dev
+    - name: Create credentials directory
+      run: mkdir -p credentials
 
-    - name: Mount credentials to /credentials-dev
+    - name: Mount credentials
       env:
         DBT_CREDENTIALS: ${{ secrets.DBT_CREDENTIALS_DEV }}
-      run: echo "$DBT_CREDENTIALS_DEV" > credentials-dev/dev.json
-
-    - name: Verify if credentials exist 
-      run: ls /credentials-dev.json
+      run: echo "$DBT_CREDENTIALS_DEV" > credentials/dev.json
 
     - name: Install dbt
-      run:  pip install -r requirements.txt
+      run:  pip install dbt-core dbt-bigquery
 
     - name: Compile dbt models
-      run: dbt compile --profiles-dir . --profile default --target dev
+      run: dbt compile --profiles-dir . --profile default --target compile
 
