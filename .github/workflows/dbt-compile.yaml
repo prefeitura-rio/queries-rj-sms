@@ -16,12 +16,15 @@ jobs:
         python-version: 3.x
 
     - name: Create /credentials-dev directory
-      run: mkdir -p /credentials-dev
+      run: mkdir -p credentials-dev
 
     - name: Mount credentials to /credentials-dev
       env:
         DBT_CREDENTIALS: ${{ secrets.DBT_CREDENTIALS_DEV }}
-      run: echo "$DBT_CREDENTIALS_DEV" > /credentials-dev/dev.json
+      run: echo "$DBT_CREDENTIALS_DEV" > credentials-dev/dev.json
+
+    - name: Verify if credentials exist 
+      run: ls /credentials-dev.json
 
     - name: Install dbt
       run:  pip install -r requirements.txt
