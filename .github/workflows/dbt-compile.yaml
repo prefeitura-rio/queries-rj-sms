@@ -1,9 +1,6 @@
 name: DBT Compile
 
-on:
-  push:
-    branches:
-      - "*"
+on: [pull_request, push]
 
 jobs:
   dbt-compile:
