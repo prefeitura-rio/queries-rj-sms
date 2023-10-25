@@ -1,0 +1,34 @@
+name: DBT Compile
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  dbt-compile:
+    name: DBT Compile
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Create /credentials-dev directory
+      run: mkdir -p /credentials-dev
+
+    - name: Mount credentials to /credentials-dev
+      env:
+        DBT_CREDENTIALS: ${{ secrets.DBT_CREDENTIALS_DEV }}
+      run: echo "$DBT_CREDENTIALS_DEV" > /credentials-dev/dev.json
+
+    - name: Install dbt
+      run:  pip install -r requirements.txt
+
+    - name: Compile dbt models
+      run: dbt compile --profiles-dir . --profile default --target dev
+
