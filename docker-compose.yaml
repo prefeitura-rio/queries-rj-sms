@@ -1,0 +1,16 @@
+version: '3'
+services:
+  dbt-compile:
+    build: .
+    command:       
+      - dbt
+      - compile
+      - --profiles-dir
+      - .
+      - --profile
+      - default
+      - --target
+      - dev
+    volumes:
+      - ./credentials/:/credentials-dev/
+

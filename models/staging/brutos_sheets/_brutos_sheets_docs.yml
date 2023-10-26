@@ -1,3 +1,4 @@
+version: 2
 models:
   - name: estabelecimento_auxiliar
     description: Tabela contendo informações complementares das unidades de saúde

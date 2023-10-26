@@ -1,3 +1,4 @@
+version: 2
 models:
   - name: material
     description: "Tabela contendo a relação sigma de insumos e medicamentos "

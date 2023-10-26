@@ -1,0 +1,31 @@
+name: DBT Compile
+
+on: [pull_request, push]
+
+jobs:
+  dbt-compile:
+    name: DBT Compile
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Create credentials directory
+      run: mkdir -p credentials
+
+    - name: Mount credentials
+      env:
+        DBT_CREDENTIALS_DEV: ${{ secrets.DBT_CREDENTIALS_DEV }}
+      run: echo "$DBT_CREDENTIALS_DEV" > credentials/dev.json
+
+    - name: Install dbt
+      run:  pip install dbt-core dbt-bigquery
+
+    - name: Compile dbt models
+      run: dbt compile --profiles-dir . --profile default --target compile
+
