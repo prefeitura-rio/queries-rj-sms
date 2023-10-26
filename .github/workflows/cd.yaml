@@ -13,6 +13,7 @@ env:
   GKE_ZONE: ${{ secrets.GKE_CLUSTER_ZONE }}
   IMAGE_NAME: ghcr.io/prefeitura-rio/dbt-rpc
 
+
 jobs:
   build-container:
     name: Build, publish and register
@@ -20,6 +21,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Create credentials directory
+        run: mkdir -p credentials
+
+      - name: Mount credentials
+        env:
+          DBT_CREDENTIALS_DEV: ${{ secrets.DBT_CREDENTIALS_DEV }}
+        run: echo "$DBT_CREDENTIALS_DEV" > credentials/dev.json
+
+      - name: Install dbt
+        run:  pip install dbt-core dbt-bigquery
+
+      - name: Compile dbt models
+        run: dbt compile --profiles-dir . --profile default --target compile
 
       - name: Setup Google Cloud CLI
         uses: google-github-actions/setup-gcloud@v0.2.1
