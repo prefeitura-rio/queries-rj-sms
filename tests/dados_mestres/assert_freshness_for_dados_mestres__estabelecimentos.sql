@@ -5,7 +5,7 @@ with
             *,
             safe_cast(saldo as float64) as material_quantidade,
             safe_cast(valormedio as float64) as material_valor_unitario
-        from {{ source("brutos_prontuario_vitai_staging", "estoque_posicao") }}
+        from {{ source("raw_prontuario_vitai", "estoque_posicao") }}
     )
 
 select *

@@ -1,0 +1,210 @@
+version: 2
+models:
+  - name: raw_cnes__estabelecimento
+    description: |-
+      Tabela com a relação dos estabelecimentos de saúde
+      Granularidade: estabelecimento de saúde
+      Atualização: mensal
+    columns:
+      - name: id_unidade
+        description: Código do Estabelecimento de Saúde
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: id_tipo_unidade
+        description: Tipo de Estabelecimento
+      - name: id_tipo_estabelecimento
+        description: Código do Tipo de Estabelecimento
+      - name: id_atividade_principal
+        description: Código da Atividade Principal
+      - name: id_estado_gestor
+        description: Sigla do Estado
+      - name: id_municipio_gestor
+        description: Código do Município
+      - name: id_regiao_saude
+        description: Código da Região de Saúde
+      - name: id_micro_regiao
+        description: Código da Microregião de Saúde
+      - name: id_distrito_sanitario
+        description: Código do Distrito Sanitário
+      - name: id_distrito_administrativo
+        description: Código do Módulo Assistencial (Conforme o plano Diretor de
+          Regionalização do Estado/Município)
+      - name: id_atividade_ensino_pesquisa
+        description: Código da Atividade de Ensino / Pesquisa
+      - name: id_clientela
+        description: Código de Fluxo da Clientela
+      - name: id_turno_atendimento
+        description: Código do Turno de Atendimento
+      - name: id_motivo_desativacao
+        description: Código do Motivo de Desativação do Estabelecimento
+      - name: id_natureza_juridica
+        description: Código da Natureza Jurídica do Estabelecimento
+      - name: cnpj_mantenedora
+        description: CNPJ da Mantenedora
+      - name: tipo_gestao
+        description: |-
+          Tipo de Gestão:
+          M - Municipal
+          E - Estadual
+          D - Dupla
+          S - Sem Gestão
+      - name: tipo_pfpj
+        description: |
+          Indica se é Pessoa Física ou Jurídica:
+          1 - Pessoa Física
+          3 - Pessoa Jurídica
+      - name: dependencia_nivel
+        description: |
+          Nivel de dependência do estabelecimento de saúde:
+          1 - Individual
+          3 - Mantido
+      - name: contrato_sus
+        description: |
+          Indica se o Estabelecimento possui Contrato formalizado com o SUS
+          S - Sim 
+          N - Não
+      - name: nome_razao_social
+        description: Razão Social
+      - name: nome_fantasia
+        description: Nome fantasia
+      - name: endereco_logradouro
+        description: Logradouro
+      - name: endereco_numero
+        description: Número
+      - name: endereco_complemento
+        description: Complemento
+      - name: endereco_bairro
+        description: Bairro
+      - name: endereco_cep
+        description: Código de endereçamento postal (CEP)
+      - name: endereco_latitude
+        description: Latitude
+      - name: endereco_longitude
+        description: Longitude
+      - name: telefone
+        description: Telefone para contato
+      - name: fax
+        description: Fax para contato
+      - name: email
+        description: Email para contato
+      - name: url
+        description: "URL "
+      - name: cpf
+        description: |
+          CPF do Estabelecimento
+          Esse campo só é preenchido no caso do campo tipo_pfpj = 1
+      - name: cnpj
+        description: |-
+          CNPJ do Estabelecimento
+          Esse campo só é preenchido no caso do campo tipo_pfpj = 3
+      - name: aberto_sempre
+        description: "Funcionamento do estabelecimento. Indica se fica sempre aberto /
+          Ininterrupto: S - SIM N - NÃO"
+      - name: conexao_internet
+        description: |
+          Possui Conexão Internet
+          S - Sim 
+          N - Não
+      - name: alvara_numero
+        description: Número do Alvará (Vigilância Sanitária)
+      - name: alvara_data_expedicao
+        description: Data de Expedição do Alvará (Vigilância Sanitária)
+      - name: alvara_orgao_expedidor
+        description: |-
+          Órgão Expedidor (Vigilância Sanitária)
+          1 - SES
+          2 - SMS
+      - name: licenca_sanitaria_data_validade
+        description: Data de Validade do Licenciamento Sanitário
+      - name: licenca_sanitaria_tipo
+        description: |
+          Tipo do Licenciamento Sanitário
+          1 - Total  
+          2 - Parcial/Restrições
+      - name: diretor_clinico_cpf
+        description: CPF do Diretor Clínico ou  Gerente / Administrador
+      - name: diretor_clinico_conselho
+        description: Registro no Conselho de Classe do Diretor Clinico
+      - name: adesao_hospital_filantropico
+        description: Indica se o hospital fez adesão ao Programa de Reestruturação de
+          Hospital Filantrópico 1 - Sim 2 - Não
+      - name: gera_credito_gerente_sgif
+        description: Indica se o crédito gerado pelo estab. será direcionado para o
+          Gerente/Administrador(Terceiro)/Interveniente no SGIF (Sistema de
+          Gestão de Informações Financeiras do SUS). S - SIM N - NÃO
+      - name: data_entrada_sistema
+        description: Data da Primeira entrada no Banco de Produção Federal
+      - name: usuario_atualizador_registro
+        description: Último Usuário que atualizou o Registro
+      - name: data_atualizao_registro
+        description: Data da Última Atualização do Registro
+      - name: usuario_atualizador_geolocalizacao
+        description: Nome do Usuário que atualizou as Coordenadas
+      - name: data_atualizacao_geolocalizacao
+        description: Data de atualização das Coordenadas
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
+  - name: tipo_unidade
+    description: Tabela contendo os tipo de unidades de saúde
+    columns:
+      - name: id_tipo_unidade
+        description: Identificar do tipo de unidade de saúde
+      - name: descricao
+        description: Descrição do tipo de unidade de saúde
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
+  - name: tipo_nivel_atencao
+    description: Tabela contendo os níveis de atenção / atividade.
+    columns:
+      - name: id_nivel_atencao
+        description: Código do Tipo de Atendimento (Atividade)
+      - name: descricao
+        description: Descrição do Tipo de Atendimento (Atividade)
+      - name: tipo
+        description: |-
+          Tipo:
+          0 - Não se Aplica;
+          1 - Ambulatorial;
+          2 - Hospitalar
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
+  - name: gestao_nivel_atencao
+    description: Tabela contendo a relação do nível de atenção correspondente à
+      unidade de saúde
+    columns:
+      - name: id_unidade
+        description: Código do Estabelecimento de Saúde
+      - name: id_nivel_atencao
+        description: Código da Atividade / Nível de Atenção
+      - name: gestao_estadual_municipal
+        description: |-
+          Indicador de Gestão
+          1 - Estadual
+          2 - Municipal
+      - name: data_entrada_sistema
+        description: Data da Primeira entrada no Banco de Produção Federal
+      - name: data_atualizao_registro
+        description: Data da Última Atualização do Registro
+      - name: usuario_atualizador_registro
+        description: Último Usuário que atualizou o Registro
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
+  - name: turno_atendimento
+    description: Tabelas contendo os tipo de turno de atendimento das unidades de saúde
+    columns:
+      - name: id_turno_atendimento
+        description: Código do Turno de Atendimento
+      - name: descricao
+        description: Descrição do Turno de Atendimento
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset

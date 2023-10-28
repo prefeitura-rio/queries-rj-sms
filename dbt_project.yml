@@ -36,27 +36,26 @@ models:
   rj_sms:
     staging:
       +materialized: view
-      brutos_cnes:
+      cnes:
           +schema: brutos_cnes
-      brutos_estoque_central_tpc:
+      estoque_central_tpc:
           +schema: brutos_estoque_central_tpc
-      brutos_prontuario_vitai:
+      prontuario_vitai:
           +schema: brutos_prontuario_vitai
-      brutos_sheets:
+      sheets:
           +schema: brutos_sheets
     intermediate:
       +materialized: ephemeral
     marts:
         +materialized: table
         core:
-          saude_dados_mestres:
+          dimensions:
               +schema: saude_dados_mestres
-          saude_estoque:
+          facts:
               +schema: saude_estoque
-        analytics:
-          dashboard_estoque:
-              +materialized: view
-              +schema: dashboard_estoque
-    sms_covid:
+        estoque:
+            +materialized: view
+            schema: dashboard_estoque
+  sms_covid:
         +materialized: table # 
         +schema: sms_covid #
