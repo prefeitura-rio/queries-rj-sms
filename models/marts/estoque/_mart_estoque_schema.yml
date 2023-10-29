@@ -6,4 +6,5 @@ models:
     columns:
       - name: id_cnes
         tests:
-          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude
+          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
+              prontuario: vitai

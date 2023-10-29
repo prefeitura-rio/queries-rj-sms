@@ -1,4 +1,4 @@
-{% test assert_tem_registro_de_prontuario_de_todas_unidades_de_saude(model, column_name
+{% test assert_tem_registro_de_prontuario_de_todas_unidades_de_saude(model, column_name, prontuario
 ) %}
 
 with
@@ -8,9 +8,9 @@ with
         ),
 
         unidades_saude_relacao_completa as (
-            select id_cnes, area_programatica, nome_limpo
+            select id_cnes, area_programatica, nome_limpo, prontuario_versao,
             from {{ ref('dim_estabelecimento') }}
-            where prontuario_tem = "sim" and prontuario_versao = "vitai"),
+            where prontuario_tem = "sim" and prontuario_versao = '{{ prontuario }}'),
 
         unidade_saude_faltantes as (
             select relacao_completa.*

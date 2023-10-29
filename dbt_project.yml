@@ -33,6 +33,8 @@ models:
   +persist_docs:
     relation: true
     columns: true
+    elementary:
+      +schema: "elementary"
   rj_sms:
     # all models should have unique and not null
     +required_tests: {"unique.*|not_null": 2}
@@ -61,3 +63,8 @@ models:
   sms_covid:
         +materialized: table # 
         +schema: sms_covid #
+
+tests:
+  rj_sms:
+    +severity: warn
+    +store_failures: true
