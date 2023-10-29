@@ -1,0 +1,27 @@
+{% test assert_tem_registro_de_prontuario_de_todas_unidades_de_saude(model, column_name
+) %}
+
+with
+
+        unidades_saude_presentes as (
+            select distinct {{ column_name }} from {{ model }}
+        ),
+
+        unidades_saude_relacao_completa as (
+            select id_cnes, area_programatica, nome_limpo
+            from {{ ref('dim_estabelecimento') }}
+            where prontuario_tem = "sim" and prontuario_versao = "vitai"),
+
+        unidade_saude_faltantes as (
+            select relacao_completa.*
+            from unidades_saude_relacao_completa as relacao_completa
+            left join
+                unidades_saude_presentes as presentes
+                on presentes.{{ column_name }} = relacao_completa.id_cnes
+            where presentes.{{ column_name }} is null
+        )
+
+    select *
+    from unidade_saude_faltantes
+
+{% endtest %}

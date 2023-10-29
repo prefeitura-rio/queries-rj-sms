@@ -1,0 +1,9 @@
+version: 2
+models:
+  - name: mart_estoque__posicao_atual
+    description: Posição do início do dia dos estoques de medicamentos e insumos das
+      unidades de saúde
+    columns:
+      - name: id_cnes
+        tests:
+          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude

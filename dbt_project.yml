@@ -34,16 +34,18 @@ models:
     relation: true
     columns: true
   rj_sms:
-    staging:
+    # all models should have unique and not null
+    +required_tests: {"unique.*|not_null": 2}
+    raw:
       +materialized: view
       cnes:
-          +schema: brutos_cnes
+        +schema: brutos_cnes
       estoque_central_tpc:
-          +schema: brutos_estoque_central_tpc
+        +schema: brutos_estoque_central_tpc
       prontuario_vitai:
-          +schema: brutos_prontuario_vitai
+        +schema: brutos_prontuario_vitai
       sheets:
-          +schema: brutos_sheets
+        +schema: brutos_sheets
     intermediate:
       +materialized: ephemeral
     marts:
