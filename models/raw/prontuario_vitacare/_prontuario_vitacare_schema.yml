@@ -1,0 +1,89 @@
+models:
+  - name: raw_prontuario_vitacare__estoque_posicao
+    description: ""
+    columns:
+      - name: ap
+        description: ""
+      - name: cnesUnidade
+        description: ""
+        tests:
+          - not_null
+          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
+              prontuario: vitacare
+              config:
+                where: safe_cast(data_particao as date) = current_date()
+      - name: nomeUnidade
+        description: ""
+      - name: desigMedicamento
+        description: ""
+      - name: atc
+        description: ""
+      - name: code
+        description: ""
+      - name: lote
+        description: ""
+      - name: dtaCriLote
+        description: ""
+      - name: dtaValidadeLote
+        description: ""
+      - name: estoqueLote
+        description: ""
+      - name: id
+        description: ""
+      - name: _data_carga
+        description: ""
+      - name: ano_particao
+        description: ""
+      - name: mes_particao
+        description: ""
+      - name: data_particao
+        description: ""
+  - name: raw_prontuario_vitacare__estoque_movimento
+    description: ""
+    columns:
+      - name: ap
+        description: ""
+      - name: cnesUnidade
+        description: ""
+        tests:
+          - not_null
+          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
+                prontuario: vitacare
+                config:
+                  where: "safe_cast(data_particao as date) = date_sub(current_date(), INTERVAL 1 DAY)"
+      - name: nomeUnidade
+        description: ""
+      - name: desigMedicamento
+        description: ""
+      - name: atc
+        description: ""
+      - name: code
+        description: ""
+      - name: lote
+        description: ""
+      - name: dtaMovimento
+        description: ""
+      - name: tipoMovimento
+        description: ""
+      - name: motivoCorrecao
+        description: ""
+      - name: justificativa
+        description: ""
+      - name: cnsProfPrescritor
+        description: ""
+      - name: cpfPatient
+        description: ""
+      - name: cnsPatient
+        description: ""
+      - name: qtd
+        description: ""
+      - name: id
+        description: ""
+      - name: _data_carga
+        description: ""
+      - name: ano_particao
+        description: ""
+      - name: mes_particao
+        description: ""
+      - name: data_particao
+        description: ""

@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: brutos_prontuario_vitai_staging
+  - name: brutos_prontuario_vitacare_staging
     database: rj-sms-dev
-    schema: brutos_prontuario_vitai_staging
+    schema: brutos_prontuario_vitacare_staging
     tables:
       - name: estoque_posicao
         loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
@@ -13,6 +13,5 @@ sources:
       - name: estoque_movimento
         loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 48, period: hour}
-          error_after: {count: 72, period: hour}
-
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}

@@ -1,0 +1,119 @@
+version: 2
+models:
+  - name: raw_prontuario_vitai__estoque_posicao
+    description: >
+      Posição diária dos estoques de medicamentos e insumos das unidades de
+      saúde que utilizam o prontuário Timed (Vitai) para  gestão de estoque de
+      farmácia e almoxarifado
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id_cnes
+            - id_material
+            - estoque_secao
+            - material_quantidade
+            - data_snapshot
+    columns:
+      - name: id_cnes
+        description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
+          unidade de saúde onde o item está localizado
+        tests:
+          - not_null
+          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
+              prontuario: vitai	
+              config:
+                where: "data_particao = current_date()"
+      - name: id_lote
+        description: Identificador do lote do medicamento/insumo
+      - name: id_material
+        tests:
+          - not_null
+        description: Código de identificação do material cadastrado no prontuário
+      - name: estoque_secao
+        description: Local dentro da unidade de saúde onde está armazenado o
+          medicamento/insumo
+        tests:
+          - not_null
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+      - name: material_unidade
+        description: Unidade de estocagem do medicamento/insumo
+      - name: lote_data_vencimento
+        description: Data de vecimento do lote
+      - name: material_quantidade
+        description: Quantidade disponível do medicamento/insumo
+      - name: material_valor_unitario
+        description: Valor em reais de uma unidade do medicamento/insumo
+      - name: material_valor_total
+        description: Valor em reais somando todas as unidades disponíveis do
+          medicamento/insumo
+      - name: data_particao
+        description: Data de referencia da posição do estoque
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
+  - name: raw_prontuario_vitai__estoque_movimento
+    description: Movimentação diária dos estoques de medicamentos e insumos das
+      unidades de saúde que utilizam o prontuário Timed (Vitai) para  gestão de
+      estoque de farmácia e almoxarifado
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id_cnes
+            - id_material
+            - estoque_secao_origem
+            - estoque_secao_destino
+            - estoque_movimento_tipo
+            - estoque_movimento_justificativa
+            - material_quantidade
+            - data_particao
+          config:
+            where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
+            error_if: ">10" 
+    columns:
+      - name: id_cnes
+        description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
+          unidade de saúde onde o item está localizado
+        tests:
+          - not_null
+          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
+              prontuario: vitai	
+              config:
+                where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
+      - name: id_material
+        description: Código de identificação do material cadastrado no prontuário
+        tests:
+          - not_null
+      - name: material_descricao
+        description: Descrição do materil (medicamento/insumo)
+      - name: material_unidade
+        description: Unidade de estocagem do material(medicamento/insumo)
+      - name: estoque_secao_origem
+        description: Local onde o material se encontrava antes de ser movimento.
+        tests:
+          - not_null
+      - name: estoque_secao_destino
+        description: Local para onde o material foi destinado após movimento.
+      - name: estoque_movimento_tipo
+        description: Tipo de movimentação do estoque.
+        tests:
+          - not_null
+      - name: estoque_movimento_justificativa
+        description: Justificativa da movimentação do estoque
+      - name: estoque_movimento_data
+        description: Data da moviementação do estoque.
+      - name: material_quantidade
+        description: Quantidade do material movida
+      - name: material_valor_total
+        description: Valor monetário (em reais) do material movimentado
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0 
+              max_value: 10000000
+              config:
+                where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
+      - name: data_particao
+        description: Data de referencia da posição do estoque
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
