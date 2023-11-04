@@ -24,7 +24,7 @@ default:
       dataset: dbt
       location: US
       threads: 2
-      keyfile: /home/thiagotrabach/.credentials/rj-sms-dev-a8fd4239a9eb.json
+      keyfile: /Users/thiagotrabach/.credentials/rj-sms-dev-a8fd4239a9eb.json
     compile:
       type: bigquery
       method: service-account
