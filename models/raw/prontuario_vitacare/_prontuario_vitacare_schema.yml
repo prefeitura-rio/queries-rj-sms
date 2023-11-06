@@ -2,88 +2,83 @@ models:
   - name: raw_prontuario_vitacare__estoque_posicao
     description: ""
     columns:
-      - name: ap
+      - name: id_estoque_posicao
         description: ""
-      - name: cnesUnidade
+      - name: area_programatica
+        description: ""
+      - name: id_cnes
         description: ""
         tests:
           - not_null
-          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
+          - assert_chegando_todas_unidades_de_saude:
               prontuario: vitacare
+              filter: prontuario_estoque_tem_dado = 'sim'
               config:
                 where: safe_cast(data_particao as date) = current_date()
-      - name: nomeUnidade
+      - name: id_lote
         description: ""
-      - name: desigMedicamento
+      - name: id_material
         description: ""
-      - name: atc
+      - name: id_atc
         description: ""
-      - name: code
+      - name: estabelecimento_nome
         description: ""
-      - name: lote
+      - name: lote_data_cadastro
         description: ""
-      - name: dtaCriLote
+      - name: lote_data_vencimento
         description: ""
-      - name: dtaValidadeLote
+      - name: material_descricao
         description: ""
-      - name: estoqueLote
-        description: ""
-      - name: id
-        description: ""
-      - name: _data_carga
-        description: ""
-      - name: ano_particao
-        description: ""
-      - name: mes_particao
+      - name: material_quantidade
         description: ""
       - name: data_particao
+        description: ""
+      - name: data_carga
         description: ""
   - name: raw_prontuario_vitacare__estoque_movimento
     description: ""
     columns:
-      - name: ap
+      - name: id_estoque_movimento
         description: ""
-      - name: cnesUnidade
+      - name: area_programatica
+        description: ""
+      - name: id_cnes
         description: ""
         tests:
           - not_null
-          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
-                prontuario: vitacare
-                config:
-                  where: "safe_cast(data_particao as date) = date_sub(current_date(), INTERVAL 1 DAY)"
-      - name: nomeUnidade
+          - assert_chegando_todas_unidades_de_saude:
+              prontuario: vitacare
+              filter: prontuario_estoque_tem_dado = 'sim'
+              config:
+                where: safe_cast(data_particao as date) = date_sub(current_date(), INTERVAL 1
+                  DAY)
+      - name: id_lote
         description: ""
-      - name: desigMedicamento
+      - name: id_material
         description: ""
-      - name: atc
+      - name: id_atc
         description: ""
-      - name: code
+      - name: estabelecimento_nome
         description: ""
-      - name: lote
+      - name: material_descricao
         description: ""
-      - name: dtaMovimento
+      - name: estoque_movimento_data_hora
         description: ""
-      - name: tipoMovimento
+      - name: estoque_movimento_tipo
         description: ""
-      - name: motivoCorrecao
+      - name: estoque_movimento_correcao_tipo
         description: ""
-      - name: justificativa
+      - name: estoque_movimento_justificativa
         description: ""
-      - name: cnsProfPrescritor
+      - name: dispensacao_prescritor_cns
         description: ""
-      - name: cpfPatient
+      - name: dispensacao_paciente_cpf
         description: ""
-      - name: cnsPatient
+      - name: dispensacao_paciente_cns
         description: ""
-      - name: qtd
-        description: ""
-      - name: id
-        description: ""
-      - name: _data_carga
-        description: ""
-      - name: ano_particao
-        description: ""
-      - name: mes_particao
+      - name: material_quantidade
         description: ""
       - name: data_particao
+        description: ""
+      - name: data_carga
         description: ""

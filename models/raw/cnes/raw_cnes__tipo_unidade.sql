@@ -15,6 +15,7 @@ select
     safe_cast(ds_tipo_unidade as string) as descricao,
 
     -- Metadata
+    safe_cast(mes_particao as string) as mes_particao,
     safe_cast(_data_snapshot as date) as data_snapshot,
     safe_cast(_data_carga as datetime) as data_carga,
 from source

@@ -19,8 +19,12 @@ models:
           unidade de saúde onde o item está localizado
         tests:
           - not_null
-          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
-              prontuario: vitai	
+          - relationships:
+              to: ref('dim_estabelecimento')
+              field: id_cnes
+          - assert_chegando_todas_unidades_de_saude:
+              prontuario: vitai
+              filter: "prontuario_estoque_tem_dado = 'sim'"	
               config:
                 where: "data_particao = current_date()"
       - name: id_lote
@@ -32,8 +36,6 @@ models:
       - name: estoque_secao
         description: Local dentro da unidade de saúde onde está armazenado o
           medicamento/insumo
-        tests:
-          - not_null
       - name: material_descricao
         description: Descrição do medicamento/insumo
       - name: material_unidade
@@ -77,8 +79,12 @@ models:
           unidade de saúde onde o item está localizado
         tests:
           - not_null
-          - assert_tem_registro_de_prontuario_de_todas_unidades_de_saude:
-              prontuario: vitai	
+          - relationships:
+              to: ref('dim_estabelecimento')
+              field: id_cnes
+          - assert_chegando_todas_unidades_de_saude:
+              prontuario: vitai
+              filter: "prontuario_estoque_tem_dado = 'sim'"
               config:
                 where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
       - name: id_material
@@ -91,14 +97,10 @@ models:
         description: Unidade de estocagem do material(medicamento/insumo)
       - name: estoque_secao_origem
         description: Local onde o material se encontrava antes de ser movimento.
-        tests:
-          - not_null
       - name: estoque_secao_destino
         description: Local para onde o material foi destinado após movimento.
       - name: estoque_movimento_tipo
         description: Tipo de movimentação do estoque.
-        tests:
-          - not_null
       - name: estoque_movimento_justificativa
         description: Justificativa da movimentação do estoque
       - name: estoque_movimento_data

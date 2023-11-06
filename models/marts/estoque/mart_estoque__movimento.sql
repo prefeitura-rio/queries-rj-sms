@@ -30,7 +30,7 @@ with
             ) as estabelecimento_administracao,
             if(
                 sistema_origem <> "tpc", est.responsavel_sms, "subpav"
-            ) as estabelecimento_responsavel_sms,  -- # TODO: confirmar
+            ) as estabelecimento_responsavel_sms, 
         from movimento as mov
         left join estabelecimento as est using (id_cnes)
     )

@@ -7,9 +7,16 @@
 
 
 with
-    estab_sms as (
+    versao_atual as (select max(mes_particao) as versao from {{ ref("raw_cnes__tipo_unidade") }}),
+    estabelecimento as (
         select *
         from {{ ref("raw_cnes__estabelecimento") }}
+        where mes_particao = (select versao from versao_atual)),
+    unidade as (select * from {{ ref("raw_cnes__tipo_unidade") }} where mes_particao = (select versao from versao_atual)),
+    turno as (select * from {{ ref("raw_cnes__turno_atendimento") }} where mes_particao = (select versao from versao_atual)),
+    estab_sms as (
+        select *
+        from estabelecimento
         where
             cnpj_mantenedora = "29468055000102"  -- SMS-RIO
             or id_cnes = "5456932"  -- Fio Cruz
@@ -26,19 +33,15 @@ with
             estab_aux.prontuario_versao,
             estab_aux.responsavel_sms,
             estab_aux.administracao,
+            estab_aux.prontuario_estoque_tem_dado,
+            estab_aux.prontuario_estoque_motivo_sem_dado,
             coalesce(
                 estab_aux.area_programatica, estab_sms.id_distrito_sanitario
             ) as id_distrito_sanitario_corrigido,  -- corrige registros que possuem algum erro no cadsus
         from estab_sms
         left join estab_aux using (id_cnes)
-    ),
-    atencao as (
-        select gestao.id_unidade, tipo.*
-        from {{ ref("raw_cnes__gestao_nivel_atencao") }} as gestao
-        left join {{ ref("raw_cnes__tipo_nivel_atencao") }} as tipo using (id_nivel_atencao)
-    ),
-    unidade as (select * from {{ ref("raw_cnes__tipo_unidade") }}),
-    turno as (select * from {{ ref("raw_cnes__turno_atendimento") }})
+    )
+
 
 select
     -- Primary key
@@ -59,6 +62,8 @@ select
     est.administracao,
     est.prontuario_tem,
     est.prontuario_versao,
+    est.prontuario_estoque_tem_dado,
+    est.prontuario_estoque_motivo_sem_dado,
     est.endereco_bairro,
     est.endereco_logradouro,
     est.endereco_numero,
@@ -77,6 +82,7 @@ select
     -- Metadata
     data_atualizao_registro,
     usuario_atualizador_registro,
+    est.mes_particao,
     est.data_carga,
     est.data_snapshot,
 

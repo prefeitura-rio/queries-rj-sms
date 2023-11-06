@@ -15,6 +15,7 @@ select
     safe_cast(tp_prog as string) as tipo,
 
     -- Metadata
+    safe_cast(mes_particao as string) as mes_particao,
     safe_cast(_data_carga as string) as data_carga,
     safe_cast(_data_snapshot as string) as data_snapshot
 from source

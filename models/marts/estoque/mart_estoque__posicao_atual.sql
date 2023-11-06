@@ -44,7 +44,7 @@ with
             ) as estabelecimento_administracao,
             if(
                 sistema_origem <> "tpc", est.responsavel_sms, "subpav"
-            ) as estabelecimento_responsavel_sms,  -- # TODO: confirmar
+            ) as estabelecimento_responsavel_sms, 
             cmm.quantidade as material_consumo_medio,
             coalesce(abc.abc_categoria, "S/C") as abc_categoria,
             coalesce(mat.nome, pos.material_descricao) as material_descricao2,

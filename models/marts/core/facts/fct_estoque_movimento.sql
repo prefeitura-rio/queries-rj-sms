@@ -44,8 +44,95 @@ with
                 then - material_valor_total
                 else material_valor_total
             end as material_valor_total_com_sinal,
+            "" as estoque_movimento_consumo_preenscritor_cns,  # TODO: abrir dados vitai no nível cpf
+            "" as estoque_movimento_consumo_paciente_cpf,
+            "" as estoque_movimento_consumo_paciente_cns,
             "vitai" as sistema_origem
         from {{ ref("raw_prontuario_vitai__estoque_movimento") }}
+    ),
+
+    source_vitacare as (
+        select
+            est.*,
+            est.material_quantidade * if(
+                valor_unitario.material_valor_unitario_medio is null,
+                0,
+                valor_unitario.material_valor_unitario_medio
+            ) as material_valor_total,
+        from {{ ref("raw_prontuario_vitacare__estoque_movimento") }} as est
+        left join
+            {{ ref("int_estoque__material_valor_unitario_tpc") }} as valor_unitario
+            on (est.id_material = valor_unitario.id_material)
+    ),
+    movimento_vitacare as (
+        select
+            est.id_cnes,
+            est.id_material,
+            est.material_descricao,
+            "" as material_unidade,
+            "" as estoque_secao_origem,
+            "" as estoque_secao_destino,
+            est.estoque_movimento_tipo,
+            est.estoque_movimento_justificativa,
+            safe_cast(
+                est.estoque_movimento_data_hora as date
+            ) as estoque_movimento_data,  # TODO: mudar para datetime
+            est.material_quantidade,
+            est.material_valor_total,
+            est.data_particao,
+            est.data_carga,
+            case
+                when estoque_movimento_tipo = "NOVO LOTE"
+                then "Entrada"
+                when
+                    estoque_movimento_tipo = "CORREÇÃO DE LOTE - AUMENTO"
+                    or estoque_movimento_tipo = "CORREÇÃO DE LOTE - DIMINUIÇÃO"
+                then "Ajuste de Inventário"
+                when
+                    estoque_movimento_tipo = "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO"
+                    or estoque_movimento_tipo
+                    = "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO"
+                    or estoque_movimento_tipo = "DISPENSAÇÃO DE RECEITA EXTERNA"
+                    or estoque_movimento_tipo
+                    = "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR"
+                    or estoque_movimento_tipo = "ANULAÇÃO DE DISPENSAS"
+                then "Consumo"
+                when
+                    estoque_movimento_tipo = "REMOÇÃO DE LOTE"
+                    or estoque_movimento_tipo = "SUSPENSÃO DE LOTE"
+                    or estoque_movimento_tipo = "RECUPERAÇÃO DE LOTE"
+                then "Avaria / Vencimento"
+                else initcap(estoque_movimento_tipo)
+            end as estoque_movimento_tipo_grupo,
+            case
+                when
+                    estoque_movimento_tipo = "CORREÇÃO DE LOTE - DIMINUIÇÃO"
+                    or estoque_movimento_tipo
+                    = "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO"
+                    or estoque_movimento_tipo
+                    = "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO"
+                    or estoque_movimento_tipo = "DISPENSAÇÃO DE RECEITA EXTERNA"
+                    or estoque_movimento_tipo
+                    = "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR"
+                    or estoque_movimento_tipo = "REMOÇÃO DE LOTE"
+                    or estoque_movimento_tipo = "RECUPERAÇÃO DE LOTE"
+                then - material_valor_total
+                else material_valor_total
+            end as material_valor_total_com_sinal,
+            est.dispensacao_prescritor_cns
+            as estoque_movimento_consumo_preenscritor_cns,
+            est.dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
+            est.dispensacao_paciente_cns as estoque_movimento_consumo_paciente_cns,
+            "vitacare" as sistema_origem,
+        from source_vitacare as est
+    ),
+
+    movimento as (
+        select *
+        from movimento_vitai
+        union all
+        select *
+        from movimento_vitacare
     )
 
 select
@@ -61,6 +148,9 @@ select
     estoque_movimento_tipo_grupo as movimento_tipo_grupo,
     estoque_movimento_justificativa as movimento_justificativa,
     estoque_movimento_data as data_evento,
+    estoque_movimento_consumo_preenscritor_cns as consumo_preenscritor_cns,
+    estoque_movimento_consumo_paciente_cns as consumo_paciente_cns,
+    estoque_movimento_consumo_paciente_cpf as consumo_paciente_cpf,
     material_descricao,
     material_quantidade,
     material_valor_total,
@@ -71,4 +161,4 @@ select
     data_particao,
     data_carga
 
-from movimento_vitai
+from movimento

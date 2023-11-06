@@ -14,7 +14,7 @@ with
             estoque.material_valor_total
         from {{ ref("fct_estoque_movimento") }} as estoque
         left join {{ ref("dim_estabelecimento") }} using (id_cnes)
-        where estoque.movimento_tipo = 'CONSUMO' and estoque.material_valor_total > 0
+        where estoque.movimento_tipo_grupo = 'Consumo' and estoque.material_valor_total > 0
     ),
     atencao_primaria as (
         select

@@ -5,6 +5,10 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
+        tests:
+          - relationships:
+              to: ref('dim_estabelecimento')
+              field: id_cnes
       - name: nome_fantasia
         description: Nome fantasia de unidade de saúde
       - name: nome_limpo
@@ -19,6 +23,11 @@ models:
       - name: prontuario_versao
         description: Para as unidades que utilizam pronturio, indica qual sistema de
           prontuario é utilizado
+      - name: prontuario_estoque_tem_dado
+        description: Indica se é esperado chegar dados de estoque (medicamentos e
+          insumos) a partir do cnes desta unidade
+      - name: prontuario_estoque_motivo_sem_dado
+        description: Se prontuario_estoque_tem_dado = nao, indica o motivo de não ter dado
       - name: responsavel_sms
         description: Subcretaria responsável dentro da SMS
       - name: administracao

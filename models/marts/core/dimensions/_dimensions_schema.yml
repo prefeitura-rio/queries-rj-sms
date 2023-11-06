@@ -30,3 +30,74 @@ models:
       - name: remume
         description: Indicação se o material faz parte Relação Municipal de Medicamentos
           Essenciais (REMUME)
+  - name: dim_estabelecimento
+    description: ""
+    columns:
+      - name: id_unidade
+        description: ""
+      - name: id_cnes
+        description: ""
+        tests:
+          - relationships:
+              to: ref('raw_sheets__estabelecimento_auxiliar')
+              field: id_cnes
+      - name: id_tipo_unidade
+        description: ""
+      - name: area_programatica
+        description: ""
+      - name: ativa
+        description: ""
+      - name: tipo
+        description: ""
+      - name: nome_limpo
+        description: ""
+      - name: nome_sigla
+        description: ""
+      - name: nome_fantasia
+        description: ""
+      - name: responsavel_sms
+        description: ""
+      - name: administracao
+        description: ""
+      - name: prontuario_tem
+        description: ""
+      - name: prontuario_versao
+        description: ""
+      - name: endereco_bairro
+        description: ""
+      - name: endereco_logradouro
+        description: ""
+      - name: endereco_numero
+        description: ""
+      - name: endereco_complemento
+        description: ""
+      - name: endereco_cep
+        description: ""
+      - name: endereco_latitude
+        description: ""
+      - name: endereco_longitude
+        description: ""
+      - name: telefone
+        description: ""
+      - name: fax
+        description: ""
+      - name: email
+        description: ""
+      - name: aberto_sempre
+        description: ""
+      - name: turno_atendimento
+        description: ""
+      - name: diretor_clinico_cpf
+        description: ""
+      - name: diretor_clinico_conselho
+        description: ""
+      - name: data_atualizao_registro
+        description: ""
+      - name: usuario_atualizador_registro
+        description: ""
+      - name: mes_particao
+        description: ""
+      - name: data_carga
+        description: ""
+      - name: data_snapshot
+        description: ""

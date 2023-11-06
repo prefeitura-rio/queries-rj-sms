@@ -13,6 +13,7 @@ select
     safe_cast(ds_turno_atendimento as string) as descricao,
 
     -- Metadata
+    safe_cast(mes_particao as string) as mes_particao,
     safe_cast(_data_carga as datetime) as data_carga,
     safe_cast(_data_snapshot as datetime) as data_snapshot
 from source
