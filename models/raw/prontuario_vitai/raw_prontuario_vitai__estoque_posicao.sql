@@ -39,8 +39,10 @@ select
 
 from {{ source("brutos_prontuario_vitai_staging", "estoque_posicao") }}
 
+where cnes <> "2970619" -- Centro Carioca dos Olhos
+
 {% if is_incremental() %}
 
-    where safe_cast(data_particao as date) > (select max(data_particao) from {{ this }})
+    and safe_cast(data_particao as date) > (select max(data_particao) from {{ this }})
 
 {% endif %}

@@ -39,7 +39,7 @@ select
 from {{ source("brutos_prontuario_vitai_staging", "estoque_movimento") }}
 where
     (cnes = "2270242" and safe_cast(data_particao as date) >= "2023-07-01")  -- Barata Ribeiro estava implantação até 2023-06-30
-    or cnes <> "2270242"  -- demais unidades
+    or (cnes <> "2270242" and cnes <> "2970619") -- demais unidades exceto Centro Carioca dos Olhos
 
 {% if is_incremental() %}
 

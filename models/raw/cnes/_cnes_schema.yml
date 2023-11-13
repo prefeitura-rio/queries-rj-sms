@@ -3,6 +3,7 @@ models:
   - name: raw_cnes__estabelecimento
     description: |-
       Tabela com a relação dos estabelecimentos de saúde
+      Arquivo CNES: tbEstabelecimento
       Granularidade: estabelecimento de saúde
       Atualização: mensal
     columns:
@@ -146,8 +147,12 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-  - name: tipo_unidade
-    description: Tabela contendo os tipo de unidades de saúde
+  - name: raw_cnes__tipo_unidade
+    description: |-
+      Tabela contendo os tipo de unidades de saúde
+      Arquivo CNES: tbTipoUnidade
+      Granularidade: tipo de estabelecimento de saúde
+      Atualização: mensal
     columns:
       - name: id_tipo_unidade
         description: Identificar do tipo de unidade de saúde
@@ -157,8 +162,12 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-  - name: tipo_nivel_atencao
-    description: Tabela contendo os níveis de atenção / atividade.
+  - name: raw_cnes__tipo_nivel_atencao
+    description: |-
+      Tabela contendo os níveis de atenção / atividade.
+      Arquivo CNES: tbGestao
+      Granularidade: nivel de atenção / atividade
+      Atualização: mensal
     columns:
       - name: id_nivel_atencao
         description: Código do Tipo de Atendimento (Atividade)
@@ -174,9 +183,13 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-  - name: gestao_nivel_atencao
-    description: Tabela contendo a relação do nível de atenção correspondente à
+  - name: raw_cnes__gestao_nivel_atencao
+    description: |-
+      Tabela contendo a relação do nível de atenção correspondente à
       unidade de saúde
+      Arquivo CNES: rlEstabProgFundo
+      Granularidade: nivel de atenção / atividade - Estabelecimento de Saúde
+      Atualização: mensal
     columns:
       - name: id_unidade
         description: Código do Estabelecimento de Saúde
@@ -197,8 +210,12 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-  - name: turno_atendimento
-    description: Tabelas contendo os tipo de turno de atendimento das unidades de saúde
+  - name: raw_cnes__turno_atendimento
+    description: |-
+      Tabelas contendo os tipo de turno de atendimento das unidades de saúde
+      Arquivo CNES: tbTurnoAtendimento
+      Granularidade: turno de atendimento
+      Atualização: mensal
     columns:
       - name: id_turno_atendimento
         description: Código do Turno de Atendimento

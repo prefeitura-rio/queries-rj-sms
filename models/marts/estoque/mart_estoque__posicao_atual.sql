@@ -2,29 +2,56 @@
     config(
         alias="estoque_posicao_atual",
         schema="dashboard_estoque",
-        materialized="view",
+        materialized="table",
     )
 }}
 
 
 with
-    posicao_atual as (
-        select *
+    posicao as (
+        select *, concat(id_cnes, "-", data_particao) as id_estabelecimento_particao
         from {{ ref("fct_estoque_posicao") }}
-        where data_particao = current_date()
     ),
 
+    posicao_atual as (
+        select posicao.*
+        from posicao
+        left join
+            {{ ref("int_estoque__posicao_mais_recente_por_estabelecimento") }} as pos_atual
+            using (id_estabelecimento_particao)
+        where pos_atual.id_estabelecimento_particao is not null
+    ),  -- para toda unidade pegamos o registro mais recente para evitar falta de dados de alguma unidade
+
+    remume as (select * from {{ ref('int_estoque__material_relacao_remume_por_estabelecimento') }}),
+
+    posicao_atual_inclusive_remume_zerado as (
+        select 
+        
+        coalesce(atual.id_material, remume.id_material) as id_material,
+        atual.id_lote,
+        coalesce(atual.id_cnes, remume.id_cnes) as id_cnes,
+        coalesce(atual.id_cnes_material, concat(remume.id_cnes,"-", remume.id_material )) as id_cnes_material,
+
+        if(atual.id_material is null, 0, atual.material_quantidade) as material_quantidade_corrigida,
+        from posicao_atual as atual
+        full outer join remume using (id_material, id_cnes)
+    ),
+
+
     historico_dispensacao as (
-        select * from {{ ref("int_estoque__dispensacao_agrupada_por_unidade_abc_e_material") }}
+        select *
+        from {{ ref("int_estoque__dispensacao_agrupada_por_unidade_abc_e_material") }}
     ),
 
     curva_abc as (select * from {{ ref("int_estoque__material_curva_abc") }}),
 
-    dispensacao_media as (select * from {{ ref("int_estoque__dispensacao_media_mensal") }}),
+    dispensacao_media as (
+        select * from {{ ref("int_estoque__dispensacao_media_mensal") }}
+    ),
 
     material as (select * from {{ ref("dim_material") }}),
 
-    establecimento as (select * from {{ ref("dim_estabelecimento") }}),
+    estabelecimento as (select * from {{ ref("dim_estabelecimento") }}),
 
     posicao_final as (
         select
@@ -44,7 +71,7 @@ with
             ) as estabelecimento_administracao,
             if(
                 sistema_origem <> "tpc", est.responsavel_sms, "subpav"
-            ) as estabelecimento_responsavel_sms, 
+            ) as estabelecimento_responsavel_sms,
             cmm.quantidade as material_consumo_medio,
             coalesce(abc.abc_categoria, "S/C") as abc_categoria,
             coalesce(mat.nome, pos.material_descricao) as material_descricao2,
@@ -70,14 +97,14 @@ with
                 then "item não possui histórico de dispensação registrado na unidade"
                 else 'desconhecida'
             end as cmm_justificativa_ausencia,
-        from posicao_atual as pos
+        from posicao_atual as pos   -- posicao_atual
         left join curva_abc as abc using (id_curva_abc)
         left join historico_dispensacao as disp using (id_curva_abc)
         left join
             dispensacao_media as cmm
             on (pos.id_material = cmm.id_material and pos.id_cnes = cmm.id_cnes)
         left join material as mat on (pos.id_material = mat.id_material)
-        left join establecimento as est on (pos.id_cnes = est.id_cnes)
+        left join estabelecimento as est on (pos.id_cnes = est.id_cnes)
     )
 
 select
@@ -115,5 +142,6 @@ select
     -- Metadata 
     sistema_origem,
     data_particao,
+    date_diff(current_date(), data_particao, day) as dias_desde_ultima_atualizacao,
     data_carga
 from posicao_final
