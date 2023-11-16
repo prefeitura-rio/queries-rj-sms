@@ -31,73 +31,82 @@ models:
         description: Indicação se o material faz parte Relação Municipal de Medicamentos
           Essenciais (REMUME)
   - name: dim_estabelecimento
-    description: ""
+    description: "Tabela contendo a relação de estabelecimentos de saúde.
+      Informações baseadas no CNES e outras compiladas dentro da SMS."
     columns:
       - name: id_unidade
-        description: ""
+        description: Código do Estabelecimento de Saúde utlizado no CNES
       - name: id_cnes
-        description: ""
+        description: Código Nacional do Estabelecimento de Saúde
         tests:
           - relationships:
               to: ref('raw_sheets__estabelecimento_auxiliar')
               field: id_cnes
       - name: id_tipo_unidade
-        description: ""
+        description: Tipo de Estabelecimento
       - name: area_programatica
-        description: ""
+        description: Área programática onde está localizada a unidades de saúde
       - name: ativa
-        description: ""
+        description: Indica se a unidade está ativa ou não
       - name: tipo
-        description: ""
+        description: Tipo de Unidade de Saúde
       - name: nome_limpo
-        description: ""
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
       - name: nome_sigla
-        description: ""
+        description: Abreviação do nome fantasia
       - name: nome_fantasia
-        description: ""
+        description: Nome fantasia
       - name: responsavel_sms
-        description: ""
+        description: Sub secretaria dentro da SMS-Rio responsável pela unidade
       - name: administracao
-        description: ""
+        description: Nome do OSS responsável pela administração. Em caso onde não
+          há OSS, é indicado como direta (administração direta pela SMS-Rio)
       - name: prontuario_tem
-        description: ""
+        description: Indica sem a unidade utiliza algum tipo de prontuário, 
+          independente se é físico ou eletrônico
       - name: prontuario_versao
-        description: ""
+        description: Indica qual sistema de prontuário é utilizado. Em caso de
+          prontuário físico, é indicado como papel.
+      - name: prontuario_estoque_tem_dado
+        description: Indica se a unidade utiliza o prontuário para controle de estoque
+      - name: prontuario_estoque_motivo_sem_dado
+        description: Indica o motivo da unidade não utilizar o prontuário para controle de estoque
       - name: endereco_bairro
-        description: ""
+        description: Bairro
       - name: endereco_logradouro
-        description: ""
+        description: Logradouro
       - name: endereco_numero
-        description: ""
+        description: Número
       - name: endereco_complemento
-        description: ""
+        description: Complemento
       - name: endereco_cep
-        description: ""
+        description: Código de endereçamento postal (CEP)
       - name: endereco_latitude
-        description: ""
+        description: Latitude
       - name: endereco_longitude
-        description: ""
+        description: Longitude
       - name: telefone
-        description: ""
+        description: Telefone para contato
       - name: fax
-        description: ""
+        description: Fax para contato
       - name: email
-        description: ""
+        description: Email para contato
       - name: aberto_sempre
-        description: ""
+        description: "Funcionamento do estabelecimento. Indica se fica sempre aberto /
+          Ininterrupto: S - SIM N - NÃO"
       - name: turno_atendimento
-        description: ""
+        description:  Descrição do Turno de Atendimento
       - name: diretor_clinico_cpf
-        description: ""
+        description: CPF do Diretor Clínico ou  Gerente / Administrador
       - name: diretor_clinico_conselho
-        description: ""
+        description: Registro no Conselho de Classe do Diretor Clinico
       - name: data_atualizao_registro
-        description: ""
+        description:  Data da última atualização do registro
       - name: usuario_atualizador_registro
-        description: ""
+        description: Último usuário que atualizou o registro no CNES
       - name: mes_particao
-        description: ""
+        description: Mês de referência do registro
       - name: data_carga
-        description: ""
+        description: Data de carga do registro
       - name: data_snapshot
-        description: ""
+        description: Data de snapshot do registro

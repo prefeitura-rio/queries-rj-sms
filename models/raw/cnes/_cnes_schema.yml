@@ -8,7 +8,7 @@ models:
       Atualização: mensal
     columns:
       - name: id_unidade
-        description: Código do Estabelecimento de Saúde
+        description: CCódigo do Estabelecimento de Saúde utlizado no CNES
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
       - name: id_tipo_unidade
