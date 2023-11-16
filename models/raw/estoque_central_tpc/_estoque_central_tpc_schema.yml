@@ -25,6 +25,13 @@ models:
       - name: material_valor_total
         description: Valor em reais somando todas as unidades disponíveis do
           medicamento/insumo
+        tests:
+          - dbt_expectations.expect_column_sum_to_be_between:
+              min_value: 850000000
+              max_value: 1100000000
+              config:
+                severity: error
+                where: "data_particao = current_date()"
       - name: data_particao
         description: Data de referencia da posição do estoque
       - name: data_snapshot

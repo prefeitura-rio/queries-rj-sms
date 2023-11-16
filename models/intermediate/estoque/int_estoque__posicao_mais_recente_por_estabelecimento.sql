@@ -1,6 +1,3 @@
-{{ config(materialized="view") }}
-
-
 with
     posicao as (select * from {{ ref("fct_estoque_posicao") }}),
 

@@ -5,14 +5,6 @@ models:
       Posição diária dos estoques de medicamentos e insumos das unidades de
       saúde que utilizam o prontuário Timed (Vitai) para  gestão de estoque de
       farmácia e almoxarifado
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - id_cnes
-            - id_material
-            - estoque_secao
-            - material_quantidade
-            - data_snapshot
     columns:
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da

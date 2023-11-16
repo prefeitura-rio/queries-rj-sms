@@ -12,7 +12,16 @@
 }}
 
 with
-    posicao_vitacare as (
+
+    remume as (select * from {{ ref('int_estoque__material_relacao_remume_por_estabelecimento') }}),
+    
+    -- importar a posicao vitacare
+    -- juntar posicao remume com seu respectivo prontuario
+    -- ajustar os campos nullos da remume na tabela de posicao
+    -- re-apontar o posicao_vitacare_final para a tabela de posicao ajustada
+
+
+    posicao_vitacare_final as (
         select
             estoque.id_cnes,
             estoque.id_lote,
@@ -73,7 +82,7 @@ with
         from posicao_tpc
         union all
         select *
-        from posicao_vitacare
+        from posicao_vitacare_final
     )
 
 select
