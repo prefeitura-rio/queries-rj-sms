@@ -41,9 +41,9 @@ with
                     or estoque_movimento_tipo = "PERDA"
                     or estoque_movimento_tipo = "SAIDA"
                     or estoque_movimento_tipo = "TRANSFERENCIA SAIDA"
-                then - material_valor_total
-                else material_valor_total
-            end as material_valor_total_com_sinal,
+                then - material_quantidade
+                else material_quantidade
+            end as material_quantidade_com_sinal,
             "" as estoque_movimento_consumo_preenscritor_cns,  # TODO: abrir dados vitai no nível cpf
             "" as estoque_movimento_consumo_paciente_cpf,
             "" as estoque_movimento_consumo_paciente_cns,
@@ -116,9 +116,9 @@ with
                     = "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR"
                     or estoque_movimento_tipo = "REMOÇÃO DE LOTE"
                     or estoque_movimento_tipo = "RECUPERAÇÃO DE LOTE"
-                then - material_valor_total
-                else material_valor_total
-            end as material_valor_total_com_sinal,
+                then - material_quantidade
+                else material_quantidade
+            end as material_quantidade_com_sinal,
             est.dispensacao_prescritor_cns
             as estoque_movimento_consumo_preenscritor_cns,
             est.dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
@@ -153,11 +153,11 @@ select
     estoque_movimento_consumo_paciente_cpf as consumo_paciente_cpf,
     material_descricao,
     material_quantidade,
-    if(
-        material_valor_total_com_sinal < 0, - material_quantidade, material_quantidade
-    ) as material_quantidade_com_sinal,
+    material_quantidade_com_sinal,
     material_valor_total,
-    material_valor_total_com_sinal,
+    if(
+        material_quantidade_com_sinal < 0, - material_valor_total, material_valor_total
+    ) as material_valor_total_com_sinal,
 
     -- Metadata
     sistema_origem,

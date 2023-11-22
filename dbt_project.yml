@@ -69,5 +69,5 @@ models:
 
 tests:
   rj_sms:
-    +severity: warn
+    +severity: error
     +store_failures: true

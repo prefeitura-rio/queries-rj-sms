@@ -15,6 +15,8 @@ models:
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
                 where: safe_cast(data_particao as date) = current_date()
+                severity: warn
+                error_if: ">10"
       - name: id_lote
         description: ""
       - name: id_material
@@ -52,6 +54,8 @@ models:
               config:
                 where: safe_cast(data_particao as date) = date_sub(current_date(), INTERVAL 1
                   DAY)
+                severity: warn
+                error_if: ">10"
       - name: id_lote
         description: ""
       - name: id_material

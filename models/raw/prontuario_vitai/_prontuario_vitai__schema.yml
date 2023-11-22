@@ -19,6 +19,8 @@ models:
               filter: "prontuario_estoque_tem_dado = 'sim'"	
               config:
                 where: "data_particao = current_date()"
+                severity: warn
+                error_if: ">3"
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -64,7 +66,7 @@ models:
             - data_particao
           config:
             where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
-            error_if: ">10" 
+            error_if: ">3" 
     columns:
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
@@ -79,6 +81,8 @@ models:
               filter: "prontuario_estoque_tem_dado = 'sim'"
               config:
                 where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
+                severity: warn
+                error_if: ">2"
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         tests:

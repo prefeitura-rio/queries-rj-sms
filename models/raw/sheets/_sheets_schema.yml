@@ -6,6 +6,7 @@ models:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
         tests:
+          - unique
           - relationships:
               to: ref('dim_estabelecimento')
               field: id_cnes

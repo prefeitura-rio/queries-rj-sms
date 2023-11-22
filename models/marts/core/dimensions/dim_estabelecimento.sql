@@ -8,12 +8,16 @@
 
 with
     versao_atual as (select max(mes_particao) as versao from {{ ref("raw_cnes__tipo_unidade") }}),
+
     estabelecimento as (
         select *
         from {{ ref("raw_cnes__estabelecimento") }}
         where mes_particao = (select versao from versao_atual)),
+
     unidade as (select * from {{ ref("raw_cnes__tipo_unidade") }} where mes_particao = (select versao from versao_atual)),
+
     turno as (select * from {{ ref("raw_cnes__turno_atendimento") }} where mes_particao = (select versao from versao_atual)),
+
     estab_sms as (
         select *
         from estabelecimento
@@ -23,7 +27,9 @@ with
             or (id_municipio_gestor = "330455" and id_natureza_juridica = "2011")  -- Rio de Janeiro & Empresa Publica (Rio Saúde)
             or (id_municipio_gestor = "330455" and id_natureza_juridica = "1031")  -- Rio de Janeiro & Orgao Publico do Poder Executivo Municipal
     ),
+
     estab_aux as (select * from {{ ref("raw_sheets__estabelecimento_auxiliar") }}),
+
     estab_final as (
         select
             estab_sms.*,
@@ -86,8 +92,6 @@ select
     est.data_carga,
     est.data_snapshot,
 
-
--- Metadata
 from estab_final as est
 left join turno using (id_turno_atendimento)
 left join unidade using (id_tipo_unidade)

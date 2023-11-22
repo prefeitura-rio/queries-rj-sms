@@ -5,6 +5,8 @@ models:
     columns:
       - name: id_material
         description: Id do material no sistema Sigma
+        tests:
+          - unique
       - name: id_grupo
         description: Id do grupo no sistema Sigma
       - name: id_classe
@@ -39,6 +41,7 @@ models:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
         tests:
+          - unique
           - relationships:
               to: ref('raw_sheets__estabelecimento_auxiliar')
               field: id_cnes
