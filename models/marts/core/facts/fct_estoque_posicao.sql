@@ -45,7 +45,8 @@ with
             safe_cast(estoque.data_particao as datetime) as data_snapshot,
             estoque.data_carga,
             "vitacare" as sistema_origem,
-            estabelecimento.tipo as estabelecimento_tipo,
+            estabelecimento.tipo_cnes as estabelecimento_tipo_cnes,
+            estabelecimento.tipo_sms as estabelecimento_tipo_sms,
             estabelecimento.area_programatica as estabelecimento_area_programatica,
         from {{ ref("raw_prontuario_vitacare__estoque_posicao") }} as estoque
         left join {{ ref("dim_estabelecimento") }} as estabelecimento using (id_cnes)
@@ -58,7 +59,8 @@ with
         select
             estoque.*,
             "vitai" as sistema_origem,
-            estabelecimento.tipo as estabelecimento_tipo,
+            estabelecimento.tipo_cnes as estabelecimento_tipo_cnes,
+            estabelecimento.tipo_sms as estabelecimento_tipo_sms,
             estabelecimento.area_programatica as estabelecimento_area_programatica,
         from {{ ref("raw_prontuario_vitai__estoque_posicao") }} as estoque
         left join {{ ref("dim_estabelecimento") }} as estabelecimento using (id_cnes)
@@ -69,7 +71,8 @@ with
             "-" as id_cnes,
             *,
             "tpc" as sistema_origem,
-            "ESTOQUE CENTRAL" as estabelecimento_tipo,
+            "ESTOQUE CENTRAL" as estabelecimento_tipo_cnes,
+            "ESTOQUE CENTRAL" as estabelecimento_tipo_sms,
             "-" as estabelecimento_area_programatica,
         from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
     ),
@@ -95,9 +98,9 @@ select
     case
         when id_cnes = '-'  -- TPC
         then "-"
-        when estabelecimento_tipo = 'CENTRO DE SAUDE/UNIDADE BASICA'
+        when estabelecimento_tipo_cnes = 'CENTRO DE SAUDE/UNIDADE BASICA'
         then concat("ap-", estabelecimento_area_programatica, "-", id_material)
-        when estabelecimento_tipo <> 'CENTRO DE SAUDE/UNIDADE BASICA'
+        when estabelecimento_tipo_cnes <> 'CENTRO DE SAUDE/UNIDADE BASICA'
         then concat("cnes-", id_cnes, "-", id_material)
         else "-"
     end as id_curva_abc,

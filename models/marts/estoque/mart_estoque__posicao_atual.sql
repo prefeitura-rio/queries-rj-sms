@@ -56,7 +56,8 @@ with
     posicao_final as (
         select
             pos.*,
-            if(sistema_origem <> "tpc", est.tipo, "ESTOQUE CENTRAL") as tipo,
+            if(sistema_origem <> "tpc", est.tipo_cnes, "ESTOQUE CENTRAL") as tipo_cnes,
+            if(sistema_origem <> "tpc", est.tipo_sms, "ESTOQUE CENTRAL") as tipo_sms,
             if(
                 sistema_origem <> "tpc", est.area_programatica, "-"
             ) as estabelecimento_area_programatica,
@@ -115,7 +116,8 @@ select
     id_cnes_material,
 
     -- Common fields
-    tipo as estabelecimento_tipo,
+    tipo_cnes as estabelecimento_tipo_cnes,
+    tipo_sms as estabelecimento_tipo_sms,
     estabelecimento_area_programatica,
     estabelecimento_nome_limpo,
     estabelecimento_nome_sigla,

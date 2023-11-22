@@ -16,6 +16,7 @@ select
     format("%07d", cast(id_cnes as int64)) as id_cnes,  -- fix cases where 0 on the left is lost
 
     -- Common fields
+    if(tipo_sms = "nan", null, tipo_sms) as tipo_sms,
     safe_cast(nome_fantasia as string) as nome_fantasia,
     if(nome_limpo = "nan", null, nome_limpo) as nome_limpo,
     if(sigla = "nan", null, sigla) as nome_sigla,
@@ -28,3 +29,4 @@ select
     if(administracao = "nan", null, administracao) as administracao,
 
 from source
+

@@ -14,8 +14,11 @@ with
         select
             mov.*,
             if(
-                sistema_origem <> "tpc", est.tipo, "ESTOQUE CENTRAL"
-            ) as estabelecimento_tipo,
+                sistema_origem <> "tpc", est.tipo_cnes, "ESTOQUE CENTRAL"
+            ) as estabelecimento_tipo_cnes,
+            if(
+                sistema_origem <> "tpc", est.tipo_sms, "ESTOQUE CENTRAL"
+            ) as estabelecimento_tipo_sms,
             if(
                 sistema_origem <> "tpc", est.area_programatica, "-"
             ) as estabelecimento_area_programatica,

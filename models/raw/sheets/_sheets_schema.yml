@@ -33,3 +33,57 @@ models:
         description: Subcretaria responsável dentro da SMS
       - name: administracao
         description: Administradora da unidade de saúde.
+  - name: raw_sheets__material_remume
+    description: Tabela contendo os medicamentos e insumos que compõem a Relação
+      Municipal de Medicamentos Essenciais (REMUME)
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id_material
+            - remume_grupo
+            - estabelecimento_disponibilidade
+    columns:
+      - name: id_material
+        description: Código de identificação do material cadastrado no prontuário
+        tests:
+          - relationships:
+              to: ref('dim_material')
+              field: id_material
+      - name: remume_grupo
+        description: Agrupor de materias
+      - name: material_descricao_generica
+        description: Descrição genérica do material
+      - name: material_concetracao
+        description: Concentração do medicamento
+      - name: material_forma_farmaceutica
+        description: Forma farmacêutica do medicamento
+      - name: material_apresentacao
+        description: Apresentação comercial do material
+      - name: estabelecimento_disponibilidade
+        description: Tipos de estabelecimento de saúde onde o material faz parte da
+          relação essencial
+      - name: estabelecimento_disponivel_cms
+        description: Sem o material faz parte da relação essencial para Clínicas
+          Municipais de Saúde
+      - name: estabelecimento_disponivel_cf
+        description: Sem o material faz parte da relação essencial para Clínicas da Família
+      - name: estabelecimento_disponivel_policlinica
+        description: Sem o material faz parte da relação essencial para Policlinicas
+      - name: estabelecimento_disponivel_hospital
+        description: Sem o material faz parte da relação essencial para Hospitais
+      - name: estabelecimento_disponivel_maternidade
+        description: Sem o material faz parte da relação essencial para Maternidades
+      - name: estabelecimento_disponivel_caps
+        description: Sem o material faz parte da relação essencial para Centros de
+          Atenção Psicossocial
+      - name: estabelecimento_disponivel_upa
+        description: Sem o material faz parte da relação essencial para UPAs
+      - name: estabelecimento_disponivel_cer
+        description: Sem o material faz parte da relação essencial para Centro de
+          Emergência Regionais
+      - name: estabelecimento_disponivel_unidades_especificas
+        description: >-
+          Relação de cnes específicas  o material faz parte da relação
+          essencial. 
+
+          Campo utilizado para quando os casos qaundo o tipo de estabelecimento de saúde é muito abrangente.

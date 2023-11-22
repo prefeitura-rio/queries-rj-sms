@@ -5,7 +5,7 @@ with
         select *
         from {{ ref("dim_estabelecimento") }}
         where
-            tipo = "CENTRO DE SAUDE/UNIDADE BASICA"  # TODO: confirmar filtro
+            tipo_cnes = "CENTRO DE SAUDE/UNIDADE BASICA"  # TODO: confirmar filtro
             and prontuario_estoque_tem_dado = "sim"  -- só mostrar unidade que usam o modulo de estoque do prontuario
     ),
     final_aps as (
