@@ -33,8 +33,8 @@ models:
         description: Indicação se o material faz parte Relação Municipal de Medicamentos
           Essenciais (REMUME)
   - name: dim_estabelecimento
-    description: "Tabela contendo a relação de estabelecimentos de saúde.
-      Informações baseadas no CNES e outras compiladas dentro da SMS."
+    description: Tabela contendo a relação de estabelecimentos de saúde. Informações
+      baseadas no CNES e outras compiladas dentro da SMS.
     columns:
       - name: id_unidade
         description: Código do Estabelecimento de Saúde utlizado no CNES
@@ -51,8 +51,10 @@ models:
         description: Área programática onde está localizada a unidades de saúde
       - name: ativa
         description: Indica se a unidade está ativa ou não
-      - name: tipo
-        description: Tipo de Unidade de Saúde
+      - name: tipo_cnes
+        description: Tipo de Unidade de Saúde segundo a classificação do CNES
+      - name: tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
       - name: nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
       - name: nome_sigla
@@ -62,18 +64,19 @@ models:
       - name: responsavel_sms
         description: Sub secretaria dentro da SMS-Rio responsável pela unidade
       - name: administracao
-        description: Nome do OSS responsável pela administração. Em caso onde não
-          há OSS, é indicado como direta (administração direta pela SMS-Rio)
+        description: Nome do OSS responsável pela administração. Em caso onde não há
+          OSS, é indicado como direta (administração direta pela SMS-Rio)
       - name: prontuario_tem
-        description: Indica sem a unidade utiliza algum tipo de prontuário, 
-          independente se é físico ou eletrônico
+        description: Indica sem a unidade utiliza algum tipo de prontuário, independente
+          se é físico ou eletrônico
       - name: prontuario_versao
         description: Indica qual sistema de prontuário é utilizado. Em caso de
           prontuário físico, é indicado como papel.
       - name: prontuario_estoque_tem_dado
         description: Indica se a unidade utiliza o prontuário para controle de estoque
       - name: prontuario_estoque_motivo_sem_dado
-        description: Indica o motivo da unidade não utilizar o prontuário para controle de estoque
+        description: Indica o motivo da unidade não utilizar o prontuário para controle
+          de estoque
       - name: endereco_bairro
         description: Bairro
       - name: endereco_logradouro
@@ -98,13 +101,13 @@ models:
         description: "Funcionamento do estabelecimento. Indica se fica sempre aberto /
           Ininterrupto: S - SIM N - NÃO"
       - name: turno_atendimento
-        description:  Descrição do Turno de Atendimento
+        description: Descrição do Turno de Atendimento
       - name: diretor_clinico_cpf
         description: CPF do Diretor Clínico ou  Gerente / Administrador
       - name: diretor_clinico_conselho
         description: Registro no Conselho de Classe do Diretor Clinico
       - name: data_atualizao_registro
-        description:  Data da última atualização do registro
+        description: Data da última atualização do registro
       - name: usuario_atualizador_registro
         description: Último usuário que atualizou o registro no CNES
       - name: mes_particao

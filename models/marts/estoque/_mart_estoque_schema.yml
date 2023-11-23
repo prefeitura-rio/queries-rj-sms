@@ -13,8 +13,10 @@ models:
         description: Identificador do medicamento/insumo
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
-      - name: estabelecimento_tipo
-        description: Tipo de estabelecimento de saúde
+      - name: estabelecimento_tipo_cnes
+        description: Tipo de Unidade de Saúde segundo a classificação do CNES
+      - name: estabelecimento_tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
       - name: estabelecimento_nome_limpo
@@ -116,8 +118,10 @@ models:
         description: Data de referencia da posição do estoque
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-      - name: estabelecimento_tipo
-        description: Tipo de estabelecimento de saúde
+      - name: estabelecimento_tipo_cnes
+        description: Tipo de Unidade de Saúde segundo a classificação do CNES
+      - name: estabelecimento_tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
       - name: estabelecimento_nome_limpo
