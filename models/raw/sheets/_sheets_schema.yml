@@ -10,6 +10,10 @@ models:
           - relationships:
               to: ref('dim_estabelecimento')
               field: id_cnes
+      - name: tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades
+      - name: tipo_sms_simplificado
+        description: Classificação alternativa ao CNES de tipos de unidades abreviada
       - name: nome_fantasia
         description: Nome fantasia de unidade de saúde
       - name: nome_limpo
@@ -41,7 +45,7 @@ models:
           combination_of_columns:
             - id_material
             - remume_grupo
-            - estabelecimento_disponibilidade
+            - estabelecimento_disponibilidade_string
     columns:
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
@@ -62,28 +66,3 @@ models:
       - name: estabelecimento_disponibilidade
         description: Tipos de estabelecimento de saúde onde o material faz parte da
           relação essencial
-      - name: estabelecimento_disponivel_cms
-        description: Sem o material faz parte da relação essencial para Clínicas
-          Municipais de Saúde
-      - name: estabelecimento_disponivel_cf
-        description: Sem o material faz parte da relação essencial para Clínicas da Família
-      - name: estabelecimento_disponivel_policlinica
-        description: Sem o material faz parte da relação essencial para Policlinicas
-      - name: estabelecimento_disponivel_hospital
-        description: Sem o material faz parte da relação essencial para Hospitais
-      - name: estabelecimento_disponivel_maternidade
-        description: Sem o material faz parte da relação essencial para Maternidades
-      - name: estabelecimento_disponivel_caps
-        description: Sem o material faz parte da relação essencial para Centros de
-          Atenção Psicossocial
-      - name: estabelecimento_disponivel_upa
-        description: Sem o material faz parte da relação essencial para UPAs
-      - name: estabelecimento_disponivel_cer
-        description: Sem o material faz parte da relação essencial para Centro de
-          Emergência Regionais
-      - name: estabelecimento_disponivel_unidades_especificas
-        description: >-
-          Relação de cnes específicas  o material faz parte da relação
-          essencial. 
-
-          Campo utilizado para quando os casos qaundo o tipo de estabelecimento de saúde é muito abrangente.

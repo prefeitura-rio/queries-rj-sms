@@ -7,7 +7,7 @@
 with
     consumo as (
         select
-            estabelecimento.tipo_cnes,
+            estabelecimento.tipo, # TODO: adicionar sufixo _cnes
             estabelecimento.area_programatica,
             estoque.id_cnes,
             estoque.id_material,
@@ -23,7 +23,7 @@ with
             id_material,
             sum(material_valor_total) as material_valor_total
         from consumo
-        where tipo_cnes = "CENTRO DE SAUDE/UNIDADE BASICA"
+        where tipo = "CENTRO DE SAUDE/UNIDADE BASICA" # TODO: adicionar sufixo _cnes
         group by id_curva_abc, abc_unidade_agrupadora, id_material
     ),
     atencao_especializada as (
@@ -33,7 +33,7 @@ with
             id_material,
             sum(material_valor_total) as material_valor_total
         from consumo
-        where tipo_cnes <> "CENTRO DE SAUDE/UNIDADE BASICA"
+        where tipo <> "CENTRO DE SAUDE/UNIDADE BASICA" # TODO: adicionar sufixo _cnes
         group by id_curva_abc, abc_unidade_agrupadora, id_material
     )
 

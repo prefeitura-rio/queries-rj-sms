@@ -55,6 +55,8 @@ models:
         description: Tipo de Unidade de Saúde segundo a classificação do CNES
       - name: tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades.
+      - name: tipo_sms_simplificado
+        description: Classificação alternativa ao CNES de tipos de unidades abreviada
       - name: nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
       - name: nome_sigla

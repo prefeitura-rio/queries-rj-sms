@@ -3,6 +3,10 @@ models:
   - name: mart_estoque__posicao_atual
     description: Posição do início do dia dos estoques de medicamentos e insumos das
       unidades de saúde
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          min_value: 100000
+          max_value: 140000
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde

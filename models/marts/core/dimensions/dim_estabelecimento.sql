@@ -34,6 +34,7 @@ with
         select
             estab_sms.*,
             estab_aux.tipo_sms,
+            estab_aux.tipo_sms_simplificado,
             estab_aux.nome_limpo,
             estab_aux.nome_sigla,
             estab_aux.prontuario_tem,
@@ -61,8 +62,9 @@ select
 
     -- Common fields
     IF (est.id_motivo_desativacao is null, "sim", "não") as ativa,
-    unidade.descricao as tipo_cnes,
-    est.tipo_sms as tipo_sms,
+    unidade.descricao as tipo ,  # TODO: renomear para tipo_cnes
+    est.tipo_sms,
+    est.tipo_sms_simplificado,
     est.nome_limpo,
     est.nome_sigla,
     est.nome_fantasia,

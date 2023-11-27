@@ -17,6 +17,7 @@ select
 
     -- Common fields
     if(tipo_sms = "nan", null, tipo_sms) as tipo_sms,
+    if(tipo_sms_simplificado = "nan", null, tipo_sms_simplificado) as tipo_sms_simplificado,
     safe_cast(nome_fantasia as string) as nome_fantasia,
     if(nome_limpo = "nan", null, nome_limpo) as nome_limpo,
     if(sigla = "nan", null, sigla) as nome_sigla,

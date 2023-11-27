@@ -10,12 +10,13 @@ with
 
     estabelecimento as (select * from {{ ref("dim_estabelecimento") }}),
     
-    movimento_final as (
+    
+    movimento_final as ( 
         select
             mov.*,
             if(
-                sistema_origem <> "tpc", est.tipo_cnes, "ESTOQUE CENTRAL"
-            ) as estabelecimento_tipo_cnes,
+                sistema_origem <> "tpc", est.tipo, "ESTOQUE CENTRAL"    # TODO: adicionar sufixo _cnes
+            ) as estabelecimento_tipo,
             if(
                 sistema_origem <> "tpc", est.tipo_sms, "ESTOQUE CENTRAL"
             ) as estabelecimento_tipo_sms,

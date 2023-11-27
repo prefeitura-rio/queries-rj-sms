@@ -1,18 +1,51 @@
 with
-    source as (select * from {{ ref("raw_sheets__material_remume") }}),
-    remume_aps as (select * from source where remume_grupo = "Atenção Básica"),
-    estabelecimento_aps as (
+    -- Sources
+    remume as (select * from {{ ref("raw_sheets__material_remume") }}),
+
+    estabelecimento as (
         select *
         from {{ ref("dim_estabelecimento") }}
-        where
-            tipo_cnes = "CENTRO DE SAUDE/UNIDADE BASICA"  # TODO: confirmar filtro
-            and prontuario_estoque_tem_dado = "sim"  -- só mostrar unidade que usam o modulo de estoque do prontuario
+        where prontuario_estoque_tem_dado = "sim"  -- só mostrar unidade que usam o modulo de estoque do prontuario
     ),
-    final_aps as (
-        select est.id_cnes, remume.id_material, remume.material_descricao_generica, est.prontuario_versao
-        from estabelecimento_aps as est
-        cross join remume_aps as remume
+
+
+    -- Unidades de Saúde
+    combinacao_estabelecimento_remume as (
+        select
+            est.id_cnes,
+            est.tipo_sms_simplificado,
+            remume.id_material,
+            remume.remume_grupo,
+            remume.estabelecimento_disponibilidade
+        from estabelecimento as est
+        cross join remume
+    ),
+
+    relacao_remume_unidades as (
+        select *
+        from combinacao_estabelecimento_remume
+        where
+            tipo_sms_simplificado in unnest(estabelecimento_disponibilidade)
+            or id_cnes in unnest(estabelecimento_disponibilidade)
+    ),
+
+
+    -- TPC
+    remume_distintos as (
+        select distinct id_material from remume
+    ),
+
+    relacao_remume_tpc as (
+        select
+            "-" as id_cnes,
+            "TPC" as tipo_sms_simplificado,
+            remume.id_material,
+            "-" as remume_grupo,
+            array["TPC"] as estabelecimento_disponibilidade,
+        from remume_distintos as remume
     )
 
-select id_cnes, id_material, material_descricao_generica, prontuario_versao
-from final_aps
+select * from relacao_remume_unidades
+union all
+select * from relacao_remume_tpc
+

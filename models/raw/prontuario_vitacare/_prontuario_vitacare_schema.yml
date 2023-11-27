@@ -10,6 +10,9 @@ models:
         description: ""
         tests:
           - not_null
+          - relationships:
+              to: ref('dim_estabelecimento')
+              field: id_cnes
           - assert_chegando_todas_unidades_de_saude:
               prontuario: vitacare
               filter: prontuario_estoque_tem_dado = 'sim'
@@ -48,6 +51,9 @@ models:
         description: ""
         tests:
           - not_null
+          - relationships:
+              to: ref('dim_estabelecimento')
+              field: id_cnes
           - assert_chegando_todas_unidades_de_saude:
               prontuario: vitacare
               filter: prontuario_estoque_tem_dado = 'sim'

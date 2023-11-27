@@ -56,7 +56,7 @@ with
     posicao_final as (
         select
             pos.*,
-            if(sistema_origem <> "tpc", est.tipo_cnes, "ESTOQUE CENTRAL") as tipo_cnes,
+            if(sistema_origem <> "tpc", est.tipo, "ESTOQUE CENTRAL") as tipo,  # TODO: adicionar sufixo _cnes
             if(sistema_origem <> "tpc", est.tipo_sms, "ESTOQUE CENTRAL") as tipo_sms,
             if(
                 sistema_origem <> "tpc", est.area_programatica, "-"
@@ -116,7 +116,7 @@ select
     id_cnes_material,
 
     -- Common fields
-    tipo_cnes as estabelecimento_tipo_cnes,
+    tipo as estabelecimento_tipo,  # TODO: adicionar sufixo _cnes
     tipo_sms as estabelecimento_tipo_sms,
     estabelecimento_area_programatica,
     estabelecimento_nome_limpo,

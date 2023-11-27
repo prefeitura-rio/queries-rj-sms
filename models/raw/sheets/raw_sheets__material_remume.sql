@@ -18,7 +18,6 @@ select
     -- Foreign keys
 
     -- Common fields
-
     if(grupo = "nan", null, grupo) as remume_grupo,
     if(
         denominacao_generica = "nan", null, denominacao_generica
@@ -28,17 +27,8 @@ select
         forma_farmaceutica = "nan", null, forma_farmaceutica
     ) as material_forma_farmaceutica,
     if(apresentacao = "nan", null, apresentacao) as material_apresentacao,
-    if(disponibilidade = "nan", null, disponibilidade) as estabelecimento_disponibilidade,
-    if(disponivel_cms = "nan", null, disponivel_cms) as estabelecimento_disponivel_cms,
-    if(disponivel_cf = "nan", null, disponivel_cf) as estabelecimento_disponivel_cf,
-    if(disponivel_policlinica = "nan", null, disponivel_policlinica) as estabelecimento_disponivel_policlinica,
-    if(disponivel_hospital = "nan", null, disponivel_hospital) as estabelecimento_disponivel_hospital,
-    if(disponivel_maternidade = "nan", null, disponivel_maternidade) as estabelecimento_disponivel_maternidade,
-    if(disponivel_caps = "nan", null, disponivel_caps) as estabelecimento_disponivel_caps,
-    if(disponivel_upa = "nan", null, disponivel_upa) as estabelecimento_disponivel_upa,
-    if(disponivel_cer = "nan", null, disponivel_cer) as estabelecimento_disponivel_cer,
-    if(disponivel_unidades_especificas = "nan", null, disponivel_unidades_especificas) as estabelecimento_disponivel_unidades_especificas,
-
+    if(disponibilidade = "nan", null, disponibilidade) as estabelecimento_disponibilidade_string,
+    SPLIT(SUBSTR(disponibilidade, 1, LENGTH(disponibilidade) - 1), ';') as estabelecimento_disponibilidade,
 
 from source
 
