@@ -94,6 +94,8 @@ models:
         description: |
           CPF do Estabelecimento
           Esse campo só é preenchido no caso do campo tipo_pfpj = 1
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: cnpj
         description: |-
           CNPJ do Estabelecimento
@@ -124,7 +126,11 @@ models:
           2 - Parcial/Restrições
       - name: diretor_clinico_cpf
         description: CPF do Diretor Clínico ou  Gerente / Administrador
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
         description: Registro no Conselho de Classe do Diretor Clinico
       - name: adesao_hospital_filantropico
         description: Indica se o hospital fez adesão ao Programa de Reestruturação de
@@ -143,10 +149,12 @@ models:
         description: Nome do Usuário que atualizou as Coordenadas
       - name: data_atualizacao_geolocalizacao
         description: Data de atualização das Coordenadas
+      - name: mes_particao
+        description: Data de referência da partição formato (YYYY-MM)
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
-        description: Momento (GMT-3) no qual foi feito o download do dataset
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
   - name: raw_cnes__tipo_unidade
     description: |-
       Tabela contendo os tipo de unidades de saúde
@@ -161,7 +169,7 @@ models:
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
-        description: Momento (GMT-3) no qual foi feito o download do dataset
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
   - name: raw_cnes__tipo_nivel_atencao
     description: |-
       Tabela contendo os níveis de atenção / atividade.
@@ -182,7 +190,7 @@ models:
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
-        description: Momento (GMT-3) no qual foi feito o download do dataset
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
   - name: raw_cnes__gestao_nivel_atencao
     description: |-
       Tabela contendo a relação do nível de atenção correspondente à
@@ -209,7 +217,7 @@ models:
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
-        description: Momento (GMT-3) no qual foi feito o download do dataset
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
   - name: raw_cnes__turno_atendimento
     description: |-
       Tabelas contendo os tipo de turno de atendimento das unidades de saúde
@@ -224,4 +232,4 @@ models:
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
-        description: Momento (GMT-3) no qual foi feito o download do dataset
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset

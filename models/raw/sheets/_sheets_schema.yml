@@ -49,6 +49,8 @@ models:
     columns:
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         tests:
           - relationships:
               to: ref('dim_material')
@@ -57,10 +59,14 @@ models:
         description: Agrupor de materias
       - name: material_descricao_generica
         description: Descrição genérica do material
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: material_concetracao
         description: Concentração do medicamento
       - name: material_forma_farmaceutica
         description: Forma farmacêutica do medicamento
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: material_apresentacao
         description: Apresentação comercial do material
       - name: estabelecimento_disponibilidade

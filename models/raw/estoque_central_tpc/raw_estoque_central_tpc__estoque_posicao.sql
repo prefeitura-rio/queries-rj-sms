@@ -2,12 +2,11 @@
     config(
         alias="estoque_posicao",
         schema="brutos_estoque_central_tpc",
-        labels={"contains_pii": "no"},
-        materialized="view",
+        materialized="table",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
-            "granularity": "month",
+            "granularity": "day",
         },
     )
 }}

@@ -1,13 +1,17 @@
 models:
   - name: raw_prontuario_vitacare__estoque_posicao
-    description: ""
+    description: >
+      Posição diária dos estoques de medicamentos e insumos das unidades de
+      saúde que utilizam o prontuário VitaCare para  gestão de estoque de
+      farmácia e almoxarifado
     columns:
       - name: id_estoque_posicao
-        description: ""
+        description: Identificador único do registro
       - name: area_programatica
-        description: ""
+        description: Área programática da unidade de saúde onde o item está localizado
       - name: id_cnes
-        description: ""
+        description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
+          unidade de saúde onde o item está localizado
         tests:
           - not_null
           - relationships:
@@ -21,34 +25,45 @@ models:
                 severity: warn
                 error_if: ">10"
       - name: id_lote
-        description: ""
+        description: Identificador do lote do medicamento/insumo
       - name: id_material
-        description: ""
+        description: Código de identificação do material cadastrado no prontuário
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
+        tests:
+          - not_null
       - name: id_atc
-        description: ""
+        description: Código de identificação do material cadastrado no prontuário no padrão ATC
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: estabelecimento_nome
-        description: ""
+        description: Nome da unidade de saúde onde o item está localizado
       - name: lote_data_cadastro
-        description: ""
+        description:  Data de cadastro do lote
       - name: lote_data_vencimento
-        description: ""
+        description:  Data de vecimento do lote
       - name: material_descricao
-        description: ""
+        description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: material_quantidade
-        description: ""
+        description: Quantidade disponível do medicamento/insumo
       - name: data_particao
-        description: ""
+        description: Data de referencia da posição do estoque
       - name: data_carga
-        description: ""
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
   - name: raw_prontuario_vitacare__estoque_movimento
-    description: ""
+    description: Movimentação diária dos estoques de medicamentos e insumos das
+      unidades de saúde que utilizam o prontuário Vitacare para gestão de
+      estoque de farmácia e almoxarifado
     columns:
       - name: id_estoque_movimento
-        description: ""
+        description: Identificador único do registro
       - name: area_programatica
-        description: ""
+        description: Área programática da unidade de saúde onde o item está localizado
       - name: id_cnes
-        description: ""
+        description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
+          unidade de saúde onde o item está localizado
         tests:
           - not_null
           - relationships:
@@ -63,32 +78,47 @@ models:
                 severity: warn
                 error_if: ">10"
       - name: id_lote
-        description: ""
+        description: Identificador do lote do medicamento/insumo
       - name: id_material
-        description: ""
+        description: Código de identificação do material cadastrado no prontuário
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: id_atc
-        description: ""
+        description: Código de identificação do material cadastrado no prontuário no padrão ATC
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: estabelecimento_nome
-        description: ""
+        description: Nome da unidade de saúde onde o item está localizado
       - name: material_descricao
-        description: ""
+        description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: estoque_movimento_data_hora
-        description: ""
+        description: Data e hora da movimentação do estoque
       - name: estoque_movimento_tipo
-        description: ""
+        description: Tipo de movimentação do estoque
       - name: estoque_movimento_correcao_tipo
-        description: ""
+        description: Tipo de correção da movimentação do estoque
       - name: estoque_movimento_justificativa
-        description: ""
+        description: Justificativa da movimentação do estoque
       - name: dispensacao_prescritor_cns
-        description: ""
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+        description: CNS do prescritor no caso de dispensação para usuário
       - name: dispensacao_paciente_cpf
-        description: ""
+        description: CPF do paciente no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: dispensacao_paciente_cns
-        description: ""
+        description: CNS do paciente no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: material_quantidade
-        description: ""
+        description: Quantidade movimentada do medicamento/insumo
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0 
       - name: data_particao
-        description: ""
+        description: Data de referencia da posição do estoque
       - name: data_carga
-        description: ""
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset

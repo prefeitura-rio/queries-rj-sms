@@ -23,6 +23,17 @@ clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_modules"
 
+# Defining variables
+vars:
+  TAG_CPF: 'projects/rj-sms/locations/us/taxonomies/1484589960313336167/policyTags/2725924647574340150'
+  TAG_CNS: 'projects/rj-sms/locations/us/taxonomies/1484589960313336167/policyTags/8466642122276519749'
+  TAG_NOME: 'projects/rj-sms/locations/us/taxonomies/1484589960313336167/policyTags/6653540523349836867'
+  TAG_TELEFONE: 'projects/rj-sms/locations/us/taxonomies/1484589960313336167/policyTags/4821430283459568091'
+  TAG_EMAIL: 'projects/rj-sms/locations/us/taxonomies/1484589960313336167/policyTags/7952571888021215204'
+  TAG_ENDERECO: 'projects/rj-sms/locations/us/taxonomies/1484589960313336167/policyTags/4420561030199075247'
+  TAG_CRM: 'projects/rj-sms/locations/us/taxonomies/1484589960313336167/policyTags/3383058637162172795'
+  TAG_MATERIAL:  'projects/rj-sms/locations/us/taxonomies/1484589960313336167/policyTags/2594193206394513245'
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
@@ -40,13 +51,14 @@ models:
     +required_tests: {"unique.*|not_null": 2}
     +required_docs: true
     raw:
-      +materialized: view
+      +materialized: table
       cnes:
         +schema: brutos_cnes
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
+        materialized: table
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
       sheets:
