@@ -1,5 +1,5 @@
 default:
-  target: devlocal
+  target: prodlocal
   outputs:
     dev:
       type: bigquery
@@ -36,7 +36,7 @@ default:
     prodlocal:
       type: bigquery
       method: service-account
-      project: rj-sms-dev
+      project: rj-sms
       dataset: dbt
       location: US
       threads: 4
