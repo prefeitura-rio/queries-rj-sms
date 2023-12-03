@@ -39,5 +39,5 @@ default:
       project: rj-sms
       dataset: dbt
       location: US
-      threads: 4
+      threads: 6
       keyfile: /Users/thiagotrabach/.credentials/rj-sms-f0dc62a2b7d5.json

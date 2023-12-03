@@ -1,7 +1,7 @@
 {{
     config(
         alias="estoque_posicao_atual",
-        schema="dashboard_estoque",
+        schema="projeto_estoque",
         materialized="table",
     )
 }}

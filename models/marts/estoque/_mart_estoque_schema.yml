@@ -15,6 +15,8 @@ models:
           de consumo
       - name: id_material
         description: Identificador do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
       - name: estabelecimento_tipo_cnes
@@ -36,6 +38,8 @@ models:
         description: Classificação do medicamento/insumo pela curva ABC
       - name: material_descricao
         description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
       - name: material_cadastro_esta_correto
@@ -76,7 +80,7 @@ models:
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
   - name: mart_estoque__movimento
-    description: Tabela contentondo os movimentos de estoque de medicamentos e
+    description: Tabela contenndo os movimentos de estoque de medicamentos e
       insumos das unidades de saúde. Para entação basica (vitacare), os dados
       são abertos no nível cp/ unidade consumidor; Para upas e hospitais, os
       dados são abertos no nível de subestoque e lote.
@@ -85,26 +89,36 @@ models:
         description: Código Nacional do Estabelecimento de Saúde
       - name: id_material
         description: Identificador do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: localizacao_origem
         description: Subestoque de origem do medicamento/insumo
       - name: localizacao_destino
         description: Subestoque ou usuário de destinodo medicamento/insumo
       - name: movimento_tipo
-        description: Tipo de movimentação do medicamento/insumo
+        description: Tipo de movimentação de estoque do medicamento/insumo
       - name: movimento_tipo_grupo
-        description: Agrupador do tipo de moiementação do medicamento/insumo
+        description: Agrupador do tipo de movimentação do medicamento/insumo
       - name: movimento_justificativa
         description: Justificativa da movimentação do medicamento/insumo
       - name: data_evento
         description: Data do movimento de estoque
       - name: consumo_preenscritor_cns
         description: CNS do preenscritor do evento de consumo
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: consumo_paciente_cns
         description: CNS do paciente do evento de consumo
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: consumo_paciente_cpf
         description: CPF do paciente do evento de consumo
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: material_descricao
         description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
       - name: material_quantidade
         description: Quantidade movimentada do medicamento/insumo
       - name: material_quantidade_com_sinal
@@ -121,7 +135,7 @@ models:
       - name: data_particao
         description: Data de referencia da posição do estoque
       - name: data_carga
-        description: Momento (GMT-3) no qual foi feito o download do dataset
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
       - name: estabelecimento_tipo_cnes
         description: Tipo de Unidade de Saúde segundo a classificação do CNES
       - name: estabelecimento_tipo_sms

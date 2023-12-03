@@ -106,8 +106,12 @@ models:
         description: Descrição do Turno de Atendimento
       - name: diretor_clinico_cpf
         description: CPF do Diretor Clínico ou  Gerente / Administrador
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: Registro no Conselho de Classe do Diretor Clinico
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
       - name: data_atualizao_registro
         description: Data da última atualização do registro
       - name: usuario_atualizador_registro

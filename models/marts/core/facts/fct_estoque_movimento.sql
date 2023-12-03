@@ -3,7 +3,6 @@
         alias="estoque_movimento",
         schema="saude_estoque",
         labels={"contains_pii": "no"},
-        materialized="view",
         partition_by={
             "field": "data_particao",
             "data_type": "date",

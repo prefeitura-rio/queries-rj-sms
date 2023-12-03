@@ -58,7 +58,6 @@ models:
         +schema: brutos_estoque_central_tpc
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
-        materialized: table
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
       sheets:
@@ -69,12 +68,11 @@ models:
         +materialized: table
         core:
           dimensions:
-              +schema: saude_dados_mestres
+            +schema: saude_dados_mestres
           facts:
-              +schema: saude_estoque
+            +schema: saude_estoque
         estoque:
-            +materialized: view
-            schema: dashboard_estoque
+            +schema: projeto_estoque
   sms_covid:
         +materialized: table # 
         +schema: sms_covid #

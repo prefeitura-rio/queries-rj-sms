@@ -2,7 +2,6 @@
     config(
         alias="estoque_posicao",
         schema="saude_estoque",
-        materialized="table",
         partition_by={
             "field": "data_particao",
             "data_type": "date",

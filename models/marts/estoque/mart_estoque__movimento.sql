@@ -1,7 +1,7 @@
 {{
     config(
         alias="estoque_movimento",
-        schema="dashboard_estoque",
+        schema="projeto_estoque",
     )
 }}
 
