@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_estoque_central_tpc_staging
-    database: rj-sms-dev
+    database: rj-sms
     schema: brutos_estoque_central_tpc_staging
     tables:
       - name: estoque_posicao

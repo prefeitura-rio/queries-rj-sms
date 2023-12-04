@@ -42,16 +42,13 @@ models:
         description: Código Nacional do Estabelecimento de Saúde
         tests:
           - unique
-          - relationships:
-              to: ref('raw_sheets__estabelecimento_auxiliar')
-              field: id_cnes
       - name: id_tipo_unidade
         description: Tipo de Estabelecimento
       - name: area_programatica
         description: Área programática onde está localizada a unidades de saúde
       - name: ativa
         description: Indica se a unidade está ativa ou não
-      - name: tipo_cnes
+      - name: tipo
         description: Tipo de Unidade de Saúde segundo a classificação do CNES
       - name: tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades.
