@@ -10,17 +10,18 @@ models:
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
         tests:
-          - not_null
+          - not_null:
+              name: raw_prontuario_vitai__estoque_posicao__id_cnes__not_null
           - relationships:
+              name: raw_prontuario_vitai__estoque_posicao__id_cnes__relationship
               to: ref('dim_estabelecimento')
               field: id_cnes
           - assert_chegando_todas_unidades_de_saude:
+              name: raw_prontuario_vitai__estoque_posicao__chegando_todas_unidades
               prontuario: vitai
               filter: "prontuario_estoque_tem_dado = 'sim'"	
               config:
                 where: "data_particao = current_date()"
-                severity: warn
-                error_if: ">3"
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -28,7 +29,8 @@ models:
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         tests:
-          - not_null
+          - not_null:
+              name: raw_prontuario_vitai__estoque_posicao__id_material__not_null
       - name: estoque_secao
         description: Local dentro da unidade de saúde onde está armazenado o
           medicamento/insumo
@@ -59,6 +61,7 @@ models:
       estoque de farmácia e almoxarifado
     tests:
       - dbt_utils.unique_combination_of_columns:
+          name: raw_prontuario_vitai__estoque_movimento__unique_combination_of_columns
           combination_of_columns:
             - id_cnes
             - id_material
@@ -76,23 +79,25 @@ models:
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
         tests:
-          - not_null
+          - not_null:
+              name: raw_prontuario_vitai__estoque_movimento__id_cnes__not_null
           - relationships:
+              name: raw_prontuario_vitai__estoque_movimento__id_cnes__relationship
               to: ref('dim_estabelecimento')
               field: id_cnes
           - assert_chegando_todas_unidades_de_saude:
+              name: raw_prontuario_vitai__estoque_movimento__chegando_todas_unidades
               prontuario: vitai
               filter: "prontuario_estoque_tem_dado = 'sim'"
               config:
                 where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
-                severity: warn
-                error_if: ">2"
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         tests:
-          - not_null
+          - not_null:
+              name: raw_prontuario_vitai__estoque_movimento__id_material__not_null
       - name: material_descricao
         description: Descrição do materil (medicamento/insumo)
         policy_tags:
@@ -115,6 +120,7 @@ models:
         description: Valor monetário (em reais) do material movimentado
         tests:
           - dbt_expectations.expect_column_values_to_be_between:
+              name: raw_prontuario_vitai__estoque_movimento__material_valor_total__between
               min_value: 0 
               max_value: 10000000
               config:

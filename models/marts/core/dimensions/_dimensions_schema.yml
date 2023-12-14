@@ -6,7 +6,8 @@ models:
       - name: id_material
         description: Id do material no sistema Sigma
         tests:
-          - unique
+          - unique:
+              name: core__dim_material__id_material__unique 
       - name: id_grupo
         description: Id do grupo no sistema Sigma
       - name: id_classe
@@ -41,7 +42,8 @@ models:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
         tests:
-          - unique
+          - unique:
+              name: core__dim_estabelecimento__id_cnes__unique
       - name: id_tipo_unidade
         description: Tipo de Estabelecimento
       - name: area_programatica

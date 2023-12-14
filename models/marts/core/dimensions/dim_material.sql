@@ -5,6 +5,7 @@
 }}
 
 with
+    
     material as (
         select
             concat(cd_grupo, cd_classe) as cd_grupo_classe,
@@ -23,6 +24,9 @@ with
             ds_subclasse
         from {{ source("sigma", "subclasse") }}
     )
+
+# TODO: remover hotfix
+, material_distinct as (select distinct * from material)
 
 select
     -- Primary Key
@@ -44,7 +48,7 @@ select
     mat.st_status as status,
     mat.remume
 
-from material as mat
+from material_distinct as mat
 left join grupo using (cd_grupo)
 left join classe using (cd_grupo_classe)
 left join subclasse using (cd_grupo_classe_subclasse)

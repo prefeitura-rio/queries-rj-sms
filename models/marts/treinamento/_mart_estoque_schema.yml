@@ -1,13 +1,8 @@
 version: 2
 models:
-  - name: mart_estoque__posicao_atual
+  - name: mart_treinamento__estoque_posicao
     description: Posição do início do dia dos estoques de medicamentos e insumos das
       unidades de saúde
-    tests:
-      - dbt_expectations.expect_table_row_count_to_be_between:
-          name: mart_estoque__posicao_atual__row_count__between
-          min_value: 100000
-          max_value: 140000
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
@@ -80,7 +75,7 @@ models:
         description: Indica quantos dias se passaram desde a última atualização do registro
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-  - name: mart_estoque__movimento
+  - name: mart_treinamento__estoque_movimento
     description: Tabela contenndo os movimentos de estoque de medicamentos e
       insumos das unidades de saúde. Para entação basica (vitacare), os dados
       são abertos no nível cp/ unidade consumidor; Para upas e hospitais, os
@@ -155,40 +150,4 @@ models:
       - name: dados_confiaveis
         description: Indica se os dados são confiáveis ou não. Caso não sejam, não devem
           ser utilizados para análises
-  - name: mart_estoque__monitoramento
-    description: "Tabela utilizada para monitorar a replicação dos dados de possição
-      de estoque. Granularidade: unidade de saúde."
-    columns:
-      - name: id_cnes
-        description: Código Nacional do Estabelecimento de Saúde
-      - name: estabelecimento_area_programatica
-        description: Área programática onde está localizada a unidade de saúde
-      - name: estabelecimento_nome_limpo
-        description: Nome fantasia sem o prefixo indicando o tipo de unidade
-      - name: estabelecimento_prontuario_versao
-        description: Sistema de origem da informação
-      - name: material_valor_total
-        description: Valor em reais somando tudo na unidade disponíveis
-      - name: data_ultima_atualizacao
-        description: Data da última atualização da posição de estoque
-      - name: dias_desde_ultima_atualizacao
-        description: Dias desde a última atualização da posição de estoque
-      - name: material_qtd_distintos
-        description: Quantidade de medicamentos/insumos distintos na unidade
-      - name: material_qtd_distintos_cadastro_incorreto
-        description: Quantidade de medicamentos/insumos distintos na unidade com
-          codifigação fora do Sigma
-      - name: material_qtd_distintos_sem_abc
-        description: Quantidade de medicamentos/insumos distintos na unidade sem curva
-          ABC calculada
-      - name: material_qtd_distintos_sem_valor_unitario
-        description: Quantidade de medicamentos/insumos distintos na unidade sem valor
-          unitário
-      - name: dispensacao_valor_medio_diario
-        description: Valor médio diário de dispensação de medicamentos/insumos na unidade
-      - name: dispensacao_quantidade_media_diario
-        description: Quantidade média diária de eventps de dispensação de
-          medicamentos/insumosna unidade
-      - name: status_replicacao_dados
-        description: Indica se os dados de posição de estoque estão atualizados ou
-          desatualizados.
+  

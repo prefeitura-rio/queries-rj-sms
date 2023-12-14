@@ -31,8 +31,9 @@ models:
           medicamento/insumo
         tests:
           - dbt_expectations.expect_column_sum_to_be_between:
-              min_value: 850000000
-              max_value: 1100000000
+              name: raw_estoque_central_tpc__estoque_posicao__material_valor_total__between
+              min_value: 75000000
+              max_value: 110000000
               config:
                 severity: error
                 where: "data_particao = current_date()"

@@ -1,5 +1,6 @@
 -- Este teste verifica se as evolução na posicao de estoque do último dia é 
 -- explicada pelas entradas e saídas observadas na tabela movimento do dia anterior
+
 with
     -- sources
     posicao as (

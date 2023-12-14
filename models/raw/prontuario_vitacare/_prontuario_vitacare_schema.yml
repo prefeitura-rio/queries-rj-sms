@@ -13,17 +13,18 @@ models:
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
         tests:
-          - not_null
+          - not_null:
+              name: raw_prontuario_vitacare__estoque_posicao__id_cnes__not_null
           - relationships:
+              name: raw_prontuario_vitacare__estoque_posicao__id_cnes__relationship
               to: ref('dim_estabelecimento')
               field: id_cnes
           - assert_chegando_todas_unidades_de_saude:
+              name: raw_prontuario_vitacare__estoque_posicao__chegando_todas_unidades
               prontuario: vitacare
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
                 where: safe_cast(data_particao as date) = current_date()
-                severity: warn
-                error_if: ">10"
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -31,7 +32,8 @@ models:
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         tests:
-          - not_null
+          - not_null:
+              name: raw_prontuario_vitacare__estoque_posicao__id_material__not_null
       - name: id_atc
         description: Código de identificação do material cadastrado no prontuário no padrão ATC
         policy_tags:
@@ -65,18 +67,19 @@ models:
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
         tests:
-          - not_null
+          - not_null:
+              name: raw_prontuario_vitacare__estoque_movimento__id_cnes__not_null
           - relationships:
+              name: raw_prontuario_vitacare__estoque_movimento__id_cnes__relationship
               to: ref('dim_estabelecimento')
               field: id_cnes
           - assert_chegando_todas_unidades_de_saude:
+              name: raw_prontuario_vitacare__estoque_movimento__chegando_todas_unidades
               prontuario: vitacare
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
                 where: safe_cast(data_particao as date) = date_sub(current_date(), INTERVAL 1
                   DAY)
-                severity: warn
-                error_if: ">10"
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -117,6 +120,7 @@ models:
         description: Quantidade movimentada do medicamento/insumo
         tests:
           - dbt_expectations.expect_column_values_to_be_between:
+              name: raw_prontuario_vitacare__estoque_movimento__material_quantidade__positive
               min_value: 0 
       - name: data_particao
         description: Data de referencia da posição do estoque
