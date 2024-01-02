@@ -1,14 +1,14 @@
 version: 2
 
 sources:
-  - name: brutos_cnes_staging
-    database: rj-sms
-    schema: brutos_cnes_staging
+  - name: br_ms_cnes
+    database: basedosdados
+    schema: br_ms_cnes
     tables:
-    - name: rlEstabProgFundo
-    - name: tbEstabelecimento
-    - name: tbTipoUnidade
-    - name: tbTipoEstabelecimento
-    - name: tbGestao
-    - name: tbTurnoAtendimento
+    - name: estabelecimento
+    - name: equipamento
+    - name: habilitacao
+    - name: leito
+    - name: profissional
+
 

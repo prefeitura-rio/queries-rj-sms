@@ -54,6 +54,8 @@ models:
       +materialized: table
       cnes:
         +schema: brutos_cnes
+      cnes_novo:
+        +schema: brutos_cnes_novo
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
       prontuario_vitacare:

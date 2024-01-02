@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: brutos_cnes_staging
+    database: rj-sms
+    schema: brutos_cnes_staging
+    tables:
+    - name: rlEstabProgFundo
+    - name: tbEstabelecimento
+    - name: tbTipoUnidade
+    - name: tbTipoEstabelecimento
+    - name: tbGestao
+    - name: tbTurnoAtendimento
+

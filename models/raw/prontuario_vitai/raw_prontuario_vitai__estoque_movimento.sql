@@ -28,6 +28,9 @@ select
     safe_cast(
         safe_cast(datamovimentacao as datetime) as date
     ) as estoque_movimento_data,
+    pacienteCpf
+    pacienteCns
+    prescritorCpf
     safe_cast(quantidade as float64) as material_quantidade,
     safe_cast(valor as float64) as material_valor_total,
 

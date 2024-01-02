@@ -42,19 +42,14 @@ models:
   - name: raw_sheets__material_remume
     description: Tabela contendo os medicamentos e insumos que compõem a Relação
       Municipal de Medicamentos Essenciais (REMUME)
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          name: raw_sheets__material_remume__unique_combination_of_columns
-          combination_of_columns:
-            - id_material
-            - remume_grupo
-            - estabelecimento_disponibilidade_string
     columns:
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         tests:
+          - unique:
+              name: raw_sheets__material_remume__id_material__unique
           - relationships:
               name: raw_sheets__material_remume__id_material__relationship
               to: ref('dim_material')
