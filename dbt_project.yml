@@ -52,10 +52,10 @@ models:
     +required_docs: true
     raw:
       +materialized: table
-      cnes:
-        +schema: brutos_cnes
-      cnes_novo:
-        +schema: brutos_cnes_novo
+      cnes_web:
+        +schema: brutos_cnes_web
+      cnes_ftp:
+        +schema: brutos_cnes_ftp
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
       prontuario_vitacare:
@@ -77,10 +77,6 @@ models:
             +schema: projeto_estoque
         treinamento:
             +schema: projeto_treinamento
-  sms_covid:
-        +materialized: table # 
-        +schema: sms_covid #
-
 tests:
   rj_sms:
     +severity: error
