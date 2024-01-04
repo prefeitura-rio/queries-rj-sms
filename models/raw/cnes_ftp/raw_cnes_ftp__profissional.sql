@@ -1,3 +1,10 @@
+{{
+    config(
+        alias="profissional",
+        schema= "brutos_cnes_ftp"
+    )
+}}
+
 with source as (
       select * from {{ source('br_ms_cnes', 'profissional') }}
 ),

@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: raw_cnes__estabelecimento
+  - name: raw_cnes_web__estabelecimento
     description: |-
       Tabela com a relação dos estabelecimentos de saúde
       Arquivo CNES: tbEstabelecimento
@@ -155,7 +155,7 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
-  - name: raw_cnes__tipo_unidade
+  - name: raw_cnes_web__tipo_unidade
     description: |-
       Tabela contendo os tipo de unidades de saúde
       Arquivo CNES: tbTipoUnidade
@@ -170,7 +170,7 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
-  - name: raw_cnes__tipo_nivel_atencao
+  - name: raw_cnes_web__tipo_nivel_atencao
     description: |-
       Tabela contendo os níveis de atenção / atividade.
       Arquivo CNES: tbGestao
@@ -191,7 +191,7 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
-  - name: raw_cnes__gestao_nivel_atencao
+  - name: raw_cnes_web__gestao_nivel_atencao
     description: |-
       Tabela contendo a relação do nível de atenção correspondente à
       unidade de saúde
@@ -218,7 +218,7 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
-  - name: raw_cnes__turno_atendimento
+  - name: raw_cnes_web__turno_atendimento
     description: |-
       Tabelas contendo os tipo de turno de atendimento das unidades de saúde
       Arquivo CNES: tbTurnoAtendimento

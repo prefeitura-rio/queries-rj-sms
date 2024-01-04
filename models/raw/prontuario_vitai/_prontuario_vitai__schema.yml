@@ -19,9 +19,9 @@ models:
           - assert_chegando_todas_unidades_de_saude:
               name: raw_prontuario_vitai__estoque_posicao__chegando_todas_unidades
               prontuario: vitai
-              filter: "prontuario_estoque_tem_dado = 'sim'"	
+              filter: prontuario_estoque_tem_dado = 'sim'
               config:
-                where: "data_particao = current_date()"
+                where: data_particao = current_date()
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -70,10 +70,10 @@ models:
             - estoque_movimento_tipo
             - estoque_movimento_justificativa
             - material_quantidade
-            - data_particao
+            - estoque_movimento_data_hora
           config:
-            where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
-            error_if: ">3" 
+            where: data_particao = date_sub(current_date(), INTERVAL 1 DAY)
+            error_if: ">3"
     columns:
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
@@ -88,9 +88,9 @@ models:
           - assert_chegando_todas_unidades_de_saude:
               name: raw_prontuario_vitai__estoque_movimento__chegando_todas_unidades
               prontuario: vitai
-              filter: "prontuario_estoque_tem_dado = 'sim'"
+              filter: prontuario_estoque_tem_dado = 'sim'
               config:
-                where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
+                where: data_particao = date_sub(current_date(), INTERVAL 1 DAY)
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
@@ -112,8 +112,22 @@ models:
         description: Tipo de movimentação do estoque.
       - name: estoque_movimento_justificativa
         description: Justificativa da movimentação do estoque
+      - name: estoque_movimento_data_hora
+        description: Data e hora da moviementação do estoque.
       - name: estoque_movimento_data
         description: Data da moviementação do estoque.
+      - name: dispensacao_paciente_cpf
+        description: CPF do paciente no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: dispensacao_paciente_cns
+        description: CNS do paciente no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: dispensacao_prescritor_cpf
+        description: CPF do prescritor no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: material_quantidade
         description: Quantidade do material movida
       - name: material_valor_total
@@ -121,10 +135,12 @@ models:
         tests:
           - dbt_expectations.expect_column_values_to_be_between:
               name: raw_prontuario_vitai__estoque_movimento__material_valor_total__between
-              min_value: 0 
+              min_value: 0
               max_value: 10000000
               config:
-                where: "data_particao = date_sub(current_date(), INTERVAL 1 DAY)"
+                where: data_particao = date_sub(current_date(), INTERVAL 1 DAY)
+      - name: data_atualizacao
+        description: Data e hora de atualização do registro no sistema de origem
       - name: data_particao
         description: Data de referencia da posição do estoque
       - name: data_carga

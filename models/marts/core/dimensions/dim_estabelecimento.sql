@@ -7,16 +7,16 @@
 
 
 with
-    versao_atual as (select max(mes_particao) as versao from {{ ref("raw_cnes__tipo_unidade") }}),
+    versao_atual as (select max(mes_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}),
 
     estabelecimento as (
         select *
-        from {{ ref("raw_cnes__estabelecimento") }}
+        from {{ ref("raw_cnes_web__estabelecimento") }}
         where mes_particao = (select versao from versao_atual)),
 
-    unidade as (select * from {{ ref("raw_cnes__tipo_unidade") }} where mes_particao = (select versao from versao_atual)),
+    unidade as (select * from {{ ref("raw_cnes_web__tipo_unidade") }} where mes_particao = (select versao from versao_atual)),
 
-    turno as (select * from {{ ref("raw_cnes__turno_atendimento") }} where mes_particao = (select versao from versao_atual)),
+    turno as (select * from {{ ref("raw_cnes_web__turno_atendimento") }} where mes_particao = (select versao from versao_atual)),
 
     estab_sms as (
         select *
@@ -59,6 +59,7 @@ select
     est.id_cnes,
     est.id_tipo_unidade,
     est.id_distrito_sanitario_corrigido as area_programatica,
+    est.cnpj_mantenedora,
 
     -- Common fields
     IF (est.id_motivo_desativacao is null, "sim", "não") as ativa,

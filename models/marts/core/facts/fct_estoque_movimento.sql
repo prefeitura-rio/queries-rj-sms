@@ -11,10 +11,42 @@
     )
 }}
 
+--- sources
 with
+    source_vitai as (select * from {{ ref("raw_prontuario_vitai__estoque_movimento") }}),
+
+    source_vitacare as (
+        select
+            est.*,
+            est.material_quantidade * if(
+                valor_unitario.material_valor_unitario_medio is null,
+                0,
+                valor_unitario.material_valor_unitario_medio
+            ) as material_valor_total,
+        from {{ ref("raw_prontuario_vitacare__estoque_movimento") }} as est
+        left join
+            {{ ref("int_estoque__material_valor_unitario_tpc") }} as valor_unitario
+            on (est.id_material = valor_unitario.id_material)
+    ),
+
+
+--- transform into standard model
     movimento_vitai as (
         select
-            *,
+            est.id_cnes,
+            est.id_material,
+            est.material_descricao,
+            est.material_unidade,
+            est.estoque_secao_origem,
+            est.estoque_secao_destino,
+            est.estoque_movimento_tipo,
+            est.estoque_movimento_justificativa,
+            est.estoque_movimento_data,
+            est.estoque_movimento_data_hora,
+            est.material_quantidade,
+            est.material_valor_total,
+            est.data_particao,
+            est.data_carga,
             case
                 when
                     estoque_movimento_tipo = "TRANSFERENCIA ENTRADA"
@@ -43,26 +75,15 @@ with
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
-            "" as estoque_movimento_consumo_preenscritor_cns,  # TODO: abrir dados vitai no nível cpf
-            "" as estoque_movimento_consumo_paciente_cpf,
-            "" as estoque_movimento_consumo_paciente_cns,
+            dispensacao_prescritor_cpf as estoque_movimento_consumo_preenscritor_cpf,
+            "" as estoque_movimento_consumo_preenscritor_cns,
+            dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
+            dispensacao_paciente_cns as estoque_movimento_consumo_paciente_cns,
             "vitai" as sistema_origem
-        from {{ ref("raw_prontuario_vitai__estoque_movimento") }}
+        from source_vitai as est
     ),
 
-    source_vitacare as (
-        select
-            est.*,
-            est.material_quantidade * if(
-                valor_unitario.material_valor_unitario_medio is null,
-                0,
-                valor_unitario.material_valor_unitario_medio
-            ) as material_valor_total,
-        from {{ ref("raw_prontuario_vitacare__estoque_movimento") }} as est
-        left join
-            {{ ref("int_estoque__material_valor_unitario_tpc") }} as valor_unitario
-            on (est.id_material = valor_unitario.id_material)
-    ),
+    
     movimento_vitacare as (
         select
             est.id_cnes,
@@ -75,7 +96,8 @@ with
             est.estoque_movimento_justificativa,
             safe_cast(
                 est.estoque_movimento_data_hora as date
-            ) as estoque_movimento_data,  # TODO: mudar para datetime
+            ) as estoque_movimento_data,
+            est.estoque_movimento_data_hora,
             est.material_quantidade,
             est.material_valor_total,
             est.data_particao,
@@ -118,6 +140,7 @@ with
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
+            "" as estoque_movimento_consumo_preenscritor_cpf,  # TODO: adicionar cpf
             est.dispensacao_prescritor_cns
             as estoque_movimento_consumo_preenscritor_cns,
             est.dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
@@ -125,6 +148,8 @@ with
             "vitacare" as sistema_origem,
         from source_vitacare as est
     ),
+
+--- union
 
     movimento as (
         select *
@@ -147,6 +172,8 @@ select
     estoque_movimento_tipo_grupo as movimento_tipo_grupo,
     estoque_movimento_justificativa as movimento_justificativa,
     estoque_movimento_data as data_evento,
+    estoque_movimento_data_hora as data_hora_evento,
+    estoque_movimento_consumo_preenscritor_cpf as consumo_preenscritor_cpf,
     estoque_movimento_consumo_preenscritor_cns as consumo_preenscritor_cns,
     estoque_movimento_consumo_paciente_cns as consumo_paciente_cns,
     estoque_movimento_consumo_paciente_cpf as consumo_paciente_cpf,
