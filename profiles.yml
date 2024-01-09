@@ -33,3 +33,11 @@ default:
       location: US
       threads: 6
       keyfile: /Users/thiagotrabach/.credentials/rj-sms-f0dc62a2b7d5.json
+    compile:
+      type: bigquery
+      method: service-account
+      project: rj-sms-dev
+      dataset: dbt
+      location: US
+      threads: 2
+      keyfile: credentials/dev.json
