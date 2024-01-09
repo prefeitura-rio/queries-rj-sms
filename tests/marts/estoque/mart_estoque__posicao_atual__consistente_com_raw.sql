@@ -5,7 +5,7 @@ with
 
     -- SOURCES
     -- filtra dados de 1 mês a fim de evitar full scan das tabelas.
-    -- Nenhuma ingestão deve estar 1 mês atrasada
+    -- Premissa: Nenhuma ingestão deve estar 1 mês atrasada
     source_vitacare as (
         select *, concat(id_cnes, "-", data_particao) as id_estabelecimento_particao
         from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}

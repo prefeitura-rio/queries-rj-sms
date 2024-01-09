@@ -4,7 +4,7 @@ with
         select *
         from {{ ref("raw_sheets__material_remume") }}
         where
-            remume_grupo = "Atenção Básica - Medicamentos" or remume_grupo = "Hospital"  -- só mostrar medicamentos por enquanto
+            remume_grupo = "Atenção Básica - Medicamentos" or remume_grupo = "Hospitalar"  -- só mostrar medicamentos por enquanto
     ),  
 
     estabelecimento as (
@@ -46,8 +46,10 @@ with
         from remume_distintos as remume
     )
 
+--- Result
 select *
 from relacao_remume_unidades
 union all
 select *
 from relacao_remume_tpc
+

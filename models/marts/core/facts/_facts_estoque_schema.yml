@@ -17,6 +17,9 @@ models:
       - name: id_curva_abc
         description: Identificador usado para agrupar os medicamentos/insumos em classes
           de consumo
+      - name: material_remume
+        description: Indicação se o material faz parte da REMUME-RIO (Relação
+          municipal de medicamentos essenciais)
       - name: estoque_secao
         description: Local dentro da unidade de saúde onde está armazenado o
           medicamento/insumo
@@ -35,14 +38,14 @@ models:
       - name: material_valor_total
         description: Valor em reais somando todas as unidades disponíveis do
           medicamento/insumo
+      - name: sistema_origem
+        description: Sistema de origem do registro
       - name: data_particao
         description: Data de referencia da posição do estoque
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-      - name: sistema_origem
-        description: Sistema de origem do registro
   - name: fct_estoque_movimento
     description: ""
     columns:
@@ -94,6 +97,6 @@ models:
       - name: sistema_origem
         description: Sistema de origem do registro
       - name: data_particao
-        description:  Data de referencia do movimento do estoque
+        description: Data de referencia do movimento do estoque
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset

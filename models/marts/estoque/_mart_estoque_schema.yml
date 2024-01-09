@@ -37,6 +37,9 @@ models:
         description: Sub secretaria dentro da SMS-Rio responsável pela unidade
       - name: abc_categoria
         description: Classificação do medicamento/insumo pela curva ABC
+      - name: material_remume
+        description: Indicação se o material faz parte da REMUME-RIO (Relação
+          municipal de medicamentos essenciais)
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
@@ -81,10 +84,10 @@ models:
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
   - name: mart_estoque__movimento
-    description: Tabela contenndo os movimentos de estoque de medicamentos e
-      insumos das unidades de saúde. Para entação basica (vitacare), os dados
-      são abertos no nível cp/ unidade consumidor; Para upas e hospitais, os
-      dados são abertos no nível de subestoque e lote.
+    description: Tabela contenndo os movimentos de estoque de medicamentos e insumos
+      das unidades de saúde. Para entação basica (vitacare), os dados são
+      abertos no nível cp/ unidade consumidor; Para upas e hospitais, os dados
+      são abertos no nível de subestoque e lote.
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde

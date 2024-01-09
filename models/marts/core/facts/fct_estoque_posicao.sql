@@ -44,6 +44,23 @@ with
         select * from vitai_dias_anteriores
     ),
 
+    --- TPC
+    tpc_atual as (
+        select * from {{ ref("int_estoque__posicao_hoje_tpc_com_zerados_remume") }}
+    ),
+    
+    tpc_dias_anteriores as (
+        select *
+        from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
+        where data_particao < current_date()
+    ),
+
+    tpc_completa as (
+        select * from tpc_atual
+        union all
+        select * from tpc_dias_anteriores
+    ),
+
     -- constroi a posicação para cada source
     posicao_vitacare as (
         select
@@ -98,7 +115,7 @@ with
             "ESTOQUE CENTRAL" as estabelecimento_tipo,
             "ESTOQUE CENTRAL" as estabelecimento_tipo_sms,
             "-" as estabelecimento_area_programatica,
-        from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
+        from tpc_completa
     ),
 
     posicao_consolidada as (
