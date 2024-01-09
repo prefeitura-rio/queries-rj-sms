@@ -36,7 +36,7 @@ jobs:
         run: echo "$DBT_CREDENTIALS_DEV" > credentials/dev.json
 
       - name: Install dbt
-        run:  pip install dbt-core dbt-bigquery
+        run:  pip install dbt-core dbt-bigquery setuptools
 
       - name: Compile dbt models
         run: dbt compile --profiles-dir . --profile default --target compile
