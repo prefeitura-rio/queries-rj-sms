@@ -124,6 +124,7 @@ select
     estabelecimento_administracao,
     estabelecimento_responsavel_sms,
     abc_categoria,
+    material_remume,
     material_descricao2 as material_descricao,
     material_unidade,
     material_cadastro_esta_correto,

@@ -1,13 +1,17 @@
 with
-    -- Sources
-    remume as (select * from {{ ref("raw_sheets__material_remume") }}),
+    -- Sources 
+    remume as (
+        select *
+        from {{ ref("raw_sheets__material_remume") }}
+        where
+            remume_grupo = "Atenção Básica - Medicamentos" or remume_grupo = "Hospital"  -- só mostrar medicamentos por enquanto
+    ),  
 
     estabelecimento as (
         select *
         from {{ ref("dim_estabelecimento") }}
         where prontuario_estoque_tem_dado = "sim"  -- só mostrar unidade que usam o modulo de estoque do prontuario
     ),
-
 
     -- Unidades de Saúde
     combinacao_estabelecimento_remume as (
@@ -29,11 +33,8 @@ with
             or id_cnes in unnest(estabelecimento_disponibilidade)
     ),
 
-
     -- TPC
-    remume_distintos as (
-        select distinct id_material from remume
-    ),
+    remume_distintos as (select distinct id_material from remume),
 
     relacao_remume_tpc as (
         select
@@ -45,7 +46,8 @@ with
         from remume_distintos as remume
     )
 
-select * from relacao_remume_unidades
+select *
+from relacao_remume_unidades
 union all
-select * from relacao_remume_tpc
-
+select *
+from relacao_remume_tpc

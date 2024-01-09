@@ -1,5 +1,5 @@
 default:
-  target: devlocal
+  target: prodlocal
   outputs:
     dev:
       type: bigquery

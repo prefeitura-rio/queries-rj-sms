@@ -10,26 +10,49 @@
     )
 }}
 
-# TODO: subtituir .tipo por .tipo
-
 with
+    -- sources
+    --- Vitacare
+    vitacare_atual as (
+        select * from {{ ref("int_estoque__posicao_hoje_vitacare_com_zerados_remume") }}
+    ),
+    vitacare_dias_anteriores as (
+        select *
+        from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
+        where data_particao < current_date()
+    ),
 
-    remume as (select * from {{ ref('int_estoque__material_relacao_remume_por_estabelecimento') }}),
-    
-    -- importar a posicao vitacare
-    -- juntar posicao remume com seu respectivo prontuario
-    -- ajustar os campos nullos da remume na tabela de posicao
-    -- re-apontar o posicao_vitacare_final para a tabela de posicao ajustada
+    vitacare_completa as (
+        select * from vitacare_atual
+        union all
+        select * from vitacare_dias_anteriores
+    ),
 
+    --- Vitai
+    vitai_atual as (
+        select * from {{ ref("int_estoque__posicao_hoje_vitai_com_zerados_remume") }}
+    ),
+    vitai_dias_anteriores as (
+        select *
+        from {{ ref("raw_prontuario_vitai__estoque_posicao") }}
+        where data_particao < current_date()
+    ),
 
-    posicao_vitacare_final as (
+    vitai_completa as (
+        select * from vitai_atual
+        union all
+        select * from vitai_dias_anteriores
+    ),
+
+    -- constroi a posicação para cada source
+    posicao_vitacare as (
         select
             estoque.id_cnes,
             estoque.id_lote,
             estoque.id_material,
             "" as estoque_secao,
             estoque.material_descricao,
-            "" as material_unidade, --payload da viticare não possui esta informação
+            "" as material_unidade,  -- payload da viticare não possui esta informação
             estoque.lote_data_vencimento,
             estoque.material_quantidade,
             if(
@@ -49,11 +72,11 @@ with
             estabelecimento.tipo as estabelecimento_tipo,
             estabelecimento.tipo_sms as estabelecimento_tipo_sms,
             estabelecimento.area_programatica as estabelecimento_area_programatica,
-        from {{ ref("raw_prontuario_vitacare__estoque_posicao") }} as estoque
+        from vitacare_completa as estoque
         left join {{ ref("dim_estabelecimento") }} as estabelecimento using (id_cnes)
         left join
-            {{ ref("int_estoque__material_valor_unitario_tpc") }}
-            as valor_unitario using (id_material)
+            {{ ref("int_estoque__material_valor_unitario_tpc") }} as valor_unitario
+            using (id_material)
     ),
 
     posicao_vitai as (
@@ -63,7 +86,7 @@ with
             estabelecimento.tipo as estabelecimento_tipo,
             estabelecimento.tipo_sms as estabelecimento_tipo_sms,
             estabelecimento.area_programatica as estabelecimento_area_programatica,
-        from {{ ref("raw_prontuario_vitai__estoque_posicao") }} as estoque
+        from vitai_completa as estoque
         left join {{ ref("dim_estabelecimento") }} as estabelecimento using (id_cnes)
     ),
 
@@ -86,7 +109,17 @@ with
         from posicao_tpc
         union all
         select *
-        from posicao_vitacare_final
+        from posicao_vitacare
+    ),
+
+    posicao_consolidada_com_remume as (
+        select pos.*,
+        if(remume.id_material is null, "nao", "sim") as material_remume,
+        from posicao_consolidada as pos
+        left join {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }} as remume
+            on pos.id_cnes = remume.id_cnes
+            and pos.id_material = remume.id_material
+
     )
 
 select
@@ -107,6 +140,7 @@ select
     end as id_curva_abc,
 
     -- Common Fields
+    material_remume,
     estoque_secao,
     material_descricao,
     material_unidade,
@@ -120,4 +154,4 @@ select
     data_particao,
     data_snapshot,
     data_carga,
-from posicao_consolidada
+from posicao_consolidada_com_remume
