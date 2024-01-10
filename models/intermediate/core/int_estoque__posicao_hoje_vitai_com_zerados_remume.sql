@@ -18,9 +18,8 @@ with
         from
             {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
             as remume
-        left join
+        inner join
             unidades_vitai_com_posicao_atual as est on remume.id_cnes = est.id_cnes
-        where est.id_cnes is not null
     ),
 
     -- materias em estoque
