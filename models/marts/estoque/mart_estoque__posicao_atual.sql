@@ -17,26 +17,32 @@ with
         select posicao.*
         from posicao
         left join
-            {{ ref("int_estoque__posicao_mais_recente_por_estabelecimento") }} as pos_atual
-            using (id_estabelecimento_particao)
+            {{ ref("int_estoque__posicao_mais_recente_por_estabelecimento") }}
+            as pos_atual using (id_estabelecimento_particao)
         where pos_atual.id_estabelecimento_particao is not null
     ),  -- para toda unidade pegamos o registro mais recente para evitar falta de dados de alguma unidade
 
-    remume as (select * from {{ ref('int_estoque__material_relacao_remume_por_estabelecimento') }}),
+    remume as (
+        select *
+        from {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
+    ),
 
     posicao_atual_inclusive_remume_zerado as (
-        select 
-        
-        coalesce(atual.id_material, remume.id_material) as id_material,
-        atual.id_lote,
-        coalesce(atual.id_cnes, remume.id_cnes) as id_cnes,
-        coalesce(atual.id_cnes_material, concat(remume.id_cnes,"-", remume.id_material )) as id_cnes_material,
+        select
 
-        if(atual.id_material is null, 0, atual.material_quantidade) as material_quantidade_corrigida,
+            coalesce(atual.id_material, remume.id_material) as id_material,
+            atual.id_lote,
+            coalesce(atual.id_cnes, remume.id_cnes) as id_cnes,
+            coalesce(
+                atual.id_cnes_material, concat(remume.id_cnes, "-", remume.id_material)
+            ) as id_cnes_material,
+
+            if(
+                atual.id_material is null, 0, atual.material_quantidade
+            ) as material_quantidade_corrigida,
         from posicao_atual as atual
         full outer join remume using (id_material, id_cnes)
     ),
-
 
     historico_dispensacao as (
         select *
@@ -73,7 +79,9 @@ with
             if(
                 sistema_origem <> "tpc", est.responsavel_sms, "subpav"
             ) as estabelecimento_responsavel_sms,
-            cmm.quantidade as material_consumo_medio,
+            if(
+                sistema_origem <> "tpc", coalesce(cmm.quantidade, 0), cmm.quantidade
+            ) as material_consumo_medio,
             coalesce(abc.abc_categoria, "S/C") as abc_categoria,
             coalesce(mat.nome, pos.material_descricao) as material_descricao2,
             if(mat.nome is null, "nao", "sim") as material_cadastro_esta_correto,
@@ -98,7 +106,7 @@ with
                 then "item não possui histórico de dispensação registrado na unidade"
                 else 'desconhecida'
             end as cmm_justificativa_ausencia,
-        from posicao_atual as pos   -- posicao_atual
+        from posicao_atual as pos  -- posicao_atual
         left join curva_abc as abc using (id_curva_abc)
         left join historico_dispensacao as disp using (id_curva_abc)
         left join
@@ -137,8 +145,11 @@ select
     material_valor_unitario,
     material_valor_total,
     material_consumo_medio,
-    {{ dbt_utils.safe_divide("material_quantidade", "material_consumo_medio") }}
-    as estoque_cobertura_dias,
+    if(
+        material_quantidade = 0,
+        0,
+        {{ dbt_utils.safe_divide("material_quantidade", "material_consumo_medio") }}
+    ) as estoque_cobertura_dias,
     abc_justificativa_ausencia,
     cmm_justificativa_ausencia,
 
