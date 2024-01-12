@@ -114,7 +114,7 @@ with
             "tpc" as sistema_origem,
             "ESTOQUE CENTRAL" as estabelecimento_tipo,
             "ESTOQUE CENTRAL" as estabelecimento_tipo_sms,
-            "-" as estabelecimento_area_programatica,
+            "TPC" as estabelecimento_area_programatica,
         from tpc_completa
     ),
 

@@ -65,7 +65,7 @@ with
             if(sistema_origem <> "tpc", est.tipo, "ESTOQUE CENTRAL") as tipo,  # TODO: adicionar sufixo _cnes
             if(sistema_origem <> "tpc", est.tipo_sms, "ESTOQUE CENTRAL") as tipo_sms,
             if(
-                sistema_origem <> "tpc", est.area_programatica, "-"
+                sistema_origem <> "tpc", est.area_programatica, "TPC"
             ) as estabelecimento_area_programatica,
             if(
                 sistema_origem <> "tpc", est.nome_limpo, "TPC"
@@ -106,6 +106,19 @@ with
                 then "item não possui histórico de dispensação registrado na unidade"
                 else 'desconhecida'
             end as cmm_justificativa_ausencia,
+            case
+                when tipo_sms = 'ESTOQUE CENTRAL'
+                then 'TPC'
+                when tipo_sms = 'HOSPITAL' or tipo_sms = 'CENTRO DE EMERGENCIA REGIONAL'
+                then 'Hospital/CER'
+                when
+                    tipo_sms = 'CLINICA DA FAMILIA'
+                    or tipo_sms = 'CENTRO MUNICIPAL DE SAUDE'
+                then 'CMS/CF'
+                when tipo_sms = 'UNIDADE DE PRONTO ATENDIMENTO'
+                then 'UPA'
+                else tipo_sms
+            end as tipo_sms_agrupado,
         from posicao_atual as pos  -- posicao_atual
         left join curva_abc as abc using (id_curva_abc)
         left join historico_dispensacao as disp using (id_curva_abc)
@@ -126,6 +139,7 @@ select
     -- Common fields
     tipo as estabelecimento_tipo,  # TODO: adicionar sufixo _cnes
     tipo_sms as estabelecimento_tipo_sms,
+    tipo_sms_agrupado as estabelecimento_tipo_sms_agrupado,
     estabelecimento_area_programatica,
     estabelecimento_nome_limpo,
     estabelecimento_nome_sigla,
