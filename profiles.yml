@@ -1,5 +1,5 @@
 default:
-  target: devlocal
+  target: prodlocal
   outputs:
     dev:
       type: bigquery
@@ -15,7 +15,7 @@ default:
       project: rj-sms
       dataset: dbt
       location: US
-      threads: 2
+      threads: 6
       keyfile: /tmp/credentials.json
     devlocal:
       type: bigquery
@@ -24,12 +24,12 @@ default:
       dataset: dbt
       location: US
       threads: 4
-      keyfile: /Users/thiagotrabach/.credentials/rj-sms-dev-a8fd4239a9eb.json
+      keyfile: /home/danilo/.credentials/rj-sms-dev-a8fd4239a9eb.json
     prodlocal:
       type: bigquery
       method: service-account
       project: rj-sms
       dataset: dbt
       location: US
-      threads: 6
-      keyfile: /Users/thiagotrabach/.credentials/rj-sms-f0dc62a2b7d5.json
+      threads: 10
+      keyfile: /home/danilo/.credentials/rj-sms-f0dc62a2b7d5.json
