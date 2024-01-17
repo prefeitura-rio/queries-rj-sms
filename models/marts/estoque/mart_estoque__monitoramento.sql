@@ -71,7 +71,9 @@ with
             ) as material_qtd_distintos_sem_valor_unitario,
         from {{ ref("mart_estoque__posicao_atual") }}
         group by 1, 2, 3, 4
-    )
+    ),
+
+    equipes_por_unidade as (select * from {{ ref('int_estoque__equipes_por_unidade') }})
 
 select
     coalesce(est.id_cnes, m.id_cnes) as id_cnes,
@@ -120,9 +122,12 @@ select
         0,
         material_qtd_distintos_sem_valor_unitario
     ) as material_qtd_distintos_sem_valor_unitario,
+    equipes.equipes_quantidade,
 
 from estabelecimento as est
 full outer join metricas as m using (id_cnes)
 left join dispensacao_media as dm using (id_cnes)
 left join entradas as e using (id_cnes)
+left join equipes_por_unidade as equipes using (id_cnes)
+
 order by est.nome_limpo desc
