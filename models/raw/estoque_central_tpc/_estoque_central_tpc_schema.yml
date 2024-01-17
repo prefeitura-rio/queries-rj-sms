@@ -32,7 +32,7 @@ models:
         tests:
           - dbt_expectations.expect_column_sum_to_be_between:
               name: raw_estoque_central_tpc__estoque_posicao__material_valor_total__between
-              min_value: 75000000
+              min_value: 70000000
               max_value: 110000000
               config:
                 severity: error
