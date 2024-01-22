@@ -36,8 +36,10 @@ with
     ),
 
     entradas as (
-        select id_cnes, count( id_material) as entrada_frequencia_ultimos_30_dias,
-        sum(material_quantidade) as entrada_quantidade_ultimos_30_dias,
+        select
+            id_cnes,
+            count(id_material) as entrada_frequencia_ultimos_30_dias,
+            sum(material_quantidade) as entrada_quantidade_ultimos_30_dias,
         from {{ ref("mart_estoque__movimento") }}
         where
             movimento_tipo_grupo = 'Entrada'
@@ -73,61 +75,93 @@ with
         group by 1, 2, 3, 4
     ),
 
-    equipes_por_unidade as (select * from {{ ref('int_estoque__equipes_por_unidade') }})
+    equipes_por_unidade as (
+        select * from {{ ref("int_estoque__equipes_por_unidade") }}
+    ),
+
+    estab_join_metricas as (
+
+        select
+            coalesce(est.id_cnes, m.id_cnes) as id_cnes,
+            coalesce(
+                est.area_programatica, m.estabelecimento_area_programatica
+            ) as estabelecimento_area_programatica,
+            coalesce(
+                est.nome_limpo, m.estabelecimento_nome_limpo
+            ) as estabelecimento_nome_limpo,
+            coalesce(
+                est.prontuario_versao, m.sistema_origem
+            ) as estabelecimento_prontuario_versao,
+            if(
+                m.material_valor_total is null, 0, m.material_valor_total
+            ) as material_valor_total,
+            data_ultima_atualizacao,
+            if(
+                m.dias_desde_ultima_atualizacao = 0, "atualizado", "desatualizado"
+            ) as status_replicacao_dados,
+            if(
+                dias_desde_ultima_atualizacao is null, 99, dias_desde_ultima_atualizacao
+            ) as dias_desde_ultima_atualizacao,
+            if(
+                material_qtd_distintos is null, 0, material_qtd_distintos
+            ) as material_qtd_distintos,
+            if(
+                material_qtd_distintos_com_estoque_positivo is null,
+                0,
+                material_qtd_distintos_com_estoque_positivo
+            ) as material_qtd_distintos_com_estoque_positivo,
+            if(
+                material_qtd_distintos_cadastro_incorreto is null,
+                0,
+                material_qtd_distintos_cadastro_incorreto
+            ) as material_qtd_distintos_cadastro_sigma_incorreto,
+            if(
+                material_qtd_distintos_sem_valor_unitario is null,
+                0,
+                material_qtd_distintos_sem_valor_unitario
+            ) as material_qtd_distintos_sem_valor_unitario,
+            if(
+                e.entrada_frequencia_ultimos_30_dias is null,
+                0,
+                e.entrada_frequencia_ultimos_30_dias
+            ) as entrada_frequencia_ultimos_30_dias,
+            if(
+                e.entrada_quantidade_ultimos_30_dias is null,
+                0,
+                e.entrada_quantidade_ultimos_30_dias
+            ) as entrada_quantidade_ultimos_30_dias,
+            if(
+                dm.dispensacao_frequencia_media_diaria is null,
+                0,
+                dm.dispensacao_frequencia_media_diaria
+            ) as dispensacao_frequencia_media_diaria,
+            if(
+                dm.dispensacao_por_cpf_frequencia_media_diaria is null,
+                0,
+                dm.dispensacao_por_cpf_frequencia_media_diaria
+            ) as dispensacao_por_cpf_frequencia_media_diaria,
+            equipes.equipes_quantidade,
+            current_date() as data_snapshot,
+        from estabelecimento as est
+        full outer join metricas as m using (id_cnes)
+        left join dispensacao_media as dm using (id_cnes)
+        left join entradas as e using (id_cnes)
+        left join equipes_por_unidade as equipes using (id_cnes)
+
+        order by est.nome_limpo desc
+    )
 
 select
-    coalesce(est.id_cnes, m.id_cnes) as id_cnes,
-    coalesce(
-        est.area_programatica, m.estabelecimento_area_programatica
-    ) as estabelecimento_area_programatica,
-    coalesce(
-        est.nome_limpo, m.estabelecimento_nome_limpo
-    ) as estabelecimento_nome_limpo,
-    coalesce(
-        est.prontuario_versao, m.sistema_origem
-    ) as estabelecimento_prontuario_versao,
-    if(
-        m.material_valor_total is null, 0, m.material_valor_total
-    ) as material_valor_total,
-    data_ultima_atualizacao,
-    if(
-        m.dias_desde_ultima_atualizacao = 0, "atualizado", "desatualizado"
-    ) as status_replicacao_dados,
-    if(
-        dias_desde_ultima_atualizacao is null, 99, dias_desde_ultima_atualizacao
-    ) as dias_desde_ultima_atualizacao,
-    if(
-        material_qtd_distintos is null, 0, material_qtd_distintos
-    ) as material_qtd_distintos,
-    if(
-        material_qtd_distintos_com_estoque_positivo is null,
-        0,
-        material_qtd_distintos_com_estoque_positivo
-    ) as material_qtd_distintos_com_estoque_positivo,
-    if(
-        material_qtd_distintos_cadastro_incorreto is null,
-        0,
-        material_qtd_distintos_cadastro_incorreto
-    ) as material_qtd_distintos_cadastro_sigma_incorreto,
-    if(
-        e.entrada_frequencia_ultimos_30_dias is null, 0, entrada_frequencia_ultimos_30_dias
-    ) as entrada_frequencia_ultimos_30_dias,
-    if(
-        e.entrada_quantidade_ultimos_30_dias is null, 0, entrada_quantidade_ultimos_30_dias
-    ) as entrada_quantidade_ultimos_30_dias,
-    dm.dispensacao_frequencia_media_diaria,
-    dm.dispensacao_por_cpf_frequencia_media_diaria,
-    if(
-        material_qtd_distintos_sem_valor_unitario is null,
-        0,
-        material_qtd_distintos_sem_valor_unitario
-    ) as material_qtd_distintos_sem_valor_unitario,
-    equipes.equipes_quantidade,
+    *,
 
-from estabelecimento as est
-full outer join metricas as m using (id_cnes)
-left join dispensacao_media as dm using (id_cnes)
-left join entradas as e using (id_cnes)
-left join equipes_por_unidade as equipes using (id_cnes)
-
-order by est.nome_limpo desc
+    {{
+        dbt_utils.safe_divide(
+            "entrada_quantidade_ultimos_30_dias", "equipes_quantidade"
+        )
+    }} as entrada_quantidade_ultimos_30_dias_por_equipe,
+    {{
+        dbt_utils.safe_divide(
+            "dispensacao_frequencia_media_diaria", "equipes_quantidade"
+        )
+    }} as dispensacao_frequencia_media_diaria_por_equipe,
+from estab_join_metricas
