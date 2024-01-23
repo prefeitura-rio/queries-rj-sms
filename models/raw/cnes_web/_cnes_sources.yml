@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: brutos_cnes_staging
+  - name: brutos_cnes_web_staging
     database: rj-sms
-    schema: brutos_cnes_staging
+    schema: brutos_cnes_web_staging
     tables:
     - name: rlEstabProgFundo
     - name: tbEstabelecimento

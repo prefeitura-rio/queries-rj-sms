@@ -1,7 +1,7 @@
 --- Quantidade de equipes por unidades
 
 with
-    equipe as (select * from {{ source("brutos_cnes_staging", "tbEquipe") }} where mes_particao = '2023-11'),  # TODO: remove from staging and hardcoded date
+    equipe as (select * from {{ source("brutos_cnes_web_staging", "tbEquipe") }} where mes_particao = '2023-11'),  # TODO: remove from staging and hardcoded date
 
     cnes_por_equipe as (
         select est.id_unidade, est.id_cnes, equipe.*

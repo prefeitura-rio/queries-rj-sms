@@ -4,7 +4,7 @@
     )
 }}
 
-with source as (select * from {{ source("brutos_cnes_staging", "rlEstabProgFundo") }})
+with source as (select * from {{ source("brutos_cnes_web_staging", "rlEstabProgFundo") }})
 select
     -- Primary Key
     -- Foreign Keys

@@ -4,7 +4,7 @@
     )
 }}
 
-with source as (select * from {{ source("brutos_cnes_staging", "tbGestao") }})
+with source as (select * from {{ source("brutos_cnes_web_staging", "tbGestao") }})
 
 select
     -- Primary key

@@ -4,7 +4,7 @@
     )
 }}
 
-with source as (select * from {{ source("brutos_cnes_staging", "tbTurnoAtendimento") }})
+with source as (select * from {{ source("brutos_cnes_web_staging", "tbTurnoAtendimento") }})
 select
     -- Primary key
     safe_cast(co_turno_atendimento as string) as id_turno_atendimento,
