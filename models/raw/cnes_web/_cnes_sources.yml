@@ -11,4 +11,5 @@ sources:
     - name: tbTipoEstabelecimento
     - name: tbGestao
     - name: tbTurnoAtendimento
+    - name: tbEquipe
 
