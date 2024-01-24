@@ -62,7 +62,7 @@ with
             ) as material_qtd_distintos_com_estoque_positivo,
             count(
                 distinct case
-                    when material_cadastro_esta_correto = 'nao' then id_material
+                    when material_cadastro_esta_correto = 'nao' then material_descricao
                 end
             ) as material_qtd_distintos_cadastro_incorreto,
             count(
