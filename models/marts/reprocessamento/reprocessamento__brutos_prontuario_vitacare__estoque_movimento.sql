@@ -46,7 +46,7 @@ select
     rel.data,
     "pending" as reprocessing_status,
     "" as request_response_code,
-    "" as request_row_count
+    safe_cast("" as int64) as request_row_count
 from relacao_unidades_datas as rel
 left join
     relacao_unidades_datas_com_dados as rel_dados
