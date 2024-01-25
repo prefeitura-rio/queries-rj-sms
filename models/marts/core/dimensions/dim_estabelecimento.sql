@@ -7,16 +7,27 @@
 
 
 with
-    versao_atual as (select max(mes_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}),
+    versao_atual as (
+        select max(mes_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}
+    ),
 
     estabelecimento as (
         select *
         from {{ ref("raw_cnes_web__estabelecimento") }}
-        where mes_particao = (select versao from versao_atual)),
+        where mes_particao = (select versao from versao_atual)
+    ),
 
-    unidade as (select * from {{ ref("raw_cnes_web__tipo_unidade") }} where mes_particao = (select versao from versao_atual)),
+    unidade as (
+        select *
+        from {{ ref("raw_cnes_web__tipo_unidade") }}
+        where mes_particao = (select versao from versao_atual)
+    ),
 
-    turno as (select * from {{ ref("raw_cnes_web__turno_atendimento") }} where mes_particao = (select versao from versao_atual)),
+    turno as (
+        select *
+        from {{ ref("raw_cnes_web__turno_atendimento") }}
+        where mes_particao = (select versao from versao_atual)
+    ),
 
     estab_sms as (
         select *
@@ -50,7 +61,6 @@ with
         left join estab_aux using (id_cnes)
     )
 
-
 select
     -- Primary key
     est.id_unidade,
@@ -62,8 +72,8 @@ select
     est.cnpj_mantenedora,
 
     -- Common fields
-    IF (est.id_motivo_desativacao is null, "sim", "não") as ativa,
-    unidade.descricao as tipo ,  # TODO: renomear para tipo_cnes
+    if(est.id_motivo_desativacao = "", "sim", "não") as ativa,
+    unidade.descricao as tipo,  # TODO: renomear para tipo_cnes
     est.tipo_sms,
     est.tipo_sms_simplificado,
     est.nome_limpo,
@@ -101,4 +111,9 @@ from estab_final as est
 left join turno using (id_turno_atendimento)
 left join unidade using (id_tipo_unidade)
 
-order by ativa desc, est.id_tipo_unidade asc, area_programatica asc, est.endereco_bairro asc, est.nome_fantasia asc
+order by
+    ativa desc,
+    est.id_tipo_unidade asc,
+    area_programatica asc,
+    est.endereco_bairro asc,
+    est.nome_fantasia asc
