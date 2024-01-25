@@ -88,6 +88,8 @@ models:
             +schema: saude_estoque
         estoque:
             +schema: projeto_estoque
+        reprocessamento:
+            +schema: controle_reprocessamento
         treinamento:
             +schema: projeto_treinamento
 tests:
