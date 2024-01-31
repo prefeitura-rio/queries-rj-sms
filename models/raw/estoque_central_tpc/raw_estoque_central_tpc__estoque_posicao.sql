@@ -13,7 +13,6 @@
 
 select
     -- Primary Key
-
     -- Foreign Keys
     safe_cast(id_lote as string) as id_lote,
     safe_cast(
@@ -21,14 +20,16 @@ select
     ) as id_material,
 
     -- Logical Info
-    safe_cast(local_nome as string) as estoque_secao,
     safe_cast(item_nome_longo as string) as material_descricao,
+    safe_cast(local_nome as string) as estoque_secao,
     safe_cast(unidade as string) as material_unidade,
     safe_cast(safe_cast(validade as datetime) as date) as lote_data_vencimento,
-    safe_cast(qtd_dispo as float64) as material_quantidade,
+    safe_cast(qtd_dispo as float64)
+    * safe_cast(qtd_unidade as float64) as material_quantidade,
     safe_cast(preco_unitario as float64) as material_valor_unitario,
     safe_cast(preco_unitario as float64)
     * safe_cast(qtd_dispo as float64) as material_valor_total,
+    if(local_classe = "DS", "sim", "não") as material_reservado_para_abastecimento, -- DS = doca de saída
 
     -- metadata
     safe_cast(data_particao as date) as data_particao,
