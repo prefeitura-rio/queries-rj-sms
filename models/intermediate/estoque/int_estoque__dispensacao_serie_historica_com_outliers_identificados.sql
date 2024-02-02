@@ -23,7 +23,9 @@ with
         from historico
         where quantidade_dispensada is not null  -- retiramos as datas nas quais não houveram dispensações e não é verificavel se havia estoque positivo
     ),
+
     historico_ultimos_30 as (select * from historico_valido where row_num <= 30),  -- o CMM é calculado a partir das 30 últimas observações
+    
     outlier as (
         select
             *,
