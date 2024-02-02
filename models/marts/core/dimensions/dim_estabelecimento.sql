@@ -8,25 +8,25 @@
 
 with
     versao_atual as (
-        select max(mes_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}
+        select max(data_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}
     ),
 
     estabelecimento as (
         select *
         from {{ ref("raw_cnes_web__estabelecimento") }}
-        where mes_particao = (select versao from versao_atual)
+        where data_particao = (select versao from versao_atual)
     ),
 
     unidade as (
         select *
         from {{ ref("raw_cnes_web__tipo_unidade") }}
-        where mes_particao = (select versao from versao_atual)
+        where data_particao = (select versao from versao_atual)
     ),
 
     turno as (
         select *
         from {{ ref("raw_cnes_web__turno_atendimento") }}
-        where mes_particao = (select versao from versao_atual)
+        where data_particao = (select versao from versao_atual)
     ),
 
     estab_sms as (
@@ -104,6 +104,8 @@ select
     data_atualizao_registro,
     usuario_atualizador_registro,
     est.mes_particao,
+    est.ano_particao,
+    est.data_particao,
     est.data_carga,
     est.data_snapshot,
 

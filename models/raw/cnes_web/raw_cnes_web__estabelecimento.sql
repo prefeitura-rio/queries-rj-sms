@@ -72,6 +72,13 @@ select
     ) as data_atualizacao_geolocalizacao,
     safe_cast(no_usuario_geo as string) as usuario_atualizador_geolocalizacao,
     safe_cast(mes_particao as string) as mes_particao,
+    safe_cast(ano_particao as string) as ano_particao,
+    concat(
+        safe_cast(ano_particao as string),
+        '-',
+        safe_cast(mes_particao as string),
+        '-01'
+    ) as data_particao,
     safe_cast(_data_carga as datetime) as data_carga,
     safe_cast(_data_snapshot as datetime) as data_snapshot
 from source
