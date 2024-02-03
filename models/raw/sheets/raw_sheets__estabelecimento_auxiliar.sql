@@ -16,6 +16,7 @@ select
     format("%07d", cast(id_cnes as int64)) as id_cnes,  -- fix cases where 0 on the left is lost
 
     -- Common fields
+    if(agrupador_sms = "nan", null, agrupador_sms) as agrupador_sms,
     if(tipo_sms = "nan", null, tipo_sms) as tipo_sms,
     if(tipo_sms_simplificado = "nan", null, tipo_sms_simplificado) as tipo_sms_simplificado,
     safe_cast(nome_fantasia as string) as nome_fantasia,

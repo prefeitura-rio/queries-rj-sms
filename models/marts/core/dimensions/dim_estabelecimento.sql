@@ -44,6 +44,7 @@ with
     estab_final as (
         select
             estab_sms.*,
+            estab_aux.agrupador_sms,
             estab_aux.tipo_sms,
             estab_aux.tipo_sms_simplificado,
             estab_aux.nome_limpo,
@@ -73,6 +74,7 @@ select
 
     -- Common fields
     if(est.id_motivo_desativacao = "", "sim", "não") as ativa,
+    est.agrupador_sms,
     unidade.descricao as tipo,  # TODO: renomear para tipo_cnes
     est.tipo_sms,
     est.tipo_sms_simplificado,
