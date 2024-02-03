@@ -8,25 +8,25 @@
 
 with
     versao_atual as (
-        select max(mes_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}
+        select max(data_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}
     ),
 
     estabelecimento as (
         select *
         from {{ ref("raw_cnes_web__estabelecimento") }}
-        where mes_particao = (select versao from versao_atual)
+        where data_particao = (select versao from versao_atual)
     ),
 
     unidade as (
         select *
         from {{ ref("raw_cnes_web__tipo_unidade") }}
-        where mes_particao = (select versao from versao_atual)
+        where data_particao = (select versao from versao_atual)
     ),
 
     turno as (
         select *
         from {{ ref("raw_cnes_web__turno_atendimento") }}
-        where mes_particao = (select versao from versao_atual)
+        where data_particao = (select versao from versao_atual)
     ),
 
     estab_sms as (
@@ -44,6 +44,7 @@ with
     estab_final as (
         select
             estab_sms.*,
+            estab_aux.agrupador_sms,
             estab_aux.tipo_sms,
             estab_aux.tipo_sms_simplificado,
             estab_aux.nome_limpo,
@@ -73,6 +74,7 @@ select
 
     -- Common fields
     if(est.id_motivo_desativacao = "", "sim", "não") as ativa,
+    est.agrupador_sms,
     unidade.descricao as tipo,  # TODO: renomear para tipo_cnes
     est.tipo_sms,
     est.tipo_sms_simplificado,
@@ -104,6 +106,8 @@ select
     data_atualizao_registro,
     usuario_atualizador_registro,
     est.mes_particao,
+    est.ano_particao,
+    est.data_particao,
     est.data_carga,
     est.data_snapshot,
 

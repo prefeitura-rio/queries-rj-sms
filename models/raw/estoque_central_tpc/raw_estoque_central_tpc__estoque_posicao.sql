@@ -20,8 +20,9 @@ select
     ) as id_material,
 
     -- Logical Info
-    safe_cast(item_nome_longo as string) as material_descricao,
+    if(local_classe = "DS", "sim", "nao") as estoque_reservado_para_abastecimento, -- DS = doca de saída
     safe_cast(local_nome as string) as estoque_secao,
+    safe_cast(item_nome_longo as string) as material_descricao,
     safe_cast(unidade as string) as material_unidade,
     safe_cast(safe_cast(validade as datetime) as date) as lote_data_vencimento,
     safe_cast(qtd_dispo as float64)
@@ -29,7 +30,6 @@ select
     safe_cast(preco_unitario as float64) as material_valor_unitario,
     safe_cast(preco_unitario as float64)
     * safe_cast(qtd_dispo as float64) as material_valor_total,
-    if(local_classe = "DS", "sim", "não") as material_reservado_para_abastecimento, -- DS = doca de saída
 
     -- metadata
     safe_cast(data_particao as date) as data_particao,

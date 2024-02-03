@@ -34,6 +34,7 @@ with
         select
             "" as id_lote,
             pz.id_material,
+            "nao" as estoque_reservado_para_abastecimento,
             "" as estoque_secao,
             mat.nome as material_descricao,
             mat.unidade as material_unidade,

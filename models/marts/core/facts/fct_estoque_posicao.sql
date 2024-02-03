@@ -67,6 +67,7 @@ with
             estoque.id_cnes,
             estoque.id_lote,
             estoque.id_material,
+            "nao" as estoque_reservado_para_abastecimento,
             "" as estoque_secao,
             estoque.material_descricao,
             "" as material_unidade,  -- payload da viticare não possui esta informação
@@ -98,7 +99,20 @@ with
 
     posicao_vitai as (
         select
-            estoque.*,
+            estoque.id_cnes,
+            estoque.id_lote,
+            estoque.id_material,
+            "nao" as estoque_reservado_para_abastecimento,
+            estoque.estoque_secao,
+            estoque.material_descricao,
+            estoque.material_unidade,
+            estoque.lote_data_vencimento,
+            estoque.material_quantidade,
+            estoque.material_valor_unitario,
+            estoque.material_valor_total,
+            estoque.data_particao,
+            estoque.data_snapshot,
+            estoque.data_carga,
             "vitai" as sistema_origem,
             estabelecimento.tipo as estabelecimento_tipo,
             estabelecimento.tipo_sms as estabelecimento_tipo_sms,
@@ -158,6 +172,7 @@ select
 
     -- Common Fields
     material_remume,
+    estoque_reservado_para_abastecimento,
     estoque_secao,
     material_descricao,
     material_unidade,

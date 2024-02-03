@@ -16,6 +16,12 @@ select
 
     -- Metadata
     safe_cast(mes_particao as string) as mes_particao,
+    safe_cast(ano_particao as string) as ano_particao,
+    concat(
+        safe_cast(ano_particao as string),
+        '-',
+        safe_cast(mes_particao as string),
+        '-01') as data_particao,
     safe_cast(_data_carga as string) as data_carga,
     safe_cast(_data_snapshot as string) as data_snapshot
 from source
