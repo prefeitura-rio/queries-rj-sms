@@ -1,6 +1,11 @@
-{% test assert_chegando_todas_unidades_de_saude(
+{%  test assert_chegando_todas_unidades_de_saude(
     model, column_name, prontuario, filter
-) %}
+    
+) 
+
+%}
+
+
         with
             unidades_saude_presentes as (
                 select distinct {{ column_name }} from {{ model }}
@@ -20,6 +25,8 @@
                     on presentes.{{ column_name }} = relacao_completa.id_cnes
                 where presentes.{{ column_name }} is null
             )
+            
         select *
         from unidade_saude_faltantes
+            
 {% endtest %}
