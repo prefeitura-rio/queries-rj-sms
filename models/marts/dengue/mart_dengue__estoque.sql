@@ -27,7 +27,7 @@ with
 
                 "65150309877",  -- AGULHA HIPODERMICA DESCARTAVEL 25X0.8
                 "65150309109",  -- AGULHA HIPODERMICA DE SEGURANCA 25X8 (21G 1")
-                --- "65150307823",  -- AGULHA HIPODERMICA DESCARTAVEL  25X8
+                -- - "65150307823",  -- AGULHA HIPODERMICA DESCARTAVEL  25X8
                 "65150303089",  -- AGULHA HIPODERMICA DESCARTAVEL CANULA ACO INOXIDAVEL, BISEL TRIFACETADO, 25X8
 
                 "66401401130",  -- CAIXA, DESCARTE MATERIAL PERFUROCORTANTE, TAMANHO GRANDE
@@ -37,6 +37,12 @@ with
 
                 "65054207236",  -- GLICOSE 5%, SISTEMA FECHADO, 500ML
                 "65054201114",  -- GLICOSE 5% SOLUCAO INJETAVEL ISOTONICA FRASCO 500ML
+
+                "65320000120",  -- LUVA CIRURGICA N.6,5
+                "65320000200",  -- LUVA CIRURGICA No 7,0
+                "65320000391",  -- LUVA CIRURGICA No 7,5
+                "65320000472",  -- LUVA CIRURGICA No 8,0
+                "65320000553",  -- LUVA CIRURGICA No 8,5
 
                 "65054207660",  -- RINGER + LACTATO SODICO SISTEMA FECHADO, 500ML
                 "65054201548",  -- RINGER + LACTATO SODICO SOLUCAO INJETAVEL FRASCO 500ML
@@ -56,11 +62,11 @@ with
                 "66403110583",  -- TUBO, PLASTICO COM EDTA E GEL  SEPARADOR, PARA COLETA DE SANGUE A VACUO
                 "65050024170"  -- TUBO COLETA SANGUE COM EDTA
 
-                -- FALTAM Adaptador vacuo; Luva; Caixa descartável
+            -- FALTAM Adaptador vacuo; Luva; Caixa descartável
             )
     ),
 
-    estoque_consolidado as (
+    estoque_agrupado as (
         select
             id_cnes,
             id_material,
@@ -73,6 +79,18 @@ with
             sum(material_quantidade) as material_quantidade,
         from estoque
         group by 1, 2, 3, 4, 5, 6, 7, 8
+    ),
+
+    estoque_aps_almoxarifado as (
+        select * from {{ ref("int_dengue__estoque_posicao_almoxarifado_padronizado") }}
+    ),
+
+    estoque_consolidado as (
+        select *
+        from estoque_agrupado
+        union all
+        select *
+        from estoque_aps_almoxarifado
     ),
 
     consumo_30_dias as (

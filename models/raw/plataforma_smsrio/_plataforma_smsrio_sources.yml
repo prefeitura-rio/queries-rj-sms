@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_plataforma_smsrio_staging
+    database: rj-sms
+    schema: brutos_plataforma_smsrio_staging
+    tables:
+      - name: estoque_posicao_almoxarifado_aps_dengue
+      - name: materiais_almoxarifado_dengue

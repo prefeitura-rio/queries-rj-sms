@@ -71,6 +71,8 @@ models:
         +schema: brutos_cnes_ftp
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
+      plataforma_smsrio:
+        +schema: brutos_plataforma_smsrio
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
       prontuario_vitai:
@@ -86,6 +88,8 @@ models:
             +schema: saude_dados_mestres
           facts:
             +schema: saude_estoque
+        dengue:
+            +schema: projeto_dengue
         estoque:
             +schema: projeto_estoque
         treinamento:
