@@ -99,7 +99,7 @@ models:
           - not_null:
               name: raw_prontuario_vitai__estoque_movimento__id_material__not_null
               config:
-                where: "estoque_movimento_data > '2023-01-01'"
+                where: "estoque_movimento_data > '2023-01-01 '"
       - name: material_descricao
         description: Descrição do materil (medicamento/insumo)
         policy_tags:
