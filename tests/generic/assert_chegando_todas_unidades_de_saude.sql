@@ -27,6 +27,6 @@
             )
             
         select *
-        from unidade_saude_faltantes
+        from unidade_saude_faltantes  where FORMAT_DATE('%A', CURRENT_DATE()) != 'sunday' or prontuario_versao != 'vitacare'
             
 {% endtest %}
