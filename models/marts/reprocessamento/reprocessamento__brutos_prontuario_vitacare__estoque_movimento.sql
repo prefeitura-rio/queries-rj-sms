@@ -56,4 +56,4 @@ left join
 where
     rel_dados.id_cnes is null
     {% if is_incremental() %} and data > (select max(data) from {{ this }}) {% endif %}
-order by rel.area_programatica, rel.id_cnes, rel.data
+order by  rel.data desc, rel.area_programatica, rel.id_cnes
