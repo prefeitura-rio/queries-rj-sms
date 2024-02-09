@@ -3,7 +3,7 @@
 {{
     config(
         alias="brutos_prontuario_vitacare__estoque_movimento",
-        materialized="incremental",
+        materialized="table",
     )
 }}
 
