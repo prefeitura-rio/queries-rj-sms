@@ -21,5 +21,5 @@
                 where presentes.{{ column_name }} is null
             )
         select *
-        from unidade_saude_faltantes
+        from unidade_saude_faltantes where FORMAT_DATE('%A', CURRENT_DATE()) != 'sunday' or prontuario_versao != 'vitacare' -- filtro aplicado para evitar a execução nas unidades de atenção primaria que não funcionam aos domingos
 {% endtest %}
