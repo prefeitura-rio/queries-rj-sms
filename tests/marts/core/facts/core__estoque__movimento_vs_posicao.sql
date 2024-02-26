@@ -66,10 +66,11 @@ with
                 - mov.material_quantidade_delta
             ) as delta_diferenca_absoluta,
             abs(
-                pos.material_quantidade_atual
+                {{ dbt_utils.safe_divide("pos.material_quantidade_atual
                 - pos.material_quantidade_anterior
-                - mov.material_quantidade_delta
-            )/pos.material_quantidade_atual as delta_diferenca_percentual,
+                - mov.material_quantidade_delta", "pos.material_quantidade_atual") }}
+                
+            ) as delta_diferenca_percentual,
         from posicao_final as pos
         left join
             movimento as mov
