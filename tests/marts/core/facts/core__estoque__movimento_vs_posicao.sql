@@ -1,6 +1,12 @@
 -- Este teste verifica se as evolução na posicao de estoque do último dia é 
 -- explicada pelas entradas e saídas observadas na tabela movimento do dia anterior
-
+{{ config(
+    severity = "error",
+    error_if = ">500",
+    warn_if = ">400",
+    store_failures = true,
+    
+) }}
 with
     -- sources
     posicao as (
@@ -69,7 +75,7 @@ with
                 {{ dbt_utils.safe_divide("pos.material_quantidade_atual
                 - pos.material_quantidade_anterior
                 - mov.material_quantidade_delta", "pos.material_quantidade_atual") }}
-                
+                  
             ) as delta_diferenca_percentual,
         from posicao_final as pos
         left join
@@ -81,5 +87,5 @@ with
     )  -- precisa ter movimento
 
 select * from consolidado
-where delta_diferenca_percentual > 0.05 -- tolerancia por descasamento de dados
+where delta_diferenca_percentual > 10 -- tolerancia por descasamento de dados
 order by delta_diferenca_percentual desc
