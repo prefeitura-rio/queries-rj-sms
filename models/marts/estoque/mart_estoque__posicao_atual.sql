@@ -120,6 +120,8 @@ with
                 then 'UPA'
                 else tipo_sms
             end as tipo_sms_agrupado,
+            mat.natureza as material_natureza,
+            INITCAP(mat.hierarquia_n3_subclasse) as material_hierarquia_subclasse,
         from posicao_atual as pos  -- posicao_atual
         left join curva_abc as abc using (id_curva_abc)
         left join historico_dispensacao as disp using (id_curva_abc)
@@ -148,6 +150,8 @@ select
     estabelecimento_administracao,
     estabelecimento_responsavel_sms,
     abc_categoria,
+    material_natureza,
+    material_hierarquia_subclasse,
     material_remume,
     material_descricao2 as material_descricao,
     material_unidade,
@@ -173,5 +177,6 @@ select
     sistema_origem,
     data_particao,
     date_diff(current_date(), data_particao, day) as dias_desde_ultima_atualizacao,
-    data_carga
+    data_carga,
+
 from posicao_final

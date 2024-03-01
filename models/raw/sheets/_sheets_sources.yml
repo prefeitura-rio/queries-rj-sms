@@ -7,3 +7,8 @@ sources:
     tables:
       - name: estabelecimento_auxiliar
       - name: material_remume
+  - name: brutos_sheets
+    database: rj-sms
+    schema: brutos_sheets
+    tables:
+      - name: projeto_estoque_acessos

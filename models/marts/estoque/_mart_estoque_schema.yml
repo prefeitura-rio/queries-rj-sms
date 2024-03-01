@@ -11,78 +11,254 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
+        data_type: STRING
       - name: id_curva_abc
         description: Identificador usado para agrupar os medicamentos/insumos em classes
           de consumo
+        data_type: STRING
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: STRING
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
+        data_type: STRING
+      - name: estabelecimento_agrupador_sms
+        description: Agrupador de tipos de unidades de saúde baseada na classificação
+          alternativa da SMS.
+        data_type: STRING
       - name: estabelecimento_tipo
         description: Tipo de Unidade de Saúde segundo a classificação do CNES
+        data_type: STRING
       - name: estabelecimento_tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades.
+        data_type: STRING
+      - name: estabelecimento_tipo_sms_agrupado
+        description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES
+        data_type: STRING
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
+        data_type: STRING
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: STRING
       - name: estabelecimento_nome_sigla
         description: Abreviação do nome fantasia
+        data_type: STRING
       - name: estabelecimento_administracao
         description: Nome do OSS responsável pela administração. Em caso onde não há
           OSS, é indicado como direta (administração direta pela SMS-Rio)
+        data_type: STRING
       - name: estabelecimento_responsavel_sms
         description: Sub secretaria dentro da SMS-Rio responsável pela unidade
+        data_type: STRING
       - name: abc_categoria
         description: Classificação do medicamento/insumo pela curva ABC
+        data_type: STRING
+      - name: material_natureza
+        description: "Indicada a natureza do material: insumo para os itens de
+          almoxarifado, medicamento para os itens de farmácia"
+        data_type: STRING
+      - name: material_hierarquia_subclasse
+        description: Agrupador de materiais (3o nível) baseado no cadastro de materiais
+          do Sigma
+        data_type: STRING
       - name: material_remume
-        description: Indicação se o material faz parte da REMUME-RIO (Relação
-          municipal de medicamentos essenciais)
+        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
+          de medicamentos essenciais)
+        data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: STRING
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
+        data_type: STRING
       - name: material_cadastro_esta_correto
         description: Indica se o cadastro do medicamento/insumo está utilizando a
           codificação Sigma
+        data_type: STRING
       - name: estoque_secao
         description: Sub-estoque onde o medicamento/insumo está armazenado
+        data_type: STRING
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
+        data_type: STRING
       - name: lote_data_vencimento
         description: Data de vencimento do lote
+        data_type: DATE
       - name: lote_status
         description: Indica se o lote está vencido ou não
+        data_type: STRING
       - name: lote_dias_para_vencer
-        description: Indica quantos dias faltam para o lote vender
+        description: Indica quantos dias faltam para o lote vencer
+        data_type: INT64
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
+        data_type: FLOAT64
       - name: material_valor_unitario
         description: Valor em reais de uma unidade do medicamento/insumo
+        data_type: FLOAT64
       - name: material_valor_total
         description: Valor em reais somando todas as unidades disponíveis do
           medicamento/insumo
+        data_type: FLOAT64
       - name: material_consumo_medio
         description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        data_type: FLOAT64
       - name: estoque_cobertura_dias
         description: Quantos dias de estoque a quantidade disponível do
           medicamento/insumo representa
+        data_type: FLOAT64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
+        data_type: STRING
       - name: cmm_justificativa_ausencia
         description: Explica o motivo do item não ter o consumo médio diáro calculado
+        data_type: STRING
       - name: sistema_origem
         description: Sistema de origem do registro
+        data_type: STRING
       - name: data_particao
         description: Data de referencia da posição do estoque
+        data_type: DATE
       - name: dias_desde_ultima_atualizacao
         description: Indica quantos dias se passaram desde a última atualização do registro
+        data_type: INT64
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
+        data_type: DATETIME
+  - name: mart_estoque__posicao_atual_looker_row_level_access
+    description: Tabela baseada na tabela estoque_posicao_atual, adicionado o email
+      dos usuários que podem ler cada registro. Atenção, registros de posição
+      duplicados por conta dos acessos
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: STRING
+      - name: id_curva_abc
+        description: Identificador usado para agrupar os medicamentos/insumos em classes
+          de consumo
+        data_type: STRING
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
+        data_type: STRING
+      - name: id_cnes_material
+        description: Identificador do medicamento/insumo na unidade de saúde
+        data_type: STRING
+      - name: estabelecimento_agrupador_sms
+        description: Agrupador de tipos de unidades de saúde baseada na classificação
+          alternativa da SMS.
+        data_type: STRING
+      - name: estabelecimento_tipo
+        description: Tipo de Unidade de Saúde segundo a classificação do CNES
+        data_type: STRING
+      - name: estabelecimento_tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
+        data_type: STRING
+      - name: estabelecimento_tipo_sms_agrupado
+        description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES
+        data_type: STRING
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: STRING
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: STRING
+      - name: estabelecimento_nome_sigla
+        description: Abreviação do nome fantasia
+        data_type: STRING
+      - name: estabelecimento_administracao
+        description: Nome do OSS responsável pela administração. Em caso onde não há
+          OSS, é indicado como direta (administração direta pela SMS-Rio)
+        data_type: STRING
+      - name: estabelecimento_responsavel_sms
+        description: Sub secretaria dentro da SMS-Rio responsável pela unidade
+        data_type: STRING
+      - name: abc_categoria
+        description: Classificação do medicamento/insumo pela curva ABC
+        data_type: STRING
+      - name: material_natureza
+        description: "Indicada a natureza do material: insumo para os itens de
+          almoxarifado, medicamento para os itens de farmácia"
+        data_type: STRING
+      - name: material_hierarquia_subclasse
+        description: Agrupador de materiais (3o nível) baseado no cadastro de materiais
+          do Sigma
+        data_type: STRING
+      - name: material_remume
+        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
+          de medicamentos essenciais)
+        data_type: STRING
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
+        data_type: STRING
+      - name: material_unidade
+        description: Unidade de estocagem do medicamento/insumo
+        data_type: STRING
+      - name: material_cadastro_esta_correto
+        description: Indica se o cadastro do medicamento/insumo está utilizando a
+          codificação Sigma
+        data_type: STRING
+      - name: estoque_secao
+        description: Sub-estoque onde o medicamento/insumo está armazenado
+        data_type: STRING
+      - name: id_lote
+        description: Identificador do lote do medicamento/insumo
+        data_type: STRING
+      - name: lote_data_vencimento
+        description: Data de vencimento do lote
+        data_type: DATE
+      - name: lote_status
+        description: Indica se o lote está vencido ou não
+        data_type: STRING
+      - name: lote_dias_para_vencer
+        description: Indica quantos dias faltam para o lote vencer
+        data_type: INT64
+      - name: material_quantidade
+        description: Quantidade disponível do medicamento/insumo
+        data_type: FLOAT64
+      - name: material_valor_unitario
+        description: Valor em reais de uma unidade do medicamento/insumo
+        data_type: FLOAT64
+      - name: material_valor_total
+        description: Valor em reais somando todas as unidades disponíveis do
+          medicamento/insumo
+        data_type: FLOAT64
+      - name: material_consumo_medio
+        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        data_type: FLOAT64
+      - name: estoque_cobertura_dias
+        description: Quantos dias de estoque a quantidade disponível do
+          medicamento/insumo representa
+        data_type: FLOAT64
+      - name: abc_justificativa_ausencia
+        description: Explica o motivo do item não ter a curva ABC calculada
+        data_type: STRING
+      - name: cmm_justificativa_ausencia
+        description: Explica o motivo do item não ter o consumo médio diáro calculado
+        data_type: STRING
+      - name: sistema_origem
+        description: Sistema de origem do registro
+        data_type: STRING
+      - name: data_particao
+        description: Data de referencia da posição do estoque
+        data_type: DATE
+      - name: dias_desde_ultima_atualizacao
+        description: Indica quantos dias se passaram desde a última atualização do registro
+        data_type: INT64
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
+        data_type: DATETIME
+      - name: email
+        description: Email do usuário do Looker que tem permissão de ver o registro
+        data_type: STRING
   - name: mart_estoque__movimento
     description: Tabela contenndo os movimentos de estoque de medicamentos e insumos
       das unidades de saúde. Para entação basica (vitacare), os dados são
@@ -195,3 +371,218 @@ models:
       - name: status_replicacao_dados
         description: Indica se os dados de posição de estoque estão atualizados ou
           desatualizados.
+  - name: mart_estoque__monitoramento_historico
+    description: Tabela contendo snapshots diários da tabela estoque_monitoramento
+    columns: []
+  - name: mart_estoque__posicao_atual_agregado
+    description: Tabela agregada no nível id_cnes, id_material a partir da tabela
+      estoque_posicao_atual.
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: STRING
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: STRING
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: STRING
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: STRING
+      - name: estabelecimento_agrupador_sms
+        description: Agrupador padrão dos tipo de UBS utilizado na SMS
+        data_type: STRING
+      - name: material_natureza
+        description: Indica ser o material é um item de almoxarifado ou farmácia
+        data_type: STRING
+      - name: material_hierarquia_subclasse
+        description: ""
+        data_type: STRING
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: STRING
+      - name: material_remume
+        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
+          de medicamentos essenciais)
+        data_type: STRING
+      - name: material_quantidade
+        description: Quantidade disponível do medicamento/insumo
+        data_type: FLOAT64
+      - name: material_consumo_medio
+        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        data_type: FLOAT64
+      - name: estoque_cobertura_dias
+        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
+          médio diário dos últimos 90 dias
+        data_type: FLOAT64
+  - name: mart_estoque__posicao_atual_agregado_looker_row_level_access
+    description: Tabela baseada na tabela estoque_posicao_atual_agregado, adicionado
+      o email dos usuários que podem ler cada registro. Atenção, registros de
+      posição duplicados por conta dos acessos
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: STRING
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: STRING
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: STRING
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: STRING
+      - name: estabelecimento_agrupador_sms
+        description: Agrupador padrão dos tipo de UBS utilizado na SMS
+        data_type: STRING
+      - name: material_natureza
+        description: Indica ser o material é um item de almoxarifado ou farmácia
+        data_type: STRING
+      - name: material_hierarquia_subclasse
+        description: ""
+        data_type: STRING
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: STRING
+      - name: material_remume
+        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
+          de medicamentos essenciais)
+        data_type: STRING
+      - name: material_quantidade
+        description: Quantidade disponível do medicamento/insumo
+        data_type: FLOAT64
+      - name: material_consumo_medio
+        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        data_type: FLOAT64
+      - name: estoque_cobertura_dias
+        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
+          médio diário dos últimos 90 dias
+        data_type: FLOAT64
+      - name: email
+        description: Email do usuário do Looker que tem permissão de ver o registro
+        data_type: STRING
+  - name: mart_estoque__consumo_serie_historica
+    description: Tabela contendo a série histórica dos últimos 90 dia de consumo e
+      posição aberta no nível cnes e item.
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: STRING
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: STRING
+      - name: data
+        description: Data do evento
+        data_type: DATE
+      - name: dia_semana
+        description: Dia da semana, sendo domingo = 1
+        data_type: INT64
+      - name: quantidade_estocada
+        description: Quantidade disponível em estoque no início do dia
+        data_type: FLOAT64
+      - name: quantidade_dispensada
+        description: Quantidade consumida (dispensada) no dia
+        data_type: FLOAT64
+      - name: row_num
+        description: Indexador do registro no nível id_cnes, id_material. Sendo row = 1
+          o registro mais recente
+        data_type: INT64
+      - name: q1
+        description: 1o quartil da série id_cnes, id_material
+        data_type: FLOAT64
+      - name: q3
+        description: 3o quartil da série id_cnes, id_material
+        data_type: FLOAT64
+      - name: iqr
+        description: Intervalor interquartilico da série id_cnes, id_material
+        data_type: FLOAT64
+      - name: outlier
+        description: Indica se a observação é um
+          outlier baseado no método de 1.5 vezes o intervalo interquartilico
+        data_type: STRING
+      - name: quantidade_dispensada_sem_outlier
+        description: Quantidade consumida (dispensada) no dia, exceto outliers
+        data_type: FLOAT64
+      - name: quantidade_dispensada_somente_outlier
+        description: Quantidade consumida (dispensada) no dia, exclusivamente outliers
+        data_type: FLOAT64
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: STRING
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: STRING
+      - name: estaabelecimento_nome_sigla
+        description: Abreviação do nome fantasia
+        data_type: STRING
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: STRING
+      - name: material_id_descricao
+        description: Concatenação do id do material e seu nome
+        data_type: STRING
+  - name: mart_estoque__consumo_serie_historica_looker_row_level_access
+    description: Tabela baseada na tabela estoque_consumo_serie_historica, adicionado
+      o email dos usuários que podem ler cada registro. Atenção, registros de
+      posição duplicados por conta dos acessos
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: STRING
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: STRING
+      - name: data
+        description: Data do evento
+        data_type: DATE
+      - name: dia_semana
+        description: Dia da semana, sendo domingo = 1
+        data_type: INT64
+      - name: quantidade_estocada
+        description: Quantidade disponível em estoque no início do dia
+        data_type: FLOAT64
+      - name: quantidade_dispensada
+        description: Quantidade consumida (dispensada) no dia
+        data_type: FLOAT64
+      - name: row_num
+        description: Indexador do registro no nível id_cnes, id_material. Sendo row = 1
+          o registro mais recente
+        data_type: INT64
+      - name: q1
+        description: 1o quartil da série id_cnes, id_material
+        data_type: FLOAT64
+      - name: q3
+        description: 3o quartil da série id_cnes, id_material
+        data_type: FLOAT64
+      - name: iqr
+        description: Intervalor interquartilico da série id_cnes, id_material
+        data_type: FLOAT64
+      - name: outlier
+        description: Indica se a observação é um
+          outlier baseado no método de 1.5 vezes o intervalo interquartilico
+        data_type: STRING
+      - name: quantidade_dispensada_sem_outlier
+        description: Quantidade consumida (dispensada) no dia, exceto outliers
+        data_type: FLOAT64
+      - name: quantidade_dispensada_somente_outlier
+        description: Quantidade consumida (dispensada) no dia, exclusivamente outliers
+        data_type: FLOAT64
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: STRING
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: STRING
+      - name: estaabelecimento_nome_sigla
+        description: Abreviação do nome fantasia
+        data_type: STRING
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: STRING
+      - name: material_id_descricao
+        description: Concatenação do id do material e seu nome
+        data_type: STRING
+      - name: email
+        description: Email do usuário do Looker que tem permissão de ver o registro
+        data_type: STRING
