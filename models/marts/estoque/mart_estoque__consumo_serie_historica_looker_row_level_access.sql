@@ -1,6 +1,6 @@
 {{
     config(
-        alias="estoque_posicao_consumo_serie_historica_nivel_registro_para_looker",
+        alias="estoque_consumo_serie_historica_nivel_registro_para_looker",
         schema="projeto_estoque",
         materialized="table",
     )
