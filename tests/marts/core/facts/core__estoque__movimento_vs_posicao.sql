@@ -87,5 +87,5 @@ with
     )  -- precisa ter movimento
 
 select * from consolidado
-where delta_diferenca_percentual > 10 -- tolerancia por descasamento de dados
+where delta_diferenca_percentual > 0.10 -- tolerancia por descasamento de dados
 order by delta_diferenca_percentual desc

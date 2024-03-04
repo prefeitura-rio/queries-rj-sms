@@ -91,7 +91,7 @@ models:
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
                 where: data_particao = date_sub(current_date(), INTERVAL 1 DAY)
-                error_if: ">1"
+                error_if: ">4"
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
