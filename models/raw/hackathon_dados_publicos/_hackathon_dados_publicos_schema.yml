@@ -1,0 +1,87 @@
+version: 2
+models:
+  - name: hackathon_dados_publicos__estabelecimentos
+    description: Tabela contendo a relação de estabelecimentos de saúde. Informações
+      baseadas no CNES e outras compiladas dentro da SMS.
+    columns:
+      - name: id_unidade
+        description: Código do Estabelecimento de Saúde utlizado no CNES
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: id_tipo_unidade
+        description: Tipo de Estabelecimento
+      - name: area_programatica
+        description: Área programática onde está localizada a unidades de saúde
+      - name: ativa
+        description: Indica se a unidade está ativa ou não
+      - name: tipo
+        description: Tipo de Unidade de Saúde segundo a classificação do CNES
+      - name: tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
+      - name: tipo_sms_simplificado
+        description: Classificação alternativa ao CNES de tipos de unidades abreviada
+      - name: nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+      - name: nome_sigla
+        description: Abreviação do nome fantasia
+      - name: nome_fantasia
+        description: Nome fantasia
+      - name: responsavel_sms
+        description: Sub secretaria dentro da SMS-Rio responsável pela unidade
+      - name: administracao
+        description: Nome do OSS responsável pela administração. Em caso onde não há
+          OSS, é indicado como direta (administração direta pela SMS-Rio)
+      - name: prontuario_tem
+        description: Indica sem a unidade utiliza algum tipo de prontuário, independente
+          se é físico ou eletrônico
+      - name: prontuario_versao
+        description: Indica qual sistema de prontuário é utilizado. Em caso de
+          prontuário físico, é indicado como papel.
+      - name: prontuario_estoque_tem_dado
+        description: Indica se a unidade utiliza o prontuário para controle de estoque
+      - name: prontuario_estoque_motivo_sem_dado
+        description: Indica o motivo da unidade não utilizar o prontuário para controle
+          de estoque
+      - name: endereco_bairro
+        description: Bairro
+      - name: endereco_logradouro
+        description: Logradouro
+      - name: endereco_numero
+        description: Número
+      - name: endereco_complemento
+        description: Complemento
+      - name: endereco_cep
+        description: Código de endereçamento postal (CEP)
+      - name: endereco_latitude
+        description: Latitude
+      - name: endereco_longitude
+        description: Longitude
+      - name: telefone
+        description: Telefone para contato
+      - name: fax
+        description: Fax para contato
+      - name: email
+        description: Email para contato
+      - name: aberto_sempre
+        description: "Funcionamento do estabelecimento. Indica se fica sempre aberto /
+          Ininterrupto: S - SIM N - NÃO"
+      - name: turno_atendimento
+        description: Descrição do Turno de Atendimento
+      - name: diretor_clinico_cpf
+        description: CPF do Diretor Clínico ou  Gerente / Administrador
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: diretor_clinico_conselho
+        description: Registro no Conselho de Classe do Diretor Clinico
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
+      - name: data_atualizao_registro
+        description: Data da última atualização do registro
+      - name: usuario_atualizador_registro
+        description: Último usuário que atualizou o registro no CNES
+      - name: mes_particao
+        description: Mês de referência do registro
+      - name: data_carga
+        description: Data de carga do registro
+      - name: data_snapshot
+        description: Data de snapshot do registro

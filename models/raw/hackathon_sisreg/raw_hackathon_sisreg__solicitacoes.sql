@@ -1,0 +1,88 @@
+{{
+    config(
+        alias="solicitacoes",
+        schema="hackathon_sisreg",
+        materialized="table",
+    )
+}}
+
+
+with
+    source as (select * from {{ source("hackathon_sisreg_staging", "solicitacoes") }}),
+    casted as (
+        select
+            codigo_solicitacao,
+            codigo_unidade_solicitante,
+            nome_unidade_solicitante,
+            codigo_central_solicitante,
+            nome_central_solicitante,
+            codigo_central_reguladora,
+            nome_central_reguladora,
+            no_usuario,
+            dt_nascimento_usuario,
+            sexo_usuario,
+            no_mae_usuario,
+            cns_usuario,
+            bairro_paciente_residencia,
+            cep_paciente_residencia,
+            data_solicitacao,
+            nome_operador_solicitante,
+            cid_solicitacao,
+            codigo_cid_solicitado,
+            nome_medico_solicitante,
+            crm_medico_solicitante,
+            codigo_grupo_procedimento,
+            nome_grupo_procedimento,
+            codigo_procedimento,
+            nome_procedimento,
+            codigo_sigtap,
+            descricao_sigtap,
+            justificativa_inicial,
+            justificativa_final,
+            safe_cast(dt_justificativa_final as date) as dt_justificativa_final,
+            situacao_justificativa,
+            tipo_descricao_final,
+            operador_final,
+            nome_cnes_operador_final,
+            codigo_cnes_operador_final,
+            tipo_perfil_final,
+            codigo_tipo_vaga_solicitada,
+            risco,
+            safe_cast(data_cancelamento as date) as data_cancelamento,
+            nome_operador_cancelamento,
+            status_solicitacao,
+            sigla_situacao,
+            uf_paciente_residencia,
+            st_visualizado_regulador,
+            codigo_tipo_fila,
+            telefone,
+            codigo_tipo_regulacao,
+            nome_cnes_central_solicitante,
+            codigo_cnes_central_solicitante,
+            codigo_uf_regulador,
+            nome_perfil_cancelamento,
+            tipo_logradouro_paciente_residencia,
+            sigla_uf_solicitante,
+            municipio_paciente_residencia,
+            codigo_unidade_desejada,
+            codigo_perfil_cancelamento,
+            nome_unidade_desejada,
+            complemento_paciente_residencia,
+            type,
+            numero_paciente_residencia,
+            safe_cast(data_desejada as date) as data_desejada,
+            nome_operador_videofonista,
+            nome_municipio_nascimento,
+            uf_municipio_nascimento,
+            codigo_uf_solicitante,
+            cpf_profissional_solicitante,
+            endereco_paciente_residencia,
+            data_atualizacao,
+            sigla_uf_regulador,
+            cpf_usuario
+
+        from source
+    )
+
+select *
+from casted

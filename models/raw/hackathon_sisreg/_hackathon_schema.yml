@@ -1,0 +1,305 @@
+models:
+  - name: raw_hackathon_sisreg__solicitacoes
+    description: "Tabela contendo os metadados das solicitações de regulação no sisreg"
+    columns:
+      - name: codigo_solicitacao
+        description: ""
+        data_type: STRING
+      - name: codigo_unidade_solicitante
+        description: ""
+        data_type: STRING
+      - name: nome_unidade_solicitante
+        description: ""
+        data_type: STRING
+      - name: codigo_central_solicitante
+        description: ""
+        data_type: STRING
+      - name: nome_central_solicitante
+        description: ""
+        data_type: STRING
+      - name: codigo_central_reguladora
+        description: ""
+        data_type: STRING
+      - name: nome_central_reguladora
+        description: ""
+        data_type: STRING
+      - name: no_usuario
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: dt_nascimento_usuario
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_DTNASCIMENTO") }}'
+      - name: sexo_usuario
+        description: ""
+        data_type: STRING
+      - name: no_mae_usuario
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME_MAE") }}'
+      - name: cns_usuario
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: bairro_paciente_residencia
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: cep_paciente_residencia
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: data_solicitacao
+        description: ""
+        data_type: STRING
+      - name: nome_operador_solicitante
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: cid_solicitacao
+        description: ""
+        data_type: STRING
+      - name: codigo_cid_solicitado
+        description: ""
+        data_type: STRING
+      - name: nome_medico_solicitante
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: crm_medico_solicitante
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
+      - name: codigo_grupo_procedimento
+        description: ""
+        data_type: STRING
+      - name: nome_grupo_procedimento
+        description: ""
+        data_type: STRING
+      - name: codigo_procedimento
+        description: ""
+        data_type: STRING
+      - name: nome_procedimento
+        description: ""
+        data_type: STRING
+      - name: codigo_sigtap
+        description: ""
+        data_type: STRING
+      - name: descricao_sigtap
+        description: ""
+        data_type: STRING
+      - name: justificativa_inicial
+        description: ""
+        data_type: STRING
+      - name: justificativa_final
+        description: ""
+        data_type: STRING
+      - name: dt_justificativa_final
+        description: ""
+        data_type: DATE
+      - name: situacao_justificativa
+        description: ""
+        data_type: STRING
+      - name: tipo_descricao_final
+        description: ""
+        data_type: STRING
+      - name: operador_final
+        description: ""
+        data_type: STRING
+      - name: nome_cnes_operador_final
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: codigo_cnes_operador_final
+        description: ""
+        data_type: STRING
+      - name: tipo_perfil_final
+        description: ""
+        data_type: STRING
+      - name: codigo_tipo_vaga_solicitada
+        description: ""
+        data_type: STRING
+      - name: risco
+        description: ""
+        data_type: STRING
+      - name: data_cancelamento
+        description: ""
+        data_type: DATE
+      - name: nome_operador_cancelamento
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: status_solicitacao
+        description: ""
+        data_type: STRING
+      - name: sigla_situacao
+        description: ""
+        data_type: STRING
+      - name: uf_paciente_residencia
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: st_visualizado_regulador
+        description: ""
+        data_type: STRING
+      - name: codigo_tipo_fila
+        description: ""
+        data_type: STRING
+      - name: telefone
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_TELEFONE") }}'
+      - name: codigo_tipo_regulacao
+        description: ""
+        data_type: STRING
+      - name: nome_cnes_central_solicitante
+        description: ""
+        data_type: STRING
+      - name: codigo_cnes_central_solicitante
+        description: ""
+        data_type: STRING
+      - name: codigo_uf_regulador
+        description: ""
+        data_type: STRING
+      - name: nome_perfil_cancelamento
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: tipo_logradouro_paciente_residencia
+        description: ""
+        data_type: STRING
+      - name: sigla_uf_solicitante
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: municipio_paciente_residencia
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: codigo_unidade_desejada
+        description: ""
+        data_type: STRING
+      - name: codigo_perfil_cancelamento
+        description: ""
+        data_type: STRING
+      - name: nome_unidade_desejada
+        description: ""
+        data_type: STRING
+      - name: complemento_paciente_residencia
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: type
+        description: ""
+        data_type: STRING
+      - name: numero_paciente_residencia
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: data_desejada
+        description: ""
+        data_type: DATE
+      - name: nome_operador_videofonista
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: nome_municipio_nascimento
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: uf_municipio_nascimento
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: codigo_uf_solicitante
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: cpf_profissional_solicitante
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: endereco_paciente_residencia
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: data_atualizacao
+        description: ""
+        data_type: STRING
+      - name: sigla_uf_regulador
+        description: ""
+        data_type: STRING
+      - name: cpf_usuario
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+  - name: raw_hackathon_sisreg__solicitacoes_justificativas
+    description: "Tabela contendo contendo a conversa entre solicitante e regulador sobre um pedido de regulação no sisreg"
+    columns:
+      - name: codigo_solicitacao
+        description: ""
+        data_type: STRING
+      - name: num_justificativa
+        description: ""
+        data_type: STRING
+      - name: justificativa
+        description: ""
+        data_type: STRING
+      - name: dt_justificativa
+        description: ""
+        data_type: DATE
+      - name: situacao_justificativa
+        description: ""
+        data_type: STRING
+      - name: tipo_descricao
+        description: ""
+        data_type: STRING
+      - name: operador
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: nome_cnes_operador
+        description: ""
+        data_type: STRING
+      - name: codigo_cnes_operador
+        description: ""
+        data_type: STRING
+      - name: tipo_perfil
+        description: ""
+        data_type: STRING
+      - name: status_solicitacao
+        description: ""
+        data_type: STRING
+      - name: sigla_situacao
+        description: ""
+        data_type: STRING
+      - name: data_extracao
+        description: ""
+        data_type: DATE
