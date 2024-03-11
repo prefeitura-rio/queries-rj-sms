@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: hackathon_dados_publicos__estabelecimentos
+  - name: raw_hackathon_dados_publicos__estabelecimentos_cadastro
     description: Tabela contendo a relação de estabelecimentos de saúde. Informações
       baseadas no CNES e outras compiladas dentro da SMS.
     columns:
@@ -85,3 +85,411 @@ models:
         description: Data de carga do registro
       - name: data_snapshot
         description: Data de snapshot do registro
+  - name: raw_hackathon_dados_publicos__sisreg_solicitacoes_ressonancia_bacia_pelve
+    description: >
+      Tabela contendo as solicitações de Ressonância Magnética de Bacia / Pelve
+      no SISREG
+    columns:
+      - name: id_estabelecimento_solicitante
+        description: Código da unidade de saúde que solicitou a vaga no SISREG
+        data_type: STRING
+      - name: estabelecimento_solicitante_nome
+        description: Nome da unidade solicitante
+        data_type: STRING
+      - name: solicitacao_data
+        description: Data da solicitação
+        data_type: STRING
+      - name: cid_nome
+        description: Descrição do  do agravo (CID 10)
+        data_type: STRING
+      - name: id_cid
+        description: Código do agravo (CID 10)
+        data_type: STRING
+      - name: id_grupo_procedimento
+        description: Código que identifica o grupo do procedimento no SISREG
+        data_type: STRING
+      - name: procedimento_grupo_nome
+        description: Nome que identifica o grupo do procedimento no SISREG
+        data_type: STRING
+      - name: id_procedimento
+        description: Código que identifica o procedimento no SISREG
+        data_type: STRING
+      - name: procedimento_nome
+        description: Nome do procedimento solicitado
+        data_type: STRING
+      - name: solicitacao_justificativa_final_data
+        description: Data da última justificativa da solicitação
+        data_type: STRING
+      - name: id_tipo_vaga_solicitada
+        description: Código que identifica o tipo de vaga solicitada (1ª vez, Reserva ou
+          Retorno)
+        data_type: STRING
+      - name: solicitacao_risco
+        description: "Definição da priorização clínica por um sistema de cores:
+          VERMELHO, AMARELO, VERDE OU AZUL"
+        data_type: STRING
+      - name: solicitao_cancelamento_data
+        description: Data do cancelamento da solicitação
+        data_type: STRING
+      - name: solicitacao_status
+        description: Status da solicitação
+        data_type: STRING
+      - name: solicitacao_sigla_situacao
+        description: "Sigla que identifica o status da solicitação (A: Autorizada; C:
+          Cancelada; D: Devolvida; N: Negada; P: Pendente; R: Reenviada)"
+        data_type: STRING
+      - name: st_visualizado_regulador
+        description: ""
+        data_type: STRING
+      - name: id_fila_tipo
+        description: "-"
+        data_type: STRING
+      - name: id_regulacao_tipo
+        description: "-"
+        data_type: STRING
+      - name: estabelecimento_centro_solicitante_nome
+        description: "-"
+        data_type: STRING
+      - name: id_estabelecimento_central_solicitante
+        description: "-"
+        data_type: STRING
+      - name: id_estabelecimento_desejado
+        description: Código CNES da unidade de saúde desejada indicada pelo usuário SUS
+          no momento do atendimento
+        data_type: STRING
+      - name: estabelecimento_desejado_nome
+        description: Nome da unidade de saúde desejada indicada pelo usuário SUS no
+          momento do atendimento
+        data_type: STRING
+      - name: type
+        description: "-"
+        data_type: STRING
+      - name: procedimento_data_desejada
+        description: Data preferencial para agendamento indicada pelo usuário SUS no
+          momento do atendimento
+        data_type: STRING
+      - name: solicitacao_data_atualizacao
+        description: Data da última atualização da solicitação
+        data_type: STRING
+      - name: id_usuario
+        description: Identificador do usuário
+        data_type: STRING
+  - name: raw_hackathon_dados_publicos__sisreg_procedimentos_cadastro
+    description: Tabela contendo o cadastros de procedimentos do SISREG
+    columns:
+      - name: procedimento_nome
+        description: Nome do procedimento
+        data_type: STRING
+      - name: id_procedimento
+        description: Código que identifica o procedimento no SISREG
+        data_type: STRING
+      - name: procedimento_especialidade
+        description: Identifica a especialidade do procedimento
+        data_type: STRING
+      - name: procedimento_tipo
+        description: Identifica o tipo do procedimento (CONSULTA, EXAME OU CIRURGIA)
+        data_type: STRING
+  - name: raw_hackathon_dados_publicos__sisreg_oferta_agrupado_mes_procedimento_estabelecimento
+    description: Série histórica de ofertas do SISREG agrupado por mes, procedimento
+      e estabelecimento de saúde
+    columns:
+      - name: id_cnes
+        description: Código da unidade de saúde que ofertou a vaga no SISREG
+        data_type: STRING
+      - name: estabelecimento_nome
+        description: Nome da unidade executante
+        data_type: STRING
+      - name: estabelecimento_tipo
+        description: Identifica o tipo da unidade executante
+        data_type: STRING
+      - name: data
+        description: Mês de referência da oferta de vaga no SISREG
+        data_type: DATE
+      - name: procedimento_esspecialidade
+        description: Identifica o tipo da especialidade do procedimento ofertado
+        data_type: STRING
+      - name: procedimento_nome
+        description: Nome do procedimento ofertado
+        data_type: STRING
+      - name: qtd_ofertada
+        description: Total de oferta de vaga de primeira vez ou reserva. NÃO contabiliza
+          vaga de retorno.
+        data_type: INT64
+  - name: raw_hackathon_dados_publicos__sisreg_fila_agrupado_dia_procedimento
+    description: Série histórica de solicitações na fila do SISREG agrupado por dia
+      e procedimento
+    columns:
+      - name: id_procedimento
+        description: Código que identifica o procedimento no SISREG
+        data_type: STRING
+      - name: procedimento_nome
+        description: Nome do procedimento em fila
+        data_type: STRING
+      - name: data
+        description: Mês de referência da fila no SISREG
+        data_type: DATE
+      - name: qtd_fila
+        description: Total de solicitações em fila (pendência acumulada) no SISREG para
+          o procedimento
+        data_type: INT64
+  - name: raw_hackathon_dados_publicos__sisreg_atendimentos_agrupado_dia_procedimento_estabelecimento
+    description: Série histórica de atendimentos (execuções) no SISREG agrupado por
+      dia, procedimento e estabelecimento de saúde
+    columns:
+      - name: id_estabelecimento
+        description: Código da unidade de saúde que ofertou a vaga no SISREG
+        data_type: STRING
+      - name: estabelecimento_nome
+        description: Nome da unidade executante
+        data_type: STRING
+      - name: estabelecimento_tipo
+        description: Identifica o tipo da unidade executante
+        data_type: STRING
+      - name: data
+        description: Mês de referência do atendimento no SISREG
+        data_type: DATE
+      - name: procedimento_especialidade
+        description: Identifica o tipo da especialidade do procedimento executado
+        data_type: STRING
+      - name: procedimento_nome
+        description: Nome do procedimento executado
+        data_type: STRING
+      - name: qtd_executada
+        description: Total de atendimentos executados de vaga de primeira vez ou
+          reserva. NÃO contabiliza vaga de retorno.
+        data_type: INT64
+  - name: raw_hackathon_dados_publicos__profissionais_cadastro
+    description: A tabela fornece o cadastro dos profissionais de saúde nos
+      estabelecimentos.
+    columns:
+      - name: ano
+        description: Ano
+      - name: mes
+        description: Mês
+      - name: sigla_uf
+        description: Sigla da Unidade da Federação
+      - name: id_estabelecimento_cnes
+        description: ID Estabelecimento - CNES
+      - name: id_municipio_6_residencia
+        description: ID Município IBGE - 6 Dígitos do local de residência do profissional
+      - name: nome
+        description: Nome do profissional
+      - name: id_vinculo
+        description: Código do vínculo empregatício com o estabelecimento
+      - name: id_registro_conselho
+        description: Número do registro no conselho de classe
+      - name: id_conselho
+        description: Código do conselho de classe
+      - name: cartao_nacional_saude
+        description: CNS - Cartão Nacional de Saúde
+      - name: cbo_2002
+        description: Código da especialidade
+      - name: indicador_estabelecimento_terceiro
+        description: Indica se o estabelecimento é de terceiros ou não
+      - name: indicador_vinculo_contratado_sus
+        description: Vínculo empregatício com o estabelecimento - Contratado SUS
+      - name: indicador_vinculo_autonomo_sus
+        description: Vínculo empregatício com o estabelecimento - Autônomo SUS
+      - name: indicador_vinculo_outros
+        description: Vínculo empregatício com o estabelecimento - Vínculo não
+          identificado (registros de profissionais não SUS e outras situações
+          anômalas)
+      - name: indicador_atende_sus
+        description: Realiza Atendimento SUS
+      - name: indicador_atende_nao_sus
+        description: Realiza Atendimento Não-SUS
+      - name: carga_horaria_outros
+        description: Carga horária não ambulatorial, nem hospitalar
+      - name: carga_horaria_hospitalar
+        description: Carga horária hospitalar
+      - name: carga_horaria_ambulatorial
+        description: Carga horária Ambulatorial
+  - name: raw_hackathon_dados_publicos__sisreg_tempo_medio_espera_mensal
+    description: ""
+    columns:
+      - name: procedimento_nome
+        description: Nome do procedimento autorizado
+        data_type: STRING
+      - name: data
+        description: Mês de referência da autorização pela regulação
+        data_type: DATE
+      - name: tme_mensal
+        description: Considerou-se para o cálculo o tempo médio de espera (em dias)
+          entre a data de execução (atendimento) e a data de solicitação de
+          todos os procedimentos autorizados no SISREG (excluindo demanda de não
+          munícipes e as consultas de retorno) no período (mês).
+        data_type: INT64
+  - name: raw_hackathon_dados_publicos__sisreg_oferta_programada_por_profissional
+    description: ""
+    columns:
+      - name: id_escala_ambulatorial
+        description: Código identificador da escala dentro do sistema.
+        data_type: STRING
+      - name: profissional_exec_cpf
+        description: CPF do profissional cuja escala foi cadastrada.
+        data_type: STRING
+      - name: profissional_exec_nome
+        description: Nome do profissional cuja escala foi cadastrada.
+        data_type: STRING
+      - name: id_estabelecimento_exec
+        description: CNES da unidade executante.
+        data_type: STRING
+      - name: estabelecimento_exec_nome
+        description: Nome da unidade executante.
+        data_type: STRING
+      - name: id_procedimento_interno
+        description: Código interno do procedimento.
+        data_type: STRING
+      - name: procedimento_interno_descricao
+        description: Nomenclatura do procedimento.
+        data_type: STRING
+      - name: dia_semana
+        description: Sigla que identifica o dia da semana para qual a oferta foi
+          disponibilizada.
+        data_type: STRING
+      - name: primeira_vez_dia
+        description: Quantidade de oferta semanal disponibilizada da escala com a
+          configuração de 1ª vez, isto é, oferta que não necessita de regulação.
+          Estando disponível, qualquer operador pode utilizar para agendamento.
+        data_type: INT64
+      - name: retorno_dia
+        description: Quantidade de oferta semanal disponibilizada da escala com a
+          configuração de retorno, isto é, oferta de utilização exclusiva da
+          unidade executante.
+        data_type: INT64
+      - name: reserva_dia
+        description: Quantidade de oferta semanal disponibilizada da escala com a
+          configuração de reserva, isto é, oferta que necessita de regulação.
+          Estando disponível, somente o regulador pode utilizar para
+          agendamento.
+        data_type: INT64
+      - name: quebra_automatica
+        description: Configuração que assegura o intervalo entre cada atendimento
+          disponibilizado na escala.
+        data_type: STRING
+      - name: agenda_local
+        description: Confirguração que delimita a visualização da escala. Uma escala
+          local fica disponível apenas para a unidade executante.
+        data_type: STRING
+      - name: vigencia_inicial
+        description: Determina a data inicial de disponibilidade da escala.
+        data_type: STRING
+      - name: vigencia_final
+        description: Determina a data final de disponibilidade da escala.
+        data_type: STRING
+      - name: hora_inicial
+        description: Horário de atendimento inicial da escala.
+        data_type: STRING
+      - name: hora_final
+        description: Horário de atendimento final da escala.
+        data_type: STRING
+      - name: ultima_alteracao
+        description: Data da última alteração de configuração da escala.
+        data_type: STRING
+      - name: primeira_vez_mensal
+        description: Quantidade mensal ofertada pela escala de 1ª vez.
+        data_type: INT64
+      - name: retorno_mensal
+        description: Quantidade mensal ofertada pela escala de retorno.
+        data_type: INT64
+      - name: reserva_mensal
+        description: Quantidade mensal ofertada pela escala de reserva.
+        data_type: INT64
+      - name: mes_de_competencia_da_oferta
+        description: Mês analisado.
+        data_type: STRING
+      - name: ano_de_competencia_da_oferta
+        description: Ano analisado.
+        data_type: STRING
+  - name: raw_hackathon_dados_publicos__sisreg_tempo_medio_espera_12_meses
+    description: ""
+    columns:
+      - name: procedimento_nome
+        description: Nome do procedimento autorizado
+        data_type: STRING
+      - name: ano
+        description: Ano de competência
+        data_type: INT64
+      - name: tme_12_meses
+        description: "Considerou-se para o cálculo o tempo médio de espera (em dias)
+          entre a data de execução (atendimento) e a data de solicitação de
+          todos os procedimentos autorizados no SISREG (excluindo demanda de não
+          munícipes e as consultas de retorno) no período (acumulado de 12
+          meses: jan/2020 a dez/2020)."
+        data_type: INT64
+  - name: raw_hackathon_dados_publicos__sisreg_oferta_diaria_amostra
+    description: ""
+    columns:
+      - name: estabelecimento_nome
+        description: Nome da unidade executante
+        data_type: STRING
+      - name: id_estabelecimento
+        description: Código da unidade de saúde que ofertou a vaga no SISREG
+        data_type: STRING
+      - name: prodecimento_nome
+        description: Nome do procedimento ofertado
+        data_type: STRING
+      - name: id_procedimento
+        description: Código que identifica o procedimento no SISREG
+        data_type: STRING
+      - name: data_vaga
+        description: Data da vaga ofertada
+        data_type: STRING
+      - name: dia_semana
+        description: Sigla que identifica o dia da semana para qual a oferta foi
+          disponibilizada.
+        data_type: STRING
+      - name: hora_vaga
+        description: Horário de atendimento ida vaga ofertada
+        data_type: STRING
+      - name: profissional_nome
+        description: Nome do profissional disponível para a vaga
+        data_type: STRING
+      - name: tipo
+        description: "Tipo da vaga ofertada: 1ª vez ou reserva"
+        data_type: STRING
+      - name: qtd_vagas
+        description: Total de oferta de vaga de primeira vez ou reserva ofertada. NÃO
+          contabiliza vaga de retorno.
+        data_type: INT64
+      - name: data
+        description: Data de extração da amostra
+        data_type: STRING
+  - name: raw_hackathon_dados_publicos__sisreg_procedimentos_parametros_padrao
+    description: "Tabela auxiliar contendo a quantidade de carga horária que o
+      profissional deve oferecer para cada procedimento "
+    columns:
+      - name: id_procedimento
+        description: Código que identifica o procedimento no SISREG
+        data_type: STRING
+      - name: nome
+        description: Nome do procedimento
+        data_type: STRING
+      - name: qtd_consulta_por_hora
+        description: Nº de consulta ou procedimento por hora de cada especialidade
+        data_type: INT64
+      - name: proporcao_de_consulta
+        description: Proporcionalidade de cada especialidade para distribuição do número
+          de vagas (entre Reserva e Retorno) no SISREG
+        data_type: STRING
+  - name: raw_hackathon_dados_publicos__sisreg_solicitacoes_agrupado_mes_procedimento_solicitante
+    description: ""
+    columns:
+      - name: id_estabelecimento_solicitante
+        description: Código da unidade de saúde solicitante
+        data_type: STRING
+      - name: estabelecimento_solicitante_nome
+        description: Nome da unidade solicitante
+        data_type: STRING
+      - name: data_competencia
+        description: Mês de referência da solicitação
+        data_type: DATE
+      - name: id_procedimento
+        description: Código que identifica o procedimento no SISREG
+        data_type: STRING
+      - name: procedimento_nome
+        description: Nome do procedimento em fila
+        data_type: STRING
+      - name: qtd_solicitacoes
+        description: Total de vagas solicitações no SISREG (de 1ª vez ou Reserva)
+        data_type: INT64

@@ -1,6 +1,6 @@
 {{
     config(
-        alias="estabelecimentos",
+        alias="estabelecimentos_cadastro",
         schema="hackathon_dados_publicos",
         materialized="table",
     )

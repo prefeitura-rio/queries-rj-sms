@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: hackathon_dados_publicos_staging
+    database: rj-sms
+    schema: hackathon_dados_publicos_staging
+    tables:
+      - name: sisreg_oferta_agrupado_mes_procedimento_estabelecimento
+      - name: sisreg_fila_agrupado_dia_procedimento
+      - name: sisreg_atendimentos_agrupado_dia_procedimento_estabelecimento
+      - name: sisreg_procedimentos_cadastro
+      - name: sisreg_solicitacoes_ressonancia_bacia_pelve
+      - name: sisreg_tempo_medio_espera_12_meses
+      - name: sisreg_tempo_medio_espera_mensal
+      - name: sisreg_procedimentos_parametros_padrao
+      - name: sisreg_solicitacoes_agrupado_mes_procedimento_solicitante
+      - name: sisreg_oferta_programada_por_profissional
+      - name: sisreg_oferta_diaria_amostra
