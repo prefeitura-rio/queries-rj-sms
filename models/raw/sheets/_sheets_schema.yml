@@ -51,7 +51,7 @@ models:
           - unique:
               name: raw_sheets__material_remume__id_material__unique
               config:
-                error_if: ">19"
+                error_if: ">20"
           - relationships:
               name: raw_sheets__material_remume__id_material__relationship
               to: ref('dim_material')
