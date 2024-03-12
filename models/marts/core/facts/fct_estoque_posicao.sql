@@ -123,7 +123,7 @@ with
 
     posicao_tpc as (
         select
-            "-" as id_cnes,
+            "tpc" as id_cnes,
             *,
             "tpc" as sistema_origem,
             "ESTOQUE CENTRAL" as estabelecimento_tipo,
