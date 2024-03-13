@@ -67,6 +67,12 @@ models:
         description: Justificativa da movimentação do medicamento/insumo
       - name: data_evento
         description: Data do movimento de estoque
+      - name: data_hora_evento
+        description: Data e hora do movimento de estoque
+      - name: consumo_preescritor_cpf
+        description: CPF do preecritor do evento consumo
+        policy_tags:
+          - '{{var ("TAG_CPF")}}'
       - name: consumo_preenscritor_cns
         description: CNS do preenscritor do evento de consumo
         policy_tags:
