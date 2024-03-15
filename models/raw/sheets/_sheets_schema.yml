@@ -56,8 +56,8 @@ models:
               name: raw_sheets__material_remume__id_material__relationship
               to: ref('dim_material')
               field: id_material
-      - name: remume_grupo
-        description: Agrupor de materias
+      - name: remume_grupos
+        description: Relação de listas da REMUME que o material faz parte
       - name: material_descricao_generica
         description: Descrição genérica do material
         policy_tags:
