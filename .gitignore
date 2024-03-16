@@ -5,3 +5,4 @@ logs/
 .env
 credentials/
 .python-version
+target-base/
