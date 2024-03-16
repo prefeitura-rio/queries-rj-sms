@@ -6,46 +6,81 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
+        data_type: STRING
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
+        data_type: STRING
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: STRING
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
+        data_type: STRING
       - name: id_curva_abc
         description: Identificador usado para agrupar os medicamentos/insumos em classes
           de consumo
+        data_type: STRING
       - name: material_remume
-        description: Indicação se o material faz parte da REMUME-RIO (Relação
-          municipal de medicamentos essenciais)
+        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
+          de medicamentos essenciais)
+        data_type: STRING
+      - name: remume_basico
+        description: Indica se o item pertence a lista 'Componente Básico' da REMUME
+        data_type: STRING
+      - name: remume_uso_interno
+        description: Indica se o item pertence a lista de 'Uso Interno nas UAPs' da REMUME
+        data_type: STRING
+      - name: remume_hospitalar
+        description: Indica se o item pertence a lista 'Componente Hospitalar' da REMUME
+        data_type: STRING
+      - name: remume_antiseptico
+        description: Indica se o item pertence a lista 'Saneantes / Antisepticos' da REMUME
+        data_type: STRING
+      - name: remume_estrategico
+        description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
+        data_type: STRING
+      - name: estoque_reservado_para_abastecimento
+        description: ""
+        data_type: STRING
       - name: estoque_secao
         description: Local dentro da unidade de saúde onde está armazenado o
           medicamento/insumo
+        data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: STRING
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
+        data_type: STRING
       - name: lote_data_vencimento
         description: Data de vecimento do lote
+        data_type: DATE
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
+        data_type: FLOAT64
       - name: material_valor_unitario
         description: Valor em reais de uma unidade do medicamento/insumo
+        data_type: FLOAT64
       - name: material_valor_total
         description: Valor em reais somando todas as unidades disponíveis do
           medicamento/insumo
+        data_type: FLOAT64
       - name: sistema_origem
         description: Sistema de origem do registro
+        data_type: STRING
       - name: data_particao
         description: Data de referencia da posição do estoque
+        data_type: DATE
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
+        data_type: DATETIME
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
+        data_type: DATETIME
   - name: fct_estoque_movimento
     description: ""
     columns:
