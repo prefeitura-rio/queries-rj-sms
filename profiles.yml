@@ -1,5 +1,5 @@
 default:
-  target: test
+  target: dev
   outputs:
     dev:
       type: bigquery
