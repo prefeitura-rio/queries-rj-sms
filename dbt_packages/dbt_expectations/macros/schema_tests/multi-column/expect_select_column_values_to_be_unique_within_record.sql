@@ -40,7 +40,7 @@
 with column_values as (
 
     select
-        row_number() over(order by 1) as row_index,
+        row_number() over(order by {{ columns|join(', ') }}) as row_index,
         {% for column in columns -%}
         {{ column }}{% if not loop.last %},{% endif %}
         {%- endfor %}
@@ -55,7 +55,7 @@ with column_values as (
 unpivot_columns as (
 
     {% for column in columns %}
-    select row_index, '{{ column }}' as column_name, {{ column }} as column_value from column_values
+    select row_index, '{{ column }}' as column_name, {{ dbt_expectations.md5(column) }} as column_value from column_values
     {% if not loop.last %}union all{% endif %}
     {% endfor %}
 ),

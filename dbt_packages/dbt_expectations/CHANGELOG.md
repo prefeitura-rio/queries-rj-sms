@@ -1,3 +1,13 @@
+# dbt-expectations v0.10.3
+## New Features
+* [CI] Uprade to dbt=1.7.x by @clausherther in https://github.com/calogica/dbt-expectations/pull/292
+* Add Trino Support by @damian3031 in https://github.com/calogica/dbt-expectations/pull/294
+* Add Trino md5 macro by @clausherther in https://github.com/calogica/dbt-expectations/pull/301
+  
+# dbt-expectations v0.10.2
+## Fixes
+* Update Test Expecting Select Column Values To Be Unique Within Record by @bkimjin in https://github.com/calogica/dbt-expectations/pull/300
+
 # dbt-expectations v0.10.1
 ## Fixes
 * Fix sum_total in expect_multicolumn_sum_to_equal to accept column names by @VDFaller in https://github.com/calogica/dbt-expectations/pull/291

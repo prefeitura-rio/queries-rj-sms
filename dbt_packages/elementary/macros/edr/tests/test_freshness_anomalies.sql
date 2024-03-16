@@ -1,8 +1,5 @@
-{% test freshness_anomalies(model, timestamp_column, where_expression, anomaly_sensitivity, anomaly_direction, min_training_set_size, time_bucket, days_back, backfill_days, seasonality, sensitivity, detection_delay, anomaly_exclude_metrics) %}
-  -- depends_on: {{ ref('monitors_runs') }}
-  -- depends_on: {{ ref('data_monitoring_metrics') }}
-  -- depends_on: {{ ref('dbt_run_results') }}
-
+{% test freshness_anomalies(model, timestamp_column, where_expression, anomaly_sensitivity, anomaly_direction, min_training_set_size, time_bucket, days_back, backfill_days, seasonality, sensitivity, detection_delay, anomaly_exclude_metrics, detection_period, training_period) %}
+  {{ config(tags = ['elementary-tests']) }}
   {{ elementary.test_table_anomalies(
       model=model,
       table_anomalies=["freshness"],
@@ -18,7 +15,9 @@
       seasonality=seasonality,
       sensitivity=sensitivity,
       detection_delay=detection_delay,
-      anomaly_exclude_metrics=anomaly_exclude_metrics
+      anomaly_exclude_metrics=anomaly_exclude_metrics,
+      detection_period=detection_period,
+      training_period=training_period
     )
   }}
 {% endtest %}

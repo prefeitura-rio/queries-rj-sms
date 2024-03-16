@@ -31,6 +31,8 @@
     'disable_run_results': false,
     'disable_tests_results': false,
     'disable_dbt_artifacts_autoupload': false,
+    'disable_dbt_columns_autoupload': false,
+    'upload_only_columns_with_descriptions': false,
     'disable_dbt_invocation_autoupload': false,
     'disable_skipped_model_alerts': true,
     'disable_skipped_test_alerts': true,
@@ -54,7 +56,7 @@
     'mute_dbt_upgrade_recommendation': false,
     'calculate_failed_count': true,
     'tests_use_temp_tables': false,
-    'collect_metrics': true,
+    'collect_metrics': false,
     'clean_elementary_temp_tables': true,
     'force_metrics_backfill': false,
     'ignore_small_changes': {
@@ -69,6 +71,12 @@
 {%- endmacro -%}
 
 {%- macro bigquery__get_default_config() -%}
+    {% set default_config = elementary.default__get_default_config() %}
+    {% do default_config.update({'query_max_size': 250000}) %}
+    {{- return(default_config) -}}
+{%- endmacro -%}
+
+{%- macro athena__get_default_config() -%}
     {% set default_config = elementary.default__get_default_config() %}
     {% do default_config.update({'query_max_size': 250000}) %}
     {{- return(default_config) -}}

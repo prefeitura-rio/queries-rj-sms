@@ -4,7 +4,7 @@
     {% endif %}
 
     {% if not table_relation %}
-        {% do exceptions.warn("Couldn't find Elementary's models in `" ~ elementary.target_database() ~ "." ~ target.schema ~ "`. Please run `dbt run -s elementary --target " ~ target.name ~ "`.") %}
+        {% do elementary.warn_missing_elementary_models() %}
         {{ return(none) }}
     {% endif %}
 
@@ -70,7 +70,7 @@
 
           {% if new_insert_query | length > query_max_size %}
             {% do elementary.file_log("Oversized row for insert_rows: {}".format(query_with_row)) %}
-            {% do exceptions.raise_compiler_error("Row to be inserted exceeds var('query_max_size'). Consider increasing its value.") %}
+            {% do exceptions.warn("Row to be inserted exceeds var('query_max_size'). Consider increasing its value.") %}
           {% endif %}
         {% endif %}
 
@@ -98,7 +98,9 @@
       {% do rendered_column_values.append(column_value) %}
     {% else %}
       {% set column_value = elementary.insensitive_get_dict_value(row, column.name) %}
-      {% do rendered_column_values.append(elementary.render_value(column_value)) %}
+      {% set normalized_data_type = elementary.normalize_data_type(column.dtype) %}
+      {% do rendered_column_values.append(elementary.render_value(column_value, normalized_data_type)) %}
+
     {% endif %}
   {% endfor %}
   {% set row_sql = "({})".format(rendered_column_values | join(",")) %}
@@ -138,10 +140,16 @@
     {{- return(string_value | replace("'", "''")) -}}
 {%- endmacro -%}
 
-{%- macro render_value(value) -%}
+{%- macro athena__escape_special_chars(string_value) -%}
+    {{- return(string_value | replace("'", "''")) -}}
+{%- endmacro -%}
+
+{%- macro render_value(value, data_type) -%}
     {%- if value is defined and value is not none -%}
         {%- if value is number -%}
             {{- value -}}
+        {%- elif value is string and data_type == 'timestamp' -%}
+            {{- elementary.edr_cast_as_timestamp(elementary.edr_quote(value)) -}}
         {%- elif value is string -%}
             '{{- elementary.escape_special_chars(value) -}}'
         {%- elif value is mapping or value is sequence -%}

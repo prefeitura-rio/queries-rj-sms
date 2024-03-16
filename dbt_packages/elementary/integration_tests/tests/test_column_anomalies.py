@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 
 from data_generator import DATE_FORMAT, generate_dates
 from dbt_project import DbtProject
+from parametrization import Parametrization
 
 TIMESTAMP_COLUMN = "updated_at"
 DBT_TEST_NAME = "elementary.column_anomalies"
@@ -107,3 +108,89 @@ def test_column_anomalies_with_where_parameter(test_id: str, dbt_project: DbtPro
         test_vars={"force_metrics_backfill": True},
     )
     assert test_result["status"] == "fail"
+
+
+def test_column_anomalies_with_timestamp_as_sql_expression(
+    test_id: str, dbt_project: DbtProject
+):
+    utc_today = datetime.utcnow().date()
+    data: List[Dict[str, Any]] = [
+        {
+            TIMESTAMP_COLUMN: cur_date.strftime(DATE_FORMAT),
+            "superhero": superhero,
+        }
+        for cur_date in generate_dates(base_date=utc_today - timedelta(1))
+        for superhero in ["Superman", "Batman"]
+    ]
+    test_args = {
+        "timestamp_column": "case when updated_at is not null then updated_at else updated_at end",
+        "column_anomalies": ["null_count"],
+    }
+
+    test_result = dbt_project.test(
+        test_id, DBT_TEST_NAME, test_args, data=data, test_column="superhero"
+    )
+    assert test_result["status"] == "pass"
+
+
+@Parametrization.autodetect_parameters()
+@Parametrization.case(
+    name="true_positive",
+    expected_result="fail",
+    drop_failure_percent_threshold=5,
+    metric_value=10,
+)
+@Parametrization.case(
+    name="false_positive",
+    expected_result="fail",
+    drop_failure_percent_threshold=None,
+    metric_value=1,
+)
+@Parametrization.case(
+    name="true_negative",
+    expected_result="pass",
+    drop_failure_percent_threshold=5,
+    metric_value=1,
+)
+def test_volume_anomaly_static_data_drop(
+    test_id: str,
+    dbt_project: DbtProject,
+    expected_result: str,
+    drop_failure_percent_threshold: int,
+    metric_value: int,
+):
+    now = datetime.utcnow()
+    data = [
+        {TIMESTAMP_COLUMN: cur_date.strftime(DATE_FORMAT), "superhero": "Batman"}
+        for cur_date in generate_dates(base_date=now, step=timedelta(days=1))
+        if cur_date < now - timedelta(days=1)
+    ] * 50
+    data += [
+        {
+            TIMESTAMP_COLUMN: (now - timedelta(days=1)).strftime(DATE_FORMAT),
+            "superhero": "Batman",
+        }
+    ] * 50
+    data += [
+        {
+            TIMESTAMP_COLUMN: (now - timedelta(days=1)).strftime(DATE_FORMAT),
+            "superhero": None,
+        }
+    ] * metric_value
+
+    # 50 new rows every day with 0 nulls
+    # 50 new rows in the last day with 0 nulls
+    # <mertic_value> new rows in the last day with nulls
+
+    test_args = {
+        **DBT_TEST_ARGS,
+        "time_bucket": {"period": "day", "count": 1},
+        "column_anomalies": ["not_null_percent"],
+        "ignore_small_changes": {
+            "drop_failure_percent_threshold": drop_failure_percent_threshold
+        },
+    }
+    test_result = dbt_project.test(
+        test_id, DBT_TEST_NAME, test_args, data=data, test_column="superhero"
+    )
+    assert test_result["status"] == expected_result
