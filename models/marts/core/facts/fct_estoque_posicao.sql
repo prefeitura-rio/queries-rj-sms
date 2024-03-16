@@ -23,12 +23,14 @@ with
     ),
 
     vitacare_completa as (
-        select * from vitacare_atual
+        select *
+        from vitacare_atual
         union all
-        select * from vitacare_dias_anteriores
+        select *
+        from vitacare_dias_anteriores
     ),
 
-    --- Vitai
+    -- - Vitai
     vitai_atual as (
         select * from {{ ref("int_estoque__posicao_hoje_vitai_com_zerados_remume") }}
     ),
@@ -39,16 +41,18 @@ with
     ),
 
     vitai_completa as (
-        select * from vitai_atual
+        select *
+        from vitai_atual
         union all
-        select * from vitai_dias_anteriores
+        select *
+        from vitai_dias_anteriores
     ),
 
-    --- TPC
+    -- - TPC
     tpc_atual as (
         select * from {{ ref("int_estoque__posicao_hoje_tpc_com_zerados_remume") }}
     ),
-    
+
     tpc_dias_anteriores as (
         select *
         from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
@@ -56,9 +60,11 @@ with
     ),
 
     tpc_completa as (
-        select * from tpc_atual
+        select *
+        from tpc_atual
         union all
-        select * from tpc_dias_anteriores
+        select *
+        from tpc_dias_anteriores
     ),
 
     -- constroi a posicação para cada source
@@ -144,10 +150,18 @@ with
     ),
 
     posicao_consolidada_com_remume as (
-        select pos.*,
-        if(remume.id_material is null, "nao", "sim") as material_remume,
+        select
+            pos.*,
+            if(remume.id_material is null, "nao", "sim") as material_remume,
+            remume.remume_basico,
+            remume.remume_uso_interno,
+            remume.remume_hospitalar,
+            remume.remume_antiseptico,
+            remume.remume_estrategico,
         from posicao_consolidada as pos
-        left join {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }} as remume
+        left join
+            {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
+            as remume
             on pos.id_cnes = remume.id_cnes
             and pos.id_material = remume.id_material
 
@@ -172,6 +186,11 @@ select
 
     -- Common Fields
     material_remume,
+    remume_basico,
+    remume_uso_interno,
+    remume_hospitalar,
+    remume_antiseptico,
+    remume_estrategico,
     estoque_reservado_para_abastecimento,
     estoque_secao,
     material_descricao,

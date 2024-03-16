@@ -65,8 +65,7 @@ case when
                 }}
               )
             ) and
-            bucket_end >= {{ elementary.edr_timeadd('day', backfill_period, 'max_bucket_end') }} and
-            training_set_size >= {{ test_configuration.min_training_set_size }}
+            bucket_end >= {{ elementary.edr_timeadd('day', backfill_period, 'max_bucket_end') }}
           then TRUE else FALSE end as is_anomalous
         from anomaly_scores
       )
@@ -119,19 +118,32 @@ case when
 {%- endmacro -%}
 
 {%- macro avg_percent_anomalous_condition(spike_failure_percent_threshold, drop_failure_percent_threshold, anomaly_direction) -%}
-  {% if spike_failure_percent_threshold and anomaly_direction | lower in ['spike', 'both'] %}
+  (
+  {% set spike_filter %}
     (metric_value > ((1 + {{ spike_failure_percent_threshold }}/100.0) * training_avg))
+  {% endset %}
+  {% set drop_filter %}
+    (metric_value < ((1 - {{ drop_failure_percent_threshold }}/100.0) * training_avg))
+  {% endset %}
+  
+  {% if spike_failure_percent_threshold and drop_failure_percent_threshold and (anomaly_direction | lower) == 'both' %}
+      {{ spike_filter }} or {{ drop_filter }}
   {% else %}
-      (1 = 1)
-  {% endif %}
+    {% if spike_failure_percent_threshold and anomaly_direction | lower in ['spike', 'both'] %}
+      {{ spike_filter }}
+    {% else %}
+        (1 = 1)
+    {% endif %}
 
-  and
+    and
 
-  {% if drop_failure_percent_threshold and anomaly_direction | lower in ['drop', 'both'] %}
-      (metric_value < ((1 - {{ drop_failure_percent_threshold }}/100.0) * training_avg))
-  {% else %}
-      (1 = 1)
+    {% if drop_failure_percent_threshold and anomaly_direction | lower in ['drop', 'both'] %}
+        {{ drop_filter }}
+    {% else %}
+        (1 = 1)
+    {% endif %}
   {% endif %}
+  )
 {%- endmacro -%}
 
 {% macro fail_on_zero(fail_on_zero) %}

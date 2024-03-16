@@ -75,8 +75,8 @@ with
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
-            dispensacao_prescritor_cpf as estoque_movimento_consumo_preenscritor_cpf,
-            "" as estoque_movimento_consumo_preenscritor_cns,
+            dispensacao_prescritor_cpf as estoque_movimento_consumo_prescritor_cpf,
+            "" as estoque_movimento_consumo_prescritor_cns,
             dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
             dispensacao_paciente_cns as estoque_movimento_consumo_paciente_cns,
             "vitai" as sistema_origem
@@ -140,9 +140,9 @@ with
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
-            "" as estoque_movimento_consumo_preenscritor_cpf, 
+            "" as estoque_movimento_consumo_prescritor_cpf, 
             est.dispensacao_prescritor_cns
-            as estoque_movimento_consumo_preenscritor_cns,
+            as estoque_movimento_consumo_prescritor_cns,
             est.dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
             est.dispensacao_paciente_cns as estoque_movimento_consumo_paciente_cns,
             "vitacare" as sistema_origem,
@@ -173,8 +173,8 @@ select
     estoque_movimento_justificativa as movimento_justificativa,
     estoque_movimento_data as data_evento,
     estoque_movimento_data_hora as data_hora_evento,
-    estoque_movimento_consumo_preenscritor_cpf as consumo_preenscritor_cpf, --- # TODO: fix preenscritor to prescritor
-    estoque_movimento_consumo_preenscritor_cns as consumo_preenscritor_cns,
+    estoque_movimento_consumo_prescritor_cpf as consumo_prescritor_cpf,
+    estoque_movimento_consumo_prescritor_cns as consumo_prescritor_cns,
     estoque_movimento_consumo_paciente_cns as consumo_paciente_cns,
     estoque_movimento_consumo_paciente_cpf as consumo_paciente_cpf,
     material_descricao,

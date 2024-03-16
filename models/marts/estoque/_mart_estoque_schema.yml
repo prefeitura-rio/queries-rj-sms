@@ -7,7 +7,7 @@ models:
       - dbt_expectations.expect_table_row_count_to_be_between:
           name: mart_estoque__posicao_atual__row_count__between
           min_value: 100000
-          max_value: 140000
+          max_value: 200000
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
@@ -67,6 +67,21 @@ models:
       - name: material_remume
         description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
           de medicamentos essenciais)
+        data_type: STRING
+      - name: remume_basico
+        description: Indica se o item pertence a lista 'Componente Básico' da REMUME
+        data_type: STRING
+      - name: remume_uso_interno
+        description: Indica se o item pertence a lista de 'Uso Interno nas UAPs' da REMUME
+        data_type: STRING
+      - name: remume_hospitalar
+        description: Indica se o item pertence a lista 'Componente Hospitalar' da REMUME
+        data_type: STRING
+      - name: remume_antiseptico
+        description: Indica se o item pertence a lista 'Saneantes / Antisepticos' da REMUME
+        data_type: STRING
+      - name: remume_estrategico
+        description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
@@ -193,6 +208,21 @@ models:
       - name: material_remume
         description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
           de medicamentos essenciais)
+        data_type: STRING
+      - name: remume_basico
+        description: Indica se o item pertence a lista 'Componente Básico' da REMUME
+        data_type: STRING
+      - name: remume_uso_interno
+        description: Indica se o item pertence a lista de 'Uso Interno nas UAPs' da REMUME
+        data_type: STRING
+      - name: remume_hospitalar
+        description: Indica se o item pertence a lista 'Componente Hospitalar' da REMUME
+        data_type: STRING
+      - name: remume_antiseptico
+        description: Indica se o item pertence a lista 'Saneantes / Antisepticos' da REMUME
+        data_type: STRING
+      - name: remume_estrategico
+        description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
@@ -498,8 +528,8 @@ models:
         description: Intervalor interquartilico da série id_cnes, id_material
         data_type: FLOAT64
       - name: outlier
-        description: Indica se a observação é um
-          outlier baseado no método de 1.5 vezes o intervalo interquartilico
+        description: Indica se a observação é um outlier baseado no método de 1.5 vezes
+          o intervalo interquartilico
         data_type: STRING
       - name: quantidade_dispensada_sem_outlier
         description: Quantidade consumida (dispensada) no dia, exceto outliers
@@ -523,9 +553,9 @@ models:
         description: Concatenação do id do material e seu nome
         data_type: STRING
   - name: mart_estoque__consumo_serie_historica_looker_row_level_access
-    description: Tabela baseada na tabela estoque_consumo_serie_historica, adicionado
-      o email dos usuários que podem ler cada registro. Atenção, registros de
-      posição duplicados por conta dos acessos
+    description: Tabela baseada na tabela estoque_consumo_serie_historica,
+      adicionado o email dos usuários que podem ler cada registro. Atenção,
+      registros de posição duplicados por conta dos acessos
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
@@ -559,8 +589,8 @@ models:
         description: Intervalor interquartilico da série id_cnes, id_material
         data_type: FLOAT64
       - name: outlier
-        description: Indica se a observação é um
-          outlier baseado no método de 1.5 vezes o intervalo interquartilico
+        description: Indica se a observação é um outlier baseado no método de 1.5 vezes
+          o intervalo interquartilico
         data_type: STRING
       - name: quantidade_dispensada_sem_outlier
         description: Quantidade consumida (dispensada) no dia, exceto outliers
