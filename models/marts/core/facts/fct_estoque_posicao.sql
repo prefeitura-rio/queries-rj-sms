@@ -200,7 +200,6 @@ select
     material_valor_unitario,
     material_valor_total,
 
-
     -- Metadata
     sistema_origem,
     data_particao,

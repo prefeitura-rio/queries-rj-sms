@@ -88,11 +88,24 @@ with
             remume.remume_antiseptico,
             remume_estrategico,
         from remume_distintos as remume
+    ),
+    -- Result
+    final as (
+        select *
+        from relacao_remume_unidades
+        union all
+        select *
+        from relacao_remume_tpc
+
     )
 
--- Result
+-- Atenção Primária só tem dados de farmácia. No momento todos itens de almoxarifado e
+-- vacinas serão desconsiderados
 select *
-from relacao_remume_unidades
-union all
-select *
-from relacao_remume_tpc
+from final
+where
+    remume_basico = "sim"
+    or (
+        remume_hospitalar = "sim"
+        and tipo_sms_simplificado in ("HOSPITAL", "MATERNIDADE")
+    )
