@@ -1,0 +1,36 @@
+version: 2
+models:
+  - name: mart_dengue__estoque
+    description: Tabela para monitoramento do estoque de medicamentos de combate a Dengue
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: id_material
+        description: Identificador do medicamento/insumo
+      - name: estabelecimento_agrupador_sms
+        description: Agrupamento por tipo de especialidade da unidade
+      - name: estabelecimento_area_programatica
+        description: Área programática da unidade de saúde onde o item está localizado
+      - name: estabelecimento_tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+      - name: estabelecimento_nome_sigla
+        description:  Abreviação do nome fantasia
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+      - name: material_quantidade
+        description: Quantidade disponível do medicamento/insumo
+      - name: material_cmd_30_dias
+        description: Calculo de cobertura para ate 30 dias
+      - name: material_cmd_07_dias
+        description: Calculo de cobertura para ate 7 dias
+      - name: material_cobertura_30_dias
+        description: Materiais com 30 dias de cobertura
+      - name: material_cobertura_07_dias
+        description: Materiais com 7 dias de cobertura
+      - name: material_id_descricao
+        description: Descrição do medicamento/insumo
+      - name: material_descricao_id
+        description: Descrição do medicamento/insumo
+      

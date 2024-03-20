@@ -39,6 +39,8 @@ models:
         description: Subcretaria responsável dentro da SMS
       - name: administracao
         description: Administradora da unidade de saúde.
+      - name: agrupador_sms
+        description: Classificação de tipo de atividade
   - name: raw_sheets__material_remume
     description: Tabela contendo os medicamentos e insumos que compõem a Relação
       Municipal de Medicamentos Essenciais (REMUME)
@@ -93,3 +95,4 @@ models:
       - name: remume_estrategico
         description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
         data_type: STRING
+        

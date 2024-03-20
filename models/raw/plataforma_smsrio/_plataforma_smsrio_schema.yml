@@ -1,0 +1,45 @@
+version: 2
+models: 
+  - name: raw_plataforma_smsrio__estoque_posicao_almoxarifado_aps_dengue
+    description: Tabela especial com a posição do almoxarifado no periodo de Dengue
+    columns: 
+      - name:  id
+        description: Id do banco de dados
+        data_type: STRING
+      - name:  id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: STRING
+      - name:  id_material
+        description: Código de identificação do material cadastrado no prontuário
+        data_type: STRING
+      - name:  data
+        description: Data e hora de atualização do registro no sistema de origem
+        data_type: DATE
+      - name:  material_quantidade
+        description: Quantidade do material movida
+        data_type: INTEGER
+      - name:  id_usuario_atualizacao
+        description: Identificação do usuario responsavel pela movimentação
+        data_type: STRING
+      - name:  created_at
+        description: Data de criação do movimento
+        data_type: DATETIME
+      - name:  updated_at
+        description: Data de atualização do movimento
+        data_type: DATETIME
+  - name: raw_plataforma_smsrio__materiais_almoxarifado_dengue
+    description: Tabela auxiliar de almoxarifado para a Dengue
+    columns:
+      - name: id_material
+        description: Código do medicamento/insumo
+        data_type: STRING
+      - name: descricao
+        description: Descrição do medicamento/insumo
+        data_type: STRING
+      - name: created_at
+        description: Data de criação do movimento
+        data_type: DATETIME
+      - name: updated_at
+        description: Data de atualização do movimento
+        data_type: DATETIME
+        
