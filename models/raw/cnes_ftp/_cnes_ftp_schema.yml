@@ -47,8 +47,6 @@ models:
         description: Código do vínculo empregatício com o estabelecimento
       - name: id_registro_conselho
         description: Número do registro no conselho de classe
-        policy_tags:
-          - '{{ var ("TAG_CRM") }}'
       - name: id_conselho
         description: Código do conselho de classe
         policy_tags:
