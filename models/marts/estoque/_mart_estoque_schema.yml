@@ -431,6 +431,8 @@ models:
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: material_remume
         description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
@@ -474,6 +476,8 @@ models:
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: material_remume
         description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
@@ -548,6 +552,8 @@ models:
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: material_id_descricao
         description: Concatenação do id do material e seu nome
@@ -609,6 +615,8 @@ models:
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: material_id_descricao
         description: Concatenação do id do material e seu nome

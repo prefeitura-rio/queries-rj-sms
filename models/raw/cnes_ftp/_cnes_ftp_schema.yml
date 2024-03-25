@@ -41,14 +41,20 @@ models:
         description: ID Município IBGE - 6 Dígitos do local de residência do profissional 
       - name: nome
         description: Nome do profissional
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: id_vinculo
         description: Código do vínculo empregatício com o estabelecimento
       - name: id_registro_conselho
         description: Número do registro no conselho de classe
       - name: id_conselho
         description: Código do conselho de classe
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
       - name: cartao_nacional_saude
         description: CNS - Cartão Nacional de Saúde
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: cbo_2002
         description: Código da especialidade 
       - name: indicador_estabelecimento_terceiro
