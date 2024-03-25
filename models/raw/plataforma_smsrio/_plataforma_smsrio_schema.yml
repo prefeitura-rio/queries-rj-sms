@@ -19,13 +19,13 @@ models:
         description: Quantidade do material movida
         data_type: INTEGER
       - name:  id_usuario_atualizacao
-        description: Identificação do usuario responsavel pela movimentação
+        description: Identificação do usuario responsavel pela atualização
         data_type: STRING
       - name:  created_at
-        description: Data de criação do movimento
+        description: Data de referencia da posição do estoque
         data_type: DATETIME
       - name:  updated_at
-        description: Data de atualização do movimento
+        description: Data de atualização da posição do estoque
         data_type: DATETIME
   - name: raw_plataforma_smsrio__materiais_almoxarifado_dengue
     description: Tabela auxiliar de almoxarifado para a Dengue
@@ -37,9 +37,9 @@ models:
         description: Descrição do medicamento/insumo
         data_type: STRING
       - name: created_at
-        description: Data de criação do movimento
+        description: Data de referencia da posição do estoque
         data_type: DATETIME
       - name: updated_at
-        description: Data de atualização do movimento
+        description: Data de atualização da posição do estoque
         data_type: DATETIME
         
