@@ -42,7 +42,7 @@ models:
         description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
         data_type: STRING
       - name: estoque_reservado_para_abastecimento
-        description: ""
+        description: Indicador de material ja reservado para o abastecimento de unidades
         data_type: STRING
       - name: estoque_secao
         description: Local dentro da unidade de saúde onde está armazenado o
