@@ -364,6 +364,16 @@ models:
       - name: dados_confiaveis
         description: Indica se os dados são confiáveis ou não. Caso não sejam, não devem
           ser utilizados para análises
+      - name: consumo_prescritor_cpf
+        description: CPF do prescritor do evento de consumo
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: consumo_prescritor_cns
+        description: CNS do prescritor do evento de consumo
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      -name: data_hora_evento
+       description: Data do movimento do estoque com hora 
   - name: mart_estoque__monitoramento
     description: "Tabela utilizada para monitorar a replicação dos dados de possição
       de estoque. Granularidade: unidade de saúde."
@@ -401,9 +411,71 @@ models:
       - name: status_replicacao_dados
         description: Indica se os dados de posição de estoque estão atualizados ou
           desatualizados.
+      - name: material_qtd_distintos_com_estoque_positivo
+        description: Quantidade de medicamentos/insumos distintos na unidade com estoque positivo
+      - name: material_qtd_distintos_cadastro_sigma_incorreto
+        description: Quantidade de medicamentos/insumos distintos na unidade com o cadastro sigma incorreto
+      - name: material_qtd_distintos_sem_valor_unitario
+        description: Quantidade de medicamentos/insumos distintos na unidade sem valor unitário
+      - name: entrada_frequencia_ultimos_30_dias
+        description: Frequência de entrada de materiais/medicamentos nos ultimos 30 dias
+      - name: entrada_quantidade_ultimos_30_dias
+        description: Quantidade de materiais/medicamentos nos ultimos 30 dias
+      - name: dispensacao_frequencia_media_diaria
+        description: Frequência media diária da dispensação
+      - name: dispensacao_por_cpf_frequencia_media_diaria
+        description: Frequência media diaria da dispensação por cpf
+      - name: equipes_quantidade
+        description: Quantidade de equipes no estabelecimento
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: entrada_quantidade_ultimos_30_dias_por_equipe
+        description: 
+      - name: dispensacao_frequencia_media_diaria_por_equipe
+        description:
   - name: mart_estoque__monitoramento_historico
     description: Tabela contendo snapshots diários da tabela estoque_monitoramento
-    columns: []
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+      - name: estabelecimento_prontuario_versao
+        description: Versão do Prontuario eletronico do estabelecimento
+      - name: material_valor_total
+        description: Valor em reais da quantidade movimentada do medicamento/insumo
+      - name: data_ultima_atualizacao
+        description: Data da ultima atualização
+      - name: status_replicacao_dados
+        description: Status da replicação dos dados atualizado/desatualizado
+      - name: dias_desde_ultima_atualizacao
+        description: Quantidade de dias desde a ultima vez que foi atualizado
+      - name: material_qtd_distintos
+        description: Quantidade de medicamentos/insumos distintos na unidade
+      - name: material_qtd_distintos_com_estoque_positivo
+        description: Quantidade de medicamentos/insumos distintos na unidade com estoque positivo
+      - name: material_qtd_distintos_cadastro_sigma_incorreto
+        description: Quantidade de medicamentos/insumos distintos na unidade com o cadastro sigma incorreto
+      - name: material_qtd_distintos_sem_valor_unitario
+        description: Quantidade de medicamentos/insumos distintos na unidade sem valor unitário
+      - name: entrada_frequencia_ultimos_30_dias
+        description: Frequência de entrada de materiais/medicamentos nos ultimos 30 dias
+      - name: entrada_quantidade_ultimos_30_dias
+        description: Quantidade de materiais/medicamentos nos ultimos 30 dias
+      - name: dispensacao_frequencia_media_diaria
+        description: Frequência media diária da dispensação
+      - name: dispensacao_por_cpf_frequencia_media_diaria
+        description: Frequência media diaria da dispensação por cpf
+      - name: equipes_quantidade
+        description: Quantidade de equipes no estabelecimento
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: entrada_quantidade_ultimos_30_dias_por_equipe
+        description: 
+      - name: dispensacao_frequencia_media_diaria_por_equipe
+        description:
   - name: mart_estoque__posicao_atual_agregado
     description: Tabela agregada no nível id_cnes, id_material a partir da tabela
       estoque_posicao_atual.
@@ -427,7 +499,7 @@ models:
         description: Indica ser o material é um item de almoxarifado ou farmácia
         data_type: STRING
       - name: material_hierarquia_subclasse
-        description: ""
+        description: Agrupador de materiais (3o nível) baseado no cadastro de materiais
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
@@ -470,7 +542,7 @@ models:
         description: Indica ser o material é um item de almoxarifado ou farmácia
         data_type: STRING
       - name: material_hierarquia_subclasse
-        description: ""
+        description: Agrupador de materiais (3o nível) baseado no cadastro de materiais
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
@@ -616,3 +688,51 @@ models:
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
         data_type: STRING
+  - name: mart_estoque__nivel_estoque
+    description: Nivel de estoque das unidades de saude da SMS
+    columns:
+      - name: data_particao
+        description: Data de referencia da posição do nivel do estoque
+      - name: id_cnes
+        description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade de saúde onde o item está localizado
+      - name: material_valor_total
+        description: Valor em reais da quantidade movimentada do medicamento/insumo
+      - name: tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades
+      - name: tipo_sms_simplificado
+        description:
+      - name: nome_limpo
+        description: Nome fantasia removido o prefixo SMS e o sufixo contendo a área programática
+  - name: mart_estoque__cobertura_remume
+    description: ""
+    columns:
+      - name: id_material
+        description: Identificador do medicamento/insumo
+       - name: material_descricao
+         description: Descrição do medicamento/insumo
+       - name: estabelecimentos_contagem
+         description: ""
+       - name: estabelecimentos_estoque_positivo
+         description: ""
+       - name: material_quantidade
+         description: Quantidade disponível do medicamento/insumo
+       - name: material_consumo_medio
+         description: ""
+       - name: material_quantidade_tpc
+         description: ""
+       - name: material_ultima_data_estoque_tpc
+         description: ""
+       - name: estoque_cobertura_dias
+         description: ""
+  - name: mart_estoque__consumo_medio_mensal
+    description: ""
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: id_material
+        description: Identificador do medicamento/insumo
+      - name: consumo_medio_diario
+        description: ""
+      - name: consumo_medio_mensal
+        description: ""
+
