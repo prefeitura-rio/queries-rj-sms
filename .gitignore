@@ -6,3 +6,4 @@ logs/
 credentials/
 .python-version
 target-base/
+*.DS_Store
