@@ -105,6 +105,7 @@ select *
 from final
 where
     remume_basico = "sim"
+    or remume_uso_interno = "sim"
     or (
         remume_hospitalar = "sim"
         and tipo_sms_simplificado in ("HOSPITAL", "MATERNIDADE")
