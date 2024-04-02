@@ -6,6 +6,7 @@ with
     posicao_mais_recente_por_estabelecimento as (
         select id_cnes, max(data_particao) as data_particao
         from posicao
+        where material_quantidade > 0
         group by id_cnes
     )
 
