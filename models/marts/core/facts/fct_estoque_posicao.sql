@@ -30,7 +30,7 @@ with
         from vitacare_dias_anteriores
     ),
 
-    -- - Vitai
+    --- Vitai
     vitai_atual as (
         select * from {{ ref("int_estoque__posicao_hoje_vitai_com_zerados_remume") }}
     ),
@@ -48,7 +48,12 @@ with
         from vitai_dias_anteriores
     ),
 
-    -- - TPC
+    --- TPC
+    particao_mais_recente as (
+        select max(data_particao) as data_particao
+        from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
+    ),
+
     tpc_atual as (
         select * from {{ ref("int_estoque__posicao_hoje_tpc_com_zerados_remume") }}
     ),
@@ -56,7 +61,10 @@ with
     tpc_dias_anteriores as (
         select *
         from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
-        where data_particao < current_date()
+        where
+            data_particao < date_sub(
+                (select data_particao from particao_mais_recente), interval 1 day
+            )
     ),
 
     tpc_completa as (

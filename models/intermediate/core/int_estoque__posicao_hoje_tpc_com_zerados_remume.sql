@@ -1,10 +1,15 @@
 -- posicao do dia de hoje adicionado os materiais remume que estão zerados
 with
+    particao_mais_recente as (
+        select max(data_particao) as data_particao
+        from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
+    ),
+
     -- source
     posicao_atual as (
         select *
         from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
-        where data_particao = current_date()
+        where data_particao = (select data_particao from particao_mais_recente)
 
     ),
     materiais as (select * from {{ ref("dim_material") }}),
@@ -42,7 +47,7 @@ with
             pz.material_quantidade,
             0 as material_valor_unitario,
             0 as material_valor_total,
-            current_date() as data_particao,
+            (select data_particao from particao_mais_recente) as data_particao, 
             current_datetime() as data_snapshot,
             current_datetime() as data_carga,
         from posicao_zeradas as pz
