@@ -54,7 +54,7 @@ with
         left join materiais as mat on pz.id_material = mat.id_material
     )
 
--- Une os itens zerados com a posição atual-
+-- Une os itens zerados com a posição atual
 select *
 from posicao_atual
 union all
