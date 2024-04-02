@@ -12,7 +12,7 @@
 
 with
     -- sources
-    -- - Vitacare
+    --- Vitacare
     vitacare_atual as (
         select * from {{ ref("int_estoque__posicao_hoje_vitacare_com_zerados_remume") }}
     ),
@@ -30,7 +30,7 @@ with
         from vitacare_dias_anteriores
     ),
 
-    -- - Vitai
+    --- Vitai
     vitai_atual as (
         select * from {{ ref("int_estoque__posicao_hoje_vitai_com_zerados_remume") }}
     ),
@@ -48,7 +48,7 @@ with
         from vitai_dias_anteriores
     ),
 
-    -- - TPC
+    --- TPC
     particao_mais_recente as (
         select max(data_particao) as data_particao
         from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
