@@ -7,6 +7,7 @@ sources:
     tables:
       - name: estabelecimento_auxiliar
       - name: material_remume
+      - name: assistencial_procedimento
   - name: brutos_sheets
     database: rj-sms
     schema: brutos_sheets

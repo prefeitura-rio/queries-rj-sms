@@ -93,3 +93,18 @@ models:
       - name: remume_estrategico
         description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
         data_type: STRING
+  - name: raw_sheets_assistencial_procedimento
+    description: Esta tabela contém informações sobre os diferentes procedimentos
+      assistênciais realizados pela SMS-Rio.
+    columns:
+      - name: id_procedimento
+        description: Código único de identificação do procedimento.
+        data_type: STRING
+      - name: descricao
+        description: Esta é uma descrição do procedimento. Ela fornece informações mais
+          detalhadas sobre o que o procedimento envolve.
+        data_type: STRING
+      - name: parametro_consultas_por_hora
+        description: Indica o número de consultas que podem ser realizadas em uma hora
+          para o procedimento específico
+        data_type: INT64
