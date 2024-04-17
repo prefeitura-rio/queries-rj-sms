@@ -119,13 +119,13 @@ models:
           material é apresentado ou embalado. Por exemplo, um material pode ser
           apresentado em uma garrafa, uma cartela, um tubo, etc.
         data_type: STRING
-      - name: categoria
+      - name: hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
           material em um grupo específico com base em suas características ou
           uso pretendido. Um material pode pertencer à categoria medicamento,
           insumo ou imunizante.
         data_type: STRING
-      - name: subcategoria
+      - name: hierarquia_n2_subcategoria
         description: Este campo representa a subcategoria do material. Fornece
           informações mais específicas sobre o tipo de material, ajudando a
           classificá-lo ainda mais dentro de sua categoria principal. Por

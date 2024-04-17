@@ -15,18 +15,20 @@ casted as (
         concentracao,
         forma_farmaceutica,
         apresentacao,
-        categoria,
-        subcategoria,
+        categoria as hierarquia_n1_categoria,
+        subcategoria as hierarquia_n2_subcategoria,
         controlado_indicador,
         controlado_tipo,
         remume_indicador,
-        remume_listagens,
+        -- remume_listagens,
+        SPLIT(SUBSTR(remume_listagens, 1, LENGTH(remume_listagens) - 1), ';') as remume_listagens,
         ifnull(remume_listagem_basico_indicador , "nao") as remume_listagem_basico_indicador,
         ifnull(remume_listagem_uso_interno_indicador, "nao") as remume_listagem_uso_interno_indicador,
         ifnull(remume_listagem_hospitalar_indicador, "nao") as remume_listagem_hospitalar_indicador,
         ifnull(remume_listagem_antiseptico_indicador, "nao") as remume_listagem_antiseptico_indicador,
         ifnull(remume_listagem_estrategico_indicador, "nao") as remume_listagem_estrategico_indicador,
-        remume_disponibilidades,
+        -- remume_disponibilidades,
+        SPLIT(SUBSTR(remume_disponibilidades, 1, LENGTH(remume_disponibilidades) - 1), ';') as remume_disponibilidades,
         ifnull(remume_disponibilidade_cms_indicador, "nao") as remume_disponibilidade_cms_indicador,
         ifnull(remume_disponibilidade_cf_indicador, "nao") as remume_disponibilidade_cf_indicador,
         ifnull(remume_disponibilidade_cse_indicador, "nao") as remume_disponibilidade_cse_indicador,
@@ -42,4 +44,3 @@ casted as (
     from source
 )
 select * from casted
-  
