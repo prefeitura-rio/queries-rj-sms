@@ -97,14 +97,32 @@ models:
     description: Esta tabela contém informações sobre os diferentes procedimentos
       assistênciais realizados pela SMS-Rio.
     columns:
-      - name: id_procedimento
-        description: Código único de identificação do procedimento.
-        data_type: STRING
       - name: descricao
         description: Esta é uma descrição do procedimento. Ela fornece informações mais
           detalhadas sobre o que o procedimento envolve.
+        data_type: STRING
+      - name: id_procedimento
+        description: Código único de identificação do procedimento.
         data_type: STRING
       - name: parametro_consultas_por_hora
         description: Indica o número de consultas que podem ser realizadas em uma hora
           para o procedimento específico
         data_type: INT64
+      - name: parametro_reservas
+        description: "Parte do atendimento dedicado ao atendimento por reserva ou
+          primeira vez. Este campo é para ser utilizado junto com o campo
+          parametro_retornos para calcular a proporção do tempo que o
+          profissional de saúde deve dedicar para cada tipo de atendimento.
+          Exemplo: parametro_reservas = 1, parametro_retornos =  4 -> Proporção
+          reservas / retornos = 1:4. Ou seja, 20% do tempo dedicado para reservas
+          ou primeira vez, 80% do tempo para atendimento do tipo retorno"
+        data_type: FLOAT64
+      - name: parametro_retornos
+        description: "Parte do atendimento dedicado ao atendimento de retornos. Este
+          campo é para ser utilizado junto com o campo parametro_reservas para
+          calcular a proporção do tempo que o profissional de saúde deve dedicar
+          para cada tipo de atendimento. Exemplo: parametro_reservas = 1,
+          parametro_retorno =  4 -> Proporção reservas / retornos = 1:4. Ou seja,
+          20% do tempo dedicado para reservas ou primeira vez, 80% do tempo para
+          atendimento do tipo retorno "
+        data_type: FLOAT64

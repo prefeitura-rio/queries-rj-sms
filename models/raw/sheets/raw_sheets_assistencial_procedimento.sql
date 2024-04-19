@@ -10,9 +10,11 @@ with source as (
 ),
 renamed as (
     select
-        {{ adapter.quote("id_procedimento") }},
-        {{ adapter.quote("descricao") }},
-        safe_cast({{ adapter.quote("parametro_consultas_por_hora") }} as int64) as parametro_consultas_por_hora,
+        descricao,
+        id_procedimento,
+        safe_cast(parametro_consultas_por_hora as float64) as parametro_consultas_por_hora,
+        safe_cast(parametro_reservas as float64) as parametro_reservas,
+        safe_cast(parametro_retornos as float64) as parametro_retornos
 
     from source
 )
