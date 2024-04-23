@@ -15,11 +15,11 @@ with
             id_material,
             estabelecimento_area_programatica,
             estabelecimento_nome_limpo,
-            estabelecimento_agrupador_sms,
-            material_natureza,
-            material_hierarquia_subclasse,
+            estabelecimento_tipo_sms_agrupado,
+            material_hierarquia_n1_categoria,
+            material_hierarquia_n2_subcategoria,
             material_descricao,
-            material_remume,
+            material_remume_indicador,
             sum(material_quantidade) as material_quantidade,
             avg(material_consumo_medio) as material_consumo_medio
         from source
@@ -29,10 +29,10 @@ with
             id_material,
             estabelecimento_area_programatica,
             estabelecimento_nome_limpo,
-            estabelecimento_agrupador_sms,
-            material_natureza,
-            material_hierarquia_subclasse,
-            material_remume,
+            estabelecimento_tipo_sms_agrupado,
+            material_hierarquia_n1_categoria,
+            material_hierarquia_n2_subcategoria,
+            material_remume_indicador,
             material_descricao
     )
 

@@ -24,7 +24,7 @@ with
             avg(material_consumo_medio) as material_consumo_medio,
         from estoque
         where
-            material_remume = 'sim'
+            material_remume_indicador = 'sim'
             and estabelecimento_tipo_sms
             in ('CLINICA DA FAMILIA', 'CENTRO MUNICIPAL DE SAUDE')
         group by id_material, material_descricao, id_cnes
@@ -34,7 +34,7 @@ with
         select id_material, sum(material_quantidade) as material_quantidade_tpc,
         from estoque
         where
-            material_remume = 'sim' and estabelecimento_tipo_sms in ('ESTOQUE CENTRAL')
+            material_remume_indicador = 'sim' and estabelecimento_tipo_sms in ('ESTOQUE CENTRAL')
         group by id_material
     ),
 

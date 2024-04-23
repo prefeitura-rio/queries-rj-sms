@@ -160,12 +160,12 @@ with
     posicao_consolidada_com_remume as (
         select
             pos.*,
-            if(remume.id_material is null, "nao", "sim") as material_remume,
-            remume.remume_basico,
-            remume.remume_uso_interno,
-            remume.remume_hospitalar,
-            remume.remume_antiseptico,
-            remume.remume_estrategico,
+            if(remume.id_material is null, "nao", "sim") as material_remume_indicador,
+            remume_listagem_basico_indicador as material_remume_listagem_basico_indicador,
+            remume_listagem_uso_interno_indicador as material_remume_listagem_uso_interno_indicador,
+            remume_listagem_hospitalar_indicador as material_remume_listagem_hospitalar_indicador,
+            remume_listagem_antiseptico_indicador as material_remume_listagem_antiseptico_indicador,
+            remume_listagem_estrategico_indicador as material_remume_listagem_estrategico_indicador,
         from posicao_consolidada as pos
         left join
             {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
@@ -179,11 +179,11 @@ select
     -- Primary Key
     -- Foreign Keys
     id_cnes,
-    id_lote,
     id_material,
+    id_lote,
     concat(id_cnes, "-", id_material) as id_cnes_material,
     case
-        when id_cnes = '-'  -- TPC
+        when id_cnes = 'tpc'  -- TPC
         then "-"
         when estabelecimento_tipo = 'CENTRO DE SAUDE/UNIDADE BASICA'
         then concat("ap-", estabelecimento_area_programatica, "-", id_material)
@@ -193,20 +193,20 @@ select
     end as id_curva_abc,
 
     -- Common Fields
-    material_remume,
-    remume_basico,
-    remume_uso_interno,
-    remume_hospitalar,
-    remume_antiseptico,
-    remume_estrategico,
-    estoque_reservado_para_abastecimento,
-    estoque_secao,
     material_descricao,
     material_unidade,
+    estoque_secao,
     lote_data_vencimento,
     material_quantidade,
     material_valor_unitario,
     material_valor_total,
+    material_remume_indicador,
+    material_remume_listagem_basico_indicador,
+    material_remume_listagem_uso_interno_indicador,
+    material_remume_listagem_hospitalar_indicador,
+    material_remume_listagem_antiseptico_indicador,
+    material_remume_listagem_estrategico_indicador,
+    estoque_reservado_para_abastecimento,
 
     -- Metadata
     sistema_origem,

@@ -23,7 +23,7 @@ with
         select
             est.id_cnes,
             est.tipo_sms_simplificado,
-            est.agrupador_sms,
+            est.tipo_sms_agrupado,
             est.prontuario_versao,
             est.prontuario_estoque_tem_dado,
             remume.cadastrado_sistema_vitacare_indicador,
@@ -53,11 +53,11 @@ with
         from relacao_remume_unidades
         where
             (
-                agrupador_sms = "APS"
+                tipo_sms_agrupado = "APS"
                 and prontuario_versao = "vitacare"
                 and cadastrado_sistema_vitacare_indicador = "sim"
             )  -- somente mostrar itens cadastrados na vitacare para APS
-            or agrupador_sms <> "APS"  -- # TODO: revisar para as demais unidades
+            or tipo_sms_agrupado <> "APS"  -- # TODO: revisar para as demais unidades
     ),
 
     -- - TPC
@@ -111,7 +111,7 @@ with
         select
             "tpc" as id_cnes,
             "TPC" as tipo_sms_simplificado,
-            "TPC" as agrupador_sms,
+            "TPC" as tipo_sms_agrupado,
             "" as prontuario_versao,
             "" as prontuario_estoque_tem_dado,
             "" as cadastrado_sistema_vitacare_indicador,

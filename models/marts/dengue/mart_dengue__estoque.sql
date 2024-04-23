@@ -70,7 +70,7 @@ with
         select
             id_cnes,
             id_material,
-            estabelecimento_agrupador_sms,
+            estabelecimento_tipo_sms_agrupado as  estabelecimento_agrupador_sms,
             estabelecimento_area_programatica,
             estabelecimento_tipo_sms,
             estabelecimento_nome_limpo,
