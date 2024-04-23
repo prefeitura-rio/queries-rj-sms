@@ -6,4 +6,8 @@ logs/
 credentials/
 .python-version
 target-base/
+<<<<<<< HEAD
 *.DS_Store
+=======
+*.DS_Store
+>>>>>>> estoque-monitoramento

@@ -98,3 +98,7 @@ tests:
   rj_sms:
     +severity: error
     +store_failures: true
+seeds:
+  rj_sms:
+    estoque:
+      +schema: projeto_estoque
