@@ -26,8 +26,8 @@ Classifique o tipo de mudança com a qual você está trabalhando para ajudar o 
 - [ ] Documentação
 - [ ] Atualização/Instalação de dependências
 
-## A fazer antes do merge
 <!---
+## A fazer antes do merge
 Atualmente nenhuma ação é necessária
 -->
 
