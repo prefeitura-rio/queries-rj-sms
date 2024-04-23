@@ -196,6 +196,7 @@ select
     material_descricao,
     material_unidade,
     estoque_secao,
+    estoque_reservado_para_abastecimento,
     lote_data_vencimento,
     material_quantidade,
     material_valor_unitario,
@@ -206,8 +207,7 @@ select
     material_remume_listagem_hospitalar_indicador,
     material_remume_listagem_antiseptico_indicador,
     material_remume_listagem_estrategico_indicador,
-    estoque_reservado_para_abastecimento,
-
+    
     -- Metadata
     sistema_origem,
     data_particao,

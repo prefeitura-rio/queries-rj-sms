@@ -116,6 +116,7 @@ with
                 then "item não possui histórico de dispensação registrado na unidade"
                 else 'desconhecida'
             end as cmm_justificativa_ausencia,
+            est.tipo_sms_simplificado as estabelecimento_tipo_sms_simplificado,
             mat.hierarquia_n1_categoria as material_hierarquia_n1_categoria,
             mat.hierarquia_n2_subcategoria as material_hierarquia_n2_subcategoria,
         from posicao_atual as pos  -- posicao_atual
@@ -140,13 +141,14 @@ select
     -- Common fields
     estabelecimento_tipo_cnes,
     estabelecimento_tipo_sms,
+    estabelecimento_tipo_sms_simplificado,
     estabelecimento_tipo_sms_agrupado,
     estabelecimento_area_programatica,
     estabelecimento_nome_limpo,
     estabelecimento_nome_sigla,
     estabelecimento_administracao,
     estabelecimento_responsavel_sms,
-    abc_categoria,
+    abc_categoria as material_abc_categoria,
     material_hierarquia_n1_categoria,
     material_hierarquia_n2_subcategoria,
     material_remume_indicador,
