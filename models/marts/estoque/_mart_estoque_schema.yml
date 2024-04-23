@@ -5,7 +5,6 @@ models:
       unidades de saúde
     tests:
       - dbt_expectations.expect_table_row_count_to_be_between:
-          name: mart_estoque__posicao_atual__row_count__between
           min_value: 100000
           max_value: 200000
     columns:
@@ -24,15 +23,14 @@ models:
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
         data_type: STRING
-      - name: estabelecimento_agrupador_sms
-        description: Agrupador de tipos de unidades de saúde baseada na classificação
-          alternativa da SMS.
-        data_type: STRING
-      - name: estabelecimento_tipo
-        description: Tipo de Unidade de Saúde segundo a classificação do CNES
+      - name: estabelecimento_tipo_cnes
+        description: Classificação do CNES de tipos de unidades.
         data_type: STRING
       - name: estabelecimento_tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades.
+        data_type: STRING
+      - name: estabelecimento_tipo_sms_simplificado
+        description: Versão encurtada do campo 'estabelecimento_tipo_sms'
         data_type: STRING
       - name: estabelecimento_tipo_sms_agrupado
         description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES
@@ -53,35 +51,46 @@ models:
       - name: estabelecimento_responsavel_sms
         description: Sub secretaria dentro da SMS-Rio responsável pela unidade
         data_type: STRING
-      - name: abc_categoria
+      - name: material_abc_categoria
         description: Classificação do medicamento/insumo pela curva ABC
         data_type: STRING
-      - name: material_natureza
-        description: "Indicada a natureza do material: insumo para os itens de
-          almoxarifado, medicamento para os itens de farmácia"
+      - name: material_hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
         data_type: STRING
-      - name: material_hierarquia_subclasse
-        description: Agrupador de materiais (3o nível) baseado no cadastro de materiais
-          do Sigma
+      - name: material_hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
         data_type: STRING
-      - name: material_remume
-        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
-          de medicamentos essenciais)
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
         data_type: STRING
-      - name: remume_basico
-        description: Indica se o item pertence a lista 'Componente Básico' da REMUME
+      - name: material_remume_listagem_basico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Básicos" da REMUME.
         data_type: STRING
-      - name: remume_uso_interno
-        description: Indica se o item pertence a lista de 'Uso Interno nas UAPs' da REMUME
+      - name: material_remume_listagem_uso_interno_indicador
+        description: Esta coluna indica se o material faz parte da lista "Uso interno
+          nas UAPs" da REMUME.
         data_type: STRING
-      - name: remume_hospitalar
-        description: Indica se o item pertence a lista 'Componente Hospitalar' da REMUME
+      - name: material_remume_listagem_hospitalar_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Hospitalares" da REMUME.
         data_type: STRING
-      - name: remume_antiseptico
-        description: Indica se o item pertence a lista 'Saneantes / Antisepticos' da REMUME
+      - name: material_remume_listagem_antiseptico_indicador
+        description: Esta coluna indica se o material faz parte da lista
+          "Saneantes/Antispeticos" da REMUME.
         data_type: STRING
-      - name: remume_estrategico
-        description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
+      - name: material_remume_listagem_estrategico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Estratégicos" da REMUME.
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
@@ -165,15 +174,14 @@ models:
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
         data_type: STRING
-      - name: estabelecimento_agrupador_sms
-        description: Agrupador de tipos de unidades de saúde baseada na classificação
-          alternativa da SMS.
-        data_type: STRING
-      - name: estabelecimento_tipo
-        description: Tipo de Unidade de Saúde segundo a classificação do CNES
+      - name: estabelecimento_tipo_cnes
+        description: Classificação do CNES de tipos de unidades.
         data_type: STRING
       - name: estabelecimento_tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades.
+        data_type: STRING
+      - name: estabelecimento_tipo_sms_simplificado
+        description: Versão encurtada do campo 'estabelecimento_tipo_sms'
         data_type: STRING
       - name: estabelecimento_tipo_sms_agrupado
         description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES
@@ -194,35 +202,46 @@ models:
       - name: estabelecimento_responsavel_sms
         description: Sub secretaria dentro da SMS-Rio responsável pela unidade
         data_type: STRING
-      - name: abc_categoria
+      - name: material_abc_categoria
         description: Classificação do medicamento/insumo pela curva ABC
         data_type: STRING
-      - name: material_natureza
-        description: "Indicada a natureza do material: insumo para os itens de
-          almoxarifado, medicamento para os itens de farmácia"
+      - name: material_hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
         data_type: STRING
-      - name: material_hierarquia_subclasse
-        description: Agrupador de materiais (3o nível) baseado no cadastro de materiais
-          do Sigma
+      - name: material_hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
         data_type: STRING
-      - name: material_remume
-        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
-          de medicamentos essenciais)
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
         data_type: STRING
-      - name: remume_basico
-        description: Indica se o item pertence a lista 'Componente Básico' da REMUME
+      - name: material_remume_listagem_basico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Básicos" da REMUME.
         data_type: STRING
-      - name: remume_uso_interno
-        description: Indica se o item pertence a lista de 'Uso Interno nas UAPs' da REMUME
+      - name: material_remume_listagem_uso_interno_indicador
+        description: Esta coluna indica se o material faz parte da lista "Uso interno
+          nas UAPs" da REMUME.
         data_type: STRING
-      - name: remume_hospitalar
-        description: Indica se o item pertence a lista 'Componente Hospitalar' da REMUME
+      - name: material_remume_listagem_hospitalar_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Hospitalares" da REMUME.
         data_type: STRING
-      - name: remume_antiseptico
-        description: Indica se o item pertence a lista 'Saneantes / Antisepticos' da REMUME
+      - name: material_remume_listagem_antiseptico_indicador
+        description: Esta coluna indica se o material faz parte da lista
+          "Saneantes/Antispeticos" da REMUME.
         data_type: STRING
-      - name: remume_estrategico
-        description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
+      - name: material_remume_listagem_estrategico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Estratégicos" da REMUME.
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
@@ -420,23 +439,31 @@ models:
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
         data_type: STRING
-      - name: estabelecimento_agrupador_sms
-        description: Agrupador padrão dos tipo de UBS utilizado na SMS
+      - name: estabelecimento_tipo_sms_agrupado
+        description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES.
         data_type: STRING
-      - name: material_natureza
-        description: Indica ser o material é um item de almoxarifado ou farmácia
+      - name: material_hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
         data_type: STRING
-      - name: material_hierarquia_subclasse
-        description: ""
+      - name: material_hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
-      - name: material_remume
-        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
-          de medicamentos essenciais)
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
         data_type: STRING
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
@@ -465,23 +492,31 @@ models:
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
         data_type: STRING
-      - name: estabelecimento_agrupador_sms
-        description: Agrupador padrão dos tipo de UBS utilizado na SMS
+      - name: estabelecimento_tipo_sms_agrupado
+        description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES.
         data_type: STRING
-      - name: material_natureza
-        description: Indica ser o material é um item de almoxarifado ou farmácia
+      - name: material_hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
         data_type: STRING
-      - name: material_hierarquia_subclasse
-        description: ""
+      - name: material_hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
         data_type: STRING
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
-      - name: material_remume
-        description: Indicação se o material faz parte da REMUME-RIO (Relação municipal
-          de medicamentos essenciais)
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
         data_type: STRING
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo

@@ -62,37 +62,34 @@ models:
           Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
           disponibilidade e regulamentação do material.
         data_type: STRING
-      - name: remume_listagens
+      - name: remume_listagem_relacao
         description: Esta coluna fornece uma lista de todas as listagens REMUME das
           quais o material faz parte. É útil para entender os diferentes
           contextos em que o material é considerado essencial.
         data_type: STRING
       - name: remume_listagem_basico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
-          Básicos" da REMUME. Os valores são 'sim' para sim e 'não' para não.
+          Básicos" da REMUME.
         data_type: STRING
       - name: remume_listagem_uso_interno_indicador
         description: Esta coluna indica se o material faz parte da lista "Uso interno
-          nas UAPs" da REMUME. Os valores são 'sim' para sim e 'não' para não.
+          nas UAPs" da REMUME.
         data_type: STRING
       - name: remume_listagem_hospitalar_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
-          Hospitalares" da REMUME. Os valores são 'sim' para sim e 'não' para
-          não.
+          Hospitalares" da REMUME.
         data_type: STRING
       - name: remume_listagem_antiseptico_indicador
         description: Esta coluna indica se o material faz parte da lista
-          "Saneantes/Antispeticos" da REMUME. Os valores são 'sim' para sim e
-          'não' para não.
+          "Saneantes/Antispeticos" da REMUME.
         data_type: STRING
       - name: remume_listagem_estrategico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
-          Estratégicos" da REMUME. Os valores são 'sim' para sim e 'não' para
-          não.
+          Estratégicos" da REMUME.
         data_type: STRING
-      - name: remume_disponibilidades
+      - name: remume_disponibilidade_relacao
         description: Esta coluna fornece informações sobre a disponibilidade do material
-          em diferentes unidades de saúde. É um campo de texto que lista os
+          nos diferentes tipos de unidades de saúde. É um campo de texto que lista os
           tipos de unidades de saúde onde o material deve estar disponível.
         data_type: STRING
       - name: remume_disponibilidade_cms_indicador
