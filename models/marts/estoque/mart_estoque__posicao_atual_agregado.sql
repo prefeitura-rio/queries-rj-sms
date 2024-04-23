@@ -18,6 +18,8 @@ with
             estabelecimento_tipo_sms_agrupado,
             material_hierarquia_n1_categoria,
             material_hierarquia_n2_subcategoria,
+            material_controlado_indicador,
+            material_controlado_tipo,
             material_descricao,
             material_remume_indicador,
             sum(material_quantidade) as material_quantidade,
@@ -32,6 +34,8 @@ with
             estabelecimento_tipo_sms_agrupado,
             material_hierarquia_n1_categoria,
             material_hierarquia_n2_subcategoria,
+            material_controlado_indicador,
+            material_controlado_tipo,
             material_remume_indicador,
             material_descricao
     )

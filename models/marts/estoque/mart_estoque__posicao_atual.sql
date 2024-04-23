@@ -119,6 +119,8 @@ with
             est.tipo_sms_simplificado as estabelecimento_tipo_sms_simplificado,
             mat.hierarquia_n1_categoria as material_hierarquia_n1_categoria,
             mat.hierarquia_n2_subcategoria as material_hierarquia_n2_subcategoria,
+            mat.controlado_indicador as material_controlado_indicador,
+            mat.controlado_tipo as material_controlado_tipo,
         from posicao_atual as pos  -- posicao_atual
         left join curva_abc as abc using (id_curva_abc)
         left join historico_dispensacao as disp using (id_curva_abc)
@@ -157,6 +159,8 @@ select
     material_remume_listagem_hospitalar_indicador,
     material_remume_listagem_antiseptico_indicador,
     material_remume_listagem_estrategico_indicador,
+    material_controlado_indicador,
+    material_controlado_tipo,
     material_descricao2 as material_descricao,
     material_unidade,
     material_cadastro_esta_correto,
