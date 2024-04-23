@@ -1,26 +1,40 @@
 with
     -- Sources 
-    remume as (select * from {{ ref("raw_sheets__material_remume") }}),
-
-    estabelecimento as (
-        select *
-        from {{ ref("dim_estabelecimento") }}
-        where prontuario_estoque_tem_dado = "sim"  -- só mostrar unidade que usam o modulo de estoque do prontuario
+    remume as (
+        select
+            *,
+            split(
+                substr(
+                    remume_disponibilidade_relacao,
+                    1,
+                    length(remume_disponibilidade_relacao) - 1
+                ),
+                ';'
+            ) as remume_disponibilidade_relacao_array,
+        from {{ ref("raw_sheets__material_mestre") }}
+        where remume_indicador = "sim"
     ),
 
-    -- Unidades de Saúde
+    estabelecimento as (select * from {{ ref("dim_estabelecimento") }}),
+
+    -- Relação de materiais da REMUME por Unidade
+    -- - Unidades de Saúde
     combinacao_estabelecimento_remume as (
         select
             est.id_cnes,
             est.tipo_sms_simplificado,
-            remume.estabelecimento_disponibilidade,
+            est.agrupador_sms,
+            est.prontuario_versao,
+            est.prontuario_estoque_tem_dado,
+            remume.cadastrado_sistema_vitacare_indicador,
+            remume.remume_disponibilidade_relacao_array,
             remume.id_material,
-            remume.remume_grupos,
-            remume.remume_basico,
-            remume.remume_hospitalar,
-            remume.remume_uso_interno,
-            remume.remume_antiseptico,
-            remume.remume_estrategico
+            remume.remume_listagem_relacao,
+            remume.remume_listagem_basico_indicador,
+            remume.remume_listagem_hospitalar_indicador,
+            remume.remume_listagem_uso_interno_indicador,
+            remume.remume_listagem_antiseptico_indicador,
+            remume.remume_listagem_estrategico_indicador
         from estabelecimento as est
         cross join remume
     ),
@@ -29,84 +43,92 @@ with
         select *
         from combinacao_estabelecimento_remume
         where
-            tipo_sms_simplificado in unnest(estabelecimento_disponibilidade)
-            or id_cnes in unnest(estabelecimento_disponibilidade)
+            tipo_sms_simplificado in unnest(remume_disponibilidade_relacao_array)
+            or id_cnes in unnest(remume_disponibilidade_relacao_array)
         order by id_cnes
     ),
 
-    relacao_remume_ajutasdo_unidades as (
-        select
-            id_cnes,
-            tipo_sms_simplificado,
-            estabelecimento_disponibilidade,
-            id_material,
-            remume_grupos,
-            if(
-                tipo_sms_simplificado in ("HOSPITAL", "MATERNIDADE"),
-                null,
-                remume_basico
-            ) as remume_basico,
-            if(
-                tipo_sms_simplificado in ("HOSPITAL", "MATERNIDADE"),
-                null,
-                remume_uso_interno
-            ) as remume_uso_interno,
-            if(
-                tipo_sms_simplificado not in ("HOSPITAL", "MATERNIDADE"),
-                null,
-                remume_hospitalar
-            ) as remume_hospitalar,
-            remume_antiseptico,
-            remume_estrategico
+    relacao_remume_unidades_com_dados as (
+        select *
         from relacao_remume_unidades
+        where
+            (
+                agrupador_sms = "APS"
+                and prontuario_versao = "vitacare"
+                and cadastrado_sistema_vitacare_indicador = "sim"
+            )  -- somente mostrar itens cadastrados na vitacare para APS
+            or agrupador_sms <> "APS"  -- # TODO: revisar para as demais unidades
     ),
 
-    -- TPC
+    -- - TPC
     remume_distintos as (
         select
             id_material,
-            remume_grupos,
-            remume_basico,
-            remume_hospitalar,
-            remume_uso_interno,
-            remume_antiseptico,
-            remume_estrategico
+            remume_disponibilidade_relacao_array,
+            remume_listagem_relacao,
+            remume_listagem_basico_indicador,
+            remume_listagem_hospitalar_indicador,
+            remume_listagem_uso_interno_indicador,
+            remume_listagem_antiseptico_indicador,
+            remume_listagem_estrategico_indicador,
         from remume
-        where remume_basico = "sim" or remume_uso_interno = "sim"  -- TPC só abastece APS
+        where
+            array_length(remume_disponibilidade_relacao_array) > 2
+            or (
+                array_length(remume_disponibilidade_relacao_array) = 1
+                and not (
+                    contains_substr(
+                        array_to_string(remume_disponibilidade_relacao_array, ','),
+                        "HOSPITAL"
+                    )
+                    or (
+                        contains_substr(
+                            array_to_string(remume_disponibilidade_relacao_array, ','),
+                            "MATERNIDADE"
+                        )
+                    )
+                )
+            )
+            or (
+                array_length(remume_disponibilidade_relacao_array) = 2
+                and not (
+                    contains_substr(
+                        array_to_string(remume_disponibilidade_relacao_array, ','),
+                        "HOSPITAL"
+                    )
+                    and (
+                        contains_substr(
+                            array_to_string(remume_disponibilidade_relacao_array, ','),
+                            "MATERNIDADE"
+                        )
+                    )
+                )
+            )  -- TPC só abastece APS, então só considerar itens que não são exclusivos para hospitais e maternidades
+
     ),
 
     relacao_remume_tpc as (
         select
             "tpc" as id_cnes,
             "TPC" as tipo_sms_simplificado,
-            array["TPC"] as estabelecimento_disponibilidade,
+            "TPC" as agrupador_sms,
+            "" as prontuario_versao,
+            "" as prontuario_estoque_tem_dado,
+            "" as cadastrado_sistema_vitacare_indicador,
+            array["TPC"] as remume_disponibilidade_relacao_array,
             remume.id_material,
-            remume.remume_grupos,
-            remume.remume_basico,
-            "" as remume_hospitalar,  -- TPC só abastece APS
-            remume.remume_uso_interno,
-            remume.remume_antiseptico,
-            remume_estrategico,
+            remume.remume_listagem_relacao,
+            remume.remume_listagem_basico_indicador,
+            remume.remume_listagem_hospitalar_indicador,
+            remume.remume_listagem_uso_interno_indicador,
+            remume.remume_listagem_antiseptico_indicador,
+            remume.remume_listagem_estrategico_indicador
         from remume_distintos as remume
-    ),
-    -- Result
-    final as (
-        select *
-        from relacao_remume_unidades
-        union all
-        select *
-        from relacao_remume_tpc
-
     )
 
--- Atenção Primária só tem dados de farmácia. No momento todos itens de almoxarifado e
--- vacinas serão desconsiderados
+-- Result
 select *
-from final
-where
-    remume_basico = "sim"
-    or remume_uso_interno = "sim"
-    or (
-        remume_hospitalar = "sim"
-        and tipo_sms_simplificado in ("HOSPITAL", "MATERNIDADE")
-    )
+from relacao_remume_unidades_com_dados
+union all
+select *
+from relacao_remume_tpc

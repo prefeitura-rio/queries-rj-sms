@@ -20,15 +20,15 @@ casted as (
         controlado_indicador,
         controlado_tipo,
         remume_indicador,
-        remume_listagens,
+        remume_listagens as remume_listagem_relacao,
         -- SPLIT(SUBSTR(remume_listagens, 1, LENGTH(remume_listagens) - 1), ';') as remume_listagens,
         ifnull(remume_listagem_basico_indicador , "nao") as remume_listagem_basico_indicador,
         ifnull(remume_listagem_uso_interno_indicador, "nao") as remume_listagem_uso_interno_indicador,
         ifnull(remume_listagem_hospitalar_indicador, "nao") as remume_listagem_hospitalar_indicador,
         ifnull(remume_listagem_antiseptico_indicador, "nao") as remume_listagem_antiseptico_indicador,
         ifnull(remume_listagem_estrategico_indicador, "nao") as remume_listagem_estrategico_indicador,
-        remume_disponibilidades,
-        -- SPLIT(SUBSTR(remume_disponibilidades, 1, LENGTH(remume_disponibilidades) - 1), ';') as remume_disponibilidades,
+        remume_disponibilidades as remume_disponibilidade_relacao,
+        -- SPLIT(SUBSTR(remume_disponibilidades, 1, LENGTH(remume_disponibilidades) - 1), ';') as remume_disponibilidade_relacao,
         ifnull(remume_disponibilidade_cms_indicador, "nao") as remume_disponibilidade_cms_indicador,
         ifnull(remume_disponibilidade_cf_indicador, "nao") as remume_disponibilidade_cf_indicador,
         ifnull(remume_disponibilidade_cse_indicador, "nao") as remume_disponibilidade_cse_indicador,
@@ -39,7 +39,7 @@ casted as (
         ifnull(remume_disponibilidade_upa_indicador, "nao") as remume_disponibilidade_upa_indicador,
         ifnull(remume_disponibilidade_cer_indicador, "nao") as remume_disponibilidade_cer_indicador,
         remume_disponibilidade_unidades_especificas_lista,
-        cadastrado_sistema_vitacare_indicador,
+        if(CONTAINS_SUBSTR(cadastrado_sistema_vitacare_indicador, "nao"), "nao", "sim") as cadastrado_sistema_vitacare_indicador, 
 
     from source
 )
