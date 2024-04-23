@@ -70,10 +70,12 @@ models:
             - estoque_movimento_tipo
             - estoque_movimento_justificativa
             - material_quantidade
+            - dispensacao_paciente_cpf
+            - dispensacao_prescritor_cpf
             - estoque_movimento_data_hora
           config:
             where: data_particao = date_sub(current_date(), INTERVAL 1 DAY)
-            error_if: ">100"
+            error_if: ">1000"
     columns:
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
