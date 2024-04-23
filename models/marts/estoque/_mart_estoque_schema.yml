@@ -114,7 +114,7 @@ models:
         data_type: STRING
       - name: material_cadastro_esta_correto
         description: Indica se o cadastro do medicamento/insumo está utilizando a
-          codificação Sigma
+          codificação Sigma correta.
         data_type: STRING
       - name: estoque_secao
         description: Sub-estoque onde o medicamento/insumo está armazenado
@@ -277,7 +277,7 @@ models:
         data_type: STRING
       - name: material_cadastro_esta_correto
         description: Indica se o cadastro do medicamento/insumo está utilizando a
-          codificação Sigma
+          codificação Sigma correta.
         data_type: STRING
       - name: estoque_secao
         description: Sub-estoque onde o medicamento/insumo está armazenado
