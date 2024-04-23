@@ -6,31 +6,43 @@ models:
       - name: id_material
         description: Este é o identificador único para cada material. É usado para
           rastrear e gerenciar materiais no sistema.
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: descricao
         description: Esta é uma descrição do material. Fornece informações detalhadas
           sobre o material, incluindo seu nome e quaisquer outros detalhes
           relevantes.
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: concentracao
         description: Isso se refere à concentração do ingrediente ativo no material. É
           um fator importante para determinar a potência e eficácia do material.
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: forma_farmaceutica
         description: Esta coluna representa a forma farmacêutica do material. Descreve a
           forma física em que o material é produzido ou administrado. Exemplos
           incluem comprimidos, cápsulas, soluções, etc.
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: apresentacao
         description: Esta coluna representa a apresentação do material. Descreve como o
           material é apresentado ou embalado. Por exemplo, um material pode ser
           apresentado em uma garrafa, uma cartela, um tubo, etc.
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: nome
         description: Esta coluna representa o nome do material. É uma combinação da
           descrição do material, concentração e apresentação ou forma
           farmacêutica. Este campo é útil para identificar o material de maneira
           mais detalhada e abrangente.
+        policy_tags:
+          - '{{ var ("TAG_MATERIAL") }}'
         data_type: STRING
       - name: hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
