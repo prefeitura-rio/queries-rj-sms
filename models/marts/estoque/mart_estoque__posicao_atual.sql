@@ -28,7 +28,7 @@ with
         from {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
     ),
 
-    sigma as (select * from {{ source('sigma', 'material') }}),
+    sigma as (select * from {{ source("sigma", "material") }}),
 
     posicao_atual_inclusive_remume_zerado as (
         select
@@ -93,7 +93,11 @@ with
                 sistema_origem <> "tpc", coalesce(cmm.quantidade, 0), cmm.quantidade
             ) as material_consumo_medio,
             coalesce(abc.abc_categoria, "S/C") as abc_categoria,
-            coalesce(mat.nome, sig.nm_padronizado, pos.material_descricao) as material_descricao2, 
+            coalesce(
+                mat.nome,
+                concat(sig.nm_padronizado," ", nm_complementar_material),
+                pos.material_descricao
+            ) as material_descricao2,
             if(mat.nome is null, "nao", "sim") as material_cadastro_esta_correto,
             case
                 when abc.abc_categoria is not null
@@ -133,7 +137,7 @@ with
 
     )
 
-select 
+select
     -- Foreign keys
     id_cnes,
     id_curva_abc,
