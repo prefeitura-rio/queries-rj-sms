@@ -45,6 +45,9 @@ models:
       - name: id_material
         description: Este é o identificador único para cada material. É usado para
           rastrear e gerenciar materiais no sistema.
+        tests:
+          - unique:
+              name: raw_sheets__material_mestre__id_material__unique
         data_type: STRING
       - name: descricao
         description: Esta é uma descrição do material. Fornece informações detalhadas
