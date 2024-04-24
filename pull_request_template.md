@@ -26,10 +26,16 @@ Classifique o tipo de mudança com a qual você está trabalhando para ajudar o 
 - [ ] Documentação
 - [ ] Atualização/Instalação de dependências
 
-<!---
+
 ## A fazer antes do merge
-Atualmente nenhuma ação é necessária
+<!---
+Inclua quaisquer observações sobre coisas que precisam acontecer antes que este PR seja mergeado, por exemplo:
 -->
+Em caso de quebra de compatibilidade
+- [ ] Validar em dev o funcionamento correto dos produtos de dados afetados
+- [ ] Materializar os novos modelos em prod
+- [ ] Re-apontar os produtos de dados afetados para as novas estruturas de dados
+
 
 ## DAG de Linhagem:
 <!---
