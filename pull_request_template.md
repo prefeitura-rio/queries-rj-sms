@@ -33,9 +33,6 @@ Inclua quaisquer observações sobre coisas que precisam acontecer antes que est
 -->
 Em caso de quebra de compatibilidade
 - [ ] Validar em dev o funcionamento correto dos produtos de dados afetados
-- [ ] Materializar os novos modelos em prod
-- [ ] Re-apontar os produtos de dados afetados para as novas estruturas de dados
-
 
 ## DAG de Linhagem:
 <!---
