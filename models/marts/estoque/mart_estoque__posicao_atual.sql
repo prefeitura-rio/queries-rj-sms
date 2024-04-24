@@ -28,24 +28,8 @@ with
         from {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
     ),
 
-    sigma as (select * from {{ source("sigma", "material") }}),
+    sigma as (select distinct * from {{ source("sigma", "material") }}), -- existe um bug na origem do sigma gerando duplicidade
 
-    posicao_atual_inclusive_remume_zerado as (
-        select
-
-            coalesce(atual.id_material, remume.id_material) as id_material,
-            atual.id_lote,
-            coalesce(atual.id_cnes, remume.id_cnes) as id_cnes,
-            coalesce(
-                atual.id_cnes_material, concat(remume.id_cnes, "-", remume.id_material)
-            ) as id_cnes_material,
-
-            if(
-                atual.id_material is null, 0, atual.material_quantidade
-            ) as material_quantidade_corrigida,
-        from posicao_atual as atual
-        full outer join remume using (id_material, id_cnes)
-    ),
 
     historico_dispensacao as (
         select *
