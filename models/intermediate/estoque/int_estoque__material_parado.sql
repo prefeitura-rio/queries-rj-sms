@@ -9,6 +9,6 @@ with
 select
     concat(id_cnes, "-", id_material) as id_cnes_material,
     *,
-    date_diff(current_date(), data_ultima_dispensacao, day) as dias_ultima_dispensacao
+    date_diff(current_date('America/Sao_Paulo'), data_ultima_dispensacao, day) as dias_ultima_dispensacao
 from ultima_dispensacao
-where date_diff(current_date(), data_ultima_dispensacao, day) > 90
+where date_diff(current_date('America/Sao_Paulo'), data_ultima_dispensacao, day) > 90

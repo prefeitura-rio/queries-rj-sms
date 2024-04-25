@@ -155,8 +155,8 @@ select
     estoque_secao,
     id_lote,
     lote_data_vencimento,
-    if(current_date() > lote_data_vencimento, "vencido", "ativo") as lote_status,
-    date_diff(lote_data_vencimento, current_date(), day) as lote_dias_para_vencer,
+    if(current_date('America/Sao_Paulo') > lote_data_vencimento, "vencido", "ativo") as lote_status,
+    date_diff(lote_data_vencimento, current_date('America/Sao_Paulo'), day) as lote_dias_para_vencer,
     material_quantidade,
     material_valor_unitario,
     material_valor_total,
@@ -172,7 +172,7 @@ select
     -- Metadata 
     sistema_origem,
     data_particao,
-    date_diff(current_date(), data_particao, day) as dias_desde_ultima_atualizacao,
+    date_diff(current_date('America/Sao_Paulo'), data_particao, day) as dias_desde_ultima_atualizacao,
     data_carga,
 
 from posicao_final

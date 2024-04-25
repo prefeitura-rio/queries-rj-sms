@@ -24,7 +24,7 @@ models:
               prontuario: vitacare
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
-                where: safe_cast(data_particao as date) = current_date()
+                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -79,7 +79,7 @@ models:
               prontuario: vitacare
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
-                where: safe_cast(data_particao as date) = date_sub(current_date(), INTERVAL 1 DAY)
+                where: safe_cast(data_particao as date) = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
                 error_if: ">10"  
       - name: id_lote
         description: Identificador do lote do medicamento/insumo

@@ -16,7 +16,7 @@ with
             unnest(
                 generate_date_array(
                     '2023-01-01',
-                    date_sub(current_date(), interval 1 day),
+                    date_sub(current_date('America/Sao_Paulo'), interval 1 day),
                     interval 1 day
                 )
             ) as data

@@ -21,7 +21,7 @@ models:
               prontuario: vitai
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
-                where: data_particao = current_date()
+                where: data_particao = current_date('America/Sao_Paulo')
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -74,7 +74,7 @@ models:
             - dispensacao_prescritor_cpf
             - estoque_movimento_data_hora
           config:
-            where: data_particao = date_sub(current_date(), INTERVAL 1 DAY)
+            where: data_particao = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
             error_if: ">1000"
     columns:
       - name: id_cnes
@@ -92,7 +92,7 @@ models:
               prontuario: vitai
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
-                where: data_particao = date_sub(current_date(), INTERVAL 1 DAY)
+                where: data_particao = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
                 error_if: ">4"
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
@@ -143,7 +143,7 @@ models:
               min_value: 0
               max_value: 10000000
               config:
-                where: data_particao = date_sub(current_date(), INTERVAL 1 DAY)
+                where: data_particao = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
       - name: data_atualizacao
         description: Data e hora de atualização do registro no sistema de origem
       - name: data_particao

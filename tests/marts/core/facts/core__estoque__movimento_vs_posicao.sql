@@ -17,7 +17,7 @@ with
             sum(material_quantidade) as material_quantidade
         from {{ ref("fct_estoque_posicao") }}
         where
-            data_particao >= date_sub(current_date(), interval 1 day)
+            data_particao >= date_sub(current_date('America/Sao_Paulo'), interval 1 day)
             and sistema_origem <> "tpc"  -- não temos movimentos de estoque da TPC
         group by id_cnes, id_material, data_particao
     ),
@@ -27,17 +27,17 @@ with
             id_material,
             sum(material_quantidade_com_sinal) as material_quantidade_delta
         from {{ ref("fct_estoque_movimento") }}
-        where data_particao = date_sub(current_date(), interval 1 day)
+        where data_particao = date_sub(current_date('America/Sao_Paulo'), interval 1 day)
         group by id_cnes, id_material
     ),
     estalelecimento as (select * from {{ ref("dim_estabelecimento") }}),
 
     -- junta a posicao do dia atual com a do dia anterior e 
-    posicao_atual as (select * from posicao where data_particao = current_date()),
+    posicao_atual as (select * from posicao where data_particao = current_date('America/Sao_Paulo')),
     posicao_anterior as (
         select *
         from posicao
-        where data_particao = date_sub(current_date(), interval 1 day)
+        where data_particao = date_sub(current_date('America/Sao_Paulo'), interval 1 day)
     ),
     posicao_final as (
         select

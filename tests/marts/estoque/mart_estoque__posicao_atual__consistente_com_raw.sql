@@ -9,19 +9,19 @@ with
     source_vitacare as (
         select *, concat(id_cnes, "-", data_particao) as id_estabelecimento_particao
         from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
-        where data_particao > date_sub(current_date(), interval 1 month)
+        where data_particao > date_sub(current_date('America/Sao_Paulo'), interval 1 month)
     ),
 
     source_vitai as (
         select *, concat(id_cnes, "-", data_particao) as id_estabelecimento_particao
         from {{ ref("raw_prontuario_vitai__estoque_posicao") }}
-        where data_particao > date_sub(current_date(), interval 1 month)
+        where data_particao > date_sub(current_date('America/Sao_Paulo'), interval 1 month)
     ),
 
     source_tpc as (
         select *
         from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
-        where data_particao > date_sub(current_date(), interval 1 month)
+        where data_particao > date_sub(current_date('America/Sao_Paulo'), interval 1 month)
     ),
 
     posicao_mais_recente as (

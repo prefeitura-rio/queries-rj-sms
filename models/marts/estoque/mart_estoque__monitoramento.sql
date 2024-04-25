@@ -89,7 +89,7 @@ select
     c.material_qtd_distintos_com_saldo,
     c.material_qtd_distintos_cadastro_incorreto,
     c.metrica_proporcao_materiais_cadastro_correto,
-    current_date() as data_referencia
+    current_date('America/Sao_Paulo') as data_referencia
 from estabelecimento as e
 left join metrica_dispensacao as d using (id_cnes)
 left join metrica_cadastro as c using (id_cnes)

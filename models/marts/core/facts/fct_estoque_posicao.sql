@@ -19,7 +19,7 @@ with
     vitacare_dias_anteriores as (
         select *
         from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
-        where data_particao < current_date()
+        where data_particao < current_date('America/Sao_Paulo')
     ),
 
     vitacare_completa as (
@@ -37,7 +37,7 @@ with
     vitai_dias_anteriores as (
         select *
         from {{ ref("raw_prontuario_vitai__estoque_posicao") }}
-        where data_particao < current_date()
+        where data_particao < current_date('America/Sao_Paulo')
     ),
 
     vitai_completa as (
