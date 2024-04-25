@@ -1,0 +1,7 @@
+version: 2
+
+seeds:
+  - name: apv_atendimento_dia
+    config:
+      column_types:
+        id_cnes: string

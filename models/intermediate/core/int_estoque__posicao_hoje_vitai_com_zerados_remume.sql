@@ -4,7 +4,7 @@ with
     posicao_atual as (
         select *
         from {{ ref("raw_prontuario_vitai__estoque_posicao") }}
-        where data_particao = current_date()
+        where data_particao = current_date('America/Sao_Paulo')
     ),
 
     materiais as (select * from {{ ref("dim_material") }}),
@@ -44,14 +44,14 @@ with
             pz.id_material,
             "" as estoque_secao,
             mat.nome as material_descricao,
-            mat.unidade as material_unidade,
+            "" as material_unidade,
             cast(null as date) as lote_data_vencimento,
             pz.material_quantidade,
             0 as material_valor_unitario,
             0 as material_valor_total,
-            current_date() as data_particao,
-            current_datetime() as data_snapshot,
-            current_datetime() as data_carga,
+            current_date('America/Sao_Paulo') as data_particao,
+            current_datetime('America/Sao_Paulo') as data_snapshot,
+            current_datetime('America/Sao_Paulo') as data_carga,
         from posicao_zeradas as pz
         left join materiais as mat on pz.id_material = mat.id_material
     )

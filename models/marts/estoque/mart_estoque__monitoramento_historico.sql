@@ -10,6 +10,6 @@ select * from {{ ref('mart_estoque__monitoramento') }}
 
 {% if is_incremental() %}
 
-    where data_snapshot > (select max(data_snapshot) from {{ this }})
+    where data_referencia > (select max(data_referencia) from {{ this }})
 
 {% endif %}

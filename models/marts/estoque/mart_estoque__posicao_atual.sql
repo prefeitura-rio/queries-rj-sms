@@ -8,6 +8,7 @@
 
 
 with
+    -- source
     posicao as (
         select *, concat(id_cnes, "-", data_particao) as id_estabelecimento_particao
         from {{ ref("fct_estoque_posicao") }}
@@ -27,22 +28,8 @@ with
         from {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
     ),
 
-    posicao_atual_inclusive_remume_zerado as (
-        select
+    sigma as (select distinct * from {{ source("sigma", "material") }}), -- existe um bug na origem do sigma gerando duplicidade
 
-            coalesce(atual.id_material, remume.id_material) as id_material,
-            atual.id_lote,
-            coalesce(atual.id_cnes, remume.id_cnes) as id_cnes,
-            coalesce(
-                atual.id_cnes_material, concat(remume.id_cnes, "-", remume.id_material)
-            ) as id_cnes_material,
-
-            if(
-                atual.id_material is null, 0, atual.material_quantidade
-            ) as material_quantidade_corrigida,
-        from posicao_atual as atual
-        full outer join remume using (id_material, id_cnes)
-    ),
 
     historico_dispensacao as (
         select *
@@ -62,9 +49,15 @@ with
     posicao_final as (
         select
             pos.*,
-            if(sistema_origem <> "tpc", est.agrupador_sms, "TPC") as estabelecimento_agrupador_sms,
-            if(sistema_origem <> "tpc", est.tipo, "ESTOQUE CENTRAL") as tipo,  # TODO: adicionar sufixo _cnes
-            if(sistema_origem <> "tpc", est.tipo_sms, "ESTOQUE CENTRAL") as tipo_sms,
+            if(
+                sistema_origem <> "tpc", est.tipo, "ESTOQUE CENTRAL"
+            ) as estabelecimento_tipo_cnes,
+            if(
+                sistema_origem <> "tpc", est.tipo_sms, "ESTOQUE CENTRAL"
+            ) as estabelecimento_tipo_sms,
+            if(
+                sistema_origem <> "tpc", est.tipo_sms_agrupado, "TPC"
+            ) as estabelecimento_tipo_sms_agrupado,
             if(
                 sistema_origem <> "tpc", est.area_programatica, "TPC"
             ) as estabelecimento_area_programatica,
@@ -84,7 +77,11 @@ with
                 sistema_origem <> "tpc", coalesce(cmm.quantidade, 0), cmm.quantidade
             ) as material_consumo_medio,
             coalesce(abc.abc_categoria, "S/C") as abc_categoria,
-            coalesce(mat.nome, pos.material_descricao) as material_descricao2,
+            coalesce(
+                mat.nome,
+                concat(sig.nm_padronizado," ", nm_complementar_material),
+                pos.material_descricao
+            ) as material_descricao2,
             if(mat.nome is null, "nao", "sim") as material_cadastro_esta_correto,
             case
                 when abc.abc_categoria is not null
@@ -107,21 +104,11 @@ with
                 then "item não possui histórico de dispensação registrado na unidade"
                 else 'desconhecida'
             end as cmm_justificativa_ausencia,
-            case
-                when tipo_sms = 'ESTOQUE CENTRAL'
-                then 'TPC'
-                when tipo_sms = 'HOSPITAL' or tipo_sms = 'CENTRO DE EMERGENCIA REGIONAL'
-                then 'Hospital/CER'
-                when
-                    tipo_sms = 'CLINICA DA FAMILIA'
-                    or tipo_sms = 'CENTRO MUNICIPAL DE SAUDE'
-                then 'CMS/CF'
-                when tipo_sms = 'UNIDADE DE PRONTO ATENDIMENTO'
-                then 'UPA'
-                else tipo_sms
-            end as tipo_sms_agrupado,
-            mat.natureza as material_natureza,
-            INITCAP(mat.hierarquia_n3_subclasse) as material_hierarquia_subclasse,
+            est.tipo_sms_simplificado as estabelecimento_tipo_sms_simplificado,
+            mat.hierarquia_n1_categoria as material_hierarquia_n1_categoria,
+            mat.hierarquia_n2_subcategoria as material_hierarquia_n2_subcategoria,
+            mat.controlado_indicador as material_controlado_indicador,
+            mat.controlado_tipo as material_controlado_tipo,
         from posicao_atual as pos  -- posicao_atual
         left join curva_abc as abc using (id_curva_abc)
         left join historico_dispensacao as disp using (id_curva_abc)
@@ -129,7 +116,9 @@ with
             dispensacao_media as cmm
             on (pos.id_material = cmm.id_material and pos.id_cnes = cmm.id_cnes)
         left join material as mat on (pos.id_material = mat.id_material)
+        left join sigma as sig on (pos.id_material = sig.cd_material)
         left join estabelecimento as est on (pos.id_cnes = est.id_cnes)
+
     )
 
 select
@@ -140,32 +129,34 @@ select
     id_cnes_material,
 
     -- Common fields
-    estabelecimento_agrupador_sms,
-    tipo as estabelecimento_tipo,  # TODO: adicionar sufixo _cnes
-    tipo_sms as estabelecimento_tipo_sms,
-    tipo_sms_agrupado as estabelecimento_tipo_sms_agrupado,
+    estabelecimento_tipo_cnes,
+    estabelecimento_tipo_sms,
+    estabelecimento_tipo_sms_simplificado,
+    estabelecimento_tipo_sms_agrupado,
     estabelecimento_area_programatica,
     estabelecimento_nome_limpo,
     estabelecimento_nome_sigla,
     estabelecimento_administracao,
     estabelecimento_responsavel_sms,
-    abc_categoria,
-    material_natureza,
-    material_hierarquia_subclasse,
-    material_remume,
-    remume_basico,
-    remume_uso_interno,
-    remume_hospitalar,
-    remume_antiseptico,
-    remume_estrategico,
+    abc_categoria as material_abc_categoria,
+    material_hierarquia_n1_categoria,
+    material_hierarquia_n2_subcategoria,
+    material_remume_indicador,
+    material_remume_listagem_basico_indicador,
+    material_remume_listagem_uso_interno_indicador,
+    material_remume_listagem_hospitalar_indicador,
+    material_remume_listagem_antiseptico_indicador,
+    material_remume_listagem_estrategico_indicador,
+    material_controlado_indicador,
+    material_controlado_tipo,
     material_descricao2 as material_descricao,
     material_unidade,
     material_cadastro_esta_correto,
     estoque_secao,
     id_lote,
     lote_data_vencimento,
-    if(current_date() > lote_data_vencimento, "vencido", "ativo") as lote_status,
-    date_diff(lote_data_vencimento, current_date(), day) as lote_dias_para_vencer,
+    if(current_date('America/Sao_Paulo') > lote_data_vencimento, "vencido", "ativo") as lote_status,
+    date_diff(lote_data_vencimento, current_date('America/Sao_Paulo'), day) as lote_dias_para_vencer,
     material_quantidade,
     material_valor_unitario,
     material_valor_total,
@@ -181,7 +172,12 @@ select
     -- Metadata 
     sistema_origem,
     data_particao,
-    date_diff(current_date(), data_particao, day) as dias_desde_ultima_atualizacao,
+    date_diff(current_date('America/Sao_Paulo'), data_particao, day) as dias_desde_ultima_atualizacao,
     data_carga,
 
 from posicao_final
+order by
+    estabelecimento_tipo_sms_agrupado,
+    estabelecimento_area_programatica,
+    estabelecimento_nome_limpo,
+    material_descricao

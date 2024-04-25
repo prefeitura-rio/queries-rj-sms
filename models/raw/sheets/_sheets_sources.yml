@@ -6,6 +6,7 @@ sources:
     schema: brutos_sheets_staging
     tables:
       - name: estabelecimento_auxiliar
+      - name: material_mestre
       - name: material_remume
   - name: brutos_sheets
     database: rj-sms

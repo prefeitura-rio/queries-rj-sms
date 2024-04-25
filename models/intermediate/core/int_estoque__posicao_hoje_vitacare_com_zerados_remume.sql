@@ -4,7 +4,7 @@ with
     posicao_atual as (
         select *
         from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
-        where data_particao = current_date()
+        where data_particao = current_date('America/Sao_Paulo')
     ),
 
     materiais as (select * from {{ ref("dim_material") }}),
@@ -50,8 +50,8 @@ with
             cast(null as date) as lote_data_vencimento,
             mat.nome as material_descricao,
             pz.material_quantidade,
-            current_date() as data_particao,
-            current_datetime() as data_ingestao,
+            current_date('America/Sao_Paulo') as data_particao,
+            current_datetime('America/Sao_Paulo') as data_ingestao,
         from posicao_zeradas as pz
         left join materiais as mat on pz.id_material = mat.id_material
     )

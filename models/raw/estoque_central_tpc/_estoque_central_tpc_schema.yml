@@ -29,7 +29,7 @@ models:
               name: raw_estoque_central_tpc__estoque_posicao__material_quantidade__not_null
               config:
                 severity: error
-                where: "data_particao = current_date()"
+                where: "data_particao = current_date('America/Sao_Paulo')"
       - name: material_valor_unitario
         description: Valor em reais de uma unidade do medicamento/insumo
       - name: material_valor_total
@@ -42,7 +42,7 @@ models:
               max_value: 110000000
               config:
                 severity: error
-                where: "data_particao = current_date()"
+                where: "data_particao = current_date('America/Sao_Paulo')"
       - name: data_particao
         description: Data de referencia da posição do estoque
       - name: data_snapshot

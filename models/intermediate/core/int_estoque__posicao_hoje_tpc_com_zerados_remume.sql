@@ -42,7 +42,7 @@ with
             "nao" as estoque_reservado_para_abastecimento,
             "" as estoque_secao,
             mat.nome as material_descricao,
-            mat.unidade as material_unidade,
+            "" as material_unidade,
             cast(null as date) as lote_data_vencimento,
             pz.material_quantidade,
             0 as material_valor_unitario,

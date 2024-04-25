@@ -70,7 +70,7 @@ with
 select
     estoque.id_cnes,
     m.id_material_sigma as id_material,
-    e.agrupador_sms as estabelecimento_agrupador_sms,
+    e.tipo_sms_agrupado as estabelecimento_agrupador_sms,
     e.area_programatica as estabelecimento_area_programatica,
     e.tipo_sms as estabelecimento_tipo_sms,
     e.nome_limpo as estabelecimento_nome_limpo,

@@ -39,57 +39,163 @@ models:
         description: Subcretaria responsável dentro da SMS
       - name: administracao
         description: Administradora da unidade de saúde.
-  - name: raw_sheets__material_remume
-    description: Tabela contendo os medicamentos e insumos que compõem a Relação
-      Municipal de Medicamentos Essenciais (REMUME)
+  - name: raw_sheets__material_mestre
+    description: Tabela cadastral de materiais da SMS-Rio
     columns:
       - name: id_material
-        description: Código de identificação do material cadastrado no prontuário
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+        description: Este é o identificador único para cada material. É usado para
+          rastrear e gerenciar materiais no sistema.
         tests:
           - unique:
-              name: raw_sheets__material_remume__id_material__unique
-          - relationships:
-              name: raw_sheets__material_remume__id_material__relationship
-              to: ref('dim_material')
-              field: id_material
+              name: raw_sheets__material_mestre__id_material__unique
         data_type: STRING
-      - name: material_descricao_generica
-        description: Descrição genérica do material
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+      - name: descricao
+        description: Esta é uma descrição do material. Fornece informações detalhadas
+          sobre o material, incluindo seu nome e quaisquer outros detalhes
+          relevantes.
         data_type: STRING
-      - name: material_concetracao
-        description: Concentração do medicamento
+      - name: concentracao
+        description: Isso se refere à concentração do ingrediente ativo no material. É
+          um fator importante para determinar a potência e eficácia do material.
         data_type: STRING
-      - name: material_forma_farmaceutica
-        description: Forma farmacêutica do medicamento
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+      - name: forma_farmaceutica
+        description: Esta coluna representa a forma farmacêutica do material. Descreve a
+          forma física em que o material é produzido ou administrado. Exemplos
+          incluem comprimidos, cápsulas, soluções, etc.
         data_type: STRING
-      - name: material_apresentacao
-        description: Apresentação comercial do material
+      - name: apresentacao
+        description: Esta coluna representa a apresentação do material. Descreve como o
+          material é apresentado ou embalado. Por exemplo, um material pode ser
+          apresentado em uma garrafa, uma cartela, um tubo, etc.
         data_type: STRING
-      - name: estabelecimento_disponibilidade
-        description: Tipos de estabelecimento de saúde onde o material faz parte da
-          relação essencial
+      - name: hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
         data_type: STRING
-      - name: remume_grupos
-        description: Relação de listas da REMUME que o material faz parte
+      - name: hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
         data_type: STRING
-      - name: remume_basico
-        description: Indica se o item pertence a lista 'Componente Básico' da REMUME
+      - name: controlado_indicador
+        description: Este campo indica se o material é controlado ou não. Um material
+          controlado é aquele que está sujeito a regulamentações ou restrições
+          adicionais. O valor neste campo será 'sim' se o material for
+          controlado e 'não' se não for.
         data_type: STRING
-      - name: remume_uso_interno
-        description: Indica se o item pertence a lista de 'Uso Interno nas UAPs' da REMUME
+      - name: controlado_tipo
+        description: Este campo fornece informações sobre o tipo de controle aplicado ao
+          material. Dá detalhes mais específicos sobre as regulamentações ou
+          restrições às quais o material está sujeito, se for um material
+          controlado.
         data_type: STRING
-      - name: remume_hospitalar
-        description: Indica se o item pertence a lista 'Componente Hospitalar' da REMUME
+      - name: remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
         data_type: STRING
-      - name: remume_antiseptico
-        description: Indica se o item pertence a lista 'Saneantes / Antisepticos' da REMUME
+      - name: remume_listagens
+        description: Esta coluna fornece uma lista de todas as listagens REMUME das
+          quais o material faz parte. É útil para entender os diferentes
+          contextos em que o material é considerado essencial.
         data_type: STRING
-      - name: remume_estrategico
-        description: Indica se o item pertence a lista 'Componente Estratégico' da REMUME
+      - name: remume_listagem_basico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Básicos" da REMUME. Os valores são 'sim' para sim e 'não' para não.
+        data_type: STRING
+      - name: remume_listagem_uso_interno_indicador
+        description: Esta coluna indica se o material faz parte da lista "Uso interno
+          nas UAPs" da REMUME. Os valores são 'sim' para sim e 'não' para não.
+        data_type: STRING
+      - name: remume_listagem_hospitalar_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Hospitalares" da REMUME. Os valores são 'sim' para sim e 'não' para
+          não.
+        data_type: STRING
+      - name: remume_listagem_antiseptico_indicador
+        description: Esta coluna indica se o material faz parte da lista
+          "Saneantes/Antispeticos" da REMUME. Os valores são 'sim' para sim e
+          'não' para não.
+        data_type: STRING
+      - name: remume_listagem_estrategico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Estratégicos" da REMUME. Os valores são 'sim' para sim e 'não' para
+          não.
+        data_type: STRING
+      - name: remume_disponibilidades
+        description: Esta coluna fornece informações sobre a disponibilidade do material
+          em diferentes unidades de saúde. É um campo de texto que lista os
+          tipos de unidades de saúde onde o material deve estar disponível.
+        data_type: STRING
+      - name: remume_disponibilidade_cms_indicador
+        description: Esta coluna indica se o material deve estar disponível nos CMS
+          (Centro Municipal de Saúde). É um indicador binário com 'sim'
+          indicando que o material deve estar disponível nos CMS e 'não'
+          indicando que deve.
+        data_type: STRING
+      - name: remume_disponibilidade_cf_indicador
+        description: >
+          Esta coluna indica se o material deve estar disponível nos CF (Clínica
+          da Família). É um indicador binário com 'sim' indicando que o material
+          deve estar disponível nos CF e 'não' indicando que deve.
+        data_type: STRING
+      - name: remume_disponibilidade_cse_indicador
+        description: Esta coluna indica se o material deve estar disponível nos 'Centro
+          de Saúde Escolar' (CSE). É um indicador binário com 'sim' indicando
+          que o material deve estar disponível nos CSE e 'não' indicando que
+          deve.
+        data_type: STRING
+      - name: remume_disponibilidade_policlinica_indicador
+        description: Esta coluna indica se o material deve estar disponível nas
+          Policlínicas. É um indicador binário com 'sim' indicando que o
+          material deve estar disponível nas Policlínicas e 'não' indicando que
+          deve.
+        data_type: STRING
+      - name: remume_disponibilidade_hospital_indicador
+        description: >
+          Esta coluna indica se o material deve estar disponível nos Hospitais.
+          É um indicador binário com 'sim' indicando que o material deve estar
+          disponível nos Hospitais e 'não' indicando que deve.
+        data_type: STRING
+      - name: remume_disponibilidade_maternidade_indicador
+        description: Esta coluna indica se o material deve estar disponível nas
+          Maternidades. É um indicador binário com 'sim' indicando que o
+          material deve estar disponível nas Maternidades e 'não' indicando que
+          deve.
+        data_type: STRING
+      - name: remume_disponibilidade_caps_indicador
+        description: Esta coluna indica se o material deve estar disponível nos CAPS
+          (Centro de Atenção Psicossocial). É um indicador binário com 'sim'
+          indicando que o material deve estar disponível nos CAPS e 'não'
+          indicando que deve.
+        data_type: STRING
+      - name: remume_disponibilidade_upa_indicador
+        description: >
+          Esta coluna indica se o material deve estar disponível nas UPAs
+          (Unidades de Pronto Atendimento). É um indicador binário com 'sim'
+          indicando que o material deve estar disponível nas UPAs e 'não'
+          indicando que deve.
+        data_type: STRING
+      - name: remume_disponibilidade_cer_indicador
+        description: >
+          Esta coluna indica se o material deve estar disponível nos CER
+          (Centros de Especialidades Regionais). É um indicador binário com
+          'sim' indicando que o material deve estar disponível nos CER e 'não'
+          indicando que deve.
+        data_type: STRING
+      - name: remume_disponibilidade_unidades_especificas_lista
+        description: Esta coluna contém uma lista de unidades específicas onde o
+          material está disponível. A lista é representada pelo CNES de cada
+          unidade separada por vírgula.
+        data_type: STRING
+      - name: cadastrado_sistema_vitacare_indicador
+        description: Esta coluna indica se o material está registrado no Prontuário da
+          Vitacare. É um valor de string que pode ser 'sim' se o material
+          estiver registrado, ou 'não' se não estiver. Essas informações são
+          cruciais para rastrear os materiais que fazem parte do sistema
+          Vitacare.
         data_type: STRING

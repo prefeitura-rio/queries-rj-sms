@@ -74,7 +74,7 @@ select
 
     -- Common fields
     if(est.id_motivo_desativacao = "", "sim", "não") as ativa,
-    est.agrupador_sms,
+    est.agrupador_sms as tipo_sms_agrupado,
     unidade.descricao as tipo,  # TODO: renomear para tipo_cnes
     est.tipo_sms,
     est.tipo_sms_simplificado,
