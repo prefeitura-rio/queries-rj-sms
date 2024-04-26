@@ -78,5 +78,5 @@ abordados e remova quaisquer itens que não sejam relevantes para este PR.
 - [ ] `dbt build` completa com sucesso e os testes dbt passam (se não, detalhe por quê)
 - [ ] Materializei meus modelos apropriadamente.
 - [ ] Adicionei testes e documentação apropriados a quaisquer modelos novos.
-- [ ] Adicionei policy tags apropriadas a quaiquer modelos novos.
+- [ ] Adicionei policy tags apropriadas a quaisquer modelos novos.
 - [ ] Atualizei o arquivo README.
