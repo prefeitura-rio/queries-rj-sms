@@ -26,7 +26,7 @@ with
             lpad(cod_procedimento_interno, 7, "0") as id_procedimento_interno,
             desc_procedimento_interno as procedimento_interno_descricao,
             cod_procedimento_unificado as id_procedimento_unificado,
-            sigla_dia_semana as dia_semana_sigla,
+            sigla_dia_semana as procedimento_dia_semana_sigla,
             safe_cast(qtd_vagas_prim_vez as int64) as vagas_primeira_vez_qtd,
             safe_cast(
                 qtd_minutos_prim_vez as int64
@@ -59,7 +59,7 @@ with
                 data_ultima_alteracao != "" and data_ultima_alteracao != "---",
                 parse_date('%d/%m/%Y', data_ultima_alteracao),
                 null
-            ) as ultima_alteracao_hora,
+            ) as escala_data_ultima_alteracao,
             status as escala_status,
             if(
                 data_da_insercao != "" and data_da_insercao != "---",
@@ -71,7 +71,7 @@ with
                 data_da_ultima_ativacao != "" and data_da_ultima_ativacao != "---",
                 parse_date('%d/%m/%Y', data_da_ultima_ativacao),
                 null
-            ) as escala_hora_ultima_ativacao,
+            ) as escala_data_ultima_ativacao,
             hora_da_ultima_ativacao as escala_hora_ultima_ativacao,
             _data_carga,
             ano_particao,
@@ -82,8 +82,46 @@ with
     )
 select
     -- pk
+    id_escala_ambulatorial,
     -- fk
-    -- dados geraias
-    -- metadados de processamento
-    *
+    id_central_executante,
+    id_estabelecimento_executante,
+    id_procedimento_unificado,
+    id_cbo2002,
+    profissional_executante_cpf,
+
+    -- dados gerais
+    central_executante_nome,
+    estabelecimento_executante_nome,
+    procedimento_interno_descricao,
+    cbo2002_descricao,
+    profissional_executante_nome,
+    procedimento_vigencia_inicial_data,
+    procedimento_vigencia_final_data,
+    procedimento_dia_semana_sigla,
+    procedimento_hora_inicial,
+    procedimento_hora_final,
+    escala_status,
+    vagas_primeira_vez_qtd,
+    vagas_primeira_vez_minutos_por_procedimento,
+    vagas_retorno_qtd,
+    vagas_retorno_minutos_por_procedimento,
+    vagas_reserva_qtd,
+    vagas_reserva_minutos_por_procedimento,
+
+
+    -- metadados
+    agenda_local,
+    quebra_automatica,
+    escala_data_insercao,
+    escala_hora_insercao,
+    escala_data_ultima_ativacao,
+    escala_hora_ultima_ativacao
+    escala_data_ultima_alteracao,
+    operador_nome_criador,
+    operador_nome_modificador,
+    _data_carga,
+    ano_particao,
+    mes_particao,
+    data_particao
 from renamed
