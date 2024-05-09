@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_sih_staging
+    database:   rj-sms
+    schema: brutos_sih_staging
+    tables:
+      - name: indicadores_hospitalares
