@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_sih",
+        schema="brutos_sih_staging",
         alias="indicadores_hospitalares",
     )
 }}
@@ -48,8 +48,8 @@ renamed as (
         {{ adapter.quote("val_tot") }},
         {{ adapter.quote("val_uti") }},
         {{ adapter.quote("us_tot") }},
-        {{ adapter.quote("dt_inter") }},
-        {{ adapter.quote("dt_saida") }},
+        parse_date('%Y%m%d', dt_inter) as dt_inter,
+        parse_date('%Y%m%d', dt_saida) as dt_saida,
         {{ adapter.quote("diag_princ") }},
         {{ adapter.quote("diag_secun") }},
         {{ adapter.quote("cobranca") }},
