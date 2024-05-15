@@ -1,0 +1,77 @@
+version: 2
+models:
+  - name: gerenciamento_acessos__looker_farmacia
+    description: "O modelo 'raw_sheets__gerenciamento_acesso_looker_farmacia' é um
+      conjunto abrangente de dados que fornece informações sobre o gerenciamento
+      de acesso do BI Farmácia Digital no Looker. "
+    columns:
+      - name: cpf
+        description: Esta coluna contém o identificador único de cada indivíduo,
+          conhecido como CPF (Cadastro de Pessoas Físicas).
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        data_type: STRING
+      - name: nome
+        description: Esta coluna contém o nome completo do indivíduo.
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: email
+        description: Esta coluna contém o endereço de e-mail do indivíduo.
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_EMAIL") }}'
+      - name: telefone
+        description: Este campo representa o número de telefone de contato do indivíduo.
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_TELEFONE") }}'
+      - name: sub_secretaria__oss
+        description: Este campo representa a subsecretaria ou a OSS (Organização Social
+          de Saúde) com a qual o indivíduo está associado.
+        data_type: STRING
+      - name: area
+        description: Este campo representa a área específica ou departamento dentro da
+          organização do qual o usuário faz parte.
+        data_type: STRING
+      - name: cargo
+        description: "Esta coluna representa o cargo do indivíduo na organização. "
+        data_type: STRING
+      - name: status_do_acesso
+        description: Esta coluna indica o status atual do acesso do indivíduo à
+          plataforma Looker.
+        data_type: STRING
+      - name: responsavel_pela_renovacao_do_acesso
+        description: Esta coluna identifica a pessoa responsável por renovar o acesso do
+          indivíduo à plataforma Looker.
+        data_type: STRING
+      - name: ultima_renovacao_do_acesso
+        description: Esta coluna representa a data da última renovação de acesso.
+        data_type: DATE
+      - name: escopo_bi
+        description: Esta coluna indica o escopo de acesso do usuário às ferramentas de
+          Business Intelligence (BI).
+        data_type: STRING
+      - name: escopo_ap
+        description: Esta coluna representa o escopo geográfico (por área programátic)
+          de acesso do usuário.
+        data_type: STRING
+      - name: acesso_tpc
+        description: Esta coluna indica se o usuário tem acesso aos dados TPC.
+        data_type: STRING
+      - name: acesso_aps
+        description: "Esta coluna indica se o usuário tem acesso aos dados APS (Atenção
+          Primária à Saúde). "
+        data_type: STRING
+      - name: acesso_upas
+        description: Esta coluna indica se o usuário tem acesso aos dados UPAs (Unidades
+          de Pronto Atendimento).
+        data_type: STRING
+      - name: acesso_hospitais
+        description: "Este campo indica se o usuário tem acesso aos dados hospitalares. "
+        data_type: STRING
+      - name: acesso_unidade_especifica
+        description: Este campo indica se o usuário tem acesso a dados de unidades
+          específicas. O valor será o CNES da unidade específica à qual o
+          usuário tem acesso.
+        data_type: STRING
