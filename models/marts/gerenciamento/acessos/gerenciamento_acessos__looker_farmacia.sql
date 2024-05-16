@@ -1,6 +1,6 @@
 {{
     config(
-        schema="gerenciamento_acessos",
+        schema="gerenciamento__acessos",
         alias="looker_farmacia_digital",
     )
 }}
