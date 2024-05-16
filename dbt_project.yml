@@ -92,8 +92,6 @@ models:
             +schema: projeto_dengue
         estoque:
             +schema: projeto_estoque
-        reprocessamento:
-            +schema: controle_reprocessamento
 tests:
   rj_sms:
     +severity: error
