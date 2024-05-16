@@ -200,9 +200,8 @@ models:
           Vitacare.
         data_type: STRING
   - name: raw_sheets__gerenciamento_acesso_looker_farmacia
-    description: "O modelo 'raw_sheets__gerenciamento_acesso_looker_farmacia' é um
-      conjunto abrangente de dados que fornece informações sobre o gerenciamento
-      de acesso do BI Farmácia Digital no Looker. "
+    description: "Tabela contendo informações sobre o gerenciamento
+      de acesso do BI Farmácia Digital no Looker."
     columns:
       - name: cpf
         description: Esta coluna contém o identificador único de cada indivíduo,
