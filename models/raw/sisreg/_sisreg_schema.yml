@@ -3,112 +3,145 @@ models:
     description: Tabela contendo as escalas programadas no SISREG
     tests:
       - dbt_utils.unique_combination_of_columns:
-          name: raw_sisreg__escala__unique_combination_of_columns
           combination_of_columns:
             - id_escala_ambulatorial
             - data_particao
     columns:
       - name: id_escala_ambulatorial
-        description: Este é o identificador único para a escala ambulatorial. É usado para rastrear e gerenciar cada escala ambulatorial individual dentro do sistema.
+        description: Este é o identificador único para a escala ambulatorial. É usado
+          para rastrear e gerenciar cada escala ambulatorial individual dentro
+          do sistema.
         data_type: STRING
         tests:
           - not_null:
-                name: raw_sisreg__escala__id_escala_ambulatorial__not_null
+              name: raw_sisreg__escala__id_escala_ambulatorial__not_null
       - name: id_central_executante
-        description: Este é o identificador único para a central executante. É usado para identificar cada central executante dentro do sistema.
+        description: Este é o identificador único para a central executante. É usado
+          para identificar cada central executante dentro do sistema.
         data_type: STRING
       - name: id_estabelecimento_executante
         description: ID CNES do estabelecimento executante.
         data_type: STRING
         tests:
           - relationships:
-                name: raw_sisreg__escala__id_estabelecimento_executante__relationship
-                to: ref('dim_estabelecimento')
-                field: id_cnes
-                config:
-                  where: "procedimento_vigencia_final_data > '2020-01-01'"
-                  severity: warn
+              name: raw_sisreg__escala__id_estabelecimento_executante__relationship
+              to: ref('dim_estabelecimento')
+              field: id_cnes
+              config:
+                where: procedimento_vigencia_final_data > '2020-01-01'
+                severity: warn
       - name: id_procedimento_unificado
-        description: Este é o identificador único para o procedimento sendo realizado. É usado para rastrear e gerenciar procedimentos em diferentes sistemas e bancos de dados.
+        description: Este é o identificador único para o procedimento sendo realizado. É
+          usado para rastrear e gerenciar procedimentos em diferentes sistemas e
+          bancos de dados.
         data_type: STRING
         tests:
           - not_null:
-                name: raw_sisreg__escala__id_procedimento_unificado__not_null
+              name: raw_sisreg__escala__id_procedimento_unificado__not_null
       - name: id_cbo2002
-        description: Este é o identificador único para o código da Classificação Brasileira de Ocupações (CBO). É usado para categorizar o tipo de trabalho realizado pelo profissional.
+        description: Este é o identificador único para o código da Classificação
+          Brasileira de Ocupações (CBO). É usado para categorizar o tipo de
+          trabalho realizado pelo profissional.
         data_type: STRING
       - name: profissional_executante_cpf
-        description: Este é o número do CPF (Cadastro de Pessoas Físicas) do profissional que realiza o procedimento. O CPF é um identificador único para indivíduos no Brasil, semelhante ao Número de Seguro Social nos Estados Unidos.
+        description: Este é o número do CPF (Cadastro de Pessoas Físicas) do
+          profissional que realiza o procedimento. O CPF é um identificador
+          único para indivíduos no Brasil, semelhante ao Número de Seguro Social
+          nos Estados Unidos.
         data_type: STRING
-        tests:
-          - not_null:
-                name: raw_sisreg__escala__profissional_executante_cpf__not_null
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+        tests:
+          - not_null:
+              name: raw_sisreg__escala__profissional_executante_cpf__not_null
       - name: central_executante_nome
-        description: Esta coluna representa o nome da central executante. É um tipo de dado string e fornece informações sobre a entidade.
+        description: Esta coluna representa o nome da central executante. É um tipo de
+          dado string e fornece informações sobre a entidade.
         data_type: STRING
       - name: estabelecimento_executante_nome
-        description: Esta coluna representa o nome do estabelecimento executante. É um tipo de dado string e fornece informações sobre o estabelecimento específico onde os procedimentos estão sendo executados.
+        description: Esta coluna representa o nome do estabelecimento executante. É um
+          tipo de dado string e fornece informações sobre o estabelecimento
+          específico onde os procedimentos estão sendo executados.
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
       - name: procedimento_interno_descricao
-        description: Esta coluna representa a descrição do procedimento de acordo com o codigo interno.
+        description: Esta coluna representa a descrição do procedimento de acordo com o
+          codigo interno.
         data_type: STRING
       - name: cbo2002_descricao
-        description: Esta coluna contém a descrição do código da Classificação Brasileira de Ocupações (CBO) para o profissional que realizou o procedimento. O CBO é um sistema usado no Brasil para identificar e classificar ocupações.
+        description: Esta coluna contém a descrição do código da Classificação
+          Brasileira de Ocupações (CBO) para o profissional que realizou o
+          procedimento. O CBO é um sistema usado no Brasil para identificar e
+          classificar ocupações.
         data_type: STRING
       - name: profissional_executante_nome
-        description: Esta coluna contém o nome do profissional que realizou o procedimento. Essa informação é importante para rastrear o desempenho de profissionais individuais e para registros de pacientes.
+        description: Esta coluna contém o nome do profissional que realizou o
+          procedimento. Essa informação é importante para rastrear o desempenho
+          de profissionais individuais e para registros de pacientes.
         data_type: STRING
       - name: procedimento_vigencia_inicial_data
-        description: Esta coluna contém a data de início do período de vigência da escala do profissional para determinado procedimento. 
+        description: Esta coluna contém a data de início do período de vigência da
+          escala do profissional para determinado procedimento.
         data_type: DATE
       - name: procedimento_vigencia_final_data
-        description: Esta coluna contém a data de fim do período de vigência da escala do profissional para determinado procedimento. 
+        description: Esta coluna contém a data de fim do período de vigência da escala
+          do profissional para determinado procedimento.
         data_type: DATE
       - name: procedimento_dia_semana_sigla
-        description: Esta coluna representa o dia da semana em que o procedimento está agendado para ocorrer. Está no formato STRING e é representado por uma forma abreviada ou sigla do nome do dia.
+        description: Esta coluna representa o dia da semana em que o procedimento está
+          agendado para ocorrer. Está no formato STRING e é representado por uma
+          forma abreviada ou sigla do nome do dia.
         data_type: STRING
       - name: procedimento_hora_inicial
-        description: Esta coluna contém a hora de início da escala do profissional para determinado procedimento. 
+        description: Esta coluna contém a hora de início da escala do profissional para
+          determinado procedimento.
         data_type: STRING
       - name: procedimento_hora_final
-        description: Esta coluna contém a hora de fim da escala do profissional para determinado procedimento. 
+        description: Esta coluna contém a hora de fim da escala do profissional para
+          determinado procedimento.
         data_type: STRING
       - name: escala_status
-        description: Esta coluna indica o status da escala. É um valor de string que pode fornecer insights sobre o estado atual da escala.
+        description: Esta coluna indica o status da escala. É um valor de string que
+          pode fornecer insights sobre o estado atual da escala.
         data_type: STRING
       - name: vagas_primeira_vez_qtd
-        description: Esta coluna representa a quantidade de vagas disponíveis para procedimentos de primeira vez. É armazenado como um número inteiro.
+        description: Esta coluna representa a quantidade de vagas disponíveis para
+          procedimentos de primeira vez.
         data_type: INT64
       - name: vagas_primeira_vez_minutos_por_procedimento
-        description: Esta coluna representa o número total de minutos alocados para cada procedimento de primeira vez. 
+        description: Esta coluna representa o número total de minutos alocados para cada
+          procedimento de primeira vez.
         data_type: INT64
       - name: vagas_retorno_qtd
-        description: Esta coluna indica a quantidade de vagas de retorno disponíveis para procedimentos.
+        description: Esta coluna indica a quantidade de vagas de retorno disponíveis
+          para procedimentos.
         data_type: INT64
       - name: vagas_retorno_minutos_por_procedimento
-        description: Esta coluna representa o número total de minutos alocados para cada procedimento de retorno.
+        description: Esta coluna representa o número total de minutos alocados para cada
+          procedimento de retorno.
         data_type: INT64
       - name: vagas_reserva_qtd
-        description: Esta coluna representa a quantidade de vagas disponíveis para procedimentos do tipo reserva. É armazenado como um número inteiro.
+        description: Esta coluna representa a quantidade de vagas disponíveis para
+          procedimentos do tipo reserva.
         data_type: INT64
       - name: vagas_reserva_minutos_por_procedimento
-        description: Esta coluna representa o número total de minutos alocados para cada procedimento do tipo reserva. 
+        description: Esta coluna representa o número total de minutos alocados para cada
+          procedimento do tipo reserva.
         data_type: INT64
       - name: agenda_local
-        description: Este campo diz respeito à visibilidade da agenda/escala para as diversas unidades.
+        description: Este campo diz respeito à visibilidade da agenda/escala para as
+          diversas unidades.
         data_type: STRING
       - name: quebra_automatica
-        description: Este campo informa se a divisão dos horários da escala foi feita de forma automática.
+        description: Este campo informa se a divisão dos horários da escala foi feita de
+          forma automática.
         data_type: STRING
       - name: escala_data_insercao
         description: Este campo representa a data em que a escala foi inserida no sistema.
         data_type: DATE
       - name: escala_hora_insercao
-        description: Este campo representa a hora em que a escala foi inserida no sistema. 
+        description: Este campo representa a hora em que a escala foi inserida no sistema.
         data_type: STRING
       - name: escala_data_ultima_ativacao
         description: Esta coluna representa a data da última ativação da escala.
@@ -117,20 +150,28 @@ models:
         description: Esta coluna representa a data da última modificação feita na escala.
         data_type: STRING
       - name: operador_nome_criador
-        description: Esta coluna representa o nome do operador que criou a escala. Está no formato de STRING. Esta informação é útil para identificar a pessoa responsável pela criação da escala.
+        description: "Esta coluna representa o nome do operador que criou a escala. "
         data_type: STRING
       - name: operador_nome_modificador
-        description: Esta coluna contém o nome do operador que modificou pela última vez o registro. Esta informação é útil para rastrear mudanças e manter a responsabilidade dentro do sistema.
+        description: "Esta coluna contém o nome do operador que modificou pela última
+          vez o registro. "
         data_type: STRING
       - name: _data_carga
-        description: Esta coluna representa a data em que os dados foram carregados no sistema. Está no formato de uma string e pode ser usado para rastrear quando os dados foram atualizados pela última vez.
+        description: Esta coluna representa a data em que os dados foram carregados no
+          Data Lake.
         data_type: STRING
       - name: ano_particao
-        description: Esta coluna representa o ano da partição de dados. É usado para gerenciamento e organização de dados, permitindo consultas e análises eficientes de dados por anos específicos.
+        description: Esta coluna representa o ano da partição de dados. É usado para
+          gerenciamento e organização de dados, permitindo consultas e análises
+          eficientes de dados por anos específicos.
         data_type: STRING
       - name: mes_particao
-        description: Esta coluna representa o mês da partição. É usado para organizar os dados de forma cronológica, facilitando a filtragem e análise de dados para um mês específico.
+        description: Esta coluna representa o mês da partição. É usado para organizar os
+          dados de forma cronológica, facilitando a filtragem e análise de dados
+          para um mês específico.
         data_type: STRING
       - name: data_particao
-        description: Esta coluna representa a data da partição. É usado para organizar os dados de forma cronológica, facilitando a filtragem e análise de dados para uma data específica.
+        description: Esta coluna representa a data da partição. É usado para organizar
+          os dados de forma cronológica, facilitando a filtragem e análise de
+          dados para uma data específica.
         data_type: STRING
