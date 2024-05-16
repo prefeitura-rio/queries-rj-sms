@@ -6,6 +6,7 @@ sources:
     schema: brutos_sheets_staging
     tables:
       - name: estabelecimento_auxiliar
+      - name: gerenciamento_acesso_looker_farmacia
       - name: material_mestre
       - name: material_remume
   - name: brutos_sheets

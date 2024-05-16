@@ -10,7 +10,7 @@
 with
     consumo as (select * from {{ ref("mart_estoque__consumo_serie_historica") }}),
     
-    acessos as (select * from {{ source("brutos_sheets", "projeto_estoque_acessos") }}),
+    acessos as (select id_cnes, email from {{ ref('gerenciamento_acessos__looker_farmacia') }}),
 
     consumo_com_acessos as (
         select consumo.*, acessos.email,

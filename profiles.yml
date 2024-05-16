@@ -5,7 +5,7 @@ default:
       type: bigquery
       method: service-account
       project: rj-sms-dev
-      dataset: dbt
+      dataset: gerenciamento__dbt
       location: US
       threads: 6
       keyfile: /tmp/credentials.json
@@ -13,7 +13,7 @@ default:
       type: bigquery
       method: service-account
       project: rj-sms
-      dataset: dbt
+      dataset: gerenciamento__dbt
       location: US
       threads: 6
       keyfile: /tmp/credentials.json
