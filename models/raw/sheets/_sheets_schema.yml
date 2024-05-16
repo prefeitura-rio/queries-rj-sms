@@ -207,14 +207,14 @@ models:
       - name: cpf
         description: Esta coluna contém o identificador único de cada indivíduo,
           conhecido como CPF (Cadastro de Pessoas Físicas).
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        data_type: STRING
         tests:
           - unique:
               name: raw_sheets__gerenciamento_acesso_looker_farmacia__cpf__unique
               config:
                 severity: warn
-        policy_tags:
-          - '{{ var ("TAG_CPF") }}'
-        data_type: STRING
       - name: nome
         description: Esta coluna contém o nome completo do indivíduo.
         data_type: STRING
@@ -278,4 +278,12 @@ models:
         description: Este campo indica se o usuário tem acesso a dados de unidades
           específicas. O valor será o CNES da unidade específica à qual o
           usuário tem acesso.
+        data_type: STRING
+      - name: acesso_relacao_aps
+        description: Relação de APs que o usuário tem acesso
+        data_type: STRING
+      - name: acesso_relacao_estabelecimentos
+        description: Relação de estabelecimentos que o usuário tem acesso. Este campo
+          aceita os tipo de estabelecimentos utilizados no agrupador SMS ou o
+          CNES da unidade.
         data_type: STRING
