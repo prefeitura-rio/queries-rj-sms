@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_sih",
+        schema="brutos_sih_staging",
         alias="indicadores_hospitalares",
     )
 }}
