@@ -20,6 +20,7 @@ with
             material_hierarquia_n2_subcategoria,
             material_controlado_indicador,
             material_controlado_tipo,
+            material_abc_categoria,
             material_descricao,
             material_remume_indicador,
             sum(material_quantidade) as material_quantidade,
@@ -36,6 +37,7 @@ with
             material_hierarquia_n2_subcategoria,
             material_controlado_indicador,
             material_controlado_tipo,
+            material_abc_categoria,
             material_remume_indicador,
             material_descricao
     )
