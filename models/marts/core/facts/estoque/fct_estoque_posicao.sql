@@ -1,6 +1,6 @@
 {{
     config(
-        alias="estoque_posicao",
+        alias="posicao",
         schema="saude_estoque",
         partition_by={
             "field": "data_particao",

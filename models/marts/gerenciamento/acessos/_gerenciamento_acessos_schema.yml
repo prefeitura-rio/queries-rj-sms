@@ -1,0 +1,62 @@
+version: 2
+models:
+  - name: gerenciamento_acessos__looker_farmacia
+    description: Tabela contendo os acessos ativos do BI Farmácia Digital no Looker.
+      Cada registro contém um email e unidades cnes que pode o email pode
+      acessar.
+    columns:
+      - name: email
+        description: Esta coluna contém o endereço de e-mail do indivíduo.
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_EMAIL") }}'
+      - name: cpf
+        description: Esta coluna contém o identificador único de cada indivíduo,
+          conhecido como CPF (Cadastro de Pessoas Físicas).
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        data_type: STRING
+      - name: nome
+        description: Esta coluna contém o nome completo do indivíduo.
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: sub_secretaria__oss
+        description: Este campo representa a subsecretaria ou a OSS (Organização Social
+          de Saúde) com a qual o indivíduo está associado.
+        data_type: STRING
+      - name: area
+        description: Este campo representa a área específica ou departamento dentro da
+          organização do qual o usuário faz parte.
+        data_type: STRING
+      - name: cargo
+        description: "Esta coluna representa o cargo do indivíduo na organização. "
+        data_type: STRING
+      - name: status_do_acesso
+        description: Esta coluna indica o status atual do acesso do indivíduo à
+          plataforma Looker.
+        data_type: STRING
+      - name: escopo_bi
+        description: Esta coluna indica o escopo de acesso do usuário às ferramentas de
+          Business Intelligence (BI).
+        data_type: STRING
+      - name: acesso_relacao_aps
+        description: Relação de APs que o usuário tem acesso.
+        data_type: STRING
+      - name: acesso_relacao_estabelecimentos
+        description: Relação de estabelecimentos que o usuário tem acesso. Este campo
+          aceita os tipo de estabelecimentos utilizados no agrupador SMS ou o
+          CNES da unidade.
+        data_type: STRING
+      - name: id_cnes
+        description: CNES da unidades que o usuário tem acesso.
+        data_type: STRING
+      - name: area_programatica
+        description: Área programática da unidade que o usuário tem acesso.
+        data_type: STRING
+      - name: tipo_sms_agrupado
+        description: Agrupador SMS da unidade que o usuário tem acesso.
+        data_type: STRING
+      - name: nome_limpo
+        description: Nome da unidade que o usuário tem acesso.
+        data_type: STRING

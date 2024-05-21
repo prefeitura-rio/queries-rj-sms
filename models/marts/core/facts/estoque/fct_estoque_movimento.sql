@@ -1,6 +1,6 @@
 {{
     config(
-        alias="estoque_movimento",
+        alias="movimento",
         schema="saude_estoque",
         labels={"contains_pii": "no"},
         partition_by={

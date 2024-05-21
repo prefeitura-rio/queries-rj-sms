@@ -57,8 +57,8 @@ models:
   +persist_docs:
     relation: true
     columns: true
-    elementary:
-      +schema: "gerenciamento__dbt_elementary"
+  elementary:
+    +schema: "gerenciamento__dbt_elementary"
   rj_sms:
     # all models should have unique and not null
     +required_tests: {"unique.*|not_null": 2}
@@ -95,12 +95,11 @@ models:
             +schema: projeto_dengue
         estoque:
             +schema: projeto_estoque
-        reprocessamento:
-            +schema: controle_reprocessamento
 tests:
   rj_sms:
     +severity: error
     +store_failures: true
+    +schema: gerenciamento__dbt_test_audit
 seeds:
   rj_sms:
     estoque:
