@@ -2,6 +2,11 @@
     config(
         schema="brutos_sisreg",
         alias="escala",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 

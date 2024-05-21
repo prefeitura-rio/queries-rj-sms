@@ -49,8 +49,7 @@ models:
       - name: profissional_executante_cpf
         description: Este é o número do CPF (Cadastro de Pessoas Físicas) do
           profissional que realiza o procedimento. O CPF é um identificador
-          único para indivíduos no Brasil, semelhante ao Número de Seguro Social
-          nos Estados Unidos.
+          único para indivíduos no Brasil.
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_CPF") }}'

@@ -58,7 +58,7 @@ models:
     relation: true
     columns: true
     elementary:
-      +schema: "elementary"
+      +schema: "gerenciamento__dbt_elementary"
   rj_sms:
     # all models should have unique and not null
     +required_tests: {"unique.*|not_null": 2}
@@ -87,7 +87,10 @@ models:
           dimensions:
             +schema: saude_dados_mestres
           facts:
-            +schema: saude_estoque
+            sisreg:
+              +schema: saude_sisreg
+            estoque:
+              +schema: saude_estoque
         dengue:
             +schema: projeto_dengue
         estoque:

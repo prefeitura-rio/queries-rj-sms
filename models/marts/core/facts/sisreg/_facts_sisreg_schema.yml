@@ -1,0 +1,91 @@
+models:
+  - name: fct_sisreg_escala
+    columns:
+      - name: id_central_executante
+        data_type: string
+        quote: true
+        description: Este é o identificador único para a central executante. É usado
+          para identificar cada central executante dentro do sistema.
+      - name: id_estabelecimento_executante
+        data_type: string
+        quote: true
+        description: ID CNES do estabelecimento executante.
+      - name: id_procedimento_interno
+        data_type: string
+        quote: true
+        description: Este é o identificador único para o procedimento sendo realizado. É
+          usado para rastrear e gerenciar procedimentos em diferentes sistemas e
+          bancos de dados.
+      - name: id_procedimento_unificado
+        data_type: string
+        quote: true
+        description: Este é o identificador único alternativo para o procedimento sendo
+          realizado.
+      - name: id_cbo2002
+        data_type: string
+        quote: true
+        description: Este é o identificador único para o código da Classificação
+          Brasileira de Ocupações (CBO). É usado para categorizar o tipo de
+          trabalho realizado pelo profissional.
+      - name: profissional_executante_cpf
+        data_type: string
+        quote: true
+        description: Este é o número do CPF (Cadastro de Pessoas Físicas) do
+          profissional que realiza o procedimento. O CPF é um identificador
+          único para indivíduos no Brasil.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: procedimento_vigencia_inicial_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de início do período de vigência da
+          escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_final_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de fim do período de vigência da escala
+          do profissional para determinado procedimento.
+      - name: procedimento_vigencia_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de vigência da escala do profissional
+          para determinado procedimento.
+      - name: procedimento_vigencia_ano
+        data_type: int64
+        quote: true
+        description: Esta coluna contém o ano da data de vigência da escala do
+          profissional para determinado procedimento.
+      - name: procedimento_vigencia_mes
+        data_type: int64
+        quote: true
+        description: Esta coluna contém o mês da data de vigência da escala do
+          profissional para determinado procedimento.
+      - name: vagas_primeira_vez_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna representa a quantidade de vagas disponíveis para
+          procedimentos de primeira vez.
+      - name: vagas_reserva_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna representa a quantidade de vagas disponíveis para
+          procedimentos do tipo reserva.
+      - name: vagas_retorno_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna indica a quantidade de vagas de retorno disponíveis
+          para procedimentos.
+      - name: vagas_todas_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna indica a quantidade de todos os tipo de vagas
+          disponíveis para procedimentos.
+      - name: data_particao
+        data_type: date
+        quote: true
+        description: Esta coluna representa a data da partição. É usado para organizar
+          os dados de forma cronológica, facilitando a filtragem e análise de
+          dados para uma data específica.
+    description: Tabela contendo o histórico de escalas programadas no SISREG.
+      Atenção, usar a colubna data_particao para filtrar o histórico mais
+      recente
