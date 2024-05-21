@@ -16,7 +16,6 @@ with
         select *
         from {{ ref("raw_sisreg__escala") }}
         where
-            -- - data_particao = current_date('America/Sao_Paulo')
             escala_status != "EXCLUIDA"
     ),
 
@@ -100,7 +99,6 @@ with
             mes_particao,
             data_particao
         from sisreg_explodido_filtrado
-        where data_particao = current_date('America/Sao_Paulo')
         order by
             id_escala_ambulatorial,
             id_central_executante,
