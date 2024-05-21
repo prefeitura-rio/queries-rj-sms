@@ -76,7 +76,7 @@ with
             _data_carga,
             ano_particao,
             mes_particao,
-            data_particao
+            safe_cast(data_particao as date) as data_particao,
 
         from source
     )
