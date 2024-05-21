@@ -86,6 +86,7 @@ select
     -- fk
     id_central_executante,
     id_estabelecimento_executante,
+    id_procedimento_interno,
     id_procedimento_unificado,
     id_cbo2002,
     profissional_executante_cpf,

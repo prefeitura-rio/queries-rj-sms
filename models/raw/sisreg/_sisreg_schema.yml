@@ -30,7 +30,7 @@ models:
               config:
                 where: procedimento_vigencia_final_data > '2020-01-01'
                 severity: warn
-      - name: id_procedimento_unificado
+      - name: id_procedimento_interno
         description: Este é o identificador único para o procedimento sendo realizado. É
           usado para rastrear e gerenciar procedimentos em diferentes sistemas e
           bancos de dados.
@@ -38,6 +38,9 @@ models:
         tests:
           - not_null:
               name: raw_sisreg__escala__id_procedimento_unificado__not_null
+      - name: id_procedimento_unificado
+        description: Este é o identificador único alternativo para o procedimento sendo realizado.
+        data_type: STRING
       - name: id_cbo2002
         description: Este é o identificador único para o código da Classificação
           Brasileira de Ocupações (CBO). É usado para categorizar o tipo de
