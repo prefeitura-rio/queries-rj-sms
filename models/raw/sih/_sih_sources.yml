@@ -5,4 +5,4 @@ sources:
     database:   rj-sms-dev
     schema: brutos_sih_staging
     tables:
-      - name: indicadores_hospitalares
+      - name: indicadores_hospitalares_parquet
