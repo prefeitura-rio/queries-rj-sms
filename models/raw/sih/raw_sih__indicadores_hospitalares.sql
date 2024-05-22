@@ -6,7 +6,7 @@
 }}
 
 with source as (
-      select * from {{ source('brutos_sih_staging', 'indicadores_hospitalares') }}
+      select * from {{ source('brutos_sih_staging', 'indicadores_hospitalares_parquet') }}
 ),
 renamed as (
     select
