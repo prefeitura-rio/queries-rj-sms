@@ -74,7 +74,7 @@ abordados e remova quaisquer itens que não sejam relevantes para este PR.
 -->
 - [ ] Meu pull request representa uma peça lógica de trabalho.
 - [ ] Meus commits estão relacionados ao pull request e parecem limpos.
-- [ ] Meu SQL segue o [guia de estilo do dbt Labs](https://github.com/dbt-labs/corp/blob/master/dbt_style_guide.md).
+- [ ] Meu SQL segue o [guia de estilo da SMS-Rio](https://doc.clickup.com/9013004335/d/h/8ckf21f-1073/e8ed96d7bccb902/8ckf21f-14653).
 - [ ] `dbt build` completa com sucesso e os testes dbt passam (se não, detalhe por quê)
 - [ ] Materializei meus modelos apropriadamente.
 - [ ] Adicionei testes e documentação apropriados a quaisquer modelos novos.
