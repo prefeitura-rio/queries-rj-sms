@@ -1,0 +1,32 @@
+version: 2
+models:
+  - name: profissionais
+    description: Tabela de profissionais de saúde que já atenderam em unidades do SUS na cidade do Rio de Janeiro
+    columns:
+      - name: id_estabelecimento_cnes
+        description: Identificador do estabelecimento
+        data_type: STRING
+      - name: nome_profissional
+        description: Nome do profissional
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: cartao_nacional_saude
+        description: Cartão nacional de saúde do profissional
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: id_registro_conselho
+        description: Número do registro no conselho de classe
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
+      - name: tipo_conselho
+        description: Tipo do conselho de classe
+        data_type: STRING
+      - name: cbo_fam_descricao
+        description: Descrição da familia de especialidade do profissional
+        data_type: STRING
+      - name: lista_especialidades_prestadas
+        description: Lista com todas as ocupações do médico performou na unidade
+        data_type: ARRAY
