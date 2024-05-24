@@ -23,6 +23,7 @@ with
             material_abc_categoria,
             material_descricao,
             material_remume_indicador,
+            material_remume_listagem_estrategico_indicador,
             sum(material_quantidade) as material_quantidade,
             avg(material_consumo_medio) as material_consumo_medio
         from source
@@ -39,6 +40,7 @@ with
             material_controlado_tipo,
             material_abc_categoria,
             material_remume_indicador,
+            material_remume_listagem_estrategico_indicador,
             material_descricao
     )
 
