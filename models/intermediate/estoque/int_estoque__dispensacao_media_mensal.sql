@@ -7,7 +7,7 @@ with
                     "int_estoque__dispensacao_serie_historica_com_outliers_identificados"
                 )
             }}
-        where outlier = "nao" and row_num <= 90  -- o CMD é calculado a partir das 90 últimas observações
+        where outlier = "nao" and row_num <= 30  -- o CMD é calculado a partir das 30 últimas observações
         group by id_cnes, id_material
         order by id_cnes, id_material
     ),
@@ -20,7 +20,7 @@ with
                     "int_estoque__dispensacao_serie_historica_com_outliers_identificados"
                 )
             }}
-        where row_num <= 90  -- o CMD é calculado a partir das 90 últimas observações
+        where row_num <= 30  -- o CMD é calculado a partir das 30 últimas observações
         group by id_cnes, id_material
         order by id_cnes, id_material
     )
