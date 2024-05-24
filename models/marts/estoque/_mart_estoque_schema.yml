@@ -142,7 +142,8 @@ models:
           medicamento/insumo
         data_type: FLOAT64
       - name: material_consumo_medio
-        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
+          médio diário dos últimos 30 dias
         data_type: FLOAT64
       - name: estoque_cobertura_dias
         description: Quantos dias de estoque a quantidade disponível do
@@ -305,7 +306,8 @@ models:
           medicamento/insumo
         data_type: FLOAT64
       - name: material_consumo_medio
-        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
+          médio diário dos últimos 30 dias
         data_type: FLOAT64
       - name: estoque_cobertura_dias
         description: Quantos dias de estoque a quantidade disponível do
@@ -392,7 +394,7 @@ models:
         data_type: FLOAT64
       - name: estoque_cobertura_dias
         description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 90 dias
+          médio diário dos últimos 30 dias
         data_type: FLOAT64
   - name: mart_estoque__posicao_atual_agregado_looker_row_level_access
     description: Tabela baseada na tabela estoque_posicao_atual_agregado, adicionado
@@ -455,7 +457,7 @@ models:
         data_type: FLOAT64
       - name: estoque_cobertura_dias
         description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 90 dias
+          médio diário dos últimos 30 dias
         data_type: FLOAT64
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
