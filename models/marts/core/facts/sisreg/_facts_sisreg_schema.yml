@@ -1,6 +1,12 @@
 models:
   - name: fct_sisreg_escala
     columns:
+      - name: id_escala_ambulatorial
+        description: Este é o identificador único para a escala ambulatorial. É usado
+          para rastrear e gerenciar cada escala ambulatorial individual dentro
+          do sistema.
+        data_type: string
+        quote: true
       - name: id_central_executante
         data_type: string
         quote: true

@@ -53,6 +53,7 @@ with
 
     final as (
         select
+            id_escala_ambulatorial,
             id_central_executante,
             id_estabelecimento_executante,
             id_procedimento_interno,
@@ -72,10 +73,13 @@ with
                 vagas_primeira_vez_qtd + vagas_reserva_qtd + vagas_retorno_qtd
             ) as vagas_todas_qtd,
         from sisreg_explodido_filtrado
-        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
     )
 
 select
+    --pk
+    id_escala_ambulatorial,
+
     -- fks
     id_central_executante,
     id_estabelecimento_executante,
