@@ -28,8 +28,7 @@ with
         from {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
     ),
 
-    sigma as (select distinct * from {{ source("sigma", "material") }}), -- existe um bug na origem do sigma gerando duplicidade
-
+    sigma as (select distinct * from {{ source("sigma", "material") }}),  -- existe um bug na origem do sigma gerando duplicidade
 
     historico_dispensacao as (
         select *
@@ -79,9 +78,9 @@ with
             coalesce(abc.abc_categoria, "S/C") as abc_categoria,
             coalesce(
                 mat.nome,
-                concat(sig.nm_padronizado," ", nm_complementar_material),
+                concat(sig.nm_padronizado, " ", nm_complementar_material),
                 pos.material_descricao
-            ) as material_descricao2,
+            ) as material_descricao_full,
             if(mat.nome is null, "nao", "sim") as material_cadastro_esta_correto,
             case
                 when abc.abc_categoria is not null
@@ -149,14 +148,18 @@ select
     material_remume_listagem_estrategico_indicador,
     material_controlado_indicador,
     material_controlado_tipo,
-    material_descricao2 as material_descricao,
+    material_descricao_full as material_descricao,
     material_unidade,
     material_cadastro_esta_correto,
     estoque_secao,
     id_lote,
     lote_data_vencimento,
-    if(current_date('America/Sao_Paulo') > lote_data_vencimento, "vencido", "ativo") as lote_status,
-    date_diff(lote_data_vencimento, current_date('America/Sao_Paulo'), day) as lote_dias_para_vencer,
+    if(
+        current_date('America/Sao_Paulo') > lote_data_vencimento, "vencido", "ativo"
+    ) as lote_status,
+    date_diff(
+        lote_data_vencimento, current_date('America/Sao_Paulo'), day
+    ) as lote_dias_para_vencer,
     material_quantidade,
     material_valor_unitario,
     material_valor_total,
@@ -170,9 +173,20 @@ select
     cmm_justificativa_ausencia,
 
     -- Metadata 
+    concat(
+        id_material,
+        " - ",
+        upper(material_descricao_full),
+        " - ",
+        lower(material_descricao_full),
+        " - ",
+        initcap(material_descricao_full)
+    ) as busca_material_id_descricao_case_insensitive,
     sistema_origem,
     data_particao,
-    date_diff(current_date('America/Sao_Paulo'), data_particao, day) as dias_desde_ultima_atualizacao,
+    date_diff(
+        current_date('America/Sao_Paulo'), data_particao, day
+    ) as dias_desde_ultima_atualizacao,
     data_carga,
 
 from posicao_final

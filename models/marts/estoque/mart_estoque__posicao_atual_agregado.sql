@@ -22,6 +22,7 @@ with
             material_controlado_tipo,
             material_descricao,
             material_remume_indicador,
+            busca_material_id_descricao_case_insensitive,
             sum(material_quantidade) as material_quantidade,
             avg(material_consumo_medio) as material_consumo_medio
         from source
@@ -37,7 +38,8 @@ with
             material_controlado_indicador,
             material_controlado_tipo,
             material_remume_indicador,
-            material_descricao
+            material_descricao,
+            busca_material_id_descricao_case_insensitive
     )
 
 select
