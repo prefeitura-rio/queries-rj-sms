@@ -63,6 +63,7 @@ with
             procedimento_vigencia_inicial_data,
             procedimento_vigencia_final_data,
             data as procedimento_vigencia_data,
+            procedimento_dia_semana_sigla,
             extract(year from data) as procedimento_vigencia_ano,
             extract(month from data) as procedimento_vigencia_mes,
             data_particao,
@@ -73,7 +74,7 @@ with
                 vagas_primeira_vez_qtd + vagas_reserva_qtd + vagas_retorno_qtd
             ) as vagas_todas_qtd,
         from sisreg_explodido_filtrado
-        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
     )
 
 select
@@ -94,6 +95,7 @@ select
     procedimento_vigencia_data,
     procedimento_vigencia_ano,
     procedimento_vigencia_mes,
+    procedimento_dia_semana_sigla as procedimento_vigencia_dia_semana,
     vagas_primeira_vez_qtd,
     vagas_reserva_qtd,
     vagas_retorno_qtd,

@@ -66,6 +66,11 @@ models:
         quote: true
         description: Esta coluna contém o mês da data de vigência da escala do
           profissional para determinado procedimento.
+      - name: procedimento_vigencia_dia_semana
+        description: Esta coluna contém o dia da semana da escala do profissional para
+          determinado procedimento.
+        data_type: string
+        quote: true
       - name: vagas_primeira_vez_qtd
         data_type: int64
         quote: true
