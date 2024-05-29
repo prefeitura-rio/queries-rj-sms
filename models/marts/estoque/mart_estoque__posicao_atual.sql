@@ -73,7 +73,7 @@ with
                 sistema_origem <> "tpc", est.responsavel_sms, "subpav"
             ) as estabelecimento_responsavel_sms,
             if(
-                sistema_origem <> "tpc", coalesce(cmm.quantidade, 0), cmm.quantidade
+                sistema_origem <> "tpc", coalesce(cmm.cmd_com_outliers, 0), cmm.cmd_com_outliers
             ) as material_consumo_medio,
             coalesce(abc.abc_categoria, "S/C") as abc_categoria,
             coalesce(
@@ -95,11 +95,11 @@ with
                 else 'desconhecida'
             end as abc_justificativa_ausencia,
             case
-                when cmm.quantidade is not null
+                when cmm.cmd_com_outliers is not null
                 then '-'
-                when cmm.quantidade is null and sistema_origem = 'tpc'
+                when cmm.cmd_com_outliers is null and sistema_origem = 'tpc'
                 then "CMM não calculado para TPC"
-                when cmm.quantidade is null and disp.id_curva_abc is null
+                when cmm.cmd_com_outliers is null and disp.id_curva_abc is null
                 then "item não possui histórico de dispensação registrado na unidade"
                 else 'desconhecida'
             end as cmm_justificativa_ausencia,

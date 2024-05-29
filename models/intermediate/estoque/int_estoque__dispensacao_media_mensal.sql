@@ -28,13 +28,13 @@ with
 select
     cmd_sem_outliers.id_cnes,
     cmd_sem_outliers.id_material,
+    cmd_com_outliers.quantidade as cmd_com_outliers,
+    cmd_sem_outliers.quantidade as cmd_sem_outliers,
     if(
         cmd_sem_outliers.quantidade is null or cmd_sem_outliers.quantidade = 0,
         cmd_com_outliers.quantidade,
         cmd_sem_outliers.quantidade
-    ) as quantidade,  -- para eventos esporádicos, onde todos os pontos são considerados outliers, o CMD é calculado com todos os pontos
-    -- cmd_com_outliers.quantidade as qtd_com,
-    -- cmd_sem_outliers.quantidade as qtd_sem
+    ) as cmd_hibrido,  -- para eventos esporádicos, onde todos os pontos são considerados outliers, o CMD é calculado com todos os pontos
 from cmd_sem_outliers
 left join
     cmd_com_outliers
