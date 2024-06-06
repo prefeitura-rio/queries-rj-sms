@@ -12,4 +12,7 @@ sources:
     - name: tbGestao
     - name: tbTurnoAtendimento
     - name: tbEquipe
+    - name: tbModVinculo
+    - name: tbTpModVinculo
+    - name: tbDadosProfissionalSus
 

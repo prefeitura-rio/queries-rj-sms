@@ -233,3 +233,40 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__vinculo
+    description: Tabela dimensão da vinculação empregatícia dos funcionários
+    columns:
+      - name: codigo_vinculacao
+        description: Código da vinculação do empregado
+      - name: descricao_vinculacao
+        description: Descrição da vinculação do empregado
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__tipo_vinculo
+    description: Tabela dimensão dos tipos de vinculação empregatícia dos funcionários
+    columns:
+      - name: codigo_vinculacao
+        description: Código da vinculação do empregado
+      - name: tipo_vinculacao
+        description: Tipo da vinculação do empregado
+      - name: descricao_vinculacao
+        description: Descrição da vinculação do empregado
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__dados_profissionais_sus
+    description: Tabela de informações dos profissionais do SUS
+    columns:
+      - name: codigo_sus
+        description: Código SUS do profissional
+      - name: tipo_vinculacao
+        description: Tipo da vinculação do empregado
+      - name: descricao_vinculacao
+        description: Descrição da vinculação do empregado
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
