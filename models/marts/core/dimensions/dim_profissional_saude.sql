@@ -1,7 +1,7 @@
 {{
     config(
         schema="saude_dados_mestres",
-        alias="profissional",
+        alias="profissional_saude",
         materialized="table",
     )
 }}
