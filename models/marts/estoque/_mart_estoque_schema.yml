@@ -10,162 +10,167 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        data_type: STRING
+        data_type: string
       - name: id_curva_abc
         description: Identificador usado para agrupar os medicamentos/insumos em classes
           de consumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_cnes
         description: Classificação do CNES de tipos de unidades.
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades.
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_sms_simplificado
         description: Versão encurtada do campo 'estabelecimento_tipo_sms'
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_sms_agrupado
         description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_nome_sigla
         description: Abreviação do nome fantasia
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_administracao
         description: Nome do OSS responsável pela administração. Em caso onde não há
           OSS, é indicado como direta (administração direta pela SMS-Rio)
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_responsavel_sms
         description: Sub secretaria dentro da SMS-Rio responsável pela unidade
-        data_type: STRING
+        data_type: string
       - name: material_abc_categoria
         description: Classificação do medicamento/insumo pela curva ABC
-        data_type: STRING
+        data_type: string
       - name: material_hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
           material em um grupo específico com base em suas características ou
           uso pretendido. Um material pode pertencer à categoria medicamento,
           insumo ou imunizante.
-        data_type: STRING
+        data_type: string
       - name: material_hierarquia_n2_subcategoria
         description: Este campo representa a subcategoria do material. Fornece
           informações mais específicas sobre o tipo de material, ajudando a
           classificá-lo ainda mais dentro de sua categoria principal. Por
           exemplo, um material do grupo medicamento pode pertencer às
           subcategorias como antibióticos, analgésicos, etc.
-        data_type: STRING
+        data_type: string
       - name: material_remume_indicador
         description: Esta coluna indica se o material está listado na Lista Municipal de
           Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
           disponibilidade e regulamentação do material.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_basico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Básicos" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_uso_interno_indicador
         description: Esta coluna indica se o material faz parte da lista "Uso interno
           nas UAPs" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_hospitalar_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Hospitalares" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_antiseptico_indicador
         description: Esta coluna indica se o material faz parte da lista
           "Saneantes/Antispeticos" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_estrategico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Estratégicos" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_controlado_indicador
         description: Esta coluna indica para os casos de medicamentos se é controlado ou
           não.
-        data_type: STRING
+        data_type: string
       - name: material_controlado_tipo
         description: Esta coluna indica para os casos de medicamentos controlados, qual
           o seu tipo de controle.
-        data_type: STRING
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
-        data_type: STRING
+        data_type: string
       - name: material_cadastro_esta_correto
         description: Indica se o cadastro do medicamento/insumo está utilizando a
           codificação Sigma correta.
-        data_type: STRING
+        data_type: string
       - name: estoque_secao
         description: Sub-estoque onde o medicamento/insumo está armazenado
-        data_type: STRING
+        data_type: string
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
-        data_type: STRING
+        data_type: string
       - name: lote_data_vencimento
         description: Data de vencimento do lote
-        data_type: DATE
+        data_type: date
       - name: lote_status
         description: Indica se o lote está vencido ou não
-        data_type: STRING
+        data_type: string
       - name: lote_dias_para_vencer
         description: Indica quantos dias faltam para o lote vencer
-        data_type: INT64
+        data_type: int64
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
-        data_type: FLOAT64
+        data_type: float64
       - name: material_valor_unitario
         description: Valor em reais de uma unidade do medicamento/insumo
-        data_type: FLOAT64
+        data_type: float64
       - name: material_valor_total
         description: Valor em reais somando todas as unidades disponíveis do
           medicamento/insumo
-        data_type: FLOAT64
+        data_type: float64
       - name: material_consumo_medio
-        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
-        data_type: FLOAT64
+        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
+          médio diário dos últimos 30 dias
+        data_type: float64
       - name: estoque_cobertura_dias
         description: Quantos dias de estoque a quantidade disponível do
           medicamento/insumo representa
-        data_type: FLOAT64
+        data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
-        data_type: STRING
+        data_type: string
       - name: cmm_justificativa_ausencia
         description: Explica o motivo do item não ter o consumo médio diáro calculado
-        data_type: STRING
+        data_type: string
+      - name: busca_material_id_descricao_case_insensitive
+        description: Campo utiilizado para busca de material no BI.
+        data_type: string
+        quote: true
       - name: sistema_origem
         description: Sistema de origem do registro
-        data_type: STRING
+        data_type: string
       - name: data_particao
         description: Data de referencia da posição do estoque
-        data_type: DATE
+        data_type: date
       - name: dias_desde_ultima_atualizacao
         description: Indica quantos dias se passaram desde a última atualização do registro
-        data_type: INT64
+        data_type: int64
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-        data_type: DATETIME
+        data_type: datetime
   - name: mart_estoque__posicao_atual_looker_row_level_access
     description: Tabela baseada na tabela estoque_posicao_atual, adicionado o email
       dos usuários que podem ler cada registro. Atenção, registros de posição
@@ -173,227 +178,236 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        data_type: STRING
+        data_type: string
       - name: id_curva_abc
         description: Identificador usado para agrupar os medicamentos/insumos em classes
           de consumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_cnes
         description: Classificação do CNES de tipos de unidades.
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades.
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_sms_simplificado
         description: Versão encurtada do campo 'estabelecimento_tipo_sms'
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_sms_agrupado
         description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_nome_sigla
         description: Abreviação do nome fantasia
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_administracao
         description: Nome do OSS responsável pela administração. Em caso onde não há
           OSS, é indicado como direta (administração direta pela SMS-Rio)
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_responsavel_sms
         description: Sub secretaria dentro da SMS-Rio responsável pela unidade
-        data_type: STRING
+        data_type: string
       - name: material_abc_categoria
         description: Classificação do medicamento/insumo pela curva ABC
-        data_type: STRING
+        data_type: string
       - name: material_hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
           material em um grupo específico com base em suas características ou
           uso pretendido. Um material pode pertencer à categoria medicamento,
           insumo ou imunizante.
-        data_type: STRING
+        data_type: string
       - name: material_hierarquia_n2_subcategoria
         description: Este campo representa a subcategoria do material. Fornece
           informações mais específicas sobre o tipo de material, ajudando a
           classificá-lo ainda mais dentro de sua categoria principal. Por
           exemplo, um material do grupo medicamento pode pertencer às
           subcategorias como antibióticos, analgésicos, etc.
-        data_type: STRING
+        data_type: string
       - name: material_remume_indicador
         description: Esta coluna indica se o material está listado na Lista Municipal de
           Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
           disponibilidade e regulamentação do material.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_basico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Básicos" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_uso_interno_indicador
         description: Esta coluna indica se o material faz parte da lista "Uso interno
           nas UAPs" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_hospitalar_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Hospitalares" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_antiseptico_indicador
         description: Esta coluna indica se o material faz parte da lista
           "Saneantes/Antispeticos" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_remume_listagem_estrategico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Estratégicos" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: material_controlado_indicador
         description: Esta coluna indica para os casos de medicamentos se é controlado ou
           não.
-        data_type: STRING
+        data_type: string
       - name: material_controlado_tipo
         description: Esta coluna indica para os casos de medicamentos controlados, qual
           o seu tipo de controle.
-        data_type: STRING
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
-        data_type: STRING
+        data_type: string
       - name: material_cadastro_esta_correto
         description: Indica se o cadastro do medicamento/insumo está utilizando a
           codificação Sigma correta.
-        data_type: STRING
+        data_type: string
       - name: estoque_secao
         description: Sub-estoque onde o medicamento/insumo está armazenado
-        data_type: STRING
+        data_type: string
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
-        data_type: STRING
+        data_type: string
       - name: lote_data_vencimento
         description: Data de vencimento do lote
-        data_type: DATE
+        data_type: date
       - name: lote_status
         description: Indica se o lote está vencido ou não
-        data_type: STRING
+        data_type: string
       - name: lote_dias_para_vencer
         description: Indica quantos dias faltam para o lote vencer
-        data_type: INT64
+        data_type: int64
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
-        data_type: FLOAT64
+        data_type: float64
       - name: material_valor_unitario
         description: Valor em reais de uma unidade do medicamento/insumo
-        data_type: FLOAT64
+        data_type: float64
       - name: material_valor_total
         description: Valor em reais somando todas as unidades disponíveis do
           medicamento/insumo
-        data_type: FLOAT64
+        data_type: float64
       - name: material_consumo_medio
-        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
-        data_type: FLOAT64
+        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
+          médio diário dos últimos 30 dias
+        data_type: float64
       - name: estoque_cobertura_dias
         description: Quantos dias de estoque a quantidade disponível do
           medicamento/insumo representa
-        data_type: FLOAT64
+        data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
-        data_type: STRING
+        data_type: string
       - name: cmm_justificativa_ausencia
         description: Explica o motivo do item não ter o consumo médio diáro calculado
-        data_type: STRING
+        data_type: string
+      - name: busca_material_id_descricao_case_insensitive
+        description: Campo utiilizado para busca de material no BI.
+        data_type: string
+        quote: true
       - name: sistema_origem
         description: Sistema de origem do registro
-        data_type: STRING
+        data_type: string
       - name: data_particao
         description: Data de referencia da posição do estoque
-        data_type: DATE
+        data_type: date
       - name: dias_desde_ultima_atualizacao
         description: Indica quantos dias se passaram desde a última atualização do registro
-        data_type: INT64
+        data_type: int64
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-        data_type: DATETIME
+        data_type: datetime
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
-        data_type: STRING
+        data_type: string
   - name: mart_estoque__posicao_atual_agregado
     description: Tabela agregada no nível id_cnes, id_material a partir da tabela
       estoque_posicao_atual.
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        data_type: STRING
+        data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_sms_agrupado
         description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES.
-        data_type: STRING
+        data_type: string
       - name: material_hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
           material em um grupo específico com base em suas características ou
           uso pretendido. Um material pode pertencer à categoria medicamento,
           insumo ou imunizante.
-        data_type: STRING
+        data_type: string
       - name: material_hierarquia_n2_subcategoria
         description: Este campo representa a subcategoria do material. Fornece
           informações mais específicas sobre o tipo de material, ajudando a
           classificá-lo ainda mais dentro de sua categoria principal. Por
           exemplo, um material do grupo medicamento pode pertencer às
           subcategorias como antibióticos, analgésicos, etc.
-        data_type: STRING
+        data_type: string
       - name: material_controlado_indicador
         description: Esta coluna indica para os casos de medicamentos se é controlado ou
           não.
-        data_type: STRING
+        data_type: string
       - name: material_controlado_tipo
         description: Esta coluna indica para os casos de medicamentos controlados, qual
           o seu tipo de controle.
-        data_type: STRING
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: material_remume_indicador
         description: Esta coluna indica se o material está listado na Lista Municipal de
           Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
           disponibilidade e regulamentação do material.
-        data_type: STRING
+        data_type: string
+      - name: busca_material_id_descricao_case_insensitive
+        description: Campo utiilizado para busca de material no BI.
+        data_type: string
+        quote: true
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
-        data_type: FLOAT64
+        data_type: float64
       - name: material_consumo_medio
         description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
-        data_type: FLOAT64
+        data_type: float64
       - name: estoque_cobertura_dias
         description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 90 dias
-        data_type: FLOAT64
+          médio diário dos últimos 30 dias
+        data_type: float64
   - name: mart_estoque__posicao_atual_agregado_looker_row_level_access
     description: Tabela baseada na tabela estoque_posicao_atual_agregado, adicionado
       o email dos usuários que podem ler cada registro. Atenção, registros de
@@ -401,65 +415,69 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        data_type: STRING
+        data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_tipo_sms_agrupado
         description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES.
-        data_type: STRING
+        data_type: string
       - name: material_hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
           material em um grupo específico com base em suas características ou
           uso pretendido. Um material pode pertencer à categoria medicamento,
           insumo ou imunizante.
-        data_type: STRING
+        data_type: string
       - name: material_hierarquia_n2_subcategoria
         description: Este campo representa a subcategoria do material. Fornece
           informações mais específicas sobre o tipo de material, ajudando a
           classificá-lo ainda mais dentro de sua categoria principal. Por
           exemplo, um material do grupo medicamento pode pertencer às
           subcategorias como antibióticos, analgésicos, etc.
-        data_type: STRING
+        data_type: string
       - name: material_controlado_indicador
         description: Esta coluna indica para os casos de medicamentos se é controlado ou
           não.
-        data_type: STRING
+        data_type: string
       - name: material_controlado_tipo
         description: Esta coluna indica para os casos de medicamentos controlados, qual
           o seu tipo de controle.
-        data_type: STRING
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: material_remume_indicador
         description: Esta coluna indica se o material está listado na Lista Municipal de
           Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
           disponibilidade e regulamentação do material.
-        data_type: STRING
+        data_type: string
+      - name: busca_material_id_descricao_case_insensitive
+        description: Campo utiilizado para busca de material no BI.
+        data_type: string
+        quote: true
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
-        data_type: FLOAT64
+        data_type: float64
       - name: material_consumo_medio
         description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
-        data_type: FLOAT64
+        data_type: float64
       - name: estoque_cobertura_dias
         description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 90 dias
-        data_type: FLOAT64
+          médio diário dos últimos 30 dias
+        data_type: float64
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
-        data_type: STRING
+        data_type: string
   - name: mart_estoque__consumo_serie_historica
     description: Tabela contendo a série histórica dos últimos 90 dia de consumo e
       posição aberta no nível cnes e item.
