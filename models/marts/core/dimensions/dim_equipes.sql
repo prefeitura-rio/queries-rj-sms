@@ -7,50 +7,53 @@
 }}
 
 
-SELECT  
-  equipe.CO_EQUIPE as cod_equipe,
-  equipe.CO_AREA as cod_area,
-  equipe.SEQ_EQUIPE as seq_equipe,
-  equipe.NO_REFERENCIA as nome_equipe,
-  equipe.TP_EQUIPE as tipo_equipe,
-  equipe.CO_SUB_TIPO_EQUIPE as subtipo_equipe,
-  equipe.CO_UNIDADE as cod_unidade_saude, 
-  equipe.CO_PROF_SUS_PRECEPTOR as cod_profissional_preceptor,
-  lista_profissionais.profissionais,
-  equipe.DT_ATUALIZACAO as ultima_atualizacao_infos_equipe,
-  lista_profissionais.DT_ATUALIZACAO as ultima_atualizacao_profissionais_equipe,
-FROM `rj-sms-dev.brutos_cnes_web_staging.tbEquipe` as equipe
+select
+    equipe.codigo_equipe,
+    equipe.codigo_area,
+    equipe.sequencial_equipe,
+    equipe.nome_referencia as nome_equipe,
+    equipe.tipo_equipe as tipo_equipe,
+    equipe.codigo_subtipo_equipe as subtipo_equipe,
+    equipe.codigo_unidade as codigo_unidade_saude,
+    equipe.codigo_profissional_preceptor as codigo_profissional_preceptor,
+    lista_profissionais.profissionais,
+    equipe.data_atualizacao as ultima_atualizacao_infos_equipe,
+    lista_profissionais.data_atualizacao as ultima_atualizacao_profissionais_equipe,
+from {{ ref("raw_cnes_web__equipe") }} as equipe
 
-LEFT JOIN (
-    SELECT * 
-    FROM (  
-        SELECT *, 
-        ROW_NUMBER() OVER (PARTITION BY CO_UNIDADE,SEQ_EQUIPE ORDER BY DT_ATUALIZACAO DESC) as ordenacao
-        FROM  (
-            SELECT 
-            CO_UNIDADE, 
-            SEQ_EQUIPE,
-            DT_ATUALIZACAO, 
-            ARRAY_AGG(CO_PROFISSIONAL_SUS) as profissionais
-            FROM `rj-sms-dev.brutos_cnes_web_staging.rlEstabEquipeProf`
-            WHERE _data_carga = (
-                SELECT MAX(_data_carga)
-                FROM `rj-sms-dev.brutos_cnes_web_staging.rlEstabEquipeProf`
+left join
+    (
+        select *
+        from
+            (
+                select
+                    *,
+                    row_number() over (
+                        partition by codigo_unidade, sequencial_equipe
+                        order by data_atualizacao desc
+                    ) as ordenacao
+                from
+                    (
+                        select
+                            codigo_unidade,
+                            sequencial_equipe,
+                            data_atualizacao,
+                            array_agg(distinct codigo_profissional_sus) as profissionais
+                        from {{ ref("raw_cnes_web__equipe_profissionais") }}
+                        where codigo_municipio = '330455'
+                        group by 1, 2, 3
+                    )
             )
-            AND CO_MUNICIPIO = '330455'
-            GROUP BY 1,2,3
-        )
-    )
-    WHERE ordenacao = 1
-) as lista_profissionais
-ON (
-    lista_profissionais.CO_UNIDADE = equipe.CO_UNIDADE
-    AND lista_profissionais.SEQ_EQUIPE = equipe.SEQ_EQUIPE
+        where ordenacao = 1
+    ) as lista_profissionais
+    on (
+        lista_profissionais.codigo_unidade = equipe.codigo_unidade
+        and lista_profissionais.sequencial_equipe = equipe.sequencial_equipe
     )
 
-
-WHERE equipe._data_carga = (
-  SELECT MAX(_data_carga)
-  FROM `rj-sms-dev.brutos_cnes_web_staging.tbEquipe`
-)
-AND equipe.CO_MUNICIPIO = '330455'
+inner join
+    (
+        select distinct id_unidade from {{ ref("dim_estabelecimento") }}
+    ) as estabelecimento
+    on estabelecimento.id_unidade = equipe.codigo_unidade
+where equipe.codigo_municipio = '330455'

@@ -1,0 +1,38 @@
+{{
+    config(
+        alias="equipe_profissionais",
+    )
+}}
+
+with
+    source as (
+        select * from {{ source("brutos_cnes_web_staging", "rlEstabEquipeProf") }}
+    )
+
+select
+    safe_cast(co_profissional_sus as string) as codigo_profissional_sus,
+    safe_cast(co_municipio as string) as codigo_municipio,
+    safe_cast(co_area as string) as codigo_area,
+    safe_cast(co_microarea as string) as codigo_microarea,
+    safe_cast(seq_equipe as string) as sequencial_equipe,
+    safe_cast(co_unidade as string) as codigo_unidade,
+    safe_cast(co_cbo as string) as codigo_cbo,
+    safe_cast(tp_sus_nao_sus as string) as tipo_sus_nao_sus,
+    safe_cast(ind_vinculacao as string) as codigo_vinculo_profissional,
+    safe_cast(dt_entrada as string) as data_entrada_profissional,
+    safe_cast(dt_desligamento as string) as data_desligamento_profissional,
+    safe_cast(co_cnes_outraequipe as string) as codigo_cnes_outra_equipe,
+    safe_cast(co_municipio_outraequipe as string) as codigo_municipio_outra_equipe,
+    safe_cast(co_area_outraequipe as string) as codigo_area_outra_equipe,
+    safe_cast(co_profissional_sus_compl as string) as codigo_profissional_complementar,
+    safe_cast(co_cbo_ch_compl as string) as cbo_profissional_complementar,
+    safe_cast(st_equipeminima as string) as pertence_equipe_minima,
+    safe_cast(co_mun_atuacao as string) as codigo_municipio_atuacao,
+    safe_cast(dt_atualizacao as string) as data_atualizacao,
+    safe_cast(dt_atualizacao_origem as string) as data_atualizacao_origem,
+    safe_cast(no_usuario as string) as nome_usuario,
+    safe_cast(_data_carga as date format 'DD/MM/YYY') as data_carga,
+    safe_cast(_data_snapshot as date format 'DD/MM/YYY') as data_snapshot,
+    concat(ano_particao, '-', mes_particao, '-', '01') as data_particao,
+    safe_cast(ano_particao as string) as ano_particao,
+from source
