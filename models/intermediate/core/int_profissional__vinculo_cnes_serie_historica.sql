@@ -85,12 +85,5 @@ where
         or indicador_vinculo_contratado_sus = 1
         or indicador_vinculo_autonomo_sus = 1
     )
-    and id_estabelecimento_cnes in (
-        select distinct id_estabelecimento_cnes
-        from {{ ref("raw_cnes_ftp__estabelecimento") }}
-        where
-            ano >= 2008
-            and sigla_uf = "RJ"
-            and id_municipio_6 = "330455"
-            and indicador_vinculo_sus = 1
-    )
+    and id_estabelecimento_cnes
+    in (select distinct id_cnes from {{ ref("dim_estabelecimento") }})
