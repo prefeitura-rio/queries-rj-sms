@@ -69,6 +69,8 @@ models:
         +schema: brutos_cnes_web
       cnes_ftp:
         +schema: brutos_cnes_ftp
+      datasus:
+        +schema: brutos_datasus
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
       plataforma_smsrio:

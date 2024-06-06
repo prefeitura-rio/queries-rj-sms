@@ -260,15 +260,15 @@ models:
         description: Data de carga do registro
       - name: data_snapshot
         description: Data de snapshot do registro
-- name: dim_equipes
+  - name: dim_equipes
     description: Tabela contendo a relação de equipes dentro dos estabelecimentos de saúde. Informações
       baseadas no CNES e outras compiladas dentro da SMS.
     columns:
-      - name: cod_equipe
+      - name: codigo_equipe
         description: Código da Equipe (Identificador Nacional de Equipe - INE)
-      - name: cod_area
+      - name: codigo_area
         description: Código da Área da Equipe
-      - name: seq_equipe
+      - name: sequencial_equipe
         description: Sequencial da Equipe
       - name: nome_equipe
         description: Nome de Referência da Equipe
@@ -276,9 +276,9 @@ models:
         description: Tipo de equipe
       - name: subtipo_equipe
         description: Subtipo de equipe
-      - name: cod_unidade_saude
+      - name: codigo_unidade_saude
         description: Código do Estabelecimento de Saúde
-      - name: cod_profissional_preceptor
+      - name: codigo_profissional_preceptor
         description: Código do profissional Preceptor na equipe
       - name: profissionais
         description: Array de profissionais pertencentes a equipe
