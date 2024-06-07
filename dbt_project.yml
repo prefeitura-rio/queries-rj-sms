@@ -87,7 +87,10 @@ models:
           dimensions:
             +schema: saude_dados_mestres
           facts:
-            +schema: saude_estoque
+            sisreg:
+              +schema: saude_sisreg
+            estoque:
+              +schema: saude_estoque
         dengue:
             +schema: projeto_dengue
         estoque:
