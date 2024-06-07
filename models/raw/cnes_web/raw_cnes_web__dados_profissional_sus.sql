@@ -9,7 +9,7 @@ with
         select * from {{ source("brutos_cnes_web_staging", "tbDadosProfissionalSus") }}
     )
 select
-    safe_cast(co_profissional_sus as string) as codigo_sus,
+    safe_cast(co_profissional_sus as string) as id_codigo_sus,
     safe_cast(co_cns as string) as cns,
     safe_cast(no_profissional as string) as nome,
     safe_cast(dt_atualizacao as date format 'DD/MM/YYYY') as data_atualizacao,

@@ -6,10 +6,9 @@
 
 with source as (select * from {{ source("brutos_cnes_web_staging", "tbTpModVinculo") }})
 select
-    -- Primary key
-    safe_cast(cd_vinculacao as string) as codigo_vinculacao,
-    safe_cast(tp_vinculo as string) as tipo_vinculacao,
-    safe_cast(ds_vinculo as string) as descricao_vinculacao,
+    safe_cast(cd_vinculacao as string) as id_vinculacao,
+    safe_cast(tp_vinculo as string) as tipo,
+    safe_cast(ds_vinculo as string) as descricao,
     safe_cast(ano_particao as string) as ano_particao,
     concat(
         safe_cast(ano_particao as string), '-', safe_cast(mes_particao as string), '-01'

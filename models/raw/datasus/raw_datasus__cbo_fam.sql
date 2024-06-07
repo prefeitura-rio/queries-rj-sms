@@ -8,10 +8,10 @@ with
     source as (select * from {{ source("brutos_datasus_staging", "cbo_fam") }}),
     renamed as (
         select
-            {{ adapter.quote("chave") }},
-            {{ adapter.quote("ds_regra") }},
-            {{ adapter.quote("_data_carga") }},
-            {{ adapter.quote("_data_snapshot") }}
+            safe_cast(chave as string) as id_cbo_familia,
+            safe_cast(ds_regra as string) as descricao,
+            safe_cast(_data_carga as date format 'DD/MM/YYY') as data_carga,
+            safe_cast(_data_snapshot as date format 'DD/MM/YYY') as _data_snapshot,
         from source
     )
 select *

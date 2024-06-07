@@ -260,18 +260,15 @@ models:
         description: Data de carga do registro
       - name: data_snapshot
         description: Data de snapshot do registro
-  - name: dim_profissional
+  - name: dim_profissional_saude
     description: Tabela de profissionais de saúde que já atenderam em unidades do SUS na cidade do Rio de Janeiro
     columns:
-      - name: id_estabelecimento_cnes
-        description: Identificador do estabelecimento
-        data_type: STRING
-      - name: nome_profissional
+      - name: nome
         description: Nome do profissional
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
-      - name: cartao_nacional_saude
+      - name: cns
         description: Cartão nacional de saúde do profissional
         data_type: STRING
         policy_tags:
@@ -281,7 +278,7 @@ models:
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
-      - name: cod_profissional_sus
+      - name: codigo_sus
         description: Código SUS do profissional
         data_type: STRING
       - name: id_registro_conselho
@@ -289,50 +286,44 @@ models:
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_CRM") }}'
-      - name: tipo_conselho
+      - name: id_tipo_conselho
         description: Tipo do conselho de classe
         data_type: STRING
-      - name: cbo_fam_descricao
+      - name: cbo_familia
         description: Descrição da familia de especialidade do profissional
         data_type: STRING
-      - name: lista_especialidades_prestadas
-        description: Lista com todas as ocupações do médico performou na unidade
-        data_type: ARRAY
-  - name: dim_vinculo_profissional_saude_cnes
+  - name: dim_vinculo_profissional_saude_estabelecimento
     description: Tabela de profissionais de saúde alocados hoje em unidades do SUS na cidade do Rio de Janeiro. 
     columns:
       - name: data_ultima_atualizacao
         description: Data de ultima atualização do registro
         data_type: STRING
-      - name: id_estabelecimento_cnes
+      - name: id_cnes
         description: Identificador do estabelecimento
         data_type: STRING
-      - name: cbo_2002
-        description: Código da especialidade do profissional
-        data_type: STRING
-      - name: cbo_descricao
+      - name: cbo
         description: Descrição da especialidade do profissional
         data_type: STRING
-      - name: cbo_fam_descricao
+      - name: cbo_familia
         description: Descrição da familia de especialidade do profissional
         data_type: STRING
-      - name: nome_profissional
+      - name: profissional_nome
         description: Nome do profissional
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
-      - name: cartao_nacional_saude
+      - name: profissional_cns
         description: Cartão nacional de saúde do profissional
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
-      - name: cod_profissional_sus
+      - name: profissional_codigo_sus
         description: Código SUS do profissional
         data_type: STRING
-      - name: vinculacao_descricao
+      - name: vinculacao
         description: Vinculação do profissional
         data_type: STRING
-      - name: tipo_vinculo_descricao
+      - name: vinculo_tipo
         description: Tipo de vinculo do profissional
         data_type: STRING
       - name: carga_horaria_outros
@@ -349,6 +340,6 @@ models:
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_CRM") }}'
-      - name: tipo_conselho
+      - name: id_tipo_conselho
         description: Tipo do conselho de classe
         data_type: STRING

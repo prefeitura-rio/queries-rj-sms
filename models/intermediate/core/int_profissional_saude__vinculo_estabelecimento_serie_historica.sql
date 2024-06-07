@@ -1,23 +1,26 @@
+-- cria serie historica de vinculacao nos estabelecimentos de saude da atenção
+-- primaria do rio de janeiro
 select
     concat(p.ano, '-', lpad(cast(p.mes as string), 2, '0')) data_registro,
-    p.id_estabelecimento_cnes,
-    utils.clean_name_string(p.nome) as nome_profissional,
+    p.id_estabelecimento_cnes as id_cnes,
+    cod_sus.id_codigo_sus as profissional_codigo_sus,
+    utils.clean_numeric_string(p.cartao_nacional_saude) as profissional_cns,
+    utils.clean_name_string(p.nome) as profissional_nome,
+    vinculacao.descricao as vinculacao,
+    tipo_vinculo.descricao as vinculo_tipo,
+    ocup.descricao as cbo,
+    ocupf.descricao as cbo_familia,
     utils.clean_numeric_string(p.id_registro_conselho) as id_registro_conselho,
-    p.tipo_conselho,
-    cod_sus.codigo_sus as cod_profissional_sus,
-    utils.clean_numeric_string(p.cartao_nacional_saude) as cartao_nacional_saude,
-    ocup.ds_cbo as cbo_descricao,
-    ocupf.ds_regra as cbo_fam_descricao,
-    vinculacao.descricao_vinculacao as vinculacao_descricao,
-    tipo_vinculo.descricao_vinculacao as tipo_vinculo_descricao,
+    p.tipo_conselho as id_tipo_conselho,
     p.carga_horaria_outros,
     p.carga_horaria_hospitalar,
     p.carga_horaria_ambulatorial
 
 from {{ ref("raw_cnes_ftp__profissional") }} as p
-left join {{ ref("raw_datasus__cbo") }} as ocup on p.cbo_2002 = ocup.cbo
+left join {{ ref("raw_datasus__cbo") }} as ocup on p.cbo_2002 = ocup.id_cbo
 left join
-    {{ ref("raw_datasus__cbo_fam") }} as ocupf on left(p.cbo_2002, 4) = ocupf.chave
+    {{ ref("raw_datasus__cbo_fam") }} as ocupf
+    on left(p.cbo_2002, 4) = ocupf.id_cbo_familia
 
 left join
     (
@@ -25,19 +28,17 @@ left join
         from
             (
                 select
-                    concat(codigo_vinculacao, tipo_vinculacao) as cd_tipo_vinculo,
-                    descricao_vinculacao,
+                    concat(id_vinculacao, tipo) as codigo_tipo_vinculo,
+                    descricao,
                     row_number() over (
-                        partition by
-                            concat(codigo_vinculacao, tipo_vinculacao),
-                            descricao_vinculacao
+                        partition by concat(id_vinculacao, tipo), descricao
                         order by data_carga desc
                     ) as ordenacao
                 from {{ ref("raw_cnes_web__tipo_vinculo") }}
             )
         where ordenacao = 1
     ) as tipo_vinculo
-    on substring(p.tipo_vinculo, 1, 4) = tipo_vinculo.cd_tipo_vinculo
+    on substring(p.tipo_vinculo, 1, 4) = tipo_vinculo.codigo_tipo_vinculo
 
 left join
     (
@@ -45,17 +46,16 @@ left join
         from
             (
                 select
-                    codigo_vinculacao,
-                    descricao_vinculacao,
+                    id_vinculacao,
+                    descricao,
                     row_number() over (
-                        partition by codigo_vinculacao, descricao_vinculacao
-                        order by data_carga desc
+                        partition by id_vinculacao, descricao order by data_carga desc
                     ) as ordenacao
                 from {{ ref("raw_cnes_web__vinculo") }}
             )
         where ordenacao = 1
     ) as vinculacao
-    on substring(p.tipo_vinculo, 1, 2) = vinculacao.codigo_vinculacao
+    on substring(p.tipo_vinculo, 1, 2) = vinculacao.id_vinculacao
 
 left join
     (
@@ -63,12 +63,12 @@ left join
         from
             (
                 select
+                    id_codigo_sus,
                     nome,
-                    codigo_sus,
                     cns,
                     data_atualizacao,
                     row_number() over (
-                        partition by nome, codigo_sus, cns
+                        partition by nome, id_codigo_sus, cns
                         order by data_atualizacao desc
                     ) as ordenacao
                 from {{ ref("raw_cnes_web__dados_profissional_sus") }}
