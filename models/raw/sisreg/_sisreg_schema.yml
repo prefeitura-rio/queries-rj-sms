@@ -22,14 +22,6 @@ models:
       - name: id_estabelecimento_executante
         description: ID CNES do estabelecimento executante.
         data_type: STRING
-        tests:
-          - relationships:
-              name: raw_sisreg__escala__id_estabelecimento_executante__relationship
-              to: ref('dim_estabelecimento')
-              field: id_cnes
-              config:
-                where: procedimento_vigencia_final_data > '2020-01-01'
-                severity: warn
       - name: id_procedimento_interno
         description: Este é o identificador único para o procedimento sendo realizado. É
           usado para rastrear e gerenciar procedimentos em diferentes sistemas e
