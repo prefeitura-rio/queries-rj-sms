@@ -1,7 +1,8 @@
 {{
     config(
         schema="saude_sisreg",
-        alias="escala",
+        alias="oferta_programada_serie_historica",
+        materialized="incremental",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -13,7 +14,9 @@
 with
     -- sources
     sisreg as (
-        select * from {{ ref("raw_sisreg__escala") }} where escala_status != "EXCLUIDA"
+        select *
+        from {{ ref("raw_sisreg__oferta_programada") }}
+        where escala_status != "EXCLUIDA"
     ),
 
     sisreg_explodido_data as (
@@ -78,7 +81,7 @@ with
     )
 
 select
-    --pk
+    -- pk
     id_escala_ambulatorial,
 
     -- fks
@@ -104,4 +107,8 @@ select
     -- metadados
     data_particao
 from final
+{% if is_incremental() %}
 
+    where data_particao > (select max(data_particao) from {{ this }})
+
+{% endif %}
