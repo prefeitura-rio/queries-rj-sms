@@ -1,7 +1,8 @@
 {{
     config(
         schema="brutos_sisreg",
-        alias="escala",
+        alias="oferta_programada",
+        materialized="incremental",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -23,9 +24,7 @@ with
             if(
                 cod_cbo = "---" or cod_cbo = "", null, lpad(cod_cbo, 6, "0")
             ) as id_cbo2002,
-            if(
-                desc_cbo = "---" or desc_cbo = "", null, desc_cbo
-            ) as cbo2002_descricao,
+            if(desc_cbo = "---" or desc_cbo = "", null, desc_cbo) as cbo2002_descricao,
             lpad(cod_cnes_exec, 7, "0") as id_estabelecimento_executante,
             desc_cnes_exec as estabelecimento_executante_nome,
             lpad(cod_procedimento_interno, 7, "0") as id_procedimento_interno,
@@ -115,7 +114,6 @@ select
     vagas_reserva_qtd,
     vagas_reserva_minutos_por_procedimento,
 
-
     -- metadados
     agenda_local,
     quebra_automatica,
@@ -131,3 +129,8 @@ select
     mes_particao,
     data_particao
 from renamed
+{% if is_incremental() %}
+
+    where data_particao > (select max(data_particao) from {{ this }})
+
+{% endif %}
