@@ -5,12 +5,31 @@
         materialized="table",
     )
 }}
-
+with
+    equipes_rj as (
+        select
+            codigo_unidade,
+            sequencial_equipe,
+            data_atualizacao,
+            array_agg(distinct codigo_profissional_sus) as profissionais
+        from {{ ref("raw_cnes_web__equipe_profissionais") }}
+        where codigo_municipio = '330455'
+        group by 1, 2, 3
+    ),
+    equipes_rj_ordernado as (
+        select
+            *,
+            row_number() over (
+                partition by codigo_unidade, sequencial_equipe
+                order by data_atualizacao desc
+            ) as ordenacao
+        from equipes_rj
+    )
 
 select
     equipe.codigo_equipe,
-    equipe.codigo_area,
     equipe.sequencial_equipe,
+    equipe.codigo_area,
     equipe.nome_referencia as nome_equipe,
     equipe.tipo_equipe as tipo_equipe,
     equipe.codigo_subtipo_equipe as subtipo_equipe,
@@ -22,33 +41,10 @@ select
 from {{ ref("raw_cnes_web__equipe") }} as equipe
 
 left join
-    (
-        select *
-        from
-            (
-                select
-                    *,
-                    row_number() over (
-                        partition by codigo_unidade, sequencial_equipe
-                        order by data_atualizacao desc
-                    ) as ordenacao
-                from
-                    (
-                        select
-                            codigo_unidade,
-                            sequencial_equipe,
-                            data_atualizacao,
-                            array_agg(distinct codigo_profissional_sus) as profissionais
-                        from {{ ref("raw_cnes_web__equipe_profissionais") }}
-                        where codigo_municipio = '330455'
-                        group by 1, 2, 3
-                    )
-            )
-        where ordenacao = 1
-    ) as lista_profissionais
+    (select * from equipes_rj_ordernado where ordenacao = 1) as lista_profissionais
     on (
         lista_profissionais.codigo_unidade = equipe.codigo_unidade
-        and lista_profissionais.sequencial_equipe = equipe.sequencial_equipe
+        and lista_profissionais.codigo_equipe = equipe.codigo_equipe
     )
 
 inner join
