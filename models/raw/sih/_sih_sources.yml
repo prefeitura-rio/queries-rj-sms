@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_sih_staging
-    database:   rj-sms-dev
+    database:   rj-sms
     schema: brutos_sih_staging
     tables:
-      - name: indicadores_hospitalares_parquet
+      - name: indicadores_hospitalares
