@@ -21,12 +21,12 @@ with
     alocacao as (
         select
             profissional_codigo_sus,
-            array_agg(distinct cbo ignore nulls) as lista_cbo,
-            array_agg(distinct id_cbo ignore nulls) as lista_id_cbo,
-            array_agg(distinct id_cbo_familia ignore nulls) as lista_id_cbo_familia,
-            array_agg(distinct cbo_familia ignore nulls) as lista_cbo_familia,
-            array_agg(distinct id_tipo_conselho ignore nulls) as lista_id_tipo_conselho,
-            array_agg(distinct id_registro_conselho ignore nulls) as lista_id_registro_conselho,
+            array_agg(distinct id_cbo ignore nulls) as id_cbo_lista,
+            array_agg(distinct cbo ignore nulls) as cbo_lista,
+            array_agg(distinct id_cbo_familia ignore nulls) as id_cbo_familia_lista,
+            array_agg(distinct cbo_familia ignore nulls) as cbo_familia_lista,
+            array_agg(distinct id_tipo_conselho ignore nulls) as id_tipo_conselho_lista,
+            array_agg(distinct id_registro_conselho ignore nulls) as id_registro_conselho_lista,
         from
             {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
         where data_registro = ( select max(data_registro) from {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }})
@@ -37,14 +37,13 @@ with
 select
     cpf_profissionais.cpf as cpf,
     profissionais_datasus.id_codigo_sus,
-    profissionais_datasus.nome,
     profissionais_datasus.cns,
-    alocacao.lista_id_cbo,
-    alocacao.lista_cbo,
-    alocacao.lista_id_cbo_familia,
-    alocacao.lista_cbo_familia as cbo_familia,
-    alocacao.lista_id_registro_conselho,
-    alocacao.lista_id_tipo_conselho
+    alocacao.id_cbo_lista,
+    alocacao.cbo_lista,
+    alocacao.id_cbo_familia_lista,
+    alocacao.cbo_familia_lista,
+    alocacao.id_registro_conselho_lista,
+    alocacao.id_tipo_conselho_lista
 
 from (select * from profissionais_datasus where ordenacao = 1) as profissionais_datasus
 inner join alocacao as alocacao 

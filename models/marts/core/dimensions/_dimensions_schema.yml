@@ -263,11 +263,6 @@ models:
   - name: dim_profissional_saude
     description: Tabela de profissionais de saúde que já atenderam em unidades do SUS na cidade do Rio de Janeiro
     columns:
-      - name: nome
-        description: Nome do profissional
-        data_type: STRING
-        policy_tags:
-          - '{{ var ("TAG_NOME") }}'
       - name: cns
         description: Cartão nacional de saúde do profissional
         data_type: STRING
@@ -278,20 +273,29 @@ models:
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
-      - name: codigo_sus
+      - name: id_codigo_sus
         description: Código SUS do profissional
         data_type: STRING
-      - name: id_registro_conselho
-        description: Número do registro no conselho de classe
-        data_type: STRING
+      - name: id_registro_conselho_lista
+        description: Lista de números do registro no conselho de classe
+        data_type: ARRAY
         policy_tags:
           - '{{ var ("TAG_CRM") }}'
-      - name: id_tipo_conselho
-        description: Tipo do conselho de classe
-        data_type: STRING
-      - name: cbo_familia
-        description: Descrição da familia de especialidade do profissional
-        data_type: STRING
+      - name: id_tipo_conselho_lista
+        description: Lista do tipo do conselho de classe
+        data_type: ARRAY
+      - name: cbo_familia_lista
+        description: Lista de descrição da familia de especialidade do profissional para cada cbo associado
+        data_type: ARRAY
+      - name: id_cbo_familia_lista
+        description: Lista de ids da familia de especialidade do profissional para cada cbo associado
+        data_type: ARRAY
+      - name: cbo_lista
+        description: Lista de descrição da especialidade do profissional para cada cbo associado
+        data_type: ARRAY
+      - name: id_cbo_lista
+        description: Lista de id da especialidade do profissional para cada cbo associado
+        data_type: ARRAY
   - name: dim_vinculo_profissional_saude_estabelecimento
     description: Tabela de profissionais de saúde alocados hoje em unidades do SUS na cidade do Rio de Janeiro. 
     columns:
@@ -301,8 +305,14 @@ models:
       - name: id_cnes
         description: Identificador do estabelecimento
         data_type: STRING
+      - name: id_cbo
+        description: Id da especialidade do profissional
+        data_type: STRING
       - name: cbo
         description: Descrição da especialidade do profissional
+        data_type: STRING
+      - name: id_cbo_familia
+        description: Id da família de especialidade do profissional
         data_type: STRING
       - name: cbo_familia
         description: Descrição da familia de especialidade do profissional

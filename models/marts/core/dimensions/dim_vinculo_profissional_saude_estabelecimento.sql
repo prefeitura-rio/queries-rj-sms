@@ -35,7 +35,7 @@ from profissional_serie_historica
 where
     data_registro = (
         select distinct data_registro
-        from profissionais_serie_historica
+        from profissional_serie_historica
         order by 1 desc
         limit 1
     )
