@@ -3,7 +3,7 @@
 {{
     config(
         alias="brutos_prontuario_vitacare__estoque_movimento",
-        schema="controle_reprocessamento",
+        schema="gerenciamento__reprocessamento",
         materialized="incremental",
     )
 }}
@@ -20,7 +20,7 @@ with
         from
             unnest(
                 generate_date_array(
-                    '2023-10-28',  -- - data de quando começamos a ingestão vitacare
+                    '2024-02-01',  -- - data de quando começamos a ingestão vitacare
                     date_sub(current_date('America/Sao_Paulo'), interval 1 day),
                     interval 1 day
                 )
@@ -46,8 +46,8 @@ select
     rel.id_cnes,
     rel.area_programatica,
     rel.data,
-    "pending" as reprocessing_status,
-    "" as request_response_code,
+    "pending" as retry_status,
+    0 as retry_attempts_count,
     safe_cast("" as int64) as request_row_count
 from relacao_unidades_datas as rel
 left join
