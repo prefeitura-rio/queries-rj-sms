@@ -16,13 +16,13 @@ with
 
 
 select
-    p.id_cnes,
-    profissional_codigo_sus,
+    id_cnes,
+    profissional_codigo_sus as id_profissional_sus,
     profissional_cns,
     id_cbo,
-    cbo,
+    cbo as cbo_nome,
     id_cbo_familia,
-    cbo_familia,
+    cbo_familia as cbo_familia_nome,
     id_registro_conselho,
     id_tipo_conselho,
     vinculacao,

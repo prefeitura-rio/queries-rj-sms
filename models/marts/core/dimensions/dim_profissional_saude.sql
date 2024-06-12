@@ -39,13 +39,14 @@ with
     cpf_profissionais as (select * from {{ ref("raw_pacientes") }})
 
 select
+    profissionais_datasus.id_codigo_sus as id_profissional_sus,
     cpf_profissionais.cpf as cpf,
-    profissionais_datasus.id_codigo_sus,
     profissionais_datasus.cns,
+    profissionais_datasus.nome,
     alocacao.id_cbo_lista,
-    alocacao.cbo_lista,
+    alocacao.cbo_lista as cbo_nome_lista,
     alocacao.id_cbo_familia_lista,
-    alocacao.cbo_familia_lista,
+    alocacao.cbo_familia_lista as cbo_familia_nome_lista,
     alocacao.id_registro_conselho_lista,
     alocacao.id_tipo_conselho_lista,
     current_date('America/Sao_Paulo') as data_referencia
