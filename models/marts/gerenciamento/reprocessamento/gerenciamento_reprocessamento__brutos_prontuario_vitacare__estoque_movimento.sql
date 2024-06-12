@@ -10,7 +10,7 @@
 
 with
     unidades as (
-        select id_cnes, area_programatica
+        select id_cnes, area_programatica, nome_limpo
         from {{ ref("dim_estabelecimento") }}
         where prontuario_versao = 'vitacare' and prontuario_estoque_tem_dado = 'sim'
     ),
@@ -34,7 +34,9 @@ with
     ),
 
     relacao_unidades_datas as (
-        select id_cnes, area_programatica, data from unidades cross join calendario_sem_domingo as cal
+        select id_cnes, area_programatica, nome_limpo, data
+        from unidades
+        cross join calendario_sem_domingo as cal
     ),
 
     relacao_unidades_datas_com_dados as (
@@ -45,6 +47,7 @@ with
 select
     rel.id_cnes,
     rel.area_programatica,
+    rel.nome_limpo,
     rel.data,
     "pending" as retry_status,
     0 as retry_attempts_count,
@@ -57,4 +60,4 @@ left join
 where
     rel_dados.id_cnes is null
     {% if is_incremental() %} and data > (select max(data) from {{ this }}) {% endif %}
-order by  rel.data desc, rel.area_programatica, rel.id_cnes
+order by rel.data desc, rel.area_programatica, rel.id_cnes
