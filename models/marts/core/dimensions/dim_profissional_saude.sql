@@ -3,6 +3,7 @@
         schema="saude_dados_mestres",
         alias="profissional_saude",
         materialized="table",
+        tags=["weekly"]
     )
 }}
 
@@ -18,6 +19,7 @@ with
             ) as ordenacao
         from {{ ref("raw_cnes_web__dados_profissional_sus") }}
     ),
+    estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }}),
     alocacao as (
         select
             profissional_codigo_sus,
@@ -28,9 +30,11 @@ with
             array_agg(distinct id_tipo_conselho ignore nulls) as id_tipo_conselho_lista,
             array_agg(distinct id_registro_conselho ignore nulls) as id_registro_conselho_lista,
         from
-            {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
+            {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }} as v
+        inner join estabelecimentos as estabelecimentos
+        on estabelecimentos.id_cnes  = v.id_cnes
         where data_registro = ( select max(data_registro) from {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }})
-        group by 1
+       group by 1
     ),
     cpf_profissionais as (select * from {{ ref("raw_pacientes") }})
 
@@ -43,7 +47,8 @@ select
     alocacao.id_cbo_familia_lista,
     alocacao.cbo_familia_lista,
     alocacao.id_registro_conselho_lista,
-    alocacao.id_tipo_conselho_lista
+    alocacao.id_tipo_conselho_lista,
+    current_date('America/Sao_Paulo') as data_referencia
 
 from (select * from profissionais_datasus where ordenacao = 1) as profissionais_datasus
 inner join alocacao as alocacao 

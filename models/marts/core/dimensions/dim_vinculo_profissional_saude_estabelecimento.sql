@@ -3,19 +3,20 @@
         schema="saude_dados_mestres",
         alias="vinculo_profissional_saude_estabelecimento",
         materialized="table",
+        tags=["weekly"]
     )
 }}
 
 with
     profissional_serie_historica as (
         select *
-        from
-            {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
+        from {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
+     ),
+    estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }})
 
-    )
 
 select
-    id_cnes,
+    p.id_cnes,
     profissional_codigo_sus,
     profissional_cns,
     id_cbo,
@@ -29,13 +30,9 @@ select
     carga_horaria_outros,
     carga_horaria_hospitalar,
     carga_horaria_ambulatorial,
-    data_registro as data_ultima_atualizacao
+    data_registro as data_ultima_atualizacao,
+    current_date('America/Sao_Paulo') as data_referencia
 
-from profissional_serie_historica
-where
-    data_registro = (
-        select distinct data_registro
-        from profissional_serie_historica
-        order by 1 desc
-        limit 1
-    )
+from profissional_serie_historica as p
+inner join estabelecimentos as estabelecimentos 
+on p.id_cnes = estabelecimentos.id_cnes

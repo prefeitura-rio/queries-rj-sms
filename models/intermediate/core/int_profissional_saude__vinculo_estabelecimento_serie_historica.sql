@@ -58,9 +58,8 @@ with
                 partition by id_vinculacao, descricao order by data_carga desc
             ) as ordenacao
         from {{ ref("raw_cnes_web__vinculo") }}
-    ),
-    estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }})
-select
+    )
+    select
     p.data_registro,
     p.id_estabelecimento_cnes as id_cnes,
     cod_sus.id_codigo_sus as profissional_codigo_sus,
@@ -90,4 +89,3 @@ left join
 left join
     (select * from profissional_sus where ordenacao = 1) as cod_sus
     on p.profissional_cns = cod_sus.cns
-where p.id_estabelecimento_cnes in (select * from estabelecimentos)
