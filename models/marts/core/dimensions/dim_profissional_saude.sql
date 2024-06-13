@@ -34,7 +34,7 @@ with
         inner join estabelecimentos as estabelecimentos
         on estabelecimentos.id_cnes  = v.id_cnes
         where data_registro = ( select max(data_registro) from {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }})
-       group by 1
+        group by 1
     ),
     cpf_profissionais as (select * from {{ ref("raw_pacientes") }})
 

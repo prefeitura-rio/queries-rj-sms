@@ -16,7 +16,7 @@ with
 
 
 select
-    id_cnes,
+    p.id_cnes,
     profissional_codigo_sus as id_profissional_sus,
     profissional_cns,
     id_cbo,
