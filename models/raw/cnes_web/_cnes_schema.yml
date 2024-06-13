@@ -233,3 +233,46 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__vinculo
+    description: Tabela dimensão da vinculação empregatícia dos funcionários
+    columns:
+      - name: id_vinculacao
+        description: Código da vinculação do empregado
+      - name: descricao
+        description: Descrição da vinculação do empregado
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__tipo_vinculo
+    description: Tabela dimensão dos tipos de vinculação empregatícia dos funcionários
+    columns:
+      - name: id_vinculacao
+        description: Código da vinculação do empregado
+      - name: tipo
+        description: Tipo da vinculação do empregado
+      - name: descricao
+        description: Descrição da vinculação do empregado
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__dados_profissionais_sus
+    description: Tabela de informações dos profissionais do SUS
+    columns:
+      - name: id_codigo_sus
+        description: Código SUS do profissional
+      - name: cns
+        description: CNS do profissional
+      - name: nome
+        description: Nome do profissional
+      - name: data_atualizacao
+        description: Ultima atualização do registro no sistema
+      - name: usuario_atualizador_registro
+        description: Ultimo usuário a atualizar registro no sistema
+      - name: codigo_nacionalidade
+        description: Código de nacionalidade
+      - name: codigo_sequencial_inclusao
+        description: Código sequencial de inclusão
+      - name: data_atualizacao_origem
+        description: Data de atualização na origem

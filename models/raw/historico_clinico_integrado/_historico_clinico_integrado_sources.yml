@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_plataforma_smsrio
+    database: rj-sms-dev
+    schema: brutos_plataforma_smsrio
+    tables:
+      - name: profissional_saude_cpf

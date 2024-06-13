@@ -101,8 +101,9 @@ models:
         data_type: STRING
       - name: remume_disponibilidade_relacao
         description: Esta coluna fornece informações sobre a disponibilidade do material
-          nos diferentes tipos de unidades de saúde. É um campo de texto que lista os
-          tipos de unidades de saúde onde o material deve estar disponível.
+          nos diferentes tipos de unidades de saúde. É um campo de texto que
+          lista os tipos de unidades de saúde onde o material deve estar
+          disponível.
         data_type: STRING
       - name: remume_disponibilidade_cms_indicador
         description: Esta coluna indica se o material deve estar disponível nos CMS
@@ -260,3 +261,105 @@ models:
         description: Data de carga do registro
       - name: data_snapshot
         description: Data de snapshot do registro
+  - name: dim_profissional_saude
+    description: Tabela de profissionais de saúde que já atenderam em unidades do
+      SUS na cidade do Rio de Janeiro
+    columns:
+      - name: id_profissional_sus
+        description: Código SUS do profissional
+        data_type: string
+      - name: cpf
+        description: CPF do profissional
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: cns
+        description: Cartão nacional de saúde do profissional
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: nome
+        description: Nome do profissional de saúde.
+        data_type: string
+        quote: true
+      - name: id_cbo_lista
+        description: Lista de id da especialidade do profissional para cada cbo associado
+        data_type: array
+      - name: cbo_nome_lista
+        description: Lista de descrição da especialidade do profissional para cada cbo
+          associado
+        data_type: array
+      - name: id_cbo_familia_lista
+        description: Lista de ids da familia de especialidade do profissional para cada
+          cbo associado
+        data_type: array
+      - name: cbo_familia_nome_lista
+        description: Lista de descrição da familia de especialidade do profissional para
+          cada cbo associado
+        data_type: array
+      - name: id_registro_conselho_lista
+        description: Lista de números do registro no conselho de classe
+        data_type: array
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
+      - name: id_tipo_conselho_lista
+        description: Lista do tipo do conselho de classe
+        data_type: array
+  - name: dim_vinculo_profissional_saude_estabelecimento
+    description: Tabela de profissionais de saúde alocados hoje em unidades do SUS
+      na cidade do Rio de Janeiro.
+    columns:
+      - name: data_ultima_atualizacao
+        description: Data de ultima atualização do registro
+        data_type: STRING
+      - name: id_cnes
+        description: Identificador do estabelecimento
+        data_type: STRING
+      - name: id_cbo
+        description: Id da especialidade do profissional
+        data_type: STRING
+      - name: cbo_nome
+        description: Descrição da especialidade do profissional
+        data_type: STRING
+      - name: id_cbo_familia
+        description: Id da família de especialidade do profissional
+        data_type: STRING
+      - name: cbo_familia_nome
+        description: Descrição da familia de especialidade do profissional
+        data_type: STRING
+      - name: profissional_nome
+        description: Nome do profissional
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: profissional_cns
+        description: Cartão nacional de saúde do profissional
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: id_profissional_sus
+        description: Código SUS do profissional
+        data_type: STRING
+      - name: vinculacao
+        description: Vinculação do profissional
+        data_type: STRING
+      - name: vinculo_tipo
+        description: Tipo de vinculo do profissional
+        data_type: STRING
+      - name: carga_horaria_outros
+        description: Carga horária não ambulatorial, nem hospitalar
+        data_type: INT64
+      - name: carga_horaria_hospitalar
+        description: Carga horária hospitalar
+        data_type: INT64
+      - name: carga_horaria_ambulatorial
+        description: Carga horária ambulatorial
+        data_type: INT64
+      - name: id_registro_conselho
+        description: Número do registro no conselho de classe
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
+      - name: id_tipo_conselho
+        description: Tipo do conselho de classe
+        data_type: STRING
