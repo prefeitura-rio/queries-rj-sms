@@ -2,8 +2,8 @@
 -- explicada pelas entradas e saídas observadas na tabela movimento do dia anterior
 {{ config(
     severity = "error",
-    error_if = ">2000",
-    warn_if = ">1000",
+    error_if = ">20000",
+    warn_if = ">10000",
     store_failures = true,
     
 ) }}

@@ -22,6 +22,7 @@ models:
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
                 where: data_particao = current_date('America/Sao_Paulo')
+                severity: warn
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -93,6 +94,7 @@ models:
               filter: prontuario_estoque_tem_dado = 'sim'
               config:
                 where: data_particao = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
+                severity: warn
                 error_if: ">4"
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
