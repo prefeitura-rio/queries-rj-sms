@@ -19,7 +19,7 @@ casted as (
         tipo_descricao,
         operador,
         nome_cnes_operador,
-        codigo_cnes_operador,
+        lpad(cast(codigo_cnes_operador as string), 7, "0") as codigo_cnes_operador,
         tipo_perfil,
         status_solicitacao,
         sigla_situacao,
