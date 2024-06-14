@@ -2,6 +2,7 @@
     config(
         materialized="table",
         alias="estabelecimento",
+        tags=["daily"]
     )
 }}
 
