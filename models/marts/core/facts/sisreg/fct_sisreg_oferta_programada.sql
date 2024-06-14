@@ -2,7 +2,7 @@
     config(
         schema="saude_sisreg",
         alias="oferta_programada",
-        materialized="incremental",
+        materialized="table",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
