@@ -36,7 +36,12 @@ with
         where data_registro = ( select max(data_registro) from {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }})
        group by 1
     ),
-    cpf_profissionais as (select * from {{ ref("raw_pacientes") }})
+    cpf_profissionais as (
+        select  patient_cns.cns_valor as cns, patient.cpf as cpf
+        from {{ ref("raw_paciente") }} as patient
+        left join {{ ref("raw_cns_paciente")}} as patient_cns
+        on patient.paciente_id = patient_cns.paciente_id
+    )
 
 select
     profissionais_datasus.id_codigo_sus as id_profissional_sus,
@@ -55,4 +60,4 @@ from (select * from profissionais_datasus where ordenacao = 1) as profissionais_
 inner join alocacao as alocacao 
 on profissionais_datasus.id_codigo_sus = alocacao.profissional_codigo_sus
 left join cpf_profissionais as cpf_profissionais 
-on profissionais_datasus.cns = cpf_profissionais.cns_procurado
+on profissionais_datasus.cns = cpf_profissionais.cns

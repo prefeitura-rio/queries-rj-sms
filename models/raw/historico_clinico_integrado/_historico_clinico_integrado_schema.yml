@@ -1,0 +1,135 @@
+models:
+  - name: raw_paciente
+    description: Tabela de cadastro unificado dos pacientes. Resultado do merge das informações dos prontuários Vitai, Vitacare e SMSRio.
+    columns:
+      - name: paciente_id
+        description: Identificador do paciente.
+        data_type: string
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var ("TAG_DTNASCIMENTO") }}'
+      - name: falecido
+        description: Booleano que informa se o paciente é falecido.
+        data_type: bool
+        policy_tags:
+          - '{{ var ("TAG_OBITO") }}'
+      - name: data_obito
+        description: Data de óbito do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var ("TAG_DTOBITO") }}'
+      - name: nome_pai
+        description: Nome do pai do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_NOME_PAI") }}'
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_NOME_MAE") }}'
+      - name: nome
+        description: Nome do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: id_cidade_nascimento
+        description: Código da cidade de nascimento do paciente.
+        data_type: string
+      - name: id_genero
+        description: Código do gênero do paciente.
+        data_type: int
+      - name: id_nacionalidade
+        description: Código da nacionalidade.
+        data_type: int
+        policy_tags:
+          - '{{ var ("TAG_NATURALIDADE") }}'
+      - name: id_raca
+        description: Código de raça do paciente.
+        data_type: string
+  - name: raw_cns_paciente
+    description: Tabela contendo os valores de cns provisórios e principais.
+    columns:
+      - name: id
+        description: Identificador do cns.
+        data_type: string
+      - name: cns_valor
+        description: Número do cns.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: principal
+        description: Booleano que informa se o cns é o principal cns do paciente.
+        data_type: bool
+      - name: paciente_id
+        description: Id único de identificação do paciente.
+        data_type: string
+  - name: raw_endereco_paciente
+    description: Tabela contendo os valores de endereço cadastrados.
+    columns:
+      - name: id
+        description: Identificador do endereço.
+        data_type: string
+      - name: uso
+        description: Uso do endereço.
+        data_type: string
+      - name: tipo
+        description: Tipo do endereço.
+        data_type: string
+      - name: logradouro
+        description: Endereço completo.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: cep
+        description: Código postal do endereço.
+        data_type: string
+      - name: paciente_id
+        description: Id único de identificação do paciente.
+        data_type: string
+      - name: id_cidade
+        description: Id único de identificação da cidade do endereço cadastrado.
+        data_type: string
+      - name: inicio_periodo
+        description: Início do período do contato.
+        data_type: date
+      - name: fim_periodo
+        description: Fim do período do contato.
+        data_type: date
+  - name: raw_contato_paciente
+    description: Tabela contendo os valores de contato cadastrados.
+    columns:
+      - name: id
+        description: Identificador do contato.
+        data_type: string
+      - name: uso
+        description: Uso do contato.
+        data_type: string
+      - name: tipo
+        description: Tipo do meio de contato.
+        data_type: string
+      - name: valor
+        description: Contato.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_TELEFONE") }}'
+      - name: rank
+        description: Ordem de preferência de contato.
+        data_type: int
+      - name: paciente_id
+        description: Id único de identificação do paciente.
+        data_type: string
+      - name: inicio_periodo
+        description: Início do período do contato.
+        data_type: date
+      - name: fim_periodo
+        description: Fim do período do contato
+        data_type: date
+
