@@ -241,4 +241,3 @@ select
     data_carga
 
 from movimento
- where sistema_origem = 'vitacare'
