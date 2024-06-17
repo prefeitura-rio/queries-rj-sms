@@ -31,7 +31,7 @@ with
             on (est.id_material = valor_unitario.id_material)
     ),
 
-    -- - standardize inventory movements
+    -- - standardize inventory movements # TODO: revisar padronização vitai
     vitacare_padronizada as (
         select
             *,
@@ -128,6 +128,7 @@ with
             est.material_valor_total,
             est.data_particao,
             est.data_carga,
+            "" as estoque_movimento_entrada_saida,
             case
                 when
                     estoque_movimento_tipo = "TRANSFERENCIA ENTRADA"
@@ -182,54 +183,11 @@ with
             est.material_valor_total,
             est.data_particao,
             est.data_carga,
-            case
-                when estoque_movimento_tipo = "NOVO LOTE"
-                then "Entrada / Saida Estoque"
-                when
-                    estoque_movimento_tipo in (
-                        "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO",
-                        "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO",
-                        "DISPENSAÇÃO DE RECEITA EXTERNA",
-                        "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR",
-                        "ANULAÇÃO DE DISPENSAS"
-                    )
-                    or (
-                        estoque_movimento_tipo in (
-                            "CORREÇÃO DE LOTE - AUMENTO",
-                            "CORREÇÃO DE LOTE - DIMINUIÇÃO"
-                        )
-                        and estoque_movimento_correcao_tipo = "ATENDIMENTO_EXTERNO"
-                    )
-                then "Consumo"
-                when
-                    estoque_movimento_tipo
-                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
-                    and estoque_movimento_tipo in ("CORRECAO", "OUTRO")
-                then "Correcao de Estoque / Outro"
-                when
-                    estoque_movimento_tipo
-                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
-                    and estoque_movimento_tipo in ("AVARIA", "VALIDADE_EXPIRADA")
-                then "Avaria / Vencimento"
-                when
-                    estoque_movimento_tipo
-                    in ("SUSPENSÃO DE LOTE", "RECUPERAÇÃO DE LOTE")
-                then "Bloqueio de Estoque"
-
-                else initcap(estoque_movimento_tipo)
-            end as estoque_movimento_tipo_grupo,
+            est.estoque_movimento_entrada_saida,
+            est.estoque_movimento_tipo_grupo,
             case
                 when
-                    estoque_movimento_tipo = "CORREÇÃO DE LOTE - DIMINUIÇÃO"
-                    or estoque_movimento_tipo
-                    = "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO"
-                    or estoque_movimento_tipo
-                    = "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO"
-                    or estoque_movimento_tipo = "DISPENSAÇÃO DE RECEITA EXTERNA"
-                    or estoque_movimento_tipo
-                    = "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR"
-                    or estoque_movimento_tipo = "REMOÇÃO DE LOTE"
-                    or estoque_movimento_tipo = "SUSPENSÃO DE LOTE"
+                    est.estoque_movimento_entrada_saida = "Saida"
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
@@ -238,7 +196,7 @@ with
             est.dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
             est.dispensacao_paciente_cns as estoque_movimento_consumo_paciente_cns,
             "vitacare" as sistema_origem,
-        from source_vitacare as est
+        from vitacare_padronizada as est
     ),
 
     -- - union
@@ -259,6 +217,7 @@ select
     -- Common Fields
     estoque_secao_origem as localizacao_origem,
     estoque_secao_destino as localizacao_destino,
+    estoque_movimento_entrada_saida as movimento_entrada_saida,
     estoque_movimento_tipo as movimento_tipo,
     estoque_movimento_tipo_grupo as movimento_tipo_grupo,
     estoque_movimento_justificativa as movimento_justificativa,
@@ -282,3 +241,4 @@ select
     data_carga
 
 from movimento
+ where sistema_origem = 'vitacare'
