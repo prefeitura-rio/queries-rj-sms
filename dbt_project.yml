@@ -74,7 +74,7 @@ models:
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
       historico_clinico_integrado:
-        +schema: historico_clinico_integrado
+        +schema: brutos_historico_clinico_integrado
       plataforma_smsrio:
         +schema: brutos_plataforma_smsrio
       prontuario_vitacare:

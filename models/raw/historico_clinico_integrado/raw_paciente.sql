@@ -1,18 +1,14 @@
-{{
-    config(
-        alias="paciente",
-        tags=["hci"]
-    )
-}}
+{{ config(alias="paciente", tags=["hci"]) }}
 
 
 with
     source as (
-        select * from {{ source("historico_clinico_integrado_staging", "paciente") }}
+        select *
+        from {{ source("brutos_historico_clinico_integrado_staging", "paciente") }}
     ),
     renamed as (
         select
-            safe_cast(patient_code as string) as paciente_id,
+            safe_cast(patient_code as string) as id_paciente,
             safe_cast(patient_cpf as string) as cpf,
             safe_cast(name as string) as nome,
             safe_cast(gender_id as int) as id_genero,

@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: historico_clinico_integrado_staging
+  - name: brutos_historico_clinico_integrado_staging
     database: rj-sms
-    schema: historico_clinico_integrado_staging
+    schema: brutos_historico_clinico_integrado_staging
     tables:
       - name: paciente
       - name: paciente_cns

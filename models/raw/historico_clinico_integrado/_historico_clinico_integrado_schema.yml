@@ -2,7 +2,7 @@ models:
   - name: raw_paciente
     description: Tabela de cadastro unificado dos pacientes. Resultado do merge das informações dos prontuários Vitai, Vitacare e SMSRio.
     columns:
-      - name: paciente_id
+      - name: id_paciente
         description: Identificador do paciente.
         data_type: string
       - name: cpf
@@ -68,7 +68,7 @@ models:
       - name: principal
         description: Booleano que informa se o cns é o principal cns do paciente.
         data_type: bool
-      - name: paciente_id
+      - name: id_paciente
         description: Id único de identificação do paciente.
         data_type: string
   - name: raw_endereco_paciente
@@ -91,7 +91,7 @@ models:
       - name: cep
         description: Código postal do endereço.
         data_type: string
-      - name: paciente_id
+      - name: id_paciente
         description: Id único de identificação do paciente.
         data_type: string
       - name: id_cidade
@@ -123,7 +123,7 @@ models:
       - name: rank
         description: Ordem de preferência de contato.
         data_type: int
-      - name: paciente_id
+      - name: id_paciente
         description: Id único de identificação do paciente.
         data_type: string
       - name: inicio_periodo
