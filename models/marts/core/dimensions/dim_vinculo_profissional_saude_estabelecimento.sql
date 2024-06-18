@@ -11,12 +11,12 @@ with
     profissional_serie_historica as (
         select *
         from {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
-     ),
+    ),
     estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }})
 
 
 select
-    id_cnes,
+    p.id_cnes,
     profissional_codigo_sus as id_profissional_sus,
     profissional_cns,
     id_cbo,

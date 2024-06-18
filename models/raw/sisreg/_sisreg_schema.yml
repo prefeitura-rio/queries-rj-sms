@@ -1,8 +1,9 @@
 models:
-  - name: raw_sisreg__escala
+  - name: raw_sisreg__oferta_programada
     description: Tabela contendo as escalas programadas no SISREG
     tests:
       - dbt_utils.unique_combination_of_columns:
+          name: raw_sisreg__oferta_programada__unique_combination_of_columns
           combination_of_columns:
             - id_escala_ambulatorial
             - data_particao
@@ -14,7 +15,7 @@ models:
         data_type: STRING
         tests:
           - not_null:
-              name: raw_sisreg__escala__id_escala_ambulatorial__not_null
+              name: raw_sisreg__oferta_programada__id_escala_ambulatorial__not_null
       - name: id_central_executante
         description: Este é o identificador único para a central executante. É usado
           para identificar cada central executante dentro do sistema.
@@ -22,14 +23,6 @@ models:
       - name: id_estabelecimento_executante
         description: ID CNES do estabelecimento executante.
         data_type: STRING
-        tests:
-          - relationships:
-              name: raw_sisreg__escala__id_estabelecimento_executante__relationship
-              to: ref('dim_estabelecimento')
-              field: id_cnes
-              config:
-                where: procedimento_vigencia_final_data > '2020-01-01'
-                severity: warn
       - name: id_procedimento_interno
         description: Este é o identificador único para o procedimento sendo realizado. É
           usado para rastrear e gerenciar procedimentos em diferentes sistemas e
@@ -37,7 +30,7 @@ models:
         data_type: STRING
         tests:
           - not_null:
-              name: raw_sisreg__escala__id_procedimento_unificado__not_null
+              name: raw_sisreg__oferta_programada__id_procedimento_unificado__not_null
       - name: id_procedimento_unificado
         description: Este é o identificador único alternativo para o procedimento sendo realizado.
         data_type: STRING

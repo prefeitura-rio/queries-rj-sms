@@ -209,11 +209,6 @@ models:
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
         data_type: STRING
-        tests:
-          - unique:
-              name: raw_sheets__gerenciamento_acesso_looker_farmacia__cpf__unique
-              config:
-                severity: warn
       - name: nome
         description: Esta coluna contém o nome completo do indivíduo.
         data_type: STRING
@@ -224,6 +219,11 @@ models:
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_EMAIL") }}'
+        tests:
+          - unique:
+              name: raw_sheets__gerenciamento_acesso_looker_farmacia__email__unique
+              config:
+                severity: warn
       - name: telefone
         description: Este campo representa o número de telefone de contato do indivíduo.
         data_type: STRING

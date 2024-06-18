@@ -1,12 +1,12 @@
 {{
     config(
-        schema="brutos_sih_staging",
+        schema="brutos_sih",
         alias="indicadores_hospitalares",
     )
 }}
 
 with source as (
-      select * from {{ source('brutos_sih_staging', 'indicadores_hospitalares_parquet') }}
+      select * from {{ source('brutos_sih_staging', 'indicadores_hospitalares') }}
 ),
 renamed as (
     select
