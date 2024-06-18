@@ -54,6 +54,12 @@ models:
       - name: id_raca
         description: Código de raça do paciente.
         data_type: string
+      - name: created_at
+        description: Data de criação do registro
+        data_type: date
+      - name: updated_at
+        description: Data de atualização do registro
+        data_type: date
   - name: raw_hci__cns_paciente
     description: Tabela contendo os valores de cns provisórios e principais.
     columns:

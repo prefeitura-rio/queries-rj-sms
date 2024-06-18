@@ -20,7 +20,6 @@ with
             safe_cast(line as string) as logradouro,
             safe_cast(postal_code as string) as cep,
             safe_cast(city_id as string) as id_cidade,
-            safe_cast(fingerprint as string) as fingerprint,
             safe_cast(period_start as date) as periodo_inicio,
             safe_cast(period_end as date) as periodo_fim,
         from source
