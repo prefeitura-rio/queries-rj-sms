@@ -257,7 +257,7 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
-  - name: raw_cnes_web__dados_profissionais_sus
+  - name: raw_cnes_web__dados_profissional_sus
     description: Tabela de informações dos profissionais do SUS
     columns:
       - name: id_codigo_sus

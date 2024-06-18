@@ -20,8 +20,8 @@ with
             safe_cast(value as string) as valor,
             safe_cast(rank as int) as rank,
             safe_cast(fingerprint as string) as fingerprint,
-            safe_cast(period_start as date) as inicio_periodo,
-            safe_cast(period_end as date) as fim_periodo,
+            safe_cast(period_start as date) as periodo_inicio,
+            safe_cast(period_end as date) as periodo_fim,
         from source
     )
 select *

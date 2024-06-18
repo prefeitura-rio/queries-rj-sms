@@ -1,5 +1,5 @@
 models:
-  - name: raw_paciente
+  - name: raw_hci__paciente
     description: Tabela de cadastro unificado dos pacientes. Resultado do merge das informações dos prontuários Vitai, Vitacare e SMSRio.
     columns:
       - name: id_paciente
@@ -10,7 +10,7 @@ models:
         data_type: string
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
-      - name: data_nascimento
+      - name: nascimento_data
         description: Data de nascimento do paciente.
         data_type: date
         policy_tags:
@@ -20,17 +20,17 @@ models:
         data_type: bool
         policy_tags:
           - '{{ var ("TAG_OBITO") }}'
-      - name: data_obito
+      - name: obito_data
         description: Data de óbito do paciente.
         data_type: date
         policy_tags:
           - '{{ var ("TAG_DTOBITO") }}'
-      - name: nome_pai
+      - name: pai_nome
         description: Nome do pai do paciente.
         data_type: string
         policy_tags:
           - '{{ var ("TAG_NOME_PAI") }}'
-      - name: nome_mae
+      - name: mae_nome
         description: Nome da mãe do paciente.
         data_type: string
         policy_tags:
@@ -54,7 +54,7 @@ models:
       - name: id_raca
         description: Código de raça do paciente.
         data_type: string
-  - name: raw_cns_paciente
+  - name: raw_hci__cns_paciente
     description: Tabela contendo os valores de cns provisórios e principais.
     columns:
       - name: id
@@ -71,7 +71,7 @@ models:
       - name: id_paciente
         description: Id único de identificação do paciente.
         data_type: string
-  - name: raw_endereco_paciente
+  - name: raw_hci__endereco_paciente
     description: Tabela contendo os valores de endereço cadastrados.
     columns:
       - name: id
@@ -97,13 +97,13 @@ models:
       - name: id_cidade
         description: Id único de identificação da cidade do endereço cadastrado.
         data_type: string
-      - name: inicio_periodo
+      - name: periodo_inicio
         description: Início do período do contato.
         data_type: date
-      - name: fim_periodo
+      - name: periodo_fim
         description: Fim do período do contato.
         data_type: date
-  - name: raw_contato_paciente
+  - name: raw_hci__contato_paciente
     description: Tabela contendo os valores de contato cadastrados.
     columns:
       - name: id
@@ -126,10 +126,10 @@ models:
       - name: id_paciente
         description: Id único de identificação do paciente.
         data_type: string
-      - name: inicio_periodo
+      - name: periodo_inicio
         description: Início do período do contato.
         data_type: date
-      - name: fim_periodo
+      - name: periodo_fim
         description: Fim do período do contato
         data_type: date
 

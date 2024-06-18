@@ -38,9 +38,9 @@ with
     ),
     cpf_profissionais as (
         select  patient_cns.cns_valor as cns, patient.cpf as cpf
-        from {{ ref("raw_paciente") }} as patient
-        left join {{ ref("raw_cns_paciente")}} as patient_cns
-        on patient.paciente_id = patient_cns.paciente_id
+        from {{ ref("raw_hci__paciente") }} as patient
+        left join {{ ref("raw_hci__cns_paciente")}} as patient_cns
+        on patient.id_paciente = patient_cns.id_paciente
     )
 
 select

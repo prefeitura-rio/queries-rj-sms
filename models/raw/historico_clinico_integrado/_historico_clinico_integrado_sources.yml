@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_historico_clinico_integrado_staging
-    database: rj-sms
+    database: rj-sms-dev
     schema: brutos_historico_clinico_integrado_staging
     tables:
       - name: paciente
