@@ -18,7 +18,7 @@ with
             nome_central_solicitante,
             lpad(cast(cpf_usuario as string), 11, "0") as cpf_usuario,
             no_usuario,
-            dt_nascimento_usuario,
+            cast(dt_nascimento_usuario as string) as dt_nascimento_usuario,
             sexo_usuario,
             no_mae_usuario,
             cns_usuario,
