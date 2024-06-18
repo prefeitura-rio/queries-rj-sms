@@ -24,8 +24,15 @@ with
                 order by data_atualizacao desc
             ) as ordenacao
         from equipes_rj
+    ),
+    estabelecimentos as (
+        select distinct id_unidade 
+        from {{ ref("dim_estabelecimento") }}
+    ),
+    equipe as (
+        select * from
+        {{ ref("raw_cnes_web__equipe") }}
     )
-
 select
     equipe.codigo_equipe,
     equipe.sequencial_equipe,
@@ -38,18 +45,10 @@ select
     lista_profissionais.profissionais,
     equipe.data_atualizacao as ultima_atualizacao_infos_equipe,
     lista_profissionais.data_atualizacao as ultima_atualizacao_profissionais_equipe,
-from {{ ref("raw_cnes_web__equipe") }} as equipe
-
+from equipe
+inner join estabelecimentos
+    on estabelecimentos.id_unidade = equipe.codigo_unidade
 left join
     (select * from equipes_rj_ordernado where ordenacao = 1) as lista_profissionais
-    on (
-        lista_profissionais.codigo_unidade = equipe.codigo_unidade
-        and lista_profissionais.codigo_equipe = equipe.codigo_equipe
-    )
-
-inner join
-    (
-        select distinct id_unidade from {{ ref("dim_estabelecimento") }}
-    ) as estabelecimento
-    on estabelecimento.id_unidade = equipe.codigo_unidade
+    on CONCAT(lista_profissionais.codigo_unidade,'.',lista_profissionais.sequencial_equipe) = CONCAT(equipe.codigo_unidade,'.', equipe.sequencial_equipe)
 where equipe.codigo_municipio = '330455'
