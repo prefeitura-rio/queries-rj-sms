@@ -264,22 +264,24 @@ models:
     description: Tabela contendo a relação de equipes dentro dos estabelecimentos de saúde. Informações
       baseadas no CNES e outras compiladas dentro da SMS.
     columns:
-      - name: codigo_equipe
+      - name: id_equipe
         description: Código da Equipe (Identificador Nacional de Equipe - INE)
-      - name: codigo_area
-        description: Código da Área da Equipe
-      - name: sequencial_equipe
+      - name: equipe_sequencial
         description: Sequencial da Equipe
-      - name: nome_equipe
+      - name: id_area
+        description: Código da Área da Equipe
+      - name: area_descricao
+        description: Descrição da Área da Equipe
+      - name: segmento_descricao
+        description: Descrição do segmento da área da equipe
+      - name: nome
         description: Nome de Referência da Equipe
-      - name: tipo_equipe
-        description: Tipo de equipe
-      - name: subtipo_equipe
-        description: Subtipo de equipe
-      - name: codigo_unidade_saude
+      - name: id_tipo_equipe
+        description: Código do tipo de equipe
+      - name: tipo_equipe_descricao
+        description: Descrição do tipo de equipe
+      - name: id_unidade_saude
         description: Código do Estabelecimento de Saúde
-      - name: codigo_profissional_preceptor
-        description: Código do profissional Preceptor na equipe
       - name: profissionais
         description: Array de profissionais pertencentes a equipe
       - name: ultima_atualizacao_infos_equipe

@@ -239,41 +239,41 @@ models:
       Arquivo CNES: rlEstabEquipeProf
       Granularidade: profissional / unidade de saúde
     columns:
-      - name: codigo_profissional_sus
+      - name: id_profissional_sus
         description: Código do profissional de saúde
-      - name: codigo_municipio
-        description: Código do município
-      - name: codigo_area
-        description: Código da área da equipe
-      - name: codigo_microarea
-        description: Código da microarea da equipe
-      - name: sequencial_equipe
-        description: Código sequencial da equipe
-      - name: codigo_unidade
-        description: Código da unidade de saúde da equipe
-      - name: codigo_cbo
+      - name: id_cbo
         description: Código CBO do profissional
+      - name: equipe_sequencial
+        description: Código sequencial da equipe
+      - name: id_unidade
+        description: Código da unidade de saúde da equipe
+      - name: id_municipio
+        description: Código do município
+      - name: id_area
+        description: Código da área da equipe
+      - name: id_microarea
+        description: Código da microarea da equipe
       - name: tp_sus_nao_sus
         description: Indica se o profissional faz atendimento SUS
-      - name: ind_vinculacao
+      - name:  id_vinculo_profissional
         description: Indica a vinculação, o tipo e o sub tipo  de vinculo do Profissional com o Estabelecimento de Saúde
       - name: data_entrada_profissional
         description: Data de entrada do profissional na equipe
       - name: data_desligamento_profissional
         description: Data de desligamento do profissional na equipe
-      - name: codigo_cnes_outra_equipe
+      - name: id_cnes_outra_equipe
         description: CNES no qual o Profissional completa a Carga Horária
-      - name: codigo_municipio_outra_equipe
+      - name: id_municipio_outra_equipe
         description: Código do Município no qual o Profissional completa a Carga Horária
-      - name: codigo_area_outra_equipe
+      - name: id_area_outra_equipe
         description: Código da Área na qual o Profissional completa a Carga Horária
-      - name: codigo_profissional_complementar
+      - name: id_profissional_complementar
         description: Profissional de Carga Horária Complementar
       - name: cbo_profissional_complementar
         description: CBO do Profissional de Carga Horária Complementar
       - name: pertence_equipe_minima
         description: Indica se o Profissional pertence a Equipe Mínima
-      - name: codigo_municipio_atuacao
+      - name: id_municipio_atuacao
         description: Código do Municipio de atuação da microárea  do Profissional na Equipe
       - name: dt_atualizacao
         description: Data de atualização do registro
@@ -287,20 +287,22 @@ models:
       Arquivo CNES: tbEquipe
       Granularidade: unidade de saude / equipe
     columns:
-      - name: codigo_municipio
-        description: Código do município
-      - name: codigo_area
-        description: Código da área da equipe
-      - name: sequencial_equipe
+      - name: id_equipe
         description: Código sequencial da equipe
-      - name: codigo_unidade
-        description: Código da unidade de saúde da equipe
-      - name: tipo_equipe
-        description: Tipo de equipe
-      - name: codigo_subtipo_equipe
-        description: Subtipo de equipe
-      - name: nome_referencia
+      - name: equipe_sequencial
+        description: Código sequencial da equipe
+      - name: equipe_nome
         description: Nome de referência da equipe
+      - name: id_tipo_equipe
+        description: Id do tipo de equipe
+      - name: id_subtipo_equipe
+        description: Id do tipo de equipe
+      - name: id_unidade
+        description: Código da unidade de saúde da equipe
+      - name: id_municipio
+        description: Código do município
+      - name: id_area
+        description: Código da área da equipe
       - name: data_ativacao
         description: Data de ativacao da equipe
       - name: data_desativacao
@@ -331,16 +333,63 @@ models:
         description: CNES da UOM (Unidade Odontológica Móvel)
       - name: carga_horaria_uom
         description: Carga horária da UOM (Unidade Odontológica Móvel)
-      - name: codigo_motivacao_desativacao_equipe
+      - name: id_motivacao_desativacao_equipe
         description: Código do Motivo de Desativação da Equipe
-      - name: codigo_tipo_desativacao_equipe
+      - name: id_tipo_desativacao_equipe
         description: Código do Tipo de Desativação da Equipe
-      - name: codigo_profissional_preceptor
+      - name: id_profissional_preceptor
         description: Código do profissional Preceptor na equipe
-      - name: codigo_cnes_preceptor
+      - name: id_cnes_preceptor
         description: CNES no qual o Profissional está vinculado como Preceptor
-      - name: codigo_equipe
-        description: Código da Equipe (Identificador Nacional de Equipe - INE)
+      - name: data_atualizacao
+        description: Data da Última Atualização do Registro
+      - name: data_atualizacao_origem
+        description: Data da primeira entrada no Banco de Produção Federal
+      - name: usuario
+        description: Último Usuário que atualizou o Registro
+  - name: raw_cnes_web__equipe_tipo
+    description: |-
+      Relação dos tipos de equipes das unidades de saúde
+      Arquivo CNES: tbTipoEquipe
+    columns:
+      - name: id_equipe_tipo
+        description: Código de tipo da equipe
+      - name: equipe_descricao
+        description: Descrição do tipo da equipe
+      - name: id_equipe_grupo
+        description: Código de tipo de grupo da equipe
+  - name: raw_cnes_web__segmento
+    description: |-
+      Relação dos tipos de segmentos
+      Arquivo CNES: tbSegmento
+    columns:
+      - name: id_municipio
+        description: Código de municipio
+      - name: id_segmento
+        description: Código de segmento
+      - name: segmento_descricao
+        description: Descrição do segmento
+      - name: segmento_tipo
+        description: Tipo do segmento
+      - name: data_atualizacao
+        description: Data da Última Atualização do Registro
+      - name: data_atualizacao_origem
+        description: Data da primeira entrada no Banco de Produção Federal
+      - name: usuario
+        description: Último Usuário que atualizou o Registro
+  - name: raw_cnes_web__area
+    description: |-
+      Relação das areas de equipe
+      Arquivo CNES: tbSegmento
+    columns:
+      - name: id_municipio
+        description: Código de municipio
+      - name: id_area
+        description: Código de area
+      - name: area_descricao
+        description: Descrição da area
+      - name: id_segmento
+        description: Id do segmento
       - name: data_atualizacao
         description: Data da Última Atualização do Registro
       - name: data_atualizacao_origem

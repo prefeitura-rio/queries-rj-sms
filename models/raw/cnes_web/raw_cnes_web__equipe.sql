@@ -7,14 +7,14 @@
 with source as (select * from {{ source("brutos_cnes_web_staging", "tbEquipe") }})
 
 select
-    safe_cast(co_equipe as string) as codigo_equipe,
-    safe_cast(co_unidade as string) as codigo_unidade,
-    safe_cast(seq_equipe as string) as sequencial_equipe,
-    safe_cast(tp_equipe as string) as tipo_equipe,
-    safe_cast(co_sub_tipo_equipe as string) as codigo_subtipo_equipe,
-    safe_cast(co_municipio as string) as codigo_municipio,
-    safe_cast(co_area as string) as codigo_area,
-    safe_cast(no_referencia as string) as nome_referencia,
+    safe_cast(co_equipe as string) as id_equipe,
+    safe_cast(seq_equipe as string) as equipe_sequencial,
+    safe_cast(no_referencia as string) as equipe_nome,
+    safe_cast(co_sub_tipo_equipe as string) as id_subtipo_equipe,
+    safe_cast(tp_equipe as string) as id_tipo_equipe,
+    safe_cast(co_unidade as string) as id_unidade,
+    safe_cast(co_municipio as string) as id_municipio,
+    safe_cast(co_area as string) as id_area,
     safe_cast(dt_ativacao as date) as data_ativacao,
     safe_cast(dt_desativacao as date) as data_desativacao,
     safe_cast(tp_pop_assist_quilomb as string) as atende_pop_quilombola,
@@ -30,12 +30,12 @@ select
     safe_cast(
         tp_pop_assist_adol_conf_lei as string
     ) as atende_pop_adolescente_conflito_lei,
-    safe_cast(co_cnes_uom as string) as codigo_cnes_uom,
+    safe_cast(co_cnes_uom as string) as id_cnes_uom,
     safe_cast(nu_ch_amb_uom as string) as carga_horaria_uom,
-    safe_cast(cd_motivo_desativ as string) as codigo_motivacao_desativacao_equipe,
-    safe_cast(cd_tp_desativ as string) as codigo_tipo_desativacao_equipe,
-    safe_cast(co_prof_sus_preceptor as string) as codigo_profissional_preceptor,
-    safe_cast(co_cnes_preceptor as string) as codigo_cnes_preceptor,
+    safe_cast(cd_motivo_desativ as string) as id_motivacao_desativacao_equipe,
+    safe_cast(cd_tp_desativ as string) as id_tipo_desativacao_equipe,
+    safe_cast(co_prof_sus_preceptor as string) as id_profissional_preceptor,
+    safe_cast(co_cnes_preceptor as string) as id_cnes_preceptor,
     safe_cast(dt_atualizacao as date format 'DD/MM/YYYY') as data_atualizacao,
     safe_cast(
         dt_atualizacao_origem as date format 'DD/MM/YYYY'

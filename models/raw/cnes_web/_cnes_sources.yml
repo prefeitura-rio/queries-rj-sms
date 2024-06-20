@@ -13,4 +13,7 @@ sources:
     - name: tbTurnoAtendimento
     - name: tbEquipe
     - name: rlEstabEquipeProf
+    - name: tbTipoEquipe
+    - name: tbSegmento
+    - name: tbArea
 
