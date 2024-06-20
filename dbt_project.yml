@@ -78,6 +78,9 @@ models:
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
         +tags: "daily"
+      historico_clinico_integrado:
+        +schema: brutos_historico_clinico_integrado
+        +tags: "daily"
       plataforma_smsrio:
         +schema: brutos_plataforma_smsrio
         +tags: "daily"
