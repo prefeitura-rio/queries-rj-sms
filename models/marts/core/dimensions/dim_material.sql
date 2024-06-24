@@ -1,6 +1,7 @@
 {{
     config(
         alias="material",
+        tags=["daily"]
     )
 }}
 

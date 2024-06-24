@@ -1,0 +1,45 @@
+models:
+  - name: raw_datasus__cbo_fam
+    description: Tabela contendo as famílias do CBO.
+    columns:
+      - name: id_cbo_familia
+        description: Identificador da família.
+        data_type: string
+        quote: true
+        tests:
+          - unique:
+              name: raw_datasus__cbo_fam__id_cbo_familia__unique
+      - name: descricao
+        description: Descrição da família.
+        data_type: string
+        quote: true
+      - name: _data_carga
+        description: Data de carga dos dados no Data Lake.
+        data_type: string
+        quote: true
+      - name: _data_snapshot
+        description: Data de atualização do arquivo no DataSUS.
+        data_type: string
+        quote: true
+  - name: raw_datasus__cbo
+    description: Tabela contendo os cargos do CBO.
+    columns:
+      - name: id_cbo
+        description: " Identificador do cargo."
+        data_type: string
+        quote: true
+        tests:
+          - unique:
+              name: raw_datasus__cbo__id_cbo__unique
+      - name: descricao
+        description: Descrição do cargo.
+        data_type: string
+        quote: true
+      - name: _data_carga
+        data_type: string
+        quote: true
+        description: " Data de carga dos dados no Data Lake."
+      - name: _data_snapshot
+        data_type: string
+        quote: true
+        description: Data de atualização do arquivo no DataSUS.

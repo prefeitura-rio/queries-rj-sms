@@ -233,6 +233,119 @@ models:
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__vinculo
+    description: Tabela dimensão da vinculação empregatícia dos funcionários
+    columns:
+      - name: id_vinculacao
+        description: Código da vinculação do empregado
+      - name: descricao
+        description: Descrição da vinculação do empregado
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__tipo_vinculo
+    description: Tabela dimensão dos tipos de vinculação empregatícia dos funcionários
+    columns:
+      - name: id_vinculacao
+        description: Código da vinculação do empregado
+      - name: tipo
+        description: Tipo da vinculação do empregado
+      - name: descricao
+        description: Descrição da vinculação do empregado
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_web__dados_profissional_sus
+    description: |-
+        Relação de profissionais do SUS.
+        Tabela original do CNES: tbDadosProfissionalSus
+    columns:
+      - name: id_codigo_sus
+        description: Este é um identificador único para cada profissional no banco de
+          dados do SUS (Sistema Único de Saúde). É um valor de string que é
+          convertido do campo 'co_profissional_sus' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: cns
+        description: Este é o número do CNS (Cartão Nacional de Saúde) do profissional.
+          É um identificador único fornecido a cada profissional de saúde no
+          Brasil. É um valor de string que é convertido do campo 'co_cns' nos
+          dados de origem.
+        data_type: string
+        quote: true
+      - name: nome
+        description: Este é o nome do profissional. É um valor de string que é
+          convertido do campo 'no_profissional' nos dados de origem. Este campo
+          é usado para identificar o profissional de uma forma mais legível em
+          comparação com os campos 'id_codigo_sus' ou 'cns'.
+        data_type: string
+        quote: true
+      - name: data_atualizacao
+        description: Esta coluna representa a data em que as informações do profissional
+          foram atualizadas pela última vez no banco de dados do SUS (Sistema
+          Único de Saúde). A data é formatada como AAAA-MM-DD.
+        data_type: date
+        quote: true
+      - name: usuario_atualizador_registro
+        description: Esta coluna contém o identificador do usuário que atualizou pela
+          última vez o registro do profissional no banco de dados do SUS. Essas
+          informações são úteis para rastrear alterações e manter a
+          responsabilidade.
+        data_type: string
+        quote: true
+      - name: codigo_nacionalidade
+        description: Esta coluna contém o código de nacionalidade do profissional. Esse
+          código é usado para identificar a nacionalidade do profissional no
+          banco de dados do SUS.
+        data_type: string
+        quote: true
+      - name: codigo_sequencial_inclusao
+        description: Este é um identificador único para cada registro no banco de dados.
+          É usado para rastrear a sequência de entrada de dados e pode ser útil
+          para fins de auditoria e gerenciamento de dados.
+        data_type: string
+        quote: true
+      - name: data_atualizacao_origem
+        description: Esta é a data em que os dados originais foram atualizados pela
+          última vez. É importante para entender a atualidade dos dados e pode
+          ser usado para rastrear alterações ao longo do tempo.
+        data_type: date
+        quote: true
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+        data_type: string
+        quote: true
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+        data_type: string
+        quote: true
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.
+        data_type: datetime
+        quote: true
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.
+        data_type: datetime
+        quote: true
   - name: raw_cnes_web__equipe_profissionais
     description: |-
       Tabelas contendo os profissonais pertencentes as equipes nas unidades de saúde
@@ -253,7 +366,7 @@ models:
         description: Código da área da equipe
       - name: id_microarea
         description: Código da microarea da equipe
-      - name: tp_sus_nao_sus
+      - name: tipo_sus_nao_sus
         description: Indica se o profissional faz atendimento SUS
       - name:  id_vinculo_profissional
         description: Indica a vinculação, o tipo e o sub tipo  de vinculo do Profissional com o Estabelecimento de Saúde
@@ -275,12 +388,40 @@ models:
         description: Indica se o Profissional pertence a Equipe Mínima
       - name: id_municipio_atuacao
         description: Código do Municipio de atuação da microárea  do Profissional na Equipe
-      - name: dt_atualizacao
+      - name: data_atualizacao
         description: Data de atualização do registro
-      - name: no_usuario
+      - name: nome_usuario
         description: Último Usuário que atualizou o Registro
-      - name: dt_atualizacao_origem
+      - name: data_atualizacao_origem
         description: Data da primeira entrada no Banco de Produção Federal
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+        data_type: string
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+        data_type: string
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+        data_type: string
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.
+        data_type: datetime
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.
+        data_type: datetime
   - name: raw_cnes_web__equipe
     description: |-
       Tabelas contendo o cadastro des equipes das unidades de saúde
@@ -329,7 +470,7 @@ models:
         description: Atende População Assistida Com Transtorno Mental em Conflito com a Lei
       - name: atende_pop_adolescente_conflito_lei
         description: Atende População Assistida Adolescente em Conflito com a Lei
-      - name: codigo_cnes_uom
+      - name: id_cnes_uom
         description: CNES da UOM (Unidade Odontológica Móvel)
       - name: carga_horaria_uom
         description: Carga horária da UOM (Unidade Odontológica Móvel)
@@ -347,6 +488,34 @@ models:
         description: Data da primeira entrada no Banco de Produção Federal
       - name: usuario
         description: Último Usuário que atualizou o Registro
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+        data_type: string
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+        data_type: string
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+        data_type: string
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.
+        data_type: datetime
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.
+        data_type: datetime
   - name: raw_cnes_web__equipe_tipo
     description: |-
       Relação dos tipos de equipes das unidades de saúde
@@ -358,6 +527,34 @@ models:
         description: Descrição do tipo da equipe
       - name: id_equipe_grupo
         description: Código de tipo de grupo da equipe
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+        data_type: string
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+        data_type: string
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+        data_type: string
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.
+        data_type: datetime
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.
+        data_type: datetime
   - name: raw_cnes_web__segmento
     description: |-
       Relação dos tipos de segmentos
@@ -377,6 +574,34 @@ models:
         description: Data da primeira entrada no Banco de Produção Federal
       - name: usuario
         description: Último Usuário que atualizou o Registro
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+        data_type: string
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+        data_type: string
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+        data_type: string
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.
+        data_type: datetime
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.
+        data_type: datetime
   - name: raw_cnes_web__area
     description: |-
       Relação das areas de equipe
@@ -396,3 +621,31 @@ models:
         description: Data da primeira entrada no Banco de Produção Federal
       - name: usuario
         description: Último Usuário que atualizou o Registro
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+        data_type: string
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+        data_type: string
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+        data_type: string
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.
+        data_type: datetime
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.
+        data_type: datetime

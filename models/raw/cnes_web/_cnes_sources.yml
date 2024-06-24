@@ -12,6 +12,9 @@ sources:
     - name: tbGestao
     - name: tbTurnoAtendimento
     - name: tbEquipe
+    - name: tbModVinculo
+    - name: tbTpModVinculo
+    - name: tbDadosProfissionalSus
     - name: rlEstabEquipeProf
     - name: tbTipoEquipe
     - name: tbSegmento

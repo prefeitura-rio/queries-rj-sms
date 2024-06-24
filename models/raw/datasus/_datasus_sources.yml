@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_datasus_staging
+    database: rj-sms
+    schema: brutos_datasus_staging
+    tables:
+    - name: cbo
+    - name: cbo_fam

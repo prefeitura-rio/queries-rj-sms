@@ -3,14 +3,14 @@
 {{
     config(
         alias="brutos_prontuario_vitacare__estoque_movimento",
-        schema="controle_reprocessamento",
+        schema="gerenciamento__reprocessamento",
         materialized="incremental",
     )
 }}
 
 with
     unidades as (
-        select id_cnes, area_programatica
+        select id_cnes, area_programatica, nome_limpo
         from {{ ref("dim_estabelecimento") }}
         where prontuario_versao = 'vitacare' and prontuario_estoque_tem_dado = 'sim'
     ),
@@ -20,7 +20,7 @@ with
         from
             unnest(
                 generate_date_array(
-                    '2023-10-28',  -- - data de quando começamos a ingestão vitacare
+                    '2024-02-01',  -- - data de quando começamos a ingestão vitacare
                     date_sub(current_date('America/Sao_Paulo'), interval 1 day),
                     interval 1 day
                 )
@@ -34,7 +34,9 @@ with
     ),
 
     relacao_unidades_datas as (
-        select id_cnes, area_programatica, data from unidades cross join calendario_sem_domingo as cal
+        select id_cnes, area_programatica, nome_limpo, data
+        from unidades
+        cross join calendario_sem_domingo as cal
     ),
 
     relacao_unidades_datas_com_dados as (
@@ -45,9 +47,10 @@ with
 select
     rel.id_cnes,
     rel.area_programatica,
+    rel.nome_limpo,
     rel.data,
-    "pending" as reprocessing_status,
-    "" as request_response_code,
+    "pending" as retry_status,
+    0 as retry_attempts_count,
     safe_cast("" as int64) as request_row_count
 from relacao_unidades_datas as rel
 left join
@@ -57,4 +60,4 @@ left join
 where
     rel_dados.id_cnes is null
     {% if is_incremental() %} and data > (select max(data) from {{ this }}) {% endif %}
-order by  rel.data desc, rel.area_programatica, rel.id_cnes
+order by rel.data desc, rel.area_programatica, rel.id_cnes

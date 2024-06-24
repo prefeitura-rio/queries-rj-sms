@@ -65,35 +65,57 @@ models:
     +required_docs: true
     raw:
       +materialized: table
+      +tags: "raw"
       cnes_web:
         +schema: brutos_cnes_web
+        +tags: "weekly"
       cnes_ftp:
         +schema: brutos_cnes_ftp
+        +tags: "weekly"
       datasus:
         +schema: brutos_datasus
+        +tags: "weekly"
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
+        +tags: "daily"
+      historico_clinico_integrado:
+        +schema: brutos_historico_clinico_integrado
+        +tags: "daily"
       plataforma_smsrio:
         +schema: brutos_plataforma_smsrio
+        +tags: "daily"
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
+        +tags: "daily"
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
+        +tags: "daily"
       sheets:
         +schema: brutos_sheets
+        +tags: "daily"
     intermediate:
         +materialized: ephemeral
     marts:
         +materialized: table
         core:
+          +tags: "core"
           dimensions:
             +schema: saude_dados_mestres
           facts:
-            +schema: saude_estoque
+            sisreg:
+              +schema: saude_sisreg
+              +tags: "daily"
+            estoque:
+              +schema: saude_estoque
+              +tags: "daily"
         dengue:
             +schema: projeto_dengue
+            +tags: "daily"
         estoque:
             +schema: projeto_estoque
+            +tags: ["daily", "estoque"]
+        gerenciamento:
+            +tags: "daily"
 tests:
   rj_sms:
     +severity: error
