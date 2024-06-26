@@ -428,66 +428,96 @@ models:
       Arquivo CNES: tbEquipe
       Granularidade: unidade de saude / equipe
     columns:
-      - name: id_equipe
-        description: Código sequencial da equipe
+      - name: equipe_ine
+        description: Código INE da equipe
+        data_type: string
       - name: equipe_sequencial
         description: Código sequencial da equipe
+        data_type: string
       - name: equipe_nome
         description: Nome de referência da equipe
+        data_type: string
       - name: id_tipo_equipe
         description: Id do tipo de equipe
+        data_type: string
       - name: id_subtipo_equipe
         description: Id do tipo de equipe
+        data_type: string
       - name: id_unidade
         description: Código da unidade de saúde da equipe
+        data_type: string
       - name: id_municipio
         description: Código do município
+        data_type: string
       - name: id_area
         description: Código da área da equipe
+        data_type: string
       - name: data_ativacao
         description: Data de ativacao da equipe
+        data_type: date
       - name: data_desativacao
         description: Data de desativacao da equipe
+        data_type: date
       - name: atende_pop_quilombola
         description: Atende População Assistida Quilombolas
+        data_type: string
       - name: atende_pop_assentados
         description: Atende População Assistida Assentados
+        data_type: string
       - name: atende_pop_geral
         description: Atende População Assistida Geral
+        data_type: string
       - name: atende_pop_escola
         description: Atende População Assistida Escola
+        data_type: string
       - name: atende_pop_pronasci
         description: Atende População Assistida Pronasci
+        data_type: string
       - name: atende_pop_indigena
         description: Atende População Assistida Indígena
+        data_type: string
       - name: atende_pop_ribeirinha
         description: Atende População Assistida Ribeirinha
+        data_type: string
       - name: atende_pop_situacao_rua
         description: Atende População Assistida em Situação de Rua
+        data_type: string
       - name: atende_pop_privada_liberdade
         description: Atende População Assistida Privada de Liberdade
+        data_type: string
       - name: atende_pop_conflito_lei
         description: Atende População Assistida Com Transtorno Mental em Conflito com a Lei
+        data_type: string
       - name: atende_pop_adolescente_conflito_lei
         description: Atende População Assistida Adolescente em Conflito com a Lei
+        data_type: string
       - name: id_cnes_uom
         description: CNES da UOM (Unidade Odontológica Móvel)
+        data_type: string
       - name: carga_horaria_uom
         description: Carga horária da UOM (Unidade Odontológica Móvel)
+        data_type: string
       - name: id_motivacao_desativacao_equipe
         description: Código do Motivo de Desativação da Equipe
+        data_type: string
       - name: id_tipo_desativacao_equipe
         description: Código do Tipo de Desativação da Equipe
+        data_type: string
       - name: id_profissional_preceptor
         description: Código do profissional Preceptor na equipe
+        data_type: string
       - name: id_cnes_preceptor
         description: CNES no qual o Profissional está vinculado como Preceptor
+        data_type: string
       - name: data_atualizacao
         description: Data da Última Atualização do Registro
+        data_type: date
       - name: data_atualizacao_origem
         description: Data da primeira entrada no Banco de Produção Federal
+        data_type: date
       - name: usuario
         description: Último Usuário que atualizou o Registro
+        data_type: string
       - name: mes_particao
         description: Isso representa o mês da partição de dados. É usado para organizar
           os dados por períodos de tempo para consultas e análises eficientes. O
@@ -523,10 +553,13 @@ models:
     columns:
       - name: id_equipe_tipo
         description: Código de tipo da equipe
+        data_type: string
       - name: equipe_descricao
         description: Descrição do tipo da equipe
+        data_type: string
       - name: id_equipe_grupo
         description: Código de tipo de grupo da equipe
+        data_type: string
       - name: mes_particao
         description: Isso representa o mês da partição de dados. É usado para organizar
           os dados por períodos de tempo para consultas e análises eficientes. O
@@ -562,18 +595,25 @@ models:
     columns:
       - name: id_municipio
         description: Código de municipio
+        data_type: string
       - name: id_segmento
         description: Código de segmento
+        data_type: string
       - name: segmento_descricao
         description: Descrição do segmento
+        data_type: string
       - name: segmento_tipo
         description: Tipo do segmento
+        data_type: string
       - name: data_atualizacao
         description: Data da Última Atualização do Registro
+        data_type: date
       - name: data_atualizacao_origem
         description: Data da primeira entrada no Banco de Produção Federal
+        data_type: date
       - name: usuario
         description: Último Usuário que atualizou o Registro
+        data_type: string
       - name: mes_particao
         description: Isso representa o mês da partição de dados. É usado para organizar
           os dados por períodos de tempo para consultas e análises eficientes. O
@@ -609,18 +649,25 @@ models:
     columns:
       - name: id_municipio
         description: Código de municipio
+        data_type: string
       - name: id_area
         description: Código de area
+        data_type: string
       - name: area_descricao
         description: Descrição da area
+        data_type: string
       - name: id_segmento
         description: Id do segmento
+        data_type: string
       - name: data_atualizacao
         description: Data da Última Atualização do Registro
+        data_type: date
       - name: data_atualizacao_origem
         description: Data da primeira entrada no Banco de Produção Federal
+        data_type: date
       - name: usuario
         description: Último Usuário que atualizou o Registro
+        data_type: string
       - name: mes_particao
         description: Isso representa o mês da partição de dados. É usado para organizar
           os dados por períodos de tempo para consultas e análises eficientes. O

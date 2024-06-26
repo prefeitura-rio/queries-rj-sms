@@ -7,7 +7,7 @@
 with source as (select * from {{ source("brutos_cnes_web_staging", "tbEquipe") }})
 
 select
-    safe_cast(co_equipe as string) as id_equipe,
+    safe_cast(co_equipe as string) as equipe_ine,
     safe_cast(seq_equipe as string) as equipe_sequencial,
     safe_cast(no_referencia as string) as equipe_nome,
     safe_cast(co_sub_tipo_equipe as string) as id_subtipo_equipe,

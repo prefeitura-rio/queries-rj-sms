@@ -2,7 +2,7 @@
     config(
         schema="saude_dados_mestres",
         alias="equipe_profissional_saude",
-        materialized="table",
+        tags = ["weekly"],
     )
 }}
 with
@@ -110,27 +110,39 @@ dim_tipo_equipe as (
     select id_equipe_tipo, equipe_descricao, id_equipe_grupo
     from {{ ref("raw_cnes_web__equipe_tipo") }}
     where data_particao = (select versao from versao_atual)
+),
+contato_equipe as (
+    select ine, telefone
+    from {{ ref("raw_plataforma_smsrio__equipe_contato") }}
 )
 select
-    lista_profissionais.*,
+    equipe.equipe_ine as ine,
+    equipe.equipe_nome as nome_referencia,
+    equipe.id_unidade as id_unidade_saude,
+    equipe.id_tipo_equipe as id_equipe_tipo,
+    dim_tipo_equipe.equipe_descricao as equipe_tipo_descricao,
     equipe.id_area,
     dim_area_segmento.area_descricao,
     dim_area_segmento.segmento_descricao,
-    equipe.equipe_nome as nome,
-    equipe.id_tipo_equipe as id_tipo_equipe,
-    dim_tipo_equipe.equipe_descricao as tipo_equipe_descricao,
-    equipe.id_unidade as id_unidade_saude,
+    contato_equipe.telefone,
+    profissionais_equipe.medicos,
+    profissionais_equipe.enfermeiros,
+    profissionais_equipe.auxiliares_tecnicos_enfermagem,
+    profissionais_equipe.agentes_comunitarios,
+    profissionais_equipe.auxiliares_tecnico_saude_bucal,
+    profissionais_equipe.dentista,
+    profissionais_equipe.outros_profissionais,
+    profissionais_equipe.ultima_atualizacao_profissionais,
     equipe.data_atualizacao as ultima_atualizacao_infos_equipe
 from equipe
 inner join
     dim_estabelecimentos on dim_estabelecimentos.id_unidade = equipe.id_unidade
 left join
-    profissionais_equipe as lista_profissionais
+    profissionais_equipe
     on (
-        lista_profissionais.id_unidade = equipe.id_unidade
-        and lista_profissionais.equipe_sequencial = equipe.equipe_sequencial
+        profissionais_equipe.id_unidade_saude = equipe.id_unidade
+        and profissionais_equipe.equipe_sequencial = equipe.equipe_sequencial
     )
 left join dim_area_segmento on dim_area_segmento.id_area = equipe.id_area
 left join dim_tipo_equipe on dim_tipo_equipe.id_equipe_tipo = equipe.id_tipo_equipe
-
-where equipe.id_municipio = '330455'
+left join contato_equipe on  LPAD(contato_equipe.ine,10,'0') = equipe.equipe_ine

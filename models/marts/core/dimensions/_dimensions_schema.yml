@@ -367,7 +367,7 @@ models:
     description: Tabela contendo a relação de equipes dentro dos estabelecimentos de saúde. Informações
       baseadas no CNES e outras compiladas dentro da SMS.
     columns:
-      - name: id_equipe
+      - name: ine
         description: Código da Equipe (Identificador Nacional de Equipe - INE)
       - name: equipe_sequencial
         description: Sequencial da Equipe
@@ -377,11 +377,13 @@ models:
         description: Descrição da Área da Equipe
       - name: segmento_descricao
         description: Descrição do segmento da área da equipe
-      - name: nome
+      - name: nome_referencia
         description: Nome de Referência da Equipe
-      - name: id_tipo_equipe
+      - name: telefone
+        description: Whatsapp da equipe
+      - name: id_equipe_tipo
         description: Código do tipo de equipe
-      - name: tipo_equipe_descricao
+      - name: equipe_tipo_descricao
         description: Descrição do tipo de equipe
       - name: id_unidade_saude
         description: Código do Estabelecimento de Saúde
@@ -404,3 +406,4 @@ models:
       - name: dentista
         description: Código SUS dos dentistas atribuidos a equipe
       - name: outros_profissionais
+        description: Código SUS dos outros profissionais atribuidos a equipe
