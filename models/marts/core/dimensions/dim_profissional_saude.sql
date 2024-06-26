@@ -8,6 +8,24 @@
 }}
 
 with
+    estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }}),
+    alocacao as (
+        select v.*
+        from
+            {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
+            as v
+        inner join estabelecimentos on estabelecimentos.id_cnes = v.id_cnes
+        where
+            data_registro = (
+                select max(data_registro)
+                from
+                    {{
+                        ref(
+                            "int_profissional_saude__vinculo_estabelecimento_serie_historica"
+                        )
+                    }}
+            )
+    ),
     unique_profissionais_datasus as (
         select
             id_codigo_sus,
@@ -15,7 +33,9 @@ with
             row_number() over (
                 partition by id_codigo_sus order by data_carga desc
             ) as ordenacao
-        from {{ ref("raw_cnes_web__dados_profissional_sus") }}
+        from {{ ref("raw_cnes_web__dados_profissional_sus") }} as unique_p
+        inner join alocacao as alocacao
+        on unique_p.id_codigo_sus = alocacao.profissional_codigo_sus
     ),
     profissionais_datasus as (
         select
@@ -40,34 +60,27 @@ with
                 profissionais_enriquecido.data_carga
             )
     ),
-    estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }}),
-    alocacao as (
+    cbo_distinct as (
+        select distinct profissional_codigo_sus, id_cbo, cbo, id_cbo_familia, cbo_familia
+        from alocacao
+    ),
+    cbo_agg as (
         select
-            profissional_codigo_sus,
-            array_agg(distinct id_cbo ignore nulls) as id_cbo_lista,
-            array_agg(distinct cbo ignore nulls) as cbo_lista,
-            array_agg(distinct id_cbo_familia ignore nulls) as id_cbo_familia_lista,
-            array_agg(distinct cbo_familia ignore nulls) as cbo_familia_lista,
-            array_agg(distinct id_tipo_conselho ignore nulls) as id_tipo_conselho_lista,
-            array_agg(
-                distinct id_registro_conselho ignore nulls
-            ) as id_registro_conselho_lista,
-        from
-            {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
-            as v
-        inner join
-            estabelecimentos as estabelecimentos on estabelecimentos.id_cnes = v.id_cnes
-        where
-            data_registro = (
-                select max(data_registro)
-                from
-                    {{
-                        ref(
-                            "int_profissional_saude__vinculo_estabelecimento_serie_historica"
-                        )
-                    }}
-            )
+        profissional_codigo_sus,
+        array_agg(struct(id_cbo, cbo, id_cbo_familia, cbo_familia)) as cbo
+        from cbo_distinct
         group by 1
+    ),
+    conselho_distinct as (
+        select distinct profissional_codigo_sus, id_tipo_conselho, id_registro_conselho
+        from alocacao
+    ),
+    conselho_agg as (
+        select
+    profissional_codigo_sus,
+    array_agg(struct(id_registro_conselho, id_tipo_conselho)) as conselho
+    from conselho_distinct
+    group by 1
     ),
     cpf_profissionais as (
         select patient_cns.cns_valor as cns, patient.cpf as cpf
@@ -81,17 +94,16 @@ select
     cpf_profissionais.cpf as cpf,
     profissionais_datasus.cns,
     profissionais_datasus.nome,
-    alocacao.id_cbo_lista,
-    alocacao.cbo_lista as cbo_nome_lista,
-    alocacao.id_cbo_familia_lista,
-    alocacao.cbo_familia_lista as cbo_familia_nome_lista,
-    alocacao.id_registro_conselho_lista,
-    alocacao.id_tipo_conselho_lista,
+    cbo_agg.cbo,
+    conselho_agg.conselho,
     current_date('America/Sao_Paulo') as data_referencia
 from profissionais_datasus
-inner join
-    alocacao as alocacao
-    on profissionais_datasus.id_codigo_sus = alocacao.profissional_codigo_sus
 left join
-    cpf_profissionais as cpf_profissionais
+    cpf_profissionais 
     on profissionais_datasus.cns = cpf_profissionais.cns
+left join
+    cbo_agg 
+    on profissionais_datasus.id_codigo_sus = cbo_agg.profissional_codigo_sus
+left join
+    conselho_agg 
+    on profissionais_datasus.id_codigo_sus = conselho_agg.profissional_codigo_sus
