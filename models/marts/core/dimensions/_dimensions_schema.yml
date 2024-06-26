@@ -282,29 +282,35 @@ models:
         description: Nome do profissional de saúde.
         data_type: string
         quote: true
-      - name: id_cbo_lista
-        description: Lista de id da especialidade do profissional para cada cbo associado
+      - name: cbo
+        description: Array de informações de cbo do profissional
         data_type: array
-      - name: cbo_nome_lista
-        description: Lista de descrição da especialidade do profissional para cada cbo
-          associado
+      - name: cbo.id_cbo
+        description: ID de CBO associado ao profissional
+        data_type: string
+      - name: cbo.cbo
+        description: Descrição do CBO associado ao profissional
+        data_type: string
+      - name: cbo.id_cbo_familia
+        description: ID de familia de CBO associado ao CBO
+        data_type: string
+      - name: cbo.cbo_familia
+        description: Descrição de familia de CBO associado ao CBO
+        data_type: string
+      - name: conselho
+        description: Array de informações de conselho relacionadas ao profissional
         data_type: array
-      - name: id_cbo_familia_lista
-        description: Lista de ids da familia de especialidade do profissional para cada
-          cbo associado
-        data_type: array
-      - name: cbo_familia_nome_lista
-        description: Lista de descrição da familia de especialidade do profissional para
-          cada cbo associado
-        data_type: array
-      - name: id_registro_conselho_lista
-        description: Lista de números do registro no conselho de classe
-        data_type: array
+      - name: conselho.id_registro_conselho
+        description: Número do registro no conselho de classe
+        data_type: string
         policy_tags:
           - '{{ var ("TAG_CRM") }}'
-      - name: id_tipo_conselho_lista
-        description: Lista do tipo do conselho de classe
-        data_type: array
+      - name: conselho.id_tipo_conselho
+        description: ID do tipo do conselho de classe
+        data_type: string
+      - name: data_referencia
+        description: Data de última atualização da tabela
+        data_type: date
   - name: dim_vinculo_profissional_saude_estabelecimento
     description: Tabela de profissionais de saúde alocados hoje em unidades do SUS
       na cidade do Rio de Janeiro.
