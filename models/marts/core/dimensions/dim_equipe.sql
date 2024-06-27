@@ -39,17 +39,6 @@ with
                     or (upper(descricao) like "CIRURGIAO-DENTISTA%")
                     or (upper(descricao) like "CIRURGIAODENTISTA%")
                 then "dentista"
-                -- when (upper(descricao) like "PSIC%")
-                -- then "PSICOLOGO"
-                -- when (upper(descricao) like "FISIOTERAP%")
-                -- then "FISIOTERAPEUTA"
-                -- when (upper(descricao) like "NUTRIC%") or (upper(descricao) like
-                -- "NUTRIÇ%")
-                -- then "NUTRICIONISTA"
-                -- when (upper(descricao) like "FONO%")
-                -- then "FONOAUDIOLOGO"
-                -- when (upper(descricao) like "FARM%")
-                -- then "FARMACEUTICO"
                 else "outros_profissionais"
             end grupo,
             dense_rank() over (
