@@ -39,17 +39,6 @@ with
                     or (upper(descricao) like "CIRURGIAO-DENTISTA%")
                     or (upper(descricao) like "CIRURGIAODENTISTA%")
                 then "dentista"
-                -- when (upper(descricao) like "PSIC%")
-                -- then "PSICOLOGO"
-                -- when (upper(descricao) like "FISIOTERAP%")
-                -- then "FISIOTERAPEUTA"
-                -- when (upper(descricao) like "NUTRIC%") or (upper(descricao) like
-                -- "NUTRIÇ%")
-                -- then "NUTRICIONISTA"
-                -- when (upper(descricao) like "FONO%")
-                -- then "FONOAUDIOLOGO"
-                -- when (upper(descricao) like "FARM%")
-                -- then "FARMACEUTICO"
                 else "outros_profissionais"
             end grupo,
             dense_rank() over (
@@ -79,7 +68,7 @@ from
 where ordenacao = 1
 ),
 dim_estabelecimentos as (
-    select distinct id_unidade from {{ ref("dim_estabelecimento") }}
+    select distinct id_unidade,id_cnes from {{ ref("dim_estabelecimento") }}
 ),
 versao_atual as (
     select max(data_particao) as versao from {{ ref("raw_cnes_web__equipe") }}
@@ -118,7 +107,8 @@ contato_equipe as (
 select
     equipe.equipe_ine as ine,
     equipe.equipe_nome as nome_referencia,
-    equipe.id_unidade as id_unidade_saude,
+    equipe.id_unidade as id_estabelecimento,
+    dim_estabelecimentos.id_cnes,
     equipe.id_tipo_equipe as id_equipe_tipo,
     dim_tipo_equipe.equipe_descricao as equipe_tipo_descricao,
     equipe.id_area,

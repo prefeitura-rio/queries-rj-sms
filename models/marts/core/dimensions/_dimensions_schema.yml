@@ -385,8 +385,10 @@ models:
         description: Código do tipo de equipe
       - name: equipe_tipo_descricao
         description: Descrição do tipo de equipe
-      - name: id_unidade_saude
+      - name: id_estabelecimento
         description: Código do Estabelecimento de Saúde
+      - name: id_cnes
+        description: Código CNES do Estabelecimento de Saúde
       - name: profissionais
         description: Array de profissionais pertencentes a equipe
       - name: ultima_atualizacao_infos_equipe
