@@ -1,7 +1,8 @@
 {{
     config(
         alias="profissional",
-        schema= "brutos_cnes_ftp"
+        schema= "brutos_cnes_ftp",
+        cluster_by="sigla_uf",
     )
 }}
 
