@@ -80,17 +80,9 @@ equipe as (
         id_municipio = '330455'
         and data_particao = (select versao from versao_atual)
 ),
-dim_segmento as (
-    select id_segmento, segmento_descricao,
-    from {{ ref("raw_cnes_web__segmento") }}
-    where
-        data_particao = (select versao from versao_atual)
-        and id_municipio = '330455'
-),
-dim_area_segmento as (
-    select area.id_area, area.area_descricao, dim_segmento.segmento_descricao
+dim_area as (
+    select area.id_area, area.area_descricao, 
     from {{ ref("raw_cnes_web__area") }} as area
-    left join dim_segmento on dim_segmento.id_segmento = area.id_segmento
     where
         area.data_particao = (select versao from versao_atual)
         and area.id_municipio = '330455'
@@ -105,15 +97,13 @@ contato_equipe as (
     from {{ ref("raw_plataforma_smsrio__equipe_contato") }}
 )
 select
-    equipe.equipe_ine as ine,
+    equipe.equipe_ine as id_ine,
     equipe.equipe_nome as nome_referencia,
-    equipe.id_unidade as id_estabelecimento,
     dim_estabelecimentos.id_cnes,
     equipe.id_tipo_equipe as id_equipe_tipo,
-    dim_tipo_equipe.equipe_descricao as equipe_tipo_descricao,
+    REGEXP_REPLACE(dim_tipo_equipe.equipe_descricao, r' {2,}', ' ') as equipe_tipo_descricao,
     equipe.id_area,
-    dim_area_segmento.area_descricao,
-    dim_area_segmento.segmento_descricao,
+    dim_area.area_descricao,
     contato_equipe.telefone,
     profissionais_equipe.medicos,
     profissionais_equipe.enfermeiros,
@@ -133,6 +123,6 @@ left join
         profissionais_equipe.id_unidade_saude = equipe.id_unidade
         and profissionais_equipe.equipe_sequencial = equipe.equipe_sequencial
     )
-left join dim_area_segmento on dim_area_segmento.id_area = equipe.id_area
+left join dim_area on dim_area.id_area = equipe.id_area
 left join dim_tipo_equipe on dim_tipo_equipe.id_equipe_tipo = equipe.id_tipo_equipe
 left join contato_equipe on  LPAD(contato_equipe.ine,10,'0') = equipe.equipe_ine

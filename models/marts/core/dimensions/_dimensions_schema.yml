@@ -367,7 +367,7 @@ models:
     description: Tabela contendo a relação de equipes dentro dos estabelecimentos de saúde. Informações
       baseadas no CNES e outras compiladas dentro da SMS.
     columns:
-      - name: ine
+      - name: id_ine
         description: Código da Equipe (Identificador Nacional de Equipe - INE)
       - name: equipe_sequencial
         description: Sequencial da Equipe
@@ -375,8 +375,6 @@ models:
         description: Código da Área da Equipe
       - name: area_descricao
         description: Descrição da Área da Equipe
-      - name: segmento_descricao
-        description: Descrição do segmento da área da equipe
       - name: nome_referencia
         description: Nome de Referência da Equipe
       - name: telefone
@@ -385,8 +383,6 @@ models:
         description: Código do tipo de equipe
       - name: equipe_tipo_descricao
         description: Descrição do tipo de equipe
-      - name: id_estabelecimento
-        description: Código do Estabelecimento de Saúde
       - name: id_cnes
         description: Código CNES do Estabelecimento de Saúde
       - name: profissionais
