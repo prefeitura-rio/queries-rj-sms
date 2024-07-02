@@ -95,8 +95,7 @@ select
     profissionais_datasus.cns,
     profissionais_datasus.nome,
     cbo_agg.cbo,
-    conselho_agg.conselho,
-    current_date('America/Sao_Paulo') as data_referencia
+    conselho_agg.conselho
 from profissionais_datasus
 left join
     cpf_profissionais 
