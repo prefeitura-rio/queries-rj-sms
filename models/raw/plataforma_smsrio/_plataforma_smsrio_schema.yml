@@ -1,0 +1,30 @@
+version: 2
+models:
+  - name: raw_plataforma_smsrio__equipe_contato
+    description: |-
+      Tabela com os meios de contato de uma equipe de profissionais de saude
+    columns:
+      - name: ine
+        description: Código INE da equipe
+        data_type: string
+      - name: id_area
+        description: ID da área da equipe
+        data_type: string
+      - name: telefone
+        description: Whatsapp da equipe
+        data_type: string
+      - name: email
+        description: Email da equipe
+        data_type: string
+      - name: imei
+        description: Imei do aparelho celular da equipe
+        data_type: string
+      - name: user_id
+        description: Último usuário a atualizar o registro
+        data_type: string
+      - name: created_at
+        description: Data de criação do registro
+        data_type: datetime
+      - name: updated_at
+        description: Data de última atualização do registro
+        data_type: datetime

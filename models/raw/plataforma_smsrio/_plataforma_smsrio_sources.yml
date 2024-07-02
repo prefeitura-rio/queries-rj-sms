@@ -7,3 +7,4 @@ sources:
     tables:
       - name: estoque_posicao_almoxarifado_aps_dengue
       - name: materiais_almoxarifado_dengue
+      - name: equipe_contato

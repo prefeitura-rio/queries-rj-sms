@@ -15,4 +15,8 @@ sources:
     - name: tbModVinculo
     - name: tbTpModVinculo
     - name: tbDadosProfissionalSus
+    - name: rlEstabEquipeProf
+    - name: tbTipoEquipe
+    - name: tbSegmento
+    - name: tbArea
 
