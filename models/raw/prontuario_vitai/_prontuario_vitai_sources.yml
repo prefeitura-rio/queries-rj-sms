@@ -15,4 +15,9 @@ sources:
         freshness:
           warn_after: {count: 48, period: hour}
           error_after: {count: 72, period: hour}
+      - name: paciente_eventos
+        loaded_at_field: "CAST(datalake_imported_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 8, period: hour}
+          error_after: {count: 24, period: hour}
 
