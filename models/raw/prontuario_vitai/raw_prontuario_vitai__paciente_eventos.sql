@@ -8,10 +8,6 @@
 
 with
     source as (
-        select *
-        from {{ source("brutos_prontuario_vitai_staging", "paciente_eventos") }}
-    ),
-    renamed as (
         select
             safe_cast(gid as string) as gid,
             safe_cast(racacor as string) as raca_cor,
@@ -41,12 +37,12 @@ with
             safe_cast(numero_prontuario as string) as numero_prontuario,
             safe_cast(nome as string) as nome,
             safe_cast(cliente as string) as cliente,
-            timestamp(datalake_imported_at) as datalake_imported_at
-        from source
+            timestamp(datalake__imported_at) as datalake__imported_at
+        from {{ source("brutos_prontuario_vitai_staging", "paciente_eventos") }}
     )
 
 select *
-from renamed
+from source
 {% if is_incremental() %}
 where data_hora >= (SELECT max(data_hora) FROM {{ this }})
 {% endif %}
