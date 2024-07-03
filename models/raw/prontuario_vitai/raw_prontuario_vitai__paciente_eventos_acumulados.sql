@@ -35,8 +35,9 @@ select
     safe_cast(numero_prontuario as string) as numero_prontuario,
     safe_cast(nome as string) as nome,
     safe_cast(cliente as string) as cliente,
-    safe_cast(datalake__imported_at as timestamp) as datalake__imported_at
+    safe_cast(datalake__imported_at as timestamp) as datalake__imported_at,
+    safe_cast(data_particao as date format "YYYY-MM-DD") as data_particao
 from {{ source("brutos_prontuario_vitai_staging", "paciente_eventos") }}
 {% if is_incremental() %}
-where data_particao >= (SELECT max(data_particao) FROM {{ this }})
+where data_particao >= (SELECT safe_cast(max(data_particao) as string) FROM {{ this }})
 {% endif %}
