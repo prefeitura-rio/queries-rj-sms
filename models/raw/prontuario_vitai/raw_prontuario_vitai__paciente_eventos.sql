@@ -1,5 +1,10 @@
-{{ config(alias="paciente_eventos", tags=["vitai_db"]) }}
-
+{{ config(
+    alias="paciente_eventos",
+    materialized='incremental',
+    partition_by={ 'field': 'data_hora', 'data_type': 'timestamp'},
+    incremental_strategy='insert_overwrite',
+    tags=["vitai_db"]
+)}}
 
 with
     source as (
@@ -8,6 +13,7 @@ with
     ),
     renamed as (
         select
+            safe_cast(gid as string) as gid,
             safe_cast(racacor as string) as raca_cor,
             safe_cast(nome_alternativo as string) as nome_alternativo,
             safe_cast(estabelecimento_gid as string) as estabelecimento_gid,
@@ -21,7 +27,6 @@ with
             safe_cast(nacionalidade as string) as nacionalidade,
             safe_cast(ocupacaocbo as string) as ocupacao_cbo,
             safe_cast(munipicio as string) as municipio,
-            safe_cast(gid as string) as gid,
             safe_cast(telefone as string) as telefone,
             safe_cast(nomemae as string) as nome_mae,
             safe_cast(sexo as string) as sexo,
@@ -39,5 +44,9 @@ with
             timestamp(datalake_imported_at) as datalake_imported_at
         from source
     )
+
 select *
 from renamed
+{% if is_incremental() %}
+where data_hora >= (SELECT max(data_hora) FROM {{ this }})
+{% endif %}

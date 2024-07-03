@@ -1,6 +1,7 @@
 {{ config(
     materialized='table',
     partition_by={"field": "updated_at", "data_type": "timestamp"},
+    partition_expiration_days=7,
     clustering_by=["cpf"]
 ) }}
 
