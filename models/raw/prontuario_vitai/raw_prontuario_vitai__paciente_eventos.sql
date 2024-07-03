@@ -37,3 +37,6 @@ select
     safe_cast(cliente as string) as cliente,
     safe_cast(datalake__imported_at as timestamp) as datalake__imported_at
 from {{ source("brutos_prontuario_vitai_staging", "paciente_eventos") }}
+{% if is_incremental() %}
+where data_particao >= (SELECT max(data_particao) FROM {{ this }})
+{% endif %}
