@@ -76,9 +76,8 @@ versao_atual as (
 equipe as (
     select *
     from {{ ref("raw_cnes_web__equipe") }}
-    where
-        id_municipio = '330455'
-        and data_particao = (select versao from versao_atual)
+    where data_particao = (select versao from versao_atual)
+        and data_desativacao is null
 ),
 dim_area as (
     select area.id_area, area.area_descricao, 
