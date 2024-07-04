@@ -94,6 +94,9 @@ dim_tipo_equipe as (
 contato_equipe as (
     select ine, telefone
     from {{ ref("raw_plataforma_smsrio__equipe_contato") }}
+    where ine is not null 
+    and ine != "0" 
+    and ine != "1"
 )
 select
     equipe.equipe_ine as id_ine,
