@@ -160,6 +160,9 @@ models:
         data_type: string
         policy_tags:
           - '{{ var("TAG_IDENTIFICADOR") }}'
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__paciente__gid__not_null
       - name: estabelecimento_gid
         description: Identificador do estabelecimento na base da Vitai
         data_type: string
@@ -258,3 +261,6 @@ models:
       - name: datalake__imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__paciente__datalake__imported_at__not_null
