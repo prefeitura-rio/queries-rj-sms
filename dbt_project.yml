@@ -44,6 +44,7 @@ vars:
   TAG_NOME_PAI: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/8262940514454666213'
   TAG_COREN: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1950446664324638402'
   TAG_MEDICAMENTO: 'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/3872480936078888207'
+  TAG_IDENTIFICADOR: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/3220112556547044825'
 
 
 
