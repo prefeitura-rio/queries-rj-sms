@@ -6,9 +6,8 @@
 - Obtenha o arquivo de credenciais `credentials.json`.
 - No arquivo `./profiles.yml`, defina onde o arquivo de credenciais estará.
 - Dê privilegio de execução para o script `./recce.sh`
-  - **Linux**: `chmod +x recce.sh`
-  - **Windows**:
-  - **MacOS**: 
+  - **Linux e MacOS**: `chmod +x recce.sh`
+  - **Windows**: Não precisa
 - Rode `dbt deps` para instalar os pacotes de dependência do projeto
 
 ## Usando
@@ -23,8 +22,7 @@
 ## Usando o Recce
 - O Recce permite comparar os dados de produção com os gerados por uma nova configuração DBT
 - Para subir um servidor Recce basta chamar o script dando como entrada o nome da branch.
-  - **Linux**: Rode `./recce.sh <NOME_BRANCH>`
-  - **Windows**:
-  - **MacOS**:
+  - **Linux e MacOS**: Rode `./recce.sh <NOME_BRANCH>`
+  - **Windows**: Rode `.\recce.ps1 <NOME_BRANCH>`
 - O servidor fica disponível em `localhost:8000`
 - Exemplo: no linux eu posso rodar `./recce.sh feat/transforming-vitai-database-into-datalake`
