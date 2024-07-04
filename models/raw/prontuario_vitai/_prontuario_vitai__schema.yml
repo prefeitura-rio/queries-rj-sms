@@ -152,3 +152,109 @@ models:
         description: Data de referencia da posição do estoque
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_prontuario_vitai__paciente
+    description: Tabela de eventos mais recentes com informações detalhadas dos pacientes.
+    columns:
+      - name: gid
+        description: Identificador do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: estabelecimento_gid
+        description: Identificador do estabelecimento na base da Vitai
+        data_type: string
+      - name: ocupacaocbo
+        description: Código Brasileiro de Ocupações.
+        data_type: string
+      - name: idcidadao
+        description: Identificador do cidadão.
+        data_type: string
+      - name: cpf
+        description: CPF do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: racacor
+        description: Raça ou cor do cidadão.
+        data_type: string
+      - name: nome_alternativo
+        description: Nome alternativo do cidadão.
+        data_type: string
+      - name: complemento
+        description: Complemento do endereço do cidadão.
+        data_type: string
+      - name: datanascimento
+        description: Data de nascimento do cidadão.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DTNASCIMENTO") }}'
+      - name: transex
+        description: Identificação de transexualidade.
+        data_type: string
+      - name: tipologradouro
+        description: Tipo de logradouro do endereço do cidadão.
+        data_type: string
+      - name: nomelogradouro
+        description: Nome do logradouro do endereço do cidadão.
+        data_type: string
+      - name: uf
+        description: Unidade Federativa do endereço do cidadão.
+        data_type: string
+      - name: nacionalidade
+        description: Nacionalidade do cidadão.
+        data_type: string
+      - name: municipio
+        description: Município do endereço do cidadão.
+        data_type: string
+      - name: telefone
+        description: Telefone de contato do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+      - name: nomemae
+        description: Nome da mãe do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: sexo
+        description: Sexo do cidadão.
+        data_type: string
+      - name: naturalidade
+        description: Naturalidade do cidadão.
+        data_type: string
+      - name: datahora
+        description: Campo descrevendo a última atualização do registro.
+        data_type: timestamp
+      - name: paisnascimento
+        description: País de nascimento do cidadão.
+        data_type: string
+      - name: bairro
+        description: Bairro do endereço do cidadão.
+        data_type: string
+      - name: dtobito
+        description: Data de óbito do cidadão, se aplicável.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DTOBITO") }}'
+      - name: numero
+        description: Número do endereço do cidadão.
+        data_type: string
+      - name: numero_prontuario
+        description: Número do prontuário do cidadão.
+        data_type: string
+      - name: nome
+        description: Nome completo do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: datalake__imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
