@@ -2,7 +2,7 @@
     config(
         alias="paciente",
         materialized="incremental",
-        unique_key="gid",
+        unique_key="id",
         tags=["vitai_db", "every_30_min"],
     )
 }}
