@@ -38,13 +38,13 @@ with
 -- Seleciona e converte os campos para o tipo apropriado
 select
     -- Chave Primária
-    safe_cast(gid as string) as id,
+    safe_cast(gid as string) as gid,
 
     -- Chaves Estrangeiras
     safe_cast(boletim_id as string) as id_boletim,
     safe_cast(boletim_gid as string) as gid_boletim,
-    safe_cast(paciente_gid as string) as id_paciente,
-    safe_cast(estabelecimento_gid as string) as id_estabelecimento,
+    safe_cast(paciente_gid as string) as gid_paciente,
+    safe_cast(estabelecimento_gid as string) as gid_estabelecimento,
     safe_cast(sk_data as string) as sk_data,
 
     -- Campos

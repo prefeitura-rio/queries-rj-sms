@@ -38,10 +38,10 @@ with
 -- Seleciona e converte os campos para o tipo apropriado
 select
     -- Chave Primária
-    safe_cast(gid as string) as id,
+    safe_cast(gid as string) as gid,
 
     -- Chaves Estrangeiras
-    safe_cast(estabelecimento_gid as string) as id_estabelecimento,
+    safe_cast(estabelecimento_gid as string) as gid_estabelecimento,
 
     -- Campos
     safe_cast(numero_conselho as string) as numero_conselho,
