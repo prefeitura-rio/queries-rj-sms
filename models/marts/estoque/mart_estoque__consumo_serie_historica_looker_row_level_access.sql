@@ -3,6 +3,7 @@
         alias="estoque_consumo_serie_historica_nivel_registro_para_looker",
         schema="projeto_estoque",
         materialized="table",
+        cluster_by="email",
     )
 }}
 

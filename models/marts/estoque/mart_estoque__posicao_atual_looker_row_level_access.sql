@@ -3,6 +3,7 @@
         alias="estoque_posicao_atual_acesso_nivel_registro_para_looker",
         schema="projeto_estoque",
         materialized="table",
+        cluster_by="email",
     )
 }}
 
