@@ -3,7 +3,7 @@ models:
   - name: raw_prontuario_vitai__estoque_posicao
     description: >
       Posição diária dos estoques de medicamentos e insumos das unidades de
-      saúde que utilizam o prontuário Timed (Vitai) para  gestão de estoque de
+      saúde que utilizam o prontuário Timed (Vitai) para gestão de estoque de
       farmácia e almoxarifado
     columns:
       - name: id_cnes
@@ -28,7 +28,7 @@ models:
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+          - '{{ var("TAG_MATERIAL") }}'
         tests:
           - not_null:
               name: raw_prontuario_vitai__estoque_posicao__id_material__not_null
@@ -38,11 +38,11 @@ models:
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+          - '{{ var("TAG_MATERIAL") }}'
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
       - name: lote_data_vencimento
-        description: Data de vecimento do lote
+        description: Data de vencimento do lote
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
       - name: material_valor_unitario
@@ -51,14 +51,15 @@ models:
         description: Valor em reais somando todas as unidades disponíveis do
           medicamento/insumo
       - name: data_particao
-        description: Data de referencia da posição do estoque
+        description: Data de referência da posição do estoque
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+
   - name: raw_prontuario_vitai__estoque_movimento
     description: Movimentação diária dos estoques de medicamentos e insumos das
-      unidades de saúde que utilizam o prontuário Timed (Vitai) para  gestão de
+      unidades de saúde que utilizam o prontuário Timed (Vitai) para gestão de
       estoque de farmácia e almoxarifado
     tests:
       - dbt_utils.unique_combination_of_columns:
@@ -99,20 +100,20 @@ models:
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+          - '{{ var("TAG_MATERIAL") }}'
         tests:
           - not_null:
               name: raw_prontuario_vitai__estoque_movimento__id_material__not_null
               config:
                 where: "estoque_movimento_data > '2023-01-01'"
       - name: material_descricao
-        description: Descrição do materil (medicamento/insumo)
+        description: Descrição do material (medicamento/insumo)
         policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+          - '{{ var("TAG_MATERIAL") }}'
       - name: material_unidade
-        description: Unidade de estocagem do material(medicamento/insumo)
+        description: Unidade de estocagem do material (medicamento/insumo)
       - name: estoque_secao_origem
-        description: Local onde o material se encontrava antes de ser movimento.
+        description: Local onde o material se encontrava antes de ser movimentado.
       - name: estoque_secao_destino
         description: Local para onde o material foi destinado após movimento.
       - name: estoque_movimento_tipo
@@ -120,21 +121,21 @@ models:
       - name: estoque_movimento_justificativa
         description: Justificativa da movimentação do estoque
       - name: estoque_movimento_data_hora
-        description: Data e hora da moviementação do estoque.
+        description: Data e hora da movimentação do estoque.
       - name: estoque_movimento_data
-        description: Data da moviementação do estoque.
+        description: Data da movimentação do estoque.
       - name: dispensacao_paciente_cpf
         description: CPF do paciente no caso de dispensação para usuário
         policy_tags:
-          - '{{ var ("TAG_CPF") }}'
+          - '{{ var("TAG_CPF") }}'
       - name: dispensacao_paciente_cns
         description: CNS do paciente no caso de dispensação para usuário
         policy_tags:
-          - '{{ var ("TAG_CNS") }}'
+          - '{{ var("TAG_CNS") }}'
       - name: dispensacao_prescritor_cpf
         description: CPF do prescritor no caso de dispensação para usuário
         policy_tags:
-          - '{{ var ("TAG_CPF") }}'
+          - '{{ var("TAG_CPF") }}'
       - name: material_quantidade
         description: Quantidade do material movida
       - name: material_valor_total
@@ -149,9 +150,10 @@ models:
       - name: data_atualizacao
         description: Data e hora de atualização do registro no sistema de origem
       - name: data_particao
-        description: Data de referencia da posição do estoque
+        description: Data de referência da posição do estoque
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+
   - name: raw_prontuario_vitai__paciente
     description: Tabela de pacientes, sincronizada com Vitai.
     columns:
@@ -172,6 +174,8 @@ models:
       - name: id_cidadao
         description: Identificador do cidadão.
         data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
       - name: cpf
         description: CPF do cidadão.
         data_type: string
@@ -264,3 +268,579 @@ models:
         tests:
           - not_null:
               name: raw_prontuario_vitai__paciente__imported_at__not_null
+
+  - name: raw_prontuario_vitai__profissional
+    description: Tabela de profissionais, sincronizada com Vitai.
+    columns:
+      - name: id
+        description: Identificador do profissional na base da Vitai.
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__profissional__id__not_null
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: id_estabelecimento
+        description: Identificador do estabelecimento na base da Vitai.
+        data_type: string
+      - name: numero_conselho
+        description: Número do conselho do profissional.
+        data_type: string
+      - name: conselho_regional
+        description: Conselho regional do profissional.
+        data_type: string
+      - name: codigo_interno
+        description: Código interno do profissional.
+        data_type: string
+      - name: cpf
+        description: CPF do profissional.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do profissional.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: sigla_conselho
+        description: Sigla do conselho do profissional.
+        data_type: string
+      - name: uf_conselho
+        description: Unidade Federativa do conselho do profissional.
+        data_type: string
+      - name: cbo_descricao
+        description: Descrição do Código Brasileiro de Ocupações.
+        data_type: string
+      - name: cbo
+        description: Código Brasileiro de Ocupações.
+        data_type: string
+      - name: situacao
+        description: Situação do profissional.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+
+  - name: raw_prontuario_vitai__boletim
+    description: Tabela de boletins de atendimento, sincronizada com Vitai.
+    columns:
+      - name: id
+        description: Identificador do boletim na base da Vitai.
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__boletim__id__not_null
+      - name: id_estabelecimento
+        description: Identificador do estabelecimento na base da Vitai.
+        data_type: string
+      - name: atendimento_tipo
+        description: Tipo de atendimento realizado.
+        data_type: string
+      - name: meio_transporte_nome
+        description: Nome do meio de transporte utilizado.
+        data_type: string
+      - name: clinica_nome
+        description: Nome da clínica de atendimento.
+        data_type: string
+      - name: sk_data
+        description: Chave de data do evento.
+        data_type: string
+      - name: motivo_atendimento_nome
+        description: Nome do motivo do atendimento.
+        data_type: string
+      - name: secao_gid
+        description: Identificador da seção na base da Vitai.
+        data_type: string
+      - name: cancelado
+        description: Indicação se o evento foi cancelado.
+        data_type: string
+      - name: plano_saude
+        description: Indicação do plano de saúde do paciente.
+        data_type: string
+      - name: data_entrada
+        description: Data de entrada do paciente.
+        data_type: string
+      - name: id_motivo_atendimento
+        description: Identificador do motivo do atendimento.
+        data_type: string
+      - name: sob_custodia
+        description: Indicação se o paciente está sob custódia.
+        data_type: string
+      - name: secao_nome
+        description: Nome da seção de atendimento.
+        data_type: string
+      - name: detalhe_acidente_nome
+        description: Nome do detalhe do acidente.
+        data_type: string
+      - name: unidade_entrada_tipo
+        description: Tipo de unidade de entrada.
+        data_type: string
+      - name: pulseira
+        description: Indicação de uso de pulseira.
+        data_type: string
+      - name: especialidade_nome
+        description: Nome da especialidade de atendimento.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento.
+        data_type: timestamp
+      - name: convenio
+        description: Nome do convênio do paciente.
+        data_type: string
+      - name: estabelecimento_sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: id_cidadao
+        description: Identificador do cidadão na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: numero_be
+        description: Número do boletim de atendimento.
+        data_type: string
+      - name: origem_descricao
+        description: Descrição da origem do atendimento.
+        data_type: string
+      - name: entrada_tipo
+        description: Tipo de entrada do paciente.
+        data_type: string
+      - name: interno
+        description: Indicação se o paciente é interno.
+        data_type: string
+      - name: cbo_descricao
+        description: Descrição do Código Brasileiro de Ocupações.
+        data_type: string
+      - name: cbo_codigo
+        description: Código Brasileiro de Ocupações.
+        data_type: string
+      - name: internacao_data
+        description: Data de internação do paciente.
+        data_type: string
+      - name: alta_data
+        description: Data de alta do paciente.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de atendimento.
+        data_type: string
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: base_url
+        description: URL base do evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+
+  - name: raw_prontuario_vitai__alergia
+    description: Tabela de eventos de alergia, sincronizada com Vitai.
+    columns:
+      - name: id
+        description: Identificador do evento de alergia na base da Vitai.
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__alergia__id__not_null
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: id_boletim
+        description: Identificador do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: id_paciente
+        description: Identificador do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: severidade
+        description: Severidade da alergia.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento de alergia.
+        data_type: timestamp
+      - name: tipo
+        description: Tipo de alergia.
+        data_type: string
+      - name: descricao
+        description: Descrição da alergia.
+        data_type: string
+      - name: alg_ativo
+        description: Indicação se a alergia está ativa.
+        data_type: string
+      - name: data_registro
+        description: Data de registro da alergia.
+        data_type: string
+      - name: reacao
+        description: Reação alérgica.
+        data_type: string
+      - name: inicio_sintomas
+        description: Data de início dos sintomas.
+        data_type: string
+      - name: observacao
+        description: Observações sobre a alergia.
+        data_type: string
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de atendimento.
+        data_type: string
+      - name: base_url
+        description: URL base do evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+
+  - name: raw_prontuario_vitai__atendimento
+    description: Tabela de eventos de atendimento, sincronizada com Vitai.
+    columns:
+      - name: id
+        description: Identificador do evento de atendimento na base da Vitai.
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__atendimento__id__not_null
+      - name: id_paciente
+        description: Identificador do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: id_boletim
+        description: Identificador do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: id_estabelecimento
+        description: Identificador do estabelecimento na base da Vitai.
+        data_type: string
+      - name: id_profissional
+        description: Identificador do profissional na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: atendimento_tipo
+        description: Tipo de atendimento realizado.
+        data_type: string
+      - name: especialidade
+        description: Especialidade do atendimento.
+        data_type: string
+      - name: inicio_datahora
+        description: Data e hora de início do atendimento.
+        data_type: string
+      - name: fim_datahora
+        description: Data e hora de fim do atendimento.
+        data_type: string
+      - name: cid_codigo
+        description: Código do CID.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento.
+        data_type: timestamp
+      - name: codigo
+        description: Código do evento de atendimento.
+        data_type: string
+      - name: queixa
+        description: Queixa principal do paciente.
+        data_type: string
+      - name: cid_nome
+        description: Descrição do CID.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+
+  - name: raw_prontuario_vitai__cirurgia
+    description: Tabela de eventos de cirurgia, sincronizada com Vitai.
+    columns:
+      - name: id
+        description: Identificador do evento de cirurgia na base da Vitai.
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__cirurgia__id__not_null
+      - name: id_paciente
+        description: Identificador do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: id_boletim
+        description: Identificador do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: id_estabelecimento
+        description: Identificador do estabelecimento na base da Vitai.
+        data_type: string
+      - name: estabelecimento_sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: cirurgia_data
+        description: Data da cirurgia.
+        data_type: string
+      - name: status
+        description: Status da cirurgia.
+        data_type: string
+      - name: procedimento_codigo
+        description: Código do procedimento realizado.
+        data_type: string
+      - name: procedimento_nome
+        description: Nome do procedimento realizado.
+        data_type: string
+      - name: diagnostico_codigo
+        description: Código do diagnóstico.
+        data_type: string
+      - name: diagnostico_descricao
+        description: Descrição do diagnóstico.
+        data_type: string
+      - name: especialidade
+        description: Especialidade da cirurgia.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento de cirurgia.
+        data_type: timestamp
+      - name: base_url
+        description: URL base do evento.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+
+  - name: raw_prontuario_vitai__classificacao_risco
+    description: Tabela de eventos de classificação de risco, sincronizada com Vitai.
+    columns:
+      - name: id
+        description: Identificador do evento de classificação de risco na base da Vitai.
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__classificacao_risco__id__not_null
+      - name: id_paciente
+        description: Identificador do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: id_boletim
+        description: Identificador do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: id_estabelecimento
+        description: Identificador do estabelecimento na base da Vitai.
+        data_type: string
+      - name: id_profissional
+        description: Identificador do profissional na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: asv_queixa_principal
+        description: Queixa principal do paciente.
+        data_type: string
+      - name: risco
+        description: Nível de risco do paciente.
+        data_type: string
+      - name: inicio_datahora
+        description: Data e hora de início da classificação de risco.
+        data_type: string
+      - name: fim_datahora
+        description: Data e hora de fim da classificação de risco.
+        data_type: string
+      - name: clr_meta
+        description: Meta da classificação de risco.
+        data_type: string
+      - name: descritor
+        description: Descritor da classificação de risco.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento de classificação de risco.
+        data_type: timestamp
+      - name: codigo
+        description: Código do evento de classificação de risco.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+
+  - name: raw_prontuario_vitai__diagnostico
+    description: Tabela de eventos de diagnóstico, sincronizada com Vitai.
+    columns:
+      - name: id
+        description: Identificador do evento de diagnóstico na base da Vitai.
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__diagnostico__id__not_null
+      - name: id_boletim
+        description: Identificador do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: gid_boletim
+        description: Identificador global do boletim na base da Vitai.
+        data_type: string
+      - name: id_paciente
+        description: Identificador do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: id_estabelecimento
+        description: Identificador do estabelecimento na base da Vitai.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento de diagnóstico.
+        data_type: timestamp
+      - name: tipo
+        description: Tipo de diagnóstico.
+        data_type: string
+      - name: codigo
+        description: Código do diagnóstico.
+        data_type: string
+      - name: data
+        description: Data do diagnóstico.
+        data_type: string
+      - name: descricao
+        description: Descrição do diagnóstico.
+        data_type: string
+      - name: sk_data
+        description: Chave de data do evento.
+        data_type: string
+      - name: situacao
+        description: Situação do diagnóstico.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: base_url
+        description: URL base do evento.
+        data_type: string
+      - name: sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+
+  - name: raw_prontuario_vitai__exame
+    description: Tabela de eventos de exame, sincronizada com Vitai.
+    columns:
+      - name: id
+        description: Identificador do evento de exame na base da Vitai.
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitai__exame__id__not_null
+      - name: id_paciente
+        description: Identificador do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: id_boletim
+        description: Identificador do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: id_estabelecimento
+        description: Identificador do estabelecimento na base da Vitai.
+        data_type: string
+      - name: id_medico_solicitante
+        description: Identificador do médico solicitante na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: id_exame_item
+        description: Identificador do item de exame na base da Vitai.
+        data_type: string
+      - name: status_pedido
+        description: Status do pedido de exame.
+        data_type: string
+      - name: liberacao_data
+        description: Data de liberação do exame.
+        data_type: string
+      - name: pedido_data
+        description: Data do pedido de exame.
+        data_type: string
+      - name: realizacao_data
+        description: Data de realização do exame.
+        data_type: string
+      - name: indicacao_clinica
+        description: Indicação clínica para o exame.
+        data_type: string
+      - name: mnemonico
+        description: Mnemonico do exame.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento de exame.
+        data_type: timestamp
+      - name: tipo
+        description: Tipo de exame.
+        data_type: string
+      - name: exame
+        description: Nome do exame.
+        data_type: string
+      - name: medico_solicitante_nome
+        description: Nome do médico solicitante.
+        data_type: string
+      - name: id_pedido
+        description: Identificador do pedido de exame.
+        data_type: string
+      - name: status_item
+        description: Status do item de exame.
+        data_type: string
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: base_url
+        description: URL base do evento.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de atendimento.
+        data_type: string
+      - name: procedimento_codigo
+        description: Código do procedimento realizado.
+        data_type: string
+      - name: procedimento_nome
+        description: Nome do procedimento realizado.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
