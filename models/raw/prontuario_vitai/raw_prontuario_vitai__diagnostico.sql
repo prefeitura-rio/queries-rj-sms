@@ -3,7 +3,7 @@
         alias="diagnostico",
         materialized="incremental",
         unique_key="id",
-        tags=["every_30_min"],
+        tags=["vitai_db", "every_30_min"],
     )
 }}
 

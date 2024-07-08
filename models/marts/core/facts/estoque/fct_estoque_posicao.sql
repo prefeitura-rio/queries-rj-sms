@@ -7,7 +7,6 @@
             "data_type": "date",
             "granularity": "month",
         },
-        enabled=false
     )
 }}
 

@@ -90,7 +90,7 @@ models:
         +tags: "daily"
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
-        +tags: "vitai_db"
+        +tags: "daily"
       sheets:
         +schema: brutos_sheets
         +tags: "daily"

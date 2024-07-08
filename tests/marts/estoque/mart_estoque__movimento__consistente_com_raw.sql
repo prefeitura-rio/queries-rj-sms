@@ -1,8 +1,3 @@
-{{
-    config(
-        enabled=false
-    )
-}}
 -- verifica se os valores consolidados no mart de posicao atual batem com os valores
 -- encontrados que estão chegando da tpc, vitai e vitacare
 
