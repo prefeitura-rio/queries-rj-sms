@@ -3,7 +3,7 @@
         alias="alergia",
         materialized="incremental",
         unique_key="id",
-        tags=["vitai_db", "every_30_min"],
+        tags=["every_30_min"],
     )
 }}
 
