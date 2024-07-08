@@ -3,7 +3,7 @@
         alias="paciente",
         materialized="incremental",
         unique_key="id",
-        tags=["vitai_db", "every_30_min"],
+        tags=["every_30_min"],
     )
 }}
 
@@ -24,10 +24,10 @@ with
     latest_events as (select * from events_ranked_by_freshness where rank = 1)
 select
     -- Chave Primária
-    safe_cast(gid as string) as id,
+    safe_cast(gid as string) as gid,
 
     -- Chaves Estrangeiras
-    safe_cast(estabelecimento_gid as string) as id_estabelecimento,
+    safe_cast(estabelecimento_gid as string) as gid_estabelecimento,
     safe_cast(ocupacaocbo as string) as cbo_ocupacao,
 
     -- Campos
