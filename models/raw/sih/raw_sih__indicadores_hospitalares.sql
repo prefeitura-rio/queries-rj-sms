@@ -1,13 +1,8 @@
 {{
     config(
-        schema="brutos_sih_staging",
+        schema="brutos_sih",
         alias="indicadores_hospitalares",
-        materialized="incremental",
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "day",
-        },
+        materialized="table",
     )
 }}
 
@@ -54,7 +49,7 @@ with
             val_obsang,
             val_ped1ac,
             val_tot,
-            -- val_uti,
+            val_uti,
             us_tot,
             parse_date('%Y%m%d', dt_inter) as dt_inter,
             parse_date('%Y%m%d', dt_saida) as dt_saida,
@@ -131,7 +126,7 @@ with
             tpdisec7,
             tpdisec8,
             tpdisec9,
-            -- _data_carga,
+            "" as data_carga,
             ano_particao,
             mes_particao,
             data_particao
@@ -140,8 +135,3 @@ with
 
 select *
 from renamed
-{% if is_incremental() %}
-
-    where safe_cast(data_particao as date) > (select max(data_particao) from {{ this }})
-
-{% endif %}
