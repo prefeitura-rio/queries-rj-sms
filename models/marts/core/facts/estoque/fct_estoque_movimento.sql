@@ -51,12 +51,12 @@ with
                         "DISPENSAÇÃO DE RECEITA EXTERNA",
                         "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR",
                         "REFORÇO",
-                        "REFORÇO ISOLADO",
+                        "REFORÇO ISOLADO",  -- #TODO: entender se o estoque pode fazer o sentido contrário, voltando para o estoque central
                         "REMOÇÃO DE LOTE",
                         "SUSPENSÃO DE LOTE"
                     )
                 then "Saida"
-                else "Desconhecido"  -- TODO: entender o que fazer com Reforço e Reforço Isolado
+                else "Desconhecido"  -- #TODO: entender o que fazer com Reforço e Reforço Isolado
             end as estoque_movimento_entrada_saida,
             case
                 when estoque_movimento_tipo = "NOVO LOTE"
@@ -80,8 +80,8 @@ with
                     )
                 then "Consumo"
                 when
-                    estoque_movimento_tipo in ("REMOÇÃO DE LOTE") or
-                    (
+                    estoque_movimento_tipo in ("REMOÇÃO DE LOTE")
+                    or (
                         estoque_movimento_tipo in (
                             "CORREÇÃO DE LOTE - AUMENTO",
                             "CORREÇÃO DE LOTE - DIMINUIÇÃO"
@@ -97,7 +97,7 @@ with
                 when
                     estoque_movimento_tipo
                     in ("SUSPENSÃO DE LOTE", "RECUPERAÇÃO DE LOTE")
-                then "Bloqueio de Estoque"
+                then "Bloqueio/Desbloqueio de Lote"
                 when estoque_movimento_tipo in ("DEVOLUÇÃO ISOLADA")
                 then "Devolucao"
                 when
@@ -186,8 +186,7 @@ with
             est.estoque_movimento_entrada_saida,
             est.estoque_movimento_tipo_grupo,
             case
-                when
-                    est.estoque_movimento_entrada_saida = "Saida"
+                when est.estoque_movimento_entrada_saida = "Saida"
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
