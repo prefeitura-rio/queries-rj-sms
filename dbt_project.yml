@@ -94,6 +94,9 @@ models:
       sheets:
         +schema: brutos_sheets
         +tags: "daily"
+      sih:
+        +schema: brutos_sih
+        +tags: "daily"
     intermediate:
         +materialized: ephemeral
     marts:
