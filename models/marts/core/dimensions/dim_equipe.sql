@@ -92,7 +92,7 @@ dim_tipo_equipe as (
     where data_particao = (select versao from versao_atual)
 ),
 contato_equipe as (
-    select ine, telefone
+    select ine,  REGEXP_EXTRACT(telefone, r'\(21\)9[0-9]{4}-[0-9]{4}') as telefone
     from {{ ref("raw_plataforma_smsrio__equipe_contato") }}
     where ine is not null 
     and ine != "0" 
