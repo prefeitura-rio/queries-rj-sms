@@ -1,6 +1,5 @@
 {{
     config(
-        schema="brutos_sih",
         alias="indicadores_hospitalares",
         materialized="table",
     )
