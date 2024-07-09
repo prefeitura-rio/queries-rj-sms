@@ -1,0 +1,483 @@
+models:
+  - name: raw_sih__indicadores_hospitalares
+    columns:
+      - name: uf_zi
+        description: Município Gestor.
+        data_type: string
+        quote: true
+      - name: ano_cmpt
+        description: Ano de processamento da AIH, no formato aaaa.
+        data_type: string
+        quote: true
+      - name: mes_cmpt
+        description: Mês de processamento da AIH, no formato mm.
+        data_type: string
+        quote: true
+      - name: espec
+        description: Especialidade do Leito.
+        data_type: string
+        quote: true
+      - name: cgc_hosp
+        description: CNPJ do Estabelecimento.
+        data_type: string
+        quote: true
+      - name: n_aih
+        description: Número da AIH.
+        data_type: string
+        quote: true
+      - name: ident
+        description: Identificação do tipo da AIH.
+        data_type: string
+        quote: true
+      - name: cep
+        description: CEP do paciente.
+        data_type: string
+        quote: true
+      - name: munic_res
+        description: Município de Residência do Paciente
+        data_type: string
+        quote: true
+      - name: nasc
+        description: Data de nascimento do paciente (aaaammdd).
+        data_type: string
+        quote: true
+      - name: sexo
+        description: Sexo do paciente.
+        data_type: string
+        quote: true
+      - name: uti_mes_in
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: uti_mes_an
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: uti_mes_al
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: uti_mes_to
+        description: Quantidade de dias de UTI no mês.
+        data_type: string
+        quote: true
+      - name: marca_uti
+        description: Indica qual o tipo de UTI utilizada pelo paciente.
+        data_type: string
+        quote: true
+      - name: uti_int_in
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: uti_int_an
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: uti_int_al
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: uti_int_to
+        description: Quantidade de diárias em unidade intermediaria.
+        data_type: string
+        quote: true
+      - name: diar_acom
+        description: Quantidade de diárias de acompanhante.
+        data_type: string
+        quote: true
+      - name: qt_diarias
+        description: Quantidade de diárias.
+        data_type: string
+        quote: true
+      - name: proc_solic
+        description: Procedimento solicitado.
+        data_type: string
+        quote: true
+      - name: proc_rea
+        description: Procedimento realizado.
+        data_type: string
+        quote: true
+      - name: val_sh
+        description: Valor de serviços hospitalares.
+        data_type: string
+        quote: true
+      - name: val_sp
+        description: Valor de serviços profissionais.
+        data_type: string
+        quote: true
+      - name: val_sadt
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_rn
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_acomp
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_ortp
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_sangue
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_sadtsr
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_transp
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_obsang
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_ped1ac
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: val_tot
+        description: Valor total da AIH.
+        data_type: string
+        quote: true
+      - name: val_uti
+        description: Valor de UTI.
+        data_type: string
+        quote: true
+      - name: us_tot
+        description: Valor total, em dólar
+        data_type: string
+        quote: true
+      - name: dt_inter
+        description: Data de internação no formato aaammdd
+        data_type: date
+        quote: true
+      - name: dt_saida
+        description: Data de saída, no formato aaaammdd.
+        data_type: date
+        quote: true
+      - name: diag_princ
+        description: Código do diagnóstico principal (CID10).
+        data_type: string
+        quote: true
+      - name: diag_secun
+        description: Código do diagnostico secundário (CID10). Preenchido com zeros a
+          partir de 201501.
+        data_type: string
+        quote: true
+      - name: cobranca
+        description: Motivo de Saída/Permanência.
+        data_type: string
+        quote: true
+      - name: natureza
+        description: Natureza jurídica do hospital (com conteúdo até maio/12). Era
+          utilizada a classificação de Regime e Natureza.
+        data_type: string
+        quote: true
+      - name: nat_jur
+        description: Natureza jurídica do Estabelecimento, conforme a Comissão Nacional
+          de Classificação - CONCLA
+        data_type: string
+        quote: true
+      - name: gestao
+        description: Indica o tipo de gestão do hospital.
+        data_type: string
+        quote: true
+      - name: rubrica
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: ind_vdrl
+        description: Indica exame VDRL.
+        data_type: string
+        quote: true
+      - name: munic_mov
+        description: Município do Estabelecimento.
+        data_type: string
+        quote: true
+      - name: cod_idade
+        description: Unidade de medida da idade.
+        data_type: string
+        quote: true
+      - name: idade
+        description: Idade.
+        data_type: string
+        quote: true
+      - name: dias_perm
+        description: Dias de Permanência.
+        data_type: string
+        quote: true
+      - name: morte
+        description: Indica Óbito.
+        data_type: string
+        quote: true
+      - name: nacional
+        description: Código da nacionalidade do paciente.
+        data_type: string
+        quote: true
+      - name: num_proc
+        description: Zerado.
+        data_type: string
+        quote: true
+      - name: car_int
+        description: Caráter da internação.
+        data_type: string
+        quote: true
+      - name: tot_pt_sp
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: cpf_aut
+        description: Zerado
+        data_type: string
+        quote: true
+      - name: homonimo
+        description: Indicador se o paciente da AIH é homônimo do paciente de outra AIH.
+        data_type: string
+        quote: true
+      - name: num_filhos
+        description: Número de filhos do paciente.
+        data_type: string
+        quote: true
+      - name: instru
+        description: Grau de instrução do paciente.
+        data_type: string
+        quote: true
+      - name: cid_notif
+        description: CID de Notificação
+        data_type: string
+        quote: true
+      - name: contracep1
+        description: Tipo de contraceptivo utilizado.
+        data_type: string
+        quote: true
+      - name: contracep2
+        description: Segundo tipo de contraceptivo utilizado.
+        data_type: string
+        quote: true
+      - name: gestrisco
+        description: Indicador se é gestante de risco.
+        data_type: string
+        quote: true
+      - name: insc_pn
+        description: Número da gestante no pré-natal.
+        data_type: string
+        quote: true
+      - name: seq_aih5
+        description: Sequencial de longa permanência (AIH tipo 5).
+        data_type: string
+        quote: true
+      - name: cbor
+        description: Ocupação do paciente, segundo a Classificação Brasileira de
+          Ocupações – CBO.
+        data_type: string
+        quote: true
+      - name: cnaer
+        description: Código de acidente de trabalho.
+        data_type: string
+        quote: true
+      - name: vincprev
+        description: Vínculo com a Previdência.
+        data_type: string
+        quote: true
+      - name: gestor_cod
+        description: Motivo de autorização da AIH pelo Gestor.
+        data_type: string
+        quote: true
+      - name: gestor_tp
+        description: Tipo de gestor.
+        data_type: string
+        quote: true
+      - name: gestor_cpf
+        description: Número do CPF do Gestor.
+        data_type: string
+        quote: true
+      - name: gestor_dt
+        description: Data da autorização dada pelo Gestor (aaaammdd).
+        data_type: string
+        quote: true
+      - name: cnes
+        description: Código CNES do hospital.
+        data_type: string
+        quote: true
+      - name: cnpj_mant
+        description: CNPJ da mantenedora.
+        data_type: string
+        quote: true
+      - name: infehosp
+        description: Status de infecção hospitalar.
+        data_type: string
+        quote: true
+      - name: cid_asso
+        description: CID causa.
+        data_type: string
+        quote: true
+      - name: cid_morte
+        description: CID da morte.
+        data_type: string
+        quote: true
+      - name: complex
+        description: Complexidade.
+        data_type: string
+        quote: true
+      - name: financ
+        description: Tipo de financiamento.
+        data_type: string
+        quote: true
+      - name: faec_tp
+        description: Subtipo de financiamento FAEC.
+        data_type: string
+        quote: true
+      - name: regct
+        description: Regra contratual.
+        data_type: string
+        quote: true
+      - name: raca_cor
+        description: Raça/Cor do paciente.
+        data_type: string
+        quote: true
+      - name: etnia
+        description: Etnia do paciente, se raça cor for indígena.
+        data_type: string
+        quote: true
+      - name: sequencia
+        description: Sequencial da AIH na remessa.
+        data_type: string
+        quote: true
+      - name: remessa
+        description: Número da remessa.
+        data_type: string
+        quote: true
+      - name: aud_just
+        description: Justificativa do auditor para aceitação da AIH sem o número do
+          Cartão Nacional de Saúde.
+        data_type: string
+        quote: true
+      - name: sis_just
+        description: Justificativa do estabelecimento para aceitação da AIH sem o número
+          do Cartão Nacional de Saúde.
+        data_type: string
+        quote: true
+      - name: val_sh_fed
+        description: Valor do complemento federal de serviços hospitalares. Está
+          incluído no valor total da AIH.
+        data_type: string
+        quote: true
+      - name: val_sp_fed
+        description: Valor do complemento federal de serviços profissionais. Está
+          incluído no valor total da AIH.
+        data_type: string
+        quote: true
+      - name: val_sh_ges
+        description: Valor do complemento do gestor (estadual ou municipal) de serviços
+          hospitalares. Está incluído no valor total da AIH.
+        data_type: string
+        quote: true
+      - name: val_sp_ges
+        description: Valor do complemento do gestor (estadual ou municipal) de serviços
+          profissionais. Está incluído no valor total da AIH.
+        data_type: string
+        quote: true
+      - name: val_uci
+        description: Valor de UCI.
+        data_type: string
+        quote: true
+      - name: marca_uci
+        description: Tipo de UCI utilizada pelo paciente.
+        data_type: string
+        quote: true
+      - name: diagsec1
+        description: Diagnóstico secundário 1
+        data_type: string
+        quote: true
+      - name: diagsec2
+        description: Diagnóstico secundário 2
+        data_type: string
+        quote: true
+      - name: diagsec3
+        description: Diagnóstico secundário 3
+        data_type: string
+        quote: true
+      - name: diagsec4
+        description: Diagnóstico secundário 4
+        data_type: string
+        quote: true
+      - name: diagsec5
+        description: Diagnóstico secundário 5
+        data_type: string
+        quote: true
+      - name: diagsec6
+        description: Diagnóstico secundário 6
+        data_type: string
+        quote: true
+      - name: diagsec7
+        description: Diagnóstico secundário 7
+        data_type: string
+        quote: true
+      - name: diagsec8
+        description: Diagnóstico secundário 8
+        data_type: string
+        quote: true
+      - name: diagsec9
+        description: Diagnóstico secundário 9
+        data_type: string
+        quote: true
+      - name: tpdisec1
+        description: Tipo de diagnóstico secundário 1
+        data_type: string
+        quote: true
+      - name: tpdisec2
+        description: Tipo de diagnóstico secundário 2
+        data_type: string
+        quote: true
+      - name: tpdisec3
+        description: Tipo de diagnóstico secundário 3
+        data_type: string
+        quote: true
+      - name: tpdisec4
+        description: Tipo de diagnóstico secundário 4
+        data_type: string
+        quote: true
+      - name: tpdisec5
+        description: Tipo de diagnóstico secundário 5
+        data_type: string
+        quote: true
+      - name: tpdisec6
+        description: Tipo de diagnóstico secundário 6
+        data_type: string
+        quote: true
+      - name: tpdisec7
+        description: Tipo de diagnóstico secundário 7
+        data_type: string
+        quote: true
+      - name: tpdisec8
+        description: Tipo de diagnóstico secundário 8
+        data_type: string
+        quote: true
+      - name: tpdisec9
+        description: Tipo de diagnóstico secundário 8
+        data_type: string
+        quote: true
+      - name: data_carga
+        description: Date de carregamento dos dados para o Data Lake.
+        data_type: string
+        quote: true
+      - name: ano_particao
+        description: Ano de competência do dado.
+        data_type: string
+        quote: true
+      - name: mes_particao
+        description: Mês de comepetência do dado.
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Data de competência do dado. Representado no formato YYYY-MM-01
+        data_type: string
+        quote: true
+    description: Relação de todos os atendimentos provenientes de internações
+      hospitalares que foram financiados pelo SUS.
