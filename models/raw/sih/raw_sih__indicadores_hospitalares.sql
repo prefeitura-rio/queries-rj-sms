@@ -106,7 +106,7 @@ with
             val_sp_fed,
             val_sh_ges,
             val_sp_ges,
-            -- val_uci,
+            "" as val_uci,
             marca_uci,
             diagsec1,
             diagsec2,
