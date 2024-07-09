@@ -1,0 +1,88 @@
+{{
+    config(
+        alias="solicitacoes",
+        schema="hackathon_sisreg",
+        materialized="table",
+    )
+}}
+
+
+with
+    source as (select * from {{ source("hackathon_sisreg_staging", "solicitacoes") }}),
+    casted as (
+        select
+            codigo_solicitacao,
+            lpad(cast(codigo_unidade_solicitante as string), 7, "0") as codigo_unidade_solicitante,
+            nome_unidade_solicitante,
+            lpad(cast(codigo_central_solicitante as string), 7, "0") as codigo_central_solicitante,
+            nome_central_solicitante,
+            lpad(cast(cpf_usuario as string), 11, "0") as cpf_usuario,
+            no_usuario,
+            cast(dt_nascimento_usuario as string) as dt_nascimento_usuario,
+            sexo_usuario,
+            no_mae_usuario,
+            cns_usuario,
+            uf_municipio_nascimento,
+            nome_municipio_nascimento,
+            uf_paciente_residencia,
+            municipio_paciente_residencia,
+            bairro_paciente_residencia,
+            tipo_logradouro_paciente_residencia,
+            endereco_paciente_residencia,
+            numero_paciente_residencia,
+            complemento_paciente_residencia,
+            cep_paciente_residencia,
+            telefone,
+            data_solicitacao,
+            nome_operador_solicitante,
+            cid_solicitacao,
+            codigo_cid_solicitado,
+            codigo_uf_solicitante,
+            nome_cnes_central_solicitante,
+            codigo_cnes_central_solicitante,
+            lpad(cast(cpf_profissional_solicitante as string), 11, "0") as cpf_profissional_solicitante,
+            nome_medico_solicitante,
+            crm_medico_solicitante,
+            sigla_uf_solicitante,
+            codigo_grupo_procedimento,
+            nome_grupo_procedimento,
+            codigo_procedimento,
+            nome_procedimento,
+            codigo_tipo_vaga_solicitada,
+            codigo_sigtap,
+            descricao_sigtap,
+            codigo_unidade_desejada,
+            nome_unidade_desejada,
+            justificativa_inicial,
+            justificativa_final,
+            safe_cast(dt_justificativa_final as date) as dt_justificativa_final,
+            situacao_justificativa,
+            tipo_descricao_final,
+            operador_final,
+            nome_cnes_operador_final,
+            lpad(cast(codigo_cnes_operador_final as string), 7, "0") as codigo_cnes_operador_final,
+            tipo_perfil_final,
+            risco,
+            status_solicitacao,
+            sigla_situacao,
+            safe_cast(data_cancelamento as date) as data_cancelamento,
+            nome_operador_cancelamento,
+            nome_perfil_cancelamento,
+            codigo_perfil_cancelamento,
+            lpad(cast(codigo_central_reguladora as string), 7, "0") as codigo_central_reguladora,
+            nome_central_reguladora,
+            st_visualizado_regulador,
+            codigo_tipo_fila,
+            codigo_tipo_regulacao
+            codigo_uf_regulador,
+            sigla_uf_regulador,
+            --- type,
+            safe_cast(data_desejada as date) as data_desejada,
+            nome_operador_videofonista,
+            data_atualizacao,
+
+        from source
+    )
+
+select *
+from casted

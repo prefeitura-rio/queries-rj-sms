@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: hackathon_sisreg_staging
+    database: rj-sms
+    schema: hackathon_sisreg_staging
+    tables:
+      - name: solicitacoes
+      - name: solicitacoes_justificativas

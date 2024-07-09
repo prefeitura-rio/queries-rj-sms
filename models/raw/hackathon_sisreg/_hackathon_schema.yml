@@ -1,0 +1,316 @@
+models:
+  - name: raw_hackathon_sisreg__solicitacoes
+    description: Tabela contendo os metadados das solicitações de regulação no sisreg
+    columns:
+      - name: codigo_solicitacao
+        description: Identificador da solicitação
+        data_type: STRING
+      - name: codigo_unidade_solicitante
+        description: Código da unidade de saúde que solicitou a vaga no SISREG
+        data_type: STRING
+      - name: nome_unidade_solicitante
+        description: Nome da unidade de saúde que solicitou a vaga no SISREG
+        data_type: STRING
+      - name: codigo_central_solicitante
+        description: "-"
+        data_type: STRING
+      - name: nome_central_solicitante
+        description: "-"
+        data_type: STRING
+      - name: cpf_usuario
+        description: CPF do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: no_usuario
+        description: Nome do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: dt_nascimento_usuario
+        description: Data de nascimento do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_DTNASCIMENTO") }}'
+      - name: sexo_usuario
+        description: Sexo do usuário para o qual a solicitação é feita
+        data_type: STRING
+      - name: no_mae_usuario
+        description: Nome da mãe do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME_MAE") }}'
+      - name: cns_usuario
+        description: Código do Cartão Nacioanl de Saúde do usuário para o qual a
+          solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: uf_municipio_nascimento
+        description: UF do nascimento do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: nome_municipio_nascimento
+        description: Município do nascimento do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: uf_paciente_residencia
+        description: UF da residência do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: municipio_paciente_residencia
+        description: Municipio da residência do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: bairro_paciente_residencia
+        description: Bairro da residência do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: tipo_logradouro_paciente_residencia
+        description: Tipo de logradouro da residência do usuário para o qual a
+          solicitação é feita
+        data_type: STRING
+      - name: endereco_paciente_residencia
+        description: Endereço da residência do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: numero_paciente_residencia
+        description: Número da residência do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: complemento_paciente_residencia
+        description: Complemento da residência do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: cep_paciente_residencia
+        description: CEP do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: telefone
+        description: Telefone de contato do usuário para o qual a solicitação é feita
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_TELEFONE") }}'
+      - name: data_solicitacao
+        description: Data da solicitação
+        data_type: STRING
+      - name: nome_operador_solicitante
+        description: Nome da pessoa que realizou a solicitação no sistema
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: cid_solicitacao
+        description: Descrição do  do agravo (CID 10)
+        data_type: STRING
+      - name: codigo_cid_solicitado
+        description: Código do agravo (CID 10)
+        data_type: STRING
+      - name: codigo_uf_solicitante
+        description: Códifo da UF onde se localiza o solicitante do pedido
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: nome_cnes_central_solicitante
+        description: Nome da central de regulação onde a solicitação foi feita
+        data_type: STRING
+      - name: codigo_cnes_central_solicitante
+        description: Identificador da central de regulação onde a solicitação foi feita
+        data_type: STRING
+      - name: cpf_profissional_solicitante
+        description: CPF do profissional que realizou a solicitação
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: nome_medico_solicitante
+        description: Nome do médico que fez a solicitação
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: crm_medico_solicitante
+        description: Número do Conselho Regional de Medicina do médico solicitante
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
+      - name: sigla_uf_solicitante
+        description: Códifo da UF do solicitante do pedido
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: codigo_grupo_procedimento
+        description: Código que identifica o procedimento no SISREG
+        data_type: STRING
+      - name: nome_grupo_procedimento
+        description: Nome que identifica o grupo do procedimento no SISREG
+        data_type: STRING
+      - name: codigo_procedimento
+        description: Código que identifica o procedimento no SISREG
+        data_type: STRING
+      - name: nome_procedimento
+        description: Nome do procedimento solicitado
+        data_type: STRING
+      - name: codigo_tipo_vaga_solicitada
+        description: Código que identifica o tipo de vaga solicitada (1ª vez, Reserva ou
+          Retorno)
+        data_type: STRING
+      - name: codigo_sigtap
+        description: Código do procedimento solicitado no SIGTAP (Sistema de
+          Gerenciamento da Tabela de Prodecimentos, Medicamentos e OPM do SUS)
+        data_type: STRING
+      - name: descricao_sigtap
+        description: Descrição do procedimento solicitado no SIGTAP (Sistema de
+          Gerenciamento da Tabela de Prodecimentos, Medicamentos e OPM do SUS)
+        data_type: STRING
+      - name: codigo_unidade_desejada
+        description: Código CNES da unidade de saúde desejada indicada pelo usuário SUS
+          no momento do atendimento
+        data_type: STRING
+      - name: nome_unidade_desejada
+        description: Nome da unidade de saúde desejada indicada pelo usuário SUS no
+          momento do atendimento
+        data_type: STRING
+      - name: justificativa_inicial
+        description: Primeiro texto justificando a solicitaçõa
+        data_type: STRING
+      - name: justificativa_final
+        description: Texto mais recente (última) justificando a solicitação
+        data_type: STRING
+      - name: dt_justificativa_final
+        description: Data da última justificativa
+        data_type: DATE
+      - name: situacao_justificativa
+        description: Situação da justificativa
+        data_type: STRING
+      - name: tipo_descricao_final
+        description: ""
+        data_type: STRING
+      - name: operador_final
+        description: ""
+        data_type: STRING
+      - name: nome_cnes_operador_final
+        description: ""
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: codigo_cnes_operador_final
+        description: ""
+        data_type: STRING
+      - name: tipo_perfil_final
+        description: ""
+        data_type: STRING
+      - name: risco
+        description: "Definição da priorização clínica por um sistema de cores:
+          VERMELHO, AMARELO, VERDE OU AZUL"
+        data_type: STRING
+      - name: status_solicitacao
+        description: Status da solição
+        data_type: STRING
+      - name: sigla_situacao
+        description: "Sigla que identifica o status da solicitação (A: Autorizada; C:
+          Cancelada; D: Devolvida; N: Negada; P: Pendente; R: Reenviada)"
+        data_type: STRING
+      - name: data_cancelamento
+        description: Data do cancelamento da solicitação, em caso de status da
+          solicitação cancelada
+        data_type: DATE
+      - name: nome_operador_cancelamento
+        description: Nome do usuário que pediu o cancelamento da solicitação
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: nome_perfil_cancelamento
+        description: "-"
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: codigo_perfil_cancelamento
+        description: ""
+        data_type: STRING
+      - name: codigo_central_reguladora
+        description: "-"
+        data_type: STRING
+      - name: nome_central_reguladora
+        description: "-"
+        data_type: STRING
+      - name: st_visualizado_regulador
+        description: Indica se foi visualizada a solicitação pelo médico regulador
+        data_type: STRING
+      - name: codigo_tipo_fila
+        description: "-"
+        data_type: STRING
+      - name: codigo_uf_regulador
+        description: Identificador da UF do médico regulador da solicitação
+        data_type: STRING
+      - name: sigla_uf_regulador
+        description: Nome da UF do médico regulador da solicitação
+        data_type: STRING
+      - name: data_desejada
+        description: Data preferencial para agendamento indicada pelo usuário SUS no
+          momento do atendimento
+        data_type: DATE
+      - name: nome_operador_videofonista
+        description: "-"
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: data_atualizacao
+        description: Última data de atualização da solicitação
+        data_type: STRING
+  - name: raw_hackathon_sisreg__solicitacoes_justificativas
+    description: Tabela contendo contendo a conversa entre solicitante e regulador
+      sobre um pedido de regulação no sisreg
+    columns:
+      - name: codigo_solicitacao
+        description: Código de identificação da solicitação
+        data_type: STRING
+      - name: num_justificativa
+        description: Ranking do texto de justificativa ordenado pela da data mais
+          antiga. Ex. primeira justiticativa = 1
+        data_type: STRING
+      - name: justificativa
+        description: Texto da justificativa
+        data_type: STRING
+      - name: dt_justificativa
+        description: Data da justificativa
+        data_type: DATE
+      - name: situacao_justificativa
+        description: Situação da solicitação no momento anterior à justificativa
+        data_type: STRING
+      - name: tipo_descricao
+        description: Tipo de justificativa (Observação ou Justificativa)
+        data_type: STRING
+      - name: operador
+        description: Identificador do usuário que realizou a justificativa
+        data_type: STRING
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: nome_cnes_operador
+        description: Nome da unidade de saúde onde o usuário que realizou a
+          justificativa está localizado
+        data_type: STRING
+      - name: codigo_cnes_operador
+        description: Identificador da unidade de saúde onde o usuário que realizou a
+          justificativa está localizado
+        data_type: STRING
+      - name: tipo_perfil
+        description: Indica se usuário quem registrou a justificativa é o solicitante ou
+          o médico regulador
+        data_type: STRING
+      - name: status_solicitacao
+        description: " Status da solicitação na data de extração dos dados"
+        data_type: STRING
+      - name: sigla_situacao
+        description: "Sigla do status da solicitação pós justificativa (A: Autorizada;
+          C: Cancelada; D: Devolvida; N: Negada; P: Pendente; R: Reenviada)"
+        data_type: STRING
+      - name: data_extracao
+        description: Data de extração dos dados
+        data_type: DATE
