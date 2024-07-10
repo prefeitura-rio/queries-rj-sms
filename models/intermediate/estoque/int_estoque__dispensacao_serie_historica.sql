@@ -30,7 +30,6 @@ with
         from {{ ref("fct_estoque_posicao") }}
         group by id_cnes, id_material, data_particao
     ),
-
     dispensacao_minima as (
         select id_material, consumo_minimo as dispensacao_minima
         from {{ ref("dim_material") }}
