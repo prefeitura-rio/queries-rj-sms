@@ -1,6 +1,7 @@
 {{
     config(
         alias="cbo_fam",
+        schema = "brutos_datasus"
     )
 }}
 

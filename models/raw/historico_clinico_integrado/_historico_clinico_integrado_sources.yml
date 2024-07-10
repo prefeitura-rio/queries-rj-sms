@@ -1,8 +1,11 @@
 version: 2
 
 sources:
-  - name: brutos_plataforma_smsrio
-    database: rj-sms-dev
-    schema: brutos_plataforma_smsrio
+  - name: brutos_historico_clinico_integrado_staging
+    database: rj-sms
+    schema: brutos_historico_clinico_integrado_staging
     tables:
-      - name: profissional_saude_cpf
+      - name: paciente
+      - name: paciente_cns
+      - name: paciente_endereco
+      - name: paciente_contato
