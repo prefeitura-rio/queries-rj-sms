@@ -1,5 +1,5 @@
 with
-    historico as (select * from {{ ref("int_estoque__dispensacao_serie_historica") }}),
+    historico as (select * from {{ ref("int_estoque__dispensacao_serie_historica") }}), -- #TODO: avaliar se é necessário filtrar por data
     historico_valido as (
         select
             *,

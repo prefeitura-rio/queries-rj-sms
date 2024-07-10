@@ -31,6 +31,8 @@ select
     hierarquia_n2_subcategoria,
     controlado_indicador,
     controlado_tipo,
+    consumo_minimo,
+    classificacao_xyz,
     remume_indicador,
     remume_listagem_relacao,
     remume_listagem_basico_indicador,
