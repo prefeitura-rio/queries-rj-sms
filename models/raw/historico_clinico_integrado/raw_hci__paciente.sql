@@ -1,4 +1,15 @@
-{{ config(alias="paciente", tags=["hci"]) }}
+{{
+    config(
+        alias="paciente",
+        materialized="incremental",
+        unique_key="id_paciente",
+        tags=["hci"],
+    )
+}}
+
+{% set seven_days_ago = (
+    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
+).isoformat() %}
 
 
 with
@@ -23,6 +34,13 @@ with
             timestamp(created_at) as created_at,
             timestamp(updated_at) as updated_at,
         from source
+        {% if is_incremental() %}
+        where
+            (
+                cast(timestamp(updated_at) as date) > '{{seven_days_ago}}'
+            )
+        {% endif %}
     )
+
 select *
 from renamed

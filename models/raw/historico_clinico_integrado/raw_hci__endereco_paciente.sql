@@ -1,5 +1,13 @@
-{{ config(alias="paciente_endereco", tags=["hci"]) }}
+{{ 
+    config(
+        alias="paciente_endereco", 
+        tags=["hci"],
+        materialized="incremental",
+        ) }}
 
+{% set seven_days_ago = (
+    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
+).isoformat() %}
 
 with
     source as (
@@ -23,6 +31,12 @@ with
             safe_cast(period_start as date) as periodo_inicio,
             safe_cast(period_end as date) as periodo_fim,
         from source
+        {% if is_incremental() %}
+        where
+            (
+                cast(timestamp(updated_at) as date) > '{{seven_days_ago}}'
+            )
+        {% endif %}
     )
 select *
 from renamed
