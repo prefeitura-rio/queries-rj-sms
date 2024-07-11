@@ -51,12 +51,12 @@ with
                         "DISPENSAÇÃO DE RECEITA EXTERNA",
                         "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR",
                         "REFORÇO",
-                        "REFORÇO ISOLADO",  -- #TODO: entender se o estoque pode fazer o sentido contrário, voltando para o estoque central
+                        "REFORÇO ISOLADO",  -- #TODO: refinar o sinal do Reforço e Reforço Isolado dependendo da origem/destino da transferência
                         "REMOÇÃO DE LOTE",
                         "SUSPENSÃO DE LOTE"
                     )
                 then "Saida"
-                else "Desconhecido"  -- #TODO: entender o que fazer com Reforço e Reforço Isolado
+                else "Desconhecido" 
             end as estoque_movimento_entrada_saida,
             case
                 when estoque_movimento_tipo = "NOVO LOTE"
@@ -68,7 +68,7 @@ with
                         "DISPENSAÇÃO DE RECEITA EXTERNA",
                         "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR",
                         "ANULAÇÃO DE DISPENSAS",
-                        "REFORÇO",
+                        "REFORÇO",  -- transferencias para subestoques já são consideradas consumo
                         "REFORÇO ISOLADO"
                     )
                     or (
@@ -104,7 +104,7 @@ with
                     estoque_movimento_tipo
                     in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
                     and estoque_movimento_tipo in ("TRANSFERENCIA")
-                then "Transferencia"
+                then "Transferencia Externa"
                 else "Desconhecido"
             end as estoque_movimento_tipo_grupo,
         from source_vitacare
