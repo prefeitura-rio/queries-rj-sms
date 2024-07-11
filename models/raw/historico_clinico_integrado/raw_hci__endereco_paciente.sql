@@ -30,6 +30,7 @@ with
             safe_cast(city_id as string) as id_cidade,
             safe_cast(period_start as date) as periodo_inicio,
             safe_cast(period_end as date) as periodo_fim,
+            timestamp(updated_at) as updated_at,
         from source
         {% if is_incremental() %}
         where
