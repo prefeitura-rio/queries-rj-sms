@@ -11,6 +11,7 @@ with
                 partition by nome, id_codigo_sus, cns order by data_atualizacao desc
             ) as ordenacao
         from {{ ref("raw_cnes_web__dados_profissional_sus") }}
+        where cns != ""
     ),
     profissional_ftp as (
         select
@@ -37,6 +38,7 @@ with
                 or indicador_vinculo_contratado_sus = 1
                 or indicador_vinculo_autonomo_sus = 1
             )
+            and utils.clean_numeric_string(cartao_nacional_saude) != ""
     ),
     cbo as (select * from {{ ref("raw_datasus__cbo") }}),
     cbo_fam as (select * from {{ ref("raw_datasus__cbo_fam") }}),
