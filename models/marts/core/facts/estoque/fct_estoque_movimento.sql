@@ -86,24 +86,24 @@ with
                             "CORREÇÃO DE LOTE - AUMENTO",
                             "CORREÇÃO DE LOTE - DIMINUIÇÃO"
                         )
-                        and estoque_movimento_tipo in ("CORRECAO", "OUTRO")
+                        and estoque_movimento_correcao_tipo in ("CORRECAO", "OUTRO")
                     )
                 then "Correcao de Estoque / Outro"
                 when
                     estoque_movimento_tipo
                     in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
-                    and estoque_movimento_tipo in ("AVARIA", "VALIDADE_EXPIRADA")
+                    and estoque_movimento_correcao_tipo in ("AVARIA", "VALIDADE_EXPIRADA")
                 then "Avaria / Vencimento"
                 when
                     estoque_movimento_tipo
                     in ("SUSPENSÃO DE LOTE", "RECUPERAÇÃO DE LOTE")
                 then "Bloqueio/Desbloqueio de Lote"
-                when estoque_movimento_tipo in ("DEVOLUÇÃO ISOLADA")
+                when estoque_movimento_correcao_tipo in ("DEVOLUÇÃO ISOLADA")
                 then "Devolucao"
                 when
                     estoque_movimento_tipo
                     in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
-                    and estoque_movimento_tipo in ("TRANSFERENCIA")
+                    and estoque_movimento_correcao_tipo in ("TRANSFERENCIA")
                 then "Transferencia Externa"
                 else "Desconhecido"
             end as estoque_movimento_tipo_grupo,
