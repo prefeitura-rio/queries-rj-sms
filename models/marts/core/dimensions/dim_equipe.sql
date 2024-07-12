@@ -6,11 +6,17 @@
     )
 }}
 with
+    cbo as (
+        select * from {{ ref("raw_datasus__cbo") }}
+    ),
+    profissionais_mestre as (
+        select * from {{ ref("dim_profissional_saude") }} 
+    ),
     profissionais_enriquecido as (
         select
             id_unidade as id_unidade_saude,
             equipe_sequencial,
-            id_profissional_sus,
+            equipe_p.id_profissional_sus,
             equipe_p.data_particao as ultima_atualizacao_profissionais,
             case
                 when upper(descricao) like "MEDIC%"
@@ -46,7 +52,8 @@ with
                 order by equipe_p.data_particao desc
             ) as ordenacao
         from {{ ref("raw_cnes_web__equipe_profissionais") }} as equipe_p
-        left join {{ ref("raw_datasus__cbo") }} as cbo on cbo.id_cbo = equipe_p.id_cbo
+        inner join profissionais_mestre on profissionais_mestre.id_profissional_sus = equipe_p.id_profissional_sus 
+        left join cbo on cbo.id_cbo = equipe_p.id_cbo
         where id_municipio = '330455'
 
     ),
