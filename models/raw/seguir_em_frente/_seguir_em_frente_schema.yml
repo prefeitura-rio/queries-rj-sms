@@ -149,12 +149,116 @@ models:
           organização de dados.
         data_type: date
         quote: true
-    description: Contém dados relacionados aos participantes do programa 'Seguir em
-      Frente'.  Ele inclui informações pessoais, como ID, CPF, nome e data de
-      nascimento do participante. Também contém informações sobre o
-      estabelecimento de saúde mental do participante, a URL do RG e do termo de
-      compromisso, e detalhes sobre a conta bancária do Santander. O modelo
-      também acompanha a fase atual do participante no programa, as datas de
-      início e os estabelecimentos das fases 1 e 2, e o monitor da fase 1.
-      Campos adicionais incluem observações, data e criador do registro, e dados
-      de particionamento.
+  - name: raw_seguir_em_frente__controle_presenca
+    description: Contém informações sobre o controle de presença do programa 'Seguir em Frente'. 
+      Inclui identificadores únicos, identificadores pessoais (CPF), observações, anexos, 
+      tipo de período cadastrado, dia cadastrado do período, semana cadastrada do período, 
+      registros diários, registros para cada dia da semana (segunda a sexta-feira), o 
+      criador do registro e a data de criação. Também inclui informações de particionamento, 
+      como o ano, mês e data da partição. Este modelo é particularmente útil para rastrear a 
+      presença e participação no programa, bem como para entender a distribuição da 
+      participação ao longo de diferentes períodos.
+    columns:
+      - name: id
+        description: Este é um identificador único para cada registro. É 
+          um valor string que é gerado automaticamente quando um novo registro é criado.
+        data_type: string
+        quote: true
+      - name: id_nome_cpf
+        description: Este é um valor string que representa a combinação do nome 
+          e CPF (Cadastro de Pessoas Físicas) do indivíduo. O CPF é um identificador 
+          único para cidadãos brasileiros. O 'id_nome_cpf' é formatado como 'nome_cpf'.
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cpf
+        description: Este é o CPF (Cadastro de Pessoas Físicas) do indivíduo. 
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: observacoes
+        description: Este campo contém quaisquer notas ou observações adicionais 
+          relacionadas ao controle de presença do indivíduo. É um campo de texto 
+          livre e pode conter qualquer tipo de informação considerada relevante pelo criador.
+        data_type: string
+        quote: true
+      - name: anexos
+        description: Este campo é usado para armazenar a URL de quaisquer anexos relacionados 
+          ao controle de presença do indivíduo. Pode ser qualquer documento ou 
+          arquivo que forneça contexto adicional ou evidência para o controle de presença.
+        data_type: string
+        quote: true
+      - name: periodo_cadastrado_tipo
+        description: Este campo indica o tipo de período para o qual o indivíduo registrou 
+          a presença. Pode ser um dia ou semana.
+        data_type: string
+        quote: true
+      - name: periodo_cadastrado_dia
+        description: Esta coluna representa o dia específico para o qual o usuário 
+          registrou a presença quando o 'periodo_cadastrado_tipo' é 'dia'.
+        data_type: string
+        quote: true
+      - name: periodo_cadastrado_semana
+        description: Esta coluna representa a semana para a qual o usuário 
+          registrou a presença quando o 'periodo_cadastrado_tipo' é 'semana'.
+        data_type: string
+        quote: true
+      - name: registro_dia
+        description: Esta coluna representa o registro de presença para o indivíduo. 
+          Ela é preenchida quando o período_cadastrado_tipo é 'dia'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'. 
+        data_type: string
+        quote: true
+      - name: registro_segunda_feira
+        description: Esta coluna representa o registro de presença para segunda-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: registro_terca_feira
+        description: Esta coluna representa o registro de presença para terça-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: registro_quarta_feira
+        description: Esta coluna representa o registro de presença para quarta-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: registro_quinta_feira
+        description: Esta coluna representa o registro de presença para quinta-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: registro_sexta_feira
+        description: Esta coluna representa o registro de presença para sexta-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: criado_por
+        description: Este campo indica o criador do registro. 
+          Fornece informações sobre quem criou a entrada no banco de dados.
+        data_type: string
+        quote: true
+      - name: criado_em
+        description: Esta coluna representa a data e hora em que o registro foi criado. 
+        data_type: datetime
+        quote: true
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. 
+        data_type: string
+        quote: true
+      - name: mes_particao
+        description: Esta coluna representa o mês da partição. 
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Esta coluna representa a data da partição. 
+        data_type: date
+        quote: true
