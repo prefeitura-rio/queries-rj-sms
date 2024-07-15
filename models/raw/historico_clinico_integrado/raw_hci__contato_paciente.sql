@@ -1,8 +1,10 @@
-{{ 
-    config(alias="paciente_contato", 
-    tags=["hci"],
-    materialized="incremental"
-) 
+{{
+    config(
+        alias="paciente_contato",
+        materialized="incremental",
+        unique_key="id",
+        tags=["hci"],
+    )
 }}
 
 {% set seven_days_ago = (
@@ -29,14 +31,16 @@ with
             safe_cast(rank as int) as rank,
             safe_cast(period_start as date) as periodo_inicio,
             safe_cast(period_end as date) as periodo_fim,
-            timestamp(updated_at) as updated_at,
+            timestamp(created_at) as created_at,
+            (
+                row_number() over (partition by id order by created_at desc)
+                = 1
+            ) as is_latest
         from source
         {% if is_incremental() %}
-        where
-            (
-                cast(timestamp(updated_at) as date) > '{{seven_days_ago}}'
-            )
+            where (cast(timestamp(created_at) as date) > '{{seven_days_ago}}')
         {% endif %}
     )
 select *
 from renamed
+where is_latest = true

@@ -33,14 +33,16 @@ with
             safe_cast(nationality_id as int) as id_nacionalidade,
             timestamp(created_at) as created_at,
             timestamp(updated_at) as updated_at,
+            (
+                row_number() over (partition by patient_code order by updated_at desc)
+                = 1
+            ) as is_latest
         from source
         {% if is_incremental() %}
-        where
-            (
-                cast(timestamp(updated_at) as date) > '{{seven_days_ago}}'
-            )
+            where (cast(timestamp(updated_at) as date) > '{{seven_days_ago}}')
         {% endif %}
     )
 
 select *
 from renamed
+where is_latest = true
