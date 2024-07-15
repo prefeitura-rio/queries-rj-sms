@@ -29,7 +29,7 @@ models:
           usado para vincular o indivíduo a um PCSM específico.
         data_type: string
         quote: true
-      - name: name
+      - name: nome
         description: Esta coluna representa o nome do indivíduo associado ao registro. É
           armazenado como uma string e é convertido para maiúsculas para
           consistência.

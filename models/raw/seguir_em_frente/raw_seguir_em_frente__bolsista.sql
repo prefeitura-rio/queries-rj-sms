@@ -51,7 +51,7 @@ select
     id_pcsm,
 
     -- common fields
-    upper(nome) as name,
+    upper(nome) as nome,
     safe_cast(data_nascimento as date) as data_nascimento,
     saude_mental_estabelecimento,
     rg_url,
