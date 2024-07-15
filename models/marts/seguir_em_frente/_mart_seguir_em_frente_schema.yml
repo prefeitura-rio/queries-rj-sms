@@ -131,3 +131,77 @@ models:
         description: Esta coluna indica o nome do usuário que criou o registro.
         data_type: string
         quote: true
+  - name: mart_seguir_em_frente__controle_presenca
+    description: A table é uma visão orientada para negócios dos dados de controle 
+      de presença do projeto 'Seguir em Frente'
+    columns:
+      - name: cpf
+        description: Este é o identificador único de cada indivíduo no programa 'Seguir
+          em Frente'. É um campo de texto que representa o CPF (Cadastro de
+          Pessoas Físicas) do indivíduo, que é um documento de identificação de
+          registro de contribuinte no Brasil.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+        quote: true
+      - name: nome
+        description: Este é o nome do indivíduo no programa 'Seguir em Frente'.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+        data_type: string
+        quote: true
+      - name: fase_atual
+        description: Esta é a fase atual do indivíduo no programa 'Seguir em Frente'.
+        data_type: string
+        quote: true
+      - name: estabelecimento
+        description: Esta coluna representa o estabelecimento onde o indivíduo está
+          matriculado atualmente. O valor é determinado com base na fase atual
+          do indivíduo. 
+        data_type: string
+        quote: true
+      - name: observacoes
+        description: Esta coluna contém quaisquer notas ou observações adicionais feitas
+          sobre a presença do indivíduo. Isso pode incluir detalhes sobre sua
+          presença, comportamento ou qualquer outra informação relevante.
+        data_type: string
+        quote: true
+      - name: anexos
+        description: Esta coluna contém quaisquer anexos ou documentos adicionais
+          relacionados à presença do indivíduo.
+        data_type: string
+        quote: true
+      - name: criado_por
+        description: Esta coluna representa o usuário que criou o registro. É um campo
+          de texto que contém o nome de usuário da pessoa que inseriu os dados
+          no sistema.
+        data_type: string
+        quote: true
+      - name: criado_em
+        description: Esta coluna representa a data e hora em que o registro foi criado.
+          É um campo de data e hora que captura o momento exato em que os dados
+          foram inseridos no sistema.
+        data_type: datetime
+        quote: true
+      - name: registro_data
+        description: Esta coluna representa a data ao qual se refere o registro de presença.
+        data_type: date
+        quote: true
+      - name: registro_data_competencia
+        description: Esta coluna representa o mês (formato 'AAAA-MM') ao qual se refere registro no. É
+          derivada da coluna 'registro_data' e é usada para agrupar os registros
+          por mês e ano para fins de relatório.
+        data_type: string
+        quote: true
+      - name: registro_valor
+        description: "Esta coluna representa o status de presença do indivíduo. Pode ter
+          dois valores: 'falta', 'presenca' ou 'abono'."
+        data_type: string
+        quote: true
+      - name: registro_valor_numerico
+        description: "Esta coluna é uma representação numérica da coluna
+          'registro_valor'. É usada para facilitar a análise e geração de
+          relatórios dos dados. O valor '0' indica ausência (correspondente a
+          'falta' em 'registro_valor') e '1' indica presença ou abono."
+        data_type: int64
+        quote: true
