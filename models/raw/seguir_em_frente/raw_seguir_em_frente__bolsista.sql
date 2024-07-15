@@ -1,6 +1,6 @@
 {{
     config(
-        alias="bolsita",
+        alias="bolsista",
         materialized="table",
         unique_key="id",
     )
@@ -8,7 +8,7 @@
 
 with
     source as (
-        select * from {{ source("brutos_seguir_em_frente_staging", "bolsita") }}
+        select * from {{ source("brutos_seguir_em_frente_staging", "bolsista") }}
     ),
     renamed as (
         select
@@ -61,7 +61,7 @@ select
     ) as santander_conta_indicador,
     santander_agencia_numero,
     santander_conta_numero,
-    observacoes,
+    upper(observacoes) as observacoes,
     fase_atual,
     safe_cast(fase_1_data_inicio as date) as fase_1_data_inicio,
     fase_1_estabelecimento,

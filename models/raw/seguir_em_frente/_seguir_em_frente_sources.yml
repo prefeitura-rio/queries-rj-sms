@@ -5,7 +5,7 @@ sources:
     database: rj-sms
     schema: brutos_seguir_em_frente_staging
     tables:
-      - name: bolsita
+      - name: bolsista
         loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
         freshness:
           warn_after: {count: 24, period: hour}

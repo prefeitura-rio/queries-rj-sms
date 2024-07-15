@@ -1,5 +1,5 @@
 models:
-  - name: raw_seguir_em_frente__bolsita
+  - name: raw_seguir_em_frente__bolsista
     decription: Contém dados relacionados aos participantes do programa 'Seguir em
       Frente'. Ele inclui informações pessoais, como ID, CPF, nome e data de
       nascimento do participante. Também contém informações sobre o
@@ -11,9 +11,7 @@ models:
       de particionamento.
     columns:
       - name: id
-        description: Este é um identificador único para cada registro no modelo
-          'raw_seguir_em_frente__bolsita'. É do tipo string e é usado para
-          distinguir cada registro individualmente.
+        description: Este é um identificador único para cada registro. 
         data_type: string
         quote: true
       - name: cpf
