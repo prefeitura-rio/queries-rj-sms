@@ -32,12 +32,11 @@ Classifique o tipo de mudança com a qual você está trabalhando para ajudar o 
 Inclua quaisquer observações sobre coisas que precisam acontecer antes que este PR seja mergeado, por exemplo:
 -->
 Em caso de quebra de compatibilidade
-- [ ] Validar em dev o funcionamento correto dos produtos de dados afetados
+- [ ] Validar em dev o funcionamento correto dos reports, dashboard e modelos afetados
 
 ## DAG de Linhagem:
 <!---
-Inclua uma captura de tela da seção relevante do DAG atualizado. Você pode acessar
-sua versão do DAG executando `dbt docs generate && dbt docs serve`.
+Inclua uma captura de tela da seção relevante do DAG atualizado. 
 -->
 
 ## Validação dos modelos:
@@ -76,7 +75,8 @@ abordados e remova quaisquer itens que não sejam relevantes para este PR.
 - [ ] Meus commits estão relacionados ao pull request e parecem limpos.
 - [ ] Meu SQL segue o [guia de estilo da SMS-Rio](https://doc.clickup.com/9013004335/d/h/8ckf21f-1073/e8ed96d7bccb902/8ckf21f-14653).
 - [ ] `dbt build` completa com sucesso e os testes dbt passam (se não, detalhe por quê)
-- [ ] Materializei meus modelos apropriadamente.
+- [ ] Materializei meus modelos apropriadamente (tipo de materialização e no dataset correto).
 - [ ] Adicionei testes e documentação apropriados a quaisquer modelos novos.
 - [ ] Adicionei policy tags apropriadas a quaisquer modelos novos.
-- [ ] Atualizei o arquivo README.
+- [ ] Adicionei tags apropriadas a quaisquer modelos novos.
+- [ ] Atualizei o arquivo README (quando necessário).
