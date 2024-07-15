@@ -27,6 +27,7 @@ clean-targets: # directories to be removed by `dbt clean`
 vars:
   TAG_CPF: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7275937608331929015'
   TAG_CNS: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/8199751371890630153'
+  TAG_RG: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1359518576511941019'
   TAG_NOME: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2632983500029416584'
   TAG_TELEFONE: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/6197099915332240403'
   TAG_EMAIL: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/6775173897032728488'
@@ -45,6 +46,7 @@ vars:
   TAG_COREN: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1950446664324638402'
   TAG_MEDICAMENTO: 'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/3872480936078888207'
   TAG_IDENTIFICADOR: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/3220112556547044825'
+  TAG_DADOS_BANCARIOS: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7203052192415747676'
 
 
 
@@ -91,6 +93,9 @@ models:
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
         +tags: "vitai"
+      seguir_em_frente:
+        +schema: brutos_seguir_em_frente
+        +tags: "daily"
       sheets:
         +schema: brutos_sheets
         +tags: "daily"
@@ -119,6 +124,9 @@ models:
             +schema: projeto_estoque
             +tags: ["daily", "estoque"]
         gerenciamento:
+            +tags: "daily"
+        seguir_em_frente:
+            +schema: projeto_seguir_em_frente
             +tags: "daily"
 tests:
   rj_sms:
