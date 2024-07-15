@@ -1,0 +1,133 @@
+models:
+  - name: mart_seguir_em_frente__bolsista
+    decription: Contém dados relacionados aos participantes do programa 'Seguir em
+      Frente'. Ele inclui informações pessoais, como ID, CPF, nome e data de
+      nascimento do participante. Também contém informações sobre o
+      estabelecimento de saúde mental do participante, a URL do RG e do termo de
+      compromisso, e detalhes sobre a conta bancária do Santander. O modelo
+      também acompanha a fase atual do participante no programa, as datas de
+      início e os estabelecimentos das fases 1 e 2, e o monitor da fase 1.
+      Campos adicionais incluem observações, data e criador do registro, e dados
+      de particionamento.
+    columns:
+      - name: id
+        description: Este é um identificador único para cada registro no modelo
+          'raw_seguir_em_frente__bolsita'. É do tipo string e é usado para
+          distinguir cada registro individualmente.
+        data_type: string
+        quote: true
+      - name: cpf
+        description: Este é o número do CPF (Cadastro de Pessoas Físicas) do indivíduo.
+          É um identificador único atribuído aos cidadãos brasileiros e é usado
+          para fins fiscais. Neste modelo, ele é limpo e formatado como uma
+          string.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+        quote: true
+      - name: id_pcsm
+        description: Este é o identificador único para o PCSM (Prontuario de Carioca da
+          Saúde Mental) ao qual o indivíduo está associado. É do tipo string e é
+          usado para vincular o indivíduo a um PCSM específico.
+        data_type: string
+        quote: true
+      - name: name
+        description: Esta coluna representa o nome do indivíduo associado ao registro. É
+          armazenado como uma string e é convertido para maiúsculas para
+          consistência.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+        data_type: string
+        quote: true
+      - name: data_nascimento
+        description: Esta coluna representa a data de nascimento do indivíduo associado
+          ao registro. É armazenado como uma data no formato AAAA-MM-DD.
+        policy_tags:
+          - '{{ var("TAG_DTNASCIMENTO") }}'
+        data_type: date
+        quote: true
+      - name: saude_mental_estabelecimento
+        description: Esta coluna representa o estabelecimento de saúde mental ao qual o
+          indivíduo está associado.
+        data_type: string
+        quote: true
+      - name: rg_url
+        description: Esta coluna contém a URL da imagem do documento RG (Registro Geral)
+          do bolsita. O RG é um documento de identidade brasileiro.
+        policy_tags:
+          - '{{ var("TAG_RG") }}'
+        data_type: string
+        quote: true
+      - name: termo_de_compromisso_url
+        description: Esta coluna contém a URL do documento 'Termo de Compromisso'
+          assinado pelo bolsita. O 'Termo de Compromisso' é um acordo de
+          compromisso que o bolsita assina para participar do programa 'Seguir
+          em Frente'.
+        data_type: string
+        quote: true
+      - name: santander_conta_indicador
+        description: Esta coluna indica se o bolsita já possui uma conta corrente no
+          Santander. Os valores nesta coluna são 'sim' se o bolsita possui uma
+          conta e 'nao' se não possui.
+        data_type: string
+        quote: true
+      - name: santander_agencia_numero
+        description: Este campo representa o número da agência bancária do Santander
+          onde o participante possui uma conta.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_DADOS_BANCARIOS") }}'
+        quote: true
+      - name: santander_conta_numero
+        description: Este campo representa o número da conta do participante no banco
+          Santander.
+        policy_tags:
+          - '{{ var("TAG_DADOS_BANCARIOS") }}'
+        data_type: string
+        quote: true
+      - name: observacoes
+        description: Este campo contém quaisquer notas ou observações adicionais
+          relacionadas ao participante. É um campo do tipo string e pode incluir
+          qualquer informação relevante que não se encaixe nos outros campos.
+        data_type: string
+        quote: true
+      - name: fase_atual
+        description: Esta coluna representa a fase atual do programa 'Seguir em Frente'
+          na qual o participante está envolvido.
+        data_type: string
+        quote: true
+      - name: fase_1_data_inicio
+        description: Esta coluna indica a data de início da primeira fase do programa
+          'Seguir em Frente' para o participante. Ajuda a acompanhar a linha do
+          tempo da jornada do participante no programa.
+        data_type: date
+        quote: true
+      - name: fase_1_estabelecimento
+        description: Esta coluna representa  ou local onde a primeira fase do programa
+          'Seguir em Frente' foi realizada para o participante.
+        data_type: string
+        quote: true
+      - name: fase_1_monitor
+        description: Esta coluna representa o nome do monitor designado durante a
+          primeira fase do programa 'Seguir em Frente'.
+        data_type: string
+        quote: true
+      - name: fase_2_data_inicio
+        description: Esta coluna representa a data de início da segunda fase do programa
+          'Seguir em Frente'.
+        data_type: date
+        quote: true
+      - name: fase_2_estabelecimento
+        description: Esta coluna representa o nome do estabelecimento de saúde onde o
+          participante está matriculado durante a segunda fase do programa
+          'Seguir em Frente'
+        data_type: string
+        quote: true
+      - name: criado_em
+        description: Esta coluna representa a data e hora em que o registro foi criado.
+        data_type: datetime
+        quote: true
+      - name: criado_por
+        description: Esta coluna indica o nome do usuário que criou o registro.
+        data_type: string
+        quote: true

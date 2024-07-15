@@ -125,6 +125,9 @@ models:
             +tags: ["daily", "estoque"]
         gerenciamento:
             +tags: "daily"
+        seguir_em_frente:
+            +schema: projeto_seguir_em_frente
+            +tags: "daily"
 tests:
   rj_sms:
     +severity: error
