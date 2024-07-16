@@ -143,12 +143,11 @@ models:
           medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 30 dias
+        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Quantos dias de estoque a quantidade disponível do
-          medicamento/insumo representa
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
+          médio diário dos últimos 60 dias
         data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
@@ -311,12 +310,11 @@ models:
           medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 30 dias
+        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Quantos dias de estoque a quantidade disponível do
-          medicamento/insumo representa
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
+          médio diário dos últimos 60 dias
         data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
@@ -403,11 +401,11 @@ models:
         description: Quantidade disponível do medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 30 dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
+          médio diário dos últimos 60 dias
         data_type: float64
   - name: mart_estoque__posicao_atual_agregado_looker_row_level_access
     description: Tabela baseada na tabela estoque_posicao_atual_agregado, adicionado
@@ -470,11 +468,11 @@ models:
         description: Quantidade disponível do medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 30 dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
+          médio diário dos últimos 60 dias
         data_type: float64
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
