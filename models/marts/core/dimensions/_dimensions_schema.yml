@@ -268,6 +268,9 @@ models:
       - name: id_profissional_sus
         description: Código SUS do profissional
         data_type: string
+        tests:
+          - unique:
+              name: core__dim_equipe__id_ine__unique
       - name: cpf
         description: CPF do profissional
         data_type: string
@@ -370,11 +373,14 @@ models:
         description: Tipo do conselho de classe
         data_type: STRING
   - name: dim_equipe
-    description: Tabela contendo a relação de equipes dentro dos estabelecimentos de saúde. Informações
-      baseadas no CNES e outras compiladas dentro da SMS.
+    description: Tabela contendo a relação de equipes dentro dos estabelecimentos de
+      saúde. Informações baseadas no CNES e outras compiladas dentro da SMS.
     columns:
       - name: id_ine
         description: Código da Equipe (Identificador Nacional de Equipe - INE)
+        tests:
+          - unique:
+              name: core__dim_equipe__id_ine__unique
       - name: equipe_sequencial
         description: Sequencial da Equipe
       - name: id_area
@@ -397,16 +403,17 @@ models:
         description: Data de ultima atualização de informações da equipe
       - name: ultima_atualizacao_profissionais
         description: Data de ultima atualização da lista de profissionais da equipe
-      - name: medicos	
+      - name: medicos
         description: Código SUS dos médicos atribuidos a equipe
-      - name: enfermeiros	
+      - name: enfermeiros
         description: Código SUS dos enfermeiros atribuidos a equipe
       - name: auxiliares_tecnicos_enfermagem
         description: Código SUS dos auxiliares ou técnicos de enfermagem atribuidos a equipe
       - name: agentes_comunitarios
         description: Código SUS dos agentes comunitários atribuidos a equipe
       - name: auxiliares_tecnico_saude_bucal
-        description: Código SUS dos auxiliares ou técnicos de saúde bucal atribuidos a equipe
+        description: Código SUS dos auxiliares ou técnicos de saúde bucal atribuidos a
+          equipe
       - name: dentista
         description: Código SUS dos dentistas atribuidos a equipe
       - name: outros_profissionais
