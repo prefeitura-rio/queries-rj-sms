@@ -4,10 +4,10 @@ with
         from
             {{
                 ref(
-                    "int_estoque__dispensacao_serie_historica_com_outliers_identificados"
+                    "int_estoque__dispensacao_serie_historica_calculo_cmd"
                 )
             }}
-        where outlier = "nao" and row_num <= 30  -- o CMD é calculado a partir das 30 últimas observações
+        where outlier = "nao"
         group by id_cnes, id_material
         order by id_cnes, id_material
     ),
@@ -17,10 +17,9 @@ with
         from
             {{
                 ref(
-                    "int_estoque__dispensacao_serie_historica_com_outliers_identificados"
+                    "int_estoque__dispensacao_serie_historica_calculo_cmd"
                 )
             }}
-        where row_num <= 30  -- o CMD é calculado a partir das 30 últimas observações
         group by id_cnes, id_material
         order by id_cnes, id_material
     )

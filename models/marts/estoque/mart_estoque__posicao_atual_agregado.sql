@@ -26,7 +26,7 @@ with
             sum(material_quantidade) as material_quantidade,
             avg(material_consumo_medio) as material_consumo_medio
         from source
-        where lote_status = "ativo"
+        where lote_validade_dentro_indicador = "sim"
         group by
             id_cnes,
             id_material,

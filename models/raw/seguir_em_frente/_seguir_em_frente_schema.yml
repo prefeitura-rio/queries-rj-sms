@@ -1,0 +1,333 @@
+models:
+  - name: raw_seguir_em_frente__bolsista
+    decription: Contém dados relacionados aos participantes do programa 'Seguir em
+      Frente'. Ele inclui informações pessoais, como ID, CPF, nome e data de
+      nascimento do participante. Também contém informações sobre o
+      estabelecimento de saúde mental do participante, a URL do RG e do termo de
+      compromisso, e detalhes sobre a conta bancária do Santander. O modelo
+      também acompanha a fase atual do participante no programa, as datas de
+      início e os estabelecimentos das fases 1 e 2, e o monitor da fase 1.
+      Campos adicionais incluem observações, data e criador do registro, e dados
+      de particionamento.
+    columns:
+      - name: id
+        description: Este é um identificador único para cada registro. 
+        data_type: string
+        quote: true
+      - name: cpf
+        description: Este é o número do CPF (Cadastro de Pessoas Físicas) do indivíduo.
+          É um identificador único atribuído aos cidadãos brasileiros e é usado
+          para fins fiscais. Neste modelo, ele é limpo e formatado como uma
+          string.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+        quote: true
+      - name: id_pcsm
+        description: Este é o identificador único para o PCSM (Prontuario de Carioca da
+          Saúde Mental) ao qual o indivíduo está associado. É do tipo string e é
+          usado para vincular o indivíduo a um PCSM específico.
+        data_type: string
+        quote: true
+      - name: nome
+        description: Esta coluna representa o nome do indivíduo associado ao registro. É
+          armazenado como uma string e é convertido para maiúsculas para
+          consistência.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+        data_type: string
+        quote: true
+      - name: data_nascimento
+        description: Esta coluna representa a data de nascimento do indivíduo associado
+          ao registro. É armazenado como uma data no formato AAAA-MM-DD.
+        policy_tags:
+          - '{{ var("TAG_DTNASCIMENTO") }}'
+        data_type: date
+        quote: true
+      - name: saude_mental_estabelecimento
+        description: Esta coluna representa o estabelecimento de saúde mental ao qual o
+          indivíduo está associado.
+        data_type: string
+        quote: true
+      - name: rg_url
+        description: Esta coluna contém a URL da imagem do documento RG (Registro Geral)
+          do bolsita. O RG é um documento de identidade brasileiro.
+        policy_tags:
+          - '{{ var("TAG_RG") }}'
+        data_type: string
+        quote: true
+      - name: termo_de_compromisso_url
+        description: Esta coluna contém a URL do documento 'Termo de Compromisso'
+          assinado pelo bolsita. O 'Termo de Compromisso' é um acordo de
+          compromisso que o bolsita assina para participar do programa 'Seguir
+          em Frente'.
+        data_type: string
+        quote: true
+      - name: santander_conta_indicador
+        description: Esta coluna indica se o bolsita já possui uma conta corrente no
+          Santander. Os valores nesta coluna são 'sim' se o bolsita possui uma
+          conta e 'nao' se não possui.
+        data_type: string
+        quote: true
+      - name: santander_agencia_numero
+        description: Este campo representa o número da agência bancária do Santander
+          onde o participante possui uma conta.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_DADOS_BANCARIOS") }}'
+        quote: true
+      - name: santander_conta_numero
+        description: Este campo representa o número da conta do participante no banco
+          Santander.
+        policy_tags:
+          - '{{ var("TAG_DADOS_BANCARIOS") }}'
+        data_type: string
+        quote: true
+      - name: observacoes
+        description: Este campo contém quaisquer notas ou observações adicionais
+          relacionadas ao participante. É um campo do tipo string e pode incluir
+          qualquer informação relevante que não se encaixe nos outros campos.
+        data_type: string
+        quote: true
+      - name: fase_atual
+        description: Esta coluna representa a fase atual do programa 'Seguir em Frente'
+          na qual o participante está envolvido.
+        data_type: string
+        quote: true
+      - name: fase_1_data_inicio
+        description: Esta coluna indica a data de início da primeira fase do programa
+          'Seguir em Frente' para o participante. Ajuda a acompanhar a linha do
+          tempo da jornada do participante no programa.
+        data_type: date
+        quote: true
+      - name: fase_1_estabelecimento
+        description: Esta coluna representa  ou local onde a primeira fase do programa
+          'Seguir em Frente' foi realizada para o participante.
+        data_type: string
+        quote: true
+      - name: fase_1_monitor
+        description: Esta coluna representa o nome do monitor designado durante a
+          primeira fase do programa 'Seguir em Frente'.
+        data_type: string
+        quote: true
+      - name: fase_2_data_inicio
+        description: Esta coluna representa a data de início da segunda fase do programa
+          'Seguir em Frente'.
+        data_type: date
+        quote: true
+      - name: fase_2_estabelecimento
+        description: Esta coluna representa o nome do estabelecimento de saúde onde o
+          participante está matriculado durante a segunda fase do programa
+          'Seguir em Frente'
+        data_type: string
+        quote: true
+      - name: criado_em
+        description: Esta coluna representa a data e hora em que o registro foi criado.
+        data_type: datetime
+        quote: true
+      - name: criado_por
+        description: Esta coluna indica o nome do usuário que criou o registro.
+        data_type: string
+        quote: true
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É usado para
+          particionamento de dados e é armazenado como uma string.
+        data_type: string
+        quote: true
+      - name: mes_particao
+        description: Esta coluna representa o mês da partição. É um valor string que
+          indica o mês específico em que os dados foram particionados. Essa
+          informação é útil para gerenciamento e organização de dados.
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de data que
+          indica o dia específico em que os dados foram particionados. Essa
+          informação é crucial para entender a linha do tempo da coleta e
+          organização de dados.
+        data_type: date
+        quote: true
+  - name: raw_seguir_em_frente__controle_presenca
+    description: Contém informações sobre o controle de presença do programa 'Seguir em Frente'. 
+      Inclui identificadores únicos, identificadores pessoais (CPF), observações, anexos, 
+      tipo de período cadastrado, dia cadastrado do período, semana cadastrada do período, 
+      registros diários, registros para cada dia da semana (segunda a sexta-feira), o 
+      criador do registro e a data de criação. Também inclui informações de particionamento, 
+      como o ano, mês e data da partição. Este modelo é particularmente útil para rastrear a 
+      presença e participação no programa, bem como para entender a distribuição da 
+      participação ao longo de diferentes períodos.
+    columns:
+      - name: id
+        description: Este é um identificador único para cada registro. É 
+          um valor string que é gerado automaticamente quando um novo registro é criado.
+        data_type: string
+        quote: true
+      - name: id_nome_cpf
+        description: Este é um valor string que representa a combinação do nome 
+          e CPF (Cadastro de Pessoas Físicas) do indivíduo.
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cpf
+        description: Este é o CPF (Cadastro de Pessoas Físicas) do indivíduo. 
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: observacoes
+        description: Este campo contém quaisquer notas ou observações adicionais 
+          relacionadas ao controle de presença do indivíduo. É um campo de texto 
+          livre e pode conter qualquer tipo de informação considerada relevante pelo criador.
+        data_type: string
+        quote: true
+      - name: anexos
+        description: Este campo é usado para armazenar a URL de quaisquer anexos relacionados 
+          ao controle de presença do indivíduo. Pode ser qualquer documento ou 
+          arquivo que forneça contexto adicional ou evidência para o controle de presença.
+        data_type: string
+        quote: true
+      - name: periodo_cadastrado_tipo
+        description: Este campo indica o tipo de período para o qual o indivíduo registrou 
+          a presença. Pode ser um dia ou semana.
+        data_type: string
+        quote: true
+      - name: periodo_cadastrado_dia
+        description: Esta coluna representa o dia específico para o qual o usuário 
+          registrou a presença quando o 'periodo_cadastrado_tipo' é 'dia'.
+        data_type: string
+        quote: true
+      - name: periodo_cadastrado_semana
+        description: Esta coluna representa a semana para a qual o usuário 
+          registrou a presença quando o 'periodo_cadastrado_tipo' é 'semana'.
+        data_type: string
+        quote: true
+      - name: registro_dia
+        description: Esta coluna representa o registro de presença para o indivíduo. 
+          Ela é preenchida quando o período_cadastrado_tipo é 'dia'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'. 
+        data_type: string
+        quote: true
+      - name: registro_segunda_feira
+        description: Esta coluna representa o registro de presença para segunda-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: registro_terca_feira
+        description: Esta coluna representa o registro de presença para terça-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: registro_quarta_feira
+        description: Esta coluna representa o registro de presença para quarta-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: registro_quinta_feira
+        description: Esta coluna representa o registro de presença para quinta-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: registro_sexta_feira
+        description: Esta coluna representa o registro de presença para sexta-feira 
+          quando o período_cadastrado_tipo é 'semana'.
+          Seu valor é 'presenca' ou 'falta' ou 'abono'.
+        data_type: string
+        quote: true
+      - name: criado_por
+        description: Este campo indica o criador do registro. 
+          Fornece informações sobre quem criou a entrada no banco de dados.
+        data_type: string
+        quote: true
+      - name: criado_em
+        description: Esta coluna representa a data e hora em que o registro foi criado. 
+        data_type: datetime
+        quote: true
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. 
+        data_type: string
+        quote: true
+      - name: mes_particao
+        description: Esta coluna representa o mês da partição. 
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Esta coluna representa a data da partição. 
+        data_type: date
+        quote: true
+  - name: raw_seguir_em_frente__ficha_ponto
+    description: "Contém informações sobre o programa 'seguir em frente',
+      especificamente relacionadas às fichas de ponto dos participantes. O modelo
+      inclui as seguintes colunas: 'id', que é um identificador único para cada
+      registro, 'id_nome_cpf', que é uma combinação do ID, nome e CPF do
+      participante, 'cpf', que é o número do CPF do participante, 'competencia',
+      que representa o mês da ficha de ponto, 'url', que é a URL da ficha de ponto,
+      'criado_por', que indica quem criou o registro, 'criado_em', que indica quando
+      o registro foi criado, 'ano_particao', 'mes_particao' e 'data_particao', que
+      são usados para particionar os dados. As colunas 'cpf' e 'url' são derivadas
+      das colunas 'id_nome_cpf' e 'url', respectivamente, usando transformações
+      específicas."
+    columns:
+      - name: id
+        description: Este é um identificador único para cada registro. 
+          É um valor de string que é gerado automaticamente quando um novo registro é criado.
+        data_type: string
+        quote: true
+      - name: id_nome_cpf
+        description: Este é um valor de string que representa a combinação do ID,
+          nome e CPF do indivíduo associado ao registro.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+        quote: true
+      - name: cpf
+        description: Este é o número do CPF do indivíduo associado ao registro. É
+          extraído do campo 'id_nome_cpf' e limpo de quaisquer caracteres não
+          numéricos para facilitar o processamento e análise.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+        quote: true
+      - name: competencia
+        description: Esta coluna representa o mês do registro. É um valor de string
+          que indica o mês ao qual a ficha de ponto se refere. Essa informação é
+          crucial para relatórios mensais e acompanhamento das fichas de ponto.
+        data_type: string
+        quote: true
+      - name: url
+        description: Esta coluna contém as URLs das fichas de ponto. É um valor de
+          string que representa os endereços da web onde as fichas de ponto podem
+          ser acessadas. Isso é importante para usuários que precisam visualizar
+          ou baixar as fichas de ponto.
+        data_type: string
+        quote: true
+      - name: criado_por
+        description: Esta coluna indica o criador do registro. É um valor de string
+          que representa o nome da pessoa que criou a ficha de ponto.
+        data_type: string
+        quote: true
+      - name: criado_em
+        description: Esta coluna representa a data e hora em que o registro foi
+          criado. 
+        data_type: string
+        quote: true
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É uma string que
+          indica o ano em que os dados foram particionados.
+        data_type: string
+        quote: true
+      - name: mes_particao
+        description: Esta coluna representa o mês da partição. É uma string que
+          indica o mês em que os dados foram particionados. 
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É formatada como
+          uma data e é usada para organizar os dados para consultas e análises
+          eficientes.
+        data_type: date
+        quote: true

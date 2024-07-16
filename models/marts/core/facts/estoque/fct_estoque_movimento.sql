@@ -11,9 +11,11 @@
     )
 }}
 
---- sources
+-- - sources
 with
-    source_vitai as (select * from {{ ref("raw_prontuario_vitai__estoque_movimento") }}),
+    source_vitai as (
+        select * from {{ ref("raw_prontuario_vitai__estoque_movimento") }}
+    ),
 
     source_vitacare as (
         select
@@ -29,8 +31,87 @@ with
             on (est.id_material = valor_unitario.id_material)
     ),
 
+    -- - standardize inventory movements # TODO: revisar padronização vitai
+    vitacare_padronizada as (
+        select
+            *,
+            case
+                when
+                    estoque_movimento_tipo in (
+                        "CORREÇÃO DE LOTE - AUMENTO", "NOVO LOTE", "RECUPERAÇÃO DE LOTE"
+                    )
+                then "Entrada"
+                when
+                    estoque_movimento_tipo in (
+                        "ANULAÇÃO DE DISPENSAS",
+                        "CORREÇÃO DE LOTE - DIMINUIÇÃO",
+                        "DEVOLUÇÃO ISOLADA",
+                        "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO",
+                        "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO",
+                        "DISPENSAÇÃO DE RECEITA EXTERNA",
+                        "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR",
+                        "REFORÇO",
+                        "REFORÇO ISOLADO",  -- #TODO: refinar o sinal do Reforço e Reforço Isolado dependendo da origem/destino da transferência
+                        "REMOÇÃO DE LOTE",
+                        "SUSPENSÃO DE LOTE"
+                    )
+                then "Saida"
+                else "Desconhecido" 
+            end as estoque_movimento_entrada_saida,
+            case
+                when estoque_movimento_tipo = "NOVO LOTE"
+                then "Entrada de Estoque"
+                when
+                    estoque_movimento_tipo in (
+                        "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO",
+                        "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO",
+                        "DISPENSAÇÃO DE RECEITA EXTERNA",
+                        "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR",
+                        "ANULAÇÃO DE DISPENSAS",
+                        "REFORÇO",  -- transferencias para subestoques já são consideradas consumo
+                        "REFORÇO ISOLADO"
+                    )
+                    or (
+                        estoque_movimento_tipo in (
+                            "CORREÇÃO DE LOTE - AUMENTO",
+                            "CORREÇÃO DE LOTE - DIMINUIÇÃO"
+                        )
+                        and estoque_movimento_correcao_tipo = "ATENDIMENTO_EXTERNO"
+                    )
+                then "Consumo"
+                when
+                    estoque_movimento_tipo in ("REMOÇÃO DE LOTE")
+                    or (
+                        estoque_movimento_tipo in (
+                            "CORREÇÃO DE LOTE - AUMENTO",
+                            "CORREÇÃO DE LOTE - DIMINUIÇÃO"
+                        )
+                        and estoque_movimento_correcao_tipo in ("CORRECAO", "OUTRO")
+                    )
+                then "Correcao de Estoque / Outro"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("AVARIA", "VALIDADE_EXPIRADA")
+                then "Avaria / Vencimento"
+                when
+                    estoque_movimento_tipo
+                    in ("SUSPENSÃO DE LOTE", "RECUPERAÇÃO DE LOTE")
+                then "Bloqueio/Desbloqueio de Lote"
+                when estoque_movimento_correcao_tipo in ("DEVOLUÇÃO ISOLADA")
+                then "Devolucao"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("TRANSFERENCIA")
+                then "Transferencia Externa"
+                else "Desconhecido"
+            end as estoque_movimento_tipo_grupo,
+        from source_vitacare
 
---- transform into standard model
+    ),
+
+    -- - transform into standard model
     movimento_vitai as (
         select
             est.id_cnes,
@@ -47,6 +128,7 @@ with
             est.material_valor_total,
             est.data_particao,
             est.data_carga,
+            "" as estoque_movimento_entrada_saida,
             case
                 when
                     estoque_movimento_tipo = "TRANSFERENCIA ENTRADA"
@@ -83,7 +165,6 @@ with
         from source_vitai as est
     ),
 
-    
     movimento_vitacare as (
         select
             est.id_cnes,
@@ -102,55 +183,22 @@ with
             est.material_valor_total,
             est.data_particao,
             est.data_carga,
+            est.estoque_movimento_entrada_saida,
+            est.estoque_movimento_tipo_grupo,
             case
-                when estoque_movimento_tipo = "NOVO LOTE"
-                then "Entrada"
-                when
-                    estoque_movimento_tipo = "CORREÇÃO DE LOTE - AUMENTO"
-                    or estoque_movimento_tipo = "CORREÇÃO DE LOTE - DIMINUIÇÃO"
-                then "Ajuste de Inventário"
-                when
-                    estoque_movimento_tipo = "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO"
-                    or estoque_movimento_tipo
-                    = "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO"
-                    or estoque_movimento_tipo = "DISPENSAÇÃO DE RECEITA EXTERNA"
-                    or estoque_movimento_tipo
-                    = "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR"
-                    or estoque_movimento_tipo = "ANULAÇÃO DE DISPENSAS"
-                then "Consumo"
-                when
-                    estoque_movimento_tipo = "REMOÇÃO DE LOTE"
-                    or estoque_movimento_tipo = "SUSPENSÃO DE LOTE"
-                    or estoque_movimento_tipo = "RECUPERAÇÃO DE LOTE"
-                then "Avaria / Vencimento"
-                else initcap(estoque_movimento_tipo)
-            end as estoque_movimento_tipo_grupo,
-            case
-                when
-                    estoque_movimento_tipo = "CORREÇÃO DE LOTE - DIMINUIÇÃO"
-                    or estoque_movimento_tipo
-                    = "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO"
-                    or estoque_movimento_tipo
-                    = "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO"
-                    or estoque_movimento_tipo = "DISPENSAÇÃO DE RECEITA EXTERNA"
-                    or estoque_movimento_tipo
-                    = "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR"
-                    or estoque_movimento_tipo = "REMOÇÃO DE LOTE"
-                    or estoque_movimento_tipo = "SUSPENSÃO DE LOTE"
+                when est.estoque_movimento_entrada_saida = "Saida"
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
-            "" as estoque_movimento_consumo_prescritor_cpf, 
-            est.dispensacao_prescritor_cns
-            as estoque_movimento_consumo_prescritor_cns,
+            "" as estoque_movimento_consumo_prescritor_cpf,
+            est.dispensacao_prescritor_cns as estoque_movimento_consumo_prescritor_cns,
             est.dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
             est.dispensacao_paciente_cns as estoque_movimento_consumo_paciente_cns,
             "vitacare" as sistema_origem,
-        from source_vitacare as est
+        from vitacare_padronizada as est
     ),
 
---- union
-
+    -- - union
     movimento as (
         select *
         from movimento_vitai
@@ -168,6 +216,7 @@ select
     -- Common Fields
     estoque_secao_origem as localizacao_origem,
     estoque_secao_destino as localizacao_destino,
+    estoque_movimento_entrada_saida as movimento_entrada_saida,
     estoque_movimento_tipo as movimento_tipo,
     estoque_movimento_tipo_grupo as movimento_tipo_grupo,
     estoque_movimento_justificativa as movimento_justificativa,

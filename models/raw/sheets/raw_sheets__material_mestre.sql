@@ -19,6 +19,8 @@ casted as (
         subcategoria as hierarquia_n2_subcategoria,
         controlado_indicador,
         controlado_tipo,
+        safe_cast(consumo_minimo as int64) as consumo_minimo,
+        classificacao_xyz,
         remume_indicador,
         remume_listagens as remume_listagem_relacao,
         -- SPLIT(SUBSTR(remume_listagens, 1, LENGTH(remume_listagens) - 1), ';') as remume_listagens,

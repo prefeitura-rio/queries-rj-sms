@@ -7,3 +7,4 @@ credentials/
 .python-version
 target-base/
 *.DS_Store
+/dbt_packages

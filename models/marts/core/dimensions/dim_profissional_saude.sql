@@ -10,7 +10,13 @@
 with
     estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }}),
     alocacao as (
-        select v.*
+        select profissional_codigo_sus, 
+        id_cbo, 
+        cbo, 
+        id_cbo_familia, 
+        cbo_familia, 
+        id_tipo_conselho, 
+        id_registro_conselho
         from
             {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
             as v
@@ -83,7 +89,7 @@ with
     group by 1
     ),
     cpf_profissionais as (
-        select patient_cns.cns_valor as cns, patient.cpf as cpf
+        select distinct patient_cns.cns_valor as cns, patient.cpf as cpf
         from {{ ref("raw_hci__paciente") }} as patient
         left join
             {{ ref("raw_hci__cns_paciente") }} as patient_cns

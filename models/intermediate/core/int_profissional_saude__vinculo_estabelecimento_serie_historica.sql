@@ -11,6 +11,7 @@ with
                 partition by nome, id_codigo_sus, cns order by data_atualizacao desc
             ) as ordenacao
         from {{ ref("raw_cnes_web__dados_profissional_sus") }}
+        where cns != ""
     ),
     profissional_ftp as (
         select

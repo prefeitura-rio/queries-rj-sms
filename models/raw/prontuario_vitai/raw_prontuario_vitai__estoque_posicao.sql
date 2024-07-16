@@ -8,6 +8,7 @@
             "data_type": "date",
             "granularity": "month",
         },
+        tags=["vitai_estoque"]
     )
 }}
 -- source

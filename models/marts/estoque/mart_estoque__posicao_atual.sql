@@ -155,8 +155,8 @@ select
     id_lote,
     lote_data_vencimento,
     if(
-        current_date('America/Sao_Paulo') > lote_data_vencimento, "vencido", "ativo"
-    ) as lote_status,
+        current_date('America/Sao_Paulo') > lote_data_vencimento, "nao", "sim"
+    ) as lote_validade_dentro_indicador,
     date_diff(
         lote_data_vencimento, current_date('America/Sao_Paulo'), day
     ) as lote_dias_para_vencer,

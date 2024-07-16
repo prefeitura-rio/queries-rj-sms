@@ -126,7 +126,7 @@ models:
       - name: lote_data_vencimento
         description: Data de vencimento do lote
         data_type: date
-      - name: lote_status
+      - name: lote_validade_dentro_indicador
         description: Indica se o lote está vencido ou não
         data_type: string
       - name: lote_dias_para_vencer
@@ -143,12 +143,11 @@ models:
           medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 30 dias
+        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Quantos dias de estoque a quantidade disponível do
-          medicamento/insumo representa
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
+          médio diário dos últimos 60 dias
         data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
@@ -294,7 +293,7 @@ models:
       - name: lote_data_vencimento
         description: Data de vencimento do lote
         data_type: date
-      - name: lote_status
+      - name: lote_validade_dentro_indicador
         description: Indica se o lote está vencido ou não
         data_type: string
       - name: lote_dias_para_vencer
@@ -311,12 +310,11 @@ models:
           medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 30 dias
+        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Quantos dias de estoque a quantidade disponível do
-          medicamento/insumo representa
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
+          médio diário dos últimos 60 dias
         data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
@@ -403,11 +401,11 @@ models:
         description: Quantidade disponível do medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 30 dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
+          médio diário dos últimos 60 dias
         data_type: float64
   - name: mart_estoque__posicao_atual_agregado_looker_row_level_access
     description: Tabela baseada na tabela estoque_posicao_atual_agregado, adicionado
@@ -470,11 +468,11 @@ models:
         description: Quantidade disponível do medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Consumo médio diário do medicamento/insumo dentro da unidade de saúde
+        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Estimativa de quantos dias deve durar o estoque baseado no consumo
-          médio diário dos últimos 30 dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
+          médio diário dos últimos 60 dias
         data_type: float64
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
@@ -514,11 +512,11 @@ models:
         description: 3o quartil da série id_cnes, id_material
         data_type: FLOAT64
       - name: iqr
-        description: Intervalor interquartilico da série id_cnes, id_material
+        description: Intervalor interquartílico da série id_cnes, id_material
         data_type: FLOAT64
       - name: outlier
         description: Indica se a observação é um outlier baseado no método de 1.5 vezes
-          o intervalo interquartilico
+          o intervalo interquartílico
         data_type: STRING
       - name: quantidade_dispensada_sem_outlier
         description: Quantidade consumida (dispensada) no dia, exceto outliers
