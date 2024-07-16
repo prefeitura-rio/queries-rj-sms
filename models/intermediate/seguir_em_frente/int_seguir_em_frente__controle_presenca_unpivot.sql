@@ -1,10 +1,15 @@
 -- Unpivot the columns of the table raw_seguir_em_frente__controle_presenca
-
 with
     -- sources
-    presenca as (select * from {{ ref("raw_seguir_em_frente__controle_presenca") }}),
-
-    bolsita as (select * from {{ ref("mart_seguir_em_frente__bolsista") }}),
+    presenca as (
+        select *
+        from {{ ref("raw_seguir_em_frente__controle_presenca") }}
+        where
+            data_particao = (
+                select max(data_particao)
+                from {{ ref("raw_seguir_em_frente__controle_presenca") }}
+            )
+    ),
 
     -- transformations
     prensenca_pivoted as (
