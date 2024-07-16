@@ -30,8 +30,7 @@ select
     carga_horaria_outros,
     carga_horaria_hospitalar,
     carga_horaria_ambulatorial,
-    data_registro as data_ultima_atualizacao,
-    current_date('America/Sao_Paulo') as data_referencia
+    data_registro as data_ultima_atualizacao
 
 from profissional_serie_historica as p
 inner join estabelecimentos as estabelecimentos 

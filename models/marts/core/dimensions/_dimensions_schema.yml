@@ -285,6 +285,9 @@ models:
       - name: id_profissional_sus
         description: Código SUS do profissional
         data_type: string
+        tests:
+          - unique:
+              name: core__dim_equipe__id_ine__unique
       - name: cpf
         description: CPF do profissional
         data_type: string
@@ -386,3 +389,49 @@ models:
       - name: id_tipo_conselho
         description: Tipo do conselho de classe
         data_type: STRING
+  - name: dim_equipe
+    description: Tabela contendo a relação de equipes dentro dos estabelecimentos de
+      saúde. Informações baseadas no CNES e outras compiladas dentro da SMS.
+    columns:
+      - name: id_ine
+        description: Código da Equipe (Identificador Nacional de Equipe - INE)
+        tests:
+          - unique:
+              name: core__dim_equipe__id_ine__unique
+      - name: equipe_sequencial
+        description: Sequencial da Equipe
+      - name: id_area
+        description: Código da Área da Equipe
+      - name: area_descricao
+        description: Descrição da Área da Equipe
+      - name: nome_referencia
+        description: Nome de Referência da Equipe
+      - name: telefone
+        description: Whatsapp da equipe
+      - name: id_equipe_tipo
+        description: Código do tipo de equipe
+      - name: equipe_tipo_descricao
+        description: Descrição do tipo de equipe
+      - name: id_cnes
+        description: Código CNES do Estabelecimento de Saúde
+      - name: profissionais
+        description: Array de profissionais pertencentes a equipe
+      - name: ultima_atualizacao_infos_equipe
+        description: Data de ultima atualização de informações da equipe
+      - name: ultima_atualizacao_profissionais
+        description: Data de ultima atualização da lista de profissionais da equipe
+      - name: medicos
+        description: Código SUS dos médicos atribuidos a equipe
+      - name: enfermeiros
+        description: Código SUS dos enfermeiros atribuidos a equipe
+      - name: auxiliares_tecnicos_enfermagem
+        description: Código SUS dos auxiliares ou técnicos de enfermagem atribuidos a equipe
+      - name: agentes_comunitarios
+        description: Código SUS dos agentes comunitários atribuidos a equipe
+      - name: auxiliares_tecnico_saude_bucal
+        description: Código SUS dos auxiliares ou técnicos de saúde bucal atribuidos a
+          equipe
+      - name: dentista
+        description: Código SUS dos dentistas atribuidos a equipe
+      - name: outros_profissionais
+        description: Código SUS dos outros profissionais atribuidos a equipe
