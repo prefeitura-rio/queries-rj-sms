@@ -21,7 +21,7 @@ dispensacao as (
         q3,
         iqr,
         outlier
-    from {{ ref('int_estoque__dispensacao_serie_historica_com_outliers_identificados') }} where row_num <= 60),
+    from {{ ref('int_estoque__dispensacao_serie_historica_calculo_cmd') }}),
 
 estabelecimento as (select * from {{ ref('dim_estabelecimento') }}),
 
