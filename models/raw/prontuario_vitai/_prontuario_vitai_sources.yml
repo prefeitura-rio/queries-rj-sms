@@ -16,48 +16,48 @@ sources:
           warn_after: {count: 48, period: hour}
           error_after: {count: 72, period: hour}
       - name: paciente_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: alergia_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: exame_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: profissional_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
-          error_after: {count: 24, period: hour}
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
       - name: cirurgia_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: classificacao_risco_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: boletim_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: atendimento_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: diagnostico_eventos
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
+        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
         freshness:
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
 
