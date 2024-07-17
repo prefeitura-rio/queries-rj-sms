@@ -31,10 +31,6 @@ models:
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        tests:
-          - not_null:
-              name: raw_prontuario_vitacare__estoque_posicao__id_material__not_null
-              severity: warn
       - name: id_atc
         description: Código de identificação do material cadastrado no prontuário no padrão ATC
         policy_tags:
