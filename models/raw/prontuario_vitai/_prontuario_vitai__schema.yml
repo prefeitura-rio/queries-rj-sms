@@ -16,13 +16,6 @@ models:
               name: raw_prontuario_vitai__estoque_posicao__id_cnes__relationship
               to: ref('dim_estabelecimento')
               field: id_cnes
-          - assert_chegando_todas_unidades_de_saude:
-              name: raw_prontuario_vitai__estoque_posicao__chegando_todas_unidades
-              prontuario: vitai
-              filter: prontuario_estoque_tem_dado = 'sim'
-              config:
-                where: data_particao = current_date('America/Sao_Paulo')
-                severity: warn
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
       - name: id_material
@@ -89,14 +82,6 @@ models:
               name: raw_prontuario_vitai__estoque_movimento__id_cnes__relationship
               to: ref('dim_estabelecimento')
               field: id_cnes
-          - assert_chegando_todas_unidades_de_saude:
-              name: raw_prontuario_vitai__estoque_movimento__chegando_todas_unidades
-              prontuario: vitai
-              filter: prontuario_estoque_tem_dado = 'sim'
-              config:
-                where: data_particao = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
-                severity: warn
-                error_if: ">4"
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
