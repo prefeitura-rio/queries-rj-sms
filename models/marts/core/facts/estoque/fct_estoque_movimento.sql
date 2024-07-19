@@ -2,12 +2,13 @@
     config(
         alias="movimento",
         schema="saude_estoque",
-        labels={"contains_pii": "no"},
+        labels={"contains_pii": "yes"},
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "month",
         },
+        cluster_by = ["sistema_origem", "id_cnes"],
     )
 }}
 
@@ -116,6 +117,7 @@ with
         select
             est.id_cnes,
             est.id_material,
+            "" as id_pedido_wms,
             est.material_descricao,
             est.material_unidade,
             est.estoque_secao_origem,
@@ -169,10 +171,11 @@ with
         select
             est.id_cnes,
             est.id_material,
+            est.id_pedido_wms,
             est.material_descricao,
             "" as material_unidade,
-            "" as estoque_secao_origem,
-            "" as estoque_secao_destino,
+            est.estoque_armazem_origem as estoque_secao_origem,
+            est.estoque_armazem_destino as estoque_secao_destino,
             est.estoque_movimento_tipo,
             est.estoque_movimento_justificativa,
             safe_cast(
@@ -190,7 +193,7 @@ with
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
-            "" as estoque_movimento_consumo_prescritor_cpf,
+            est.dispensacao_prescritor_cpf as estoque_movimento_consumo_prescritor_cpf,
             est.dispensacao_prescritor_cns as estoque_movimento_consumo_prescritor_cns,
             est.dispensacao_paciente_cpf as estoque_movimento_consumo_paciente_cpf,
             est.dispensacao_paciente_cns as estoque_movimento_consumo_paciente_cns,
@@ -212,20 +215,21 @@ select
     -- Foreing Key
     id_cnes,
     id_material,
+    id_pedido_wms,
 
     -- Common Fields
-    estoque_secao_origem as localizacao_origem,
-    estoque_secao_destino as localizacao_destino,
-    estoque_movimento_entrada_saida as movimento_entrada_saida,
+    upper(estoque_secao_origem) as localizacao_origem,
+    upper(estoque_secao_destino) as localizacao_destino,
+    upper(estoque_movimento_entrada_saida) as movimento_entrada_saida,
     estoque_movimento_tipo as movimento_tipo,
-    estoque_movimento_tipo_grupo as movimento_tipo_grupo,
+    upper(estoque_movimento_tipo_grupo) as movimento_tipo_grupo,
     estoque_movimento_justificativa as movimento_justificativa,
     estoque_movimento_data as data_evento,
     estoque_movimento_data_hora as data_hora_evento,
     estoque_movimento_consumo_prescritor_cpf as consumo_prescritor_cpf,
     estoque_movimento_consumo_prescritor_cns as consumo_prescritor_cns,
-    estoque_movimento_consumo_paciente_cns as consumo_paciente_cns,
     estoque_movimento_consumo_paciente_cpf as consumo_paciente_cpf,
+    estoque_movimento_consumo_paciente_cns as consumo_paciente_cns,
     material_descricao,
     material_quantidade,
     material_quantidade_com_sinal,
