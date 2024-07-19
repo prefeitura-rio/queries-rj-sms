@@ -43,7 +43,11 @@ with
 
     material as (select * from {{ ref("dim_material") }}),
 
-    estabelecimento as (select * from {{ ref("dim_estabelecimento") }}),
+    estabelecimento as (
+        select *
+        from {{ ref("dim_estabelecimento") }}
+        where prontuario_estoque_tem_dado = "sim"
+    ),
 
     posicao_final as (
         select
@@ -73,7 +77,9 @@ with
                 sistema_origem <> "tpc", est.responsavel_sms, "subpav"
             ) as estabelecimento_responsavel_sms,
             if(
-                sistema_origem <> "tpc", coalesce(cmm.cmd_com_outliers, 0), cmm.cmd_com_outliers
+                sistema_origem <> "tpc",
+                coalesce(cmm.cmd_com_outliers, 0),
+                cmm.cmd_com_outliers
             ) as material_consumo_medio,
             coalesce(abc.abc_categoria, "S/C") as abc_categoria,
             coalesce(
@@ -109,6 +115,7 @@ with
             mat.controlado_indicador as material_controlado_indicador,
             mat.controlado_tipo as material_controlado_tipo,
         from posicao_atual as pos  -- posicao_atual
+        inner join estabelecimento as est on (pos.id_cnes = est.id_cnes)
         left join curva_abc as abc using (id_curva_abc)
         left join historico_dispensacao as disp using (id_curva_abc)
         left join
@@ -116,7 +123,6 @@ with
             on (pos.id_material = cmm.id_material and pos.id_cnes = cmm.id_cnes)
         left join material as mat on (pos.id_material = mat.id_material)
         left join sigma as sig on (pos.id_material = sig.cd_material)
-        left join estabelecimento as est on (pos.id_cnes = est.id_cnes)
 
     )
 
