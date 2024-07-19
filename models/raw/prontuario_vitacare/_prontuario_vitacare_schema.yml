@@ -32,15 +32,16 @@ models:
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
       - name: id_atc
-        description: Código de identificação do material cadastrado no prontuário no padrão ATC
+        description: Código de identificação do material cadastrado no prontuário no
+          padrão ATC
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
       - name: estabelecimento_nome
         description: Nome da unidade de saúde onde o item está localizado
       - name: lote_data_cadastro
-        description:  Data de cadastro do lote
+        description: Data de cadastro do lote
       - name: lote_data_vencimento
-        description:  Data de vecimento do lote
+        description: Data de vecimento do lote
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
@@ -58,68 +59,107 @@ models:
     columns:
       - name: id_estoque_movimento
         description: Identificador único do registro
+        data_type: string
       - name: area_programatica
         description: Área programática da unidade de saúde onde o item está localizado
+        data_type: string
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
+        data_type: string
         tests:
+          - assert_chegando_todas_unidades_de_saude:
+              name: raw_prontuario_vitacare__estoque_movimento__chegando_todas_unidades
+              prontuario: vitacare
+              filter: prontuario_estoque_tem_dado = 'sim'
+              config:
+                where: safe_cast(data_particao as date) =
+                  date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
+                error_if: ">10"
           - not_null:
               name: raw_prontuario_vitacare__estoque_movimento__id_cnes__not_null
           - relationships:
               name: raw_prontuario_vitacare__estoque_movimento__id_cnes__relationship
               to: ref('dim_estabelecimento')
               field: id_cnes
-          - assert_chegando_todas_unidades_de_saude:
-              name: raw_prontuario_vitacare__estoque_movimento__chegando_todas_unidades
-              prontuario: vitacare
-              filter: prontuario_estoque_tem_dado = 'sim'
-              config:
-                where: safe_cast(data_particao as date) = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
-                error_if: ">10"  
+      - name: id_pedido_wms
+        description: Identificador do pedido na TPC que gerou o evento de entrada de
+          medicamentos na unidade.
+        data_type: string
+        quote: true
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
+        data_type: string
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: string
       - name: id_atc
-        description: Código de identificação do material cadastrado no prontuário no padrão ATC
+        description: Código de identificação do material cadastrado no prontuário no
+          padrão ATC
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: string
       - name: estabelecimento_nome
         description: Nome da unidade de saúde onde o item está localizado
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: string
       - name: estoque_movimento_data_hora
         description: Data e hora da movimentação do estoque
+        data_type: datetime
       - name: estoque_movimento_tipo
         description: Tipo de movimentação do estoque
+        data_type: string
       - name: estoque_movimento_correcao_tipo
         description: Tipo de correção da movimentação do estoque
+        data_type: string
       - name: estoque_movimento_justificativa
         description: Justificativa da movimentação do estoque
+        data_type: string
+      - name: estoque_armazem_origem
+        description: Subestoque de origem do medicamento/insumo
+        data_type: string
+        quote: true
+      - name: estoque_armazem_destino
+        description: Subestoque de destino do medicamento/insumo
+        data_type: string
+        quote: true
+      - name: dispensacao_prescritor_cpf
+        description: CPF do prescritor no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        data_type: string
+        quote: true
       - name: dispensacao_prescritor_cns
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
         description: CNS do prescritor no caso de dispensação para usuário
+        data_type: string
       - name: dispensacao_paciente_cpf
         description: CPF do paciente no caso de dispensação para usuário
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+        data_type: string
       - name: dispensacao_paciente_cns
         description: CNS do paciente no caso de dispensação para usuário
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
+        data_type: string
       - name: material_quantidade
         description: Quantidade movimentada do medicamento/insumo
+        data_type: float64
         tests:
           - dbt_expectations.expect_column_values_to_be_between:
               name: raw_prontuario_vitacare__estoque_movimento__material_quantidade__positive
-              min_value: 0 
+              min_value: 0
       - name: data_particao
         description: Data de referencia da posição do estoque
+        data_type: date
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+        data_type: datetime
