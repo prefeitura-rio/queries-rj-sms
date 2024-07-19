@@ -74,7 +74,8 @@ models:
         data_type: STRING
       - name: estoque_reservado_para_abastecimento
         description: Este campo indica se o material está reservado para abastecimento
-          de outras unidades de saúde. Este campo só se aplica para estoques na TPC.
+          de outras unidades de saúde. Este campo só se aplica para estoques na
+          TPC.
         data_type: STRING
       - name: sistema_origem
         description: Sistema de origem do registro
@@ -89,62 +90,92 @@ models:
         description: Momento (GMT-3) no qual foi feito o download do dataset
         data_type: DATETIME
   - name: fct_estoque_movimento
-    description: ""
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
+        data_type: string
       - name: id_material
         description: Código do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: string
+      - name: id_pedido_wms
+        description: Identificador do pedido na TPC que gerou o evento de entrada de
+          medicamentos nas unidades da atenção primária
+        data_type: string
+        quote: true
       - name: localizacao_origem
         description: Subestoque de origem do medicamento/insumo
+        data_type: string
       - name: localizacao_destino
         description: Subestoque ou usuário de destinodo medicamento/insumo
+        data_type: string
+      - name: movimento_entrada_saida
+        description: Indica se o movimento é de entranda (somando ao estoque) ou de
+          saída (subtraindo do estoque)
+        data_type: string
+        quote: true
       - name: movimento_tipo
         description: Tipo de movimentação de estoque do medicamento/insumo
+        data_type: string
       - name: movimento_tipo_grupo
         description: Agrupador do tipo de movimentação do medicamento/insumo
+        data_type: string
       - name: movimento_justificativa
         description: Justificativa da movimentação do medicamento/insumo
+        data_type: string
       - name: data_evento
         description: Data do movimento de estoque
+        data_type: date
       - name: data_hora_evento
         description: Data e hora do movimento de estoque
+        data_type: datetime
       - name: consumo_prescritor_cpf
         description: CPF do prescritor do evento consumo
         policy_tags:
           - '{{var ("TAG_CPF")}}'
+        data_type: string
       - name: consumo_prescritor_cns
         description: CNS do prescritor do evento de consumo
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
+        data_type: string
       - name: consumo_paciente_cns
         description: CNS do paciente do evento de consumo
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
+        data_type: string
       - name: consumo_paciente_cpf
         description: CPF do paciente do evento de consumo
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: string
       - name: material_quantidade
         description: Quantidade movimentada do medicamento/insumo
+        data_type: float64
       - name: material_quantidade_com_sinal
         description: Quantidade movimentada do medicamento/insumo com sinal positivo em
           caso de entrada de estoque, negativo em caso de saída de estoque
+        data_type: float64
       - name: material_valor_total
         description: Valor em reais da quantidade movimentada do medicamento/insumo
+        data_type: float64
       - name: material_valor_total_com_sinal
         description: Valor em reais da quantidade movimentada do medicamento/insumo com
           sinal positivo em caso de entrada de estoque, negativo em caso de
           saída de estoque
+        data_type: float64
       - name: sistema_origem
         description: Sistema de origem do registro
+        data_type: string
       - name: data_particao
         description: Data de referencia do movimento do estoque
+        data_type: date
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+        data_type: datetime
