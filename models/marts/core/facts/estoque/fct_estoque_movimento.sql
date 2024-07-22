@@ -45,28 +45,35 @@ with
                 when
                     estoque_movimento_tipo
                     in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("AVARIA")
+                then "AVARIA"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
                     and estoque_movimento_correcao_tipo in ("CORRECAO")
                 then "CORRECAO"
                 when
                     estoque_movimento_tipo
                     in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
                     and estoque_movimento_correcao_tipo in ("OUTRO")
+                    and estoque_movimento_justificativa in ("IMPORTAÇÃO TPC")
+                then "IMPORTACAO TPC"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("OUTRO")
+                    and estoque_movimento_justificativa not in ("IMPORTAÇÃO TPC")
                 then "OUTRO"
-                when
-                    estoque_movimento_tipo
-                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
-                    and estoque_movimento_correcao_tipo in ("AVARIA")
-                then "AVARIA"
-                when
-                    estoque_movimento_tipo
-                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
-                    and estoque_movimento_correcao_tipo in ("VALIDADE_EXPIRADA")
-                then "VALIDADE_EXPIRADA"
                 when
                     estoque_movimento_tipo
                     in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
                     and estoque_movimento_correcao_tipo in ("TRANSFERENCIA")
                 then "TRANSFERENCIA"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("VALIDADE_EXPIRADA")
+                then "VALIDADE_EXPIRADA"
                 else estoque_movimento_tipo
             end as estoque_movimento_tipo_corrigido
         from source_vitacare
@@ -99,7 +106,7 @@ with
                 else "DESCONHECIDO"
             end as estoque_movimento_entrada_saida,
             case
-                when estoque_movimento_tipo_corrigido = "NOVO LOTE"
+                when estoque_movimento_tipo_corrigido in ("NOVO LOTE", "IMPORTACAO TPC")
                 then "ENTRADA DE ESTOQUE"
                 when
                     estoque_movimento_tipo_corrigido in (
@@ -130,7 +137,6 @@ with
                 else "DESCONHECIDO"
             end as estoque_movimento_tipo_grupo,
         from vitacare_movimento_corrigido
-
     ),
 
     -- - transform into standard model
