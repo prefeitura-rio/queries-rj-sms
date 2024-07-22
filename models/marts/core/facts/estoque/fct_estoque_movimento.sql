@@ -8,7 +8,7 @@
             "data_type": "date",
             "granularity": "month",
         },
-        cluster_by = ["sistema_origem", "id_cnes"],
+        cluster_by=["sistema_origem", "id_cnes"],
     )
 }}
 
@@ -33,6 +33,45 @@ with
     ),
 
     -- - standardize inventory movements # TODO: revisar padronização vitai
+    vitacare_movimento_corrigido as (
+        select
+            *,
+            case
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo = "ATENDIMENTO_EXTERNO"
+                then "ATENDIMENTO_EXTERNO"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("CORRECAO")
+                then "CORRECAO"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("OUTRO")
+                then "OUTRO"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("AVARIA")
+                then "AVARIA"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("VALIDADE_EXPIRADA")
+                then "VALIDADE_EXPIRADA"
+                when
+                    estoque_movimento_tipo
+                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
+                    and estoque_movimento_correcao_tipo in ("TRANSFERENCIA")
+                then "TRANSFERENCIA"
+                else estoque_movimento_tipo
+            end as estoque_movimento_tipo_corrigido
+        from source_vitacare
+    ),
+
     vitacare_padronizada as (
         select
             *,
@@ -41,7 +80,7 @@ with
                     estoque_movimento_tipo in (
                         "CORREÇÃO DE LOTE - AUMENTO", "NOVO LOTE", "RECUPERAÇÃO DE LOTE"
                     )
-                then "Entrada"
+                then "ENTRADA"
                 when
                     estoque_movimento_tipo in (
                         "ANULAÇÃO DE DISPENSAS",
@@ -56,59 +95,41 @@ with
                         "REMOÇÃO DE LOTE",
                         "SUSPENSÃO DE LOTE"
                     )
-                then "Saida"
-                else "Desconhecido" 
+                then "SAIDA"
+                else "DESCONHECIDO"
             end as estoque_movimento_entrada_saida,
             case
-                when estoque_movimento_tipo = "NOVO LOTE"
-                then "Entrada de Estoque"
+                when estoque_movimento_tipo_corrigido = "NOVO LOTE"
+                then "ENTRADA DE ESTOQUE"
                 when
-                    estoque_movimento_tipo in (
+                    estoque_movimento_tipo_corrigido in (
                         "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO",
                         "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO",
                         "DISPENSAÇÃO DE RECEITA EXTERNA",
                         "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR",
                         "ANULAÇÃO DE DISPENSAS",
                         "REFORÇO",  -- transferencias para subestoques já são consideradas consumo
-                        "REFORÇO ISOLADO"
+                        "REFORÇO ISOLADO",
+                        "ATENDIMENTO_EXTERNO"
                     )
-                    or (
-                        estoque_movimento_tipo in (
-                            "CORREÇÃO DE LOTE - AUMENTO",
-                            "CORREÇÃO DE LOTE - DIMINUIÇÃO"
-                        )
-                        and estoque_movimento_correcao_tipo = "ATENDIMENTO_EXTERNO"
-                    )
-                then "Consumo"
+                then "CONSUMO"
                 when
-                    estoque_movimento_tipo in ("REMOÇÃO DE LOTE")
-                    or (
-                        estoque_movimento_tipo in (
-                            "CORREÇÃO DE LOTE - AUMENTO",
-                            "CORREÇÃO DE LOTE - DIMINUIÇÃO"
-                        )
-                        and estoque_movimento_correcao_tipo in ("CORRECAO", "OUTRO")
-                    )
-                then "Correcao de Estoque / Outro"
+                    estoque_movimento_tipo_corrigido
+                    in ("REMOÇÃO DE LOTE", "CORRECAO", "OUTRO")
+                then "CORRECAO DE ESTOQUE / OUTRO"
+                when estoque_movimento_tipo_corrigido in ("AVARIA", "VALIDADE_EXPIRADA")
+                then "AVARIA / VENCIMENTO"
                 when
-                    estoque_movimento_tipo
-                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
-                    and estoque_movimento_correcao_tipo in ("AVARIA", "VALIDADE_EXPIRADA")
-                then "Avaria / Vencimento"
-                when
-                    estoque_movimento_tipo
+                    estoque_movimento_tipo_corrigido
                     in ("SUSPENSÃO DE LOTE", "RECUPERAÇÃO DE LOTE")
-                then "Bloqueio/Desbloqueio de Lote"
-                when estoque_movimento_correcao_tipo in ("DEVOLUÇÃO ISOLADA")
-                then "Devolucao"
-                when
-                    estoque_movimento_tipo
-                    in ("CORREÇÃO DE LOTE - AUMENTO", "CORREÇÃO DE LOTE - DIMINUIÇÃO")
-                    and estoque_movimento_correcao_tipo in ("TRANSFERENCIA")
-                then "Transferencia Externa"
-                else "Desconhecido"
+                then "BLOQUEIO / DESBLOQUEIO DE LOTE"
+                when estoque_movimento_tipo_corrigido in ("DEVOLUÇÃO ISOLADA")
+                then "DEVOLUCAO"
+                when estoque_movimento_tipo_corrigido in ("TRANSFERENCIA")
+                then "TRANSFERENCIA EXTERNA"
+                else "DESCONHECIDO"
             end as estoque_movimento_tipo_grupo,
-        from source_vitacare
+        from vitacare_movimento_corrigido
 
     ),
 
@@ -176,7 +197,7 @@ with
             "" as material_unidade,
             est.estoque_armazem_origem as estoque_secao_origem,
             est.estoque_armazem_destino as estoque_secao_destino,
-            est.estoque_movimento_tipo,
+            est.estoque_movimento_tipo_corrigido as estoque_movimento_tipo,
             est.estoque_movimento_justificativa,
             safe_cast(
                 est.estoque_movimento_data_hora as date
@@ -189,7 +210,7 @@ with
             est.estoque_movimento_entrada_saida,
             est.estoque_movimento_tipo_grupo,
             case
-                when est.estoque_movimento_entrada_saida = "Saida"
+                when est.estoque_movimento_entrada_saida = "SAIDA"
                 then - material_quantidade
                 else material_quantidade
             end as material_quantidade_com_sinal,
@@ -216,7 +237,6 @@ select
     id_cnes,
     id_material,
     id_pedido_wms,
-
     -- Common Fields
     upper(estoque_secao_origem) as localizacao_origem,
     upper(estoque_secao_destino) as localizacao_destino,
@@ -237,10 +257,8 @@ select
     if(
         material_quantidade_com_sinal < 0, - material_valor_total, material_valor_total
     ) as material_valor_total_com_sinal,
-
     -- Metadata
     sistema_origem,
     data_particao,
     data_carga
-
 from movimento
