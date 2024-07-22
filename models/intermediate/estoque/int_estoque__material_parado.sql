@@ -2,7 +2,7 @@ with
     ultima_dispensacao as (
         select id_cnes, id_material, max(data_particao) as data_ultima_dispensacao
         from {{ ref("fct_estoque_movimento") }}
-        where movimento_tipo_grupo = "Consumo"
+        where movimento_tipo_grupo = "CONSUMO"
         group by id_cnes, id_material
     )
 

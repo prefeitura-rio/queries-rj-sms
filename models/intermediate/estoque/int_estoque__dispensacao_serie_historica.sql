@@ -6,7 +6,7 @@ with
             data_particao,
             sum(material_quantidade) as material_quantidade
         from {{ ref("fct_estoque_movimento") }}
-        where movimento_tipo_grupo = "Consumo"
+        where movimento_tipo_grupo = "CONSUMO"
         group by id_cnes, id_material, data_particao
         order by id_cnes, id_material, data_particao
     ),
