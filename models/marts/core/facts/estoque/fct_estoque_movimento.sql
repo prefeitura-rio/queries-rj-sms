@@ -145,6 +145,7 @@ with
             est.id_cnes,
             est.id_material,
             "" as id_pedido_wms,
+            "" as id_lote,
             est.material_descricao,
             est.material_unidade,
             est.estoque_secao_origem,
@@ -199,6 +200,7 @@ with
             est.id_cnes,
             est.id_material,
             est.id_pedido_wms,
+            est.id_lote,
             est.material_descricao,
             "" as material_unidade,
             est.estoque_armazem_origem as estoque_secao_origem,
@@ -243,6 +245,7 @@ select
     id_cnes,
     id_material,
     id_pedido_wms,
+    id_lote,
     -- Common Fields
     upper(estoque_secao_origem) as localizacao_origem,
     upper(estoque_secao_destino) as localizacao_destino,
