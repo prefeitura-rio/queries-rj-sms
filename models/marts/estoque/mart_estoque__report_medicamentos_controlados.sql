@@ -1,6 +1,6 @@
 {{
     config(
-        alias="rp_medicamentos_controlados",
+        alias="report_medicamentos_controlados",
         schema="projeto_estoque",
         materialized="table",
     )
@@ -15,8 +15,10 @@ with
         where
             sistema_origem = 'vitacare'
             and material_quantidade <> 0
-            and data_particao
-            >= date_sub(current_date('America/Sao_Paulo'), interval 6 day)
+            and data_particao >= date_sub(
+                current_date('America/Sao_Paulo'),
+                interval {{ dbt_date.day_of_month("current_date('America/Sao_Paulo')") }} -1 day
+            )
             and id_cnes in ("2280787", "7523246", "2288370")  -- Nilza Rosa (22), Nelio de
     -- Oliveira (10), Pindaro de Carvalho (21)
     ),
@@ -29,7 +31,10 @@ with
             sum(material_quantidade) as posicao_quantidade
         from {{ ref("fct_estoque_posicao") }}
         where
-            data_particao = date_sub(current_date('America/Sao_Paulo'), interval 6 day)
+            data_particao = date_sub(
+                current_date('America/Sao_Paulo'),
+                interval {{ dbt_date.day_of_month("current_date('America/Sao_Paulo')") }} -1 day
+            )
         group by 1, 2, 3
     ),
 
@@ -57,6 +62,7 @@ with
             controlado_tipo,
             id_lote,
             data_evento,
+            data_hora_evento,
             movimento_entrada_saida,
             movimento_tipo_grupo,
             movimento_tipo,
@@ -118,7 +124,7 @@ with
         select
             *,
             row_number() over (
-                partition by id_cnes, id_material order by data_evento, tipo_evento
+                partition by id_cnes, id_material order by tipo_evento, data_hora_evento
             ) as ordem
         from eventos
         order by id_cnes, nome, data_evento, tipo_evento
@@ -134,6 +140,7 @@ with
             val.data_validade,
             mov.tipo_evento,
             mov.evento,
+            movimento_justificativa,
             mov.data_evento,
             mov.ordem,
             mov.quantidade as movimento_quantidade,
@@ -168,10 +175,12 @@ select
     data_validade,
     tipo_evento,
     evento,
+    -- movimento_justificativa,
     data_evento,
     ordem,
-    --posicao_inicial,
+    -- posicao_inicial,
     movimento_quantidade,
-    --movimento_quantidade_acumulada,
+    -- movimento_quantidade_acumulada,
     posicao_final
 from final
+where id_material = "65053800987" and id_cnes = "7523246"
