@@ -43,11 +43,7 @@ with
 
     material as (select * from {{ ref("dim_material") }}),
 
-    estabelecimento as (
-        select *
-        from {{ ref("dim_estabelecimento") }}
-        where prontuario_estoque_tem_dado = "sim"
-    ),
+    estabelecimento as (select * from {{ ref("dim_estabelecimento") }}),
 
     posicao_final as (
         select
@@ -115,7 +111,7 @@ with
             mat.controlado_indicador as material_controlado_indicador,
             mat.controlado_tipo as material_controlado_tipo,
         from posicao_atual as pos  -- posicao_atual
-        inner join estabelecimento as est on (pos.id_cnes = est.id_cnes)
+        left join estabelecimento as est on (pos.id_cnes = est.id_cnes)
         left join curva_abc as abc using (id_curva_abc)
         left join historico_dispensacao as disp using (id_curva_abc)
         left join
@@ -123,7 +119,7 @@ with
             on (pos.id_material = cmm.id_material and pos.id_cnes = cmm.id_cnes)
         left join material as mat on (pos.id_material = mat.id_material)
         left join sigma as sig on (pos.id_material = sig.cd_material)
-
+        where est.prontuario_estoque_tem_dado = "sim" or pos.id_cnes = "tpc"
     )
 
 select
