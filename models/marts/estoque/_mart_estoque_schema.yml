@@ -500,7 +500,7 @@ models:
         description: Dia da semana, sendo domingo = 1
         data_type: int64
       - name: quantidade_estocada
-        description: Quantidade disponível em estoque no início da data
+        description: Quantidade disponível em estoque no início da data de referência
         data_type: float64
       - name: quantidade_dispensada
         description: Quantidade consumida (dispensada) no dia
@@ -567,7 +567,7 @@ models:
         description: Dia da semana, sendo domingo = 1
         data_type: int64
       - name: quantidade_estocada
-        description: Quantidade disponível em estoque no início da data
+        description: Quantidade disponível em estoque no início da data de referência
         data_type: float64
       - name: quantidade_dispensada
         description: Quantidade consumida (dispensada) no dia
