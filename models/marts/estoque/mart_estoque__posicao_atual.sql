@@ -192,6 +192,7 @@ select
     data_carga,
 
 from posicao_final
+where sistema_origem <> "vitai"  -- retirado por falta de dados
 order by
     estabelecimento_tipo_sms_agrupado,
     estabelecimento_area_programatica,
