@@ -21,7 +21,6 @@ with
             )
             * 1.5 as iqr
         from historico
-        where quantidade_dispensada is not null  -- retiramos as datas nas quais não houveram dispensações e não é verificavel se havia estoque positivo
     ),
     
     outlier as (
