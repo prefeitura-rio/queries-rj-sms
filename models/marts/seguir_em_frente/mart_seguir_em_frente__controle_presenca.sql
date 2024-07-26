@@ -20,9 +20,9 @@ select
     b.fase_atual,
     case
         when b.fase_atual = "1"
-        then UPPER(b.fase_1_estabelecimento)
+        then upper(b.fase_1_estabelecimento)
         when b.fase_atual = "2"
-        then UPPER(b.fase_2_estabelecimento)
+        then upper(b.fase_2_estabelecimento)
         else null
     end as estabelecimento,
     p.observacoes,
@@ -30,7 +30,16 @@ select
     p.criado_por,
     p.criado_em,
     p.registro_data,
-    format_date("%Y-%m", p.registro_data) as registro_data_competencia,
+    format_date(
+        "%Y-%m",
+        if(
+            {{ dbt_date.day_of_month("p.registro_data") }} <= 14,
+            p.registro_data,
+            date_add(
+                p.registro_data, interval 1 month
+            )
+        )
+    ) as registro_data_competencia, -- competência é o mês seguinte se a data for maior que 14
     p.registro_valor,
     if(p.registro_valor = "falta", 0, 1) as registro_valor_numerico
 from presenca as p
