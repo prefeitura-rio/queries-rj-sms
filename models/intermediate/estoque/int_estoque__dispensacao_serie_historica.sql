@@ -41,7 +41,7 @@ select
     cal.data,
     disp.material_quantidade as quantidade_dispensada_positiva,  -- casos onde não houve dispensação (=0) aparecem como null
     {{ dbt_date.day_of_week("cal.data") }} as dia_semana,
-    pos.material_quantidade as quantidade_estocada,
+    coalesce(pos.material_quantidade,0) as quantidade_estocada,
     coalesce(min.dispensacao_minima, 1) as dispensacao_minima,
     coalesce(
         disp.material_quantidade,
