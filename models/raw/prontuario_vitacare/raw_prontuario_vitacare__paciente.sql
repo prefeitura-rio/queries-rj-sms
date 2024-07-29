@@ -2,7 +2,7 @@
     config(
         alias="paciente",
         materialized="incremental",
-        unique_key="patient_cpf",
+        unique_key="paciente_cpf",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
