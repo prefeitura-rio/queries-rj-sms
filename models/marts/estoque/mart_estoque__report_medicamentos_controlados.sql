@@ -3,6 +3,7 @@
         alias="report_medicamentos_controlados",
         schema="projeto_estoque",
         materialized="table",
+        tag =["report", "weekly"],
     )
 }}
 
