@@ -28,3 +28,85 @@ models:
       - name: updated_at
         description: Data de última atualização do registro
         data_type: datetime
+  - name: raw_plataforma_smsrio__paciente
+    description: >
+      Tabela contendo informações detalhadas dos pacientes da Plataforma SMSRio.
+    columns:
+      - name: paciente_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: nome
+        description: Nome completo do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: nome_pai
+        description: Nome do pai do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_PAI") }}'
+      - name: dt_nasc
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DTNASCIMENTO") }}'
+      - name: sexo
+        description: Sexo do paciente.
+      - name: raca_cor
+        description: Raça/cor do paciente.
+      - name: nacionalidade
+        description: Nacionalidade do paciente.
+      - name: obito
+        description: Indicação se o paciente é falecido.
+      - name: dt_obito
+        description: Data de óbito do paciente.
+        policy_tags:
+          - '{{ var("TAG_DTOBITO") }}'
+      - name: end_tp_logrado_cod
+        description: Código do tipo de logradouro do endereço do paciente.
+      - name: end_logrado
+        description: Logradouro do endereço do paciente.
+      - name: end_numero
+        description: Número do endereço do paciente.
+      - name: end_comunidade
+        description: Comunidade onde o paciente reside.
+      - name: end_complem
+        description: Complemento do endereço do paciente.
+      - name: end_bairro
+        description: Bairro do endereço do paciente.
+      - name: end_cep
+        description: CEP do endereço do paciente.
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+      - name: cod_mun_res
+        description: Código do município de residência do paciente.
+      - name: uf_res
+        description: Unidade Federativa de residência do paciente.
+      - name: cod_mun_nasc
+        description: Código do município de nascimento do paciente.
+      - name: uf_nasc
+        description: Unidade Federativa de nascimento do paciente.
+      - name: cod_pais_nasc
+        description: Código do país de nascimento do paciente.
+      - name: email
+        description: Email do paciente.
+        policy_tags:
+          - '{{ var("TAG_EMAIL") }}'
+      - name: timestamp
+        description: Timestamp do registro.
+      - name: cns_provisorio
+        description: CNS (Cartão Nacional de Saúde) provisório do paciente.
+      - name: telefones
+        description: Telefones de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+      - name: ano_particao
+        description: Ano de partição dos dados.
+      - name: mes_particao
+        description: Mês de partição dos dados.
+      - name: data_particao
+        description: Data de partição dos dados.
