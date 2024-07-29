@@ -124,7 +124,7 @@ with
         select
             *,
             row_number() over (
-                partition by id_cnes, id_material order by tipo_evento, data_hora_evento
+                partition by id_cnes, id_material order by data_hora_evento, tipo_evento 
             ) as ordem
         from eventos
         order by id_cnes, nome, data_evento, tipo_evento
@@ -183,4 +183,4 @@ select
     -- movimento_quantidade_acumulada,
     posicao_final
 from final
-where id_material = "65053800987" and id_cnes = "7523246"
+-- where id_material = "65053800715" and id_cnes = "7523246"
