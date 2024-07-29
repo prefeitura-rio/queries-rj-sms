@@ -1,4 +1,4 @@
-WITH smrio_tb AS (
+WITH smsrio_tb AS (
     SELECT 
         TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(paciente_cpf, NFD), r'\pM', ''))) AS paciente_cpf,
         TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cns_provisorio, NFD), r'\pM', ''))) AS cns_provisorio,
@@ -26,7 +26,7 @@ WITH smrio_tb AS (
 ),
 
 
-smrio_cns_ranked AS (
+smsrio_cns_ranked AS (
     SELECT
         paciente_cpf,
         TRIM(cns) AS cns,
@@ -36,7 +36,7 @@ smrio_cns_ranked AS (
                 paciente_cpf,
                 cns,
                 timestamp
-            FROM smrio_tb,
+            FROM smsrio_tb,
             UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(cns_provisorio, '[', ''), ']', ''), '"', ''), ',')) AS cns
             WHERE
                 cns_provisorio IS NOT NULL
@@ -45,34 +45,34 @@ smrio_cns_ranked AS (
     
 ),
 
-smrio_clinica_familia AS (
+smsrio_clinica_familia AS (
     SELECT
         paciente_cpf,
         cod_mun_res AS id_cnes,
         end_logrado AS nome,
         updated_at AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
-    FROM smrio_tb
+    FROM smsrio_tb
     WHERE
         end_logrado IS NOT NULL
     GROUP BY
         paciente_cpf, cod_mun_res, end_logrado, updated_at
 ),
 
-smrio_equipe_saude_familia AS (
+smsrio_equipe_saude_familia AS (
     SELECT
         paciente_cpf,
         cod_mun_res AS id_ine,
         updated_at AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
-    FROM smrio_tb
+    FROM smsrio_tb
     WHERE
         cod_mun_res IS NOT NULL
     GROUP BY
         paciente_cpf, cod_mun_res, updated_at
 ),
 
-smrio_contato AS (
+smsrio_contato AS (
     SELECT
         paciente_cpf,
         'telefone' AS tipo,
@@ -83,7 +83,7 @@ smrio_contato AS (
             paciente_cpf,
             telefones,
             timestamp
-        FROM smrio_tb,
+        FROM smsrio_tb,
         UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(telefones, '[', ''), ']', ''), '"', ''), ',')) AS telefones
         WHERE
             telefones IS NOT NULL
@@ -97,14 +97,14 @@ smrio_contato AS (
         'email' AS tipo,
         email AS valor,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
-    FROM smrio_tb
+    FROM smsrio_tb
     WHERE
         email IS NOT NULL
     GROUP BY
         paciente_cpf, email, timestamp
 ),
 
-smrio_endereco AS (
+smsrio_endereco AS (
     SELECT
         paciente_cpf,
         end_cep AS cep,
@@ -117,26 +117,26 @@ smrio_endereco AS (
         uf_res AS estado,
         timestamp AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
-    FROM smrio_tb
+    FROM smsrio_tb
     WHERE
         end_logrado IS NOT NULL
     GROUP BY
         paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, timestamp
 ),
 
-smrio_prontuario AS (
+smsrio_prontuario AS (
     SELECT
         paciente_cpf,
         'SMSRIO' AS fornecedor,
         cod_mun_res AS id_cnes,
         NULL AS id_paciente,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
-    FROM smrio_tb
+    FROM smsrio_tb
     GROUP BY
         paciente_cpf, cod_mun_res, timestamp
 ),
 
-smrio_paciente_dados AS (
+smsrio_paciente_dados AS (
     SELECT
         paciente_cpf,
         nome,
@@ -150,7 +150,7 @@ smrio_paciente_dados AS (
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf) AS rank
-    FROM smrio_tb
+    FROM smsrio_tb
     GROUP BY
         paciente_cpf, nome, dt_nasc, sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
 )
@@ -178,12 +178,12 @@ SELECT
     ARRAY_AGG(STRUCT(spt.fornecedor, spt.id_cnes, spt.id_paciente, spt.rank)) AS prontuario,
     STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
 FROM
-    smrio_paciente_dados spd
-LEFT JOIN smrio_cns_ranked scr ON spd.paciente_cpf = scr.paciente_cpf
-LEFT JOIN smrio_clinica_familia scf ON spd.paciente_cpf = scf.paciente_cpf
-LEFT JOIN smrio_equipe_saude_familia sesf ON spd.paciente_cpf = sesf.paciente_cpf
-LEFT JOIN smrio_contato sct ON spd.paciente_cpf = sct.paciente_cpf
-LEFT JOIN smrio_endereco sed ON spd.paciente_cpf = sed.paciente_cpf
-LEFT JOIN smrio_prontuario spt ON spd.paciente_cpf = spt.paciente_cpf
+    smsrio_paciente_dados spd
+LEFT JOIN smsrio_cns_ranked scr ON spd.paciente_cpf = scr.paciente_cpf
+LEFT JOIN smsrio_clinica_familia scf ON spd.paciente_cpf = scf.paciente_cpf
+LEFT JOIN smsrio_equipe_saude_familia sesf ON spd.paciente_cpf = sesf.paciente_cpf
+LEFT JOIN smsrio_contato sct ON spd.paciente_cpf = sct.paciente_cpf
+LEFT JOIN smsrio_endereco sed ON spd.paciente_cpf = sed.paciente_cpf
+LEFT JOIN smsrio_prontuario spt ON spd.paciente_cpf = spt.paciente_cpf
 GROUP BY
     spd.paciente_cpf
