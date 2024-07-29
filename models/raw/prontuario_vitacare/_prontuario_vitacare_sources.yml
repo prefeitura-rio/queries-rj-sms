@@ -7,4 +7,6 @@ sources:
     tables:
       - name: estoque_posicao
       - name: estoque_movimento
+      - name: paciente_eventos
+      - name: paciente_historico_eventos
 
