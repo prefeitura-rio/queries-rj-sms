@@ -85,12 +85,14 @@ with
             case
                 when
                     estoque_movimento_tipo in (
-                        "CORREÇÃO DE LOTE - AUMENTO", "NOVO LOTE", "RECUPERAÇÃO DE LOTE"
+                        "CORREÇÃO DE LOTE - AUMENTO",
+                        "NOVO LOTE",
+                        "RECUPERAÇÃO DE LOTE",
+                        "ANULAÇÃO DE DISPENSAS"
                     )
                 then "ENTRADA"
                 when
                     estoque_movimento_tipo in (
-                        "ANULAÇÃO DE DISPENSAS",
                         "CORREÇÃO DE LOTE - DIMINUIÇÃO",
                         "DEVOLUÇÃO ISOLADA",
                         "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO",
