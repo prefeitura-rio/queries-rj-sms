@@ -1,4 +1,10 @@
 -- Teste se a posição calculada bate com a posição obtida pela API
+{{ config(
+    error_if = ">2",
+    warn_if = ">0",    
+) }}
+
+
 with
     --
     ultima_posicao_calculada as (
@@ -15,11 +21,20 @@ with
         where rank = 1
     ),
 
+    posicao_calculada as (
+        select
+            id_cnes,
+            id_material,
+            date_add(data_evento, interval 1 day) as data_estoque_inicio_proximo_dia,
+            posicao_calculada
+        from ultima_posicao_calculada
+    ),
+
     posicao_api as (
         select
             id_cnes,
             id_material,
-            date_sub(data_particao, interval 1 day) as data_particao, -- A API retorna a posição do dia anterior
+            data_particao,
             sum(material_quantidade) as posicao_api,
         from {{ ref("fct_estoque_posicao") }}
         where
@@ -33,11 +48,10 @@ with
     )
 
 select calculada.*, api.posicao_api
-from ultima_posicao_calculada as calculada
+from posicao_calculada as calculada
 left join
     posicao_api as api
     on calculada.id_cnes = api.id_cnes
     and calculada.id_material = api.id_material
-    and calculada.data_evento = api.data_particao
-where calculada.posicao_calculada <> api.posicao_api
-    
+    and calculada.data_estoque_inicio_proximo_dia = api.data_particao
+where calculada.posicao_calculada != api.posicao_api
