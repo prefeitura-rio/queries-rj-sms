@@ -86,7 +86,7 @@ models:
         +tags: "daily"
       plataforma_smsrio:
         +schema: brutos_plataforma_smsrio
-        +tags: "daily"
+        +tags: ["smsrio", "daily"]
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]

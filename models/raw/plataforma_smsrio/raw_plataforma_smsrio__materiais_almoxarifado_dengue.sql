@@ -1,6 +1,7 @@
 {{
     config(
         alias="materiais_almoxarifado_dengue",
+        tags="smsrio_estoque"
     )
 }}
 
