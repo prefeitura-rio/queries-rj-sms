@@ -144,7 +144,7 @@ models:
         data_type: float64
       - name: material_consumo_medio
         description: Estimativa do consumo diário baseada na média de consumo dos
-          últimos 60 dias
+          últimos 90 dias
         data_type: float64
         tests:
           - dbt_expectations.expect_column_mean_to_be_between:
@@ -155,7 +155,7 @@ models:
                 severity: error
       - name: estoque_cobertura_dias
         description: Estimativa de quantos dias úteis devem durar o estoque baseado no
-          consumo médio diário dos últimos 60 dias
+          consumo médio diário dos últimos 90 dias
         data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
@@ -319,11 +319,11 @@ models:
         data_type: float64
       - name: material_consumo_medio
         description: Estimativa do consumo diário baseada na média de consumo dos
-          últimos 60 dias
+          últimos 90 dias
         data_type: float64
       - name: estoque_cobertura_dias
         description: Estimativa de quantos dias úteis devem durar o estoque baseado no
-          consumo médio diário dos últimos 60 dias
+          consumo médio diário dos últimos 90 dias
         data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
@@ -411,11 +411,11 @@ models:
         data_type: float64
       - name: material_consumo_medio
         description: Estimativa do consumo diário baseada na média de consumo dos
-          últimos 60 dias
+          últimos 90 dias
         data_type: float64
       - name: estoque_cobertura_dias
         description: Estimativa de quantos dias úteis devem durar o estoque baseado no
-          consumo médio diário dos últimos 60 dias
+          consumo médio diário dos últimos 90 dias
         data_type: float64
   - name: mart_estoque__posicao_atual_agregado_looker_row_level_access
     description: Tabela baseada na tabela estoque_posicao_atual_agregado, adicionado
@@ -479,11 +479,11 @@ models:
         data_type: float64
       - name: material_consumo_medio
         description: Estimativa do consumo diário baseada na média de consumo dos
-          últimos 60 dias
+          últimos 90 dias
         data_type: float64
       - name: estoque_cobertura_dias
         description: Estimativa de quantos dias úteis devem durar o estoque baseado no
-          consumo médio diário dos últimos 60 dias
+          consumo médio diário dos últimos 90 dias
         data_type: float64
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
