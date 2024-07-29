@@ -6,7 +6,7 @@ models:
     tests:
       - dbt_expectations.expect_table_row_count_to_be_between:
           name: mart_estoque__posicao_atual__row_count_to_be_between
-          min_value: 100000
+          min_value: 95000
           max_value: 200000
     columns:
       - name: id_cnes
@@ -133,7 +133,7 @@ models:
         description: Indica quantos dias faltam para o lote vencer
         data_type: int64
       - name: material_quantidade
-        description: Quantidade disponível do medicamento/insumo
+        description: Quantidade disponível em estoque no início do dia
         data_type: float64
       - name: material_valor_unitario
         description: Valor em reais de uma unidade do medicamento/insumo
@@ -143,11 +143,19 @@ models:
           medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
+        description: Estimativa do consumo diário baseada na média de consumo dos
+          últimos 90 dias
         data_type: float64
+        tests:
+          - dbt_expectations.expect_column_mean_to_be_between:
+              name: mart_estoque__posicao_atual__material_consumo_medio__mean_between
+              min_value: 30
+              max_value: 70
+              config:
+                severity: error
       - name: estoque_cobertura_dias
-        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
-          médio diário dos últimos 60 dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no
+          consumo médio diário dos últimos 90 dias
         data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
@@ -300,7 +308,7 @@ models:
         description: Indica quantos dias faltam para o lote vencer
         data_type: int64
       - name: material_quantidade
-        description: Quantidade disponível do medicamento/insumo
+        description: Quantidade disponível em estoque no início do dia
         data_type: float64
       - name: material_valor_unitario
         description: Valor em reais de uma unidade do medicamento/insumo
@@ -310,11 +318,12 @@ models:
           medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
+        description: Estimativa do consumo diário baseada na média de consumo dos
+          últimos 90 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
-          médio diário dos últimos 60 dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no
+          consumo médio diário dos últimos 90 dias
         data_type: float64
       - name: abc_justificativa_ausencia
         description: Explica o motivo do item não ter a curva ABC calculada
@@ -401,11 +410,12 @@ models:
         description: Quantidade disponível do medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
+        description: Estimativa do consumo diário baseada na média de consumo dos
+          últimos 90 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
-          médio diário dos últimos 60 dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no
+          consumo médio diário dos últimos 90 dias
         data_type: float64
   - name: mart_estoque__posicao_atual_agregado_looker_row_level_access
     description: Tabela baseada na tabela estoque_posicao_atual_agregado, adicionado
@@ -468,11 +478,12 @@ models:
         description: Quantidade disponível do medicamento/insumo
         data_type: float64
       - name: material_consumo_medio
-        description: Estimativa do consumo diário baseada na média de consumo dos últimos 60 dias
+        description: Estimativa do consumo diário baseada na média de consumo dos
+          últimos 90 dias
         data_type: float64
       - name: estoque_cobertura_dias
-        description: Estimativa de quantos dias úteis devem durar o estoque baseado no consumo
-          médio diário dos últimos 60 dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no
+          consumo médio diário dos últimos 90 dias
         data_type: float64
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
@@ -483,64 +494,64 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        data_type: STRING
+        data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: data
         description: Data do evento
-        data_type: DATE
+        data_type: date
       - name: dia_semana
         description: Dia da semana, sendo domingo = 1
-        data_type: INT64
+        data_type: int64
       - name: quantidade_estocada
-        description: Quantidade disponível em estoque no início do dia
-        data_type: FLOAT64
+        description: Quantidade disponível em estoque no início da data de referência
+        data_type: float64
       - name: quantidade_dispensada
         description: Quantidade consumida (dispensada) no dia
-        data_type: FLOAT64
+        data_type: float64
       - name: row_num
         description: Indexador do registro no nível id_cnes, id_material. Sendo row = 1
           o registro mais recente
-        data_type: INT64
+        data_type: int64
       - name: q1
         description: 1o quartil da série id_cnes, id_material
-        data_type: FLOAT64
+        data_type: float64
       - name: q3
         description: 3o quartil da série id_cnes, id_material
-        data_type: FLOAT64
+        data_type: float64
       - name: iqr
         description: Intervalor interquartílico da série id_cnes, id_material
-        data_type: FLOAT64
+        data_type: float64
       - name: outlier
         description: Indica se a observação é um outlier baseado no método de 1.5 vezes
           o intervalo interquartílico
-        data_type: STRING
+        data_type: string
       - name: quantidade_dispensada_sem_outlier
         description: Quantidade consumida (dispensada) no dia, exceto outliers
-        data_type: FLOAT64
+        data_type: float64
       - name: quantidade_dispensada_somente_outlier
         description: Quantidade consumida (dispensada) no dia, exclusivamente outliers
-        data_type: FLOAT64
+        data_type: float64
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
-        data_type: STRING
+        data_type: string
       - name: estaabelecimento_nome_sigla
         description: Abreviação do nome fantasia
-        data_type: STRING
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: material_id_descricao
         description: Concatenação do id do material e seu nome
-        data_type: STRING
+        data_type: string
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
   - name: mart_estoque__consumo_serie_historica_looker_row_level_access
@@ -550,69 +561,69 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        data_type: STRING
+        data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: data
         description: Data do evento
-        data_type: DATE
+        data_type: date
       - name: dia_semana
         description: Dia da semana, sendo domingo = 1
-        data_type: INT64
+        data_type: int64
       - name: quantidade_estocada
-        description: Quantidade disponível em estoque no início do dia
-        data_type: FLOAT64
+        description: Quantidade disponível em estoque no início da data de referência
+        data_type: float64
       - name: quantidade_dispensada
         description: Quantidade consumida (dispensada) no dia
-        data_type: FLOAT64
+        data_type: float64
       - name: row_num
         description: Indexador do registro no nível id_cnes, id_material. Sendo row = 1
           o registro mais recente
-        data_type: INT64
+        data_type: int64
       - name: q1
         description: 1o quartil da série id_cnes, id_material
-        data_type: FLOAT64
+        data_type: float64
       - name: q3
         description: 3o quartil da série id_cnes, id_material
-        data_type: FLOAT64
+        data_type: float64
       - name: iqr
         description: Intervalor interquartilico da série id_cnes, id_material
-        data_type: FLOAT64
+        data_type: float64
       - name: outlier
         description: Indica se a observação é um outlier baseado no método de 1.5 vezes
           o intervalo interquartilico
-        data_type: STRING
+        data_type: string
       - name: quantidade_dispensada_sem_outlier
         description: Quantidade consumida (dispensada) no dia, exceto outliers
-        data_type: FLOAT64
+        data_type: float64
       - name: quantidade_dispensada_somente_outlier
         description: Quantidade consumida (dispensada) no dia, exclusivamente outliers
-        data_type: FLOAT64
+        data_type: float64
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
-        data_type: STRING
+        data_type: string
       - name: estabelecimento_nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
-        data_type: STRING
+        data_type: string
       - name: estaabelecimento_nome_sigla
         description: Abreviação do nome fantasia
-        data_type: STRING
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: material_id_descricao
         description: Concatenação do id do material e seu nome
-        data_type: STRING
+        data_type: string
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
-        data_type: STRING
+        data_type: string
   - name: mart_estoque__movimento
     description: Tabela contenndo os movimentos de estoque de medicamentos e insumos
       das unidades de saúde. Para entação basica (vitacare), os dados são

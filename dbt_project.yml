@@ -89,7 +89,7 @@ models:
         +tags: "daily"
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
-        +tags: "daily"
+        +tags: ["vitacare", "daily"]
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
         +tags: "vitai"

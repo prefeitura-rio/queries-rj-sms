@@ -1,6 +1,7 @@
 {{
     config(
         alias="estoque_posicao",
+        tags="vitacare_estoque"
     )
 }}
 

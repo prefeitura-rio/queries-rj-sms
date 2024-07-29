@@ -42,6 +42,7 @@ with
 
     presenca_valid_records as (
         select * from prensenca_pivoted where registro_valor != ""
+        and (periodo_cadastrado_dia != "" or periodo_cadastrado_semana != "") -- #TODO: verificar porque alguns registros estão sem data
     ),
 
     final as (

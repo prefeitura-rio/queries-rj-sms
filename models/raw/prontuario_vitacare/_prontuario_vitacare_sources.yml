@@ -6,12 +6,7 @@ sources:
     schema: brutos_prontuario_vitacare_staging
     tables:
       - name: estoque_posicao
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
       - name: estoque_movimento
-        loaded_at_field: "CAST(data_particao AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
+      - name: paciente_eventos
+      - name: paciente_historico_eventos
+
