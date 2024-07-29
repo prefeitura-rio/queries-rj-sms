@@ -1,37 +1,43 @@
+DECLARE max_rank INT64 DEFAULT 3;
+
 WITH vitai_tb AS (
     SELECT 
-        cpf,
-        cns,
-        cliente,
-        nome,
-        telefone,
-        tipo_logradouro,
-        nome_logradouro,
-        numero,
-        complemento,
-        bairro,
-        municipio,
-        uf,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cpf, NFD), r'\pM', ''))) AS cpf,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cns, NFD), r'\pM', ''))) AS cns,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cliente, NFD), r'\pM', ''))) AS cliente,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(telefone, NFD), r'\pM', ''))) AS telefone,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(tipo_logradouro, NFD), r'\pM', ''))) AS tipo_logradouro,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_logradouro, NFD), r'\pM', ''))) AS nome_logradouro,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(numero, NFD), r'\pM', ''))) AS numero,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(complemento, NFD), r'\pM', ''))) AS complemento,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(bairro, NFD), r'\pM', ''))) AS bairro,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(municipio, NFD), r'\pM', ''))) AS municipio,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(uf, NFD), r'\pM', ''))) AS uf,
         updated_at,
-        id_cidadao,
-        nome_alternativo,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(id_cidadao, NFD), r'\pM', ''))) AS id_cidadao,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_alternativo, NFD), r'\pM', ''))) AS nome_alternativo,
         data_nascimento,
-        sexo,
-        raca_cor,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(sexo, NFD), r'\pM', ''))) AS sexo,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(raca_cor, NFD), r'\pM', ''))) AS raca_cor,
         data_obito,
-        nome_mae
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_mae, NFD), r'\pM', ''))) AS nome_mae
     FROM `rj-sms.brutos_prontuario_vitai.paciente`
-    WHERE cpf IS NOT NULL AND cpf != "None"
+    WHERE cpf IS NOT NULL
+        AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
+        AND TRIM(cpf) != ""
 ),
 
 vitai_cns_ranked AS (
     SELECT
         cpf AS paciente_cpf,
         cns,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
     FROM vitai_tb
     WHERE
         cns IS NOT NULL
+        AND TRIM(cns) NOT IN ("")
+    GROUP BY cpf, cns
 ),
 
 vitai_clinica_familia AS (
@@ -44,6 +50,8 @@ vitai_clinica_familia AS (
     FROM vitai_tb
     WHERE
         nome IS NOT NULL
+    GROUP BY
+        cpf, cliente, nome, updated_at
 ),
 
 vitai_equipe_saude_familia AS (
@@ -55,6 +63,8 @@ vitai_equipe_saude_familia AS (
     FROM vitai_tb
     WHERE
         cliente IS NOT NULL
+    GROUP BY
+        cpf, cliente, updated_at
 ),
 
 vitai_contato AS (
@@ -62,23 +72,27 @@ vitai_contato AS (
         cpf AS paciente_cpf,
         'telefone' AS tipo,
         telefone AS valor,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
     FROM vitai_tb
     WHERE
         telefone IS NOT NULL
+    GROUP BY
+        cpf, telefone, updated_at
     UNION ALL
     SELECT
         cpf AS paciente_cpf,
         'email' AS tipo,
-        NULL AS valor, 
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
+        '' AS valor, 
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
     FROM vitai_tb
+    GROUP BY
+        cpf
 ),
 
 vitai_endereco AS (
     SELECT
         cpf AS paciente_cpf,
-        NULL AS cep,
+        '' AS cep,
         tipo_logradouro,
         nome_logradouro AS logradouro,
         numero AS numero,
@@ -91,16 +105,20 @@ vitai_endereco AS (
     FROM vitai_tb
     WHERE
         nome_logradouro IS NOT NULL
+    GROUP BY
+        cpf, tipo_logradouro, nome_logradouro, numero, complemento, bairro, municipio, uf, updated_at
 ),
 
 vitai_prontuario AS (
     SELECT
         cpf AS paciente_cpf,
-        'vitai' AS fornecedor,
+        'VITAI' AS fornecedor,
         cliente AS id_cnes,
-        id_cidadao AS id_paciente,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
+        cpf AS id_paciente,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
     FROM vitai_tb
+    GROUP BY
+        cpf, cliente
 ),
 
 vitai_paciente_dados AS (
@@ -115,9 +133,11 @@ vitai_paciente_dados AS (
         data_obito AS obito_indicador,
         NULL AS obito_data,
         nome_mae AS mae_nome,
-        NULL AS pai_nome, 
+        NULL AS pai_nome, -- Assumindo que a coluna nome_pai não existe na tabela vitai
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf) AS rank
     FROM vitai_tb
+    GROUP BY
+        cpf, nome, nome_alternativo, cpf, data_nascimento, sexo, raca_cor, data_obito, nome_mae
 )
 
 SELECT
@@ -144,11 +164,11 @@ SELECT
     STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
 FROM
     vitai_paciente_dados vi_pd
-LEFT JOIN vitai_cns_ranked vi_cr ON vi_pd.paciente_cpf = vi_cr.paciente_cpf AND vi_cr.rank = 1
-LEFT JOIN vitai_clinica_familia vi_cf ON vi_pd.paciente_cpf = vi_cf.paciente_cpf AND vi_cf.rank = 1
-LEFT JOIN vitai_equipe_saude_familia vi_esf ON vi_pd.paciente_cpf = vi_esf.paciente_cpf AND vi_esf.rank = 1
-LEFT JOIN vitai_contato vi_ct ON vi_pd.paciente_cpf = vi_ct.paciente_cpf AND vi_ct.rank = 1
-LEFT JOIN vitai_endereco vi_ed ON vi_pd.paciente_cpf = vi_ed.paciente_cpf AND vi_ed.rank = 1
-LEFT JOIN vitai_prontuario vi_pt ON vi_pd.paciente_cpf = vi_pt.paciente_cpf AND vi_pt.rank = 1
+LEFT JOIN vitai_cns_ranked vi_cr ON vi_pd.paciente_cpf = vi_cr.paciente_cpf AND vi_cr.rank < max_rank
+LEFT JOIN vitai_clinica_familia vi_cf ON vi_pd.paciente_cpf = vi_cf.paciente_cpf AND vi_cf.rank < max_rank
+LEFT JOIN vitai_equipe_saude_familia vi_esf ON vi_pd.paciente_cpf = vi_esf.paciente_cpf AND vi_esf.rank < max_rank
+LEFT JOIN vitai_contato vi_ct ON vi_pd.paciente_cpf = vi_ct.paciente_cpf AND vi_ct.rank < max_rank
+LEFT JOIN vitai_endereco vi_ed ON vi_pd.paciente_cpf = vi_ed.paciente_cpf AND vi_ed.rank < max_rank
+LEFT JOIN vitai_prontuario vi_pt ON vi_pd.paciente_cpf = vi_pt.paciente_cpf AND vi_pt.rank < max_rank
 GROUP BY
-    vi_pd.paciente_cpf, vi_pd.nome, vi_pd.nome_social, vi_pd.cpf, vi_pd.data_nascimento, vi_pd.genero, vi_pd.raca, vi_pd.obito_indicador, vi_pd.mae_nome, vi_pd.pai_nome, vi_pd.rank
+    vi_pd.paciente_cpf

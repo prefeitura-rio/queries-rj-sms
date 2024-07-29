@@ -1,26 +1,26 @@
 WITH smrio_tb AS (
     SELECT 
-        paciente_cpf,
-        cns_provisorio,
-        telefones,
-        email,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(paciente_cpf, NFD), r'\pM', ''))) AS paciente_cpf,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cns_provisorio, NFD), r'\pM', ''))) AS cns_provisorio,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(telefones, NFD), r'\pM', ''))) AS telefones,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(email, NFD), r'\pM', ''))) AS email,
         timestamp,
-        end_logrado,
-        end_cep,
-        end_tp_logrado_cod,
-        end_numero,
-        end_complem,
-        end_bairro,
-        cod_mun_res,
-        uf_res,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_logrado, NFD), r'\pM', ''))) AS end_logrado,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_cep, NFD), r'\pM', ''))) AS end_cep,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_tp_logrado_cod, NFD), r'\pM', ''))) AS end_tp_logrado_cod,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_numero, NFD), r'\pM', ''))) AS end_numero,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_complem, NFD), r'\pM', ''))) AS end_complem,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_bairro, NFD), r'\pM', ''))) AS end_bairro,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cod_mun_res, NFD), r'\pM', ''))) AS cod_mun_res,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(uf_res, NFD), r'\pM', ''))) AS uf_res,
         dt_nasc,
-        sexo,
-        raca_cor,
-        obito,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(sexo, NFD), r'\pM', ''))) AS sexo,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(raca_cor, NFD), r'\pM', ''))) AS raca_cor,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(obito, NFD), r'\pM', ''))) AS obito,
         dt_obito,
-        nome_mae,
-        nome_pai,
-        nome,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_mae, NFD), r'\pM', ''))) AS nome_mae,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_pai, NFD), r'\pM', ''))) AS nome_pai,
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
         updated_at
     FROM rj-sms.brutos_plataforma_smsrio.paciente
 ),
@@ -30,17 +30,19 @@ smrio_cns_ranked AS (
     SELECT
         paciente_cpf,
         TRIM(cns) AS cns,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf DESC) AS rank
     FROM (
-        SELECT
-            paciente_cpf,
-            cns,
-            timestamp
-    FROM smrio_tb,
+            SELECT
+                paciente_cpf,
+                cns,
+                timestamp
+            FROM smrio_tb,
             UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(cns_provisorio, '[', ''), ']', ''), '"', ''), ',')) AS cns
-        WHERE
-            cns_provisorio IS NOT NULL
+            WHERE
+                cns_provisorio IS NOT NULL
     )
+    GROUP BY paciente_cpf, TRIM(cns)
+    
 ),
 
 smrio_clinica_familia AS (
@@ -50,10 +52,11 @@ smrio_clinica_familia AS (
         end_logrado AS nome,
         updated_at AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
-    FROM
-        rj-sms.brutos_plataforma_smsrio.paciente
+    FROM smrio_tb
     WHERE
         end_logrado IS NOT NULL
+    GROUP BY
+        paciente_cpf, cod_mun_res, end_logrado, updated_at
 ),
 
 smrio_equipe_saude_familia AS (
@@ -62,10 +65,11 @@ smrio_equipe_saude_familia AS (
         cod_mun_res AS id_ine,
         updated_at AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
-    FROM
-        rj-sms.brutos_plataforma_smsrio.paciente
+    FROM smrio_tb
     WHERE
         cod_mun_res IS NOT NULL
+    GROUP BY
+        paciente_cpf, cod_mun_res, updated_at
 ),
 
 smrio_contato AS (
@@ -79,21 +83,25 @@ smrio_contato AS (
             paciente_cpf,
             telefones,
             timestamp
-    FROM smrio_tb,
-            UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(telefones, '[', ''), ']', ''), '"', ''), ',')) AS telefones
+        FROM smrio_tb,
+        UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(telefones, '[', ''), ']', ''), '"', ''), ',')) AS telefones
         WHERE
             telefones IS NOT NULL
     )
+    WHERE TRIM(telefones) NOT IN ("NULL","NONE")
+    GROUP BY
+        paciente_cpf, telefones, timestamp
     UNION ALL
     SELECT
         paciente_cpf,
         'email' AS tipo,
         email AS valor,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
-    FROM
-        rj-sms.brutos_plataforma_smsrio.paciente
+    FROM smrio_tb
     WHERE
         email IS NOT NULL
+    GROUP BY
+        paciente_cpf, email, timestamp
 ),
 
 smrio_endereco AS (
@@ -109,21 +117,23 @@ smrio_endereco AS (
         uf_res AS estado,
         timestamp AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
-    FROM
-        rj-sms.brutos_plataforma_smsrio.paciente
+    FROM smrio_tb
     WHERE
         end_logrado IS NOT NULL
+    GROUP BY
+        paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, timestamp
 ),
 
 smrio_prontuario AS (
     SELECT
         paciente_cpf,
-        'smrio' AS fornecedor,
+        'SMRIO' AS fornecedor,
         cod_mun_res AS id_cnes,
         NULL AS id_paciente,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
-    FROM
-        rj-sms.brutos_plataforma_smsrio.paciente
+    FROM smrio_tb
+    GROUP BY
+        paciente_cpf, cod_mun_res, timestamp
 ),
 
 smrio_paciente_dados AS (
@@ -140,8 +150,9 @@ smrio_paciente_dados AS (
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf) AS rank
-    FROM
-        rj-sms.brutos_plataforma_smsrio.paciente
+    FROM smrio_tb
+    GROUP BY
+        paciente_cpf, nome, dt_nasc, sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
 )
 
 SELECT
@@ -175,4 +186,4 @@ LEFT JOIN smrio_contato sct ON spd.paciente_cpf = sct.paciente_cpf
 LEFT JOIN smrio_endereco sed ON spd.paciente_cpf = sed.paciente_cpf
 LEFT JOIN smrio_prontuario spt ON spd.paciente_cpf = spt.paciente_cpf
 GROUP BY
-    spd.paciente_cpf, spd.nome, spd.nome_social, spd.cpf, spd.data_nascimento, spd.genero, spd.raca, spd.obito_indicador, spd.mae_nome, spd.pai_nome, spd.rank
+    spd.paciente_cpf
