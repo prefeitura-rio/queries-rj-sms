@@ -127,7 +127,7 @@ smrio_endereco AS (
 smrio_prontuario AS (
     SELECT
         paciente_cpf,
-        'SMRIO' AS fornecedor,
+        'SMSRIO' AS fornecedor,
         cod_mun_res AS id_cnes,
         NULL AS id_paciente,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
