@@ -21,8 +21,7 @@ WITH vitai_tb AS (
         data_obito,
         nome_mae
     FROM `rj-sms.brutos_prontuario_vitai.paciente`
-    WHERE cpf NOT NULL AND cpf != "None"
-    LIMIT 1000
+    WHERE cpf IS NOT NULL AND cpf != "None"
 ),
 
 vitai_cns_ranked AS (
@@ -45,8 +44,6 @@ vitai_clinica_familia AS (
     FROM vitai_tb
     WHERE
         nome IS NOT NULL
-    GROUP BY
-        cpf, cliente, nome, updated_at
 ),
 
 vitai_equipe_saude_familia AS (
@@ -58,8 +55,6 @@ vitai_equipe_saude_familia AS (
     FROM vitai_tb
     WHERE
         cliente IS NOT NULL
-    GROUP BY
-        cpf, cliente, updated_at
 ),
 
 vitai_contato AS (
@@ -71,23 +66,19 @@ vitai_contato AS (
     FROM vitai_tb
     WHERE
         telefone IS NOT NULL
-    GROUP BY
-        cpf, telefone, updated_at
     UNION ALL
     SELECT
         cpf AS paciente_cpf,
         'email' AS tipo,
-        '' AS valor, 
+        NULL AS valor, 
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM vitai_tb
-    GROUP BY
-        cpf, updated_at
 ),
 
 vitai_endereco AS (
     SELECT
         cpf AS paciente_cpf,
-        '' AS cep, -- Assumindo que a coluna cep não existe na tabela vitai
+        NULL AS cep,
         tipo_logradouro,
         nome_logradouro AS logradouro,
         numero AS numero,
@@ -100,8 +91,6 @@ vitai_endereco AS (
     FROM vitai_tb
     WHERE
         nome_logradouro IS NOT NULL
-    GROUP BY
-        cpf, tipo_logradouro, nome_logradouro, numero, complemento, bairro, municipio, uf, updated_at
 ),
 
 vitai_prontuario AS (
@@ -112,8 +101,6 @@ vitai_prontuario AS (
         id_cidadao AS id_paciente,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM vitai_tb
-    GROUP BY
-        cpf, cliente, id_cidadao, updated_at
 ),
 
 vitai_paciente_dados AS (
@@ -128,11 +115,9 @@ vitai_paciente_dados AS (
         data_obito AS obito_indicador,
         NULL AS obito_data,
         nome_mae AS mae_nome,
-        NULL AS pai_nome, -- Assumindo que a coluna nome_pai não existe na tabela vitai
+        NULL AS pai_nome, 
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf) AS rank
     FROM vitai_tb
-    GROUP BY
-        cpf, nome, nome_alternativo, cpf, data_nascimento, sexo, raca_cor, data_obito, nome_mae
 )
 
 SELECT
@@ -159,11 +144,11 @@ SELECT
     STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
 FROM
     vitai_paciente_dados vi_pd
-LEFT JOIN vitai_cns_ranked vi_cr ON vi_pd.paciente_cpf = vi_cr.paciente_cpf
-LEFT JOIN vitai_clinica_familia vi_cf ON vi_pd.paciente_cpf = vi_cf.paciente_cpf
-LEFT JOIN vitai_equipe_saude_familia vi_esf ON vi_pd.paciente_cpf = vi_esf.paciente_cpf
-LEFT JOIN vitai_contato vi_ct ON vi_pd.paciente_cpf = vi_ct.paciente_cpf
-LEFT JOIN vitai_endereco vi_ed ON vi_pd.paciente_cpf = vi_ed.paciente_cpf
-LEFT JOIN vitai_prontuario vi_pt ON vi_pd.paciente_cpf = vi_pt.paciente_cpf
+LEFT JOIN vitai_cns_ranked vi_cr ON vi_pd.paciente_cpf = vi_cr.paciente_cpf AND vi_cr.rank = 1
+LEFT JOIN vitai_clinica_familia vi_cf ON vi_pd.paciente_cpf = vi_cf.paciente_cpf AND vi_cf.rank = 1
+LEFT JOIN vitai_equipe_saude_familia vi_esf ON vi_pd.paciente_cpf = vi_esf.paciente_cpf AND vi_esf.rank = 1
+LEFT JOIN vitai_contato vi_ct ON vi_pd.paciente_cpf = vi_ct.paciente_cpf AND vi_ct.rank = 1
+LEFT JOIN vitai_endereco vi_ed ON vi_pd.paciente_cpf = vi_ed.paciente_cpf AND vi_ed.rank = 1
+LEFT JOIN vitai_prontuario vi_pt ON vi_pd.paciente_cpf = vi_pt.paciente_cpf AND vi_pt.rank = 1
 GROUP BY
-    vi_pd.paciente_cpf
+    vi_pd.paciente_cpf, vi_pd.nome, vi_pd.nome_social, vi_pd.cpf, vi_pd.data_nascimento, vi_pd.genero, vi_pd.raca, vi_pd.obito_indicador, vi_pd.mae_nome, vi_pd.pai_nome, vi_pd.rank

@@ -27,7 +27,6 @@ WITH vitacare_tb AS (
         nome_mae, 
         nome_pai 
     FROM `rj-sms.brutos_prontuario_vitacare.paciente`
-    LIMIT 1000
 ),
 
 vitacare_cns_ranked AS (
@@ -50,8 +49,7 @@ vitacare_clinica_familia AS (
     FROM vitacare_tb
     WHERE
         nome_unidade IS NOT NULL
-    GROUP BY
-        paciente_cpf, cnes_unidade, nome_unidade, data_atualizacao_vinculo_equipe
+
 ),
 
 vitacare_equipe_saude_familia AS (
@@ -63,8 +61,7 @@ vitacare_equipe_saude_familia AS (
     FROM vitacare_tb
     WHERE
         ine_equipe IS NOT NULL
-    GROUP BY
-        paciente_cpf, ine_equipe, data_atualizacao_vinculo_equipe
+
 ),
 
 vitacare_contato AS (
@@ -87,8 +84,7 @@ vitacare_contato AS (
     FROM vitacare_tb
     WHERE
         email IS NOT NULL
-    GROUP BY
-        paciente_cpf, email, data_cadastro
+
 ),
 
 vitacare_endereco AS (
@@ -107,8 +103,6 @@ vitacare_endereco AS (
     FROM vitacare_tb
     WHERE
         logradouro IS NOT NULL
-    GROUP BY
-        paciente_cpf, cep, tipo_logradouro, logradouro,REGEXP_EXTRACT(logradouro, r'\b(\d+)\b'),TRIM(REGEXP_REPLACE(logradouro, r'^.*?\d+\s*(.*)$', r'\1')), bairro, municipio_residencia, estado_residencia, data_cadastro
 ),
 
 vitacare_prontuario AS (
@@ -119,8 +113,7 @@ vitacare_prontuario AS (
         id AS id_paciente,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_cadastro DESC) AS rank
     FROM vitacare_tb
-    GROUP BY
-        paciente_cpf, cnes_unidade, id, data_cadastro
+
 ),
 
 vitacare_paciente_dados AS (
@@ -138,8 +131,7 @@ vitacare_paciente_dados AS (
         nome_pai AS pai_nome,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf) AS rank
     FROM vitacare_tb
-    GROUP BY
-        paciente_cpf, nome, nome_social, cpf, data_nascimento, sexo, raca_cor, obito, nome_mae, nome_pai
+
 )
 
 SELECT
@@ -173,4 +165,4 @@ LEFT JOIN vitacare_contato vc_ct ON vc_pd.paciente_cpf = vc_ct.paciente_cpf
 LEFT JOIN vitacare_endereco vc_ed ON vc_pd.paciente_cpf = vc_ed.paciente_cpf
 LEFT JOIN vitacare_prontuario vc_pt ON vc_pd.paciente_cpf = vc_pt.paciente_cpf
 GROUP BY
-    vc_pd.paciente_cpf
+    vc_pd.paciente_cpf, vc_pd.nome, vc_pd.nome_social, vc_pd.cpf, vc_pd.data_nascimento, vc_pd.genero, vc_pd.raca, vc_pd.obito_indicador, vc_pd.mae_nome, vc_pd.pai_nome, vc_pd.rank

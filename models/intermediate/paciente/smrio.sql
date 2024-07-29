@@ -23,7 +23,6 @@ WITH smrio_tb AS (
         nome,
         updated_at
     FROM rj-sms.brutos_plataforma_smsrio.paciente
-    LIMIT 1000
 ),
 
 
@@ -55,8 +54,6 @@ smrio_clinica_familia AS (
         rj-sms.brutos_plataforma_smsrio.paciente
     WHERE
         end_logrado IS NOT NULL
-    GROUP BY
-        paciente_cpf, cod_mun_res, end_logrado, updated_at
 ),
 
 smrio_equipe_saude_familia AS (
@@ -69,8 +66,6 @@ smrio_equipe_saude_familia AS (
         rj-sms.brutos_plataforma_smsrio.paciente
     WHERE
         cod_mun_res IS NOT NULL
-    GROUP BY
-        paciente_cpf, cod_mun_res, updated_at
 ),
 
 smrio_contato AS (
@@ -89,8 +84,6 @@ smrio_contato AS (
         WHERE
             telefones IS NOT NULL
     )
-    GROUP BY
-        paciente_cpf, telefones, timestamp
     UNION ALL
     SELECT
         paciente_cpf,
@@ -101,8 +94,6 @@ smrio_contato AS (
         rj-sms.brutos_plataforma_smsrio.paciente
     WHERE
         email IS NOT NULL
-    GROUP BY
-        paciente_cpf, email, timestamp
 ),
 
 smrio_endereco AS (
@@ -122,8 +113,6 @@ smrio_endereco AS (
         rj-sms.brutos_plataforma_smsrio.paciente
     WHERE
         end_logrado IS NOT NULL
-    GROUP BY
-        paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, timestamp
 ),
 
 smrio_prontuario AS (
@@ -135,8 +124,6 @@ smrio_prontuario AS (
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
     FROM
         rj-sms.brutos_plataforma_smsrio.paciente
-    GROUP BY
-        paciente_cpf, cod_mun_res, timestamp
 ),
 
 smrio_paciente_dados AS (
@@ -155,8 +142,6 @@ smrio_paciente_dados AS (
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf) AS rank
     FROM
         rj-sms.brutos_plataforma_smsrio.paciente
-    GROUP BY
-        paciente_cpf, nome, dt_nasc, sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
 )
 
 SELECT
@@ -190,4 +175,4 @@ LEFT JOIN smrio_contato sct ON spd.paciente_cpf = sct.paciente_cpf
 LEFT JOIN smrio_endereco sed ON spd.paciente_cpf = sed.paciente_cpf
 LEFT JOIN smrio_prontuario spt ON spd.paciente_cpf = spt.paciente_cpf
 GROUP BY
-    spd.paciente_cpf
+    spd.paciente_cpf, spd.nome, spd.nome_social, spd.cpf, spd.data_nascimento, spd.genero, spd.raca, spd.obito_indicador, spd.mae_nome, spd.pai_nome, spd.rank
