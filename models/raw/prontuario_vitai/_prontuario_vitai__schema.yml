@@ -840,3 +840,31 @@ models:
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
+  - name: raw_prontuario_vitai__m_estabelecimento
+    description: >
+      Tabela contendo informações básicas sobre os estabelecimentos de saúde.
+    columns:
+      - name: gid
+        description: Identificador único do estabelecimento.
+      - name: cnes
+        description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) do estabelecimento.
+      - name: cnpj
+        description: CNPJ do estabelecimento.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: sigla
+        description: Sigla do estabelecimento.
+      - name: nome_estabelecimento
+        description: Nome do estabelecimento de saúde.
+      - name: idsetor
+        description: Identificador do setor do estabelecimento.
+      - name: secretaria_gid
+        description: Identificador único da secretaria à qual o estabelecimento pertence.
+      - name: cliente
+        description: Nome ou identificação do cliente do estabelecimento.
+      - name: baseurl
+        description: URL base do estabelecimento ou sistema relacionado.
+      - name: updated_at
+        description: Data e hora da última atualização das informações do estabelecimento.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o data lake.
