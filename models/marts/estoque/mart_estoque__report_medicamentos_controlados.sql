@@ -201,5 +201,4 @@ select
     posicao_final
 from
     final
-where id_material = "65051001092" 
     
