@@ -23,7 +23,6 @@ WITH smsrio_tb AS (
         TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
         updated_at
     FROM `rj-sms.brutos_plataforma_smsrio.paciente`
-    LIMIT 1000
 ),
 
 -- CNS

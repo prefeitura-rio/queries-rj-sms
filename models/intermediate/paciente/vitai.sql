@@ -25,7 +25,6 @@ WITH vitai_tb AS (
     WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
         AND TRIM(cpf) != ""
-    LIMIT 100000
 ),
 
 -- CNS
