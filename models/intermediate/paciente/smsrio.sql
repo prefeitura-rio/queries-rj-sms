@@ -23,6 +23,7 @@ WITH smsrio_tb AS (
         TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
         updated_at
     FROM `rj-sms.brutos_plataforma_smsrio.paciente`
+    LIMIT 1000
 ),
 
 -- CNS
@@ -39,8 +40,6 @@ smsrio_cns_ranked AS (
                 timestamp
             FROM smsrio_tb,
             UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(cns_provisorio, '[', ''), ']', ''), '"', ''), ',')) AS cns
-            WHERE
-                cns_provisorio IS NOT NULL
     )
     GROUP BY paciente_cpf, TRIM(cns)
     
@@ -58,63 +57,6 @@ cns_dados AS (
 ),
 
 
--- CLINICA DA FAMILIA
-
-smsrio_clinica_familia AS (
-    SELECT
-        paciente_cpf,
-        cod_mun_res AS id_cnes,
-        end_logrado AS nome,
-        updated_at AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
-    FROM smsrio_tb
-    WHERE
-        end_logrado IS NOT NULL
-    GROUP BY
-        paciente_cpf, cod_mun_res, end_logrado, updated_at
-),
-
-clinica_familia_dados AS (
-    SELECT
-        paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            id_cnes, 
-            nome, 
-            datahora_ultima_atualizacao, 
-            rank
-        )) AS clinica_familia
-    FROM smsrio_clinica_familia
-    GROUP BY paciente_cpf
-),
-
-
--- EQUIPE SAUDE FAMILIA
-
-smsrio_equipe_saude_familia AS (
-    SELECT
-        paciente_cpf,
-        cod_mun_res AS id_ine,
-        updated_at AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
-    FROM smsrio_tb
-    WHERE
-        cod_mun_res IS NOT NULL
-    GROUP BY
-        paciente_cpf, cod_mun_res, updated_at
-),
-
-equipe_saude_familia_dados AS (
-    SELECT
-        paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            id_ine, 
-            datahora_ultima_atualizacao, 
-            rank
-        )) AS equipe_saude_familia
-    FROM smsrio_equipe_saude_familia
-    GROUP BY paciente_cpf
-),
-
 -- EQUIPE CONTATO
 
 smsrio_contato AS (
@@ -130,8 +72,6 @@ smsrio_contato AS (
             timestamp
         FROM smsrio_tb,
         UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(telefones, '[', ''), ']', ''), '"', ''), ',')) AS telefones
-        WHERE
-            telefones IS NOT NULL
     )
     GROUP BY
         paciente_cpf, telefones, timestamp
@@ -142,8 +82,6 @@ smsrio_contato AS (
         email AS valor,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
     FROM smsrio_tb
-    WHERE
-        email IS NOT NULL
     GROUP BY
         paciente_cpf, email, timestamp
 ),
@@ -153,11 +91,14 @@ contato_dados AS (
         paciente_cpf,
         ARRAY_AGG(STRUCT(
             tipo, 
-            valor, 
+            CASE 
+                WHEN TRIM(valor) IN ("NONE", "NULL", "") THEN NULL
+                ELSE valor
+            END AS valor,
             rank
         )) AS contato
     FROM smsrio_contato
-    WHERE TRIM(valor) NOT IN ("NONE","", "NULL")
+    WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
     GROUP BY paciente_cpf
 ),
 
@@ -168,18 +109,22 @@ smsrio_endereco AS (
     SELECT
         paciente_cpf,
         end_cep AS cep,
-        end_tp_logrado_cod AS tipo_logradouro,
+        CASE 
+            WHEN end_tp_logrado_cod IN ("NONE","") THEN NULL
+            ELSE end_tp_logrado_cod
+        END AS tipo_logradouro,
         end_logrado AS logradouro,
         end_numero AS numero,
         end_complem AS complemento,
         end_bairro AS bairro,
-        cod_mun_res AS cidade,
+        CASE 
+            WHEN cod_mun_res IN ("NONE","") THEN NULL
+            ELSE cod_mun_res
+        END AS cidade,
         uf_res AS estado,
         timestamp AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
     FROM smsrio_tb
-    WHERE
-        end_logrado IS NOT NULL
     GROUP BY
         paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, timestamp
 ),
@@ -208,9 +153,9 @@ endereco_dados AS (
 smsrio_prontuario AS (
     SELECT
         paciente_cpf,
-        'SMSRIO' AS fornecedor,
-        cod_mun_res AS id_cnes,
-        NULL AS id_paciente,
+        'SMSRIO' AS sistema,
+        NULL AS id_cnes,
+        paciente_cpf AS id_paciente,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
     FROM smsrio_tb
     GROUP BY
@@ -221,7 +166,7 @@ prontuario_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
-            fornecedor, 
+            sistema, 
             id_cnes, 
             id_paciente, 
             rank
@@ -238,17 +183,32 @@ smsrio_paciente_dados AS (
         nome,
         NULL AS nome_social,
         paciente_cpf AS cpf,
-        dt_nasc AS data_nascimento,
-        sexo AS genero,
-        raca_cor AS raca,
-        obito as obito_indicador,
-        dt_obito AS obito_data,
+        DATE(dt_nasc) AS data_nascimento,
+        CASE
+            WHEN sexo = "1" THEN "MALE"
+            WHEN sexo = "2" THEN "FEMALE"
+        ELSE NULL
+        END  AS genero,
+        CASE
+            WHEN raca_cor IN ("None") THEN NULL
+        ELSE raca_cor
+        END AS raca,
+        CASE
+            WHEN obito = "0" THEN FALSE
+            WHEN obito = "1" THEN TRUE
+        ELSE NULL
+        END AS obito_indicador,
+        CASE
+            WHEN dt_obito IN ("None") THEN NULL
+            ELSE DATE(dt_obito)
+        END AS obito_data,
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
+        TRUE AS cadastro_validado_indicador,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf) AS rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, nome, dt_nasc, sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
+        paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
 ),
 
 paciente_dados AS (
@@ -262,6 +222,7 @@ paciente_dados AS (
             genero,
             raca,
             obito_indicador,
+            obito_data,
             mae_nome,
             pai_nome,
             rank
@@ -277,16 +238,12 @@ SELECT
     pd.paciente_cpf,
     cns.cns,
     pd.dados,
-    cf.clinica_familia,
-    esf.equipe_saude_familia,
     ct.contato,
     ed.endereco,
     pt.prontuario,
     STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
 FROM paciente_dados pd
 LEFT JOIN cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
-LEFT JOIN clinica_familia_dados cf ON pd.paciente_cpf = cf.paciente_cpf
-LEFT JOIN equipe_saude_familia_dados esf ON pd.paciente_cpf = esf.paciente_cpf
 LEFT JOIN contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
 LEFT JOIN endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
 LEFT JOIN prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf

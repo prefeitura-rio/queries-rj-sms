@@ -118,8 +118,6 @@ vitacare_contato AS (
         telefone AS valor,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_cadastro DESC) AS rank
     FROM vitacare_tb
-    WHERE
-        telefone IS NOT NULL
     GROUP BY
         paciente_cpf, telefone, data_cadastro
     UNION ALL
@@ -129,8 +127,6 @@ vitacare_contato AS (
         email AS valor,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_cadastro DESC) AS rank
     FROM vitacare_tb
-    WHERE
-        email IS NOT NULL
     GROUP BY
         paciente_cpf, email, data_cadastro
 ),
@@ -140,10 +136,14 @@ contato_dados AS (
         paciente_cpf,
         ARRAY_AGG(STRUCT(
             tipo, 
-            valor, 
+            CASE 
+                WHEN TRIM(valor) IN ("()", "") THEN NULL
+                ELSE valor
+            END AS valor,
             rank
         )) AS contato
     FROM vitacare_contato
+    WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
     GROUP BY paciente_cpf
 ),
 
@@ -193,7 +193,7 @@ endereco_dados AS (
 vitacare_prontuario AS (
     SELECT
         paciente_cpf,
-        'VITACARE' AS fornecedor,
+        'VITACARE' AS sistema,
         cnes_unidade AS id_cnes,
         id AS id_paciente,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_cadastro DESC) AS rank
@@ -206,7 +206,7 @@ prontuario_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
-            fornecedor, 
+            sistema, 
             id_cnes, 
             id_paciente, 
             rank
@@ -224,17 +224,25 @@ vitacare_paciente_dados AS (
         nome,
         nome_social,
         cpf,
-        data_nascimento,
+        DATE(data_nascimento) AS data_nascimento,
         sexo AS genero,
-        raca_cor AS raca,
-        obito as obito_indicador,
+        CASE
+            WHEN TRIM(raca_cor) IN ("") THEN NULL
+            ELSE raca_cor
+        END AS raca,
+        CASE
+            WHEN obito = "FALSE" THEN FALSE
+            WHEN obito = "TRUE" THEN TRUE
+            ELSE NULL
+        END AS obito_indicador,
         NULL AS obito_data,
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
+        FALSE AS cadastro_validado_indicador,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf) AS rank
     FROM vitacare_tb
     GROUP BY
-        paciente_cpf, nome, nome_social, cpf, data_nascimento, sexo, raca_cor, obito, nome_mae, nome_pai
+        paciente_cpf, nome, nome_social, cpf, DATE(data_nascimento), sexo, raca_cor, obito, nome_mae, nome_pai
 ),
 
 paciente_dados AS (
@@ -248,6 +256,7 @@ paciente_dados AS (
             genero,
             raca,
             obito_indicador,
+            obito_data,
             mae_nome,
             pai_nome,
             rank
