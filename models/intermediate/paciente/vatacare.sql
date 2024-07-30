@@ -29,6 +29,8 @@ WITH vitacare_tb AS (
     FROM `rj-sms.brutos_prontuario_vitacare.paciente`
 ),
 
+-- CNS
+
 vitacare_cns_ranked AS (
     SELECT
         paciente_cpf,
@@ -39,6 +41,19 @@ vitacare_cns_ranked AS (
         cns IS NOT NULL
     GROUP BY paciente_cpf, cns
 ),
+
+cns_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            cns AS valor, 
+            rank
+        )) AS cns
+    FROM vitacare_cns_ranked 
+    GROUP BY paciente_cpf
+),
+
+-- CLINICA DA FAMILIA
 
 vitacare_clinica_familia AS (
     SELECT
@@ -54,6 +69,21 @@ vitacare_clinica_familia AS (
         paciente_cpf, cnes_unidade, nome_unidade, data_atualizacao_vinculo_equipe
 ),
 
+clinica_familia_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            id_cnes, 
+            nome, 
+            datahora_ultima_atualizacao, 
+            rank
+        )) AS clinica_familia
+    FROM vitacare_clinica_familia
+    GROUP BY paciente_cpf
+),
+
+-- EQUIPE SAUDE FAMILIA
+
 vitacare_equipe_saude_familia AS (
     SELECT
         paciente_cpf,
@@ -66,6 +96,20 @@ vitacare_equipe_saude_familia AS (
     GROUP BY
         paciente_cpf, ine_equipe, data_atualizacao_vinculo_equipe
 ),
+
+equipe_saude_familia_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            id_ine, 
+            datahora_ultima_atualizacao, 
+            rank
+        )) AS equipe_saude_familia
+    FROM vitacare_equipe_saude_familia
+    GROUP BY paciente_cpf
+),
+
+-- EQUIPE CONTATO
 
 vitacare_contato AS (
     SELECT
@@ -91,6 +135,20 @@ vitacare_contato AS (
         paciente_cpf, email, data_cadastro
 ),
 
+contato_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            tipo, 
+            valor, 
+            rank
+        )) AS contato
+    FROM vitacare_contato
+    GROUP BY paciente_cpf
+),
+
+-- EQUIPE ENDEREÇO
+
 vitacare_endereco AS (
     SELECT
         paciente_cpf,
@@ -111,6 +169,27 @@ vitacare_endereco AS (
         paciente_cpf, cep, tipo_logradouro, logradouro,REGEXP_EXTRACT(logradouro, r'\b(\d+)\b'),TRIM(REGEXP_REPLACE(logradouro, r'^.*?\d+\s*(.*)$', r'\1')), bairro, municipio_residencia, estado_residencia, data_cadastro
 ),
 
+endereco_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            cep, 
+            tipo_logradouro, 
+            logradouro, 
+            numero, 
+            complemento, 
+            bairro, 
+            cidade, 
+            estado, 
+            datahora_ultima_atualizacao, 
+            rank
+        )) AS endereco
+    FROM vitacare_endereco
+    GROUP BY paciente_cpf
+),
+
+-- PRONTUARIO
+
 vitacare_prontuario AS (
     SELECT
         paciente_cpf,
@@ -122,6 +201,22 @@ vitacare_prontuario AS (
     GROUP BY
         paciente_cpf, cnes_unidade, id, data_cadastro
 ),
+
+prontuario_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            fornecedor, 
+            id_cnes, 
+            id_paciente, 
+            rank
+        )) AS prontuario
+    FROM vitacare_prontuario
+    GROUP BY paciente_cpf
+),
+
+
+-- PACIENTE DADOS
 
 vitacare_paciente_dados AS (
     SELECT
@@ -140,37 +235,44 @@ vitacare_paciente_dados AS (
     FROM vitacare_tb
     GROUP BY
         paciente_cpf, nome, nome_social, cpf, data_nascimento, sexo, raca_cor, obito, nome_mae, nome_pai
+),
+
+paciente_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            nome,
+            nome_social,
+            cpf,
+            data_nascimento,
+            genero,
+            raca,
+            obito_indicador,
+            mae_nome,
+            pai_nome,
+            rank
+        )) AS dados,
+    FROM vitacare_paciente_dados
+    GROUP BY
+        paciente_cpf
 )
 
+-- FINAL JOIN
+
 SELECT
-    vc_pd.paciente_cpf,
-    ARRAY_AGG(STRUCT(vc_cr.cns AS valor, vc_cr.rank)) AS cns,
-    ARRAY_AGG(STRUCT(
-        vc_pd.paciente_cpf,
-        vc_pd.nome,
-        vc_pd.nome_social,
-        vc_pd.cpf,
-        vc_pd.data_nascimento,
-        vc_pd.genero,
-        vc_pd.raca,
-        vc_pd.obito_indicador,
-        vc_pd.mae_nome,
-        vc_pd.pai_nome,
-        vc_pd.rank
-    )) AS dados,
-    ARRAY_AGG(STRUCT(vc_cf.id_cnes, vc_cf.nome, vc_cf.datahora_ultima_atualizacao, vc_cf.rank)) AS clinica_familia,
-    ARRAY_AGG(STRUCT(vc_esf.id_ine, vc_esf.datahora_ultima_atualizacao, vc_esf.rank)) AS equipe_saude_familia,
-    ARRAY_AGG(STRUCT(vc_ct.tipo, vc_ct.valor, vc_ct.rank)) AS contato,
-    ARRAY_AGG(STRUCT(vc_ed.cep, vc_ed.tipo_logradouro, vc_ed.logradouro, vc_ed.numero, vc_ed.complemento, vc_ed.bairro, vc_ed.cidade, vc_ed.estado, vc_ed.datahora_ultima_atualizacao, vc_ed.rank)) AS endereco,
-    ARRAY_AGG(STRUCT(vc_pt.fornecedor, vc_pt.id_cnes, vc_pt.id_paciente, vc_pt.rank)) AS prontuario,
+    pd.paciente_cpf,
+    cns.cns,
+    pd.dados,
+    cf.clinica_familia,
+    esf.equipe_saude_familia,
+    ct.contato,
+    ed.endereco,
+    pt.prontuario,
     STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
-FROM
-    vitacare_paciente_dados vc_pd
-LEFT JOIN vitacare_cns_ranked vc_cr ON vc_pd.paciente_cpf = vc_cr.paciente_cpf
-LEFT JOIN vitacare_clinica_familia vc_cf ON vc_pd.paciente_cpf = vc_cf.paciente_cpf
-LEFT JOIN vitacare_equipe_saude_familia vc_esf ON vc_pd.paciente_cpf = vc_esf.paciente_cpf
-LEFT JOIN vitacare_contato vc_ct ON vc_pd.paciente_cpf = vc_ct.paciente_cpf
-LEFT JOIN vitacare_endereco vc_ed ON vc_pd.paciente_cpf = vc_ed.paciente_cpf
-LEFT JOIN vitacare_prontuario vc_pt ON vc_pd.paciente_cpf = vc_pt.paciente_cpf
-GROUP BY
-    vc_pd.paciente_cpf
+FROM paciente_dados pd
+LEFT JOIN cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
+LEFT JOIN clinica_familia_dados cf ON pd.paciente_cpf = cf.paciente_cpf
+LEFT JOIN equipe_saude_familia_dados esf ON pd.paciente_cpf = esf.paciente_cpf
+LEFT JOIN contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
+LEFT JOIN endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
+LEFT JOIN prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf

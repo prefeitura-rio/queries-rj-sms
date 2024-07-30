@@ -22,9 +22,10 @@ WITH smsrio_tb AS (
         TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_pai, NFD), r'\pM', ''))) AS nome_pai,
         TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
         updated_at
-    FROM rj-sms.brutos_plataforma_smsrio.paciente
+    FROM `rj-sms.brutos_plataforma_smsrio.paciente`
 ),
 
+-- CNS
 
 smsrio_cns_ranked AS (
     SELECT
@@ -45,6 +46,20 @@ smsrio_cns_ranked AS (
     
 ),
 
+cns_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            cns AS valor, 
+            rank
+        )) AS cns
+    FROM smsrio_cns_ranked 
+    GROUP BY paciente_cpf
+),
+
+
+-- CLINICA DA FAMILIA
+
 smsrio_clinica_familia AS (
     SELECT
         paciente_cpf,
@@ -59,6 +74,22 @@ smsrio_clinica_familia AS (
         paciente_cpf, cod_mun_res, end_logrado, updated_at
 ),
 
+clinica_familia_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            id_cnes, 
+            nome, 
+            datahora_ultima_atualizacao, 
+            rank
+        )) AS clinica_familia
+    FROM smsrio_clinica_familia
+    GROUP BY paciente_cpf
+),
+
+
+-- EQUIPE SAUDE FAMILIA
+
 smsrio_equipe_saude_familia AS (
     SELECT
         paciente_cpf,
@@ -71,6 +102,20 @@ smsrio_equipe_saude_familia AS (
     GROUP BY
         paciente_cpf, cod_mun_res, updated_at
 ),
+
+equipe_saude_familia_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            id_ine, 
+            datahora_ultima_atualizacao, 
+            rank
+        )) AS equipe_saude_familia
+    FROM smsrio_equipe_saude_familia
+    GROUP BY paciente_cpf
+),
+
+-- EQUIPE CONTATO
 
 smsrio_contato AS (
     SELECT
@@ -88,7 +133,6 @@ smsrio_contato AS (
         WHERE
             telefones IS NOT NULL
     )
-    WHERE TRIM(telefones) NOT IN ("NULL","NONE")
     GROUP BY
         paciente_cpf, telefones, timestamp
     UNION ALL
@@ -103,6 +147,22 @@ smsrio_contato AS (
     GROUP BY
         paciente_cpf, email, timestamp
 ),
+
+contato_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            tipo, 
+            valor, 
+            rank
+        )) AS contato
+    FROM smsrio_contato
+    WHERE TRIM(valor) NOT IN ("NONE","", "NULL")
+    GROUP BY paciente_cpf
+),
+
+
+-- EQUIPE ENDEREÇO
 
 smsrio_endereco AS (
     SELECT
@@ -124,6 +184,27 @@ smsrio_endereco AS (
         paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, timestamp
 ),
 
+
+endereco_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            cep, 
+            tipo_logradouro, 
+            logradouro, numero, 
+            complemento, 
+            bairro, 
+            cidade, 
+            estado, 
+            datahora_ultima_atualizacao, 
+            rank
+        )) AS endereco
+    FROM smsrio_endereco
+    GROUP BY paciente_cpf
+),
+
+-- PRONTUARIO
+
 smsrio_prontuario AS (
     SELECT
         paciente_cpf,
@@ -135,6 +216,21 @@ smsrio_prontuario AS (
     GROUP BY
         paciente_cpf, cod_mun_res, timestamp
 ),
+
+prontuario_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            fornecedor, 
+            id_cnes, 
+            id_paciente, 
+            rank
+        )) AS prontuario
+    FROM smsrio_prontuario
+    GROUP BY paciente_cpf
+),
+
+-- PACIENTE DADOS
 
 smsrio_paciente_dados AS (
     SELECT
@@ -153,37 +249,44 @@ smsrio_paciente_dados AS (
     FROM smsrio_tb
     GROUP BY
         paciente_cpf, nome, dt_nasc, sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
+),
+
+paciente_dados AS (
+    SELECT
+        paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            nome,
+            nome_social,
+            cpf,
+            data_nascimento,
+            genero,
+            raca,
+            obito_indicador,
+            mae_nome,
+            pai_nome,
+            rank
+        )) AS dados,
+    FROM smsrio_paciente_dados
+    GROUP BY
+        paciente_cpf
 )
 
+-- FINAL JOIN
+
 SELECT
-    spd.paciente_cpf,
-    ARRAY_AGG(STRUCT(scr.cns AS valor, scr.rank)) AS cns,
-    ARRAY_AGG(STRUCT(
-        spd.paciente_cpf,
-        spd.nome,
-        spd.nome_social,
-        spd.cpf,
-        spd.data_nascimento,
-        spd.genero,
-        spd.raca,
-        spd.obito_indicador,
-        spd.mae_nome,
-        spd.pai_nome,
-        spd.rank
-    )) AS dados,
-    ARRAY_AGG(STRUCT(scf.id_cnes, scf.nome, scf.datahora_ultima_atualizacao, scf.rank)) AS clinica_familia,
-    ARRAY_AGG(STRUCT(sesf.id_ine, sesf.datahora_ultima_atualizacao, sesf.rank)) AS equipe_saude_familia,
-    ARRAY_AGG(STRUCT(sct.tipo, sct.valor, sct.rank)) AS contato,
-    ARRAY_AGG(STRUCT(sed.cep, sed.tipo_logradouro, sed.logradouro, sed.numero, sed.complemento, sed.bairro, sed.cidade, sed.estado, sed.datahora_ultima_atualizacao, sed.rank)) AS endereco,
-    ARRAY_AGG(STRUCT(spt.fornecedor, spt.id_cnes, spt.id_paciente, spt.rank)) AS prontuario,
+    pd.paciente_cpf,
+    cns.cns,
+    pd.dados,
+    cf.clinica_familia,
+    esf.equipe_saude_familia,
+    ct.contato,
+    ed.endereco,
+    pt.prontuario,
     STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
-FROM
-    smsrio_paciente_dados spd
-LEFT JOIN smsrio_cns_ranked scr ON spd.paciente_cpf = scr.paciente_cpf
-LEFT JOIN smsrio_clinica_familia scf ON spd.paciente_cpf = scf.paciente_cpf
-LEFT JOIN smsrio_equipe_saude_familia sesf ON spd.paciente_cpf = sesf.paciente_cpf
-LEFT JOIN smsrio_contato sct ON spd.paciente_cpf = sct.paciente_cpf
-LEFT JOIN smsrio_endereco sed ON spd.paciente_cpf = sed.paciente_cpf
-LEFT JOIN smsrio_prontuario spt ON spd.paciente_cpf = spt.paciente_cpf
-GROUP BY
-    spd.paciente_cpf
+FROM paciente_dados pd
+LEFT JOIN cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
+LEFT JOIN clinica_familia_dados cf ON pd.paciente_cpf = cf.paciente_cpf
+LEFT JOIN equipe_saude_familia_dados esf ON pd.paciente_cpf = esf.paciente_cpf
+LEFT JOIN contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
+LEFT JOIN endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
+LEFT JOIN prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf
