@@ -180,7 +180,13 @@ select
     estabelecimento_area_programatica,
     estabelecimento_endereco,
     id_material,
-    nome,
+    upper(
+        trim(
+            regexp_replace(
+                regexp_replace(normalize(nome, nfd), r"\pM", ''), r'[^ A-Za-z0-9.,]', ' '
+            )
+        )
+    ) as nome,
     controlado_tipo,
     id_lote,
     data_validade,
