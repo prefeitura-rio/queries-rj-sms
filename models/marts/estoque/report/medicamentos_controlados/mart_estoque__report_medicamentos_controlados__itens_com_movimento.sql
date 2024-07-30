@@ -1,6 +1,6 @@
 {{
     config(
-        alias="report_medicamentos_controlados",
+        alias="report_medicamentos_controlados__itens_com_movimento",
         schema="projeto_estoque",
         materialized="table",
         tag=["report", "weekly"],
@@ -203,12 +203,13 @@ select
     ) as nome,
     controlado_tipo,
     id_lote,
-    format_date('%d-%m-%Y', data_validade) as data_validade,
+    format_date('%d-%m-%Y', data_validade) as data_validade_br,
     if(tipo_evento = "saida", "saída", tipo_evento) as tipo_evento,
     evento,
     movimento_tipo,
     movimento_justificativa,
-    format_date('%d-%m-%Y', data_evento) as data_evento,
+    data_evento,
+    format_date('%d-%m-%Y', data_evento) as data_evento_br,
     ordem,
     -- posicao_inicial,
     movimento_quantidade,

@@ -16,7 +16,7 @@ with
                     rank() over (
                         partition by id_cnes, id_material order by ordem desc
                     ) rank
-                from {{ ref("mart_estoque__report_medicamentos_controlados") }}
+                from {{ ref("mart_estoque__report_medicamentos_controlados__itens_com_movimento") }}
             )
         where rank = 1
     ),
