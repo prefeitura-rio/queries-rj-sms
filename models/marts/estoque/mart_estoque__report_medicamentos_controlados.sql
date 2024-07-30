@@ -80,7 +80,7 @@ with
             ) as tipo_evento,
             case
                 when movimento_tipo_grupo = "ENTRADA DE ESTOQUE"
-                then concat("Pedido WMS: ", coalesce(id_pedido_wms, "não registrado"))
+                then concat("Pedido WMS: ", coalesce(id_pedido_wms, "não registrado (inserção manual)"))
                 when movimento_tipo_grupo = "TRANSFERENCIA EXTERNA"
                 then "Transferência entre unidades"
                 when movimento_tipo_grupo = "CORRECAO DE ESTOQUE / OUTRO"
@@ -189,11 +189,11 @@ select
     ) as nome,
     controlado_tipo,
     id_lote,
-    data_validade,
-    tipo_evento,
+    FORMAT_DATE('%d-%m-%Y', data_validade) AS data_validade,
+    if(tipo_evento = "saida", "saída", tipo_evento) as tipo_evento,
     evento,
-    -- movimento_justificativa,
-    data_evento,
+    movimento_justificativa,
+    FORMAT_DATE('%d-%m-%Y', data_evento) AS data_evento,
     ordem,
     -- posicao_inicial,
     movimento_quantidade,
@@ -201,4 +201,5 @@ select
     posicao_final
 from
     final
+where id_material = "65051001092" 
     
