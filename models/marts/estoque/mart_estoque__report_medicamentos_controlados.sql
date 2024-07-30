@@ -39,7 +39,9 @@ with
         group by 1, 2, 3
     ),
 
-    controlados as (select * from {{ ref("dim_material") }} where controlado_indicador = 'sim'),
+    controlados as (
+        select * from {{ ref("dim_material") }} where controlado_indicador = 'sim'
+    ),
 
     estabelecimento as (select * from {{ ref("dim_estabelecimento") }}),
 
@@ -80,7 +82,11 @@ with
             ) as tipo_evento,
             case
                 when movimento_tipo_grupo = "ENTRADA DE ESTOQUE"
-                then concat("Pedido WMS: ", coalesce(id_pedido_wms, "não registrado (inserção manual)"))
+                then
+                    concat(
+                        "Pedido WMS: ",
+                        coalesce(id_pedido_wms, "não registrado (inserção manual)")
+                    )
                 when movimento_tipo_grupo = "TRANSFERENCIA EXTERNA"
                 then "Transferência entre unidades"
                 when movimento_tipo_grupo = "CORRECAO DE ESTOQUE / OUTRO"
@@ -88,10 +94,15 @@ with
                 when
                     movimento_tipo_grupo = "CONSUMO"
                     and movimento_tipo = "ATENDIMENTO EXTERNO"
-                then "ATENDIMENTO EXTERNO"
+                then "Atendimento externo"
                 when
                     movimento_tipo_grupo = "CONSUMO"
-                    and movimento_tipo != "ATENDIMENTO EXTERNO"
+                    and movimento_tipo in ("REFORÇO", "REFORÇO ISOLADO")
+                then "Armário de ermergência"
+                when
+                    movimento_tipo_grupo = "CONSUMO"
+                    and movimento_tipo
+                    not in ("REFORÇO", "REFORÇO ISOLADO", "ATENDIMENTO EXTERNO")
                 then
                     concat(
                         "Consumo paciente: ",
@@ -142,7 +153,8 @@ with
             val.data_validade,
             mov.tipo_evento,
             mov.evento,
-            movimento_justificativa,
+            mov.movimento_tipo,
+            mov.movimento_justificativa,
             mov.data_evento,
             mov.ordem,
             mov.quantidade as movimento_quantidade,
@@ -183,22 +195,24 @@ select
     upper(
         trim(
             regexp_replace(
-                regexp_replace(normalize(nome, nfd), r"\pM", ''), r'[^ A-Za-z0-9.,]', ' '
+                regexp_replace(normalize(nome, nfd), r"\pM", ''),
+                r'[^ A-Za-z0-9.,]',
+                ' '
             )
         )
     ) as nome,
     controlado_tipo,
     id_lote,
-    FORMAT_DATE('%d-%m-%Y', data_validade) AS data_validade,
+    format_date('%d-%m-%Y', data_validade) as data_validade,
     if(tipo_evento = "saida", "saída", tipo_evento) as tipo_evento,
     evento,
+    movimento_tipo,
     movimento_justificativa,
-    FORMAT_DATE('%d-%m-%Y', data_evento) AS data_evento,
+    format_date('%d-%m-%Y', data_evento) as data_evento,
     ordem,
     -- posicao_inicial,
     movimento_quantidade,
     -- movimento_quantidade_acumulada,
     posicao_final
-from
-    final
-    
+from final
+
