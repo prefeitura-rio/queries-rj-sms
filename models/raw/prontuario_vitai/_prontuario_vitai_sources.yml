@@ -52,4 +52,5 @@ sources:
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
+      - name: m_estabelecimento_eventos
 
