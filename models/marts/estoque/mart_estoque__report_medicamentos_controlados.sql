@@ -3,7 +3,7 @@
         alias="report_medicamentos_controlados",
         schema="projeto_estoque",
         materialized="table",
-        tag =["report", "weekly"],
+        tag=["report", "weekly"],
     )
 }}
 
@@ -39,22 +39,23 @@ with
         group by 1, 2, 3
     ),
 
+    controlados as (select * from {{ ref("dim_material") }} where controlado_indicador = 'sim'),
+
+    estabelecimento as (select * from {{ ref("dim_estabelecimento") }}),
+
     validade as (
         select id_cnes, id_material, id_lote, max(lote_data_vencimento) as data_validade
         from {{ ref("fct_estoque_posicao") }}
         group by 1, 2, 3
     ),
 
-    material as (select * from {{ ref("dim_material") }}),
-
+    -- TRASNFORMATIONS
     movimento_controlados as (
         select mov.*, mat.controlado_tipo, mat.nome
         from movimento as mov
-        left join material as mat using (id_material)
-        where controlado_indicador = 'sim'
+        inner join controlados as mat using (id_material)
     ),
 
-    -- TRASNFORMATIONS
     eventos as (
         select
             id_cnes,
@@ -83,7 +84,7 @@ with
                 when movimento_tipo_grupo = "TRANSFERENCIA EXTERNA"
                 then "Transferência entre unidades"
                 when movimento_tipo_grupo = "CORRECAO DE ESTOQUE / OUTRO"
-                then "Correção de lote (aumento) / Outro"
+                then "Correção de lote / Outro"
                 when
                     movimento_tipo_grupo = "CONSUMO"
                     and movimento_tipo = "ATENDIMENTO EXTERNO"
@@ -125,7 +126,7 @@ with
         select
             *,
             row_number() over (
-                partition by id_cnes, id_material order by data_hora_evento, tipo_evento 
+                partition by id_cnes, id_material order by data_hora_evento, tipo_evento
             ) as ordem
         from eventos
         order by id_cnes, nome, data_evento, tipo_evento
@@ -163,12 +164,21 @@ with
             (
                 coalesce(posicao_quantidade, 0) + movimento_quantidade_acumulada
             ) as posicao_final,
+            est.nome_limpo as estabelecimento_nome,
+            est.area_programatica as estabelecimento_area_programatica,
+            concat(
+                est.endereco_logradouro, ', ', est.endereco_numero
+            ) as estabelecimento_endereco
         from eventos_final as eventos
         left join posicao using (id_cnes, id_material)
+        left join estabelecimento as est using (id_cnes)
     )
 
 select
     id_cnes,
+    estabelecimento_nome,
+    estabelecimento_area_programatica,
+    estabelecimento_endereco,
     id_material,
     nome,
     controlado_tipo,
@@ -183,5 +193,6 @@ select
     movimento_quantidade,
     -- movimento_quantidade_acumulada,
     posicao_final
-from final
--- where id_material = "65053800715" and id_cnes = "7523246"
+from
+    final
+    
