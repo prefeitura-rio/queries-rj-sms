@@ -123,7 +123,7 @@ vitai_contato AS (
     SELECT
         cpf AS paciente_cpf,
         'email' AS tipo,
-        NULL AS valor, 
+        "" AS valor, 
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
     FROM vitai_tb
     GROUP BY
