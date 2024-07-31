@@ -33,7 +33,7 @@ vitai_cns_ranked AS (
     SELECT
         cpf AS paciente_cpf,
         cns,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM vitai_tb
     WHERE
         cns IS NOT NULL
@@ -69,7 +69,7 @@ vitai_contato_telefone AS (
             cpf AS paciente_cpf,
             'telefone' AS tipo,
             telefone AS valor,
-            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
         FROM vitai_tb
         GROUP BY cpf, telefone, updated_at
     )
@@ -90,7 +90,7 @@ vitai_contato_email AS (
             cpf AS paciente_cpf,
             'email' AS tipo,
             "" AS valor, 
-            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
         FROM vitai_tb
         GROUP BY cpf
     )
@@ -163,7 +163,7 @@ vitai_prontuario AS (
         'VITAI' AS sistema,
         cliente AS id_cnes,
         cpf AS id_paciente,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM vitai_tb
     GROUP BY
         cpf, cliente
@@ -210,7 +210,7 @@ vitai_paciente_dados AS (
         nome_mae AS mae_nome,
         NULL AS pai_nome,
         FALSE AS cadastro_validado_indicador,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf) AS rank
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
     FROM vitai_tb
     GROUP BY
         cpf, nome, nome_alternativo, cpf, DATE(data_nascimento), sexo, raca_cor, data_obito, nome_mae
