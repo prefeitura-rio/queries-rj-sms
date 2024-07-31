@@ -43,7 +43,7 @@ vitacare_cns_ranked AS (
     GROUP BY paciente_cpf, cns
 ),
 
-cns_dados AS (
+vitacare_cns_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -70,7 +70,7 @@ vitacare_clinica_familia AS (
         paciente_cpf, cnes_unidade, nome_unidade, data_atualizacao_vinculo_equipe
 ),
 
-clinica_familia_dados AS (
+vitacare_clinica_familia_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -98,7 +98,7 @@ vitacare_equipe_saude_familia AS (
         paciente_cpf, ine_equipe, data_atualizacao_vinculo_equipe
 ),
 
-equipe_saude_familia_dados AS (
+vitacare_equipe_saude_familia_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -154,7 +154,7 @@ vitacare_contato_email AS (
     WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
 
-contato_dados AS (
+vitacare_contato_dados AS (
     SELECT
         COALESCE(ctt.paciente_cpf, cte.paciente_cpf) AS paciente_cpf,
         STRUCT(
@@ -189,7 +189,7 @@ vitacare_endereco AS (
         paciente_cpf, cep, tipo_logradouro, logradouro,REGEXP_EXTRACT(logradouro, r'\b(\d+)\b'),TRIM(REGEXP_REPLACE(logradouro, r'^.*?\d+\s*(.*)$', r'\1')), bairro, municipio_residencia, estado_residencia, data_cadastro
 ),
 
-endereco_dados AS (
+vitacare_endereco_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -222,7 +222,7 @@ vitacare_prontuario AS (
         paciente_cpf, cnes_unidade, id, data_cadastro
 ),
 
-prontuario_dados AS (
+vitacare_prontuario_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -238,7 +238,7 @@ prontuario_dados AS (
 
 -- PACIENTE DADOS
 
-vitacare_paciente_dados AS (
+vitacare_paciente AS (
     SELECT
         paciente_cpf,
         nome,
@@ -265,7 +265,7 @@ vitacare_paciente_dados AS (
         paciente_cpf, nome, nome_social, cpf, DATE(data_nascimento), sexo, raca_cor, obito, nome_mae, nome_pai,updated_at
 ),
 
-paciente_dados AS (
+vitacare_paciente_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -281,7 +281,7 @@ paciente_dados AS (
             pai_nome,
             rank
         )) AS dados,
-    FROM vitacare_paciente_dados
+    FROM vitacare_paciente
     GROUP BY
         paciente_cpf
 )
@@ -298,10 +298,10 @@ SELECT
     ed.endereco,
     pt.prontuario,
     STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
-FROM paciente_dados pd
-LEFT JOIN cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
-LEFT JOIN clinica_familia_dados cf ON pd.paciente_cpf = cf.paciente_cpf
-LEFT JOIN equipe_saude_familia_dados esf ON pd.paciente_cpf = esf.paciente_cpf
-LEFT JOIN contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
-LEFT JOIN endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
-LEFT JOIN prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf
+FROM vitacare_paciente_dados pd
+LEFT JOIN vitacare_cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
+LEFT JOIN vitacare_clinica_familia_dados cf ON pd.paciente_cpf = cf.paciente_cpf
+LEFT JOIN vitacare_equipe_saude_familia_dados esf ON pd.paciente_cpf = esf.paciente_cpf
+LEFT JOIN vitacare_contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
+LEFT JOIN vitacare_endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
+LEFT JOIN vitacare_prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf

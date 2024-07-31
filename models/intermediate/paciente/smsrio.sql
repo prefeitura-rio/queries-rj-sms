@@ -44,7 +44,7 @@ smsrio_cns_ranked AS (
     
 ),
 
-cns_dados AS (
+smsrio_cns_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -109,7 +109,7 @@ smsrio_contato_email AS (
     WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
 ),
 
-contato_dados AS (
+smsrio_contato_dados AS (
     SELECT
         COALESCE(ctt.paciente_cpf, cte.paciente_cpf) AS paciente_cpf,
         STRUCT(
@@ -150,7 +150,7 @@ smsrio_endereco AS (
 ),
 
 
-endereco_dados AS (
+smsrio_endereco_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -182,7 +182,7 @@ smsrio_prontuario AS (
         paciente_cpf, cod_mun_res, timestamp
 ),
 
-prontuario_dados AS (
+smsrio_prontuario_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -197,7 +197,7 @@ prontuario_dados AS (
 
 -- PACIENTE DADOS
 
-smsrio_paciente_dados AS (
+smsrio_paciente AS (
     SELECT
         paciente_cpf,
         nome,
@@ -231,7 +231,7 @@ smsrio_paciente_dados AS (
         paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
 ),
 
-paciente_dados AS (
+smsrio_paciente_dados AS (
     SELECT
         paciente_cpf,
         ARRAY_AGG(STRUCT(
@@ -247,7 +247,7 @@ paciente_dados AS (
             pai_nome,
             rank
         )) AS dados,
-    FROM smsrio_paciente_dados
+    FROM smsrio_paciente
     GROUP BY
         paciente_cpf
 )
@@ -262,8 +262,8 @@ SELECT
     ed.endereco,
     pt.prontuario,
     STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
-FROM paciente_dados pd
-LEFT JOIN cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
-LEFT JOIN contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
-LEFT JOIN endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
-LEFT JOIN prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf
+FROM smsrio_paciente_dados pd
+LEFT JOIN smsrio_cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
+LEFT JOIN smsrio_contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
+LEFT JOIN smsrio_endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
+LEFT JOIN smsrio_prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf
