@@ -58,47 +58,68 @@ cns_dados AS (
 
 -- EQUIPE CONTATO
 
-smsrio_contato AS (
-    SELECT
+smsrio_contato_telefone AS (
+    SELECT 
         paciente_cpf,
-        'telefone' AS tipo,
-        TRIM(telefones) AS valor,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+        tipo, 
+        CASE 
+            WHEN TRIM(valor) IN ("NONE", "NULL", "") THEN NULL
+            ELSE valor
+        END AS valor,
+        rank
     FROM (
         SELECT
             paciente_cpf,
-            telefones,
-            timestamp
-        FROM smsrio_tb,
-        UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(telefones, '[', ''), ']', ''), '"', ''), ',')) AS telefones
+            'telefone' AS tipo,
+            TRIM(telefones) AS valor,
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+        FROM (
+            SELECT
+                paciente_cpf,
+                telefones,
+                timestamp
+            FROM smsrio_tb,
+            UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(telefones, '[', ''), ']', ''), '"', ''), ',')) AS telefones
+        )
+        GROUP BY
+            paciente_cpf, telefones, timestamp
     )
-    GROUP BY
-        paciente_cpf, telefones, timestamp
-    UNION ALL
-    SELECT
+    WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
+),
+
+smsrio_contato_email AS (
+    SELECT 
         paciente_cpf,
-        'email' AS tipo,
-        email AS valor,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
-    FROM smsrio_tb
-    GROUP BY
-        paciente_cpf, email, timestamp
+        tipo, 
+        CASE 
+            WHEN TRIM(valor) IN ("NONE", "NULL", "") THEN NULL
+            ELSE valor
+        END AS valor,
+        rank
+    FROM (
+        SELECT
+            paciente_cpf,
+            'email' AS tipo,
+            email AS valor,
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+        FROM smsrio_tb
+        GROUP BY
+            paciente_cpf, email, timestamp
+    )
+    WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
 ),
 
 contato_dados AS (
     SELECT
-        paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            tipo, 
-            CASE 
-                WHEN TRIM(valor) IN ("NONE", "NULL", "") THEN NULL
-                ELSE valor
-            END AS valor,
-            rank
-        )) AS contato
-    FROM smsrio_contato
-    WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
-    GROUP BY paciente_cpf
+        COALESCE(ctt.paciente_cpf, cte.paciente_cpf) AS paciente_cpf,
+        STRUCT(
+            ARRAY_AGG(STRUCT(ctt.valor, ctt.rank)) AS telefone,
+            ARRAY_AGG(STRUCT(cte.valor, cte.rank)) AS email
+        ) AS contato
+    FROM smsrio_contato_telefone ctt
+    FULL OUTER JOIN smsrio_contato_email cte
+        ON ctt.paciente_cpf = cte.paciente_cpf
+    GROUP BY COALESCE(ctt.paciente_cpf, cte.paciente_cpf)
 ),
 
 

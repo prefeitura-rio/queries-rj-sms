@@ -55,43 +55,61 @@ cns_dados AS (
 
 -- EQUIPE CONTATO
 
-vitai_contato AS (
-    SELECT
-        cpf AS paciente_cpf,
-        'telefone' AS tipo,
-        telefone AS valor,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
-    FROM vitai_tb
-    GROUP BY
-        cpf, telefone, updated_at
-    UNION ALL
-    SELECT
-        cpf AS paciente_cpf,
-        'email' AS tipo,
-        "" AS valor, 
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
-    FROM vitai_tb
-    GROUP BY
-        cpf
+vitai_contato_telefone AS (
+    SELECT 
+        paciente_cpf,
+        tipo, 
+        CASE 
+            WHEN TRIM(valor) IN ("()", "") THEN NULL
+            ELSE valor
+        END AS valor,
+        rank
+    FROM (
+        SELECT
+            cpf AS paciente_cpf,
+            'telefone' AS tipo,
+            telefone AS valor,
+            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
+        FROM vitai_tb
+        GROUP BY cpf, telefone, updated_at
+    )
+    WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
 
+vitai_contato_email AS (
+    SELECT 
+        paciente_cpf,
+        tipo, 
+        CASE 
+            WHEN TRIM(valor) IN ("()", "") THEN NULL
+            ELSE valor
+        END AS valor,
+        rank
+    FROM (
+        SELECT
+            cpf AS paciente_cpf,
+            'email' AS tipo,
+            "" AS valor, 
+            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY cpf DESC) AS rank
+        FROM vitai_tb
+        GROUP BY cpf
+    )
+    WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
+),
 
 contato_dados AS (
     SELECT
-        paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            tipo, 
-            CASE 
-                WHEN TRIM(valor) IN ("()", "") THEN NULL
-                ELSE valor
-            END AS valor, 
-            rank
-        )) AS contato
-    FROM vitai_contato
-    WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
-    GROUP BY paciente_cpf
-
+        COALESCE(ctt.paciente_cpf, cte.paciente_cpf) AS paciente_cpf,
+        STRUCT(
+            ARRAY_AGG(STRUCT(ctt.valor, ctt.rank)) AS telefone,
+            ARRAY_AGG(STRUCT(cte.valor, cte.rank)) AS email
+        ) AS contato
+    FROM vitai_contato_telefone ctt
+    FULL OUTER JOIN vitai_contato_email cte
+        ON ctt.paciente_cpf = cte.paciente_cpf
+    GROUP BY COALESCE(ctt.paciente_cpf, cte.paciente_cpf)
 ),
+
 
 -- EQUIPE ENDEREÇO
 
