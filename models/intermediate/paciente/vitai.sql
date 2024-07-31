@@ -20,7 +20,8 @@ WITH vitai_tb AS (
         TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(sexo, NFD), r'\pM', ''))) AS sexo,
         TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(raca_cor, NFD), r'\pM', ''))) AS raca_cor,
         data_obito,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_mae, NFD), r'\pM', ''))) AS nome_mae
+        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_mae, NFD), r'\pM', ''))) AS nome_mae,
+        gid_estabelecimento
     FROM `rj-sms.brutos_prontuario_vitai.paciente`
     WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
@@ -38,7 +39,7 @@ vitai_cns_ranked AS (
     WHERE
         cns IS NOT NULL
         AND TRIM(cns) NOT IN ("")
-    GROUP BY cpf, cns
+    GROUP BY cpf, cns, updated_at
 ),
 
 cns_dados AS (
@@ -92,7 +93,7 @@ vitai_contato_email AS (
             "" AS valor, 
             ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
         FROM vitai_tb
-        GROUP BY cpf
+        GROUP BY cpf, updated_at
     )
     WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
@@ -161,12 +162,20 @@ vitai_prontuario AS (
     SELECT
         cpf AS paciente_cpf,
         'VITAI' AS sistema,
-        cliente AS id_cnes,
+        id_cnes AS id_cnes,
         cpf AS id_paciente,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
-    FROM vitai_tb
+    FROM(
+        SELECT 
+            pc.updated_at,
+            pc.cpf,
+            es.cnes AS id_cnes,
+        FROM  vitai_tb pc
+        JOIN  `rj-sms.brutos_prontuario_vitai.estabelecimento` es
+            ON pc.gid_estabelecimento = es.gid
+    )
     GROUP BY
-        cpf, cliente
+        cpf, id_cnes, updated_at
 ),
 
 prontuario_dados AS (
@@ -213,7 +222,7 @@ vitai_paciente_dados AS (
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
     FROM vitai_tb
     GROUP BY
-        cpf, nome, nome_alternativo, cpf, DATE(data_nascimento), sexo, raca_cor, data_obito, nome_mae
+        cpf, nome, nome_alternativo, cpf, DATE(data_nascimento), sexo, raca_cor, data_obito, nome_mae, updated_at
 ),
 
 
