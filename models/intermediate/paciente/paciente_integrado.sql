@@ -398,10 +398,10 @@ smsrio_paciente AS (
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
         TRUE AS cadastro_validado_indicador,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
+        paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai, updated_at
 ),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
