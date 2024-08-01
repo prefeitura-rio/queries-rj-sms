@@ -1,103 +1,125 @@
-DECLARE cpf_filter STRING DEFAULT "";
+-- This code integrates patient data from two sources:
+-- rj-sms.brutos_prontuario_vitacare.paciente (VITACARE)
+-- rj-sms.brutos_plataforma_vitai.paciente (VITAI)
+-- rj-sms.brutos_plataforma_smsrio.paciente (SMSRIO)
+-- The goal is to consolidate information such as registration data,
+-- contact, address and medical record into a single view.
 
+-- Auxiliary function to clean and standardize text fields
+CREATE TEMP FUNCTION CleanText(texto STRING) AS (
+    TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(texto, NFD), r'\pM', '')))
+);
+
+-- Declaration of the variable to filter by CPF (optional)
+--DECLARE cpf_filter STRING DEFAULT "";
+
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get source data and standardize
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+
+-- VITACARE: Patient base table
 WITH vitacare_tb AS (
-    SELECT 
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(paciente_cpf, NFD), r'\pM', ''))) AS paciente_cpf,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cns, NFD), r'\pM', ''))) AS cns,
+    SELECT
+        CleanText(paciente_cpf) AS paciente_cpf,
+        CleanText(cns) AS cns,
         data_cadastro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cnes_unidade, NFD), r'\pM', ''))) AS cnes_unidade,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_unidade, NFD), r'\pM', ''))) AS nome_unidade,
+        CleanText(cnes_unidade) AS cnes_unidade,
+        CleanText(nome_unidade) AS nome_unidade,
         data_atualizacao_vinculo_equipe,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(ine_equipe, NFD), r'\pM', ''))) AS ine_equipe,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(telefone, NFD), r'\pM', ''))) AS telefone,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(email, NFD), r'\pM', ''))) AS email,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cep, NFD), r'\pM', ''))) AS cep,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(tipo_logradouro, NFD), r'\pM', ''))) AS tipo_logradouro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(logradouro, NFD), r'\pM', ''))) AS logradouro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(bairro, NFD), r'\pM', ''))) AS bairro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(municipio_residencia, NFD), r'\pM', ''))) AS municipio_residencia,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(estado_residencia, NFD), r'\pM', ''))) AS estado_residencia,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(id, NFD), r'\pM', ''))) AS id,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_social, NFD), r'\pM', ''))) AS nome_social,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cpf, NFD), r'\pM', ''))) AS cpf,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(data_nascimento, NFD), r'\pM', ''))) AS data_nascimento,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(sexo, NFD), r'\pM', ''))) AS sexo,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(raca_cor, NFD), r'\pM', ''))) AS raca_cor,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(obito, NFD), r'\pM', ''))) AS obito,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_mae, NFD), r'\pM', ''))) AS nome_mae,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_pai, NFD), r'\pM', ''))) AS nome_pai,
+        CleanText(ine_equipe) AS ine_equipe,
+        CleanText(telefone) AS telefone,
+        CleanText(email) AS email,
+        CleanText(cep) AS cep,
+        CleanText(tipo_logradouro) AS tipo_logradouro,
+        CleanText(logradouro) AS logradouro,
+        CleanText(bairro) AS bairro,
+        CleanText(municipio_residencia) AS municipio_residencia,
+        CleanText(estado_residencia) AS estado_residencia,
+        CleanText(id) AS id,
+        CleanText(nome) AS nome,
+        CleanText(nome_social) AS nome_social,
+        CleanText(cpf) AS cpf,
+        CleanText(data_nascimento) AS data_nascimento,
+        CleanText(sexo) AS sexo,
+        CleanText(raca_cor) AS raca_cor,
+        CleanText(obito) AS obito,
+        CleanText(nome_mae) AS nome_mae,
+        CleanText(nome_pai) AS nome_pai,
         updated_at
     FROM `rj-sms.brutos_prontuario_vitacare.paciente`
     -- WHERE paciente_cpf = cpf_filter
 ),
 
----------- SMS RIO ----------
-
+-- SMSRIO: Patient base table
 smsrio_tb AS (
     SELECT 
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(paciente_cpf, NFD), r'\pM', ''))) AS paciente_cpf,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cns_provisorio, NFD), r'\pM', ''))) AS cns_provisorio,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(telefones, NFD), r'\pM', ''))) AS telefones,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(email, NFD), r'\pM', ''))) AS email,
+        CleanText(paciente_cpf) AS paciente_cpf,
+        CleanText(cns_provisorio) AS cns_provisorio,
+        CleanText(telefones) AS telefones,
+        CleanText(email) AS email,
         timestamp,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_logrado, NFD), r'\pM', ''))) AS end_logrado,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_cep, NFD), r'\pM', ''))) AS end_cep,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_tp_logrado_cod, NFD), r'\pM', ''))) AS end_tp_logrado_cod,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_numero, NFD), r'\pM', ''))) AS end_numero,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_complem, NFD), r'\pM', ''))) AS end_complem,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_bairro, NFD), r'\pM', ''))) AS end_bairro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cod_mun_res, NFD), r'\pM', ''))) AS cod_mun_res,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(uf_res, NFD), r'\pM', ''))) AS uf_res,
+        CleanText(end_logrado) AS end_logrado,
+        CleanText(end_cep) AS end_cep,
+        CleanText(end_tp_logrado_cod) AS end_tp_logrado_cod,
+        CleanText(end_numero) AS end_numero,
+        CleanText(end_complem) AS end_complem,
+        CleanText(end_bairro) AS end_bairro,
+        CleanText(cod_mun_res) AS cod_mun_res,
+        CleanText(uf_res) AS uf_res,
         dt_nasc,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(sexo, NFD), r'\pM', ''))) AS sexo,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(raca_cor, NFD), r'\pM', ''))) AS raca_cor,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(obito, NFD), r'\pM', ''))) AS obito,
+        CleanText(sexo) AS sexo,
+        CleanText(raca_cor) AS raca_cor,
+        CleanText(obito) AS obito,
         dt_obito,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_mae, NFD), r'\pM', ''))) AS nome_mae,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_pai, NFD), r'\pM', ''))) AS nome_pai,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
+        CleanText(nome_mae) AS nome_mae,
+        CleanText(nome_pai) AS nome_pai,
+        CleanText(nome) AS nome,
         updated_at
     FROM `rj-sms.brutos_plataforma_smsrio.paciente`
     -- WHERE paciente_cpf = cpf_filter
 ),
 
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get CNS from the source tables
+-- giving preference to the most recently registered.
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
--- CNS VITACARE
-
+-- CNS VITACARE: Extracts and ranks CNS numbers
 vitacare_cns_ranked AS (
     SELECT
         paciente_cpf,
         cns,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY cns DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
     FROM vitacare_tb
     WHERE
         cns IS NOT NULL
-    GROUP BY paciente_cpf, cns
+    GROUP BY paciente_cpf, cns, updated_at
 ),
 
-
--- CNS SMSRIO
-
+-- CNS SMSRIO: Extracts and ranks CNS numbers 
 smsrio_cns_ranked AS (
     SELECT
         paciente_cpf,
         TRIM(cns) AS cns,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
     FROM (
             SELECT
                 paciente_cpf,
                 cns,
-                timestamp
+                updated_at
             FROM smsrio_tb,
             UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(cns_provisorio, '[', ''), ']', ''), '"', ''), ',')) AS cns
     )
-    GROUP BY paciente_cpf, TRIM(cns)
+    GROUP BY paciente_cpf, TRIM(cns), updated_at
     
 ),
 
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get Family Clinic data
+--  attended by each patient based on the most recent visit date.
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
--- CLINICA DA FAMILIA VITACARE
+-- CLINICA DA FAMILIA VITACARE: Extracts and ranks family clinics
 vitacare_clinica_familia AS (
     SELECT
         paciente_cpf,
@@ -112,8 +134,12 @@ vitacare_clinica_familia AS (
         paciente_cpf, cnes_unidade, nome_unidade, data_atualizacao_vinculo_equipe
 ),
 
--- EQUIPE SAUDE FAMILIA VITACARE
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get Family Health Team data
+--  attended by each patient based on the most recent visit date.
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
+-- EQUIPE SAUDE FAMILIA VITACARE: Extracts and ranks family health teams
 vitacare_equipe_saude_familia AS (
     SELECT
         paciente_cpf,
@@ -127,9 +153,12 @@ vitacare_equipe_saude_familia AS (
         paciente_cpf, ine_equipe, data_atualizacao_vinculo_equipe
 ),
 
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get contact information
+--  prioritizing the most recently registered.
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
--- CONTATO VITACARE
-
+-- CONTATO VITACARE: Extracts and ranks telephone numbers
 vitacare_contato_telefone AS (
     SELECT 
         paciente_cpf,
@@ -151,6 +180,7 @@ vitacare_contato_telefone AS (
     WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
 
+-- CONTATO VITACARE: Extracts and ranks email
 vitacare_contato_email AS (
     SELECT 
         paciente_cpf,
@@ -172,8 +202,7 @@ vitacare_contato_email AS (
     WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
 
--- CONTATO SMSRIO
-
+-- CONTATO SMSRIO: Extracts and ranks phone numbers
 smsrio_contato_telefone AS (
     SELECT 
         paciente_cpf,
@@ -188,21 +217,22 @@ smsrio_contato_telefone AS (
             paciente_cpf,
             'telefone' AS tipo,
             TRIM(telefones) AS valor,
-            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
         FROM (
             SELECT
                 paciente_cpf,
                 telefones,
-                timestamp
+                updated_at
             FROM smsrio_tb,
             UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(telefones, '[', ''), ']', ''), '"', ''), ',')) AS telefones
         )
         GROUP BY
-            paciente_cpf, telefones, timestamp
+            paciente_cpf, telefones, updated_at
     )
     WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
 ),
 
+-- CONTATO SMSRIO: Extracts and ranks email
 smsrio_contato_email AS (
     SELECT 
         paciente_cpf,
@@ -217,16 +247,20 @@ smsrio_contato_email AS (
             paciente_cpf,
             'email' AS tipo,
             email AS valor,
-            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
         FROM smsrio_tb
         GROUP BY
-            paciente_cpf, email, timestamp
+            paciente_cpf, email, updated_at
     )
     WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
 ),
 
---  ENDEREÇO VITACARE
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get address information
+--  prioritizing the most recent by registration date.
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
+--  ENDEREÇO VITACARE: Extracts and ranks addresses, 
 vitacare_endereco AS (
     SELECT
         paciente_cpf,
@@ -247,8 +281,7 @@ vitacare_endereco AS (
         paciente_cpf, cep, tipo_logradouro, logradouro,REGEXP_EXTRACT(logradouro, r'\b(\d+)\b'),TRIM(REGEXP_REPLACE(logradouro, r'^.*?\d+\s*(.*)$', r'\1')), bairro, municipio_residencia, estado_residencia, data_cadastro
 ),
 
---  ENDEREÇO SMSRIO
-
+--  ENDEREÇO SMSRIO: Extracts and ranks addresses
 smsrio_endereco AS (
     SELECT
         paciente_cpf,
@@ -266,16 +299,19 @@ smsrio_endereco AS (
             ELSE cod_mun_res
         END AS cidade,
         uf_res AS estado,
-        timestamp AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+        updated_at AS datahora_ultima_atualizacao,
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, timestamp
+        paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, updated_at
 ),
 
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get system medical record information
+--  prioritizing the most recently registered.
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
--- PRONTUARIO
-
+-- PRONTUARIO: Extracts and ranks medical record information
 vitacare_prontuario AS (
     SELECT
         paciente_cpf,
@@ -287,25 +323,25 @@ vitacare_prontuario AS (
     GROUP BY
         paciente_cpf, cnes_unidade, id, data_cadastro
 ),
-
-
--- PRONTUARIO SMSRIO
-
+-- PRONTUARIO SMSRIO: Extracts and ranks medical record information
 smsrio_prontuario AS (
     SELECT
         paciente_cpf,
         'SMSRIO' AS sistema,
         NULL AS id_cnes,
         paciente_cpf AS id_paciente,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, cod_mun_res, timestamp
+        paciente_cpf, cod_mun_res, updated_at
 ),
 
 
--- PACIENTE DADOS VITACARE
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get and structure patient data
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
+-- PACIENTE DADOS VITACARE: Extracts and structures patient data
 vitacare_paciente AS (
     SELECT
         paciente_cpf,
@@ -333,13 +369,12 @@ vitacare_paciente AS (
         paciente_cpf, nome, nome_social, cpf, DATE(data_nascimento), sexo, raca_cor, obito, nome_mae, nome_pai,updated_at
 ),
 
--- PACIENTE DADOS SMSRIO
-
+-- PACIENTE DADOS SMSRIO: Extracts and structures patient data
 smsrio_paciente AS (
     SELECT
         paciente_cpf,
         nome,
-        "" AS nome_social,
+        CAST(NULL AS STRING) AS nome_social,
         paciente_cpf AS cpf,
         DATE(dt_nasc) AS data_nascimento,
         CASE
@@ -369,8 +404,11 @@ smsrio_paciente AS (
         paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
 ),
 
--- MERGE DATA
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Merge data from different sources
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
+-- CNS Dados: Merges CNS data, grouping by patient.
 cns_dados AS (
     SELECT
         COALESCE(sm.paciente_cpf,vc.paciente_cpf) AS paciente_cpf,
@@ -384,7 +422,7 @@ cns_dados AS (
     GROUP BY sm.paciente_cpf, vc.paciente_cpf
 ),
 
-
+-- Clinica Familia Dados: Groups family clinic data by patient.
 clinica_familia_dados AS (
     SELECT
         paciente_cpf AS paciente_cpf,
@@ -398,8 +436,7 @@ clinica_familia_dados AS (
     GROUP BY paciente_cpf
 ),
 
-
-
+-- Equipe Saude Familia Dados: Groups family health team data by patient.
 equipe_saude_familia_dados AS (
     SELECT
         paciente_cpf,
@@ -412,7 +449,7 @@ equipe_saude_familia_dados AS (
     GROUP BY paciente_cpf
 ),
 
-
+-- Contato Dados: Merges contact data
 contato_dados AS (
     SELECT
         COALESCE(
@@ -439,6 +476,7 @@ contato_dados AS (
     GROUP BY vt_telefone.paciente_cpf, vt_email.paciente_cpf, sm_telefone.paciente_cpf, sm_email.paciente_cpf
 ),
 
+-- Endereco Dados: Merges address information
 endereco_dados AS (
     SELECT
         COALESCE(vc.paciente_cpf,sm.paciente_cpf) AS paciente_cpf,
@@ -461,6 +499,7 @@ endereco_dados AS (
 
 ),
 
+-- Prontuario Dados: Merges system medical record data
 prontuario_dados AS (
     SELECT
         COALESCE(vp.paciente_cpf,sp.paciente_cpf) AS paciente_cpf,
@@ -483,7 +522,7 @@ prontuario_dados AS (
     GROUP BY COALESCE(vp.paciente_cpf,sp.paciente_cpf)
 ),
 
-
+-- Paciente Dados: Merges patient data
 paciente_dados AS (
     SELECT
         COALESCE(vc.paciente_cpf, sm.paciente_cpf) AS paciente_cpf,
@@ -506,8 +545,8 @@ paciente_dados AS (
     GROUP BY vc.paciente_cpf, sm.paciente_cpf
 ),
 
----- FINAL JOIN
-
+---- FINAL JOIN: Joins all the data previously processed, creating the
+---- integrated table of the patients.
 
 paciente_integrado AS (
     SELECT
