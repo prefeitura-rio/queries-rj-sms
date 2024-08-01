@@ -1,0 +1,102 @@
+version: 2
+
+models:
+  - name: mart_historico_clinico__episodio
+    description: |
+      Tabela com uma visão consolidada dos atendimentos realizados em estabelecimentos de saúde.
+    columns:
+      - name: id
+        description: |
+          Identificador único para o atendimento, composto pelo CNES do estabelecimento e pelo identificador do atendimento (`gid`). 
+          Utilizado para diferenciar atendimentos entre diferentes estabelecimentos.
+        tests:
+          - not_null:
+              name: historico_clinico__id_episodio__notnull
+          - unique:
+              name: historico_clinico__id_episodio__unique
+      - name: tipo
+        description: |
+          Tipo de atendimento classificado como 'Exames', 'Consulta' ou 'Internação', baseado no tipo de atendimento informado no boletim.
+      - name: subtipo
+        description: |
+          Subtipo do atendimento, obtido a partir do tipo de atendimento do boletim. 
+      - name: entrada_datahora
+        description: |
+          Data e hora de início do atendimento. Representa o momento em que o atendimento começou.
+      - name: saida_datahora
+        description: |
+          Data e hora de término do atendimento. Representa o momento em que o atendimento terminou.
+      - name: paciente
+        description: |
+          Informações sobre os pacientes envolvidos no atendimento, incluindo CPF e CNS. 
+          Agrupados por identificador de prontuário.
+      - name: paciente.id_prontuario
+        description: |
+          Prontuário relacionado ao atendimento.
+      - name: paciente.cpf
+        description: |
+          CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: paciente.cns
+        description: |
+          CNS do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: cid
+        description: |
+          Códigos e descrições dos CID (Classificação Internacional de Doenças) relacionados ao atendimento. 
+          Inclui informações como código e nome do CID.
+      - name: cid.id
+        description: |
+          Código CID ativo
+      - name: cid.descricao
+        description: |
+          Descrição do CID associado 
+      - name: alergia
+        description: |
+          Descrições das alergias associadas ao atendimento, extraídas dos registros de alergias.
+      - name: estabelecimento
+        description: |
+          Informações sobre o estabelecimento de saúde onde o atendimento foi realizado, incluindo CNES, nome e sigla.
+      - name: estabelecimento.id_cnes
+        description: |
+          CNES do estabelecimento onde ocorreu o atendimento
+      - name: estabelecimento.nome
+        description: |
+          Nome do estabelecimento onde ocorreu o atendimento
+      - name: estabelecimento.estabelecimento_tipo
+        description: |
+          Tipo do estabelecimento onde ocorreu o atendimento
+      - name: profissional_saude_responsavel
+        description: |
+          Dados dos profissionais de saúde responsáveis pelo atendimento, incluindo CPF, CNS e nome.
+      - name: profissional_saude_responsavel.id
+        description: |
+          ID do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR") }}'
+      - name: profissional_saude_responsavel.cns
+        description: |
+          CNS do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: profissional_saude_responsavel.nome
+        description: |
+          Nome do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: profissional_saude_responsavel.cpf
+        description: |
+          CPF do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: prontuario
+        description: |
+          Informações adicionais sobre o atendimento, como o fornecedor e o identificador do atendimento.
+      - name: prontuario.id_atendimento
+        description: |
+          ID do atendimento.
+      - name: prontuario.fornecedor
+        description: |
+          Fornecedor do prontuário.

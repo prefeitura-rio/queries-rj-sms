@@ -8,7 +8,7 @@ default:
       dataset: gerenciamento__dbt
       location: US
       threads: 6
-      keyfile: /tmp/credentials.json
+      keyfile: C:\Users\home\.credentials\rj-sms-dev-6b9be4537ca1.json
     prod:
       type: bigquery
       method: service-account
@@ -16,7 +16,7 @@ default:
       dataset: gerenciamento__dbt
       location: US
       threads: 6
-      keyfile: /tmp/credentials.json
+      keyfile: C:\Users\home\.credentials\rj-sms-dev-6b9be4537ca1.json
     compile:
       type: bigquery
       method: service-account
@@ -24,4 +24,4 @@ default:
       dataset: gerenciamento__dbt
       location: US
       threads: 6
-      keyfile: /tmp/credentials.json
+      keyfile: C:\Users\home\.credentials\rj-sms-dev-6b9be4537ca1.json
