@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: mart_historico_clinico__episodio
+  - name: int_historico_clinico__episodio__vitai
     description: |
       Tabela com uma visão consolidada dos atendimentos realizados em estabelecimentos de saúde.
     columns:
@@ -11,9 +11,9 @@ models:
           Utilizado para diferenciar atendimentos entre diferentes estabelecimentos.
         tests:
           - not_null:
-              name: historico_clinico__id_episodio__notnull
+              name: historico_clinico__id_episodio_vitai__notnull
           - unique:
-              name: historico_clinico__id_episodio__unique
+              name: historico_clinico__id_episodio_vitai__unique
       - name: tipo
         description: |
           Tipo de atendimento classificado como 'Exames', 'Consulta' ou 'Internação', baseado no tipo de atendimento informado no boletim.

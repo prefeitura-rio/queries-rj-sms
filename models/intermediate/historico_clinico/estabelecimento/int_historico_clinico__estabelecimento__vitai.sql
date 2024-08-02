@@ -1,21 +1,13 @@
 with
-    estabelecimentos_std as (
-        select
-            gid,
-            cnes,
-            nome_estabelecimento,
-            case
-                when regexp_contains(sigla, r'UPA[A-Z-a-z-0-9]')
-                then 'UPA'
-                when regexp_contains(sigla, r'CER[A-Z-a-z-0-9]')
-                then 'CER'
-                when regexp_contains(sigla, r'HM[A-Z-a-z-0-9]')
-                then 'HM'
-                when regexp_contains(sigla, r'M[A-Z-a-z-0-9]')
-                then 'M'
-                else sigla
-            end as sigla
+    estabelecimento_vitai as (
+        select 
+            gid, 
+            cnes, 
+            initcap(nome_estabelecimento) as nome_estabelecimento_cap
         from {{ ref("raw_prontuario_vitai__m_estabelecimento") }}
     )
-select *
-from estabelecimentos_std
+select 
+    gid, 
+    cnes, 
+    {{ proper_estabelecimento(nome_estabelecimento_cap) }} as nome_estabelecimento
+from estabelecimento_vitai
