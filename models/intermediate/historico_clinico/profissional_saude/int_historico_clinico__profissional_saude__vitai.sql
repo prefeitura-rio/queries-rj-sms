@@ -1,5 +1,7 @@
-with profissionais_std as (
-    select  gid, cns, cpf, INITCAP(nome) as nome
-    from {{ ref('raw_prontuario_vitai__profissional')}}
-)
-select * from profissionais_std
+with
+    profissionais_std as (
+        select gid, cns, cpf, initcap(nome) as nome
+        from {{ ref("raw_prontuario_vitai__profissional") }}
+    )
+select gid, cns, cpf, {{ proper_br('nome') }} as nome
+from profissionais_std

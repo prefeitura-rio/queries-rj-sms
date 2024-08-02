@@ -45,7 +45,7 @@ with
     estabelecimentos as (
         select
             gid, cnes, nome_estabelecimento, estabelecimento_dim.tipo_sms_simplificado
-        from {{ ref("raw_prontuario_vitai__m_estabelecimento") }} as estabelecimento_vitai
+        from {{ ref("int_historico_clinico__estabelecimento__vitai") }} as estabelecimento_vitai
         left join
             {{ ref("dim_estabelecimento") }} as estabelecimento_dim
             on estabelecimento_vitai.cnes = estabelecimento_dim.id_cnes
@@ -152,6 +152,7 @@ select
     atendimento_struct.subtipo,
     atendimento_struct.entrada_datahora,
     atendimento_struct.saida_datahora,
+    atendimento_struct.paciente,
     cid_grouped.cid,
     alergias_grouped.alergia,
     profissional_grouped.profissional_saude_responsavel,
