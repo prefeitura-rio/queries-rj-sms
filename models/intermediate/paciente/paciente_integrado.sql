@@ -5,13 +5,13 @@
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
 
+-- Declaration of the variable to filter by CPF (optional)
+DECLARE cpf_filter STRING DEFAULT "49190342704";
+
 -- Auxiliary function to clean and standardize text fields
 CREATE TEMP FUNCTION CleanText(texto STRING) AS (
     TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(texto, NFD), r'\pM', '')))
 );
-
--- Declaration of the variable to filter by CPF (optional)
---DECLARE cpf_filter STRING DEFAULT "";
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get source data and standardize
@@ -47,7 +47,7 @@ WITH vitacare_tb AS (
         CleanText(nome_pai) AS nome_pai,
         updated_at
     FROM `rj-sms.brutos_prontuario_vitacare.paciente`
-    -- WHERE paciente_cpf = cpf_filter
+    WHERE paciente_cpf = cpf_filter
 ),
 
 -- SMSRIO: Patient base table
@@ -76,7 +76,7 @@ smsrio_tb AS (
         CleanText(nome) AS nome,
         updated_at
     FROM `rj-sms.brutos_plataforma_smsrio.paciente`
-    -- WHERE paciente_cpf = cpf_filter
+    WHERE paciente_cpf = cpf_filter
 ),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -89,11 +89,22 @@ vitacare_cns_ranked AS (
     SELECT
         paciente_cpf,
         cns,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf, cns ORDER BY updated_at DESC) AS rank
     FROM vitacare_tb
     WHERE
         cns IS NOT NULL
     GROUP BY paciente_cpf, cns, updated_at
+),
+
+vitacare_cns_array AS (
+    SELECT
+        vc.paciente_cpf AS paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            vc.cns AS valor,
+            vc.rank AS rank
+        )) AS vitacare
+    FROM  vitacare_cns_ranked  vc
+    GROUP BY vc.paciente_cpf
 ),
 
 -- CNS SMSRIO: Extracts and ranks CNS numbers 
@@ -101,8 +112,8 @@ smsrio_cns_ranked AS (
     SELECT
         paciente_cpf,
         CASE 
-          WHEN TRIM(cns) IN ('NONE') THEN NULL
-          ELSE TRIM(cns)
+            WHEN TRIM(cns) IN ('NONE') THEN NULL
+            ELSE TRIM(cns)
         END AS cns,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
     FROM (
@@ -116,6 +127,18 @@ smsrio_cns_ranked AS (
     GROUP BY paciente_cpf, cns, updated_at
     
 ),
+
+smsrio_cns_array AS (
+    SELECT
+        sm.paciente_cpf AS paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            sm.cns AS valor,
+            sm.rank AS rank
+        )) AS smsrio
+    FROM  smsrio_cns_ranked  sm
+    GROUP BY sm.paciente_cpf
+),
+
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get Family Clinic data
@@ -205,6 +228,25 @@ vitacare_contato_email AS (
     WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
 
+vitacare_contato_array AS (
+    SELECT
+        COALESCE(vt_telefone.paciente_cpf, vt_email.paciente_cpf) AS paciente_cpf, 
+        STRUCT(
+            ARRAY_AGG(STRUCT(
+                vt_telefone.valor AS valor, 
+                vt_telefone.rank AS rank
+            )) AS telefone,
+            ARRAY_AGG(STRUCT(
+                vt_email.valor  AS valor, 
+                vt_email.rank AS rank
+            )) AS email
+        ) AS vitacare,
+    FROM vitacare_contato_telefone vt_telefone
+    FULL OUTER JOIN vitacare_contato_email vt_email
+        ON vt_telefone.paciente_cpf = vt_email.paciente_cpf
+    GROUP BY vt_telefone.paciente_cpf, vt_email.paciente_cpf
+),
+
 -- CONTATO SMSRIO: Extracts and ranks phone numbers
 smsrio_contato_telefone AS (
     SELECT 
@@ -258,6 +300,25 @@ smsrio_contato_email AS (
     WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
 ),
 
+smsrio_contato_array AS (
+    SELECT
+        COALESCE(sm_telefone.paciente_cpf, sm_email.paciente_cpf) AS paciente_cpf, 
+        STRUCT(
+            ARRAY_AGG(STRUCT(
+                sm_telefone.valor AS valor, 
+                sm_telefone.rank AS rank
+            )) AS telefone,
+            ARRAY_AGG(STRUCT(
+                sm_email.valor  AS valor, 
+                sm_email.rank AS rank
+            )) AS email
+        ) AS smsrio,
+    FROM smsrio_contato_telefone sm_telefone
+    FULL OUTER JOIN smsrio_contato_email sm_email
+        ON sm_telefone.paciente_cpf = sm_email.paciente_cpf
+    GROUP BY sm_telefone.paciente_cpf, sm_email.paciente_cpf
+),
+
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get address information
 --  prioritizing the most recent by registration date.
@@ -282,6 +343,25 @@ vitacare_endereco AS (
         logradouro IS NOT NULL
     GROUP BY
         paciente_cpf, cep, tipo_logradouro, logradouro,REGEXP_EXTRACT(logradouro, r'\b(\d+)\b'),TRIM(REGEXP_REPLACE(logradouro, r'^.*?\d+\s*(.*)$', r'\1')), bairro, municipio_residencia, estado_residencia, data_cadastro
+),
+
+vitacare_endereco_array AS (
+    SELECT
+        vc.paciente_cpf AS paciente_cpf,
+        ARRAY_AGG(STRUCT(
+              vc.cep AS cep, 
+              vc.tipo_logradouro AS tipo_logradouro, 
+              vc.logradouro AS logradouro, 
+              vc.numero AS numero, 
+              vc.complemento AS complemento, 
+              vc.bairro AS bairro, 
+              vc.cidade AS cidade, 
+              vc.estado AS estado, 
+              vc.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
+              vc.rank AS rank
+      )) AS vitacare
+    FROM vitacare_endereco  vc
+    GROUP BY vc.paciente_cpf
 ),
 
 --  ENDEREÇO SMSRIO: Extracts and ranks addresses
@@ -309,6 +389,25 @@ smsrio_endereco AS (
         paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, updated_at
 ),
 
+smsrio_endereco_array AS (
+    SELECT
+        sm.paciente_cpf AS paciente_cpf,
+        ARRAY_AGG(STRUCT(
+                sm.cep AS cep, 
+                sm.tipo_logradouro AS tipo_logradouro, 
+                sm.logradouro AS logradouro, 
+                sm.numero AS numero, 
+                sm.complemento AS complemento, 
+                sm.bairro AS bairro, 
+                sm.cidade AS cidade, 
+                sm.estado AS estado, 
+                sm.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
+                sm.rank AS rank
+        )) AS smsrio
+    FROM smsrio_endereco sm
+    GROUP BY sm.paciente_cpf
+),
+
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get system medical record information
 --  prioritizing the most recently registered.
@@ -326,6 +425,20 @@ vitacare_prontuario AS (
     GROUP BY
         paciente_cpf, cnes_unidade, id, data_cadastro
 ),
+
+vitacare_prontuario_array AS (
+    SELECT
+        vc.paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            vc.sistema, 
+            vc.id_cnes, 
+            vc.id_paciente, 
+            vc.rank
+        )) AS vitacare
+    FROM vitacare_prontuario vc
+    GROUP BY vc.paciente_cpf
+),
+
 -- PRONTUARIO SMSRIO: Extracts and ranks medical record information
 smsrio_prontuario AS (
     SELECT
@@ -337,6 +450,19 @@ smsrio_prontuario AS (
     FROM smsrio_tb
     GROUP BY
         paciente_cpf, cod_mun_res, updated_at
+),
+
+smsrio_prontuario_array AS (
+    SELECT
+        sm.paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            sm.sistema, 
+            sm.id_cnes, 
+            sm.id_paciente, 
+            sm.rank
+        )) AS smsrio
+    FROM smsrio_prontuario sm
+    GROUP BY sm.paciente_cpf
 ),
 
 
@@ -420,19 +546,12 @@ cns_dados AS (
     SELECT
         COALESCE(sm.paciente_cpf,vc.paciente_cpf) AS paciente_cpf,
         STRUCT(
-            ARRAY_AGG(STRUCT(
-                sm.cns AS valor,
-                sm.rank AS rank
-                )) AS smsrio,
-                ARRAY_AGG(STRUCT(
-                    vc.cns AS valor,
-                    vc.rank AS rank
-                )) AS vitacare
+            vc.vitacare,
+            sm.smsrio
         ) AS cns
-    FROM vitacare_cns_ranked  vc
-    FULL OUTER JOIN smsrio_cns_ranked  sm
+    FROM vitacare_cns_array  vc
+    FULL OUTER JOIN smsrio_cns_array  sm
         ON vc.paciente_cpf = sm.paciente_cpf
-    GROUP BY sm.paciente_cpf, vc.paciente_cpf
 ),
 
 
@@ -471,101 +590,50 @@ equipe_saude_familia_dados AS (
 contato_dados AS (
     SELECT
         COALESCE(
-            COALESCE(vt_telefone.paciente_cpf, vt_email.paciente_cpf), 
-            COALESCE(sm_telefone.paciente_cpf, sm_email.paciente_cpf)
+            vc.paciente_cpf,
+            sm.paciente_cpf
         ) AS paciente_cpf,
         STRUCT(
-            STRUCT(
-                ARRAY_AGG(STRUCT(
-                    vt_telefone.valor AS valor, 
-                    vt_telefone.rank AS rank
-                )) AS telefone,
-                ARRAY_AGG(STRUCT(
-                    vt_email.valor  AS valor, 
-                    vt_email.rank AS rank
-                )) AS email
-            ) AS vitacare,
-            STRUCT(
-                ARRAY_AGG(STRUCT(
-                    sm_telefone.valor AS valor, 
-                    sm_telefone.rank AS rank
-                )) AS telefone,
-                ARRAY_AGG(STRUCT(
-                    sm_email.valor AS valor, 
-                    sm_email.rank AS rank
-                )) AS email
-            ) AS smsrio
+            vc.vitacare,
+            sm.smsrio
         ) AS contato
-    FROM vitacare_contato_telefone vt_telefone
-    FULL OUTER JOIN vitacare_contato_email vt_email
-        ON vt_telefone.paciente_cpf = vt_email.paciente_cpf
-    FULL OUTER JOIN smsrio_contato_telefone sm_telefone
-        ON vt_telefone.paciente_cpf = sm_telefone.paciente_cpf
-    FULL OUTER JOIN smsrio_contato_email sm_email
-        ON vt_telefone.paciente_cpf = sm_email.paciente_cpf
-    GROUP BY vt_telefone.paciente_cpf, vt_email.paciente_cpf, sm_telefone.paciente_cpf, sm_email.paciente_cpf
+    FROM vitacare_contato_array vc
+    FULL OUTER JOIN smsrio_contato_array sm
+        ON vc.paciente_cpf = sm.paciente_cpf
 ),
 
 -- Endereco Dados: Merges address information
 -- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
 endereco_dados AS (
     SELECT
-        COALESCE(vc.paciente_cpf,sm.paciente_cpf) AS paciente_cpf,
+        COALESCE(
+            vc.paciente_cpf,
+            sm.paciente_cpf
+        ) AS paciente_cpf,
         STRUCT(
-            ARRAY_AGG(STRUCT(
-                vc.cep AS cep, 
-                vc.tipo_logradouro AS tipo_logradouro, 
-                vc.logradouro AS logradouro, 
-                vc.numero AS numero, 
-                vc.complemento AS complemento, 
-                vc.bairro AS bairro, 
-                vc.cidade AS cidade, 
-                vc.estado AS estado, 
-                vc.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
-                vc.rank AS rank
-            )) AS vitacare,
-            ARRAY_AGG(STRUCT(
-                sm.cep AS cep, 
-                sm.tipo_logradouro AS tipo_logradouro, 
-                sm.logradouro AS logradouro, 
-                sm.numero AS numero, 
-                sm.complemento AS complemento, 
-                sm.bairro AS bairro, 
-                sm.cidade AS cidade, 
-                sm.estado AS estado, 
-                sm.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
-                sm.rank AS rank
-            )) AS smsrio
-        ) endereco
-    FROM vitacare_endereco  vc
-    FULL OUTER JOIN smsrio_endereco  sm
+            vc.vitacare,
+            sm.smsrio
+        ) AS endereco
+    FROM vitacare_endereco_array vc
+    FULL OUTER JOIN smsrio_endereco_array sm
         ON vc.paciente_cpf = sm.paciente_cpf
-    GROUP BY sm.paciente_cpf, vc.paciente_cpf
-
 ),
 
 -- Prontuario Dados: Merges system medical record data
 -- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
 prontuario_dados AS (
     SELECT
-        COALESCE(vp.paciente_cpf,sp.paciente_cpf) AS paciente_cpf,
-        STRUCT(ARRAY_AGG(STRUCT(
-            vp.sistema, 
-            vp.id_cnes, 
-            vp.id_paciente, 
-            vp.rank
-        )) AS vitacare,
-        ARRAY_AGG(STRUCT(
-            sp.sistema, 
-            sp.id_cnes, 
-            sp.id_paciente, 
-            sp.rank
-        )) AS smsrio
+        COALESCE(
+            vc.paciente_cpf,
+            sm.paciente_cpf
+        ) AS paciente_cpf,
+        STRUCT(
+            vc.vitacare,
+            sm.smsrio
         ) AS prontuario
-    FROM vitacare_prontuario vp
-    FULL OUTER JOIN smsrio_prontuario sp
-        ON vp.paciente_cpf = sp.paciente_cpf
-    GROUP BY COALESCE(vp.paciente_cpf,sp.paciente_cpf)
+    FROM vitacare_prontuario_array vc
+    FULL OUTER JOIN smsrio_prontuario_array sm
+        ON vc.paciente_cpf = sm.paciente_cpf
 ),
 
 -- Paciente Dados: Merges patient data
