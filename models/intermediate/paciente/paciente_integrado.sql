@@ -349,7 +349,10 @@ vitacare_paciente AS (
     SELECT
         paciente_cpf,
         nome,
-        nome_social,
+        CASE 
+            WHEN nome_social IN ('') THEN NULL
+            ELSE nome_social
+        END AS nome_social,
         cpf,
         DATE(data_nascimento) AS data_nascimento,
         sexo AS genero,
@@ -581,20 +584,106 @@ prontuario_dados AS (
 paciente_dados AS (
     SELECT
         COALESCE(vc.paciente_cpf, sm.paciente_cpf) AS paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            COALESCE(sm.nome, vc.nome) AS nome,
-            COALESCE(sm.nome_social,vc.nome_social) AS nome_social_social,
-            COALESCE(sm.cpf,vc.cpf) AS cpf,
-            COALESCE(sm.data_nascimento,vc.data_nascimento) AS data_nascimento,
-            COALESCE(sm.genero,vc.genero) AS genero,
-            COALESCE(vc.raca, sm.raca) AS raca,
-            COALESCE(sm.obito_indicador, vc.obito_indicador) AS obito_indicador,
-            COALESCE(vc.obito_data ,sm.obito_data) AS obito_data,
-            COALESCE(sm.mae_nome, vc.mae_nome) AS mae_nome,
-            COALESCE(sm.pai_nome, vc.pai_nome) AS pai_nome,
-            COALESCE(sm.cadastro_validado_indicador,vc.cadastro_validado_indicador) AS cadastro_validado_indicador,
-            COALESCE( sm.rank, vc.rank) AS rank
-        )) AS dados
+        ARRAY_AGG(
+            STRUCT(
+                STRUCT(
+                    COALESCE(sm.nome, vc.nome) AS valor,
+                    CASE 
+                        WHEN sm.nome IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.nome IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS nome,
+                STRUCT(
+                    COALESCE(sm.nome_social, vc.nome_social) AS valor,
+                    CASE 
+                        WHEN sm.nome_social IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.nome_social IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS nome_social,
+                STRUCT(
+                    COALESCE(sm.cpf, vc.cpf) AS valor,
+                    CASE 
+                        WHEN sm.cpf IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.cpf IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS cpf,
+                STRUCT(
+                    COALESCE(sm.data_nascimento, vc.data_nascimento) AS valor,
+                    CASE 
+                        WHEN sm.data_nascimento IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.data_nascimento IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS data_nascimento,
+                STRUCT(
+                    COALESCE(sm.genero, vc.genero) AS valor,
+                    CASE 
+                        WHEN sm.genero IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.genero IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS genero,
+                STRUCT(
+                    COALESCE(vc.raca, sm.raca) AS valor,
+                    CASE 
+                        WHEN vc.raca IS NOT NULL THEN "VITACARE" 
+                        WHEN sm.raca IS NOT NULL THEN "SMSRIO" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS raca,
+                STRUCT(
+                    COALESCE(sm.obito_indicador, vc.obito_indicador) AS valor,
+                    CASE 
+                        WHEN sm.obito_indicador IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.obito_indicador IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS obito_indicador,
+                STRUCT(
+                    COALESCE(sm.obito_data, vc.obito_data) AS valor,
+                    CASE 
+                        WHEN sm.obito_data IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.obito_data IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS obito_data,
+                STRUCT(
+                    COALESCE(sm.mae_nome, vc.mae_nome) AS valor,
+                    CASE 
+                        WHEN sm.mae_nome IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.mae_nome IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS mae_nome,
+                STRUCT(
+                    COALESCE(sm.pai_nome, vc.pai_nome) AS valor,
+                    CASE 
+                        WHEN sm.pai_nome IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.pai_nome IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS pai_nome,
+                STRUCT(
+                    COALESCE(sm.cadastro_validado_indicador, vc.cadastro_validado_indicador) AS valor,
+                    CASE 
+                        WHEN sm.cadastro_validado_indicador IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.cadastro_validado_indicador IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS cadastro_validado_indicador,
+                STRUCT(
+                    COALESCE(sm.rank, vc.rank) AS valor,
+                    CASE 
+                        WHEN sm.rank IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.rank IS NOT NULL THEN "VITACARE" 
+                        ELSE NULL 
+                    END AS sistema
+                ) AS rank
+            )
+        ) AS dados
     FROM vitacare_paciente vc
     FULL OUTER JOIN smsrio_paciente sm
         ON vc.paciente_cpf = sm.paciente_cpf
