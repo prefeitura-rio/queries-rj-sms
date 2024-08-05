@@ -1,6 +1,7 @@
 {{
     config(
         alias="agencia",
+        schema="brutos_osinfo_staging"
     )
 }}
 with source as (

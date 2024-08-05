@@ -1,6 +1,7 @@
 {{
     config(
         alias="secretaria",
+        schema="brutos_osinfo_staging"
     )
 }}
 

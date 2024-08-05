@@ -1,6 +1,7 @@
 {{
     config(
         alias="fornecedor",
+        schema="brutos_osinfo_staging"
     )
 }}
 

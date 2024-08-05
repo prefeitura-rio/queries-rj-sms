@@ -1,6 +1,7 @@
 {{
     config(
         alias="plano_contas",
+        schema="brutos_osinfo_staging"
     )
 }}
 

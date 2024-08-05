@@ -1,6 +1,7 @@
 {{
     config(
         alias="usuario_sistema",
+        schema="brutos_osinfo_staging"
     )
 }}
 

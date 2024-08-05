@@ -1,6 +1,7 @@
 {{
     config(
         alias="rubrica",
+        schema="brutos_osinfo_staging"
     )
 }}
 

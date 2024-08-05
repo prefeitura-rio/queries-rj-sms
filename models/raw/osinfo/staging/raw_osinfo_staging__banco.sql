@@ -1,6 +1,7 @@
 {{
     config(
         alias="banco",
+        schema="brutos_osinfo_staging"
     )
 }}
 

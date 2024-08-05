@@ -1,6 +1,7 @@
 {{
     config(
         alias="conta_bancaria_tipo",
+        schema="brutos_osinfo_staging"
     )
 }}
 

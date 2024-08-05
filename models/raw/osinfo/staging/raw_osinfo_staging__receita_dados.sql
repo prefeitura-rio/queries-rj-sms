@@ -1,6 +1,7 @@
 {{
     config(
         alias="receita_dados",
+        schema="brutos_osinfo_staging"
     )
 }}
 

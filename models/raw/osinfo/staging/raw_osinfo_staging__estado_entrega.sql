@@ -1,6 +1,7 @@
 {{
     config(
         alias="estado_entrega",
+        schema="brutos_osinfo_staging"
     )
 }}
 

@@ -1,6 +1,7 @@
 {{
     config(
         alias="tipo_arquivo",
+        schema="brutos_osinfo_staging"
     )
 }}
 

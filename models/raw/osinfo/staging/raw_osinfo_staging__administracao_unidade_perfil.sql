@@ -1,6 +1,7 @@
 {{
     config(
         alias="administracao_unidade_perfil",
+        schema="brutos_osinfo_staging"
     )
 }}
 

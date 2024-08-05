@@ -1,6 +1,7 @@
 {{
     config(
         alias="fechamento",
+        schema="brutos_osinfo_staging"
     )
 }}
 

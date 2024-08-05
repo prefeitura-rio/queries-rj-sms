@@ -1,6 +1,7 @@
 {{
     config(
         alias="saldo_item",
+        schema="brutos_osinfo_staging"
     )
 }}
 
