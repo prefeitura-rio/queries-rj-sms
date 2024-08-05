@@ -6,7 +6,7 @@
 -- contact, address and medical record into a single view.
 
 -- Declaration of the variable to filter by CPF (optional)
-DECLARE cpf_filter STRING DEFAULT "49190342704";
+{# DECLARE cpf_filter STRING DEFAULT ""; #}
 
 -- Auxiliary function to clean and standardize text fields
 CREATE TEMP FUNCTION CleanText(texto STRING) AS (
@@ -47,7 +47,7 @@ WITH vitacare_tb AS (
         CleanText(nome_pai) AS nome_pai,
         updated_at
     FROM `rj-sms.brutos_prontuario_vitacare.paciente`
-    WHERE paciente_cpf = cpf_filter
+    {# WHERE paciente_cpf = cpf_filter #}
 ),
 
 -- SMSRIO: Patient base table
@@ -76,7 +76,7 @@ smsrio_tb AS (
         CleanText(nome) AS nome,
         updated_at
     FROM `rj-sms.brutos_plataforma_smsrio.paciente`
-    WHERE paciente_cpf = cpf_filter
+    {# WHERE paciente_cpf = cpf_filter #}
 ),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -349,17 +349,17 @@ vitacare_endereco_array AS (
     SELECT
         vc.paciente_cpf AS paciente_cpf,
         ARRAY_AGG(STRUCT(
-              vc.cep AS cep, 
-              vc.tipo_logradouro AS tipo_logradouro, 
-              vc.logradouro AS logradouro, 
-              vc.numero AS numero, 
-              vc.complemento AS complemento, 
-              vc.bairro AS bairro, 
-              vc.cidade AS cidade, 
-              vc.estado AS estado, 
-              vc.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
-              vc.rank AS rank
-      )) AS vitacare
+            vc.cep AS cep, 
+            vc.tipo_logradouro AS tipo_logradouro, 
+            vc.logradouro AS logradouro, 
+            vc.numero AS numero, 
+            vc.complemento AS complemento, 
+            vc.bairro AS bairro, 
+            vc.cidade AS cidade, 
+            vc.estado AS estado, 
+            vc.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
+            vc.rank AS rank
+        )) AS vitacare
     FROM vitacare_endereco  vc
     GROUP BY vc.paciente_cpf
 ),
@@ -651,7 +651,7 @@ prontuario_dados AS (
 
 paciente_dados AS (
     SELECT
-        COALESCE(vc.paciente_cpf, sm.paciente_cpf) AS paciente_cpf,
+        COALESCE(sm.paciente_cpf, vc.paciente_cpf) AS paciente_cpf,
         ARRAY_AGG(
             STRUCT(
                 STRUCT(
