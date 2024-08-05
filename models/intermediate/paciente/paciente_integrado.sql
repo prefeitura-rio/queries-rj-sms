@@ -100,7 +100,10 @@ vitacare_cns_ranked AS (
 smsrio_cns_ranked AS (
     SELECT
         paciente_cpf,
-        TRIM(cns) AS cns,
+        CASE 
+          WHEN TRIM(cns) IN ('NONE') THEN NULL
+          ELSE TRIM(cns)
+        END AS cns,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
     FROM (
             SELECT
@@ -110,7 +113,7 @@ smsrio_cns_ranked AS (
             FROM smsrio_tb,
             UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(cns_provisorio, '[', ''), ']', ''), '"', ''), ',')) AS cns
     )
-    GROUP BY paciente_cpf, TRIM(cns), updated_at
+    GROUP BY paciente_cpf, cns, updated_at
     
 ),
 
@@ -408,21 +411,31 @@ smsrio_paciente AS (
 --  Merge data from different sources
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
--- CNS Dados: Merges CNS data, grouping by patient.
+-- CNS Dados: Merges CNS data, grouping by patient 
+-- UNION 1. Vitacare | 3. SMSRIO | 2. Vitai
 cns_dados AS (
     SELECT
         COALESCE(sm.paciente_cpf,vc.paciente_cpf) AS paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            COALESCE(sm.cns, vc.cns) AS valor,
-            COALESCE(sm.rank, vc.rank) AS rank
-        )) AS cns
+        STRUCT(
+            ARRAY_AGG(STRUCT(
+                sm.cns AS valor,
+                sm.rank AS rank
+                )) AS smsrio,
+                ARRAY_AGG(STRUCT(
+                    vc.cns AS valor,
+                    vc.rank AS rank
+                )) AS vitacare
+        ) AS cns
     FROM vitacare_cns_ranked  vc
     FULL OUTER JOIN smsrio_cns_ranked  sm
         ON vc.paciente_cpf = sm.paciente_cpf
     GROUP BY sm.paciente_cpf, vc.paciente_cpf
 ),
 
+
+
 -- Clinica Familia Dados: Groups family clinic data by patient.
+-- ONLY VITACARE
 clinica_familia_dados AS (
     SELECT
         paciente_cpf AS paciente_cpf,
@@ -437,6 +450,7 @@ clinica_familia_dados AS (
 ),
 
 -- Equipe Saude Familia Dados: Groups family health team data by patient.
+-- ONLY VITACARE
 equipe_saude_familia_dados AS (
     SELECT
         paciente_cpf,
@@ -449,7 +463,8 @@ equipe_saude_familia_dados AS (
     GROUP BY paciente_cpf
 ),
 
--- Contato Dados: Merges contact data
+-- Contato Dados: Merges contact data 
+-- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
 contato_dados AS (
     SELECT
         COALESCE(
@@ -457,14 +472,26 @@ contato_dados AS (
             COALESCE(sm_telefone.paciente_cpf, sm_email.paciente_cpf)
         ) AS paciente_cpf,
         STRUCT(
-            ARRAY_AGG(STRUCT(
-                COALESCE(vt_telefone.valor, sm_telefone.valor) AS valor, 
-                COALESCE(vt_telefone.rank, sm_telefone.rank) AS rank
-            )) AS telefone,
-            ARRAY_AGG(STRUCT(
-                COALESCE(vt_email.valor, sm_email.valor) AS valor, 
-                COALESCE(vt_email.rank, sm_email.rank) AS rank
-            )) AS email
+            STRUCT(
+                ARRAY_AGG(STRUCT(
+                    vt_telefone.valor AS valor, 
+                    vt_telefone.rank AS rank
+                )) AS telefone,
+                ARRAY_AGG(STRUCT(
+                    vt_email.valor  AS valor, 
+                    vt_email.rank AS rank
+                )) AS email
+            ) AS vitacare,
+            STRUCT(
+                ARRAY_AGG(STRUCT(
+                    sm_telefone.valor AS valor, 
+                    sm_telefone.rank AS rank
+                )) AS telefone,
+                ARRAY_AGG(STRUCT(
+                    sm_email.valor AS valor, 
+                    sm_email.rank AS rank
+                )) AS email
+            ) AS smsrio
         ) AS contato
     FROM vitacare_contato_telefone vt_telefone
     FULL OUTER JOIN vitacare_contato_email vt_email
@@ -477,21 +504,36 @@ contato_dados AS (
 ),
 
 -- Endereco Dados: Merges address information
+-- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
 endereco_dados AS (
     SELECT
         COALESCE(vc.paciente_cpf,sm.paciente_cpf) AS paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            COALESCE(vc.cep,sm.cep) AS cep, 
-            COALESCE(vc.tipo_logradouro,sm.tipo_logradouro) AS tipo_logradouro, 
-            COALESCE(vc.logradouro,sm.logradouro) AS logradouro, 
-            COALESCE(vc.numero,sm.numero) AS numero, 
-            COALESCE(vc.complemento,sm.complemento) AS complemento, 
-            COALESCE(vc.bairro,sm.bairro) AS bairro, 
-            COALESCE(vc.cidade,sm.cidade) AS cidade, 
-            COALESCE(vc.estado,sm.estado) AS estado, 
-            COALESCE(vc.datahora_ultima_atualizacao,sm.datahora_ultima_atualizacao) AS datahora_ultima_atualizacao, 
-            COALESCE(vc.rank,sm.rank) AS rank
-        )) AS endereco
+        STRUCT(
+            ARRAY_AGG(STRUCT(
+                vc.cep AS cep, 
+                vc.tipo_logradouro AS tipo_logradouro, 
+                vc.logradouro AS logradouro, 
+                vc.numero AS numero, 
+                vc.complemento AS complemento, 
+                vc.bairro AS bairro, 
+                vc.cidade AS cidade, 
+                vc.estado AS estado, 
+                vc.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
+                vc.rank AS rank
+            )) AS vitacare,
+            ARRAY_AGG(STRUCT(
+                sm.cep AS cep, 
+                sm.tipo_logradouro AS tipo_logradouro, 
+                sm.logradouro AS logradouro, 
+                sm.numero AS numero, 
+                sm.complemento AS complemento, 
+                sm.bairro AS bairro, 
+                sm.cidade AS cidade, 
+                sm.estado AS estado, 
+                sm.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
+                sm.rank AS rank
+            )) AS smsrio
+        ) endereco
     FROM vitacare_endereco  vc
     FULL OUTER JOIN smsrio_endereco  sm
         ON vc.paciente_cpf = sm.paciente_cpf
@@ -500,6 +542,7 @@ endereco_dados AS (
 ),
 
 -- Prontuario Dados: Merges system medical record data
+-- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
 prontuario_dados AS (
     SELECT
         COALESCE(vp.paciente_cpf,sp.paciente_cpf) AS paciente_cpf,
@@ -523,21 +566,34 @@ prontuario_dados AS (
 ),
 
 -- Paciente Dados: Merges patient data
+-- COALESCE
+-- nome:             1. SMSRIO   | 2. Vitai    | 3. Vitacare
+-- nome_social:      1. SMSRIO   | 2. Vitai    | 3. Vitacare
+-- cpf:              1. SMSRIO   | 2. Vitai    | 3. Vitacare
+-- data_nascimento:  1. SMSRIO   | 2. Vitacare | 3. Vitai
+-- genero:           1. SMSRIO   | 2. Vitai    | 3. Vitacare
+-- raca:             1. Vitacare | 2. SMSRIO   | 3. Vitai
+-- obito_indicador:  1. SMSRIO   | 2. Vitai    | 3. Vitacare
+-- obito_data:       1. SMSRIO   | 2. Vitai    | 3. Vitacare
+-- mae_nome:         1. SMSRIO   | 2. Vitai    | 3. Vitacare
+-- pai_nome:         1. SMSRIO   | 2. Vitai    | 3. Vitacare
+
 paciente_dados AS (
     SELECT
         COALESCE(vc.paciente_cpf, sm.paciente_cpf) AS paciente_cpf,
         ARRAY_AGG(STRUCT(
-            COALESCE(vc.nome, sm.nome) AS nome,
-            COALESCE(vc.nome_social, sm.nome_social) AS nome_social_social,
-            COALESCE(vc.cpf, sm.cpf) AS cpf,
-            COALESCE(vc.data_nascimento, sm.data_nascimento) AS data_nascimento,
-            COALESCE(vc.genero, sm.genero) AS genero,
+            COALESCE(sm.nome, vc.nome) AS nome,
+            COALESCE(sm.nome_social,vc.nome_social) AS nome_social_social,
+            COALESCE(sm.cpf,vc.cpf) AS cpf,
+            COALESCE(sm.data_nascimento,vc.data_nascimento) AS data_nascimento,
+            COALESCE(sm.genero,vc.genero) AS genero,
             COALESCE(vc.raca, sm.raca) AS raca,
-            COALESCE(vc.obito_indicador,sm.obito_indicador) AS obito_indicador,
-            COALESCE(sm.obito_data, vc.obito_data) AS obito_data,
-            COALESCE(vc.mae_nome, sm.mae_nome) AS mae_nome,
-            COALESCE(vc.pai_nome, sm.pai_nome) AS pai_nome,
-            COALESCE(vc.rank, sm.rank) AS rank
+            COALESCE(sm.obito_indicador, vc.obito_indicador) AS obito_indicador,
+            COALESCE(vc.obito_data ,sm.obito_data) AS obito_data,
+            COALESCE(sm.mae_nome, vc.mae_nome) AS mae_nome,
+            COALESCE(sm.pai_nome, vc.pai_nome) AS pai_nome,
+            COALESCE(sm.cadastro_validado_indicador,vc.cadastro_validado_indicador) AS cadastro_validado_indicador,
+            COALESCE( sm.rank, vc.rank) AS rank
         )) AS dados
     FROM vitacare_paciente vc
     FULL OUTER JOIN smsrio_paciente sm
