@@ -49,7 +49,7 @@ select
     safe_cast(data__paisNascimento as string) as pais_nascimento,
     safe_cast(data__ap as string) as ap,
     safe_cast(data__unidade as string) as nome_unidade,
-    safe_cast(data__cnes as string) as cnes_unidade,
+    safe_cast(payload_cnes as string) as cnes_unidade,
     safe_cast(data__ineEquipe as string) as ine_equipe,
     safe_cast(data__codigoEquipe as string) as codigo_equipe,
     safe_cast(data__microarea as string) as microarea,
