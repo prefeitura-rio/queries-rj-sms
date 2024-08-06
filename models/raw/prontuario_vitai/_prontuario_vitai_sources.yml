@@ -27,7 +27,7 @@ sources:
         freshness:
           warn_after: {count: 24, period: hour}
           error_after: {count: 48, period: hour}
-      - name: cirurgia_eventos
+      - name: relato_cirurgico_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           warn_after: {count: 4, period: hour}
@@ -52,5 +52,6 @@ sources:
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
+      - name: cirurgia_eventos
       - name: m_estabelecimento_eventos
 
