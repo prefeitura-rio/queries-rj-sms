@@ -6,7 +6,7 @@
 -- contact, address and medical record into a single view.
 
 -- Declaration of the variable to filter by CPF (optional)
---- DECLARE cpf_filter STRING DEFAULT "";
+-- DECLARE cpf_filter STRING DEFAULT "";
 
 -- Auxiliary function to clean and standardize text fields
 CREATE TEMP FUNCTION CleanText(texto STRING) AS (
@@ -47,7 +47,7 @@ WITH vitacare_tb AS (
         CleanText(nome_pai) AS nome_pai,
         updated_at
     FROM `rj-sms.brutos_prontuario_vitacare.paciente`
-    ---- WHERE paciente_cpf = cpf_filter
+    -- WHERE paciente_cpf = cpf_filter
 ),
 
 -- SMSRIO: Patient base table
@@ -76,7 +76,7 @@ smsrio_tb AS (
         CleanText(nome) AS nome,
         updated_at
     FROM `rj-sms.brutos_plataforma_smsrio.paciente`
-    --- WHERE paciente_cpf = cpf_filter
+    -- WHERE paciente_cpf = cpf_filter
 ),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -89,23 +89,11 @@ vitacare_cns_ranked AS (
     SELECT
         paciente_cpf,
         cns,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf, cns ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf, cns ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS original_rank,
     FROM vitacare_tb
     WHERE
         cns IS NOT NULL
     GROUP BY paciente_cpf, cns, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
-),
-
-vitacare_cns_array AS (
-    SELECT
-        vc.paciente_cpf AS paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            vc.cns AS valor,
-            vc.rank AS rank,
-            "VITACARE" AS sistema
-        )) AS vitacare
-    FROM  vitacare_cns_ranked  vc
-    GROUP BY vc.paciente_cpf
 ),
 
 -- CNS SMSRIO: Extracts and ranks CNS numbers 
@@ -116,7 +104,7 @@ smsrio_cns_ranked AS (
             WHEN TRIM(cns) IN ('NONE') THEN NULL
             ELSE TRIM(cns)
         END AS cns,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS original_rank,
     FROM (
             SELECT
                 paciente_cpf,
@@ -127,18 +115,6 @@ smsrio_cns_ranked AS (
     )
     GROUP BY paciente_cpf, cns, updated_at
     
-),
-
-smsrio_cns_array AS (
-    SELECT
-        sm.paciente_cpf AS paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            sm.cns AS valor,
-            sm.rank AS rank,
-            "SMSRIO" AS sistema
-        )) AS smsrio
-    FROM  smsrio_cns_ranked  sm
-    GROUP BY sm.paciente_cpf
 ),
 
 
@@ -154,7 +130,7 @@ vitacare_clinica_familia AS (
         cnes_unidade AS id_cnes,
         nome_unidade AS nome,
         data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS original_rank
     FROM vitacare_tb
     WHERE
         nome_unidade IS NOT NULL
@@ -173,7 +149,7 @@ vitacare_equipe_saude_familia AS (
         paciente_cpf,
         ine_equipe AS id_ine,
         data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS original_rank
     FROM vitacare_tb
     WHERE
         ine_equipe IS NOT NULL
@@ -195,17 +171,17 @@ vitacare_contato_telefone AS (
             WHEN TRIM(valor) IN ("()", "") THEN NULL
             ELSE valor
         END AS valor,
-        rank
+        original_rank
     FROM (
         SELECT
             paciente_cpf,
             'telefone' AS tipo,
             telefone AS valor,
-            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS original_rank
         FROM vitacare_tb
         GROUP BY paciente_cpf, telefone, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
     )
-    WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
+    WHERE NOT (TRIM(valor) IN ("()", "") AND (original_rank >= 2))
 ),
 
 -- CONTATO VITACARE: Extracts and ranks email
@@ -217,17 +193,17 @@ vitacare_contato_email AS (
             WHEN TRIM(valor) IN ("()", "") THEN NULL
             ELSE valor
         END AS valor,
-        rank
+        original_rank
     FROM (
         SELECT
             paciente_cpf,
             'email' AS tipo,
             email AS valor,
-            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS original_rank
         FROM vitacare_tb
         GROUP BY paciente_cpf, email, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
     )
-    WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
+    WHERE NOT (TRIM(valor) IN ("()", "") AND (original_rank >= 2))
 ),
 
 vitacare_contato_array AS (
@@ -236,12 +212,12 @@ vitacare_contato_array AS (
         STRUCT(
             ARRAY_AGG(STRUCT(
                 vt_telefone.valor AS valor, 
-                vt_telefone.rank AS rank,
+                vt_telefone.original_rank AS original_rank,
                 "VITACARE" AS sistema
             )) AS telefone,
             ARRAY_AGG(STRUCT(
                 vt_email.valor  AS valor, 
-                vt_email.rank AS rank,
+                vt_email.original_rank AS original_rank,
                 "VITACARE" AS sistema
             )) AS email
         ) AS vitacare,
@@ -260,13 +236,13 @@ smsrio_contato_telefone AS (
             WHEN TRIM(valor) IN ("NONE", "NULL", "") THEN NULL
             ELSE valor
         END AS valor,
-        rank
+        original_rank
     FROM (
         SELECT
             paciente_cpf,
             'telefone' AS tipo,
             TRIM(telefones) AS valor,
-            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS original_rank
         FROM (
             SELECT
                 paciente_cpf,
@@ -278,7 +254,7 @@ smsrio_contato_telefone AS (
         GROUP BY
             paciente_cpf, telefones, updated_at
     )
-    WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
+    WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (original_rank >= 2))
 ),
 
 -- CONTATO SMSRIO: Extracts and ranks email
@@ -290,18 +266,18 @@ smsrio_contato_email AS (
             WHEN TRIM(valor) IN ("NONE", "NULL", "") THEN NULL
             ELSE valor
         END AS valor,
-        rank
+        original_rank
     FROM (
         SELECT
             paciente_cpf,
             'email' AS tipo,
             email AS valor,
-            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS original_rank
         FROM smsrio_tb
         GROUP BY
             paciente_cpf, email, updated_at
     )
-    WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
+    WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (original_rank >= 2))
 ),
 
 smsrio_contato_array AS (
@@ -310,12 +286,12 @@ smsrio_contato_array AS (
         STRUCT(
             ARRAY_AGG(STRUCT(
                 sm_telefone.valor AS valor, 
-                sm_telefone.rank AS rank,
+                sm_telefone.original_rank AS original_rank,
                 "SMSRIO" AS sistema
             )) AS telefone,
             ARRAY_AGG(STRUCT(
                 sm_email.valor  AS valor, 
-                sm_email.rank AS rank,
+                sm_email.original_rank AS original_rank,
                 "SMSRIO" AS sistema
             )) AS email
         ) AS smsrio,
@@ -343,7 +319,7 @@ vitacare_endereco AS (
         municipio_residencia AS cidade,
         estado_residencia AS estado,
         cadastro_permanente AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS original_rank
     FROM vitacare_tb
     WHERE
         logradouro IS NOT NULL
@@ -364,7 +340,7 @@ vitacare_endereco_array AS (
             vc.cidade AS cidade, 
             vc.estado AS estado, 
             vc.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
-            vc.rank AS rank,
+            vc.original_rank AS original_rank,
             "VITACARE" AS sistema
         )) AS vitacare
     FROM vitacare_endereco  vc
@@ -390,7 +366,7 @@ smsrio_endereco AS (
         END AS cidade,
         uf_res AS estado,
         updated_at AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS original_rank
     FROM smsrio_tb
     GROUP BY
         paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, updated_at
@@ -409,7 +385,7 @@ smsrio_endereco_array AS (
                 sm.cidade AS cidade, 
                 sm.estado AS estado, 
                 sm.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
-                sm.rank AS rank,
+                sm.original_rank AS original_rank,
                 "SMSRIO" AS sistema
         )) AS smsrio
     FROM smsrio_endereco sm
@@ -428,7 +404,7 @@ vitacare_prontuario AS (
         'VITACARE' AS sistema,
         cnes_unidade AS id_cnes,
         id AS id_paciente,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS original_rank
     FROM vitacare_tb
     GROUP BY
         paciente_cpf, cnes_unidade, id, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
@@ -441,7 +417,7 @@ vitacare_prontuario_array AS (
             vc.sistema, 
             vc.id_cnes, 
             vc.id_paciente, 
-            vc.rank
+            vc.original_rank
         )) AS vitacare
     FROM vitacare_prontuario vc
     GROUP BY vc.paciente_cpf
@@ -454,7 +430,7 @@ smsrio_prontuario AS (
         'SMSRIO' AS sistema,
         NULL AS id_cnes,
         paciente_cpf AS id_paciente,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS original_rank
     FROM smsrio_tb
     GROUP BY
         paciente_cpf, cod_mun_res, updated_at
@@ -467,7 +443,7 @@ smsrio_prontuario_array AS (
             sm.sistema, 
             sm.id_cnes, 
             sm.id_paciente, 
-            sm.rank
+            sm.original_rank
         )) AS smsrio
     FROM smsrio_prontuario sm
     GROUP BY sm.paciente_cpf
@@ -503,7 +479,7 @@ vitacare_paciente AS (
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
         FALSE AS cadastro_validado_indicador,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS original_rank
     FROM vitacare_tb
     GROUP BY
         paciente_cpf, nome, nome_social, cpf, DATE(data_nascimento), sexo, raca_cor, obito, nome_mae, nome_pai,updated_at
@@ -538,7 +514,7 @@ smsrio_paciente AS (
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
         TRUE AS cadastro_validado_indicador,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS rank
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS original_rank
     FROM smsrio_tb
     GROUP BY
         paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai, updated_at
@@ -548,15 +524,47 @@ smsrio_paciente AS (
 --  Merge data from different sources
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
+cns_dedup AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (PARTITION BY paciente_cpf  ORDER BY merge_order ASC, original_rank ASC) AS rank
+    FROM(
+        SELECT 
+            *,
+            ROW_NUMBER() OVER (PARTITION BY paciente_cpf, cns ORDER BY merge_order, original_rank ASC) AS dedup_rank,
+        FROM (
+            SELECT 
+                *,
+                "VITACARE" AS sistema,
+                1 AS merge_order
+            FROM vitacare_cns_ranked
+            UNION ALL 
+            SELECT 
+                *,
+                "SMSRIO" AS sistema,
+                2 AS merge_order
+            FROM smsrio_cns_ranked
+        )
+        ORDER BY  merge_order ASC, original_rank ASC 
+    )
+    WHERE dedup_rank = 1
+    ORDER BY  merge_order ASC, original_rank ASC 
+),
+
 -- CNS Dados: Merges CNS data, grouping by patient 
 -- UNION 1. Vitacare | 3. SMSRIO | 2. Vitai
 cns_dados AS (
-    SELECT
-        COALESCE(sm.paciente_cpf,vc.paciente_cpf) AS paciente_cpf,
-        ARRAY_CONCAT(vc.vitacare,sm.smsrio) AS cns
-    FROM vitacare_cns_array  vc
-    FULL OUTER JOIN smsrio_cns_array  sm
-        ON vc.paciente_cpf = sm.paciente_cpf
+    SELECT 
+        paciente_cpf,
+        ARRAY_AGG(
+                STRUCT(
+                    cns, 
+                    rank,
+                    sistema
+                )
+        ) AS cns
+    FROM cns_dedup
+    GROUP BY paciente_cpf
 ),
 
 
@@ -570,7 +578,7 @@ clinica_familia_dados AS (
             id_cnes, 
             nome, 
             datahora_ultima_atualizacao, 
-            rank
+            original_rank
         )) AS clinica_familia
     FROM vitacare_clinica_familia
     GROUP BY paciente_cpf
@@ -584,7 +592,7 @@ equipe_saude_familia_dados AS (
         ARRAY_AGG(STRUCT(
             id_ine, 
             datahora_ultima_atualizacao, 
-            rank
+            original_rank
         )) AS equipe_saude_familia
     FROM vitacare_equipe_saude_familia
     GROUP BY paciente_cpf
@@ -745,13 +753,13 @@ paciente_dados AS (
                     END AS sistema
                 ) AS cadastro_validado_indicador,
                 STRUCT(
-                    COALESCE(sm.rank, vc.rank) AS valor,
+                    COALESCE(sm.original_rank, vc.original_rank) AS valor,
                     CASE 
-                        WHEN sm.rank IS NOT NULL THEN "SMSRIO" 
-                        WHEN vc.rank IS NOT NULL THEN "VITACARE" 
+                        WHEN sm.original_rank IS NOT NULL THEN "SMSRIO" 
+                        WHEN vc.original_rank IS NOT NULL THEN "VITACARE" 
                         ELSE NULL 
                     END AS sistema
-                ) AS rank
+                ) AS original_rank
             )
         ) AS dados
     FROM vitacare_paciente vc
