@@ -742,6 +742,8 @@ vitai_paciente AS (
 --  Merge data from different sources
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 
+-- CNS Dados: Merges CNS data, grouping by patient 
+-- UNION 1. Vitacare | 3. SMSRIO | 2. Vitai
 cns_dedup AS (
     SELECT
         *,
@@ -775,8 +777,7 @@ cns_dedup AS (
     ORDER BY  merge_order ASC, original_rank ASC 
 ),
 
--- CNS Dados: Merges CNS data, grouping by patient 
--- UNION 1. Vitacare | 3. SMSRIO | 2. Vitai
+
 cns_dados AS (
     SELECT 
         paciente_cpf,
