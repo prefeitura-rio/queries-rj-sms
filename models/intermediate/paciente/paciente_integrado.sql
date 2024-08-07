@@ -79,6 +79,36 @@ smsrio_tb AS (
     -- WHERE paciente_cpf = cpf_filter
 ),
 
+vitai_tb AS (
+    SELECT 
+        CleanText(cpf) AS cpf,
+        CleanText(cns) AS cns,
+        CleanText(cliente) AS cliente,
+        CleanText(nome) AS nome,
+        CleanText(telefone) AS telefone,
+        CleanText(tipo_logradouro) AS tipo_logradouro,
+        CleanText(nome_logradouro) AS nome_logradouro,
+        CleanText(numero) AS numero,
+        CleanText(complemento) AS complemento,
+        CleanText(bairro) AS bairro,
+        CleanText(municipio) AS municipio,
+        CleanText(uf) AS uf,
+        CleanText(id_cidadao) AS id_cidadao,
+        CleanText(nome_alternativo) AS nome_alternativo,
+        CleanText(sexo) AS sexo,
+        CleanText(raca_cor) AS raca_cor,
+        CleanText(nome_mae) AS nome_mae,
+        gid_estabelecimento,
+        data_obito,
+        data_nascimento,
+        updated_at
+    FROM `rj-sms.brutos_prontuario_vitai.paciente`
+    WHERE cpf IS NOT NULL
+        AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
+        AND TRIM(cpf) != ""
+),
+--
+
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get CNS from the source tables
 -- giving preference to the most recently registered.
@@ -117,6 +147,18 @@ smsrio_cns_ranked AS (
     
 ),
 
+-- CNS VITAI: Extracts and ranks CNS numbers 
+vitai_cns_ranked AS (
+    SELECT
+        cpf AS paciente_cpf,
+        cns,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
+    FROM vitai_tb
+    WHERE
+        cns IS NOT NULL
+        AND TRIM(cns) NOT IN ("")
+    GROUP BY cpf, cns, updated_at
+),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get Family Clinic data
@@ -280,6 +322,7 @@ smsrio_contato_email AS (
     WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (original_rank >= 2))
 ),
 
+
 smsrio_contato_array AS (
     SELECT
         COALESCE(sm_telefone.paciente_cpf, sm_email.paciente_cpf) AS paciente_cpf, 
@@ -301,6 +344,72 @@ smsrio_contato_array AS (
     GROUP BY sm_telefone.paciente_cpf, sm_email.paciente_cpf
 ),
 
+
+-- CONTATO VIRAI: Extracts and ranks phone numbers
+vitai_contato_telefone AS (
+    SELECT 
+        paciente_cpf,
+        tipo, 
+        CASE 
+            WHEN TRIM(valor) IN ("()", "") THEN NULL
+            ELSE valor
+        END AS valor,
+        original_rank
+    FROM (
+        SELECT
+            cpf AS paciente_cpf,
+            'telefone' AS tipo,
+            telefone AS valor,
+            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS original_rank
+        FROM vitai_tb
+        GROUP BY cpf, telefone, updated_at
+    )
+    WHERE NOT (TRIM(valor) IN ("()", "") AND (original_rank >= 2))
+),
+
+-- CONTATO VIRAI: Extracts and ranks email
+vitai_contato_email AS (
+    SELECT 
+        paciente_cpf,
+        tipo, 
+        CASE 
+            WHEN TRIM(valor) IN ("()", "") THEN NULL
+            ELSE valor
+        END AS valor,
+        original_rank
+    FROM (
+        SELECT
+            cpf AS paciente_cpf,
+            'email' AS tipo,
+            "" AS valor, 
+            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS original_rank
+        FROM vitai_tb
+        GROUP BY cpf, updated_at
+    )
+    WHERE NOT (TRIM(valor) IN ("()", "") AND (original_rank >= 2))
+),
+
+vitai_contato_array AS (
+    SELECT
+        COALESCE(vi_telefone.paciente_cpf, vi_email.paciente_cpf) AS paciente_cpf, 
+        STRUCT(
+            ARRAY_AGG(STRUCT(
+                vi_telefone.valor AS valor, 
+                vi_telefone.original_rank AS original_rank,
+                "VITAI" AS sistema
+            )) AS telefone,
+            ARRAY_AGG(STRUCT(
+                vi_email.valor  AS valor, 
+                vi_email.original_rank AS original_rank,
+                "VITAI" AS sistema
+            )) AS email
+        ) AS vitai,
+    FROM vitai_contato_telefone vi_telefone
+    FULL OUTER JOIN vitai_contato_email vi_email
+        ON vi_telefone.paciente_cpf = vi_email.paciente_cpf
+    GROUP BY vi_telefone.paciente_cpf, vi_email.paciente_cpf
+),
+
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get address information
 --  prioritizing the most recent by registration date.
@@ -318,7 +427,7 @@ vitacare_endereco AS (
         bairro,
         municipio_residencia AS cidade,
         estado_residencia AS estado,
-        cadastro_permanente AS datahora_ultima_atualizacao,
+        CAST(cadastro_permanente AS STRING) AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at DESC) AS original_rank
     FROM vitacare_tb
     WHERE
@@ -365,7 +474,7 @@ smsrio_endereco AS (
             ELSE cod_mun_res
         END AS cidade,
         uf_res AS estado,
-        updated_at AS datahora_ultima_atualizacao,
+        CAST(updated_at AS STRING) AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS original_rank
     FROM smsrio_tb
     GROUP BY
@@ -391,6 +500,51 @@ smsrio_endereco_array AS (
     FROM smsrio_endereco sm
     GROUP BY sm.paciente_cpf
 ),
+
+--  ENDEREÇO VITAI: Extracts and ranks addresses
+vitai_endereco AS (
+    SELECT
+        cpf AS paciente_cpf,
+        CAST(NULL AS STRING) AS cep,
+        tipo_logradouro,
+        CASE
+            WHEN nome_logradouro in ("NONE") THEN NULL
+            ELSE nome_logradouro
+        END AS logradouro,
+        numero AS numero,
+        complemento AS complemento,
+        bairro,
+        municipio AS cidade,
+        uf AS estado,
+        CAST(updated_at AS STRING) AS datahora_ultima_atualizacao,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS original_rank
+    FROM vitai_tb
+    WHERE
+        nome_logradouro IS NOT NULL
+    GROUP BY
+        cpf, tipo_logradouro, nome_logradouro, numero, complemento, bairro, municipio, uf, updated_at
+),
+
+vitai_endereco_array AS (
+    SELECT
+        vi.paciente_cpf AS paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            vi.cep AS cep, 
+            vi.tipo_logradouro AS tipo_logradouro, 
+            vi.logradouro AS logradouro, 
+            vi.numero AS numero, 
+            vi.complemento AS complemento, 
+            vi.bairro AS bairro, 
+            vi.cidade AS cidade, 
+            vi.estado AS estado, 
+            vi.datahora_ultima_atualizacao AS datahora_ultima_atualizacao,
+            vi.original_rank AS original_rank,
+            "VITAI" AS sistema
+        )) AS vitai
+    FROM vitai_endereco  vi
+    GROUP BY vi.paciente_cpf
+),
+
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get system medical record information
@@ -449,6 +603,39 @@ smsrio_prontuario_array AS (
     GROUP BY sm.paciente_cpf
 ),
 
+-- PRONTUARIO VITAI: Extracts and ranks medical record information
+vitai_prontuario AS (
+    SELECT
+        cpf AS paciente_cpf,
+        'VITAI' AS sistema,
+        id_cnes AS id_cnes,
+        cpf AS id_paciente,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS original_rank
+    FROM(
+        SELECT 
+            pc.updated_at,
+            pc.cpf,
+            es.cnes AS id_cnes,
+        FROM  vitai_tb pc
+        JOIN  `rj-sms.brutos_prontuario_vitai.estabelecimento` es
+            ON pc.gid_estabelecimento = es.gid
+    )
+    GROUP BY
+        cpf, id_cnes, updated_at
+),
+
+vitai_prontuario_array AS (
+    SELECT
+        vi.paciente_cpf,
+        ARRAY_AGG(STRUCT(
+            vi.sistema, 
+            vi.id_cnes, 
+            vi.id_paciente, 
+            vi.original_rank
+        )) AS vitai
+    FROM vitai_prontuario vi
+    GROUP BY vi.paciente_cpf
+),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Get and structure patient data
@@ -518,6 +705,39 @@ smsrio_paciente AS (
         paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai, updated_at
 ),
 
+-- PACIENTE DADOS VITAI: Extracts and structures patient data
+vitai_paciente AS (
+    SELECT
+        cpf AS paciente_cpf,
+        nome,
+        nome_alternativo AS nome_social,
+        cpf,
+        DATE(data_nascimento) AS data_nascimento,
+        CASE
+            WHEN sexo = "M" THEN "MALE"
+            WHEN sexo = "F" THEN "FEMALE"
+            ELSE NULL
+        END  AS genero,
+        CASE
+            WHEN raca_cor IN ("None") THEN NULL
+            WHEN raca_cor IN ("PRETO","NEGRO") THEN "PRETA"
+            WHEN raca_cor = "NAO INFORMADO" THEN "SEM INFORMACAO"
+            ELSE raca_cor
+        END AS raca,
+        CASE
+            WHEN data_obito IS NOT NULL THEN TRUE
+            ELSE NULL
+        END AS obito_indicador,
+        DATE(data_obito) AS obito_data,
+        nome_mae AS mae_nome,
+        CAST(NULL AS STRING) AS pai_nome,
+        FALSE AS cadastro_validado_indicador,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS original_rank
+    FROM vitai_tb
+    GROUP BY
+        cpf, nome, nome_alternativo, cpf, DATE(data_nascimento), sexo, raca_cor, data_obito, nome_mae, updated_at
+),
+
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Merge data from different sources
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -539,8 +759,14 @@ cns_dedup AS (
             UNION ALL 
             SELECT 
                 *,
-                "SMSRIO" AS sistema,
+                "VITAI" AS sistema,
                 2 AS merge_order
+            FROM vitai_cns_ranked
+            UNION ALL 
+            SELECT 
+                *,
+                "SMSRIO" AS sistema,
+                3 AS merge_order
             FROM smsrio_cns_ranked
         )
         ORDER BY  merge_order ASC, original_rank ASC 
@@ -602,15 +828,18 @@ contato_dados AS (
     SELECT
         COALESCE(
             vc.paciente_cpf,
-            sm.paciente_cpf
+            sm.paciente_cpf,
+            vi.paciente_cpf
         ) AS paciente_cpf,
         STRUCT(
-            ARRAY_CONCAT(vc.vitacare.telefone, sm.smsrio.telefone) AS telefone,
-            ARRAY_CONCAT(vc.vitacare.email, sm.smsrio.email) AS email
+            ARRAY_CONCAT(vc.vitacare.telefone, sm.smsrio.telefone, vi.vitai.telefone) AS telefone,
+            ARRAY_CONCAT(vc.vitacare.email, sm.smsrio.email, vi.vitai.email) AS email
         ) AS contato
     FROM vitacare_contato_array vc
     FULL OUTER JOIN smsrio_contato_array sm
         ON vc.paciente_cpf = sm.paciente_cpf
+    FULL OUTER JOIN vitai_contato_array vi
+        ON vc.paciente_cpf = vi.paciente_cpf
 ),
 
 -- Endereco Dados: Merges address information
@@ -619,12 +848,15 @@ endereco_dados AS (
     SELECT
         COALESCE(
             vc.paciente_cpf,
-            sm.paciente_cpf
+            sm.paciente_cpf,
+            vi.paciente_cpf
         ) AS paciente_cpf,
-        ARRAY_CONCAT(vc.vitacare,sm.smsrio) AS endereco
+        ARRAY_CONCAT(vc.vitacare, sm.smsrio) AS endereco
     FROM vitacare_endereco_array vc
     FULL OUTER JOIN smsrio_endereco_array sm
         ON vc.paciente_cpf = sm.paciente_cpf
+    FULL OUTER JOIN vitai_endereco_array vi
+        ON vc.paciente_cpf = vi.paciente_cpf
 ),
 
 -- Prontuario Dados: Merges system medical record data
@@ -633,15 +865,19 @@ prontuario_dados AS (
     SELECT
         COALESCE(
             vc.paciente_cpf,
-            sm.paciente_cpf
+            sm.paciente_cpf,
+            vi.paciente_cpf
         ) AS paciente_cpf,
         STRUCT(
             vc.vitacare,
-            sm.smsrio
+            sm.smsrio,
+            vi.vitai
         ) AS prontuario
     FROM vitacare_prontuario_array vc
     FULL OUTER JOIN smsrio_prontuario_array sm
         ON vc.paciente_cpf = sm.paciente_cpf
+    FULL OUTER JOIN vitai_prontuario_array vi
+        ON vc.paciente_cpf = vi.paciente_cpf
 ),
 
 -- Paciente Dados: Merges patient data
@@ -659,18 +895,18 @@ prontuario_dados AS (
 
 paciente_dados AS (
     SELECT
-        COALESCE(sm.paciente_cpf, vc.paciente_cpf) AS paciente_cpf,
+        COALESCE(sm.paciente_cpf, vi.paciente_cpf, vc.paciente_cpf) AS paciente_cpf,
         STRUCT(
-                COALESCE(sm.nome, vc.nome) AS nome,
-                COALESCE(sm.nome_social, vc.nome_social) AS nome_social,
-                COALESCE(sm.cpf, vc.cpf) AS cpf,
-                COALESCE(sm.data_nascimento, vc.data_nascimento) AS  data_nascimento,
-                COALESCE(sm.genero, vc.genero) AS genero,
-                COALESCE(vc.raca, sm.raca) AS raca,
-                COALESCE(sm.obito_indicador, vc.obito_indicador) AS obito_indicador,
-                COALESCE(sm.obito_data, vc.obito_data) AS obito_data,
-                COALESCE(sm.mae_nome, vc.mae_nome) AS mae_nome,
-                COALESCE(sm.pai_nome, vc.pai_nome) AS pai_nome,
+                COALESCE(sm.nome, vi.nome, vc.nome) AS nome,
+                COALESCE(sm.nome_social, vi.nome_social, vc.nome_social) AS nome_social,
+                COALESCE(sm.cpf, vi.cpf, vc.cpf) AS cpf,
+                COALESCE(sm.data_nascimento, vi.data_nascimento, vc.data_nascimento) AS  data_nascimento,
+                COALESCE(sm.genero, vi.genero, vc.genero) AS genero,
+                COALESCE(vc.raca, sm.raca, vi.raca) AS raca,
+                COALESCE(sm.obito_indicador, vi.obito_indicador, vc.obito_indicador) AS obito_indicador,
+                COALESCE(sm.obito_data, vi.obito_data, vc.obito_data) AS obito_data,
+                COALESCE(sm.mae_nome, vi.mae_nome, vc.mae_nome) AS mae_nome,
+                COALESCE(sm.pai_nome, vi.pai_nome, vc.pai_nome) AS pai_nome,
                 CASE 
                     WHEN sm.nome IS NOT NULL AND sm.data_nascimento IS NOT NULL AND sm.mae_nome IS NOT NULL THEN TRUE
                     ELSE FALSE 
@@ -680,12 +916,19 @@ paciente_dados AS (
     FROM vitacare_paciente vc
     FULL OUTER JOIN smsrio_paciente sm
         ON vc.paciente_cpf = sm.paciente_cpf
-    GROUP BY vc.paciente_cpf, sm.paciente_cpf, 
-        sm.nome, vc.nome, sm.nome_social, vc.nome_social,
-        sm.cpf, vc.cpf, sm.data_nascimento, vc.data_nascimento,
-        sm.genero, vc.genero, vc.raca, sm.raca,
-        sm.obito_indicador, vc.obito_indicador, sm.obito_data, vc.obito_data,
-        sm.mae_nome, vc.mae_nome, sm.pai_nome, vc.pai_nome,
+    FULL OUTER JOIN vitai_paciente vi
+        ON vc.paciente_cpf = vi.paciente_cpf
+    GROUP BY sm.paciente_cpf, vi.paciente_cpf, vc.paciente_cpf, 
+        sm.nome, vi.nome, vc.nome,
+        sm.nome_social, vi.nome_social, vc.nome_social,
+        sm.cpf, vi.cpf, vc.cpf, 
+        sm.data_nascimento, vi.data_nascimento, vc.data_nascimento,
+        sm.genero, vi.genero, vc.genero,
+        vc.raca, sm.raca, vi.raca,
+        sm.obito_indicador, vi.obito_indicador, vc.obito_indicador, 
+        sm.obito_data, vi.obito_data, vc.obito_data,
+        sm.mae_nome, vi.mae_nome, vc.mae_nome, 
+        sm.pai_nome, vi.pai_nome, vc.pai_nome,
         CASE 
             WHEN sm.nome IS NOT NULL AND sm.data_nascimento IS NOT NULL AND sm.mae_nome IS NOT NULL THEN TRUE
             ELSE FALSE 
@@ -720,3 +963,4 @@ SELECT *
 FROM paciente_integrado
 WHERE EXISTS (SELECT 1 FROM UNNEST(prontuario.smsrio) WHERE id_paciente IS NOT NULL)
     AND EXISTS (SELECT 1 FROM UNNEST(prontuario.vitacare) WHERE id_paciente IS NOT NULL)
+    AND EXISTS (SELECT 1 FROM UNNEST(prontuario.vitai) WHERE id_paciente IS NOT NULL)
