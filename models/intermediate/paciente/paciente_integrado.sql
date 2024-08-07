@@ -478,7 +478,6 @@ vitacare_paciente AS (
         DATE(NULL) AS obito_data,
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
-        FALSE AS cadastro_validado_indicador,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS original_rank
     FROM vitacare_tb
     GROUP BY
@@ -513,7 +512,6 @@ smsrio_paciente AS (
         END AS obito_data,
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
-        TRUE AS cadastro_validado_indicador,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS original_rank
     FROM smsrio_tb
     GROUP BY
@@ -662,31 +660,36 @@ prontuario_dados AS (
 paciente_dados AS (
     SELECT
         COALESCE(sm.paciente_cpf, vc.paciente_cpf) AS paciente_cpf,
-        ARRAY_AGG(
-            STRUCT(
-                    COALESCE(sm.nome, vc.nome) AS nome,
-                    COALESCE(sm.nome_social, vc.nome_social) AS nome_social,
-                    COALESCE(sm.cpf, vc.cpf) AS cpf,
-                    COALESCE(sm.data_nascimento, vc.data_nascimento) AS  data_nascimento,
-                    COALESCE(sm.genero, vc.genero) AS genero,
-                    COALESCE(vc.raca, sm.raca) AS raca,
-                    COALESCE(sm.obito_indicador, vc.obito_indicador) obito_indicador,
-                    COALESCE(sm.obito_data, vc.obito_data) AS obito_data,
-                    COALESCE(sm.mae_nome, vc.mae_nome) AS mae_nome,
-                    COALESCE(sm.pai_nome, vc.pai_nome) AS pai_nome,
-                    COALESCE(sm.cadastro_validado_indicador, vc.cadastro_validado_indicador) AS valor,
-                    CASE 
-                        WHEN 
-                            sm.nome IS NOT NULL AND sm.data_nascimento IS NOT NULL AND sm.mae_nome THEN TRUE
-                            ELSE FALSE 
-                    END AS cadastro_validado_indicador
-                    COALESCE(sm.original_rank, vc.original_rank) original_rank
-            )
+        STRUCT(
+                COALESCE(sm.nome, vc.nome) AS nome,
+                COALESCE(sm.nome_social, vc.nome_social) AS nome_social,
+                COALESCE(sm.cpf, vc.cpf) AS cpf,
+                COALESCE(sm.data_nascimento, vc.data_nascimento) AS  data_nascimento,
+                COALESCE(sm.genero, vc.genero) AS genero,
+                COALESCE(vc.raca, sm.raca) AS raca,
+                COALESCE(sm.obito_indicador, vc.obito_indicador) AS obito_indicador,
+                COALESCE(sm.obito_data, vc.obito_data) AS obito_data,
+                COALESCE(sm.mae_nome, vc.mae_nome) AS mae_nome,
+                COALESCE(sm.pai_nome, vc.pai_nome) AS pai_nome,
+                CASE 
+                    WHEN sm.nome IS NOT NULL AND sm.data_nascimento IS NOT NULL AND sm.mae_nome IS NOT NULL THEN TRUE
+                    ELSE FALSE 
+                END AS cadastro_validado_indicador
+                -- COALESCE(sm.original_rank, vc.original_rank) AS original_rank
         ) AS dados
     FROM vitacare_paciente vc
     FULL OUTER JOIN smsrio_paciente sm
         ON vc.paciente_cpf = sm.paciente_cpf
-    GROUP BY vc.paciente_cpf, sm.paciente_cpf
+    GROUP BY vc.paciente_cpf, sm.paciente_cpf, 
+        sm.nome, vc.nome, sm.nome_social, vc.nome_social,
+        sm.cpf, vc.cpf, sm.data_nascimento, vc.data_nascimento,
+        sm.genero, vc.genero, vc.raca, sm.raca,
+        sm.obito_indicador, vc.obito_indicador, sm.obito_data, vc.obito_data,
+        sm.mae_nome, vc.mae_nome, sm.pai_nome, vc.pai_nome,
+        CASE 
+            WHEN sm.nome IS NOT NULL AND sm.data_nascimento IS NOT NULL AND sm.mae_nome IS NOT NULL THEN TRUE
+            ELSE FALSE 
+        END 
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the
