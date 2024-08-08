@@ -1,5 +1,5 @@
 {% macro get_common_test_config(flattened_test) %}
-  {% set test_name = flattened_test["short_name"] %}
+  {% set test_name = flattened_test["test_original_name"] %}
   {% set test_namespace = flattened_test["test_namespace"] %}
   {% do return(elementary.get_common_test_config_by_namespace_and_name(test_namespace, test_name)) %}
 {% endmacro %}
@@ -309,6 +309,10 @@
         "accepted_range": {
           "quality_dimension": "validity",
           "failed_row_count_calc": "count(*)"
+        },
+        "unique_combination_of_columns": {
+          "quality_dimension": "uniqueness",
+          "failed_row_count_calc": "count(*)"
         }
       },
       "elementary": {
@@ -342,8 +346,11 @@
           "description": "Column-level anomaly monitors (null_count, null_percent, zero_count, string_length, variance, etc.) on the column according to its data type."
         },
         "exposure_schema_validity": {
-            "description": "Column level exposure validation according to the meta.columns property in exposures.yml"
-        }
+          "description": "Column level exposure validation according to the meta.columns property in exposures.yml"
+        },
+        "collect_metrics": {
+          "description": "Collects metrics for the specified column or table. The test will always pass.",
+        },
       }
     } %}
     {% do return(common_tests_configs_mapping) %}

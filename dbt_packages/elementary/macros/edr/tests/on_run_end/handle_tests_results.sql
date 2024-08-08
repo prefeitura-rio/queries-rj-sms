@@ -29,7 +29,7 @@
   {% set elementary_test_results = [] %}
 
   {% for result in results | selectattr('node.resource_type', '==', 'test') %}
-    {% set result = result.to_dict() %}
+    {% set result = elementary.get_run_result_dict(result) %}
     {% set elementary_test_results_rows = cached_elementary_test_results.get(result.node.unique_id) %}
     {% set elementary_test_failed_row_count = cached_elementary_test_failed_row_counts.get(result.node.unique_id) %}
 
@@ -77,6 +77,7 @@
         full_table_name,
         column_name,
         metric_name,
+        metric_type,
         metric_value,
         source_value,
         bucket_start,
@@ -93,6 +94,7 @@
         full_table_name,
         column_name,
         metric_name,
+        metric_type,
         metric_value,
         source_value,
         bucket_start,
@@ -109,6 +111,10 @@
     {{ elementary.file_log("Inserting metrics into {}.".format(target_relation)) }}
     {%- do elementary.run_query(dbt.create_table_as(True, temp_relation, test_tables_union_query)) %}
     {% do elementary.run_query(insert_query) %}
+
+    {% if not elementary.has_temp_table_support() %}
+        {% do elementary.fully_drop_relation(temp_relation) %}
+    {% endif %}
 {% endmacro %}
 
 {% macro insert_schema_columns_snapshot(database_name, schema_name, test_columns_snapshot_tables) %}
@@ -153,6 +159,10 @@
     {{ elementary.file_log("Inserting schema columns snapshot into {}.".format(target_relation)) }}
     {%- do elementary.run_query(dbt.create_table_as(True, temp_relation, test_tables_union_query)) %}
     {% do elementary.run_query(insert_query) %}
+
+    {% if not elementary.has_temp_table_support() %}
+        {% do elementary.fully_drop_relation(temp_relation) %}
+    {% endif %}
 {% endmacro %}
 
 {% macro pop_test_result_rows(elementary_test_results) %}

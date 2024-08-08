@@ -33,7 +33,7 @@
 {%- endmacro %}
 
 {%- macro spark__month_name(date, short) -%}
-{%- set f = 'LLL' if short else 'LLLL' -%}
+{%- set f = 'MMM' if short else 'MMMM' -%}
     date_format({{ date }}, '{{ f }}')
 {%- endmacro %}
 
