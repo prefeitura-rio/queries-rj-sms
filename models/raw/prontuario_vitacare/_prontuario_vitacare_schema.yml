@@ -275,4 +275,6 @@ models:
       - name: updated_at
         description: Data e hora da última atualização do registro.
       - name: imported_at
-        description: Data e hora da importação dos dados para o data lake.
+        description: Data e hora da importação dos dados para o datalake.
+      - name: tipo
+        description: Tipo do registro, se é historico ou rotineiro.
