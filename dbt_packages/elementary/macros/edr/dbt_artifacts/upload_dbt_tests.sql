@@ -23,6 +23,7 @@
                                                                  ('error_if', 'string'),
                                                                  ('test_params', 'long_string'),
                                                                  ('test_namespace', 'string'),
+                                                                 ('test_original_name', 'string'),
                                                                  ('tags', 'long_string'),
                                                                  ('model_tags', 'long_string'),
                                                                  ('model_owners', 'long_string'),
@@ -48,9 +49,10 @@
 
     {% set test_metadata = elementary.safe_get_with_default(node_dict, 'test_metadata', {}) %}
     {% set test_namespace = test_metadata.get('namespace') %}
+    {% set test_original_name = test_metadata.get('name') %}
     {% set test_short_name = elementary.get_test_short_name(node_dict, test_metadata) %}
 
-    {% set default_description = elementary.get_default_description(test_short_name, test_namespace) %}
+    {% set default_description = elementary.get_default_description(test_original_name, test_namespace) %}
 
     {% set config_meta_dict = elementary.safe_get_with_default(config_dict, 'meta', {}) %}
     {% set meta_dict = {} %}
@@ -94,7 +96,11 @@
     {% set test_kwargs = elementary.safe_get_with_default(test_metadata, 'kwargs', {}) %}
 
     {% set primary_test_model_id = namespace(data=none) %}
-    {% if test_model_unique_ids | length == 1 %}
+    {% set override_primary_test_model_id = elementary.safe_get_with_default(config_dict, 'override_primary_test_model_id')%}
+
+    {% if override_primary_test_model_id %}
+        {% set primary_test_model_id.data = override_primary_test_model_id %}
+    {% elif test_model_unique_ids | length == 1 %}
         {# if only one parent model for this test, simply use this model #}
         {% set primary_test_model_id.data = test_model_unique_ids[0] %}
     {% else %}
@@ -138,12 +144,13 @@
         'unique_id': node_dict.get('unique_id'),
         'short_name': test_short_name,
         'alias': node_dict.get('alias'),
-        'test_column_name': node_dict.get('column_name'),
+        'test_column_name': node_dict.get('column_name') or test_kwargs.get('column_name'),
         'severity': config_dict.get('severity'),
         'warn_if': config_dict.get('warn_if'),
         'error_if': config_dict.get('error_if'),
         'test_params': test_kwargs,
         'test_namespace': test_namespace,
+        'test_original_name': test_original_name,
         'tags': elementary.filter_none_and_sort(tags),
         'model_tags': elementary.filter_none_and_sort(test_models_tags),
         'model_owners': elementary.filter_none_and_sort(test_models_owners),
@@ -161,7 +168,7 @@
         'compiled_code': elementary.get_compiled_code(node_dict),
         'path': node_dict.get('path'),
         'generated_at': elementary.datetime_now_utc_as_string(),
-        'quality_dimension': meta_dict.get('quality_dimension') or elementary.get_quality_dimension(test_short_name, test_namespace)
+        'quality_dimension': meta_dict.get('quality_dimension') or elementary.get_quality_dimension(test_original_name, test_namespace)
     }%}
     {% do flatten_test_metadata_dict.update({"metadata_hash": elementary.get_artifact_metadata_hash(flatten_test_metadata_dict)}) %}
     {{ return(flatten_test_metadata_dict) }}
@@ -213,9 +220,9 @@
 {% endmacro %}
 
 
-{% macro get_default_description(short_name, test_namespace = none) %}
+{% macro get_default_description(test_original_name, test_namespace = none) %}
     {% set description = none %}
-    {% set common_test_config = elementary.get_common_test_config_by_namespace_and_name(test_namespace, short_name) %}
+    {% set common_test_config = elementary.get_common_test_config_by_namespace_and_name(test_namespace, test_original_name) %}
     {% if common_test_config %}
         {% set description = common_test_config.get("description") %}
     {% endif %}
@@ -223,9 +230,9 @@
 {% endmacro %}
 
 
-{% macro get_quality_dimension(short_name, test_namespace = none) %}
+{% macro get_quality_dimension(test_original_name, test_namespace = none) %}
     {% set quality_dimension = none %}
-    {% set common_test_config = elementary.get_common_test_config_by_namespace_and_name(test_namespace, short_name) %}
+    {% set common_test_config = elementary.get_common_test_config_by_namespace_and_name(test_namespace, test_original_name) %}
     {% if common_test_config %}
         {% set quality_dimension = common_test_config.get("quality_dimension") %}
     {% endif %}

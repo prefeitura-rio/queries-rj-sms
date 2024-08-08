@@ -7,7 +7,8 @@ from typing import Any, Dict, List, Literal, Optional, Union, overload
 from uuid import uuid4
 
 from data_seeder import DbtDataSeeder
-from elementary.clients.dbt.dbt_runner import DbtRunner
+from elementary.clients.dbt.base_dbt_runner import BaseDbtRunner
+from elementary.clients.dbt.factory import create_dbt_runner
 from logger import get_logger
 from ruamel.yaml import YAML
 
@@ -19,8 +20,8 @@ _DEFAULT_VARS = {
     "disable_dbt_artifacts_autoupload": True,
     "disable_dbt_columns_autoupload": True,
     "disable_run_results": True,
+    "disable_freshness_results": True,
     "debug_logs": True,
-    "collect_metrics": False,
     "schema_name_suffix": SCHEMA_NAME_SUFFIX,
 }
 
@@ -29,8 +30,8 @@ DEFAULT_DUMMY_CODE = "SELECT 1 AS col"
 logger = get_logger(__name__)
 
 
-def get_dbt_runner(target: str, project_dir: str) -> DbtRunner:
-    return DbtRunner(
+def get_dbt_runner(target: str, project_dir: str) -> BaseDbtRunner:
+    return create_dbt_runner(
         project_dir,
         target=target,
         vars=_DEFAULT_VARS.copy(),
@@ -60,6 +61,7 @@ class DbtProject:
     def read_table_query(
         table_name: str,
         where: Optional[str] = None,
+        group_by: Optional[str] = None,
         order_by: Optional[str] = None,
         limit: Optional[int] = None,
         column_names: Optional[List[str]] = None,
@@ -68,6 +70,7 @@ class DbtProject:
             SELECT {', '.join(column_names) if column_names else '*'}
             FROM {{{{ ref('{table_name}') }}}}
             {f"WHERE {where}" if where else ""}
+            {f"GROUP BY {group_by}" if group_by else ""}
             {f"ORDER BY {order_by}" if order_by else ""}
             {f"LIMIT {limit}" if limit else ""}
             """
@@ -76,12 +79,15 @@ class DbtProject:
         self,
         table_name: str,
         where: Optional[str] = None,
+        group_by: Optional[str] = None,
         order_by: Optional[str] = None,
         limit: Optional[int] = None,
         column_names: Optional[List[str]] = None,
         raise_if_empty: bool = True,
     ) -> List[dict]:
-        query = self.read_table_query(table_name, where, order_by, limit, column_names)
+        query = self.read_table_query(
+            table_name, where, group_by, order_by, limit, column_names
+        )
         results = self.run_query(query)
         if raise_if_empty and len(results) == 0:
             raise ValueError(
