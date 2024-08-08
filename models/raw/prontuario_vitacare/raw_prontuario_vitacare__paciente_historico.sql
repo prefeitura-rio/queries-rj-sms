@@ -20,6 +20,7 @@ select
     safe_cast(NULLIF(NOME_SOCIAL_DA_PESSOA_CADASTRADA, 'None') as string) as nome_social,
     safe_cast(NULLIF(NOME_DA_MAE_PESSOA_CADASTRADA, 'None') as string) as nome_mae,
     safe_cast(null as string) as nome_pai,
+    SAFE_CAST(CASE WHEN OBITO IS NULL OR OBITO = 'None' THEN 'False' ELSE 'True' END AS string) AS obito,
     safe_cast(NULLIF(OBITO, 'None') as date format 'DD/MM/YYYY') as data_obito,
     safe_cast(NULLIF(SEXO, 'None') as string) as sexo,
     safe_cast(NULLIF(ORIENTACAO_SEXUAL, 'None') as string) as orientacao_sexual,
