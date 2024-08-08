@@ -254,7 +254,7 @@ models:
         description: Data e hora da última atualização do registro.
       - name: imported_at
         description: Data e hora da importação dos dados para o data lake.
-  - name: raw_prontuario_vitacare__paciente
+  - name: raw_prontuario_vitacare__paciente_rotineiro
     description: >
       Tabela contendo informações dos pacientes extraídas do prontuário VitaCare.
     columns:
