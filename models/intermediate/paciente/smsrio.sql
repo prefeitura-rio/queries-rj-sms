@@ -1,66 +1,115 @@
+-- This code integrates patient data from SMSRIO:
+-- rj-sms.brutos_plataforma_smsrio.paciente (SMSRIO)
+-- The goal is to consolidate information such as registration data,
+-- contact, address and medical record into a single view.
+
+-- Declaration of the variable to filter by CPF (optional)
+-- DECLARE cpf_filter STRING DEFAULT "";
+
+-- Auxiliary function to clean and standardize text fields
+CREATE TEMP FUNCTION CleanText(texto STRING) AS (
+    TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(texto, NFD), r'\pM', '')))
+);
+-- SMSRIO: Patient base table
 WITH smsrio_tb AS (
     SELECT 
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(paciente_cpf, NFD), r'\pM', ''))) AS paciente_cpf,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cns_provisorio, NFD), r'\pM', ''))) AS cns_provisorio,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(telefones, NFD), r'\pM', ''))) AS telefones,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(email, NFD), r'\pM', ''))) AS email,
-        timestamp,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_logrado, NFD), r'\pM', ''))) AS end_logrado,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_cep, NFD), r'\pM', ''))) AS end_cep,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_tp_logrado_cod, NFD), r'\pM', ''))) AS end_tp_logrado_cod,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_numero, NFD), r'\pM', ''))) AS end_numero,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_complem, NFD), r'\pM', ''))) AS end_complem,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(end_bairro, NFD), r'\pM', ''))) AS end_bairro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cod_mun_res, NFD), r'\pM', ''))) AS cod_mun_res,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(uf_res, NFD), r'\pM', ''))) AS uf_res,
-        dt_nasc,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(sexo, NFD), r'\pM', ''))) AS sexo,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(raca_cor, NFD), r'\pM', ''))) AS raca_cor,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(obito, NFD), r'\pM', ''))) AS obito,
-        dt_obito,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_mae, NFD), r'\pM', ''))) AS nome_mae,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_pai, NFD), r'\pM', ''))) AS nome_pai,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
-        updated_at
+        CleanText(cpf) AS cpf,
+        CleanText(cns_lista) AS cns,
+        CleanText(nome) AS nome,
+        CleanText(telefone_lista) AS telefones,
+        CleanText(email) AS email,
+        CleanText(endereco_cep) AS cep,
+        CleanText(endereco_tipo_logradouro) AS tipo_logradouro,
+        CleanText(endereco_logradouro) AS logradouro,
+        CleanText(endereco_numero) AS numero,
+        CleanText(endereco_complemento) AS complemento,
+        CleanText(endereco_bairro) AS bairro,
+        CleanText(endereco_municipio_codigo) AS cidade,
+        CleanText(endereco_uf) AS estado,
+        CleanText(cpf) AS id_paciente,
+        CAST(NULL AS STRING) AS nome_social,
+        CleanText(sexo) AS genero,
+        CleanText(raca_cor) AS raca,
+        CleanText(nome_mae) AS mae_nome,
+        CleanText(nome_pai) AS pai_nome,
+        DATE(data_nascimento) AS data_nascimento,
+        DATE(data_obito) AS obito_data,
+        CleanText(obito) AS obito_indicador,
+        updated_at,
+        CAST(NULL AS STRING) AS id_cnes
     FROM `rj-sms.brutos_plataforma_smsrio.paciente`
+    WHERE cpf IS NOT NULL
+        AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
+        AND TRIM(cpf) != ""
 ),
 
--- CNS
 
+-- CNS
 smsrio_cns_ranked AS (
     SELECT
-        paciente_cpf,
-        TRIM(cns) AS cns,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf DESC) AS rank
+        cpf,
+        CASE 
+            WHEN TRIM(cns) IN ('NONE') THEN NULL
+            ELSE TRIM(cns)
+        END AS cns,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank,
     FROM (
             SELECT
-                paciente_cpf,
+                cpf,
                 cns,
-                timestamp
+                updated_at
             FROM smsrio_tb,
-            UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(cns_provisorio, '[', ''), ']', ''), '"', ''), ',')) AS cns
+            UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(cns, '[', ''), ']', ''), '"', ''), ',')) AS cns
     )
-    GROUP BY paciente_cpf, TRIM(cns)
+    GROUP BY cpf, cns, updated_at
     
 ),
 
-smsrio_cns_dados AS (
+-- CNS Dados
+cns_dedup AS (
     SELECT
-        paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            cns AS valor, 
-            rank
-        )) AS cns
-    FROM smsrio_cns_ranked 
-    GROUP BY paciente_cpf
+        cpf,
+        cns,
+        ROW_NUMBER() OVER (PARTITION BY cpf  ORDER BY merge_order ASC, rank ASC) AS rank
+    FROM(
+        SELECT 
+            cpf,
+            cns,
+            rank,
+            merge_order,
+            ROW_NUMBER() OVER (PARTITION BY cpf, cns ORDER BY merge_order, rank ASC) AS dedup_rank,
+        FROM (
+            SELECT 
+                cpf,
+                cns,
+                rank,
+                2 AS merge_order
+            FROM smsrio_cns_ranked
+        )
+        ORDER BY  merge_order ASC, rank ASC 
+    )
+    WHERE dedup_rank = 1
+    ORDER BY  merge_order ASC, rank ASC 
+),
+
+cns_dados AS (
+    SELECT 
+        cpf,
+        ARRAY_AGG(
+                STRUCT(
+                    cns, 
+                    rank
+                )
+        ) AS cns
+    FROM cns_dedup
+    GROUP BY cpf
 ),
 
 
--- EQUIPE CONTATO
-
+-- CONTATO TELEPHONE
 smsrio_contato_telefone AS (
     SELECT 
-        paciente_cpf,
+        cpf,
         tipo, 
         CASE 
             WHEN TRIM(valor) IN ("NONE", "NULL", "") THEN NULL
@@ -69,27 +118,28 @@ smsrio_contato_telefone AS (
         rank
     FROM (
         SELECT
-            paciente_cpf,
+            cpf,
             'telefone' AS tipo,
             TRIM(telefones) AS valor,
-            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
         FROM (
             SELECT
-                paciente_cpf,
+                cpf,
                 telefones,
-                timestamp
+                updated_at
             FROM smsrio_tb,
             UNNEST(SPLIT(REPLACE(REPLACE(REPLACE(telefones, '[', ''), ']', ''), '"', ''), ',')) AS telefones
         )
         GROUP BY
-            paciente_cpf, telefones, timestamp
+            cpf, telefones, updated_at
     )
     WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
 ),
 
+-- CONTATO SMSRIO: Extracts and ranks email
 smsrio_contato_email AS (
     SELECT 
-        paciente_cpf,
+        cpf,
         tipo, 
         CASE 
             WHEN TRIM(valor) IN ("NONE", "NULL", "") THEN NULL
@@ -98,93 +148,97 @@ smsrio_contato_email AS (
         rank
     FROM (
         SELECT
-            paciente_cpf,
+            cpf,
             'email' AS tipo,
             email AS valor,
-            ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+            ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
         FROM smsrio_tb
         GROUP BY
-            paciente_cpf, email, timestamp
+            cpf, email, updated_at
     )
     WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
 ),
 
-smsrio_contato_dados AS (
+contato_dados AS (
     SELECT
-        COALESCE(ctt.paciente_cpf, cte.paciente_cpf) AS paciente_cpf,
+        COALESCE(sms_telefone.cpf, sms_email.cpf) AS cpf, 
         STRUCT(
-            ARRAY_AGG(STRUCT(ctt.valor, ctt.rank)) AS telefone,
-            ARRAY_AGG(STRUCT(cte.valor, cte.rank)) AS email
-        ) AS contato
-    FROM smsrio_contato_telefone ctt
-    FULL OUTER JOIN smsrio_contato_email cte
-        ON ctt.paciente_cpf = cte.paciente_cpf
-    GROUP BY COALESCE(ctt.paciente_cpf, cte.paciente_cpf)
+            ARRAY_AGG(STRUCT(
+                sms_telefone.valor AS valor, 
+                sms_telefone.rank AS rank
+            )) AS telefone,
+            ARRAY_AGG(STRUCT(
+                sms_email.valor  AS valor, 
+                sms_email.rank AS rank
+            )) AS email
+        ) AS contato,
+    FROM smsrio_contato_telefone sms_telefone
+    FULL OUTER JOIN smsrio_contato_email sms_email
+        ON sms_telefone.cpf = sms_email.cpf
+    GROUP BY sms_telefone.cpf, sms_email.cpf
 ),
 
 
--- EQUIPE ENDEREÇO
-
+--  ENDEREÇO
 smsrio_endereco AS (
     SELECT
-        paciente_cpf,
-        end_cep AS cep,
+        cpf,
+        cep,
         CASE 
-            WHEN end_tp_logrado_cod IN ("NONE","") THEN NULL
-            ELSE end_tp_logrado_cod
+            WHEN tipo_logradouro IN ("NONE","") THEN NULL
+            ELSE tipo_logradouro
         END AS tipo_logradouro,
-        end_logrado AS logradouro,
-        end_numero AS numero,
-        end_complem AS complemento,
-        end_bairro AS bairro,
+        logradouro,
+        numero,
+        complemento,
+        bairro,
         CASE 
-            WHEN cod_mun_res IN ("NONE","") THEN NULL
-            ELSE cod_mun_res
+            WHEN cidade IN ("NONE","") THEN NULL
+            ELSE cidade
         END AS cidade,
-        uf_res AS estado,
-        timestamp AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+        estado,
+        CAST(updated_at AS STRING) AS datahora_ultima_atualizacao,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, timestamp
+        cpf, cep, tipo_logradouro, logradouro, numero, complemento, bairro, cidade, estado, updated_at
 ),
 
-
-smsrio_endereco_dados AS (
+endereco_dados AS (
     SELECT
-        paciente_cpf,
+        cpf,
         ARRAY_AGG(STRUCT(
-            cep, 
+            cep AS cep, 
             tipo_logradouro, 
-            logradouro, numero, 
+            logradouro, 
+            numero, 
             complemento, 
             bairro, 
             cidade, 
             estado, 
-            datahora_ultima_atualizacao, 
-            rank
+            datahora_ultima_atualizacao,
+            rank AS rank
         )) AS endereco
-    FROM smsrio_endereco
-    GROUP BY paciente_cpf
+    FROM smsrio_endereco 
+    GROUP BY cpf
 ),
 
 -- PRONTUARIO
-
 smsrio_prontuario AS (
     SELECT
-        paciente_cpf,
+        cpf,
         'SMSRIO' AS sistema,
-        NULL AS id_cnes,
-        paciente_cpf AS id_paciente,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY timestamp DESC) AS rank
+        id_cnes,
+        id_paciente,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, cod_mun_res, timestamp
+        cpf, id_cnes,id_paciente, updated_at
 ),
 
-smsrio_prontuario_dados AS (
+prontuario_dados AS (
     SELECT
-        paciente_cpf,
+        cpf,
         ARRAY_AGG(STRUCT(
             sistema, 
             id_cnes, 
@@ -192,78 +246,86 @@ smsrio_prontuario_dados AS (
             rank
         )) AS prontuario
     FROM smsrio_prontuario
-    GROUP BY paciente_cpf
+    GROUP BY cpf
 ),
 
--- PACIENTE DADOS
 
+-- PACIENTE DADOS
 smsrio_paciente AS (
     SELECT
-        paciente_cpf,
+        cpf,
         nome,
-        NULL AS nome_social,
-        paciente_cpf AS cpf,
-        DATE(dt_nasc) AS data_nascimento,
+        nome_social,
+        data_nascimento,
         CASE
-            WHEN sexo = "1" THEN "MALE"
-            WHEN sexo = "2" THEN "FEMALE"
+            WHEN genero = "1" THEN "MALE"
+            WHEN genero = "2" THEN "FEMALE"
         ELSE NULL
         END  AS genero,
         CASE
-            WHEN raca_cor IN ("None") THEN NULL
-        ELSE raca_cor
+            WHEN raca IN ("None") THEN NULL
+        ELSE raca
         END AS raca,
         CASE
-            WHEN obito = "0" THEN FALSE
-            WHEN obito = "1" THEN TRUE
+            WHEN obito_indicador = "0" THEN FALSE
+            WHEN obito_indicador = "1" THEN TRUE
         ELSE NULL
         END AS obito_indicador,
-        CASE
-            WHEN dt_obito IN ("None") THEN NULL
-            ELSE DATE(dt_obito)
-        END AS obito_data,
-        nome_mae AS mae_nome,
-        nome_pai AS pai_nome,
-        TRUE AS cadastro_validado_indicador,
-        ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY paciente_cpf) AS rank
+        obito_data,
+        mae_nome,
+        pai_nome,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai
+        cpf, nome,nome_social, cpf, data_nascimento, genero, raca, obito_indicador, obito_data, mae_nome, pai_nome, updated_at
 ),
 
-smsrio_paciente_dados AS (
+paciente_dados AS (
     SELECT
-        paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            nome,
-            nome_social,
-            cpf,
-            data_nascimento,
-            genero,
-            raca,
-            obito_indicador,
-            obito_data,
-            mae_nome,
-            pai_nome,
-            rank
-        )) AS dados,
+        cpf,
+        STRUCT(
+                nome,
+                nome_social,
+                data_nascimento,
+                genero,
+                raca,
+                obito_indicador,
+                obito_data,
+                mae_nome,
+                pai_nome
+        ) AS dados
     FROM smsrio_paciente
     GROUP BY
-        paciente_cpf
+        cpf, 
+        nome,
+        nome_social,
+        cpf, 
+        data_nascimento,
+        genero,
+        raca,
+        obito_indicador, 
+        obito_data,
+        mae_nome, 
+        pai_nome
+),
+
+---- FINAL JOIN: Joins all the data previously processed, creating the
+---- integrated table of the patients.
+paciente_integrado AS (
+    SELECT
+        pd.cpf,
+        cns.cns,
+        pd.dados,
+        ct.contato,
+        ed.endereco,
+        pt.prontuario,
+        STRUCT(CURRENT_TIMESTAMP() AS created_at) AS metadados
+    FROM paciente_dados pd
+    LEFT JOIN cns_dados cns ON pd.cpf = cns.cpf
+    LEFT JOIN contato_dados ct ON pd.cpf = ct.cpf
+    LEFT JOIN endereco_dados ed ON pd.cpf = ed.cpf
+    LEFT JOIN prontuario_dados pt ON pd.cpf = pt.cpf
 )
 
--- FINAL JOIN
 
-SELECT
-    pd.paciente_cpf,
-    cns.cns,
-    pd.dados,
-    ct.contato,
-    ed.endereco,
-    pt.prontuario,
-    STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
-FROM smsrio_paciente_dados pd
-LEFT JOIN smsrio_cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
-LEFT JOIN smsrio_contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
-LEFT JOIN smsrio_endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
-LEFT JOIN smsrio_prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf
+SELECT * FROM paciente_integrado

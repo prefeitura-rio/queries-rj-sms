@@ -1,27 +1,46 @@
+-- This code integrates patient data from VITAI:
+-- rj-sms.brutos_prontuario_vitai.paciente (VITAI)
+-- The goal is to consolidate information such as registration data,
+-- contact, address and medical record into a single view.
 
+-- Declaration of the variable to filter by CPF (optional)
+-- DECLARE cpf_filter STRING DEFAULT "";
+
+-- Auxiliary function to clean and standardize text fields
+CREATE TEMP FUNCTION CleanText(texto STRING) AS (
+    TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(texto, NFD), r'\pM', '')))
+);
+
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+--  Get source data and standardize
+---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+
+-- Patient base table
 WITH vitai_tb AS (
     SELECT 
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cpf, NFD), r'\pM', ''))) AS cpf,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cns, NFD), r'\pM', ''))) AS cns,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(cliente, NFD), r'\pM', ''))) AS cliente,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome, NFD), r'\pM', ''))) AS nome,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(telefone, NFD), r'\pM', ''))) AS telefone,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(tipo_logradouro, NFD), r'\pM', ''))) AS tipo_logradouro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_logradouro, NFD), r'\pM', ''))) AS nome_logradouro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(numero, NFD), r'\pM', ''))) AS numero,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(complemento, NFD), r'\pM', ''))) AS complemento,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(bairro, NFD), r'\pM', ''))) AS bairro,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(municipio, NFD), r'\pM', ''))) AS municipio,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(uf, NFD), r'\pM', ''))) AS uf,
+        CleanText(cpf) AS cpf,
+        CleanText(cns) AS cns,
+        CleanText(nome) AS nome,
+        CleanText(telefone) AS telefone,
+        CAST("" AS STRING) AS email,
+        CAST(NULL AS STRING) AS cep,
+        CleanText(tipo_logradouro) AS tipo_logradouro,
+        CleanText(nome_logradouro) AS logradouro,
+        CleanText(numero) AS numero,
+        CleanText(complemento) AS complemento,
+        CleanText(bairro) AS bairro,
+        CleanText(municipio) AS cidade,
+        CleanText(uf) AS estado,
+        CleanText(id_cidadao) AS id_paciente,
+        CleanText(nome_alternativo) AS nome_social,
+        CleanText(sexo) AS genero,
+        CleanText(raca_cor) AS raca,
+        CleanText(nome_mae) AS mae_nome,
+        CAST(NULL AS STRING) AS pai_nome,
+        DATE(data_nascimento) AS data_nascimento,
+        DATE(data_obito) AS obito_data,
         updated_at,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(id_cidadao, NFD), r'\pM', ''))) AS id_cidadao,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_alternativo, NFD), r'\pM', ''))) AS nome_alternativo,
-        data_nascimento,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(sexo, NFD), r'\pM', ''))) AS sexo,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(raca_cor, NFD), r'\pM', ''))) AS raca_cor,
-        data_obito,
-        TRIM(UPPER(REGEXP_REPLACE(NORMALIZE(nome_mae, NFD), r'\pM', ''))) AS nome_mae,
-        gid_estabelecimento
+        gid_estabelecimento AS id_cnes -- use gid to get id_cnes from  rj-sms.brutos_prontuario_vitai.estabelecimento
     FROM `rj-sms.brutos_prontuario_vitai.paciente`
     WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
@@ -29,10 +48,9 @@ WITH vitai_tb AS (
 ),
 
 -- CNS
-
 vitai_cns_ranked AS (
     SELECT
-        cpf AS paciente_cpf,
+        cpf,
         cns,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM vitai_tb
@@ -42,23 +60,50 @@ vitai_cns_ranked AS (
     GROUP BY cpf, cns, updated_at
 ),
 
-cns_dados AS (
+-- CNS Dados
+cns_dedup AS (
     SELECT
-        paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            cns AS valor, 
-            rank
-        )) AS cns
-    FROM vitai_cns_ranked 
-    GROUP BY paciente_cpf
+        cpf,
+        cns,
+        ROW_NUMBER() OVER (PARTITION BY cpf  ORDER BY merge_order ASC, rank ASC) AS rank
+    FROM(
+        SELECT 
+            cpf,
+            cns,
+            rank,
+            merge_order,
+            ROW_NUMBER() OVER (PARTITION BY cpf, cns ORDER BY merge_order, rank ASC) AS dedup_rank,
+        FROM (
+            SELECT 
+                cpf,
+                cns,
+                rank,
+                3 AS merge_order
+            FROM vitai_cns_ranked
+        )
+        ORDER BY  merge_order ASC, rank ASC 
+    )
+    WHERE dedup_rank = 1
+    ORDER BY  merge_order ASC, rank ASC 
 ),
 
+cns_dados AS (
+    SELECT 
+        cpf,
+        ARRAY_AGG(
+                STRUCT(
+                    cns, 
+                    rank
+                )
+        ) AS cns
+    FROM cns_dedup
+    GROUP BY cpf
+),
 
--- EQUIPE CONTATO
-
+-- CONTATO TELEPHONE
 vitai_contato_telefone AS (
     SELECT 
-        paciente_cpf,
+        cpf,
         tipo, 
         CASE 
             WHEN TRIM(valor) IN ("()", "") THEN NULL
@@ -67,7 +112,7 @@ vitai_contato_telefone AS (
         rank
     FROM (
         SELECT
-            cpf AS paciente_cpf,
+            cpf,
             'telefone' AS tipo,
             telefone AS valor,
             ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
@@ -77,9 +122,10 @@ vitai_contato_telefone AS (
     WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
 
+-- CONTATO EMAIL
 vitai_contato_email AS (
     SELECT 
-        paciente_cpf,
+        cpf,
         tipo, 
         CASE 
             WHEN TRIM(valor) IN ("()", "") THEN NULL
@@ -88,58 +134,62 @@ vitai_contato_email AS (
         rank
     FROM (
         SELECT
-            cpf AS paciente_cpf,
+            cpf,
             'email' AS tipo,
-            "" AS valor, 
+            email AS valor, 
             ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
         FROM vitai_tb
-        GROUP BY cpf, updated_at
+        GROUP BY cpf, email, updated_at
     )
     WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
 
 contato_dados AS (
     SELECT
-        COALESCE(ctt.paciente_cpf, cte.paciente_cpf) AS paciente_cpf,
+        COALESCE(vi_telefone.cpf, vi_email.cpf) AS cpf, 
         STRUCT(
-            ARRAY_AGG(STRUCT(ctt.valor, ctt.rank)) AS telefone,
-            ARRAY_AGG(STRUCT(cte.valor, cte.rank)) AS email
-        ) AS contato
-    FROM vitai_contato_telefone ctt
-    FULL OUTER JOIN vitai_contato_email cte
-        ON ctt.paciente_cpf = cte.paciente_cpf
-    GROUP BY COALESCE(ctt.paciente_cpf, cte.paciente_cpf)
+            ARRAY_AGG(STRUCT(
+                vi_telefone.valor AS valor, 
+                vi_telefone.rank AS rank
+            )) AS telefone,
+            ARRAY_AGG(STRUCT(
+                vi_email.valor  AS valor, 
+                vi_email.rank AS rank
+            )) AS email
+        ) AS contato,
+    FROM vitai_contato_telefone vi_telefone
+    FULL OUTER JOIN vitai_contato_email vi_email
+        ON vi_telefone.cpf = vi_email.cpf
+    GROUP BY vi_telefone.cpf, vi_email.cpf
 ),
 
 
--- EQUIPE ENDEREÇO
-
+--  ENDEREÇO
 vitai_endereco AS (
     SELECT
-        cpf AS paciente_cpf,
-        NULL AS cep,
+        cpf,
+        cep,
         tipo_logradouro,
         CASE
-            WHEN nome_logradouro in ("NONE") THEN NULL
-            ELSE nome_logradouro
+            WHEN logradouro in ("NONE") THEN NULL
+            ELSE logradouro
         END AS logradouro,
-        numero AS numero,
-        complemento AS complemento,
+        numero,
+        complemento,
         bairro,
-        municipio AS cidade,
-        uf AS estado,
+        cidade,
+        estado,
         updated_at AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM vitai_tb
-    WHERE
-        nome_logradouro IS NOT NULL
+    WHERE logradouro IS NOT NULL
     GROUP BY
-        cpf, tipo_logradouro, nome_logradouro, numero, complemento, bairro, municipio, uf, updated_at
+        cpf,cep, tipo_logradouro, logradouro, numero, complemento, bairro, cidade, estado, updated_at
 ),
 
 endereco_dados AS (
     SELECT
-        paciente_cpf,
+        cpf,
         ARRAY_AGG(STRUCT(
             cep, 
             tipo_logradouro, 
@@ -149,38 +199,38 @@ endereco_dados AS (
             bairro, 
             cidade, 
             estado, 
-            datahora_ultima_atualizacao, 
+            datahora_ultima_atualizacao,
             rank
         )) AS endereco
-    FROM vitai_endereco
-    GROUP BY paciente_cpf
+    FROM vitai_endereco 
+    GROUP BY cpf
 ),
 
 -- PRONTUARIO
-
 vitai_prontuario AS (
     SELECT
-        cpf AS paciente_cpf,
+        cpf,
         'VITAI' AS sistema,
-        id_cnes AS id_cnes,
-        cpf AS id_paciente,
+        id_cnes,
+        id_paciente,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM(
         SELECT 
             pc.updated_at,
             pc.cpf,
+            pc.id_paciente,
             es.cnes AS id_cnes,
         FROM  vitai_tb pc
         JOIN  `rj-sms.brutos_prontuario_vitai.estabelecimento` es
-            ON pc.gid_estabelecimento = es.gid
+            ON pc.id_cnes = es.gid
     )
     GROUP BY
-        cpf, id_cnes, updated_at
+        cpf, id_cnes, id_paciente, updated_at
 ),
 
 prontuario_dados AS (
     SELECT
-        paciente_cpf,
+        cpf,
         ARRAY_AGG(STRUCT(
             sistema, 
             id_cnes, 
@@ -188,77 +238,98 @@ prontuario_dados AS (
             rank
         )) AS prontuario
     FROM vitai_prontuario
-    GROUP BY paciente_cpf
+    GROUP BY cpf
 ),
 
--- PACIENTE DADOS
 
-vitai_paciente_dados AS (
+-- PACIENTE DADOS
+vitai_paciente AS (
     SELECT
-        cpf AS paciente_cpf,
-        nome,
-        nome_alternativo AS nome_social,
         cpf,
-        DATE(data_nascimento) AS data_nascimento,
+        nome,
+        nome_social,
+        data_nascimento,
         CASE
-            WHEN sexo = "M" THEN "MALE"
-            WHEN sexo = "F" THEN "FEMALE"
+            WHEN genero = "M" THEN "MALE"
+            WHEN genero = "F" THEN "FEMALE"
             ELSE NULL
         END  AS genero,
         CASE
-            WHEN raca_cor IN ("None") THEN NULL
-            WHEN raca_cor IN ("PRETO","NEGRO") THEN "PRETA"
-            WHEN raca_cor = "NAO INFORMADO" THEN "SEM INFORMACAO"
-            ELSE raca_cor
+            WHEN raca IN ("None") THEN NULL
+            WHEN raca IN ("PRETO","NEGRO") THEN "PRETA"
+            WHEN raca = "NAO INFORMADO" THEN "SEM INFORMACAO"
+            ELSE raca
         END AS raca,
         CASE
-            WHEN data_obito IS NOT NULL THEN TRUE
+            WHEN obito_data IS NOT NULL THEN TRUE
             ELSE NULL
         END AS obito_indicador,
-        DATE(data_obito) AS obito_data,
-        nome_mae AS mae_nome,
-        NULL AS pai_nome,
-        FALSE AS cadastro_validado_indicador,
+        obito_data,
+        mae_nome,
+        pai_nome,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
     FROM vitai_tb
     GROUP BY
-        cpf, nome, nome_alternativo, cpf, DATE(data_nascimento), sexo, raca_cor, data_obito, nome_mae, updated_at
+        cpf, pai_nome, nome, nome_social, data_nascimento, genero, obito_data, mae_nome, updated_at,
+        CASE
+            WHEN obito_data IS NOT NULL THEN TRUE
+            ELSE NULL
+        END,
+        CASE
+            WHEN raca IN ("None") THEN NULL
+            WHEN raca IN ("PRETO","NEGRO") THEN "PRETA"
+            WHEN raca = "NAO INFORMADO" THEN "SEM INFORMACAO"
+            ELSE raca
+        END
 ),
 
 
 paciente_dados AS (
     SELECT
-        paciente_cpf,
-        ARRAY_AGG(STRUCT(
-            nome,
-            nome_social,
-            cpf,
-            data_nascimento,
-            genero,
-            raca,
-            obito_indicador,
-            obito_data,
-            mae_nome,
-            pai_nome,
-            rank
-        )) AS dados,
-    FROM vitai_paciente_dados
+        cpf,
+        STRUCT(
+                nome,
+                nome_social,
+                data_nascimento,
+                genero,
+                raca,
+                obito_indicador,
+                obito_data,
+                mae_nome,
+                pai_nome
+        ) AS dados
+    FROM vitai_paciente
     GROUP BY
-        paciente_cpf
+        cpf, 
+        nome,
+        nome_social,
+        cpf, 
+        data_nascimento,
+        genero,
+        raca,
+        obito_indicador, 
+        obito_data,
+        mae_nome, 
+        pai_nome
+),
+
+---- FINAL JOIN: Joins all the data previously processed, creating the
+---- integrated table of the patients.
+paciente_integrado AS (
+    SELECT
+        pd.cpf,
+        cns.cns,
+        pd.dados,
+        ct.contato,
+        ed.endereco,
+        pt.prontuario,
+        STRUCT(CURRENT_TIMESTAMP() AS created_at) AS metadados
+    FROM paciente_dados pd
+    LEFT JOIN cns_dados cns ON pd.cpf = cns.cpf
+    LEFT JOIN contato_dados ct ON pd.cpf = ct.cpf
+    LEFT JOIN endereco_dados ed ON pd.cpf = ed.cpf
+    LEFT JOIN prontuario_dados pt ON pd.cpf = pt.cpf
 )
 
--- FINAL JOIN
 
-SELECT
-    pd.paciente_cpf,
-    cns.cns,
-    pd.dados,
-    ct.contato,
-    ed.endereco,
-    pt.prontuario,
-    STRUCT(CURRENT_TIMESTAMP() AS data_geracao) AS metadados
-FROM paciente_dados pd
-LEFT JOIN cns_dados cns ON pd.paciente_cpf = cns.paciente_cpf
-LEFT JOIN contato_dados ct ON pd.paciente_cpf = ct.paciente_cpf
-LEFT JOIN endereco_dados ed ON pd.paciente_cpf = ed.paciente_cpf
-LEFT JOIN prontuario_dados pt ON pd.paciente_cpf = pt.paciente_cpf
+SELECT * FROM paciente_integrado

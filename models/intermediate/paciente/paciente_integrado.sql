@@ -6,7 +6,7 @@
 -- contact, address and medical record into a single view.
 
 -- Declaration of the variable to filter by CPF (optional)
--- DECLARE cpf_filter STRING DEFAULT "";
+DECLARE cpf_filter STRING DEFAULT "";
 
 -- Auxiliary function to clean and standardize text fields
 CREATE TEMP FUNCTION CleanText(texto STRING) AS (
@@ -20,62 +20,69 @@ CREATE TEMP FUNCTION CleanText(texto STRING) AS (
 -- VITACARE: Patient base table
 WITH vitacare_tb AS (
 SELECT
-        CleanText(cpf) AS cpf,
+        CleanText(cpf) AS paciente_cpf,
         CleanText(cns) AS cns,
-        cadastro_permanente,
         CleanText(cnes_unidade) AS cnes_unidade,
-        CleanText(nome_unidade) AS nome_unidade,
-        data_atualizacao_vinculo_equipe,
-        CleanText(codigo_ine_equipe_saude) AS ine_equipe,
+        CleanText(codigo_ine_equipe_saude) AS codigo_ine_equipe_saude,
         CleanText(telefone) AS telefone,
         CleanText(email) AS email,
-        CleanText(endereco_cep) AS cep,
-        CleanText(endereco_tipo_logradouro) AS tipo_logradouro,
+        CleanText(endereco_cep) AS endereco_cep,
+        CleanText(endereco_tipo_logradouro) AS endereco_tipo_logradouro,
         CleanText(endereco_logradouro) AS logradouro,
         CleanText(endereco_bairro) AS bairro,
         CleanText(endereco_municipio) AS municipio_residencia,
         CleanText(endereco_estado) AS estado_residencia,
         CleanText(id) AS id,
+        CleanText(cpf) AS cpf,
         CleanText(nome) AS nome,
         CleanText(nome_social) AS nome_social,
-        CleanText(cpf) AS cpf,
-        data_nascimento,
         CleanText(sexo) AS sexo,
         CleanText(raca_cor) AS raca_cor,
         CleanText(nome_mae) AS nome_mae,
         CleanText(nome_pai) AS nome_pai,
+        cadastro_permanente,
+        data_obito,
+        data_nascimento,
+        updated_at AS data_atualizacao_vinculo_equipe,
         updated_at
     FROM `rj-sms.brutos_prontuario_vitacare.paciente`
-    -- WHERE paciente_cpf = cpf_filter
+    WHERE cpf IS NOT NULL
+        AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
+        AND TRIM(cpf) != ""
+        AND tipo = "rotineiro"
+
+        -- AND cpf = cpf_filter
 ),
 
 -- SMSRIO: Patient base table
 smsrio_tb AS (
     SELECT 
-        CleanText(cpf) AS cpf,
+        CleanText(cpf) AS paciente_cpf,
         CleanText(cns_lista) AS cns_provisorio,
         CleanText(telefone_lista) AS telefones,
         CleanText(email) AS email,
-        updated_at as `timestamp`,
-        CleanText(endereco_logradouro) AS end_logrado,
-        CleanText(endereco_cep) AS end_cep,
-        CleanText(endereco_tipo_logradouro) AS end_tp_logrado_cod,
-        CleanText(endereco_numero) AS end_numero,
-        CleanText(endereco_complemento) AS end_complem,
-        CleanText(endereco_bairro) AS end_bairro,
-        CleanText(endereco_municipio_codigo) AS cod_mun_res,
-        CleanText(endereco_uf) AS uf_res,
-        data_nascimento as dt_nasc,
+        CleanText(endereco_logradouro) AS endereco_logradouro,
+        CleanText(endereco_cep) AS endereco_cep,
+        CleanText(endereco_tipo_logradouro) AS endereco_tipo_logradouro,
+        CleanText(endereco_numero) AS endereco_numero,
+        CleanText(endereco_complemento) AS endereco_complemento,
+        CleanText(endereco_bairro) AS endereco_bairro,
+        CleanText(endereco_municipio_codigo) AS endereco_municipio_codigo,
+        CleanText(endereco_uf) AS endereco_uf,
         CleanText(sexo) AS sexo,
         CleanText(raca_cor) AS raca_cor,
         CleanText(obito) AS obito,
-        data_obito as dt_obito,
         CleanText(nome_mae) AS nome_mae,
         CleanText(nome_pai) AS nome_pai,
         CleanText(nome) AS nome,
+        data_nascimento,
+        data_obito,
         updated_at
     FROM `rj-sms.brutos_plataforma_smsrio.paciente`
-    -- WHERE paciente_cpf = cpf_filter
+    WHERE cpf IS NOT NULL
+        AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
+        AND TRIM(cpf) != ""
+--     WHERE cpf = cpf_filter
 ),
 
 vitai_tb AS (
@@ -85,7 +92,7 @@ vitai_tb AS (
         CleanText(cliente) AS cliente,
         CleanText(nome) AS nome,
         CleanText(telefone) AS telefone,
-        CleanText(tipo_logradouro) AS tipo_logradouro,
+        CleanText(tipo_logradouro) AS endereco_tipo_logradouro,
         CleanText(nome_logradouro) AS nome_logradouro,
         CleanText(numero) AS numero,
         CleanText(complemento) AS complemento,
@@ -105,6 +112,7 @@ vitai_tb AS (
     WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
         AND TRIM(cpf) != ""
+        -- AND cpf = cpf_filter
 ),
 --
 
@@ -169,14 +177,14 @@ vitacare_clinica_familia AS (
     SELECT
         paciente_cpf,
         cnes_unidade AS id_cnes,
-        nome_unidade AS nome,
+        e.nome_limpo AS nome,
         data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS original_rank
-    FROM vitacare_tb
-    WHERE
-        nome_unidade IS NOT NULL
+    FROM vitacare_tb vc
+    JOIN `rj-sms.saude_dados_mestres.estabelecimento` e
+        ON vc.cnes_unidade = e.id_cnes
     GROUP BY
-        paciente_cpf, cnes_unidade, nome_unidade, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
+        paciente_cpf, cnes_unidade, e.nome_limpo, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
 ),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -188,14 +196,14 @@ vitacare_clinica_familia AS (
 vitacare_equipe_saude_familia AS (
     SELECT
         paciente_cpf,
-        ine_equipe AS id_ine,
+        codigo_ine_equipe_saude AS id_ine,
         data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS original_rank
     FROM vitacare_tb
     WHERE
-        ine_equipe IS NOT NULL
+        codigo_ine_equipe_saude IS NOT NULL
     GROUP BY
-        paciente_cpf, ine_equipe, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
+        paciente_cpf, codigo_ine_equipe_saude, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
 ),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -418,8 +426,8 @@ vitai_contato_array AS (
 vitacare_endereco AS (
     SELECT
         paciente_cpf,
-        cep,
-        tipo_logradouro,
+        endereco_cep AS cep,
+        endereco_tipo_logradouro AS tipo_logradouro,
         REGEXP_EXTRACT(logradouro, r'^(.*?)(?:\d+.*)?$') AS logradouro,
         REGEXP_EXTRACT(logradouro, r'\b(\d+)\b') AS numero,
         TRIM(REGEXP_REPLACE(logradouro, r'^.*?\d+\s*(.*)$', r'\1')) AS complemento,
@@ -432,7 +440,7 @@ vitacare_endereco AS (
     WHERE
         logradouro IS NOT NULL
     GROUP BY
-        paciente_cpf, cep, tipo_logradouro, logradouro,REGEXP_EXTRACT(logradouro, r'\b(\d+)\b'),TRIM(REGEXP_REPLACE(logradouro, r'^.*?\d+\s*(.*)$', r'\1')), bairro, municipio_residencia, estado_residencia, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
+        paciente_cpf, endereco_cep, tipo_logradouro, logradouro,REGEXP_EXTRACT(logradouro, r'\b(\d+)\b'),TRIM(REGEXP_REPLACE(logradouro, r'^.*?\d+\s*(.*)$', r'\1')), bairro, municipio_residencia, estado_residencia, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
 ),
 
 vitacare_endereco_array AS (
@@ -459,25 +467,25 @@ vitacare_endereco_array AS (
 smsrio_endereco AS (
     SELECT
         paciente_cpf,
-        end_cep AS cep,
+        endereco_cep AS cep,
         CASE 
-            WHEN end_tp_logrado_cod IN ("NONE","") THEN NULL
-            ELSE end_tp_logrado_cod
+            WHEN endereco_tipo_logradouro IN ("NONE","") THEN NULL
+            ELSE endereco_tipo_logradouro
         END AS tipo_logradouro,
-        end_logrado AS logradouro,
-        end_numero AS numero,
-        end_complem AS complemento,
-        end_bairro AS bairro,
+        endereco_logradouro AS logradouro,
+        endereco_numero AS numero,
+        endereco_complemento AS complemento,
+        endereco_bairro AS bairro,
         CASE 
-            WHEN cod_mun_res IN ("NONE","") THEN NULL
-            ELSE cod_mun_res
+            WHEN endereco_municipio_codigo IN ("NONE","") THEN NULL
+            ELSE endereco_municipio_codigo
         END AS cidade,
-        uf_res AS estado,
+        endereco_uf AS estado,
         CAST(updated_at AS STRING) AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS original_rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, end_cep, end_tp_logrado_cod, end_logrado, end_numero, end_complem, end_bairro, cod_mun_res, uf_res, updated_at
+        paciente_cpf, endereco_cep, endereco_tipo_logradouro, endereco_logradouro, endereco_numero, endereco_complemento, endereco_bairro, endereco_municipio_codigo, endereco_uf, updated_at
 ),
 
 smsrio_endereco_array AS (
@@ -505,7 +513,7 @@ vitai_endereco AS (
     SELECT
         cpf AS paciente_cpf,
         CAST(NULL AS STRING) AS cep,
-        tipo_logradouro,
+        endereco_tipo_logradouro AS tipo_logradouro,
         CASE
             WHEN nome_logradouro in ("NONE") THEN NULL
             ELSE nome_logradouro
@@ -586,7 +594,7 @@ smsrio_prontuario AS (
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at DESC) AS original_rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, cod_mun_res, updated_at
+        paciente_cpf, endereco_municipio_codigo, updated_at
 ),
 
 smsrio_prontuario_array AS (
@@ -657,17 +665,16 @@ vitacare_paciente AS (
             ELSE raca_cor
         END AS raca,
         CASE
-            WHEN obito = "FALSE" THEN FALSE
-            WHEN obito = "TRUE" THEN TRUE
+            WHEN data_obito IS NULL THEN FALSE
+            WHEN data_obito IS NOT NULL THEN TRUE
             ELSE NULL
         END AS obito_indicador,
-        DATE(NULL) AS obito_data,
+        data_obito AS obito_data,
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS original_rank
     FROM vitacare_tb
-    GROUP BY
-        paciente_cpf, nome, nome_social, cpf, DATE(data_nascimento), sexo, raca_cor, obito, nome_mae, nome_pai,updated_at
+    GROUP BY paciente_cpf, nome, nome_social, cpf, data_nascimento, sexo, raca_cor, data_obito, nome_mae, nome_pai,updated_at
 ),
 
 -- PACIENTE DADOS SMSRIO: Extracts and structures patient data
@@ -677,7 +684,7 @@ smsrio_paciente AS (
         nome,
         CAST(NULL AS STRING) AS nome_social,
         paciente_cpf AS cpf,
-        DATE(dt_nasc) AS data_nascimento,
+        DATE(data_nascimento) AS data_nascimento,
         CASE
             WHEN sexo = "1" THEN "MALE"
             WHEN sexo = "2" THEN "FEMALE"
@@ -692,16 +699,13 @@ smsrio_paciente AS (
             WHEN obito = "1" THEN TRUE
         ELSE NULL
         END AS obito_indicador,
-        CASE
-            WHEN dt_obito IN ("None") THEN NULL
-            ELSE DATE(dt_obito)
-        END AS obito_data,
+        DATE(data_obito) AS obito_data,
         nome_mae AS mae_nome,
         nome_pai AS pai_nome,
         ROW_NUMBER() OVER (PARTITION BY paciente_cpf ORDER BY updated_at) AS original_rank
     FROM smsrio_tb
     GROUP BY
-        paciente_cpf, nome, DATE(dt_nasc), sexo, raca_cor, obito, dt_obito, nome_mae, nome_pai, updated_at
+        paciente_cpf, nome, DATE(data_nascimento), sexo, raca_cor, obito, data_obito, nome_mae, nome_pai, updated_at
 ),
 
 -- PACIENTE DADOS VITAI: Extracts and structures patient data
