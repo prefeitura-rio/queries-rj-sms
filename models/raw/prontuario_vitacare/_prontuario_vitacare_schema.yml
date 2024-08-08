@@ -234,10 +234,14 @@ models:
         description: Código da microárea de atuação da unidade de saúde.
       - name: cnes_unidade
         description: Número CNES da unidade de saúde onde o paciente é atendido.
+      - name: nome_unidade
+        description: Nome da unidade de saúde onde o paciente é atendido.
       - name: codigo_equipe_saude
         description: Código da equipe de saúde responsável pelo paciente.
       - name: codigo_ine_equipe_saude
         description: Código INE da equipe de saúde responsável pelo paciente.
+      - name: data_atualizacao_vinculo_equipe
+        description: Data da última atualização do vínculo do paciente com a equipe de saúde.
       - name: numero_familia
         description: Número da família do paciente.
       - name: numero_prontuario
