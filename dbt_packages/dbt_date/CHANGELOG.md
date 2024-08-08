@@ -1,3 +1,7 @@
+# dbt-date v0.10.1
+## Fixes
+* Change marco month_name.sql by @flixflop in https://github.com/calogica/dbt-date/pull/123
+
 # dbt-date v0.10.0
 ## New Features
 * Added Trino support by @damian3031 in https://github.com/calogica/dbt-date/pull/115

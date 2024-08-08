@@ -32,6 +32,7 @@ select
     controlado_indicador,
     controlado_tipo,
     consumo_minimo,
+    abastecimento_frequencia,
     classificacao_xyz,
     remume_indicador,
     remume_listagem_relacao,

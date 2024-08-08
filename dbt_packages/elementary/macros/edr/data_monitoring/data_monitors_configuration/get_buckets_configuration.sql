@@ -1,7 +1,11 @@
 {% macro get_detection_end(detection_delay) %}
+    {% if not detection_delay %}
+        {% do return(elementary.get_run_started_at()) %}
+    {% endif %}
+
     {%- set kwargs = {detection_delay.period+'s': detection_delay.count} %}
     {%- set detection_end = elementary.get_run_started_at() - modules.datetime.timedelta(**kwargs) %}
-    {{ return(detection_end) }}
+    {% do return(detection_end) %}
 {% endmacro %}
 
 {% macro get_trunc_min_bucket_start_expr(detection_end, metric_properties, days_back) %}
@@ -16,7 +20,7 @@
 {% endmacro %}
 
 
-{% macro get_test_buckets_min_and_max(model_relation, backfill_days, days_back, detection_delay, monitors=none, column_name=none, metric_properties=none, unit_test=false, unit_test_relation=none) %}
+{% macro get_metric_buckets_min_and_max(model_relation, backfill_days, days_back, detection_delay=none, metric_names=none, column_name=none, metric_properties=none, unit_test=false, unit_test_relation=none) %}
 
     {%- set detection_end = elementary.get_detection_end(detection_delay) %}
     {%- set detection_end_expr = elementary.edr_cast_as_timestamp(elementary.edr_quote(detection_end)) %}
@@ -25,8 +29,8 @@
     {%- set full_table_name = elementary.relation_to_full_name(model_relation) %}
     {%- set force_metrics_backfill = elementary.get_config_var('force_metrics_backfill') %}
 
-    {%- if monitors %}
-        {%- set monitors_tuple = elementary.strings_list_to_tuple(monitors) %}
+    {%- if metric_names %}
+        {%- set metric_names_tuple = elementary.strings_list_to_tuple(metric_names) %}
     {%- endif %}
 
     {%- if unit_test %}
@@ -67,8 +71,8 @@
             and bucket_end <= {{ detection_end_expr }}
             and upper(full_table_name) = upper('{{ full_table_name }}')
             and metric_properties = {{ elementary.dict_to_quoted_json(metric_properties) }}
-            {%- if monitors %}
-            and metric_name in {{ monitors_tuple }}
+            {%- if metric_names %}
+            and metric_name in {{ metric_names_tuple }}
             {%- endif %}
             {%- if column_name %}
             and upper(column_name) = upper('{{ column_name }}')
