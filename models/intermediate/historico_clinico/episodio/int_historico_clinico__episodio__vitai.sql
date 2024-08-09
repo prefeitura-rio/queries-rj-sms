@@ -13,8 +13,14 @@ with
             gid_paciente,
             gid_estabelecimento,
             atendimento_tipo,
-            cns,
-            cpf,
+            case
+                when REGEXP_REPLACE(cns, '[^0-9]', '') = '' then null 
+                else REGEXP_REPLACE(cns, '[^0-9]', '')
+            end as cns,
+            case 
+                when REGEXP_REPLACE(cpf, '[^0-9]', '') = '' then null 
+                else REGEXP_REPLACE(cpf, '[^0-9]', '')
+            end as cpf,
             imported_at,
             updated_at,
             alta_data,
@@ -29,8 +35,8 @@ with
             gid_profissional,
             atendimento_tipo,
             especialidade,
-            cid_codigo,
-            cid_nome,
+            IF(cid_codigo in ('None',''),null,cid_codigo) as cid_codigo,
+            IF(cid_nome in ('None',''), null, cid_nome) as cid_nome,
 
         from {{ ref("int_historico_clinico__atendimento__vitai") }}
     ),
@@ -45,7 +51,9 @@ with
     estabelecimentos as (
         select
             gid, cnes, nome_estabelecimento, estabelecimento_dim.tipo_sms_simplificado
-        from {{ ref("int_historico_clinico__estabelecimento__vitai") }} as estabelecimento_vitai
+        from
+            {{ ref("int_historico_clinico__estabelecimento__vitai") }}
+            as estabelecimento_vitai
         left join
             {{ ref("dim_estabelecimento") }} as estabelecimento_dim
             on estabelecimento_vitai.cnes = estabelecimento_dim.id_cnes
@@ -76,9 +84,15 @@ with
         select distinct
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
             atendimento.gid_profissional as profissional_id,
-            profissional.cpf as profissional_cpf,
-            profissional.cns as profissional_cns,
-            profissional.nome as profissional_nome
+            case
+                when REGEXP_REPLACE(profissional.cpf, '[^0-9]', '') = '' then null 
+                else REGEXP_REPLACE(profissional.cpf, '[^0-9]', '')
+            end as profissional_cpf,
+            case
+                when REGEXP_REPLACE(profissional.cns, '[^0-9]', '') = '' then null 
+                else REGEXP_REPLACE(profissional.cns, '[^0-9]', '')
+            end as profissional_cns,
+            if(profissional.nome = 'None', null, profissional.nome) as profissional_nome
         from boletim
         left join atendimento on boletim.gid = atendimento.gid_boletim
         left join estabelecimentos on boletim.gid_estabelecimento = estabelecimentos.gid
@@ -132,8 +146,16 @@ with
                 then null
                 else trim(initcap(boletim.atendimento_tipo))
             end as subtipo,
-            data_entrada as entrada_datahora,
-            alta_data as saida_datahora,
+            case
+                when data_entrada in ("None", "NaT")
+                then null
+                else cast(data_entrada as datetime)
+            end as entrada_datahora,
+            case
+                when alta_data in ("None", "NaT")
+                then null
+                else cast(alta_data as datetime)
+            end as saida_datahora,
             struct(boletim.gid as id_prontuario, boletim.cpf, boletim.cns) as paciente,
             struct(
                 estabelecimentos.cnes as id_cnes,
