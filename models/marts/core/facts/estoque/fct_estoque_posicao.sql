@@ -7,6 +7,7 @@
             "data_type": "date",
             "granularity": "month",
         },
+        materialized="incremental",
     )
 }}
 
@@ -214,3 +215,9 @@ select
     data_snapshot,
     data_carga,
 from posicao_consolidada_com_remume
+
+{% if is_incremental() -%}
+
+    where data_particao > (select max(data_particao) from {{ this }})
+
+{%- endif %}
