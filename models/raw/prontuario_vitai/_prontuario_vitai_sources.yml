@@ -9,46 +9,55 @@ sources:
       - name: estoque_movimento
       - name: paciente_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: alergia_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: exame_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: profissional_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 24, period: hour}
           error_after: {count: 48, period: hour}
       - name: relato_cirurgico_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: classificacao_risco_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: boletim_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: atendimento_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: diagnostico_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
