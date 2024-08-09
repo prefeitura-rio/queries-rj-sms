@@ -100,6 +100,7 @@ with
             m.nome,
             m.hierarquia_n1_categoria,
             m.hierarquia_n2_subcategoria,
+            m.cadastrado_sistema_vitacare_indicador,
             p.qtd_aps,
             p.qtd_tpc,
             p.cmd,
@@ -123,3 +124,4 @@ with
 
 select *
 from final
+where cadastrado_sistema_vitacare_indicador = "sim"
