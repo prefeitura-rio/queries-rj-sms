@@ -3,6 +3,7 @@
 
 ## Setup do Projeto
 - Instale as dependências com `pip install -r requirements.txt`.
+- Instale as dependencias do dbt com `dbt deps`
 - Obtenha o arquivo de credenciais `credentials.json`.
 - No arquivo `./profiles.yml`, defina onde o arquivo de credenciais estará.
 - Dê privilegio de execução para o script `./recce.sh`
