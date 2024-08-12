@@ -156,11 +156,17 @@ with
             safe_cast(data__profissional__cns as string) as cns_profissional,
 
             -- Informações Básicas do Atendimento
-            safe_cast(nullif(data__tipo_consulta,'') as string) as tipo_atendimento,
             safe_cast(
-                CASE data__datahora_marcacao_atendimento
-                    WHEN '' THEN 'Porta Aberta'
-                    ELSE 'Agendado'
+                CASE 
+                    WHEN data__eh_coleta='True' THEN 'Exames Complementares'
+                    WHEN data__datahora_marcacao_atendimento='' THEN 'Demanda Expontânea'
+                    ELSE 'Agendada'
+                END as string
+            ) as tipo_atendimento,
+            safe_cast(
+                CASE 
+                    WHEN data__eh_coleta='True' THEN 'N/A'
+                    ELSE nullif(data__tipo_consulta,'')
                 END as string
             ) as subtipo_atendimento,
             safe_cast(nullif(data__soap_subjetivo_motivo,'') as string) as motivo_atendimento,
