@@ -67,11 +67,14 @@ with
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  DIM: Condições
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    cid_descricao as (
+        select *
+        from {{ ref("raw_datasus__cid10") }}
+    ),
     condicoes as (
         select 
             source_id as id_atendimento,
-            JSON_EXTRACT_SCALAR(condicao_json, "$.cod_cid10") as id,
-            safe_cast(null as string) as descricao
+            JSON_EXTRACT_SCALAR(condicao_json, "$.cod_cid10") as id
         from latests_events,
             UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__condicoes') }})) as condicao_json
     ),
@@ -81,10 +84,12 @@ with
             array_agg(
                 struct(
                     condicoes.id as id,
-                    condicoes.descricao as descricao
+                    cid_descricao.descricao as descricao
                 )
             ) as condicoes
         from condicoes
+            left join cid_descricao
+                on condicoes.id = cid_descricao.codigo_cid
         group by id_atendimento
     ),
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -151,15 +156,15 @@ with
             safe_cast(data__profissional__cns as string) as cns_profissional,
 
             -- Informações Básicas do Atendimento
-            safe_cast(data__tipo_consulta as string) as tipo_atendimento,
+            safe_cast(nullif(data__tipo_consulta,'') as string) as tipo_atendimento,
             safe_cast(
                 CASE data__datahora_marcacao_atendimento
                     WHEN '' THEN 'Porta Aberta'
                     ELSE 'Agendado'
                 END as string
             ) as subtipo_atendimento,
-            safe_cast(data__soap_subjetivo_motivo as string) as motivo_atendimento,
-            safe_cast(data__soap_plano_observacoes as string) as desfecho_atendimento,
+            safe_cast(nullif(data__soap_subjetivo_motivo,'') as string) as motivo_atendimento,
+            safe_cast(nullif(data__soap_plano_observacoes,'') as string) as desfecho_atendimento,
             safe_cast(data__datahora_inicio_atendimento as timestamp) as datahora_atendimento_inicio,
             safe_cast(data__datahora_fim_atendimento as timestamp) as datahora_atendimento_fim,
 
