@@ -179,7 +179,7 @@ vitai_endereco AS (
         bairro,
         cidade,
         estado,
-        updated_at AS datahora_ultima_atualizacao,
+        CAST(updated_at AS STRING) AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM vitai_tb
     WHERE logradouro IS NOT NULL
