@@ -164,3 +164,341 @@ models:
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
         data_type: datetime
+  - name: raw_prontuario_vitacare__paciente
+    description: >
+      Tabela contendo informações dos pacientes a partir do prontuário VitaCare, incluindo dados históricos e rotineiros.
+    columns:
+      - name: id
+        description: Identificador único do paciente.
+      - name: cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: dnv
+        description: Declaração de Nascido Vivo (DNV) do paciente.
+      - name: nis
+        description: Número de Identificação Social (NIS) do paciente.
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: nome
+        description: Nome completo do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: nome_social
+        description: Nome social do paciente.
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: nome_pai
+        description: Nome do pai do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_PAI") }}'
+      - name: data_obito
+        description: Data de óbito do paciente.
+        policy_tags:
+          - '{{ var("TAG_DTOBITO") }}'
+      - name: sexo
+        description: Sexo do paciente.
+      - name: orientacao_sexual
+        description: Orientação sexual do paciente.
+      - name: identidade_genero
+        description: Identidade de gênero do paciente.
+      - name: raca_cor
+        description: Raça/cor do paciente.
+      - name: email
+        description: Email de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_EMAIL") }}'
+      - name: telefone
+        description: Telefone de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+      - name: nacionalidade
+        description: Nacionalidade do paciente.
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DTNASCIMENTO") }}'
+      - name: pais_nascimento
+        description: País de nascimento do paciente.
+      - name: municipio_nascimento
+        description: Município de nascimento do paciente.
+      - name: estado_nascimento
+        description: Estado de nascimento do paciente.
+      - name: ap
+        description: Área programática do paciente.
+      - name: microarea
+        description: Código da microárea de atuação da unidade de saúde.
+      - name: cnes_unidade
+        description: Número CNES da unidade de saúde onde o paciente é atendido.
+      - name: nome_unidade
+        description: Nome da unidade de saúde onde o paciente é atendido.
+      - name: codigo_equipe_saude
+        description: Código da equipe de saúde responsável pelo paciente.
+      - name: codigo_ine_equipe_saude
+        description: Código INE da equipe de saúde responsável pelo paciente.
+      - name: data_atualizacao_vinculo_equipe
+        description: Data da última atualização do vínculo do paciente com a equipe de saúde.
+      - name: numero_familia
+        description: Número da família do paciente.
+      - name: numero_prontuario
+        description: Número do prontuário do paciente.
+      - name: situacao_usuario
+        description: Situação do paciente quanto ao uso de serviços de saúde.
+      - name: cadastro_permanente
+        description: Indicação se o paciente possui cadastro permanente.
+      - name: data_cadastro_inicial
+        description: Data de cadastro inicial do paciente.
+      - name: data_ultima_atualizacao_cadastral
+        description: Data da última atualização cadastral do paciente.
+      - name: endereco_tipo_domicilio
+        description: Tipo de domicílio do paciente.
+      - name: endereco_tipo_logradouro
+        description: Tipo de logradouro do endereço do paciente.
+      - name: endereco_cep
+        description: CEP do endereço do paciente.
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+      - name: endereco_logradouro
+        description: Logradouro do endereço do paciente.
+      - name: endereco_bairro
+        description: Bairro do endereço do paciente.
+      - name: endereco_estado
+        description: Estado de residência do paciente.
+      - name: endereco_municipio
+        description: Município de residência do paciente.
+      - name: data_particao
+        description: Data de partição dos dados.
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o datalake.
+      - name: tipo
+        description: Tipo do registro, se é historico ou rotineiro.
+  - name: raw_prontuario_vitacare__paciente_rotineiro
+    description: >
+      Tabela contendo informações dos pacientes a partir do prontuário VitaCare, incluindo dados históricos e rotineiros.
+    columns:
+      - name: id
+        description: Identificador único do paciente.
+      - name: cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: dnv
+        description: Declaração de Nascido Vivo (DNV) do paciente.
+      - name: nis
+        description: Número de Identificação Social (NIS) do paciente.
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: nome
+        description: Nome completo do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: nome_social
+        description: Nome social do paciente.
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: nome_pai
+        description: Nome do pai do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_PAI") }}'
+      - name: data_obito
+        description: Data de óbito do paciente.
+        policy_tags:
+          - '{{ var("TAG_DTOBITO") }}'
+      - name: sexo
+        description: Sexo do paciente.
+      - name: orientacao_sexual
+        description: Orientação sexual do paciente.
+      - name: identidade_genero
+        description: Identidade de gênero do paciente.
+      - name: raca_cor
+        description: Raça/cor do paciente.
+      - name: email
+        description: Email de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_EMAIL") }}'
+      - name: telefone
+        description: Telefone de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+      - name: nacionalidade
+        description: Nacionalidade do paciente.
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DTNASCIMENTO") }}'
+      - name: pais_nascimento
+        description: País de nascimento do paciente.
+      - name: municipio_nascimento
+        description: Município de nascimento do paciente.
+      - name: estado_nascimento
+        description: Estado de nascimento do paciente.
+      - name: ap
+        description: Área programática do paciente.
+      - name: microarea
+        description: Código da microárea de atuação da unidade de saúde.
+      - name: cnes_unidade
+        description: Número CNES da unidade de saúde onde o paciente é atendido.
+      - name: nome_unidade
+        description: Nome da unidade de saúde onde o paciente é atendido.
+      - name: codigo_equipe_saude
+        description: Código da equipe de saúde responsável pelo paciente.
+      - name: codigo_ine_equipe_saude
+        description: Código INE da equipe de saúde responsável pelo paciente.
+      - name: data_atualizacao_vinculo_equipe
+        description: Data da última atualização do vínculo do paciente com a equipe de saúde.
+      - name: numero_familia
+        description: Número da família do paciente.
+      - name: numero_prontuario
+        description: Número do prontuário do paciente.
+      - name: situacao_usuario
+        description: Situação do paciente quanto ao uso de serviços de saúde.
+      - name: cadastro_permanente
+        description: Indicação se o paciente possui cadastro permanente.
+      - name: data_cadastro_inicial
+        description: Data de cadastro inicial do paciente.
+      - name: data_ultima_atualizacao_cadastral
+        description: Data da última atualização cadastral do paciente.
+      - name: endereco_tipo_domicilio
+        description: Tipo de domicílio do paciente.
+      - name: endereco_tipo_logradouro
+        description: Tipo de logradouro do endereço do paciente.
+      - name: endereco_cep
+        description: CEP do endereço do paciente.
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+      - name: endereco_logradouro
+        description: Logradouro do endereço do paciente.
+      - name: endereco_bairro
+        description: Bairro do endereço do paciente.
+      - name: endereco_estado
+        description: Estado de residência do paciente.
+      - name: endereco_municipio
+        description: Município de residência do paciente.
+      - name: data_particao
+        description: Data de partição dos dados.
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o datalake.
+  - name: raw_prontuario_vitacare__paciente_historico
+    description: >
+      Tabela contendo informações dos pacientes a partir do prontuário VitaCare, incluindo dados históricos e rotineiros.
+    columns:
+      - name: id
+        description: Identificador único do paciente.
+      - name: cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: dnv
+        description: Declaração de Nascido Vivo (DNV) do paciente.
+      - name: nis
+        description: Número de Identificação Social (NIS) do paciente.
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: nome
+        description: Nome completo do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: nome_social
+        description: Nome social do paciente.
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: nome_pai
+        description: Nome do pai do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_PAI") }}'
+      - name: data_obito
+        description: Data de óbito do paciente.
+        policy_tags:
+          - '{{ var("TAG_DTOBITO") }}'
+      - name: sexo
+        description: Sexo do paciente.
+      - name: orientacao_sexual
+        description: Orientação sexual do paciente.
+      - name: identidade_genero
+        description: Identidade de gênero do paciente.
+      - name: raca_cor
+        description: Raça/cor do paciente.
+      - name: email
+        description: Email de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_EMAIL") }}'
+      - name: telefone
+        description: Telefone de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+      - name: nacionalidade
+        description: Nacionalidade do paciente.
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DTNASCIMENTO") }}'
+      - name: pais_nascimento
+        description: País de nascimento do paciente.
+      - name: municipio_nascimento
+        description: Município de nascimento do paciente.
+      - name: estado_nascimento
+        description: Estado de nascimento do paciente.
+      - name: ap
+        description: Área programática do paciente.
+      - name: microarea
+        description: Código da microárea de atuação da unidade de saúde.
+      - name: cnes_unidade
+        description: Número CNES da unidade de saúde onde o paciente é atendido.
+      - name: nome_unidade
+        description: Nome da unidade de saúde onde o paciente é atendido.
+      - name: codigo_equipe_saude
+        description: Código da equipe de saúde responsável pelo paciente.
+      - name: codigo_ine_equipe_saude
+        description: Código INE da equipe de saúde responsável pelo paciente.
+      - name: data_atualizacao_vinculo_equipe
+        description: Data da última atualização do vínculo do paciente com a equipe de saúde.
+      - name: numero_familia
+        description: Número da família do paciente.
+      - name: numero_prontuario
+        description: Número do prontuário do paciente.
+      - name: situacao_usuario
+        description: Situação do paciente quanto ao uso de serviços de saúde.
+      - name: cadastro_permanente
+        description: Indicação se o paciente possui cadastro permanente.
+      - name: data_cadastro_inicial
+        description: Data de cadastro inicial do paciente.
+      - name: data_ultima_atualizacao_cadastral
+        description: Data da última atualização cadastral do paciente.
+      - name: endereco_tipo_domicilio
+        description: Tipo de domicílio do paciente.
+      - name: endereco_tipo_logradouro
+        description: Tipo de logradouro do endereço do paciente.
+      - name: endereco_cep
+        description: CEP do endereço do paciente.
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+      - name: endereco_logradouro
+        description: Logradouro do endereço do paciente.
+      - name: endereco_bairro
+        description: Bairro do endereço do paciente.
+      - name: endereco_estado
+        description: Estado de residência do paciente.
+      - name: endereco_municipio
+        description: Município de residência do paciente.
+      - name: data_particao
+        description: Data de partição dos dados.
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o datalake.

@@ -406,8 +406,13 @@ models:
         description: Campo utiilizado para busca de material no BI.
         data_type: string
         quote: true
+      - name: data_particao
+        description: Indica a data de referência da posição.
+        data_type: date
+        quote: true
       - name: material_quantidade
-        description: Quantidade disponível do medicamento/insumo
+        description: "Quantidade disponível do medicamento/insumo no início do dia de
+          referência (campo: data_particao)"
         data_type: float64
       - name: material_consumo_medio
         description: Estimativa do consumo diário baseada na média de consumo dos
@@ -474,8 +479,13 @@ models:
         description: Campo utiilizado para busca de material no BI.
         data_type: string
         quote: true
+      - name: data_particao
+        description: Indica a data de referência da posição.
+        data_type: date
+        quote: true
       - name: material_quantidade
-        description: Quantidade disponível do medicamento/insumo
+        description: "Quantidade disponível do medicamento/insumo no início do dia de
+          referência (campo: data_particao)"
         data_type: float64
       - name: material_consumo_medio
         description: Estimativa do consumo diário baseada na média de consumo dos

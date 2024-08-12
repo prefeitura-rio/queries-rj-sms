@@ -62,6 +62,7 @@ models:
     columns: true
   elementary:
     +schema: "gerenciamento__dbt_elementary"
+    +enabled: "{{ target.name in ['prod'] }}"
   rj_sms:
     # all models should have unique and not null
     +required_tests: {"unique.*|not_null": 2}
@@ -86,7 +87,7 @@ models:
         +tags: "daily"
       plataforma_smsrio:
         +schema: brutos_plataforma_smsrio
-        +tags: "daily"
+        +tags: ["smsrio", "daily"]
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]
@@ -128,12 +129,17 @@ models:
         seguir_em_frente:
             +schema: projeto_seguir_em_frente
             +tags: "daily"
+
 tests:
   rj_sms:
     +severity: error
     +store_failures: true
     +schema: gerenciamento__dbt_test_audit
+
 seeds:
   rj_sms:
     estoque:
       +schema: projeto_estoque
+
+flags:
+  require_explicit_package_overrides_for_builtin_materializations: false

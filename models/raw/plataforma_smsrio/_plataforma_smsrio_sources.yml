@@ -8,3 +8,9 @@ sources:
       - name: estoque_posicao_almoxarifado_aps_dengue
       - name: materiais_almoxarifado_dengue
       - name: equipe_contato
+      - name: paciente_eventos
+        loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}

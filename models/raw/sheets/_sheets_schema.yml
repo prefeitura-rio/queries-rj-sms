@@ -97,6 +97,9 @@ models:
         description: Quantidade mínima do medicamento dispensada para um paciente
         data_type: int64
         quote: true
+      - name: abastecimento_frequencia
+        data_type: string
+        quote: true
       - name: classificacao_xyz
         description: >
           Classificação da criticidade do medicamento, onde: 
