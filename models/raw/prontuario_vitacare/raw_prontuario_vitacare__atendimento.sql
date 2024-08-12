@@ -60,7 +60,7 @@ with
             struct(
                 id_cnes,
                 nome_limpo as nome,
-                tipo_sms_simplificado as estabelecimento_tipo
+                tipo_sms as estabelecimento_tipo
             ) as estabelecimento
         from {{ ref("dim_estabelecimento") }}
     ),
@@ -119,10 +119,7 @@ with
             source_id as id_atendimento,
             JSON_EXTRACT_SCALAR(prescricoes_json, "$.cod_medicamento") as id,
             JSON_EXTRACT_SCALAR(prescricoes_json, "$.nome_medicamento") as nome,
-            JSON_EXTRACT_SCALAR(prescricoes_json, "$.uso_continuado") as uso_continuo,
-            safe_cast(null as string) as frequencia,
-            safe_cast(null as string) as dose,
-            safe_cast(null as string) as duracao,
+            JSON_EXTRACT_SCALAR(prescricoes_json, "$.uso_continuado") as uso_continuo
         from latests_events,
             UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__prescricoes') }})) as prescricoes_json
     ),
@@ -133,10 +130,7 @@ with
                 struct(
                     prescricoes.id,
                     prescricoes.nome,
-                    prescricoes.uso_continuo,
-                    prescricoes.frequencia,
-                    prescricoes.dose,
-                    prescricoes.duracao
+                    prescricoes.uso_continuo
                 )
             ) as prescricoes
         from prescricoes
@@ -158,14 +152,17 @@ with
             -- Informações Básicas do Atendimento
             safe_cast(
                 CASE 
-                    WHEN data__eh_coleta='True' THEN 'Exames Complementares'
-                    WHEN data__datahora_marcacao_atendimento='' THEN 'Demanda Expontânea'
+                    WHEN data__eh_coleta = 'True' THEN 'Exames Complementares'
+                    WHEN data__vacinas != '[]' THEN 'Vacinação'
+                    WHEN data__datahora_marcacao_atendimento = '' THEN 'Demanda Expontânea'
                     ELSE 'Agendada'
                 END as string
             ) as tipo_atendimento,
             safe_cast(
                 CASE 
-                    WHEN data__eh_coleta='True' THEN 'N/A'
+                    WHEN data__eh_coleta = 'True' THEN 'N/A'
+                    WHEN data__vacinas != '[]' 
+                        THEN JSON_EXTRACT_SCALAR(JSON_EXTRACT({{dict_to_json('data__vacinas')}}, '$[0]'), '$.nome_vacina')
                     ELSE nullif(data__tipo_consulta,'')
                 END as string
             ) as subtipo_atendimento,
