@@ -24,9 +24,7 @@ with
     ),
 
     posicao_aps as (
-        select *
-        from posicao
-        where estabelecimento_tipo_sms_agrupado = "APS"
+        select * from posicao where estabelecimento_tipo_sms_agrupado = "APS"
     ),
 
     -- - transformations
@@ -104,14 +102,15 @@ with
             p.qtd_aps,
             p.qtd_tpc,
             round(p.cmd, 0) as cmd,
-            round(
-                {{ dbt_utils.safe_divide("p.qtd_aps", "p.cmd") }}, 2
+            coalesce(
+                round({{ dbt_utils.safe_divide("p.qtd_aps", "p.cmd") }}, 2), 0
             ) as cobertura_aps,
-            round(
-                {{ dbt_utils.safe_divide("p.qtd_tpc", "p.cmd") }}, 2
+            coalesce(
+                round({{ dbt_utils.safe_divide("p.qtd_tpc", "p.cmd") }}, 2), 0
             ) as cobertura_tpc,
-            round(
-                {{ dbt_utils.safe_divide("p.qtd_aps + p.qtd_tpc", "p.cmd") }}, 2
+            coalesce(
+                round({{ dbt_utils.safe_divide("p.qtd_aps + p.qtd_tpc", "p.cmd") }}, 2),
+                0
             ) as cobertura_total,
             za.zeradas_ap,
             zu.zerados_ubs,
@@ -124,5 +123,6 @@ with
 
 select *
 from final
-where hierarquia_n1_categoria = "Medicamento"
-and cadastrado_sistema_vitacare_indicador = "sim"
+where
+    hierarquia_n1_categoria = "Medicamento"
+    and cadastrado_sistema_vitacare_indicador = "sim"
