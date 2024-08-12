@@ -113,7 +113,12 @@ with
                 0
             ) as cobertura_total,
             za.zeradas_ap,
-            zu.zerados_ubs,
+            if(
+                p.qtd_aps = 0,
+                (select count(distinct id_cnes) from posicao_aps),
+                zu.zerados_ubs
+            ) as zerados_ubs,  -- correção para incluir unidades com estoques positivos porém vencidos
+            -- zu.zerados_ubs as zerados_ubs_sem_correcao,
         from medicamentos as m
         left join posicao_pivoted as p using (id_material)
         left join ubs_zeradas as zu using (id_material)
