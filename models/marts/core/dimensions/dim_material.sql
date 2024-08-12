@@ -52,6 +52,7 @@ select
     remume_disponibilidade_upa_indicador,
     remume_disponibilidade_cer_indicador,
     remume_disponibilidade_unidades_especificas_lista,
+    farmacia_popular_disponibilidade_indicador,
     cadastrado_sistema_vitacare_indicador
 from material_mestre
 order by

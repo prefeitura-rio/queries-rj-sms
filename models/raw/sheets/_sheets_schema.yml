@@ -217,6 +217,11 @@ models:
           material está disponível. A lista é representada pelo CNES de cada
           unidade separada por vírgula.
         data_type: string
+      - name: farmacia_popular_disponibilidade_indicador
+        description: Esta coluna indica se o material pode ser obtido através da
+          farmácia popular.
+        data_type: string
+        quote: true
       - name: cadastrado_sistema_vitacare_indicador
         description: Esta coluna indica se o material está registrado no Prontuário da
           Vitacare. É um valor de string que pode ser 'sim' se o material
