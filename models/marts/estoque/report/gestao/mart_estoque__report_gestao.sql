@@ -27,6 +27,12 @@ with
         select * from posicao where estabelecimento_tipo_sms_agrupado = "APS"
     ),
 
+    curva_pqrs as (
+        select *
+        from {{ ref("int_estoque__material_curva_pqrs") }}
+        where tipo_sms_agrupado = "APS"
+    ),
+
     -- - transformations
     -- dias de estoque
     cmd as (
@@ -96,6 +102,7 @@ with
         select
             m.id_material,
             m.nome,
+            coalesce(pqrs.pqrs_categoria, "S") as pqrs_categoria, -- itens sem qualquer movimento não são classificados
             m.hierarquia_n1_categoria,
             m.hierarquia_n2_subcategoria,
             m.cadastrado_sistema_vitacare_indicador,
@@ -118,11 +125,12 @@ with
                 (select count(distinct id_cnes) from posicao_aps),
                 zu.zerados_ubs
             ) as zerados_ubs,  -- correção para incluir unidades com estoques positivos porém vencidos
-            -- zu.zerados_ubs as zerados_ubs_sem_correcao,
+        -- zu.zerados_ubs as zerados_ubs_sem_correcao,
         from medicamentos as m
         left join posicao_pivoted as p using (id_material)
         left join ubs_zeradas as zu using (id_material)
         left join ap_zeradas as za using (id_material)
+        left join curva_pqrs as pqrs using (id_material)
         order by cobertura_total asc
     )
 
