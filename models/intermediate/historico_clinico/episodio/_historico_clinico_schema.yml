@@ -43,17 +43,23 @@ models:
           CNS do paciente.
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
-      - name: cid
+      - name: motivo_atendimento
+        description: |
+          Queixa inicial do paciente
+      - name: desfecho_atendimento
+        description: |
+          Desfecho do episódio
+      - name: condicoes
         description: |
           Códigos e descrições dos CID (Classificação Internacional de Doenças) relacionados ao atendimento. 
           Inclui informações como código e nome do CID.
-      - name: cid.id
+      - name: condicoes.id
         description: |
           Código CID ativo
-      - name: cid.descricao
+      - name: condicoes.descricao
         description: |
           Descrição do CID associado 
-      - name: alergia
+      - name: alergias
         description: |
           Descrições das alergias associadas ao atendimento, extraídas dos registros de alergias.
       - name: estabelecimento
@@ -86,6 +92,9 @@ models:
           Nome do profissional responsável pelo atendimento.
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
+      - name: profissional_saude_responsavel.especialidade
+        description: |
+          Especialidade do profissional responsável pelo atendimento.
       - name: profissional_saude_responsavel.cpf
         description: |
           CPF do profissional responsável pelo atendimento.
@@ -103,12 +112,21 @@ models:
       - name: metadados
         description: |
           Metadados do registro
-      - name: metadados.imported_at
+      - name: metadados.loaded_at
         description: |
-          Data de importação para o datalake
+          Data de importação para o datalake.
       - name: metadados.updated_at
         description: |
           Data de última atualização.
-      - name: episodio_informativo
+      - name: metadados.processed_at
         description: |
-          Flag que indica se o episodio é relevante para a aplicação do HCI
+          Data de merge do registro.
+      - name: metadados.tem_informacoes_basicas
+        description: |
+          Flag que indica se o episodio tem informações relevantes para a aplicação do HCI.
+      - name: metadados.tem_identificador_paciente
+        description: |
+          Flag que indica se o episodio tem identificador de pacientes.
+      - name: metadados.tem_dados_sensiveis
+        description: |
+          Flag que indica se o episodio tem dados sensíveis.

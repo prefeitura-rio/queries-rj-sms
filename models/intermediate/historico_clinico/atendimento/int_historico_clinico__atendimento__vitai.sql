@@ -8,6 +8,7 @@ with
             gid_profissional,
             atendimento_tipo,
             especialidade,
+            queixa,
             inicio_datahora,
             fim_datahora,
             if(cid_codigo = 'None', null, cid_codigo) as cid_codigo,
