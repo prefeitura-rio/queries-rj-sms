@@ -72,9 +72,9 @@ with
     condicoes as (
         select 
             source_id as fk_atendimento,
-            JSON_EXTRACT_SCALAR(condicao_json, "$.cod_cid10") as id
+            json_extract_scalar(condicao_json, "$.cod_cid10") as id
         from bruto_atendimento,
-            UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__condicoes') }})) as condicao_json
+            unnest(json_extract_array({{ dict_to_json('data__condicoes') }})) as condicao_json
     ),
     dim_condicoes_atribuidas as (
         select 
@@ -96,9 +96,9 @@ with
     alergias as (
         select 
             source_id as fk_atendimento,
-            JSON_EXTRACT_SCALAR(alergia_json, "$.descricao") as descricao,
+            json_extract_scalar(alergia_json, "$.descricao") as descricao,
         from bruto_atendimento,
-            UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__alergias_anamnese') }})) as alergia_json
+            unnest(json_extract_array({{ dict_to_json('data__alergias_anamnese') }})) as alergia_json
     ),
     dim_alergias_atribuidas as (
         select 
@@ -119,11 +119,11 @@ with
     prescricoes as (
         select 
             source_id as fk_atendimento,
-            REPLACE(JSON_EXTRACT_SCALAR(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
-            UPPER(JSON_EXTRACT_SCALAR(prescricoes_json, "$.nome_medicamento")) as nome,
-            JSON_EXTRACT_SCALAR(prescricoes_json, "$.uso_continuado") as uso_continuo
+            replace(json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
+            upper(json_extract_scalar(prescricoes_json, "$.nome_medicamento")) as nome,
+            json_extract_scalar(prescricoes_json, "$.uso_continuado") as uso_continuo
         from bruto_atendimento,
-            UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__prescricoes') }})) as prescricoes_json
+            unnest(json_extract_array({{ dict_to_json('data__prescricoes') }})) as prescricoes_json
     ),
     dim_prescricoes_atribuidas as (
         select 
@@ -154,20 +154,20 @@ with
 
             -- Tipo e Subtipo
             safe_cast(
-                CASE 
-                    WHEN data__eh_coleta = 'True' THEN 'Exames Complementares'
-                    WHEN data__vacinas != '[]' THEN 'Vacinação'
-                    WHEN data__datahora_marcacao_atendimento = '' THEN 'Demanda Expontânea'
-                    ELSE 'Agendada'
-                END as string
+                case 
+                    when data__eh_coleta = 'True' then 'Exames Complementares'
+                    when data__vacinas != '[]' then 'Vacinação'
+                    when data__datahora_marcacao_atendimento = '' then 'Demanda Expontânea'
+                    else 'Agendada'
+                end as string
             ) as tipo,
             safe_cast(
-                CASE 
-                    WHEN data__eh_coleta = 'True' THEN 'N/A'
-                    WHEN data__vacinas != '[]' 
-                        THEN JSON_EXTRACT_SCALAR(JSON_EXTRACT({{dict_to_json('data__vacinas')}}, '$[0]'), '$.nome_vacina')
-                    ELSE nullif(data__tipo_consulta,'')
-                END as string
+                case 
+                    when data__eh_coleta = 'True' then 'N/A'
+                    when data__vacinas != '[]' 
+                        then JSON_EXTRACT_SCALAR(JSON_EXTRACT({{dict_to_json('data__vacinas')}}, '$[0]'), '$.nome_vacina')
+                    else nullif(data__tipo_consulta,'')
+                end as string
             ) as subtipo,
 
             -- Entrada e Saída
@@ -197,13 +197,13 @@ with
                 dim_profissional.cpf as cpf,
                 dim_profissional.cns as cns,
                 safe_cast(
-                    CASE 
-                        WHEN data__profissional__cbo_descricao like '%Médic%' THEN 'Médico(a)'
-                        WHEN data__profissional__cbo_descricao like '%Enferm%' THEN 'Enfermeiro(a)'
-                        WHEN data__profissional__cbo_descricao like '%dentista%' THEN 'Dentista'
-                        WHEN data__profissional__cbo_descricao like '%social%' THEN 'Assistente Social'
-                        ELSE data__profissional__cbo_descricao
-                    END
+                    case 
+                        when data__profissional__cbo_descricao like '%Médic%' then 'Médico(a)'
+                        when data__profissional__cbo_descricao like '%Enferm%' then 'Enfermeiro(a)'
+                        when data__profissional__cbo_descricao like '%dentista%' then 'Dentista'
+                        when data__profissional__cbo_descricao like '%social%' then 'Assistente Social'
+                        else data__profissional__cbo_descricao
+                    end
                 as string) as especialidade
             ) as profissional_saude_responsavel,
 
@@ -220,14 +220,14 @@ with
                 safe_cast(current_timestamp() as timestamp) as processed_at,
                 safe_cast(
                     (
-                        ARRAY_LENGTH(dim_condicoes_atribuidas.condicoes) > 0 AND 
-                        safe_cast(data__datahora_inicio_atendimento as datetime) is not null AND
+                        ARRAY_LENGTH(dim_condicoes_atribuidas.condicoes) > 0 and 
+                        safe_cast(data__datahora_inicio_atendimento as datetime) is not null and
                         safe_cast(nullif(data__soap_subjetivo_motivo, '') as string) is not null
                     ) as boolean
                 ) as tem_informacoes_basicas,
                 safe_cast(
                     (
-                        dim_paciente.paciente.cpf is not null OR
+                        dim_paciente.paciente.cpf is not null or
                         dim_paciente.paciente.cns is not null
                     ) as boolean
                 ) as tem_identificador_paciente,
