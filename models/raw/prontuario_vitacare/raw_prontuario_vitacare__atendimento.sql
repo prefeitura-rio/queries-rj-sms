@@ -120,7 +120,7 @@ with
         select 
             source_id as fk_atendimento,
             REPLACE(JSON_EXTRACT_SCALAR(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
-            JSON_EXTRACT_SCALAR(prescricoes_json, "$.nome_medicamento") as nome,
+            UPPER(JSON_EXTRACT_SCALAR(prescricoes_json, "$.nome_medicamento")) as nome,
             JSON_EXTRACT_SCALAR(prescricoes_json, "$.uso_continuado") as uso_continuo
         from latests_events,
             UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__prescricoes') }})) as prescricoes_json
@@ -131,7 +131,7 @@ with
             array_agg(
                 struct(
                     prescricoes.id,
-                    materiais.descricao as nome,
+                    coalesce(materiais.descricao, prescricoes.nome) as nome,
                     materiais.concentracao,
                     prescricoes.uso_continuo
                 )
