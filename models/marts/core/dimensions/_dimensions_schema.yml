@@ -215,6 +215,8 @@ models:
         description: Classificação alternativa ao CNES de tipos de unidades abreviada
       - name: nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
+      - name: nome_complemento
+        description: Nome do estabelecimento sem o prefixo indicando o tipo de unidade
       - name: nome_sigla
         description: Abreviação do nome fantasia
       - name: nome_fantasia

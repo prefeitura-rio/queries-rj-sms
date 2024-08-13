@@ -49,6 +49,11 @@ with
             estab_aux.tipo_sms,
             estab_aux.tipo_sms_simplificado,
             estab_aux.nome_limpo,
+            regexp_replace(
+                estab_aux.nome_limpo, 
+                r'(CF |CSE |CMS |UPA 24h |POLICLINICA |HOSPITAL MUNICIPAL |COORD DE EMERGENCIA REGIONAL CER |MATERNIDADE )',
+                ''
+            ) as nome_complemento,
             estab_aux.nome_sigla,
             estab_aux.prontuario_tem,
             estab_aux.prontuario_versao,
@@ -81,6 +86,7 @@ select
     est.tipo_sms_simplificado,
     est.nome_limpo,
     est.nome_sigla,
+    est.nome_complemento,
     est.nome_fantasia,
     est.responsavel_sms,
     est.administracao,
