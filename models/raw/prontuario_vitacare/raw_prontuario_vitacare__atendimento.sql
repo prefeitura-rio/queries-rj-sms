@@ -7,21 +7,21 @@
 
 with
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  Event Setup
+--  Separação de Atendimentos
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    events as (
+    bruto_atendimento_eventos_com_repeticao as (
         select * 
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }} 
     ),
-    ranked_events as (
+    bruto_atendimento_eventos_ranqueados as (
         select
             *,
             row_number() over (partition by source_id order by datalake_loaded_at desc) as rank
-        from events
+        from bruto_atendimento_eventos_com_repeticao
     ),
-    latests_events as (
+    bruto_atendimento as (
         select *
-        from ranked_events 
+        from bruto_atendimento_eventos_ranqueados 
         where rank = 1
     ),
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -73,7 +73,7 @@ with
         select 
             source_id as fk_atendimento,
             JSON_EXTRACT_SCALAR(condicao_json, "$.cod_cid10") as id
-        from latests_events,
+        from bruto_atendimento,
             UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__condicoes') }})) as condicao_json
     ),
     dim_condicoes_atribuidas as (
@@ -97,7 +97,7 @@ with
         select 
             source_id as fk_atendimento,
             JSON_EXTRACT_SCALAR(alergia_json, "$.descricao") as descricao,
-        from latests_events,
+        from bruto_atendimento,
             UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__alergias_anamnese') }})) as alergia_json
     ),
     dim_alergias_atribuidas as (
@@ -122,7 +122,7 @@ with
             REPLACE(JSON_EXTRACT_SCALAR(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
             UPPER(JSON_EXTRACT_SCALAR(prescricoes_json, "$.nome_medicamento")) as nome,
             JSON_EXTRACT_SCALAR(prescricoes_json, "$.uso_continuado") as uso_continuo
-        from latests_events,
+        from bruto_atendimento,
             UNNEST(JSON_EXTRACT_ARRAY({{ dict_to_json('data__prescricoes') }})) as prescricoes_json
     ),
     dim_prescricoes_atribuidas as (
@@ -145,26 +145,14 @@ with
 --  FATO: Atendimento
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fato_atendimento as (
-        select 
-            -- PK
+        select
+            -- Chave
             safe_cast(source_id as string) as id,
 
-            -- FK
-            safe_cast(patient_cpf as string) as fk_paciente,
-            safe_cast(data__unidade_cnes as string) as fk_unidade,
-            safe_cast(data__profissional__cns as string) as fk_profissional,
+            -- Paciente
+            dim_paciente.paciente,
 
-            -- Especialidade do Profissional
-            safe_cast(
-                CASE WHEN data__profissional__cbo_descricao like '%Médic%' THEN 'Médico(a)'
-                WHEN data__profissional__cbo_descricao like '%Enferm%' THEN 'Enfermeiro(a)'
-                WHEN data__profissional__cbo_descricao like '%dentista%' THEN 'Dentista'
-                WHEN data__profissional__cbo_descricao like '%social%' THEN 'Assistente Social'
-                ELSE data__profissional__cbo_descricao
-                END
-            as string) as profissional_especialidade,
-
-            -- Tipo e Subtipo de Atendimento
+            -- Tipo e Subtipo
             safe_cast(
                 CASE 
                     WHEN data__eh_coleta = 'True' THEN 'Exames Complementares'
@@ -182,15 +170,44 @@ with
                 END as string
             ) as subtipo,
 
-            -- Campos Textuais
-            safe_cast(nullif(data__soap_subjetivo_motivo,'') as string) as motivo_atendimento,
-            safe_cast(nullif(data__soap_plano_observacoes,'') as string) as desfecho_atendimento,
-
-            -- Timestamps
+            -- Entrada e Saída
             safe_cast(data__datahora_inicio_atendimento as datetime) as entrada_datahora,
             safe_cast(data__datahora_fim_atendimento as datetime) as saida_datahora,
 
-            -- Prontuario
+            -- Motivo e Desfecho
+            safe_cast(nullif(data__soap_subjetivo_motivo,'') as string) as motivo_atendimento,
+            safe_cast(nullif(data__soap_plano_observacoes,'') as string) as desfecho_atendimento,
+
+            -- Condições
+            dim_condicoes_atribuidas.condicoes,
+
+            -- Prescricoes
+            dim_prescricoes_atribuidas.prescricoes,
+
+            -- Alergias
+            dim_alergias_atribuidas.alergias,
+
+            -- Estabelecimento
+            dim_estabelecimento.estabelecimento,
+
+            -- Profissional
+            struct(
+                dim_profissional.id as id,
+                dim_profissional.nome as nome,
+                dim_profissional.cpf as cpf,
+                dim_profissional.cns as cns,
+                safe_cast(
+                    CASE 
+                        WHEN data__profissional__cbo_descricao like '%Médic%' THEN 'Médico(a)'
+                        WHEN data__profissional__cbo_descricao like '%Enferm%' THEN 'Enfermeiro(a)'
+                        WHEN data__profissional__cbo_descricao like '%dentista%' THEN 'Dentista'
+                        WHEN data__profissional__cbo_descricao like '%social%' THEN 'Assistente Social'
+                        ELSE data__profissional__cbo_descricao
+                    END
+                as string) as especialidade
+            ) as profissional_saude_responsavel,
+
+            -- Prontuário
             struct(
                 safe_cast(source_id as string) as id_atendimento,
                 safe_cast('vitacare' as string) as fornecedor
@@ -200,44 +217,41 @@ with
             struct(
                 safe_cast(source_updated_at as timestamp) as updated_at,
                 safe_cast(datalake_loaded_at as timestamp) as loaded_at,
-                safe_cast(current_timestamp() as timestamp) as processed_at
-            ) as metadados,
-        from latests_events
+                safe_cast(current_timestamp() as timestamp) as processed_at,
+                safe_cast(
+                    (
+                        ARRAY_LENGTH(dim_condicoes_atribuidas.condicoes) > 0 AND 
+                        safe_cast(data__datahora_inicio_atendimento as datetime) is not null AND
+                        safe_cast(nullif(data__soap_subjetivo_motivo, '') as string) is not null
+                    ) as boolean
+                ) as tem_informacoes_basicas,
+                safe_cast(
+                    (
+                        dim_paciente.paciente.cpf is not null OR
+                        dim_paciente.paciente.cns is not null
+                    ) as boolean
+                ) as tem_identificador_paciente,
+                safe_cast(
+                    false as boolean
+                ) as tem_informacoes_sensiveis
+            ) as metadados
+
+        from bruto_atendimento
+            inner join dim_paciente
+                on bruto_atendimento.patient_cpf = dim_paciente.pk
+            inner join dim_estabelecimento
+                on bruto_atendimento.data__unidade_cnes = dim_estabelecimento.pk
+            inner join dim_profissional
+                on bruto_atendimento.data__profissional__cns = dim_profissional.pk
+            left join dim_condicoes_atribuidas
+                on bruto_atendimento.source_id = dim_condicoes_atribuidas.fk_atendimento
+            left join dim_alergias_atribuidas
+                on bruto_atendimento.source_id = dim_alergias_atribuidas.fk_atendimento
+            left join dim_prescricoes_atribuidas
+                on bruto_atendimento.source_id = dim_prescricoes_atribuidas.fk_atendimento
     )
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Finalização
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-select 
-    dim_paciente.paciente,
-    fato_atendimento.tipo,
-    fato_atendimento.subtipo,
-    fato_atendimento.entrada_datahora,
-    fato_atendimento.saida_datahora,
-    fato_atendimento.motivo_atendimento,
-    fato_atendimento.desfecho_atendimento,
-    dim_condicoes_atribuidas.condicoes as condicoes,
-    dim_prescricoes_atribuidas.prescricoes as prescricoes,
-    dim_alergias_atribuidas.alergias as alergias,
-    dim_estabelecimento.estabelecimento,
-    struct(
-        dim_profissional.id,
-        dim_profissional.nome,
-        dim_profissional.cpf,
-        dim_profissional.cns,
-        profissional_especialidade as especialidade
-    ) as profissional_saude_responsavel,
-    fato_atendimento.prontuario,
-    fato_atendimento.metadados
+select *
 from fato_atendimento
-    inner join dim_paciente
-        on fato_atendimento.fk_paciente = dim_paciente.pk
-    inner join dim_estabelecimento
-        on fato_atendimento.fk_unidade = dim_estabelecimento.pk
-    inner join dim_profissional
-        on fato_atendimento.fk_profissional = dim_profissional.pk
-    left join dim_condicoes_atribuidas
-        on fato_atendimento.id = dim_condicoes_atribuidas.fk_atendimento
-    left join dim_alergias_atribuidas
-        on fato_atendimento.id = dim_alergias_atribuidas.fk_atendimento
-    left join dim_prescricoes_atribuidas
-        on fato_atendimento.id = dim_prescricoes_atribuidas.fk_atendimento
