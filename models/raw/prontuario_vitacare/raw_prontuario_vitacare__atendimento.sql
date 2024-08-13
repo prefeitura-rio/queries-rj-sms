@@ -165,7 +165,7 @@ with
                     WHEN data__datahora_marcacao_atendimento = '' THEN 'Demanda Expontânea'
                     ELSE 'Agendada'
                 END as string
-            ) as tipo_atendimento,
+            ) as tipo,
             safe_cast(
                 CASE 
                     WHEN data__eh_coleta = 'True' THEN 'N/A'
@@ -173,15 +173,15 @@ with
                         THEN JSON_EXTRACT_SCALAR(JSON_EXTRACT({{dict_to_json('data__vacinas')}}, '$[0]'), '$.nome_vacina')
                     ELSE nullif(data__tipo_consulta,'')
                 END as string
-            ) as subtipo_atendimento,
+            ) as subtipo,
 
             -- Campos Textuais
             safe_cast(nullif(data__soap_subjetivo_motivo,'') as string) as motivo_atendimento,
             safe_cast(nullif(data__soap_plano_observacoes,'') as string) as desfecho_atendimento,
 
             -- Timestamps
-            safe_cast(data__datahora_inicio_atendimento as timestamp) as entrada_datahora,
-            safe_cast(data__datahora_fim_atendimento as timestamp) as saida_datahora,
+            safe_cast(data__datahora_inicio_atendimento as datetime) as entrada_datahora,
+            safe_cast(data__datahora_fim_atendimento as datetime) as saida_datahora,
 
             -- Prontuario
             struct(
@@ -192,7 +192,8 @@ with
             -- Metadados
             struct(
                 safe_cast(source_updated_at as timestamp) as updated_at,
-                safe_cast(null as timestamp) as imported_at
+                safe_cast(datalake_loaded_at as timestamp) as loaded_at,
+                safe_cast(current_timestamp() as timestamp) as processed_at
             ) as metadados,
         from latests_events
     )
@@ -201,10 +202,12 @@ with
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select 
     dim_paciente.paciente,
-    fato_atendimento.tipo_atendimento,
-    fato_atendimento.subtipo_atendimento,
+    fato_atendimento.tipo,
+    fato_atendimento.subtipo,
     fato_atendimento.entrada_datahora,
     fato_atendimento.saida_datahora,
+    fato_atendimento.motivo_atendimento,
+    fato_atendimento.desfecho_atendimento,
     dim_condicoes_atribuidas.condicoes as condicoes,
     dim_prescricoes_atribuidas.prescricoes as prescricoes,
     dim_alergias_atribuidas.alergias as alergias,
