@@ -112,6 +112,10 @@ with
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  DIM: Medicamento Prescrito
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    materiais as (
+        select id_material, descricao, concentracao
+        from {{ ref("dim_material") }}
+    ),
     prescricoes as (
         select 
             source_id as fk_atendimento,
@@ -127,11 +131,14 @@ with
             array_agg(
                 struct(
                     prescricoes.id,
-                    prescricoes.nome,
+                    materiais.descricao as nome,
+                    materiais.concentracao,
                     prescricoes.uso_continuo
                 )
             ) as prescricoes
         from prescricoes
+            left join materiais
+                on prescricoes.id = materiais.id_material
         group by fk_atendimento
     ),
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
