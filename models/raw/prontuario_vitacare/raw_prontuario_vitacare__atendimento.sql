@@ -16,7 +16,7 @@ with
     ranked_events as (
         select
             *,
-            row_number() over (partition by source_id order by source_updated_at desc) as rank
+            row_number() over (partition by source_id order by datalake_loaded_at desc) as rank
         from events
     ),
     latests_events as (
@@ -58,7 +58,7 @@ with
             struct(
                 id_cnes,
                 tipo_sms as estabelecimento_tipo,
-                nome_complemento as nome
+                concat(tipo_sms, ' ', nome_complemento) as nome
             ) as estabelecimento
         from {{ ref("dim_estabelecimento") }}
     ),
