@@ -9,6 +9,7 @@ sources:
       - name: gerenciamento_acesso_looker_farmacia
       - name: material_mestre
       - name: material_remume
+      - name: compras_registro_preco
   - name: brutos_sheets
     database: rj-sms
     schema: brutos_sheets
