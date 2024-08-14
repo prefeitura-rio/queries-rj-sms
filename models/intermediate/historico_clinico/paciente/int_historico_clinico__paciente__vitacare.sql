@@ -209,23 +209,75 @@ vitacare_contato_email AS (
     WHERE NOT (TRIM(valor) IN ("()", "") AND (rank >= 2))
 ),
 
-contato_dados AS (
+telefone_dedup AS (
     SELECT
-        COALESCE(vt_telefone.cpf, vt_email.cpf) AS cpf, 
+        cpf,
+        valor, 
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
+        sistema
+    FROM (
+        SELECT 
+            cpf,
+            valor,
+            rank,
+            merge_order,
+            ROW_NUMBER() OVER (PARTITION BY cpf, valor ORDER BY merge_order, rank ASC) AS dedup_rank,
+            sistema
+        FROM (
+            SELECT 
+                cpf,
+                valor, 
+                rank,
+                "VITACARE" AS sistema,
+                1 AS merge_order
+            FROM vitacare_contato_telefone
+        )
+        ORDER BY merge_order ASC, rank ASC
+    )
+    WHERE dedup_rank = 1
+    ORDER BY merge_order ASC, rank ASC
+),
+
+email_dedup AS (
+    SELECT
+        cpf,
+        valor, 
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
+        sistema
+    FROM (
+        SELECT 
+            cpf,
+            valor,
+            rank,
+            merge_order,
+            ROW_NUMBER() OVER (PARTITION BY cpf, valor ORDER BY merge_order, rank ASC) AS dedup_rank,
+            sistema
+        FROM (
+            SELECT 
+                cpf,
+                valor, 
+                rank,
+                "VITACARE" AS sistema,
+                1 AS merge_order
+            FROM vitacare_contato_email
+        )
+        ORDER BY merge_order ASC, rank ASC
+    )
+    WHERE dedup_rank = 1
+    ORDER BY merge_order ASC, rank ASC
+),
+
+contato_dados AS (
+    SELECT 
+        COALESCE(t.cpf, e.cpf) AS cpf,
         STRUCT(
-            ARRAY_AGG(STRUCT(
-                vt_telefone.valor AS valor, 
-                vt_telefone.rank
-            )) AS telefone,
-            ARRAY_AGG(STRUCT(
-                vt_email.valor  AS valor, 
-                vt_email.rank
-            )) AS email
-        ) AS contato,
-    FROM vitacare_contato_telefone vt_telefone
-    FULL OUTER JOIN vitacare_contato_email vt_email
-        ON vt_telefone.cpf = vt_email.cpf
-    GROUP BY vt_telefone.cpf, vt_email.cpf
+            ARRAY_AGG(STRUCT(t.valor, t.sistema,t.rank)) AS telefone,
+            ARRAY_AGG(STRUCT(e.valor, e.sistema, e.rank)) AS email    
+        ) AS contato
+    FROM telefone_dedup t
+    FULL OUTER JOIN email_dedup e
+        ON t.cpf = e.cpf
+    GROUP BY COALESCE(t.cpf, e.cpf)
 ),
 
 
@@ -250,22 +302,76 @@ vitacare_endereco AS (
         cpf, cep, tipo_logradouro, logradouro,numero,complemento, bairro, cidade, estado, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
 ),
 
-endereco_dados AS (
+endereco_dedup AS (
     SELECT
         cpf,
-        ARRAY_AGG(STRUCT(
-            cep AS cep, 
-            tipo_logradouro AS tipo_logradouro, 
-            logradouro AS logradouro, 
-            numero AS numero, 
-            complemento AS complemento, 
-            bairro AS bairro, 
-            cidade AS cidade, 
-            estado AS estado, 
+        cep, 
+        tipo_logradouro, 
+        logradouro, 
+        numero, 
+        complemento, 
+        bairro, 
+        cidade, 
+        estado, 
+        datahora_ultima_atualizacao,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
+        sistema
+    FROM (
+        SELECT 
+            cpf,
+            cep,
+            tipo_logradouro,
+            logradouro,
+            numero,
+            complemento,
+            bairro,
+            cidade,
+            estado,
             datahora_ultima_atualizacao,
+            merge_order,
+            rank,
+            ROW_NUMBER() OVER (PARTITION BY cpf, datahora_ultima_atualizacao ORDER BY merge_order, rank ASC) AS dedup_rank,
+            sistema
+        FROM (
+            SELECT 
+                cpf,
+                cep, 
+                tipo_logradouro, 
+                logradouro, 
+                numero, 
+                complemento, 
+                bairro, 
+                cidade, 
+                estado, 
+                datahora_ultima_atualizacao,
+                rank,
+                "VITACARE" AS sistema,
+                1 AS merge_order
+            FROM vitacare_endereco
+        )
+        ORDER BY merge_order ASC, rank ASC
+    )
+    WHERE dedup_rank = 1
+    ORDER BY merge_order ASC, rank ASC
+),
+
+endereco_dados AS (
+    SELECT 
+        cpf,
+        ARRAY_AGG(STRUCT(
+            cep, 
+            tipo_logradouro, 
+            logradouro, 
+            numero, 
+            complemento, 
+            bairro, 
+            cidade, 
+            estado, 
+            datahora_ultima_atualizacao,
+            sistema,
             rank
         )) AS endereco
-    FROM vitacare_endereco 
+    FROM endereco_dedup
     GROUP BY cpf
 ),
 
@@ -282,8 +388,41 @@ vitacare_prontuario AS (
         cpf, id_cnes, id_paciente, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
 ),
 
-prontuario_dados AS (
+
+prontuario_dedup AS (
     SELECT
+        cpf,
+        sistema, 
+        id_cnes, 
+        id_paciente, 
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank
+    FROM (
+        SELECT 
+            cpf,
+            sistema, 
+            id_cnes, 
+            id_paciente, 
+            rank,
+            merge_order,
+            ROW_NUMBER() OVER (PARTITION BY cpf, id_cnes, id_paciente ORDER BY merge_order, rank ASC) AS dedup_rank
+        FROM (
+            SELECT 
+                vi.cpf,
+                "VITACARE" AS sistema,
+                id_cnes, 
+                id_paciente, 
+                rank,
+                1 AS merge_order
+            FROM vitacare_prontuario vi
+        )
+        ORDER BY merge_order ASC, rank ASC
+    )
+    WHERE dedup_rank = 1
+    ORDER BY merge_order ASC, rank ASC
+),
+
+prontuario_dados AS (
+    SELECT 
         cpf,
         ARRAY_AGG(STRUCT(
             sistema, 
@@ -291,7 +430,7 @@ prontuario_dados AS (
             id_paciente, 
             rank
         )) AS prontuario
-    FROM vitacare_prontuario
+    FROM prontuario_dedup
     GROUP BY cpf
 ),
 
@@ -328,7 +467,7 @@ vitacare_paciente AS (
 paciente_dados AS (
     SELECT
         cpf,
-        STRUCT(
+        ARRAY_AGG(STRUCT(
                 nome,
                 nome_social,
                 data_nascimento,
@@ -337,21 +476,22 @@ paciente_dados AS (
                 obito_indicador,
                 obito_data,
                 mae_nome,
-                pai_nome
-        ) AS dados
+                pai_nome,
+                rank
+        )) AS dados
     FROM vitacare_paciente
     GROUP BY
-        cpf, 
-        nome,
-        nome_social,
-        cpf, 
-        data_nascimento,
-        genero,
-        raca,
-        obito_indicador, 
-        obito_data,
-        mae_nome, 
-        pai_nome
+        cpf
+        -- nome,
+        -- nome_social,
+        -- cpf, 
+        -- data_nascimento,
+        -- genero,
+        -- raca,
+        -- obito_indicador, 
+        -- obito_data,
+        -- mae_nome, 
+        -- pai_nome
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the

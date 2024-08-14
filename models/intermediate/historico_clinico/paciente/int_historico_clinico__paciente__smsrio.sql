@@ -163,23 +163,76 @@ smsrio_contato_email AS (
     WHERE NOT (TRIM(valor) IN ("NONE", "NULL", "") AND (rank >= 2))
 ),
 
-contato_dados AS (
+
+telefone_dedup AS (
     SELECT
-        COALESCE(sms_telefone.cpf, sms_email.cpf) AS cpf, 
+        cpf,
+        valor, 
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
+        sistema
+    FROM (
+        SELECT 
+            cpf,
+            valor,
+            rank,
+            merge_order,
+            ROW_NUMBER() OVER (PARTITION BY cpf, valor ORDER BY merge_order, rank ASC) AS dedup_rank,
+            sistema
+        FROM (
+            SELECT 
+                cpf,
+                valor, 
+                rank,
+                "SMSRIO" AS sistema,
+                2 AS merge_order
+            FROM smsrio_contato_telefone
+        )
+        ORDER BY merge_order ASC, rank ASC
+    )
+    WHERE dedup_rank = 1
+    ORDER BY merge_order ASC, rank ASC
+),
+
+email_dedup AS (
+    SELECT
+        cpf,
+        valor, 
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
+        sistema
+    FROM (
+        SELECT 
+            cpf,
+            valor,
+            rank,
+            merge_order,
+            ROW_NUMBER() OVER (PARTITION BY cpf, valor ORDER BY merge_order, rank ASC) AS dedup_rank,
+            sistema
+        FROM (
+            SELECT 
+                cpf,
+                valor, 
+                rank,
+                "SMSRIO" AS sistema,
+                2 AS merge_order
+            FROM smsrio_contato_email
+        )
+        ORDER BY merge_order ASC, rank ASC
+    )
+    WHERE dedup_rank = 1
+    ORDER BY merge_order ASC, rank ASC
+),
+
+contato_dados AS (
+    SELECT 
+        COALESCE(t.cpf, e.cpf) AS cpf,
         STRUCT(
-            ARRAY_AGG(STRUCT(
-                sms_telefone.valor AS valor, 
-                sms_telefone.rank AS rank
-            )) AS telefone,
-            ARRAY_AGG(STRUCT(
-                sms_email.valor  AS valor, 
-                sms_email.rank AS rank
-            )) AS email
-        ) AS contato,
-    FROM smsrio_contato_telefone sms_telefone
-    FULL OUTER JOIN smsrio_contato_email sms_email
-        ON sms_telefone.cpf = sms_email.cpf
-    GROUP BY sms_telefone.cpf, sms_email.cpf
+            ARRAY_AGG(STRUCT(t.valor, t.sistema,t.rank)) AS telefone,
+            ARRAY_AGG(STRUCT(e.valor, e.sistema, e.rank)) AS email    
+        ) AS contato
+    FROM telefone_dedup t
+    FULL OUTER JOIN email_dedup e
+        ON t.cpf = e.cpf
+    GROUP BY COALESCE(t.cpf, e.cpf)
 ),
 
 
@@ -208,11 +261,64 @@ smsrio_endereco AS (
         cpf, cep, tipo_logradouro, logradouro, numero, complemento, bairro, cidade, estado, updated_at
 ),
 
-endereco_dados AS (
+endereco_dedup AS (
     SELECT
         cpf,
+        cep, 
+        tipo_logradouro, 
+        logradouro, 
+        numero, 
+        complemento, 
+        bairro, 
+        cidade, 
+        estado, 
+        datahora_ultima_atualizacao,
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
+        sistema
+    FROM (
+        SELECT 
+            cpf,
+            cep,
+            tipo_logradouro,
+            logradouro,
+            numero,
+            complemento,
+            bairro,
+            cidade,
+            estado,
+            datahora_ultima_atualizacao,
+            merge_order,
+            rank,
+            ROW_NUMBER() OVER (PARTITION BY cpf, datahora_ultima_atualizacao ORDER BY merge_order, rank ASC) AS dedup_rank,
+            sistema
+        FROM (
+            SELECT 
+                cpf,
+                cep, 
+                tipo_logradouro, 
+                logradouro, 
+                numero, 
+                complemento, 
+                bairro, 
+                cidade, 
+                estado, 
+                datahora_ultima_atualizacao,
+                rank,
+                "SMSRIO" AS sistema,
+                2 AS merge_order
+            FROM smsrio_endereco
+        )
+        ORDER BY merge_order ASC, rank ASC
+    )
+    WHERE dedup_rank = 1
+    ORDER BY merge_order ASC, rank ASC
+),
+
+endereco_dados AS (
+    SELECT 
+        cpf,
         ARRAY_AGG(STRUCT(
-            cep AS cep, 
+            cep, 
             tipo_logradouro, 
             logradouro, 
             numero, 
@@ -221,9 +327,10 @@ endereco_dados AS (
             cidade, 
             estado, 
             datahora_ultima_atualizacao,
-            rank AS rank
+            sistema,
+            rank
         )) AS endereco
-    FROM smsrio_endereco 
+    FROM endereco_dedup
     GROUP BY cpf
 ),
 
@@ -240,8 +347,40 @@ smsrio_prontuario AS (
         cpf, id_cnes,id_paciente, updated_at
 ),
 
-prontuario_dados AS (
+prontuario_dedup AS (
     SELECT
+        cpf,
+        sistema, 
+        id_cnes, 
+        id_paciente, 
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank
+    FROM (
+        SELECT 
+            cpf,
+            sistema, 
+            id_cnes, 
+            id_paciente, 
+            rank,
+            merge_order,
+            ROW_NUMBER() OVER (PARTITION BY cpf, id_cnes, id_paciente ORDER BY merge_order, rank ASC) AS dedup_rank
+        FROM (
+            SELECT 
+                vi.cpf,
+                "SMSRIO" AS sistema,
+                id_cnes, 
+                id_paciente, 
+                rank,
+                2 AS merge_order
+            FROM smsrio_prontuario vi
+        )
+        ORDER BY merge_order ASC, rank ASC
+    )
+    WHERE dedup_rank = 1
+    ORDER BY merge_order ASC, rank ASC
+),
+
+prontuario_dados AS (
+    SELECT 
         cpf,
         ARRAY_AGG(STRUCT(
             sistema, 
@@ -249,7 +388,7 @@ prontuario_dados AS (
             id_paciente, 
             rank
         )) AS prontuario
-    FROM smsrio_prontuario
+    FROM prontuario_dedup
     GROUP BY cpf
 ),
 
@@ -287,7 +426,7 @@ smsrio_paciente AS (
 paciente_dados AS (
     SELECT
         cpf,
-        STRUCT(
+        ARRAY_AGG(STRUCT(
                 nome,
                 nome_social,
                 data_nascimento,
@@ -296,21 +435,22 @@ paciente_dados AS (
                 obito_indicador,
                 obito_data,
                 mae_nome,
-                pai_nome
-        ) AS dados
+                pai_nome,
+                rank
+        )) AS dados
     FROM smsrio_paciente
     GROUP BY
-        cpf, 
-        nome,
-        nome_social,
-        cpf, 
-        data_nascimento,
-        genero,
-        raca,
-        obito_indicador, 
-        obito_data,
-        mae_nome, 
-        pai_nome
+        cpf
+        -- nome,
+        -- nome_social,
+        -- cpf, 
+        -- data_nascimento,
+        -- genero,
+        -- raca,
+        -- obito_indicador, 
+        -- obito_data,
+        -- mae_nome, 
+        -- pai_nome
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the
