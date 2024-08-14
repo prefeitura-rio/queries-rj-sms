@@ -10,6 +10,7 @@ sources:
       - name: material_mestre
       - name: material_remume
       - name: compras_registro_preco
+      - name: compras_atas_processos_vigentes
   - name: brutos_sheets
     database: rj-sms
     schema: brutos_sheets
