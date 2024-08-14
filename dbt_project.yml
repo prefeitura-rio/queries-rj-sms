@@ -142,4 +142,4 @@ seeds:
       +schema: projeto_estoque
 
 flags:
-  require_explicit_package_overrides_for_builtin_materializations: false
+  require_explicit_package_overrides_for_builtin_materializations: False
