@@ -11,6 +11,8 @@ with
         where movimento_tipo_grupo = 'CONSUMO'
     ),
 
+    --- PQRS
+
     demanda as (
         select
             e.tipo_sms_agrupado,
@@ -28,7 +30,7 @@ with
             contagem_cpf_distintos as contagem_cpf,
             sum(contagem_cpf_distintos) over (
                 partition by tipo_sms_agrupado order by contagem_cpf_distintos desc
-            ) as contagem_cpf_acumulada
+            ) as contagem_cpf_acumulada,
         from demanda
     ),
 
@@ -38,14 +40,14 @@ with
         group by tipo_sms_agrupado
     ),
 
-    final as (
+    demanda_joined as (
         select
             da.tipo_sms_agrupado,
             da.id_material,
             da.contagem_cpf,
             da.contagem_cpf_acumulada,
             (da.contagem_cpf_acumulada / dt.total_cpf)
-            * 100 as contagem_cpf_acumulada_percentual
+            * 100 as contagem_cpf_acumulada_percentual,
         from demanda_acumulada as da
         inner join demanda_total as dt on da.tipo_sms_agrupado = dt.tipo_sms_agrupado
     ),
@@ -64,8 +66,27 @@ with
                 then 'Q'
                 else 'R'
             end as pqrs_categoria
-        from final
+        from demanda_joined
         order by tipo_sms_agrupado, contagem_cpf_acumulada_percentual asc
+    ),
+
+    -- usuarios atendidos
+    usuarios_atendidos_mes_a_mes as (
+        select
+            id_material,
+            concat(
+                extract(year from data_particao), '-', extract(month from data_particao)
+            ) as mes_ano,
+            count(distinct consumo_paciente_cpf) as usuarios_atendidos
+        from movimento
+        where data_particao >= "2023-12-01"
+        group by id_material, mes_ano
+    ),
+
+    usuarios_atendidos_mes as (
+        select id_material, avg(usuarios_atendidos) as usuarios_atendidos_mes
+        from usuarios_atendidos_mes_a_mes
+        group by id_material
     )
 
 select
@@ -75,6 +96,8 @@ select
     a.contagem_cpf,
     a.contagem_cpf_acumulada,
     a.contagem_cpf_acumulada_percentual,
-    a.pqrs_categoria
+    a.pqrs_categoria,
+    uam.usuarios_atendidos_mes
 from pqrs_analysis as a
 left join material as m using (id_material)
+left join usuarios_atendidos_mes as uam using (id_material)

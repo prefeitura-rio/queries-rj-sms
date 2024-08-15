@@ -105,6 +105,7 @@ with
             m.id_material,
             m.nome,
             coalesce(pqrs.pqrs_categoria, "S") as pqrs_categoria,  -- itens sem qualquer movimento não são classificados
+            pqrs.usuarios_atendidos_mes,
             m.hierarquia_n1_categoria,
             m.hierarquia_n2_subcategoria,
             m.cadastrado_sistema_vitacare_indicador,
