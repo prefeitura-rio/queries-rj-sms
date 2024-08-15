@@ -27,6 +27,7 @@
                             'xi',
                             'xii',
                             'xiii',
+                            'xxiii',
                             'xiv',
                             'xv',
                             'xvi',
