@@ -2,11 +2,12 @@
     REPLACE(
         REPLACE(
             REPLACE(
-                {{ texto }},
-                "False", "false"
-            ),
-            "True", "true"
-        ),
-        "'", '"'
-    )
+                REPLACE(
+                    REPLACE(
+                        {{ texto }},
+                    '\\', '\\\\'), -- Substitui barra invertida por duas barras invertidas
+                '", "', '\\"\\"'), -- Substitui aspas duplas internas por aspas escapadas
+            "False", "false"),
+        "True", "true"),
+    "'", '"') -- Substitui aspas simples por aspas duplas
 {% endmacro %}

@@ -6,7 +6,13 @@
     )
 }}
 
-with vitai as (select * from {{ ref("int_historico_clinico__episodio__vitai") }})
-
-select *
-from vitai
+with 
+    vitai as (
+        select * from {{ ref("int_historico_clinico__episodio__vitai") }}
+    ),
+    vitacare as (
+        select * from {{ ref("int_historico_clinico__episodio__vitacare") }}
+    )
+select * from vitai
+union all
+select * from vitacare
