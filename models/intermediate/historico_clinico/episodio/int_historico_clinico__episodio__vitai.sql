@@ -13,6 +13,7 @@ with
             gid_paciente,
             gid_estabelecimento,
             atendimento_tipo,
+            especialidade_nome,
             case
                 when regexp_replace(cns, '[^0-9]', '') = ''
                 then null
@@ -56,10 +57,6 @@ with
     profissional as (
         select gid, cns, cpf, nome, cbo_descricao
         from {{ ref("int_historico_clinico__profissional_saude__vitai") }}
-    ),
-    alergias as (
-        select gid, gid_boletim, descricao
-        from {{ ref("int_historico_clinico__alergia__vitai") }}
     ),
     estabelecimentos as (
         select
@@ -133,41 +130,12 @@ with
         from profissional_distinct
         group by 1
     ),
-    alergias_grouped as (
-        select
-            concat(estabelecimentos.cnes, ".", boletim.gid) as id,
-            array_agg(distinct descricao ignore nulls) as alergias,
-        from boletim
-        left join estabelecimentos on boletim.gid_estabelecimento = estabelecimentos.gid
-        left join alergias on boletim.gid = alergias.gid_boletim
-        group by 1
-    ),
     atendimento_struct as (
         select
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
             last_queixa.queixa as motivo_atendimento,
-            case
-                when
-                    (trim(lower(boletim.atendimento_tipo)) = 'laboratorio')
-                    or (trim(lower(boletim.atendimento_tipo)) = 'imagem')
-                then 'Exames'
-                when
-                    (trim(lower(boletim.atendimento_tipo)) = 'consulta')
-                    or (trim(lower(boletim.atendimento_tipo)) = 'emergencia')
-                then 'Consulta'
-                when trim(lower(boletim.atendimento_tipo)) = 'internacao'
-                then 'Internação'
-                else null
-            end as tipo,
-            case
-                when lower(boletim.atendimento_tipo) = 'consulta'
-                then 'Consulta Agendada'
-                when lower(boletim.atendimento_tipo) = 'internação'
-                then 'Cirurgia'
-                when lower(boletim.atendimento_tipo) = 'nao informado'
-                then null
-                else trim(initcap(boletim.atendimento_tipo))
-            end as subtipo,
+            trim(initcap(boletim.atendimento_tipo)) as tipo,
+            trim(initcap(boletim.especialidade_nome)) as subtipo,
             case
                 when (data_entrada in ("None", "NaT")) or (data_entrada is null)
                 then null
@@ -205,7 +173,6 @@ select
     null as desfecho_atendimento,
     atendimento_struct.paciente,
     cid_grouped.condicoes,
-    alergias_grouped.alergias,
     profissional_grouped.profissional_saude_responsavel,
     atendimento_struct.estabelecimento,
     atendimento_struct.prontuario,
@@ -232,5 +199,4 @@ select
     ) as metadados
 from atendimento_struct
 left join cid_grouped on atendimento_struct.id = cid_grouped.id
-left join alergias_grouped on atendimento_struct.id = alergias_grouped.id
 left join profissional_grouped on atendimento_struct.id = profissional_grouped.id
