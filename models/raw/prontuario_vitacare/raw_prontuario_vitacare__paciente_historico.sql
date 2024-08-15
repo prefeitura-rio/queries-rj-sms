@@ -1,74 +1,69 @@
 {{
     config(
         alias="paciente_historico",
-        materialized="incremental",
-        unique_key="paciente_cpf",
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "month",
-        },
+        materialized="table",
     )
 }}
 
-{% set seven_days_ago = (
-    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
-).isoformat() %}
-
-with
-    events_from_window as (
-        select *
-        -- rj-sms-dev.brutos_prontuario_vitacare_staging.paciente_historico_eventos
-        from {{ source("brutos_prontuario_vitacare_staging", "paciente_historico_eventos") }}
-        {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
-    ),
-    events_ranked_by_freshness as (
-        select *, row_number() over (partition by patient_cpf order by source_updated_at desc) as rank
-        from events_from_window
-    ),
-    latest_events as (select * from events_ranked_by_freshness where rank = 1)
 select
-    safe_cast(patient_cpf as string) as paciente_cpf,
-    safe_cast(source_id as string) as id,
-    safe_cast(data__AP as string) as ap,
-    safe_cast(data__SEXO as string) as sexo,
-    safe_cast(data__HIST_CID as string) as hist_cid,
-    safe_cast(data__RACA_COR as string) as raca_cor,
-    safe_cast(data__RELIGIAO as string) as religiao,
-    safe_cast(data__ESCOLARIDADE as string) as escolaridade,
-    safe_cast(data__dataConsulta as string) as data_consulta,
-    safe_cast(data__NACIONALIDADE as string) as nacionalidade,
-    safe_cast(data__FREQUENTA_ESCOLA as string) as frequenta_escola,
-    safe_cast(data__SITUACAO_USUARIO as string) as situacao_usuario,
-    safe_cast(data__TELEFONE_CONTATO as string) as telefone_contato,
-    safe_cast(data__dataNascPaciente as string) as data_nasc_paciente,
-    safe_cast(data__SITUACAO_FAMILIAR as string) as situacao_familiar,
-    safe_cast(data__TERRITORIO_SOCIAL as string) as territorio_social,
-    safe_cast(data__NUMERO_CNES_UNIDADE as string) as numero_cnes_unidade,
-    safe_cast(data__N_DE_CONSULTAS_2018 as string) as n_de_consultas_2018,
-    safe_cast(data__N_DE_CONSULTAS_2019 as string) as n_de_consultas_2019,
-    safe_cast(data__N_DE_CONSULTAS_2020 as string) as n_de_consultas_2020,
-    safe_cast(data__N_DE_CONSULTAS_2021 as string) as n_de_consultas_2021,
-    safe_cast(data__N_DE_CONSULTAS_2022 as string) as n_de_consultas_2022,
-    safe_cast(data__N_DE_CONSULTAS_2023 as string) as n_de_consultas_2023,
-    safe_cast(data__PACIENTE_TEMPORARIO as string) as paciente_temporario,
-    safe_cast(data__NOME_UNIDADE_DE_SAUDE as string) as nome_unidade_de_saude,
-    safe_cast(data__POSSUI_PLANO_DE_SAUDE as string) as possui_plano_de_saude,
-    safe_cast(data__SITUACAO_PROFISSIONAL as string) as situacao_profissional,
-    safe_cast(data__MUNICIPIO_DE_NASCIMENTO as string) as municipio_de_nascimento,
-    safe_cast(data__N_DE_PROCEDIMENTOS_2018 as string) as n_de_procedimentos_2018,
-    safe_cast(data__N_DE_PROCEDIMENTOS_2019 as string) as n_de_procedimentos_2019,
-    safe_cast(data__N_DE_PROCEDIMENTOS_2020 as string) as n_de_procedimentos_2020,
-    safe_cast(data__N_DE_PROCEDIMENTOS_2021 as string) as n_de_procedimentos_2021,
-    safe_cast(data__N_DE_PROCEDIMENTOS_2022 as string) as n_de_procedimentos_2022,
-    safe_cast(data__N_DE_PROCEDIMENTOS_2023 as string) as n_de_procedimentos_2023,
-    safe_cast(data__PACIENTE_SITUACAO_RUA as string) as paciente_situacao_rua,
-    safe_cast(data__CODIGO_DA_EQUIPE_DE_SAUDE as string) as codigo_da_equipe_de_saude,
-    safe_cast(data__NOME_DA_PESSOA_CADASTRADA as string) as nome_da_pessoa_cadastrada,
-    safe_cast(data__N_CNS_DA_PESSOA_CADASTRADA as string) as n_cns_da_pessoa_cadastrada,
-    safe_cast(data__NOME_DA_MAE_PESSOA_CADASTRADA as string) as nome_da_mae_pessoa_cadastrada,
-    safe_cast(data_particao as date) as data_particao,
-    safe_cast(source_updated_at as string) as updated_at,
-from latest_events
+    -- PK
+    safe_cast(null as string) as id,
 
+    -- Outras Chaves
+    safe_cast(NULLIF(N_CPF, 'None') as string) as cpf,
+    safe_cast(NULLIF(N_DNV, 'None') as string) as dnv,
+    safe_cast(NULLIF(NIS, 'None') as string) as nis,
+    safe_cast(NULLIF(N_CNS_DA_PESSOA_CADASTRADA, 'None') as string) as cns,
 
+    -- Informações Pessoais
+    safe_cast(NULLIF(NOME_DA_PESSOA_CADASTRADA, 'None') as string) as nome,
+    safe_cast(NULLIF(NOME_SOCIAL_DA_PESSOA_CADASTRADA, 'None') as string) as nome_social,
+    safe_cast(NULLIF(NOME_DA_MAE_PESSOA_CADASTRADA, 'None') as string) as nome_mae,
+    safe_cast(null as string) as nome_pai,
+    SAFE_CAST(CASE WHEN OBITO IS NULL OR OBITO = 'None' THEN 'False' ELSE 'True' END AS string) AS obito,
+    safe_cast(NULLIF(OBITO, 'None') as date format 'DD/MM/YYYY') as data_obito,
+    safe_cast(NULLIF(SEXO, 'None') as string) as sexo,
+    safe_cast(NULLIF(ORIENTACAO_SEXUAL, 'None') as string) as orientacao_sexual,
+    safe_cast(NULLIF(IDENTIDADE_GENERO, 'None') as string) as identidade_genero,
+    safe_cast(NULLIF(RACA_COR, 'None') as string) as raca_cor,
+
+    -- Contato
+    safe_cast(NULLIF(EMAIL_CONTATO, 'None') as string) as email,
+    safe_cast(NULLIF(TELEFONE_CONTATO, 'None') as string) as telefone,
+
+    -- Nascimento
+    safe_cast(NULLIF(NACIONALIDADE, 'None') as string) as nacionalidade,
+    safe_cast(NULLIF(DATA_DE_NASCIMENTO, 'None') as date format 'DD/MM/YYYY') as data_nascimento,
+    safe_cast(NULLIF(PAIS_DE_NASCIMENTO, 'None') as string) as pais_nascimento,
+    safe_cast(NULLIF(MUNICIPIO_DE_NASCIMENTO, 'None') as string) as municipio_nascimento,
+    safe_cast(null as string) as estado_nascimento,
+
+    -- Informações da Unidade
+    safe_cast(NULLIF(AP, 'None') as string) as ap,
+    safe_cast(NULLIF(CODIGO_MICROAREA, 'None') as string) as microarea,
+    safe_cast(NULLIF(NUMERO_CNES_UNIDADE, 'None') as string) as cnes_unidade,
+    safe_cast(null as string) as nome_unidade,
+    safe_cast(NULLIF(CODIGO_DA_EQUIPE_DE_SAUDE, 'None') as string) as codigo_equipe_saude,
+    safe_cast(NULLIF(CODIGO_INE_EQUIPE_DE_SAUDE, 'None') as string) as codigo_ine_equipe_saude,
+    safe_cast(null as timestamp) as data_atualizacao_vinculo_equipe,
+    safe_cast(NULLIF(N_DO_PRONTUARIO, 'None') as string) as numero_prontuario,
+    safe_cast(NULLIF(N_DA_FAMILIA, 'None') as string) as numero_familia,
+    safe_cast(null as string) as cadastro_permanente,
+    safe_cast(NULLIF(SITUACAO_USUARIO, 'None') as string) as situacao_usuario,
+    safe_cast(NULLIF(DATA_CADASTRO, 'None') as timestamp format 'DD/MM/YYYY') as data_cadastro_inicial,
+    safe_cast(NULLIF(DATA_ULTIMA_ATUALIZACAO_DO_CADASTRO, 'None') as timestamp format 'DD/MM/YYYY') as data_ultima_atualizacao_cadastral,
+
+    -- Endereço
+    safe_cast(NULLIF(TIPO_DE_DOMICILIO, 'None') as string) as endereco_tipo_domicilio,
+    safe_cast(NULLIF(TIPO_DE_LOGRADOURO, 'None') as string) as endereco_tipo_logradouro,
+    safe_cast(NULLIF(CEP_LOGRADOURO, 'None') as string) as endereco_cep,
+    safe_cast(NULLIF(LOGRADOURO, 'None') as string) as endereco_logradouro,
+    safe_cast(NULLIF(BAIRRO_DE_MORADIA, 'None') as string) as endereco_bairro,
+    safe_cast(null as string) as endereco_estado,
+    safe_cast(null as string) as endereco_municipio,
+
+    -- Metadata columns
+    safe_cast(null as date) as data_particao,
+    safe_cast(NULLIF(updated_at, 'None') as timestamp) as updated_at,
+    safe_cast(NULLIF(imported_at, 'None') as timestamp) as imported_at
+from {{ source("brutos_prontuario_vitacare_staging", "paciente_historico_eventos") }}
