@@ -182,7 +182,7 @@ with
             struct(
                 updated_at,
                 loaded_at,
-                current_timestamp() as processed_at,
+                current_datetime() as processed_at,
                 safe_cast(
                     (
                         ARRAY_LENGTH(dim_condicoes_atribuidas.condicoes) > 0 and 
