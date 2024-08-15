@@ -45,7 +45,7 @@ WITH vitai_tb AS (
         DATE(data_obito) AS obito_data,
         updated_at,
         gid_estabelecimento AS id_cnes -- use gid to get id_cnes from  rj-sms.brutos_prontuario_vitai.estabelecimento
-    FROM {{ref('raw_prontuario_vitai__paciente')}}
+    FROM {{ref('raw_prontuario_vitai__paciente')}} -- `rj-sms-dev`.`brutos_prontuario_vitai`.`paciente`
     WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
         AND TRIM(cpf) != ""
@@ -223,17 +223,38 @@ contato_dados AS (
 vitai_endereco AS (
     SELECT
         cpf,
-        cep,
-        tipo_logradouro,
+        CASE
+            WHEN cep in ("NONE") THEN NULL
+            ELSE cep
+        END AS cep,
+        CASE
+            WHEN tipo_logradouro in ("NONE") THEN NULL
+            ELSE tipo_logradouro
+        END AS tipo_logradouro,
         CASE
             WHEN logradouro in ("NONE") THEN NULL
             ELSE logradouro
         END AS logradouro,
-        numero,
-        complemento,
-        bairro,
-        cidade,
-        estado,
+        CASE
+            WHEN numero in ("NONE") THEN NULL
+            ELSE numero
+        END AS numero,
+        CASE
+            WHEN complemento in ("NONE") THEN NULL
+            ELSE complemento
+        END AS complemento,
+        CASE
+            WHEN bairro in ("NONE") THEN NULL
+            ELSE bairro
+        END AS bairro,
+        CASE
+            WHEN cidade in ("NONE") THEN NULL
+            ELSE cidade
+        END AS cidade,
+        CASE
+            WHEN estado in ("NONE") THEN NULL
+            ELSE estado
+        END AS estado,
         CAST(updated_at AS STRING) AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
     FROM vitai_tb
@@ -391,12 +412,12 @@ vitai_paciente AS (
         nome_social,
         data_nascimento,
         CASE
-            WHEN genero = "M" THEN "MALE"
-            WHEN genero = "F" THEN "FEMALE"
+            WHEN genero = "M" THEN "MASCULINO"
+            WHEN genero = "F" THEN "FEMININO"
             ELSE NULL
         END  AS genero,
         CASE
-            WHEN raca IN ("None") THEN NULL
+            WHEN raca IN ("NONE") THEN NULL
             WHEN raca IN ("PRETO","NEGRO") THEN "PRETA"
             WHEN raca = "NAO INFORMADO" THEN "SEM INFORMACAO"
             ELSE raca
@@ -417,7 +438,7 @@ vitai_paciente AS (
             ELSE NULL
         END,
         CASE
-            WHEN raca IN ("None") THEN NULL
+            WHEN raca IN ("NONE") THEN NULL
             WHEN raca IN ("PRETO","NEGRO") THEN "PRETA"
             WHEN raca = "NAO INFORMADO" THEN "SEM INFORMACAO"
             ELSE raca
@@ -437,21 +458,11 @@ paciente_dados AS (
                 obito_indicador,
                 obito_data,
                 mae_nome,
-                pai_nome
+                pai_nome,
+                rank
         )) AS dados
     FROM vitai_paciente
-    GROUP BY
-        cpf
-        -- nome,
-        -- nome_social,
-        -- cpf, 
-        -- data_nascimento,
-        -- genero,
-        -- raca,
-        -- obito_indicador, 
-        -- obito_data,
-        -- mae_nome, 
-        -- pai_nome
+    GROUP BY cpf
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the

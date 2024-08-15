@@ -41,10 +41,11 @@ WITH smsrio_tb AS (
         {{remove_accents_upper('obito')}} AS obito_indicador,
         updated_at,
         CAST(NULL AS STRING) AS id_cnes
-    FROM {{ref("raw_plataforma_smsrio__paciente")}}
+    FROM {{ref("raw_plataforma_smsrio__paciente")}} -- `rj-sms-dev`.`brutos_plataforma_smsrio`.`paciente`
     WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
-        AND TRIM(cpf) != ""
+        AND TRIM(cpf) NOT IN  ("","00000000000","01234567890","98765432100")
+        
 ),
 
 
@@ -401,8 +402,8 @@ smsrio_paciente AS (
         nome_social,
         data_nascimento,
         CASE
-            WHEN genero = "1" THEN "MALE"
-            WHEN genero = "2" THEN "FEMALE"
+            WHEN genero = "1" THEN "MASCULINO"
+            WHEN genero = "2" THEN "FEMININO"
         ELSE NULL
         END  AS genero,
         CASE
@@ -439,18 +440,7 @@ paciente_dados AS (
                 rank
         )) AS dados
     FROM smsrio_paciente
-    GROUP BY
-        cpf
-        -- nome,
-        -- nome_social,
-        -- cpf, 
-        -- data_nascimento,
-        -- genero,
-        -- raca,
-        -- obito_indicador, 
-        -- obito_data,
-        -- mae_nome, 
-        -- pai_nome
+    GROUP BY cpf
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the

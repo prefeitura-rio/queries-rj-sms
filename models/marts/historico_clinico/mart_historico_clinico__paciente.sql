@@ -37,7 +37,8 @@ WITH vitacare_tb AS (
         prontuario
     FROM {{ ref('int_historico_clinico__paciente__vitacare') }},
     UNNEST(dados) AS dados
-    -- WHERE cpf = cpf_filter
+    WHERE dados.rank=1
+    -- AND cpf = cpf_filter
 ),
 
 -- VITAI: Patient base table
@@ -59,7 +60,8 @@ vitai_tb AS (
         prontuario
     FROM {{ ref('int_historico_clinico__paciente__vitai') }},
     UNNEST(dados) AS dados
-    -- WHERE cpf = cpf_filter
+    WHERE dados.rank=1
+    -- AND cpf = cpf_filter
 ),
 
 -- SMSRIO: Patient base table
@@ -81,7 +83,8 @@ smsrio_tb AS (
         prontuario
     FROM {{ ref("int_historico_clinico__paciente__smsrio") }},
     UNNEST(dados) AS dados
-    -- WHERE cpf = cpf_filter
+    WHERE dados.rank=1
+    -- AND cpf = cpf_filter
 ),
 
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -462,57 +465,84 @@ prontuario_dados AS (
     GROUP BY cpf
 ),
 
+
 -- Paciente Dados: Merges patient data
--- COALESCE
--- nome:             1. SMSRIO   | 2. Vitai    | 3. Vitacare
--- nome_social:      1. SMSRIO   | 2. Vitai    | 3. Vitacare
--- cpf:              1. SMSRIO   | 2. Vitai    | 3. Vitacare
--- data_nascimento:  1. SMSRIO   | 2. Vitacare | 3. Vitai
--- genero:           1. SMSRIO   | 2. Vitai    | 3. Vitacare
--- raca:             1. Vitacare | 2. SMSRIO   | 3. Vitai
--- obito_indicador:  1. SMSRIO   | 2. Vitai    | 3. Vitacare
--- obito_data:       1. SMSRIO   | 2. Vitai    | 3. Vitacare
--- mae_nome:         1. SMSRIO   | 2. Vitai    | 3. Vitacare
--- pai_nome:         1. SMSRIO   | 2. Vitai    | 3. Vitacare
+all_cpfs AS (
+    SELECT 
+        DISTINCT cpf
+    FROM (
+        SELECT 
+            cpf
+        FROM vitacare_tb
+        UNION ALL
+        SELECT 
+            cpf
+        FROM vitai_tb
+        UNION ALL
+        SELECT 
+            cpf
+        FROM smsrio_tb
+    )
+),
+
+-- merge priority:
+-- nome:             1. SMSRIO   | 2. Vitacare  | 3. Vitai
+-- nome_social:      1. Vitai    
+-- data_nascimento:  1. SMSRIO   | 2. Vitacare  | 3. Vitai
+-- genero:           1. Vitacare | 2. SMSRIO    | 3. Vitai
+-- raca:             1. Vitacare | 2. SMSRIO    | 3. Vitai
+-- obito_indicador:  1. Vitacare | 2. SMSRIO    | 3. Vitai
+-- obito_data:       1. Vitacare | 2. SMSRIO    | 3. Vitai
+-- mae_nome:         1. SMSRIO   | 2. Vitacare  | 3. Vitai
+-- pai_nome:         1. SMSRIO   | 2. Vitacare  | 3. Vitai
+
 paciente_dados AS (
-    SELECT
-        COALESCE(sm.cpf, vi.cpf, vc.cpf) AS cpf,
-        ARRAY_AGG(STRUCT(
-                COALESCE(sm.nome, vi.nome, vc.nome) AS nome,
-                COALESCE(sm.nome_social, vi.nome_social, vc.nome_social) AS nome_social,
-                COALESCE(sm.cpf, vi.cpf, vc.cpf) AS cpf,
-                COALESCE(sm.data_nascimento, vi.data_nascimento, vc.data_nascimento) AS  data_nascimento,
-                COALESCE(sm.genero, vi.genero, vc.genero) AS genero,
-                COALESCE(vc.raca, sm.raca, vi.raca) AS raca,
-                COALESCE(sm.obito_indicador, vi.obito_indicador, vc.obito_indicador) AS obito_indicador,
-                COALESCE(sm.obito_data, vi.obito_data, vc.obito_data) AS obito_data,
-                COALESCE(sm.mae_nome, vi.mae_nome, vc.mae_nome) AS mae_nome,
-                COALESCE(sm.pai_nome, vi.pai_nome, vc.pai_nome) AS pai_nome,
-                CASE 
-                    WHEN sm.nome IS NOT NULL AND sm.data_nascimento IS NOT NULL AND sm.mae_nome IS NOT NULL THEN TRUE
-                    ELSE FALSE 
-                END AS cadastro_validado_indicador
-        )) AS dados
-    FROM vitacare_tb vc
-    FULL OUTER JOIN smsrio_tb sm
-        ON vc.cpf = sm.cpf
-    FULL OUTER JOIN vitai_tb vi
-        ON vc.cpf = vi.cpf
-    GROUP BY COALESCE(sm.cpf, vi.cpf, vc.cpf)
-        -- sm.nome, vi.nome, vc.nome,
-        -- sm.nome_social, vi.nome_social, vc.nome_social,
-        -- sm.cpf, vi.cpf, vc.cpf, 
-        -- sm.data_nascimento, vi.data_nascimento, vc.data_nascimento,
-        -- sm.genero, vi.genero, vc.genero,
-        -- vc.raca, sm.raca, vi.raca,
-        -- sm.obito_indicador, vi.obito_indicador, vc.obito_indicador, 
-        -- sm.obito_data, vi.obito_data, vc.obito_data,
-        -- sm.mae_nome, vi.mae_nome, vc.mae_nome, 
-        -- sm.pai_nome, vi.pai_nome, vc.pai_nome,
-        -- CASE 
-        --     WHEN sm.nome IS NOT NULL AND sm.data_nascimento IS NOT NULL AND sm.mae_nome IS NOT NULL THEN TRUE
-        --     ELSE FALSE 
-        -- END 
+    SELECT 
+        cpfs.cpf,
+        STRUCT(
+            CASE 
+                WHEN sm.cpf IS NOT NULL THEN sm.nome
+                WHEN vc.cpf IS NOT NULL THEN vc.nome
+                WHEN vi.cpf IS NOT NULL THEN vi.nome
+                ELSE NULL
+            END AS nome,
+            CASE 
+                WHEN vi.cpf IS NOT NULL THEN vc.nome_social
+                -- WHEN sm.cpf THEN sm.nome_social  -- SMSRIO não possui nome social
+                -- WHEN vi.cpf IS NOT NULL THEN vi.nome_social  -- VITAI não possui nome social
+                ELSE NULL
+            END AS nome_social,
+            CASE 
+                WHEN sm.cpf IS NOT NULL THEN sm.data_nascimento
+                WHEN vc.cpf IS NOT NULL THEN vc.data_nascimento
+                WHEN vi.cpf IS NOT NULL THEN vi.data_nascimento
+                ELSE NULL
+            END AS data_nascimento,
+            COALESCE(vc.genero, sm.genero, vi.genero) AS genero,
+            COALESCE(vc.raca, sm.raca, vi.raca) AS raca,
+            COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) AS obito_indicador,
+            COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) AS obito_data,
+            CASE 
+                WHEN sm.cpf IS NOT NULL THEN sm.mae_nome
+                WHEN vc.cpf IS NOT NULL THEN vc.mae_nome
+                WHEN vi.cpf IS NOT NULL THEN vi.mae_nome
+                ELSE NULL
+            END AS mae_nome,
+            CASE 
+                WHEN sm.cpf IS NOT NULL THEN sm.pai_nome
+                WHEN vc.cpf IS NOT NULL THEN vc.pai_nome
+                WHEN vi.cpf IS NOT NULL THEN vi.pai_nome
+                ELSE NULL
+            END AS pai_nome,
+            CASE 
+                WHEN sm.cpf IS NOT NULL THEN TRUE
+                ELSE FALSE 
+            END AS identidade_validada_indicador
+        ) AS dados
+    FROM all_cpfs cpfs
+    LEFT JOIN vitacare_tb vc ON cpfs.cpf = vc.cpf
+    LEFT JOIN vitai_tb vi ON cpfs.cpf = vi.cpf
+    LEFT JOIN smsrio_tb sm ON cpfs.cpf = sm.cpf 
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the

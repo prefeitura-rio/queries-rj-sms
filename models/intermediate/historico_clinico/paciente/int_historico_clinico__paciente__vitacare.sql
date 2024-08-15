@@ -48,7 +48,7 @@ SELECT
         data_atualizacao_vinculo_equipe, -- Change to data_atualizacao_vinculo_equipe
         updated_at,
         cadastro_permanente
-    FROM {{ref('raw_prontuario_vitacare__paciente')}}
+    FROM {{ref('raw_prontuario_vitacare__paciente')}} -- `rj-sms-dev`.`brutos_prontuario_vitacare`.`paciente`
     WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
         AND TRIM(cpf) != ""
@@ -115,13 +115,14 @@ vitacare_clinica_familia AS (
         vc.cpf,
         vc.id_cnes,
         e.nome_limpo AS nome,
+        e.telefone,
         vc.data_atualizacao_vinculo_equipe,
         ROW_NUMBER() OVER (PARTITION BY vc.cpf ORDER BY vc.data_atualizacao_vinculo_equipe DESC, vc.cadastro_permanente DESC, vc.updated_at DESC) AS rank
     FROM vitacare_tb vc
     JOIN {{ ref("dim_estabelecimento") }} e
         ON vc.id_cnes = e.id_cnes
     GROUP BY
-        vc.cpf, vc.id_cnes, e.nome_limpo, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at
+        vc.cpf, vc.id_cnes, e.nome_limpo, e.telefone, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at
 ),
 
 clinica_familia_dados AS (
@@ -129,7 +130,8 @@ clinica_familia_dados AS (
         cpf,
         ARRAY_AGG(STRUCT(
             id_cnes, 
-            nome, 
+            nome,
+            telefone,
             data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
             rank 
         )) AS clinica_familia
@@ -139,17 +141,29 @@ clinica_familia_dados AS (
 
 
 -- EQUIPE SAUDE FAMILIA VITACARE: Extracts and ranks family health teams
+-- EQUIPE SAUDE FAMILIA VITACARE: Extracts and ranks family health teams
 vitacare_equipe_saude_familia AS (
     SELECT
-        cpf,
-        id_ine,
+        vc.cpf,
+        vc.id_ine,
+        e.nome_referencia AS nome,  
+        e.telefone,
+        ARRAY_AGG(STRUCT(medico_id AS id_profissional_sus, p.nome)) AS medicos, 
+        ARRAY_AGG(STRUCT(enfermeiro_id AS id_profissional_sus, p2.nome)) AS enfermeiros, 
         data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank
-    FROM vitacare_tb
-    WHERE
-        id_ine IS NOT NULL
-    GROUP BY
-        cpf, id_ine, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
+        ROW_NUMBER() OVER (PARTITION BY vc.cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank
+    FROM vitacare_tb vc
+    JOIN {{ ref("dim_equipe") }} e ON vc.id_ine = e.id_ine
+    LEFT JOIN UNNEST(e.medicos) AS medico_id 
+        ON TRUE  
+    LEFT JOIN {{ ref("dim_profissional_saude") }} p 
+        ON medico_id = p.id_profissional_sus
+    LEFT JOIN UNNEST(e.enfermeiros) AS enfermeiro_id
+        ON TRUE  
+    LEFT JOIN {{ ref("dim_profissional_saude") }} p2 
+        ON enfermeiro_id = p2.id_profissional_sus
+    WHERE vc.id_ine IS NOT NULL
+    GROUP BY vc.cpf, vc.id_ine, e.nome_referencia, e.telefone, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
 ),
 
 equipe_saude_familia_dados AS (
@@ -157,6 +171,10 @@ equipe_saude_familia_dados AS (
         cpf,
         ARRAY_AGG(STRUCT(
             id_ine, 
+            nome,
+            telefone,
+            medicos,
+            enfermeiros,
             datahora_ultima_atualizacao, 
             rank
         )) AS equipe_saude_familia
@@ -445,7 +463,11 @@ vitacare_paciente AS (
             ELSE nome_social
         END AS nome_social,
         DATE(data_nascimento) AS data_nascimento,
-        genero,
+        CASE
+            WHEN genero IN ("M", "MALE") THEN "MASCULINO"
+            WHEN genero IN ("F", "FEMALE") THEN "FEMININO"
+            ELSE NULL
+        END  AS genero,
         CASE
             WHEN TRIM(raca) IN ("") THEN NULL
             ELSE raca
@@ -458,9 +480,9 @@ vitacare_paciente AS (
         obito_data AS obito_data,
         mae_nome,
         pai_nome,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
+        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank
     FROM vitacare_tb
-    GROUP BY cpf, nome, nome_social, cpf, data_nascimento, genero, raca, obito_data, mae_nome, pai_nome,updated_at
+    GROUP BY cpf, nome, nome_social, cpf, data_nascimento, genero, raca, obito_data, mae_nome, pai_nome,updated_at, cadastro_permanente, data_atualizacao_vinculo_equipe
 ),
 
 
@@ -480,18 +502,7 @@ paciente_dados AS (
                 rank
         )) AS dados
     FROM vitacare_paciente
-    GROUP BY
-        cpf
-        -- nome,
-        -- nome_social,
-        -- cpf, 
-        -- data_nascimento,
-        -- genero,
-        -- raca,
-        -- obito_indicador, 
-        -- obito_data,
-        -- mae_nome, 
-        -- pai_nome
+    GROUP BY cpf
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the
