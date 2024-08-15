@@ -8,7 +8,7 @@ default:
       dataset: gerenciamento__dbt
       location: US
       threads: 6
-      keyfile: /credentials/dev.json
+      keyfile: /credentials/dev.2.json
     prod:
       type: bigquery
       method: service-account
