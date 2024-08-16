@@ -25,3 +25,4 @@ default:
       location: US
       threads: 6
       keyfile: /tmp/credentials.json
+
