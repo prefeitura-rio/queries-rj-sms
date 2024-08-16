@@ -146,9 +146,7 @@ cns_dados AS (
     SELECT 
         cpf,
         ARRAY_AGG(
-                STRUCT(
-                    cns
-                )
+            cns
         ) AS cns
     FROM cns_dedup
     GROUP BY cpf
