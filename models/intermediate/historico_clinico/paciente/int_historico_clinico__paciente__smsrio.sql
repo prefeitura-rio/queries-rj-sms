@@ -404,19 +404,22 @@ smsrio_paciente AS (
         CASE
             WHEN genero = "1" THEN "MASCULINO"
             WHEN genero = "2" THEN "FEMININO"
-        ELSE NULL
+            ELSE NULL
         END  AS genero,
         CASE
             WHEN raca IN ("None") THEN NULL
-        ELSE raca
+            ELSE raca
         END AS raca,
         CASE
             WHEN obito_indicador = "0" THEN FALSE
             WHEN obito_indicador = "1" THEN TRUE
-        ELSE NULL
+            ELSE NULL
         END AS obito_indicador,
         obito_data,
-        mae_nome,
+        CASE
+            WHEN mae_nome IN ("NONE") THEN NULL
+            ELSE mae_nome
+        END  AS mae_nome,
         pai_nome,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
     FROM smsrio_tb

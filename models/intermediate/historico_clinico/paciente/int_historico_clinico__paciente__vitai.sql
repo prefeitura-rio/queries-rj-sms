@@ -427,7 +427,10 @@ vitai_paciente AS (
             ELSE NULL
         END AS obito_indicador,
         obito_data,
-        mae_nome,
+        CASE
+            WHEN mae_nome IN ("NONE") THEN NULL
+            ELSE mae_nome
+        END  AS mae_nome,
         pai_nome,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
     FROM vitai_tb

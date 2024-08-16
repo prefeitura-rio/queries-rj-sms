@@ -147,9 +147,7 @@ cns_dados AS (
         cpf,
         ARRAY_AGG(
                 STRUCT(
-                    cns, 
-                    rank,
-                    sistema
+                    cns
                 )
         ) AS cns
     FROM cns_dedup
@@ -507,7 +505,7 @@ paciente_dados AS (
                 ELSE NULL
             END AS nome,
             CASE 
-                WHEN vi.cpf IS NOT NULL THEN vc.nome_social
+                WHEN vc.cpf IS NOT NULL THEN vc.nome_social
                 -- WHEN sm.cpf THEN sm.nome_social  -- SMSRIO não possui nome social
                 -- WHEN vi.cpf IS NOT NULL THEN vi.nome_social  -- VITAI não possui nome social
                 ELSE NULL

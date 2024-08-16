@@ -141,29 +141,47 @@ clinica_familia_dados AS (
 
 
 -- EQUIPE SAUDE FAMILIA VITACARE: Extracts and ranks family health teams
--- EQUIPE SAUDE FAMILIA VITACARE: Extracts and ranks family health teams
+
+medicos_data AS (
+    SELECT
+        e.id_ine,
+        ARRAY_AGG(STRUCT(p.id_profissional_sus, p.nome)) AS medicos
+    FROM {{ ref("dim_equipe") }} e -- `rj-sms-dev`.`saude_dados_mestres`.`equipe_profissional_saude` 
+    LEFT JOIN UNNEST(e.medicos) AS medico_id
+    LEFT JOIN {{ ref("dim_profissional_saude") }} p -- `rj-sms-dev`.`saude_dados_mestres`.`profissional_saude`
+        ON medico_id = p.id_profissional_sus
+    GROUP BY e.id_ine
+),
+enfermeiros_data AS (
+    SELECT
+        e.id_ine,
+        ARRAY_AGG(STRUCT(p.id_profissional_sus, p.nome)) AS enfermeiros
+    FROM {{ ref("dim_equipe") }} e -- `rj-sms-dev`.`saude_dados_mestres`.`equipe_profissional_saude` 
+    LEFT JOIN UNNEST(e.enfermeiros) AS enfermeiro_id
+    LEFT JOIN {{ ref("dim_profissional_saude") }} p -- `rj-sms-dev`.`saude_dados_mestres`.`profissional_saude`
+        ON enfermeiro_id = p.id_profissional_sus
+    GROUP BY e.id_ine
+),
+
 vitacare_equipe_saude_familia AS (
     SELECT
         vc.cpf,
         vc.id_ine,
         e.nome_referencia AS nome,  
         e.telefone,
-        ARRAY_AGG(STRUCT(medico_id AS id_profissional_sus, p.nome)) AS medicos, 
-        ARRAY_AGG(STRUCT(enfermeiro_id AS id_profissional_sus, p2.nome)) AS enfermeiros, 
-        data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY vc.cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank
+        m.medicos, 
+        en.enfermeiros, 
+        vc.data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
+        ROW_NUMBER() OVER (PARTITION BY vc.cpf ORDER BY vc.data_atualizacao_vinculo_equipe DESC, vc.cadastro_permanente DESC, vc.updated_at DESC) AS rank
     FROM vitacare_tb vc
-    JOIN {{ ref("dim_equipe") }} e ON vc.id_ine = e.id_ine
-    LEFT JOIN UNNEST(e.medicos) AS medico_id 
-        ON TRUE  
-    LEFT JOIN {{ ref("dim_profissional_saude") }} p 
-        ON medico_id = p.id_profissional_sus
-    LEFT JOIN UNNEST(e.enfermeiros) AS enfermeiro_id
-        ON TRUE  
-    LEFT JOIN {{ ref("dim_profissional_saude") }} p2 
-        ON enfermeiro_id = p2.id_profissional_sus
+    JOIN {{ ref("dim_equipe") }} e -- `rj-sms-dev`.`saude_dados_mestres`.`equipe_profissional_saude` 
+        ON vc.id_ine = e.id_ine
+    LEFT JOIN medicos_data m
+        ON vc.id_ine = m.id_ine
+    LEFT JOIN enfermeiros_data en
+        ON vc.id_ine = en.id_ine
     WHERE vc.id_ine IS NOT NULL
-    GROUP BY vc.cpf, vc.id_ine, e.nome_referencia, e.telefone, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
+    GROUP BY vc.cpf, vc.id_ine, e.nome_referencia, e.telefone, m.medicos, en.enfermeiros, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at
 ),
 
 equipe_saude_familia_dados AS (
@@ -311,7 +329,7 @@ vitacare_endereco AS (
         bairro,
         cidade,
         estado,
-        CAST(cadastro_permanente AS STRING) AS datahora_ultima_atualizacao,
+        CAST(data_atualizacao_vinculo_equipe AS STRING) AS datahora_ultima_atualizacao,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank
     FROM vitacare_tb
     WHERE
@@ -478,7 +496,10 @@ vitacare_paciente AS (
             ELSE NULL
         END AS obito_indicador,
         obito_data AS obito_data,
-        mae_nome,
+        CASE
+            WHEN mae_nome IN ("NONE") THEN NULL
+            ELSE mae_nome
+        END  AS mae_nome,
         pai_nome,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank
     FROM vitacare_tb
