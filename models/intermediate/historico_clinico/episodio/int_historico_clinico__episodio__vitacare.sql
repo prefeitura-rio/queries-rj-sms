@@ -185,7 +185,7 @@ with
                 current_datetime() as processed_at,
                 safe_cast(
                     (
-                        ARRAY_LENGTH(dim_condicoes_atribuidas.condicoes) > 0 and 
+                        ifnull(ARRAY_LENGTH(dim_condicoes_atribuidas.condicoes) > 0, false) and 
                         datahora_inicio is not null and
                         soap_subjetivo_motivo is not null
                     ) as boolean

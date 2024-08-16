@@ -194,8 +194,8 @@ select
 
     -- Metadados
     struct(
-        safe_cast(imported_at as datetime) as loaded_at,
         safe_cast(updated_at as datetime) as updated_at,
+        safe_cast(imported_at as datetime) as loaded_at,
         safe_cast(current_datetime() as datetime) as processed_at,
         safe_cast(
             case
@@ -209,15 +209,15 @@ select
                         and (atendimento_struct.subtipo is null)
                     )
                     or (atendimento_struct.entrada_datahora is null)
-                then 0
-                else 1
+                then false
+                else true
             end 
         as boolean) as tem_informacoes_basicas,
         safe_cast(
             atendimento_struct.episodio_com_paciente 
         as boolean) as tem_identificador_paciente,
         safe_cast(
-            null 
+            false 
         as boolean) as tem_informacoes_sensiveis
     ) as metadados
 from atendimento_struct
