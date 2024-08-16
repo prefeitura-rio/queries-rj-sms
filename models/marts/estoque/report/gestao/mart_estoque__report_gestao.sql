@@ -33,7 +33,9 @@ with
         where tipo_sms_agrupado = "APS"
     ),
 
-    registro_preco as (select * from {{ ref("raw_sheets__compras_atas_processos_vigentes") }}),
+    registro_preco as (
+        select * from {{ ref("raw_sheets__compras_atas_processos_vigentes") }}
+    ),
 
     -- - transformations
     -- dias de estoque
@@ -134,7 +136,9 @@ with
             m.farmacia_popular_disponibilidade_indicador,
             coalesce(rp.rp_vigente_indicador, "nao") as rp_vigente_indicador,
             rp.vencimento_data,
-            CONCAT(UPPER(SUBSTR(status, 1, 1)), LOWER(SUBSTR(status, 2))) AS registro_preco_status,
+            concat(
+                upper(substr(status, 1, 1)), lower(substr(status, 2))
+            ) as registro_preco_status,
         from medicamentos as m
         left join posicao_pivoted as p using (id_material)
         left join ubs_zeradas as zu using (id_material)
@@ -142,32 +146,51 @@ with
         left join curva_pqrs as pqrs using (id_material)
         left join registro_preco as rp using (id_material)
         order by cobertura_total_dias asc
+    ),
+
+    -- - status e motivo_status
+    relatorio as (
+        select
+            *,
+            case
+                when
+                    pqrs_categoria = "P"
+                    and rp_vigente_indicador = "nao"
+                    and cobertura_total_dias = 0
+                then "1. Muito Crítico: sem RP e estoque zerado"
+                when
+                    pqrs_categoria = "P"
+                    and rp_vigente_indicador = "nao"
+                    and cobertura_total_dias < 30
+                then "2. Crítico: sem RP e estoque < 30 dias"
+                when
+                    pqrs_categoria = "P"
+                    and rp_vigente_indicador = "nao"
+                    and cobertura_total_dias < 30
+                then "3. Atenção: estoque baixo < 30 dias"
+                when
+                    pqrs_categoria in ("Q", "R", "S")
+                    and rp_vigente_indicador = "nao"
+                    and cobertura_total_dias = 0
+                then "2. Crítico: sem RP e estoque zerado"
+                when
+                    pqrs_categoria in ("Q", "R", "S")
+                    and rp_vigente_indicador = "nao"
+                    and cobertura_total_dias < 30
+                then "3. Atenção: sem RP e estoque < 30 dias"
+                when
+                    pqrs_categoria in ("Q", "R", "S")
+                    and rp_vigente_indicador = "nao"
+                    and cobertura_total_dias >= 30
+                then "4. Atenção: sem RP e estoque > 30 dias"
+                else "" 
+            end as status
+        from sources_joined
     )
 
-select *, 
-    case
-        when cobertura_total_dias is null then "3. Atenção"
-        when rp_vigente_indicador = "nao" and cobertura_total_dias = 0 then "1. Muito Crítico"
-        when rp_vigente_indicador = "nao" and cobertura_total_dias < 30 then "1. Muito Crítico"
-        when rp_vigente_indicador = "nao" and cobertura_total_dias >= 30 then "2. Crítico"
-        when rp_vigente_indicador = "sim" and cobertura_total_dias = 0 then "2. Crítico"
-        when rp_vigente_indicador = "sim" and cobertura_total_dias > 0 and zeradas_ap > 0 then "3. Atenção"
-        when rp_vigente_indicador = "sim" and cobertura_total_dias < 10 then "3. Atenção"
-        when rp_vigente_indicador = "sim" and cobertura_total_dias > 0 and zeradas_ap = 0 then "4. Ok"
-        else "Verificar"
-    end as status,
-    case
-        when cobertura_total_dias is null then "3.3. Sem histórico de CMD"
-        when rp_vigente_indicador = "nao" and cobertura_total_dias = 0 then "1.1. Zerado e sem RP"
-        when rp_vigente_indicador = "nao" and cobertura_total_dias < 30 then "1.2. Estoque baixo e sem RP"
-        when rp_vigente_indicador = "nao" and cobertura_total_dias >= 30 then "2.2. Estoque alto, mas sem RP"
-        when rp_vigente_indicador = "sim" and cobertura_total_dias = 0 then "2.1. Zerado com RP"
-        when rp_vigente_indicador = "sim" and cobertura_total_dias > 0 and zeradas_ap > 0 then  "3.2. Estoque desbalanceado: AP(s) zerada(s)"
-        when rp_vigente_indicador = "sim" and cobertura_total_dias < 10 then "3.1. Estoque baixo: menos de dez dias na rede"
-        when rp_vigente_indicador = "sim" and cobertura_total_dias > 0 and zeradas_ap = 0 then ""
-        else ""
-    end as motivo_status
-from sources_joined
+select
+    *,
+from relatorio
 where
     hierarquia_n1_categoria = "Medicamento"
     and cadastrado_sistema_vitacare_indicador = "sim"
