@@ -118,17 +118,15 @@ with
     profissional_grouped as (
         select
             id,
-            array_agg(
-                struct(
-                    profissional_id as id,
-                    profissional_cpf as cpf,
-                    profissional_cns as cns,
-                    profissional_nome as nome,
-                    cbo_descricao as especialidade
-                ) ignore nulls
+            struct(
+                profissional_id as id,
+                profissional_nome as nome,
+                profissional_cpf as cpf,
+                profissional_cns as cns,
+                cbo_descricao as especialidade
             ) as profissional_saude_responsavel
         from profissional_distinct
-        group by 1
+        limit 1
     ),
     atendimento_struct as (
         select
@@ -152,7 +150,10 @@ with
                 estabelecimentos.nome_estabelecimento as nome,
                 estabelecimentos.tipo_sms_simplificado as estabelecimento_tipo
             ) as estabelecimento,
-            struct("vitai" as fornecedor, boletim.gid as id_atendimento) as prontuario,
+            struct(
+                boletim.gid as id_atendimento,
+                "vitai" as fornecedor
+            ) as prontuario,
             imported_at,
             updated_at,
             case
@@ -164,39 +165,63 @@ with
         left join last_queixa on boletim.gid = last_queixa.gid_boletim
     )
 select
-    atendimento_struct.id,
-    atendimento_struct.tipo,
-    atendimento_struct.subtipo,
-    atendimento_struct.entrada_datahora,
-    atendimento_struct.saida_datahora,
-    atendimento_struct.motivo_atendimento,
-    null as desfecho_atendimento,
+    -- Paciente
     atendimento_struct.paciente,
+
+    -- Tipo e Subtipo
+    safe_cast(atendimento_struct.tipo as string) as tipo,
+    safe_cast(atendimento_struct.subtipo as string) as subtipo,
+
+    -- Entrada e Saída
+    safe_cast(atendimento_struct.entrada_datahora as datetime) as entrada_datahora,
+    safe_cast(atendimento_struct.saida_datahora as datetime) as saida_datahora,
+
+    -- Motivo e Desfecho
+    safe_cast(atendimento_struct.motivo_atendimento as string) as motivo_atendimento,
+    safe_cast(null as string) as desfecho_atendimento,
+
+    -- Condições
     cid_grouped.condicoes,
-    profissional_grouped.profissional_saude_responsavel,
+
+    -- Estabelecimento
     atendimento_struct.estabelecimento,
+
+    -- Profissional
+    profissional_grouped.profissional_saude_responsavel,
+
+    -- Prontuário
     atendimento_struct.prontuario,
+
+    -- Metadados
     struct(
-        cast(imported_at as datetime) as loaded_at,
-        cast(updated_at as datetime) as updated_at,
-        current_timestamp() as processed_at,
-        case
-            when
-                (
-                    (cid_grouped.episodio_informativo = 0)
-                    and (atendimento_struct.motivo_atendimento is null)
-                )
-                or (
-                    (atendimento_struct.tipo is null)
-                    and (atendimento_struct.subtipo is null)
-                )
-                or (atendimento_struct.entrada_datahora is null)
-            then 0
-            else 1
-        end as tem_informacoes_basicas,
-        atendimento_struct.episodio_com_paciente as tem_identificador_paciente,
-        null as tem_dados_sensiveis
+        safe_cast(updated_at as datetime) as updated_at,
+        safe_cast(imported_at as datetime) as loaded_at,
+        safe_cast(current_datetime() as datetime) as processed_at,
+        safe_cast(
+            case
+                when
+                    (
+                        (cid_grouped.episodio_informativo = 0)
+                        and (atendimento_struct.motivo_atendimento is null)
+                    )
+                    or (
+                        (atendimento_struct.tipo is null)
+                        and (atendimento_struct.subtipo is null)
+                    )
+                    or (atendimento_struct.entrada_datahora is null)
+                then false
+                else true
+            end 
+        as boolean) as tem_informacoes_basicas,
+        safe_cast(
+            atendimento_struct.episodio_com_paciente 
+        as boolean) as tem_identificador_paciente,
+        safe_cast(
+            false 
+        as boolean) as tem_informacoes_sensiveis
     ) as metadados
 from atendimento_struct
-left join cid_grouped on atendimento_struct.id = cid_grouped.id
-left join profissional_grouped on atendimento_struct.id = profissional_grouped.id
+    left join cid_grouped 
+        on atendimento_struct.id = cid_grouped.id
+    left join profissional_grouped 
+        on atendimento_struct.id = profissional_grouped.id
