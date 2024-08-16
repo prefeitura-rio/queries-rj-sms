@@ -35,8 +35,8 @@ with
             cns as pk,
             id_profissional_sus as id,
             cns,
-            cpf,
             nome,
+            cpf,
         from {{ ref("dim_profissional_saude") }}
     ),
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -47,8 +47,8 @@ with
             id_cnes as pk,
             struct(
                 id_cnes,
-                tipo_sms as estabelecimento_tipo,
-                concat(tipo_sms, ' ', nome_complemento) as nome
+                concat(tipo_sms, ' ', nome_complemento) as nome,
+                tipo_sms as estabelecimento_tipo
             ) as estabelecimento
         from {{ ref("dim_estabelecimento") }}
     ),
@@ -158,9 +158,9 @@ with
             -- Profissional
             struct(
                 dim_profissional.id as id,
-                dim_profissional.nome as nome,
                 dim_profissional.cpf as cpf,
                 dim_profissional.cns as cns,
+                dim_profissional.nome as nome,
                 safe_cast(
                     case 
                         when cbo_descricao_profissional like '%Médic%' then 'Médico(a)'
