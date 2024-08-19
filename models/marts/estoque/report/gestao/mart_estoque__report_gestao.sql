@@ -111,6 +111,7 @@ with
             m.hierarquia_n1_categoria,
             m.hierarquia_n2_subcategoria,
             m.cadastrado_sistema_vitacare_indicador,
+            m.ativo_indicador,
             p.qtd_aps,
             p.qtd_tpc,
             round(p.cmd, 0) as cmd,

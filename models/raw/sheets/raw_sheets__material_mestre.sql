@@ -16,6 +16,7 @@ with
             apresentacao,
             categoria as hierarquia_n1_categoria,
             subcategoria as hierarquia_n2_subcategoria,
+            ativo_indicador,
             controlado_indicador,
             controlado_tipo,
             coalesce(safe_cast(consumo_minimo as int64), 1) as consumo_minimo,

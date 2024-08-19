@@ -29,6 +29,7 @@ select
     ) as nome,
     hierarquia_n1_categoria,
     hierarquia_n2_subcategoria,
+    ativo_indicador,
     controlado_indicador,
     controlado_tipo,
     consumo_minimo,
