@@ -123,12 +123,18 @@ models:
         tests:
           - not_null:
               name: alergia__id_paciente__notnull
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR") }}'
       - name: cns
         description: |
           Número do Sistema Único de Saúde do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: cpf
         description: |
           Cadastro de Pessoas Físicas do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: alergias
         description: |
           Lista de alergias do paciente, agregada a partir dos registros individuais. As alergias são limpadas e padronizadas, e a lista contém apenas valores distintos.

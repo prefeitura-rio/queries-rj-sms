@@ -9,15 +9,21 @@ models:
       - name: id_paciente
         description: |
           Identificador único do paciente. Este campo é utilizado para associar os dados de alergia com o paciente correspondente.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR") }}'
         tests:
           - not_null:
               name: alergia__id_paciente_vitai__notnull
       - name: cns
         description: |
           Número do Sistema Único de Saúde do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: cpf
         description: |
           Cadastro de Pessoas Físicas do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: alergias  
         description: |
           Lista de alergias do paciente, agregada a partir dos registros individuais. As alergias são limpadas e padronizadas, e a lista contém apenas valores distintos.
