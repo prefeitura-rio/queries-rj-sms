@@ -12,6 +12,7 @@
 -- rj-sms.brutos_plataforma_smsrio.paciente (SMSRIO)
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
+-- dbt run --select int_historico_clinico__paciente__vitacare int_historico_clinico__paciente__smsrio int_historico_clinico__paciente__vitai mart_historico_clinico__paciente
 
 -- Declaration of the variable to filter by CPF (optional)
 -- DECLARE cpf_filter STRING DEFAULT "";
@@ -30,7 +31,6 @@ WITH vitacare_tb AS (
         dados.obito_data,
         dados.mae_nome,
         dados.pai_nome,
-        clinica_familia,
         equipe_saude_familia,
         contato,
         endereco,
@@ -152,15 +152,6 @@ cns_dados AS (
     GROUP BY cpf
 ),
 
-
--- Clinica Familia Dados: Groups family clinic data by patient.
--- ONLY VITACARE
-clinica_familia_dados AS (
-    SELECT
-        cpf,
-        clinica_familia
-    FROM vitacare_tb
-),
 
 -- Equipe Saude Familia Dados: Groups family health team data by patient.
 -- ONLY VITACARE
@@ -548,7 +539,6 @@ paciente_integrado AS (
         pd.cpf,
         cns.cns,
         pd.dados,
-        cf.clinica_familia,
         esf.equipe_saude_familia,
         ct.contato,
         ed.endereco,
@@ -556,7 +546,6 @@ paciente_integrado AS (
         STRUCT(CURRENT_TIMESTAMP() AS created_at) AS metadados
     FROM paciente_dados pd
     LEFT JOIN cns_dados cns ON pd.cpf = cns.cpf
-    LEFT JOIN clinica_familia_dados cf ON pd.cpf = cf.cpf
     LEFT JOIN equipe_saude_familia_dados esf ON pd.cpf = esf.cpf
     LEFT JOIN contato_dados ct ON pd.cpf = ct.cpf
     LEFT JOIN endereco_dados ed ON pd.cpf = ed.cpf

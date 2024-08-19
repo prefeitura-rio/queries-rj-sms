@@ -109,7 +109,13 @@ cns_dados AS (
 ),
 
 
--- CLINICA DA FAMILIA
+
+
+
+-- EQUIPE SAUDE FAMILIA VITACARE: Extracts and ranks family health teams
+
+
+-- clinica da familia
 vitacare_clinica_familia AS (
     SELECT
         vc.cpf,
@@ -121,27 +127,12 @@ vitacare_clinica_familia AS (
     FROM vitacare_tb vc
     JOIN {{ ref("dim_estabelecimento") }} e
         ON vc.id_cnes = e.id_cnes
+    WHERE vc.id_cnes IS NOT NULL
     GROUP BY
         vc.cpf, vc.id_cnes, e.nome_limpo, e.telefone, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at
 ),
 
-clinica_familia_dados AS (
-    SELECT
-        cpf,
-        ARRAY_AGG(STRUCT(
-            id_cnes, 
-            nome,
-            telefone,
-            data_atualizacao_vinculo_equipe AS datahora_ultima_atualizacao,
-            rank 
-        )) AS clinica_familia
-    FROM vitacare_clinica_familia
-    GROUP BY cpf
-),
-
-
--- EQUIPE SAUDE FAMILIA VITACARE: Extracts and ranks family health teams
-
+-- medicos data
 medicos_data AS (
     SELECT
         e.id_ine,
@@ -152,6 +143,8 @@ medicos_data AS (
         ON medico_id = p.id_profissional_sus
     GROUP BY e.id_ine
 ),
+
+-- enfermeiros data
 enfermeiros_data AS (
     SELECT
         e.id_ine,
@@ -186,17 +179,24 @@ vitacare_equipe_saude_familia AS (
 
 equipe_saude_familia_dados AS (
     SELECT
-        cpf,
+        ef.cpf,
         ARRAY_AGG(STRUCT(
-            id_ine, 
-            nome,
-            telefone,
-            medicos,
-            enfermeiros,
-            datahora_ultima_atualizacao, 
-            rank
+            ef.id_ine, 
+            ef.nome,
+            ef.telefone,
+            ef.medicos,
+            ef.enfermeiros,
+            STRUCT(
+                cf.id_cnes, 
+                cf.nome,
+                cf.telefone
+            ) AS clinica_familia,
+            ef.datahora_ultima_atualizacao, 
+            ef.rank
         )) AS equipe_saude_familia
-    FROM vitacare_equipe_saude_familia
+    FROM vitacare_equipe_saude_familia ef
+    LEFT JOIN vitacare_clinica_familia cf
+        ON ef.cpf = cf.cpf
     GROUP BY cpf
 ),
 
@@ -533,7 +533,6 @@ paciente_integrado AS (
         pd.cpf,
         cns.cns,
         pd.dados,
-        cf.clinica_familia,
         esf.equipe_saude_familia,
         ct.contato,
         ed.endereco,
@@ -541,7 +540,6 @@ paciente_integrado AS (
         STRUCT(CURRENT_TIMESTAMP() AS created_at) AS metadados
     FROM paciente_dados pd
     LEFT JOIN cns_dados cns ON pd.cpf = cns.cpf
-    LEFT JOIN clinica_familia_dados cf ON pd.cpf = cf.cpf
     LEFT JOIN equipe_saude_familia_dados esf ON pd.cpf = esf.cpf
     LEFT JOIN contato_dados ct ON pd.cpf = ct.cpf
     LEFT JOIN endereco_dados ed ON pd.cpf = ed.cpf
