@@ -195,3 +195,4 @@ from relatorio
 where
     hierarquia_n1_categoria = "Medicamento"
     and cadastrado_sistema_vitacare_indicador = "sim"
+    -- and ativo_indicador = "sim"
