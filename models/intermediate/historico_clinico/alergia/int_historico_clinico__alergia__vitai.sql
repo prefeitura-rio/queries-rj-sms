@@ -41,11 +41,17 @@ with
         from get_alergias
         where agg_alergia is not null
     ),
+    fix_double as (
+        select 
+            gid_paciente,
+            regexp_replace(upper(descricao), r' {2,}[A|E] {2,}', ' A ') as alergias_fix
+        from alergias_std
+    ),
     alergias_delimitadores as (
         select
             gid_paciente,
-            regexp_replace(descricao, r'\+|\n|,| E |\\|\/|;|  ', '|') as alergias_sep
-        from alergias_std
+            regexp_replace(upper(alergias_fix), r'\+|\n|,| E |\\|\/|;|  ', '|') as alergias_sep
+        from fix_double
     ),
     alergias_separadas as (
         select gid_paciente, split(alergias_sep, '|') as partes
@@ -56,7 +62,7 @@ with
             gid_paciente,
             regexp_replace(
                 upper(parte),
-                'A{0,1}L[E|É]RGI[A|C][O|A]{0,1} {1,2}[H]{0,1}[A|À]{0,1}O{0,1}:{0,1}|ALEGA|AFIRMA|^A |ALERGIA',
+                'A{0,1}L[E|É]RGI[A|C][O|A]{0,1} {1,2}[H]{0,1}[A|À]{0,1}O{0,1}:{0,1} |ALEGA|AFIRMA|^A ',
                 ''
             ) as alergias_clean
         from alergias_separadas, unnest(partes) as parte
