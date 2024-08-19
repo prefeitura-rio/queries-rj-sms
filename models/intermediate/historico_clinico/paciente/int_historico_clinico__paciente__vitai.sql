@@ -408,19 +408,18 @@ prontuario_dados AS (
 vitai_paciente AS (
     SELECT
         cpf,
-        nome,
-        nome_social,
+        {{proper_br('nome')}} AS nome,
+        {{proper_br('nome_social')}} AS nome_social,
         data_nascimento,
         CASE
-            WHEN genero = "M" THEN "MASCULINO"
-            WHEN genero = "F" THEN "FEMININO"
+            WHEN genero = "M" THEN INITCAP("MASCULINO")
+            WHEN genero = "F" THEN INITCAP("FEMININO")
             ELSE NULL
         END  AS genero,
         CASE
-            WHEN raca IN ("NONE") THEN NULL
-            WHEN raca IN ("PRETO","NEGRO") THEN "PRETA"
-            WHEN raca = "NAO INFORMADO" THEN "SEM INFORMACAO"
-            ELSE raca
+            WHEN raca IN ("NONE", "NAO INFORMADO", "SEM INFORMACAO") THEN NULL
+            WHEN raca IN ("PRETO","NEGRO") THEN INITCAP("PRETA")
+            ELSE INITCAP(raca)
         END AS raca,
         CASE
             WHEN obito_data IS NOT NULL THEN TRUE
@@ -441,10 +440,9 @@ vitai_paciente AS (
             ELSE NULL
         END,
         CASE
-            WHEN raca IN ("NONE") THEN NULL
-            WHEN raca IN ("PRETO","NEGRO") THEN "PRETA"
-            WHEN raca = "NAO INFORMADO" THEN "SEM INFORMACAO"
-            ELSE raca
+            WHEN raca IN ("NONE", "NAO INFORMADO", "SEM INFORMACAO") THEN NULL
+            WHEN raca IN ("PRETO","NEGRO") THEN INITCAP("PRETA")
+            ELSE INITCAP(raca)
         END
 ),
 

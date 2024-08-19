@@ -398,17 +398,17 @@ prontuario_dados AS (
 smsrio_paciente AS (
     SELECT
         cpf,
-        nome,
-        nome_social,
+        {{proper_br('nome')}} AS nome,
+        {{proper_br('nome_social')}} AS nome_social,
         data_nascimento,
         CASE
-            WHEN genero = "1" THEN "MASCULINO"
-            WHEN genero = "2" THEN "FEMININO"
+            WHEN genero = "1" THEN INITCAP("MASCULINO")
+            WHEN genero = "2" THEN INITCAP("FEMININO")
             ELSE NULL
         END  AS genero,
         CASE
-            WHEN raca IN ("None") THEN NULL
-            ELSE raca
+            WHEN raca IN ("NONE", "None", "NAO INFORMADO", "SEM INFORMACAO") THEN NULL
+            ELSE INITCAP(raca)
         END AS raca,
         CASE
             WHEN obito_indicador = "0" THEN FALSE
@@ -424,7 +424,11 @@ smsrio_paciente AS (
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
     FROM smsrio_tb
     GROUP BY
-        cpf, nome,nome_social, cpf, data_nascimento, genero, raca, obito_indicador, obito_data, mae_nome, pai_nome, updated_at
+        cpf, nome,nome_social, cpf, data_nascimento, genero, obito_indicador, obito_data, mae_nome, pai_nome, updated_at,
+        CASE
+            WHEN raca IN ("NONE", "None", "NAO INFORMADO", "SEM INFORMACAO") THEN NULL
+            ELSE INITCAP(raca)
+        END
 ),
 
 paciente_dados AS (

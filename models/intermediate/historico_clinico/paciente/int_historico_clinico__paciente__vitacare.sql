@@ -475,20 +475,20 @@ prontuario_dados AS (
 vitacare_paciente AS (
     SELECT
         cpf,
-        nome,
+        {{proper_br('nome')}} AS nome,
         CASE 
             WHEN nome_social IN ('') THEN NULL
-            ELSE nome_social
+            ELSE {{proper_br('nome_social')}}
         END AS nome_social,
         DATE(data_nascimento) AS data_nascimento,
         CASE
-            WHEN genero IN ("M", "MALE") THEN "MASCULINO"
-            WHEN genero IN ("F", "FEMALE") THEN "FEMININO"
+            WHEN genero IN ("M", "MALE") THEN INITCAP("MASCULINO")
+            WHEN genero IN ("F", "FEMALE") THEN INITCAP("FEMININO")
             ELSE NULL
         END  AS genero,
         CASE
-            WHEN TRIM(raca) IN ("") THEN NULL
-            ELSE raca
+            WHEN TRIM(raca) IN ("", "NAO INFORMADO", "SEM INFORMACAO") THEN NULL
+            ELSE INITCAP(raca)
         END AS raca,
         CASE
             WHEN obito_data IS NULL THEN FALSE
