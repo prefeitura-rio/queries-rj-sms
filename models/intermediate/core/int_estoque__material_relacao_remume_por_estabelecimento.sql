@@ -12,7 +12,7 @@ with
                 ';'
             ) as remume_disponibilidade_relacao_array,
         from {{ ref("raw_sheets__material_mestre") }}
-        where remume_indicador = "sim"
+        where remume_indicador = "sim" and ativo_indicador = "sim"
     ),
 
     estabelecimento as (select * from {{ ref("dim_estabelecimento") }}),
