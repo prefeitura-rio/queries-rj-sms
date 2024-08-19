@@ -16,16 +16,9 @@ with
             reacao,
             observacao,
             if(
-                (
-                    trim(lower(descricao))
-                    in ('comentario', 'outros', 'medicamento', 'outras')
-                ),
-                regexp_replace(
-                    observacao, r"[-'`~!@#$%^&*()_|=?;:'.<>\{\}\[\]\\\/]", ' '
-                ),
-                regexp_replace(
-                    descricao, r"[-'`~!@#$%^&*()_|=?;:'.<>\{\}\[\]\\\/]", ' '
-                )
+                (trim(lower(descricao)) in ('outros', 'medicamento', 'outras')),
+                regexp_replace(observacao, r'[!?\-"#*]', ''),
+                (regexp_replace(descricao, r'[!?\-"#*]', ''))
             ) as agg_alergia
         from {{ ref("raw_prontuario_vitai__alergia") }}
 
@@ -48,10 +41,34 @@ with
         from get_alergias
         where agg_alergia is not null
     ),
+    alergias_delimitadores as (
+        select
+            gid_paciente,
+            regexp_replace(descricao, r'\+|\n|,| E |\\|\/|;|  ', '|') as alergias_sep
+        from alergias_std
+    ),
+    alergias_separadas as (
+        select gid_paciente, split(alergias_sep, '|') as partes
+        from alergias_delimitadores
+    ),
+    alergias_cleaned as (
+        select
+            gid_paciente,
+            regexp_replace(
+                upper(parte),
+                'A{0,1}L[E|É]RGI[A|C][O|A]{0,1} {1,2}[H]{0,1}[A|À]{0,1}O{0,1}:{0,1}|ALEGA|AFIRMA|^A |ALERGIA',
+                ''
+            ) as alergias_clean
+        from alergias_separadas, unnest(partes) as parte
+    ),
+    alergias_trimmed as (
+        select gid_paciente, initcap(trim(alergias_clean)) as descricao
+        from alergias_cleaned
+    ),
     alergias_agg as (
         select gid_paciente, array_agg(distinct descricao ignore nulls) as alergias
-        from alergias_std
-        where descricao is not null
+        from alergias_trimmed
+        where descricao is not null and descricao != ""
         group by 1
     ),
     boletim as (
