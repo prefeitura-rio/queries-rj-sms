@@ -17,7 +17,7 @@ with
             cpf,
             replace(json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
             upper(json_extract_scalar(prescricoes_json, "$.nome_medicamento")) as nome,
-            json_extract_scalar(prescricoes_json, "$.uso_continuado") as uso_continuo
+            cast(json_extract_scalar(prescricoes_json, "$.uso_continuado") as boolean) as uso_continuo
         from bruto_atendimento,
             unnest(json_extract_array(prescricoes)) as prescricoes_json
     ),
@@ -29,12 +29,11 @@ with
         select 
             prescricoes.cpf,
             prescricoes.id,
-            prescricoes.nome,
             coalesce(materiais.descricao, prescricoes.nome) as nome,
             materiais.concentracao,
         from prescricoes
             inner join materiais on prescricoes.id = materiais.id_material
-        where prescricoes.uso_continuo = True
+        where prescricoes.uso_continuo = true
     )
 select
     cpf,
@@ -46,3 +45,4 @@ select
         )
     ) as medicamentos
 from uso_continuado
+group by cpf
