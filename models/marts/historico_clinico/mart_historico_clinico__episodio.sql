@@ -6,6 +6,7 @@
     )
 }}
 
+
 with 
     vitai as (
         select * from {{ ref("int_historico_clinico__episodio__vitai") }}
@@ -22,12 +23,12 @@ select
     motivo_atendimento,
     desfecho_atendimento,
     condicoes,
-    prescricoes,
+    null as prescricoes,
     estabelecimento, 
     profissional_saude_responsavel,
     prontuario,
     metadados
-from vitacare
+from vitai
 
 union all
 
@@ -40,9 +41,9 @@ select
     motivo_atendimento,
     desfecho_atendimento,
     condicoes,
-    null as prescricoes,
+    prescricoes,
     estabelecimento, 
     profissional_saude_responsavel,
     prontuario,
     metadados
-from vitai
+from vitacare

@@ -156,20 +156,21 @@ with
             dim_estabelecimento.estabelecimento,
 
             -- Profissional
-            struct(
-                dim_profissional.id as id,
-                dim_profissional.cpf as cpf,
-                dim_profissional.cns as cns,
-                dim_profissional.nome as nome,
-                safe_cast(
-                    case 
-                        when cbo_descricao_profissional like '%Médic%' then 'Médico(a)'
-                        when cbo_descricao_profissional like '%Enferm%' then 'Enfermeiro(a)'
-                        when cbo_descricao_profissional like '%dentista%' then 'Dentista'
-                        when cbo_descricao_profissional like '%social%' then 'Assistente Social'
-                        else cbo_descricao_profissional
-                    end
-                as string) as especialidade
+            ARRAY(
+                SELECT AS STRUCT
+                    dim_profissional.id as id,
+                    dim_profissional.cpf as cpf,
+                    dim_profissional.cns as cns,
+                    dim_profissional.nome as nome,
+                    safe_cast(
+                        case 
+                            when cbo_descricao_profissional like '%Médic%' then 'Médico(a)'
+                            when cbo_descricao_profissional like '%Enferm%' then 'Enfermeiro(a)'
+                            when cbo_descricao_profissional like '%dentista%' then 'Dentista'
+                            when cbo_descricao_profissional like '%social%' then 'Assistente Social'
+                            else cbo_descricao_profissional
+                        end
+                    as string) as especialidade
             ) as profissional_saude_responsavel,
 
             -- Prontuário
