@@ -1,7 +1,7 @@
 {{
     config(
         schema="saude_historico_clinico",
-        alias="medicamentos-cronicos",
+        alias="medicamentos_cronicos",
         materialized="table",
     )
 }}
