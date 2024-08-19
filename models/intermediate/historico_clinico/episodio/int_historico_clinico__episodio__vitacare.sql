@@ -156,7 +156,7 @@ with
             dim_estabelecimento.estabelecimento,
 
             -- Profissional
-            struct(
+            array(struct(
                 dim_profissional.id as id,
                 dim_profissional.cpf as cpf,
                 dim_profissional.cns as cns,
@@ -170,7 +170,7 @@ with
                         else cbo_descricao_profissional
                     end
                 as string) as especialidade
-            ) as profissional_saude_responsavel,
+            )) as profissional_saude_responsavel,
 
             -- Prontuário
             struct(

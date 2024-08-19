@@ -118,15 +118,17 @@ with
     profissional_grouped as (
         select
             id,
-            struct(
-                profissional_id as id,
-                profissional_nome as nome,
-                profissional_cpf as cpf,
-                profissional_cns as cns,
-                cbo_descricao as especialidade
+            array_agg(
+                struct(
+                    profissional_id as id,
+                    profissional_cpf as cpf,
+                    profissional_cns as cns,
+                    profissional_nome as nome,
+                    cbo_descricao as especialidade
+                ) ignore nulls
             ) as profissional_saude_responsavel
         from profissional_distinct
-        limit 1
+        group by 1
     ),
     atendimento_struct as (
         select
