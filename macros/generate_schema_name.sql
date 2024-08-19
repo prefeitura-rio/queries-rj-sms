@@ -5,7 +5,7 @@
         {%- set default_schema = target.schema -%}
         {%- if custom_schema_name is none -%}
 
-            {{ default_schema }}
+            {{ env_var('DBT_USER') }}__{{ default_schema }}
 
         {%- else -%}
 
