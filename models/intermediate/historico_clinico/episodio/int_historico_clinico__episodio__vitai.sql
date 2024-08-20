@@ -5,8 +5,9 @@
         materialized="table",
     )
 }}
--- cria tabela padronizada da entidade episodio assistencial da vitai 
+-- Cria tabela padronizada da entidade episodio assistencial da vitai 
 with
+-- Traz boletins com chaves de paciente tratadas
     boletim as (
         select
             gid,
@@ -30,6 +31,7 @@ with
             data_entrada
         from {{ ref("raw_prontuario_vitai__boletim") }}
     ),
+-- Traz atendimentos com CIDs nulos tratados
     atendimento as (
         select
             gid,
@@ -41,9 +43,10 @@ with
             if(cid_codigo in ('None', ''), null, cid_codigo) as cid_codigo,
             if(cid_nome in ('None', ''), null, cid_nome) as cid_nome,
 
-        from {{ ref("int_historico_clinico__atendimento__vitai") }}
+        from {{ ref("raw_prontuario_vitai__atendimento") }}
     ),
-    all_queixa as (
+-- Como cada atendimento appenda informações no boletim, pegamos a queixa do ultimo atendimento 
+    queixa_all as (
         select
             gid_boletim,
             queixa,
@@ -51,23 +54,46 @@ with
             row_number() over (
                 partition by gid_boletim order by inicio_datahora desc
             ) as ordenacao
-        from {{ ref("int_historico_clinico__atendimento__vitai") }}
+        from {{ ref("raw_prontuario_vitai__atendimento") }}
     ),
-    last_queixa as (select gid_boletim, queixa from all_queixa where ordenacao = 1),
+    queixa_final as (
+        select gid_boletim, lower(queixa) as queixa from queixa_all where ordenacao = 1
+    ),
+-- Desfecho do atendimento
+    desfecho_atendimento as (
+        select
+            gid_boletim,
+            if(
+                resumo_alta_descricao is null,
+                lower(desfecho_internacao),
+                lower(resumo_alta_descricao)
+            ) as desfecho
+        from {{ ref("raw_prontuario_vitai__resumo_alta") }}
+    ),
+-- Profissional com nome próprio tratado
+    profissional_int as (
+        select gid, cns, cpf, initcap(nome) as nome, cbo_descricao
+        from {{ ref("raw_prontuario_vitai__profissional") }}
+    ),
     profissional as (
-        select gid, cns, cpf, nome, cbo_descricao
-        from {{ ref("int_historico_clinico__profissional_saude__vitai") }}
+        select gid, cns, cpf, {{ proper_br("nome") }} as nome, cbo_descricao
+        from profissional_int
     ),
+-- Estabelecimento com infos da tabela mestre
     estabelecimentos as (
         select
-            gid, cnes, nome_estabelecimento, estabelecimento_dim.tipo_sms_simplificado
+            gid,
+            cnes,
+            initcap(nome_estabelecimento) as nome_estabelecimento,
+            estabelecimento_dim.tipo_sms_simplificado
         from
-            {{ ref("int_historico_clinico__estabelecimento__vitai") }}
+            {{ ref("raw_prontuario_vitai__m_estabelecimento") }}
             as estabelecimento_vitai
         left join
             {{ ref("dim_estabelecimento") }} as estabelecimento_dim
             on estabelecimento_vitai.cnes = estabelecimento_dim.id_cnes
     ),
+-- Monta estrurra array aninhada de CIDs do episódio
     cid_distinct as (
         select distinct
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
@@ -92,6 +118,7 @@ with
         from cid_distinct
         group by 1
     ),
+-- Monta estrurra array aninhada de profissionais do episódio
     profissional_distinct as (
         select distinct
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
@@ -130,12 +157,14 @@ with
         from profissional_distinct
         group by 1
     ),
+-- Monta base do episódio para ser enriquecida
     atendimento_struct as (
         select
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
-            last_queixa.queixa as motivo_atendimento,
+            queixa_final.queixa as motivo_atendimento,
             trim(initcap(boletim.atendimento_tipo)) as tipo,
             trim(initcap(boletim.especialidade_nome)) as subtipo,
+            desfecho,
             case
                 when (data_entrada in ("None", "NaT")) or (data_entrada is null)
                 then null
@@ -149,13 +178,10 @@ with
             struct(boletim.gid as id_prontuario, boletim.cpf, boletim.cns) as paciente,
             struct(
                 estabelecimentos.cnes as id_cnes,
-                estabelecimentos.nome_estabelecimento as nome,
+                {{ proper_estabelecimento("nome_estabelecimento") }} as nome,
                 estabelecimentos.tipo_sms_simplificado as estabelecimento_tipo
             ) as estabelecimento,
-            struct(
-                boletim.gid as id_atendimento,
-                "vitai" as fornecedor
-            ) as prontuario,
+            struct(boletim.gid as id_atendimento, "vitai" as fornecedor) as prontuario,
             imported_at,
             updated_at,
             case
@@ -164,7 +190,8 @@ with
 
         from boletim
         left join estabelecimentos on boletim.gid_estabelecimento = estabelecimentos.gid
-        left join last_queixa on boletim.gid = last_queixa.gid_boletim
+        left join queixa_final on boletim.gid = queixa_final.gid_boletim
+        left join desfecho_atendimento on boletim.gid = desfecho_atendimento.gid_boletim
     )
 select
     -- Paciente
@@ -180,7 +207,7 @@ select
 
     -- Motivo e Desfecho
     safe_cast(atendimento_struct.motivo_atendimento as string) as motivo_atendimento,
-    safe_cast(null as string) as desfecho_atendimento,
+    safe_cast(desfecho as string) as desfecho_atendimento,
 
     -- Condições
     cid_grouped.condicoes,
@@ -213,17 +240,13 @@ select
                     or (atendimento_struct.entrada_datahora is null)
                 then false
                 else true
-            end 
-        as boolean) as tem_informacoes_basicas,
+            end as boolean
+        ) as tem_informacoes_basicas,
         safe_cast(
-            atendimento_struct.episodio_com_paciente 
-        as boolean) as tem_identificador_paciente,
-        safe_cast(
-            false 
-        as boolean) as tem_informacoes_sensiveis
+            atendimento_struct.episodio_com_paciente as boolean
+        ) as tem_identificador_paciente,
+        safe_cast(false as boolean) as tem_informacoes_sensiveis
     ) as metadados
 from atendimento_struct
-    left join cid_grouped 
-        on atendimento_struct.id = cid_grouped.id
-    left join profissional_grouped 
-        on atendimento_struct.id = profissional_grouped.id
+left join cid_grouped on atendimento_struct.id = cid_grouped.id
+left join profissional_grouped on atendimento_struct.id = profissional_grouped.id
