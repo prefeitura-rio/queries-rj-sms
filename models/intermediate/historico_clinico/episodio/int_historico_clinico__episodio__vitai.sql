@@ -7,7 +7,7 @@
 }}
 -- Cria tabela padronizada da entidade episodio assistencial da vitai 
 with
--- Traz boletins com chaves de paciente tratadas
+    -- Traz boletins com chaves de paciente tratadas
     boletim as (
         select
             gid,
@@ -31,7 +31,7 @@ with
             data_entrada
         from {{ ref("raw_prontuario_vitai__boletim") }}
     ),
--- Traz atendimentos com CIDs nulos tratados
+    -- Traz atendimentos com CIDs nulos tratados
     atendimento as (
         select
             gid,
@@ -45,7 +45,8 @@ with
 
         from {{ ref("raw_prontuario_vitai__atendimento") }}
     ),
--- Como cada atendimento appenda informações no boletim, pegamos a queixa do ultimo atendimento 
+    -- Como cada atendimento appenda informações no boletim, pegamos a queixa do
+    -- ultimo atendimento
     queixa_all as (
         select
             gid_boletim,
@@ -57,9 +58,17 @@ with
         from {{ ref("raw_prontuario_vitai__atendimento") }}
     ),
     queixa_final as (
-        select gid_boletim, {{ proper_text('queixa') }} as queixa from queixa_all where ordenacao = 1
+        select
+            gid_boletim,
+            case
+                when (queixa = 'none' or queixa = '')
+                then null
+                else {{ proper_text("queixa") }}
+            end as queixa
+        from queixa_all
+        where ordenacao = 1
     ),
--- Desfecho do atendimento
+    -- Desfecho do atendimento
     desfecho_atendimento_all as (
         select
             gid_boletim,
@@ -75,11 +84,16 @@ with
     ),
     desfecho_atendimento_final as (
         select
-            gid_boletim, {{ proper_text('desfecho') }} as desfecho
+            gid_boletim,
+            case
+                when (desfecho = 'none' or desfecho = '')
+                then null
+                else {{ proper_text("desfecho") }}
+            end as desfecho
         from desfecho_atendimento_all
         where ordenacao = 1
     ),
--- Profissional com nome próprio tratado
+    -- Profissional com nome próprio tratado
     profissional_int as (
         select gid, cns, cpf, initcap(nome) as nome, cbo_descricao
         from {{ ref("raw_prontuario_vitai__profissional") }}
@@ -88,7 +102,7 @@ with
         select gid, cns, cpf, {{ proper_br("nome") }} as nome, cbo_descricao
         from profissional_int
     ),
--- Estabelecimento com infos da tabela mestre
+    -- Estabelecimento com infos da tabela mestre
     estabelecimentos as (
         select
             gid,
@@ -102,7 +116,7 @@ with
             {{ ref("dim_estabelecimento") }} as estabelecimento_dim
             on estabelecimento_vitai.cnes = estabelecimento_dim.id_cnes
     ),
--- Monta estrurra array aninhada de CIDs do episódio
+    -- Monta estrurra array aninhada de CIDs do episódio
     cid_distinct as (
         select distinct
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
@@ -127,7 +141,7 @@ with
         from cid_distinct
         group by 1
     ),
--- Monta estrurra array aninhada de profissionais do episódio
+    -- Monta estrurra array aninhada de profissionais do episódio
     profissional_distinct as (
         select distinct
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
@@ -166,7 +180,7 @@ with
         from profissional_distinct
         group by 1
     ),
--- Monta base do episódio para ser enriquecida
+    -- Monta base do episódio para ser enriquecida
     atendimento_struct as (
         select
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
@@ -200,7 +214,9 @@ with
         from boletim
         left join estabelecimentos on boletim.gid_estabelecimento = estabelecimentos.gid
         left join queixa_final on boletim.gid = queixa_final.gid_boletim
-        left join desfecho_atendimento_final on boletim.gid = desfecho_atendimento_final.gid_boletim
+        left join
+            desfecho_atendimento_final
+            on boletim.gid = desfecho_atendimento_final.gid_boletim
     )
 select
     -- Paciente
