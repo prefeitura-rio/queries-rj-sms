@@ -49,7 +49,7 @@ with
     queixa_all as (
         select
             gid_boletim,
-            queixa,
+            lower(queixa) as queixa,
             inicio_datahora,
             row_number() over (
                 partition by gid_boletim order by inicio_datahora desc
@@ -57,18 +57,27 @@ with
         from {{ ref("raw_prontuario_vitai__atendimento") }}
     ),
     queixa_final as (
-        select gid_boletim, lower(queixa) as queixa from queixa_all where ordenacao = 1
+        select gid_boletim, {{ proper_text('queixa') }} as queixa from queixa_all where ordenacao = 1
     ),
 -- Desfecho do atendimento
-    desfecho_atendimento as (
+    desfecho_atendimento_all as (
         select
             gid_boletim,
             if(
                 resumo_alta_descricao is null,
                 lower(desfecho_internacao),
                 lower(resumo_alta_descricao)
-            ) as desfecho
+            ) as desfecho,
+            row_number() over (
+                partition by gid_boletim order by resumo_alta_datahora desc
+            ) as ordenacao
         from {{ ref("raw_prontuario_vitai__resumo_alta") }}
+    ),
+    desfecho_atendimento_final as (
+        select
+            gid_boletim, {{ proper_text('desfecho') }} as desfecho
+        from desfecho_atendimento_all
+        where ordenacao = 1
     ),
 -- Profissional com nome próprio tratado
     profissional_int as (
@@ -164,7 +173,7 @@ with
             queixa_final.queixa as motivo_atendimento,
             trim(initcap(boletim.atendimento_tipo)) as tipo,
             trim(initcap(boletim.especialidade_nome)) as subtipo,
-            desfecho,
+            desfecho_atendimento_final.desfecho,
             case
                 when (data_entrada in ("None", "NaT")) or (data_entrada is null)
                 then null
@@ -191,7 +200,7 @@ with
         from boletim
         left join estabelecimentos on boletim.gid_estabelecimento = estabelecimentos.gid
         left join queixa_final on boletim.gid = queixa_final.gid_boletim
-        left join desfecho_atendimento on boletim.gid = desfecho_atendimento.gid_boletim
+        left join desfecho_atendimento_final on boletim.gid = desfecho_atendimento_final.gid_boletim
     )
 select
     -- Paciente
