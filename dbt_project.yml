@@ -25,6 +25,9 @@ clean-targets: # directories to be removed by `dbt clean`
 
 # Defining variables
 vars:
+  # internal variables
+  DBT_USER: "{{ env_var('DBT_USER') }}"
+  # policy tags
   TAG_CPF: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7275937608331929015'
   TAG_CNS: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/8199751371890630153'
   TAG_RG: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1359518576511941019'

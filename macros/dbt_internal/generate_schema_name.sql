@@ -5,11 +5,11 @@
         {%- set default_schema = target.schema -%}
         {%- if custom_schema_name is none -%}
 
-            {{ env_var('DBT_USER') }}__{{ default_schema }}
+            {{ var('DBT_USER') }}__{{ default_schema }}
 
         {%- else -%}
 
-            {{ env_var('DBT_USER') }}__{{ custom_schema_name | trim }}
+            {{ var('DBT_USER') }}__{{ custom_schema_name | trim }}
             
         {%- endif -%}
 
