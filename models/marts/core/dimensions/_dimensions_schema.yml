@@ -77,9 +77,15 @@ models:
         description: Quantidade mínima do medicamento dispensada para um paciente
         data_type: int64
         quote: true
+      - name: abastecimento_responsavel
+        description: Indica quem é o responsável pelo abastecimento do item.
+        data_type: string
+        quote: true
       - name: abastecimento_frequencia
         data_type: string
         quote: true
+        description: Esta coluna representa a frequência de abastecimento do material específico. 
+          Fornece informações sobre com que frequência o material é abastecido ou reabastecido.
       - name: classificacao_xyz
         description: "Classificação da criticidade do medicamento, onde: X (Críticos):
           São itens cruciais para o tratamento imediato e eficaz dos pacientes.

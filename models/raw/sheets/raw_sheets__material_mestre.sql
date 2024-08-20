@@ -20,6 +20,7 @@ with
             controlado_indicador,
             controlado_tipo,
             coalesce(safe_cast(consumo_minimo as int64), 1) as consumo_minimo,
+            abastecimento_responsavel,
             abastecimento_frequencia,
             classificacao_xyz,
             remume_indicador,

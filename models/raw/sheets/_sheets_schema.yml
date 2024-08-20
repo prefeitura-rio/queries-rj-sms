@@ -68,6 +68,9 @@ models:
           material é apresentado ou embalado. Por exemplo, um material pode ser
           apresentado em uma garrafa, uma cartela, um tubo, etc.
         data_type: string
+      - name: nome
+        data_type: string
+        quote: true
       - name: hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
           material em um grupo específico com base em suas características ou
@@ -101,9 +104,16 @@ models:
         description: Quantidade mínima do medicamento dispensada para um paciente
         data_type: int64
         quote: true
+      - name: abastecimento_responsavel
+        description: Responsável pelo abastecimento do item.
+        data_type: string
+        quote: true
       - name: abastecimento_frequencia
         data_type: string
         quote: true
+        description: Esta coluna representa a frequência de abastecimento do material
+          específico. Fornece informações sobre com que frequência o material é
+          abastecido ou reabastecido.
       - name: classificacao_xyz
         description: >
           Classificação da criticidade do medicamento, onde: 
