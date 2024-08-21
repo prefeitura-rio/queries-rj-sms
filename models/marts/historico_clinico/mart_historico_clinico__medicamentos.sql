@@ -17,21 +17,24 @@ with
         select 
             cpf,
             replace(json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
-            upper(json_extract_scalar(prescricoes_json, "$.nome_medicamento")) as nome,
+            json_extract_scalar(prescricoes_json, "$.nome_medicamento") as nome,
             cast(json_extract_scalar(prescricoes_json, "$.uso_continuado") as boolean) as uso_continuo,
             updated_at as datahora_prescricao
         from atendimentos_recentes,
             unnest(json_extract_array(prescricoes)) as prescricoes_json
     ),
     materiais as (
-        select id_material, descricao, concentracao
+        select 
+            id_material, 
+            descricao, 
+            concentracao
         from {{ ref("dim_material") }}
     ),
     uso_continuado as (
         select 
             prescricoes.cpf,
             prescricoes.id,
-            initcap(coalesce(materiais.descricao, prescricoes.nome)) as nome,
+            {{ proper_br('coalesce(materiais.descricao, prescricoes.nome)') }} as nome,
             materiais.concentracao,
             prescricoes.datahora_prescricao
         from prescricoes
