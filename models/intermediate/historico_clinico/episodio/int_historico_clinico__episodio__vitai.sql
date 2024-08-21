@@ -123,7 +123,7 @@ with
                     profissional_id as id,
                     profissional_cpf as cpf,
                     profissional_cns as cns,
-                    profissional_nome as nome,
+                    {{ proper_br('profissional_nome') }} as nome,
                     cbo_descricao as especialidade
                 ) ignore nulls
             ) as profissional_saude_responsavel

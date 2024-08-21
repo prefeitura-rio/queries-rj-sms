@@ -161,7 +161,7 @@ with
                     dim_profissional.id as id,
                     dim_profissional.cpf as cpf,
                     dim_profissional.cns as cns,
-                    dim_profissional.nome as nome,
+                    {{ proper_br('dim_profissional.nome') }} as nome,
                     safe_cast(
                         case 
                             when cbo_descricao_profissional like '%Médic%' then 'Médico(a)'
