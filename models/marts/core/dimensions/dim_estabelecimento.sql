@@ -1,10 +1,4 @@
-{{
-    config(
-        materialized="table",
-        alias="estabelecimento",
-        tags=["daily"]
-    )
-}}
+{{ config(materialized="table", alias="estabelecimento", tags=["daily"]) }}
 
 
 with
@@ -42,15 +36,26 @@ with
 
     estab_aux as (select * from {{ ref("raw_sheets__estabelecimento_auxiliar") }}),
 
+    contatos_aps as (
+        select * from {{ ref("raw_plataforma_smsrio__estabelecimento_contato") }}
+    ),
+
     estab_final as (
         select
             estab_sms.*,
+            split(estab_sms.telefone, "/") as telefone_cnes,
+            contatos_aps.telefone as telefone_aps,
+            estab_sms.email as email_cnes,
+            contatos_aps.email as email_aps,
+            contatos_aps.facebook,
+            contatos_aps.instagram,
+            contatos_aps.twitter,
             estab_aux.agrupador_sms,
             estab_aux.tipo_sms,
             estab_aux.tipo_sms_simplificado,
             estab_aux.nome_limpo,
             regexp_replace(
-                estab_aux.nome_limpo, 
+                estab_aux.nome_limpo,
                 r'(CF |CSE |CMS |UPA 24h |POLICLINICA |HOSPITAL MUNICIPAL |COORD DE EMERGENCIA REGIONAL CER |MATERNIDADE )',
                 ''
             ) as nome_complemento,
@@ -66,6 +71,7 @@ with
             ) as id_distrito_sanitario_corrigido,  -- corrige registros que possuem algum erro no cadsus
         from estab_sms
         left join estab_aux using (id_cnes)
+        left join contatos_aps using (id_cnes)
     )
 
 select
@@ -101,9 +107,11 @@ select
     est.endereco_cep,
     est.endereco_latitude,
     est.endereco_longitude,
-    est.telefone,
-    est.fax,
-    est.email,
+    coalesce(est.telefone_aps, est.telefone_cnes) as telefone,
+    coalesce(est.email_aps, est.email_cnes) as email,
+    est.facebook,
+    est.instagram,
+    est.twitter,
     est.aberto_sempre,
     turno.descricao as turno_atendimento,
     est.diretor_clinico_cpf,

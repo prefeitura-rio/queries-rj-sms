@@ -196,90 +196,152 @@ models:
     columns:
       - name: id_unidade
         description: Código do Estabelecimento de Saúde utlizado no CNES
+        data_type: string
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
+        data_type: string
         tests:
           - unique:
               name: core__dim_estabelecimento__id_cnes__unique
       - name: id_tipo_unidade
         description: Tipo de Estabelecimento
+        data_type: string
       - name: area_programatica
         description: Área programática onde está localizada a unidades de saúde
+        data_type: string
+      - name: cnpj_mantenedora
+        data_type: string
+        quote: true
       - name: ativa
         description: Indica se a unidade está ativa ou não
+        data_type: string
+      - name: tipo_sms_agrupado
+        description: Agrupador dos tipos de unidades utilizado dentro da SMS.
+        data_type: string
+        quote: true
       - name: tipo
         description: Tipo de Unidade de Saúde segundo a classificação do CNES
+        data_type: string
       - name: tipo_sms
-        description: Classificação alternativa ao CNES de tipos de unidades.
+        description: Classificação alternativa ao CNES utilizada dentro da SMS para
+          categorizar os tipos de unidades.
+        data_type: string
       - name: tipo_sms_simplificado
         description: Classificação alternativa ao CNES de tipos de unidades abreviada
+        data_type: string
       - name: nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
-      - name: nome_complemento
-        description: Nome do estabelecimento sem o prefixo indicando o tipo de unidade
+        data_type: string
       - name: nome_sigla
         description: Abreviação do nome fantasia
+        data_type: string
+      - name: nome_complemento
+        description: Nome do estabelecimento sem o prefixo indicando o tipo de unidade
+        data_type: string
       - name: nome_fantasia
         description: Nome fantasia
+        data_type: string
       - name: responsavel_sms
         description: Sub secretaria dentro da SMS-Rio responsável pela unidade
+        data_type: string
       - name: administracao
         description: Nome do OSS responsável pela administração. Em caso onde não há
           OSS, é indicado como direta (administração direta pela SMS-Rio)
+        data_type: string
       - name: prontuario_tem
         description: Indica sem a unidade utiliza algum tipo de prontuário, independente
           se é físico ou eletrônico
+        data_type: string
       - name: prontuario_versao
         description: Indica qual sistema de prontuário é utilizado. Em caso de
           prontuário físico, é indicado como papel.
+        data_type: string
       - name: prontuario_estoque_tem_dado
         description: Indica se a unidade utiliza o prontuário para controle de estoque
+        data_type: string
       - name: prontuario_estoque_motivo_sem_dado
         description: Indica o motivo da unidade não utilizar o prontuário para controle
           de estoque
+        data_type: string
       - name: endereco_bairro
         description: Bairro
+        data_type: string
       - name: endereco_logradouro
         description: Logradouro
+        data_type: string
       - name: endereco_numero
         description: Número
+        data_type: string
       - name: endereco_complemento
         description: Complemento
+        data_type: string
       - name: endereco_cep
         description: Código de endereçamento postal (CEP)
+        data_type: string
       - name: endereco_latitude
         description: Latitude
+        data_type: float64
       - name: endereco_longitude
         description: Longitude
+        data_type: float64
       - name: telefone
         description: Telefone para contato
-      - name: fax
-        description: Fax para contato
+        data_type: string
       - name: email
         description: Email para contato
+        data_type: string
+      - name: facebook
+        description: Handle do Facebook
+        data_type: string
+        quote: true
+      - name: instagram
+        description: Handle do Instagem
+        data_type: string
+        quote: true
+      - name: twitter
+        description: Handle do Twitter
+        data_type: string
+        quote: true
       - name: aberto_sempre
         description: "Funcionamento do estabelecimento. Indica se fica sempre aberto /
           Ininterrupto: S - SIM N - NÃO"
+        data_type: string
       - name: turno_atendimento
         description: Descrição do Turno de Atendimento
+        data_type: string
       - name: diretor_clinico_cpf
         description: CPF do Diretor Clínico ou  Gerente / Administrador
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+        data_type: string
       - name: diretor_clinico_conselho
         description: Registro no Conselho de Classe do Diretor Clinico
         policy_tags:
           - '{{ var ("TAG_CRM") }}'
+        data_type: string
       - name: data_atualizao_registro
         description: Data da última atualização do registro
+        data_type: date
       - name: usuario_atualizador_registro
         description: Último usuário que atualizou o registro no CNES
+        data_type: string
       - name: mes_particao
         description: Mês de referência do registro
+        data_type: string
+      - name: ano_particao
+        description: Ano de referência do registro
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Data de referência do registro
+        data_type: string
+        quote: true
       - name: data_carga
         description: Data de carga do registro
+        data_type: datetime
       - name: data_snapshot
         description: Data de snapshot do registro
+        data_type: datetime
   - name: dim_profissional_saude
     description: Tabela de profissionais de saúde que já atenderam em unidades do
       SUS na cidade do Rio de Janeiro
