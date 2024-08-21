@@ -57,10 +57,18 @@ with
             merged.*,
             struct(
                 safe_cast(
-                    if(DATE_DIFF('2020-03-21', paciente.dados.data_nascimento, YEAR) >= 18, true, false)                    
+                    case
+                        when paciente.dados.data_nascimento is null then true
+                        when DATE_DIFF(current_date(), paciente.dados.data_nascimento, YEAR) >= 18 then true
+                        when DATE_DIFF(current_date(), paciente.dados.data_nascimento, YEAR) < 18 then false
+                    end
                 as boolean) as indicador,
                 safe_cast(
-                    if(DATE_DIFF('2020-03-21', paciente.dados.data_nascimento, YEAR) >= 18, null, "Menor de Idade")
+                    case
+                        when paciente.dados.data_nascimento is null then null
+                        when DATE_DIFF(current_date(), paciente.dados.data_nascimento, YEAR) >= 18 then null
+                        when DATE_DIFF(current_date(), paciente.dados.data_nascimento, YEAR) < 18 then "Menor de Idade"
+                    end
                 as string) as motivo
             ) as registro_exibido
         from merged
