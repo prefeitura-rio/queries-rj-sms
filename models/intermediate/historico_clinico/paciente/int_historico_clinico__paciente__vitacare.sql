@@ -52,7 +52,7 @@ SELECT
     WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
         AND TRIM(cpf) != ""
-        AND tipo = "rotineiro"
+        -- AND tipo = "rotineiro"
         -- AND cpf = cpf_filter
 ),
 

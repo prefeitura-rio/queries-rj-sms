@@ -8,6 +8,6 @@
             'NAO INF', 'NAO INFORMADO', 'NAO POSSUI', 'NAO TEM', 'ND', 'NI', 
             'NR', 'PLANO EMPRESA', 'PLANO INDIVIDUAL', 'SEM', 'SEM INF', 
             'SEM INFO', 'SEM INFOR', 'SEM INFORMAAAO', 'SEM INFORMACAO', 
-            'SI', 'SN', 'TESTE'
+            'SI', 'SN', 'TESTE', "SIM", "N/R", "IGNORADO", "VIVE COM C"
         ) THEN NULL
 {% endmacro %}

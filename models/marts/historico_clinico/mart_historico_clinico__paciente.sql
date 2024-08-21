@@ -360,7 +360,7 @@ endereco_dedup AS (
         ORDER BY merge_order ASC, rank ASC
     )
     WHERE dedup_rank = 1
-    ORDER BY merge_order ASC, rank ASC
+    -- ORDER BY merge_order ASC, rank ASC
 ),
 
 endereco_dados AS (
