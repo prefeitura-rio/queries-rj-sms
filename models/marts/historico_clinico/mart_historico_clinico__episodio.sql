@@ -64,7 +64,7 @@ with
                 as string) as motivo
             ) as registro_exibido
         from merged
-            inner join {{ ref("mart_historico_clinico__paciente") }} as paciente 
+            left join {{ ref("mart_historico_clinico__paciente") }} as paciente 
                 on paciente.cpf = merged.paciente.cpf
     )
 select *
