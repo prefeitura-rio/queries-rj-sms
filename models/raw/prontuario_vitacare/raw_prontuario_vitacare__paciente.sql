@@ -5,6 +5,8 @@
     )
 }}
 
+-- dbt run --select raw_prontuario_vitacare__paciente
+
 WITH patients AS (
     SELECT
         *,
