@@ -31,7 +31,7 @@ with
         select 
             prescricoes.cpf,
             prescricoes.id,
-            coalesce(materiais.descricao, prescricoes.nome) as nome,
+            initcap(coalesce(materiais.descricao, prescricoes.nome)) as nome,
             materiais.concentracao,
             prescricoes.datahora_prescricao
         from prescricoes
