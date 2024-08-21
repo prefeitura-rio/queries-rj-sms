@@ -121,7 +121,7 @@ vitacare_clinica_familia AS (
         vc.cpf,
         vc.id_cnes,
         {{proper_estabelecimento('e.nome_limpo')}} AS nome,
-        e.telefone,
+        IF(ARRAY_LENGTH( e.telefone) > 0,  e.telefone[OFFSET(0)], NULL) AS telefone,
         vc.data_atualizacao_vinculo_equipe,
         ROW_NUMBER() OVER (PARTITION BY vc.cpf ORDER BY vc.data_atualizacao_vinculo_equipe DESC, vc.cadastro_permanente DESC, vc.updated_at DESC) AS rank
     FROM vitacare_tb vc
@@ -129,7 +129,8 @@ vitacare_clinica_familia AS (
         ON vc.id_cnes = e.id_cnes
     WHERE vc.id_cnes IS NOT NULL
     GROUP BY
-        vc.cpf, vc.id_cnes, e.telefone, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at, e.nome_limpo
+        vc.cpf, vc.id_cnes, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at, e.nome_limpo,  
+        IF(ARRAY_LENGTH( e.telefone) > 0,  e.telefone[OFFSET(0)], NULL)
         
 ),
 
