@@ -50,7 +50,7 @@ with
     queixa_all as (
         select
             gid_boletim,
-            lower(queixa) as queixa,
+            queixa,
             inicio_datahora,
             row_number() over (
                 partition by gid_boletim order by inicio_datahora desc
@@ -63,7 +63,7 @@ with
             case
                 when (queixa = 'none' or queixa = '')
                 then null
-                else {{ proper_text("queixa") }}
+                else upper(queixa)
             end as queixa
         from queixa_all
         where ordenacao = 1
@@ -88,7 +88,7 @@ with
             case
                 when (desfecho = 'none' or desfecho = '')
                 then null
-                else {{ proper_text("desfecho") }}
+                else upper(desfecho)
             end as desfecho
         from desfecho_atendimento_all
         where ordenacao = 1
@@ -107,7 +107,7 @@ with
         select
             gid,
             cnes,
-            initcap(nome_estabelecimento) as nome_estabelecimento,
+            estabelecimento_dim.nome_limpo as nome_estabelecimento,
             estabelecimento_dim.tipo_sms_simplificado
         from
             {{ ref("raw_prontuario_vitai__m_estabelecimento") }}
