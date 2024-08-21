@@ -250,28 +250,8 @@ select
     struct(
         safe_cast(updated_at as datetime) as updated_at,
         safe_cast(imported_at as datetime) as loaded_at,
-        safe_cast(current_datetime() as datetime) as processed_at,
-        safe_cast(
-            case
-                when
-                    (
-                        (cid_grouped.episodio_informativo = 0)
-                        and (atendimento_struct.motivo_atendimento is null)
-                    )
-                    or (
-                        (atendimento_struct.tipo is null)
-                        and (atendimento_struct.subtipo is null)
-                    )
-                    or (atendimento_struct.entrada_datahora is null)
-                then false
-                else true
-            end as boolean
-        ) as tem_informacoes_basicas,
-        safe_cast(
-            atendimento_struct.episodio_com_paciente as boolean
-        ) as tem_identificador_paciente,
-        safe_cast(false as boolean) as tem_informacoes_sensiveis
+        safe_cast(current_datetime() as datetime) as processed_at
     ) as metadados
 from atendimento_struct
-left join cid_grouped on atendimento_struct.id = cid_grouped.id
-left join profissional_grouped on atendimento_struct.id = profissional_grouped.id
+    left join cid_grouped on atendimento_struct.id = cid_grouped.id
+    left join profissional_grouped on atendimento_struct.id = profissional_grouped.id

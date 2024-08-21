@@ -183,23 +183,7 @@ with
             struct(
                 updated_at,
                 loaded_at,
-                current_datetime() as processed_at,
-                safe_cast(
-                    (
-                        ifnull(ARRAY_LENGTH(dim_condicoes_atribuidas.condicoes) > 0, false) and 
-                        datahora_inicio is not null and
-                        soap_subjetivo_motivo is not null
-                    ) as boolean
-                ) as tem_informacoes_basicas,
-                safe_cast(
-                    (
-                        dim_paciente.paciente.cpf is not null or
-                        dim_paciente.paciente.cns is not null
-                    ) as boolean
-                ) as tem_identificador_paciente,
-                safe_cast(
-                    false as boolean
-                ) as tem_informacoes_sensiveis
+                current_datetime() as processed_at
             ) as metadados
 
         from bruto_atendimento

@@ -51,6 +51,21 @@ with
             prontuario,
             metadados
         from vitacare
+    ),
+    with_observability as (
+        select 
+            *,
+            struct(
+                safe_cast(
+                    if(DATE_DIFF('2020-03-21', paciente.data_nascimento, YEAR) >= 18, true, false)                    
+                as boolean) as indicador,
+                safe_cast(
+                    if(DATE_DIFF('2020-03-21', paciente.data_nascimento, YEAR) >= 18, null, "Menor de Idade")
+                as string) as motivo
+            ) as registro_exibido
+        from merged
+            inner join {{ ref("mart_historico_clinico__paciente") }} as paciente 
+                on paciente.cpf = merged.paciente.cpf
     )
 select *
-from merged
+from with_observability
