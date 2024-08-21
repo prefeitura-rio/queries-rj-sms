@@ -47,7 +47,7 @@ with
             id_cnes as pk,
             struct(
                 id_cnes,
-                concat(tipo_sms, ' ', nome_complemento) as nome,
+                nome_limpo as nome,
                 tipo_sms as estabelecimento_tipo
             ) as estabelecimento
         from {{ ref("dim_estabelecimento") }}
