@@ -13,7 +13,12 @@ with
     medicamentos as (
         select *
         from {{ ref("dim_material") }}
-        where remume_indicador = 'sim' and remume_listagem_basico_indicador = "sim"
+        where
+            remume_indicador = 'sim'
+            and (
+                remume_listagem_basico_indicador = "sim"
+                --- or remume_listagem_uso_interno_indicador = "sim"
+            )
     ),  # TODO: revisar critério de seleção de medicamentos
 
     posicao as (
@@ -107,6 +112,59 @@ with
             m.id_material,
             m.nome,
             coalesce(pqrs.pqrs_categoria, "S") as pqrs_categoria,  -- itens sem qualquer movimento não são classificados
+            round(pqrs.usuarios_atendidos_mes, 0) as usuarios_atendidos_mes,
+            m.hierarquia_n1_categoria,
+            m.hierarquia_n2_subcategoria,
+            m.cadastrado_sistema_vitacare_indicador,
+            m.ativo_indicador,
+            m.abastecimento_responsavel,
+            m.abastecimento_frequencia,
+            coalesce(p.qtd_aps, 0) as qtd_aps,
+            coalesce(p.qtd_tpc, 0) as qtd_tpc,
+            coalesce(round(p.cmd, 2), 0) as cmd,
+            m.farmacia_popular_disponibilidade_indicador,
+            coalesce(rp.rp_vigente_indicador, "nao") as rp_vigente_indicador,
+            rp.vencimento_data,
+            concat(
+                upper(substr(status, 1, 1)), lower(substr(status, 2))
+            ) as registro_preco_status,
+        from medicamentos as m
+        left join posicao_pivoted as p using (id_material)
+        left join curva_pqrs as pqrs using (id_material)
+        left join registro_preco as rp using (id_material)
+    ),
+
+    sources_com_cobertura as (
+        select
+            s.*,
+            if(s.qtd_aps = 0, 10, za.zeradas_ap) as zeradas_ap,
+            if(
+                s.qtd_aps = 0,
+                (select count(distinct id_cnes) from posicao_aps),
+                zu.zerados_ubs
+            ) as zerados_ubs,  -- correção para incluir unidades com estoques positivos porém vencidos
+            coalesce(
+                round({{ dbt_utils.safe_divide("s.qtd_aps", "s.cmd") }}, 2),
+                if(cmd is null, null, 0)
+            ) as cobertura_aps_dias,
+            coalesce(
+                round({{ dbt_utils.safe_divide("s.qtd_tpc", "s.cmd") }}, 2),
+                if(cmd is null, null, 0)
+            ) as cobertura_tpc_dias,
+            coalesce(
+                round({{ dbt_utils.safe_divide("s.qtd_aps + s.qtd_tpc", "s.cmd") }}, 2),
+                if(cmd is null, null, 0)
+            ) as cobertura_total_dias
+        from sources_joined as s
+        left join ubs_zeradas as zu using (id_material)
+        left join ap_zeradas as za using (id_material)
+    ),
+
+    sources_joined_old as (
+        select
+            m.id_material,
+            m.nome,
+            coalesce(pqrs.pqrs_categoria, "S") as pqrs_categoria,  -- itens sem qualquer movimento não são classificados
             pqrs.usuarios_atendidos_mes,
             m.hierarquia_n1_categoria,
             m.hierarquia_n2_subcategoria,
@@ -150,49 +208,99 @@ with
     ),
 
     -- - status e motivo_status
-    relatorio as (
+    sources_joined_com_cobertura_e_status as (
         select
             *,
             case
+                when ativo_indicador = "nao"
+                then "0. Item descontinuado"
                 when
                     pqrs_categoria = "P"
                     and rp_vigente_indicador = "nao"
                     and cobertura_total_dias = 0
-                then "1. Muito Crítico: sem RP e estoque zerado"
+                then "1. Muito Crítico: s/ RP e estoque zerado"
+                when
+                    pqrs_categoria = "P"
+                    and rp_vigente_indicador = "sim"
+                    and cobertura_total_dias = 0
+                then "1. Muito Crítico: c/ RP e estoque zerado "
                 when
                     pqrs_categoria = "P"
                     and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias < 30
-                then "2. Crítico: sem RP e estoque < 30 dias"
+                    and cobertura_total_dias < 15
+                then "2. Crítico: s/ RP e estoque baixo (<15 dias)"
+                when
+                    pqrs_categoria = "P"
+                    and rp_vigente_indicador = "sim"
+                    and cobertura_total_dias < 15
+                then "2. Crítico: c/ RP e estoque baixo (<15 dias)"
                 when
                     pqrs_categoria = "P"
                     and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias < 30
-                then "3. Atenção: estoque baixo < 30 dias"
+                    and cobertura_total_dias >= 15
+                then "3. Atenção: s/ RP e estoque >= 15 dias"
                 when
                     pqrs_categoria in ("Q", "R", "S")
                     and rp_vigente_indicador = "nao"
                     and cobertura_total_dias = 0
-                then "2. Crítico: sem RP e estoque zerado"
+                then "1. Muito Crítico: s/ RP e estoque zerado"
+                when
+                    pqrs_categoria in ("Q", "R", "S")
+                    and rp_vigente_indicador = "sim"
+                    and cobertura_total_dias = 0
+                then "1. Muito Crítico: c/ RP e estoque zerado"
                 when
                     pqrs_categoria in ("Q", "R", "S")
                     and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias < 30
-                then "3. Atenção: sem RP e estoque < 30 dias"
+                    and cobertura_total_dias < 15
+                then "2. Crítico: s/ RP e estoque baixo (<15 dias)"
+                when
+                    pqrs_categoria in ("Q", "R", "S")
+                    and rp_vigente_indicador = "sim"
+                    and cobertura_total_dias < 15
+                then "3. Atenção: c/ RP e estoque baixo (<15 dias)"
                 when
                     pqrs_categoria in ("Q", "R", "S")
                     and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias >= 30
-                then "4. Atenção: sem RP e estoque > 30 dias"
-                else "" 
+                    and cobertura_total_dias >= 15
+                then "4. Atenção: s/ RP e estoque >= 15 dias"
+                else ""
             end as status
-        from sources_joined
+        from sources_com_cobertura
+    ),
+
+    -- final
+    final as (
+        select
+            id_material,
+            nome,
+            pqrs_categoria,
+            usuarios_atendidos_mes,
+            hierarquia_n1_categoria,
+            hierarquia_n2_subcategoria,
+            cadastrado_sistema_vitacare_indicador,
+            abastecimento_frequencia,
+            qtd_aps,
+            qtd_tpc,
+            cmd,
+            cobertura_aps_dias,
+            cobertura_tpc_dias,
+            cobertura_total_dias,
+            zeradas_ap,
+            zerados_ubs,
+            ativo_indicador,
+            farmacia_popular_disponibilidade_indicador,
+            abastecimento_responsavel,
+            rp_vigente_indicador,
+            vencimento_data,
+            registro_preco_status,
+            status,
+        from sources_joined_com_cobertura_e_status
     )
 
-select
-    *,
-from relatorio
-where
-    hierarquia_n1_categoria = "Medicamento"
-    and cadastrado_sistema_vitacare_indicador = "sim"
-    -- and ativo_indicador = "sim"
+select *,
+from final
+where (hierarquia_n1_categoria = "Medicamento" or id_material = "65058200201")
+-- and ativo_indicador = "sim"
+order by cobertura_total_dias asc, status, nome asc
+
