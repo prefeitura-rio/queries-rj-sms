@@ -179,7 +179,7 @@ select
     safe_cast(atendimento_struct.saida_datahora as datetime) as saida_datahora,
 
     -- Motivo e Desfecho
-    safe_cast(atendimento_struct.motivo_atendimento as string) as motivo_atendimento,
+    safe_cast(upper(atendimento_struct.motivo_atendimento) as string) as motivo_atendimento,
     safe_cast(null as string) as desfecho_atendimento,
 
     -- Condições
