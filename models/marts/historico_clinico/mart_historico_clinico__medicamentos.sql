@@ -3,6 +3,7 @@
         schema="saude_historico_clinico",
         alias="medicamentos_cronicos",
         materialized="table",
+        cluster_by = "paciente_cpf",
     )
 }}
 
@@ -42,7 +43,7 @@ with
         where prescricoes.uso_continuo = true
     )
 select
-    cpf,
+    cpf as paciente_cpf,
     array_agg(
         struct(
             id,

@@ -3,6 +3,7 @@
         schema="saude_historico_clinico",
         alias="alergia",
         materialized="table",
+        cluster_by = "paciente_cpf",
     )
 }}
 
@@ -32,8 +33,8 @@ with
     )
 select
     id_paciente,
-    cns,
-    cpf,
+    cns as paciente_cns,
+    cpf as paciente_cpf,
     array_agg(alergia) as alergias,
     safe_cast(current_datetime() as datetime) as processed_at
 from total
