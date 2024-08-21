@@ -52,15 +52,15 @@ with
             metadados
         from vitacare
     ),
-    with_observability as (
+    with_exhibition_configuration as (
         select 
-            *,
+            merged.*,
             struct(
                 safe_cast(
-                    if(DATE_DIFF('2020-03-21', paciente.data_nascimento, YEAR) >= 18, true, false)                    
+                    if(DATE_DIFF('2020-03-21', paciente.dados.data_nascimento, YEAR) >= 18, true, false)                    
                 as boolean) as indicador,
                 safe_cast(
-                    if(DATE_DIFF('2020-03-21', paciente.data_nascimento, YEAR) >= 18, null, "Menor de Idade")
+                    if(DATE_DIFF('2020-03-21', paciente.dados.data_nascimento, YEAR) >= 18, null, "Menor de Idade")
                 as string) as motivo
             ) as registro_exibido
         from merged
@@ -68,4 +68,4 @@ with
                 on paciente.cpf = merged.paciente.cpf
     )
 select *
-from with_observability
+from with_exhibition_configuration
