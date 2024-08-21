@@ -1,3 +1,11 @@
+{{
+    config(
+        schema="intermediario_historico_clinico",
+        alias="alergias_vitacare",
+        materialized="table",
+    )
+}}
+
 with
     alergias_bruto as (
         select
