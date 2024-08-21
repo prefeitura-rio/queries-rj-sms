@@ -120,7 +120,7 @@ vitacare_clinica_familia AS (
     SELECT
         vc.cpf,
         vc.id_cnes,
-        e.nome_limpo AS nome,
+        {{proper_estabelecimento('e.nome_limpo')}} AS nome,
         e.telefone,
         vc.data_atualizacao_vinculo_equipe,
         ROW_NUMBER() OVER (PARTITION BY vc.cpf ORDER BY vc.data_atualizacao_vinculo_equipe DESC, vc.cadastro_permanente DESC, vc.updated_at DESC) AS rank
@@ -129,14 +129,18 @@ vitacare_clinica_familia AS (
         ON vc.id_cnes = e.id_cnes
     WHERE vc.id_cnes IS NOT NULL
     GROUP BY
-        vc.cpf, vc.id_cnes, e.nome_limpo, e.telefone, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at
+        vc.cpf, vc.id_cnes, e.telefone, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at, e.nome_limpo
+        
 ),
 
 -- medicos data
 medicos_data AS (
     SELECT
         e.id_ine,
-        ARRAY_AGG(STRUCT(p.id_profissional_sus, p.nome)) AS medicos
+        ARRAY_AGG(STRUCT(
+            p.id_profissional_sus, 
+            {{proper_br('p.nome')}} AS nome
+        )) AS medicos
     FROM {{ ref("dim_equipe") }} e -- `rj-sms-dev`.`saude_dados_mestres`.`equipe_profissional_saude` 
     LEFT JOIN UNNEST(e.medicos) AS medico_id
     LEFT JOIN {{ ref("dim_profissional_saude") }} p -- `rj-sms-dev`.`saude_dados_mestres`.`profissional_saude`
@@ -148,7 +152,10 @@ medicos_data AS (
 enfermeiros_data AS (
     SELECT
         e.id_ine,
-        ARRAY_AGG(STRUCT(p.id_profissional_sus, p.nome)) AS enfermeiros
+        ARRAY_AGG(STRUCT(
+            p.id_profissional_sus,
+            {{proper_br('p.nome')}} AS nome
+        )) AS enfermeiros
     FROM {{ ref("dim_equipe") }} e -- `rj-sms-dev`.`saude_dados_mestres`.`equipe_profissional_saude` 
     LEFT JOIN UNNEST(e.enfermeiros) AS enfermeiro_id
     LEFT JOIN {{ ref("dim_profissional_saude") }} p -- `rj-sms-dev`.`saude_dados_mestres`.`profissional_saude`
@@ -160,7 +167,7 @@ vitacare_equipe_saude_familia AS (
     SELECT
         vc.cpf,
         vc.id_ine,
-        e.nome_referencia AS nome,  
+        {{proper_br('e.nome_referencia')}} AS nome,
         e.telefone,
         m.medicos, 
         en.enfermeiros, 
@@ -174,7 +181,7 @@ vitacare_equipe_saude_familia AS (
     LEFT JOIN enfermeiros_data en
         ON vc.id_ine = en.id_ine
     WHERE vc.id_ine IS NOT NULL
-    GROUP BY vc.cpf, vc.id_ine, e.nome_referencia, e.telefone, m.medicos, en.enfermeiros, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at
+    GROUP BY vc.cpf, vc.id_ine, e.telefone, m.medicos, en.enfermeiros, vc.data_atualizacao_vinculo_equipe, vc.cadastro_permanente, vc.updated_at, e.nome_referencia
 ),
 
 equipe_saude_familia_dados AS (
