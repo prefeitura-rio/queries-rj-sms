@@ -530,7 +530,8 @@ paciente_metadados AS (
             COUNT(DISTINCT obito_data) AS qtd_datas_obitos,
             COUNT(DISTINCT mae_nome) AS qtd_maes_nomes,
             COUNT(DISTINCT pai_nome) AS qtd_pais_nomes,
-            COUNT(DISTINCT cpf_valido_indicador) AS qtd_cpfs_validos
+            COUNT(DISTINCT cpf_valido_indicador) AS qtd_cpfs_validos,
+            "VITACARE" AS sistema
         ) AS metadados
     FROM vitacare_paciente
     GROUP BY cpf
