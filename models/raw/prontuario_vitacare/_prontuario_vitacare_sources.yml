@@ -18,5 +18,8 @@ sources:
         freshness:
           warn_after: {count: 30, period: day}
           error_after: {count: 60, period: day}
-      - name: atendimento_eventos
-
+  - name: dev_brutos_prontuario_vitacare_staging
+    database: rj-sms-dev
+    schema: brutos_prontuario_vitacare_staging
+    tables:
+    - name: atendimento_eventos

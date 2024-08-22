@@ -8,7 +8,7 @@
 with
     bruto_atendimento_eventos_com_repeticao as (
         select * 
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }} 
+        from {{ source("dev_brutos_prontuario_vitacare_staging", "atendimento_eventos") }} 
     ),
     bruto_atendimento_eventos_ranqueados as (
         select
