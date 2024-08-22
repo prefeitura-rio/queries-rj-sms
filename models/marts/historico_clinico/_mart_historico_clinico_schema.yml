@@ -1,34 +1,43 @@
 version: 2
-
 models:
   - name: mart_historico_clinico__episodio
-    description: |
-      Tabela com uma visão consolidada dos atendimentos realizados em estabelecimentos de saúde.
+    description: >
+      Tabela com uma visão consolidada dos atendimentos realizados em
+      estabelecimentos de saúde.
     columns:
       - name: id
-        description: |
-          Identificador único para o atendimento, composto pelo CNES do estabelecimento e pelo identificador do atendimento (`gid`). 
-          Utilizado para diferenciar atendimentos entre diferentes estabelecimentos.
+        description: >
+          Identificador único para o atendimento, composto pelo CNES do
+          estabelecimento e pelo identificador do atendimento (`gid`). 
+
+          Utilizado para diferenciar atendimentos entre diferentes
+          estabelecimentos.
         tests:
           - not_null:
               name: historico_clinico__id_episodio__notnull
           - unique:
               name: historico_clinico__id_episodio__unique
       - name: tipo
-        description: |
-          Tipo de atendimento classificado como 'Exames', 'Consulta' ou 'Internação', baseado no tipo de atendimento informado no boletim.
+        description: >
+          Tipo de atendimento classificado como 'Exames', 'Consulta' ou
+          'Internação', baseado no tipo de atendimento informado no boletim.
       - name: subtipo
-        description: |
-          Subtipo do atendimento, obtido a partir do tipo de atendimento do boletim. 
+        description: >
+          Subtipo do atendimento, obtido a partir do tipo de atendimento do
+          boletim. 
       - name: entrada_datahora
-        description: |
-          Data e hora de início do atendimento. Representa o momento em que o atendimento começou.
+        description: >
+          Data e hora de início do atendimento. Representa o momento em que o
+          atendimento começou.
       - name: saida_datahora
-        description: |
-          Data e hora de término do atendimento. Representa o momento em que o atendimento terminou.
+        description: >
+          Data e hora de término do atendimento. Representa o momento em que o
+          atendimento terminou.
       - name: paciente
-        description: |
-          Informações sobre os pacientes envolvidos no atendimento, incluindo CPF e CNS. 
+        description: >
+          Informações sobre os pacientes envolvidos no atendimento, incluindo
+          CPF e CNS. 
+
           Agrupados por identificador de prontuário.
       - name: paciente.id_prontuario
         description: |
@@ -44,8 +53,10 @@ models:
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
       - name: cid
-        description: |
-          Códigos e descrições dos CID (Classificação Internacional de Doenças) relacionados ao atendimento. 
+        description: >
+          Códigos e descrições dos CID (Classificação Internacional de Doenças)
+          relacionados ao atendimento. 
+
           Inclui informações como código e nome do CID.
       - name: cid.id
         description: |
@@ -54,11 +65,13 @@ models:
         description: |
           Descrição do CID associado 
       - name: alergia
-        description: |
-          Descrições das alergias associadas ao atendimento, extraídas dos registros de alergias.
+        description: >
+          Descrições das alergias associadas ao atendimento, extraídas dos
+          registros de alergias.
       - name: estabelecimento
-        description: |
-          Informações sobre o estabelecimento de saúde onde o atendimento foi realizado, incluindo CNES, nome e sigla.
+        description: >
+          Informações sobre o estabelecimento de saúde onde o atendimento foi
+          realizado, incluindo CNES, nome e sigla.
       - name: estabelecimento.id_cnes
         description: |
           CNES do estabelecimento onde ocorreu o atendimento
@@ -69,8 +82,9 @@ models:
         description: |
           Tipo do estabelecimento onde ocorreu o atendimento
       - name: profissional_saude_responsavel
-        description: |
-          Dados dos profissionais de saúde responsáveis pelo atendimento, incluindo CPF, CNS e nome.
+        description: >
+          Dados dos profissionais de saúde responsáveis pelo atendimento,
+          incluindo CPF, CNS e nome.
       - name: profissional_saude_responsavel.id
         description: |
           ID do profissional responsável pelo atendimento.
@@ -92,8 +106,9 @@ models:
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
       - name: prontuario
-        description: |
-          Informações adicionais sobre o atendimento, como o fornecedor e o identificador do atendimento.
+        description: >
+          Informações adicionais sobre o atendimento, como o fornecedor e o
+          identificador do atendimento.
       - name: prontuario.id_atendimento
         description: |
           ID do atendimento.
@@ -113,13 +128,17 @@ models:
         description: |
           Flag que indica se o episodio é relevante para a aplicação do HCI
   - name: mart_historico_clinico__alergia
-    description: |
-        Este modelo agrega informações sobre alergias dos pacientes e combina essas informações com dados identificadores dos pacientes como `cns` e `cpf`. Ele realiza a limpeza e padronização dos dados de alergias e garante que os identificadores dos pacientes sejam consistentes e precisos.
-
+    description: >
+      Este modelo agrega informações sobre alergias dos pacientes e combina
+      essas informações com dados identificadores dos pacientes como `cns` e
+      `cpf`. Ele realiza a limpeza e padronização dos dados de alergias e
+      garante que os identificadores dos pacientes sejam consistentes e
+      precisos.
     columns:
       - name: id_paciente
-        description: |
-          Identificador único do paciente. Este campo é utilizado para associar os dados de alergia com o paciente correspondente.
+        description: >
+          Identificador único do paciente. Este campo é utilizado para associar
+          os dados de alergia com o paciente correspondente.
         tests:
           - not_null:
               name: alergia__id_paciente__notnull
@@ -136,8 +155,179 @@ models:
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
       - name: alergias
-        description: |
-          Lista de alergias do paciente, agregada a partir dos registros individuais. As alergias são limpadas e padronizadas, e a lista contém apenas valores distintos.
+        description: >
+          Lista de alergias do paciente, agregada a partir dos registros
+          individuais. As alergias são limpadas e padronizadas, e a lista contém
+          apenas valores distintos.
         tests:
           - not_null:
               name: alergia__descricao_alergia__notnull
+  - name: mart_historico_clinico__paciente
+    description: "O modelo é um registro abrangente do histórico do paciente que
+      integra dados de várias fontes, incluindo 'VITACARE', 'VITAI' e 'SMSRIO'.
+      "
+    columns:
+      - name: cpf
+        description: CPF do paciente
+        data_type: string
+        quote: true
+      - name: cns
+        description: ARRAY contendo todos os números do Cartão Nacional de Saúde
+          associados ao paciente. Este número é usado pelo Ministério da Saúde
+          do Brasil para rastrear os serviços de saúde que um paciente recebe. O
+          CNS é um identificador único para um paciente e é usado em conjunto
+          com o campo 'cpf' para garantir o rastreamento preciso do paciente.
+        data_type: string
+        quote: true
+      - name: dados
+        description: A coluna 'dados' é do tipo STRUCT e contém uma variedade de
+          subcampos relacionados às informações pessoais e demográficas do paciente.
+        data_type: record
+        quote: true
+      - name: dados.nome
+        description: Nome de registro.
+      - name: dados.nome_social
+        description: Nome social.
+      - name: dados.data_nascimento
+        description: Data de nascimento.
+      - name: dados.genero
+        description: "Gênero do paciente. Os valores possíveis são 'Masculino',
+          'Feminino' e nulo (não informado)."
+      - name: dados.raca
+        description: "Raça do paciente. Os valores possíveis são 'Amarela','Branca', 
+        'Indigena', 'Parda', 'Preta' e nulo (não informado)."
+      - name: dados.obito_indicador
+        description: Indica se o paciente é falecido ou não.
+      - name: dados.obito_data
+        description: Indica a data de falecimento do paciente.
+      - name: dados.mae_nome
+        description: Nome da mãe do paciente.
+      - name: dados.pai_nome
+        description: Nome do pai do paciente. A ausência de um valor neste campo não significa
+          necessariamente que o pai do paciente seja desconhecido, mas sim que
+          o valor não foi fornecido.
+      - name: dados.identidade_validada_indicador
+        description: Indica se a identidade do paciente foi validada em alguma base federal.
+      - name: equipe_saude_familia
+        description: Esta coluna é um Array contendo todas as equipes de saúde da família
+          nas quais o paciente está atualmente associado. As equipes são ordenadas de acordo
+          com a data de associação/atualização mais recente.
+        data_type: record
+        quote: true
+      - name: equipe_saude_familia.id_ine
+        description: Identificador da equipe de saúde da família.
+      - name: equipe_saude_familia.nome
+        description: Nome da equipe de saúde da família.
+      - name: equipe_saude_familia.telefone
+        description: Telefone para contato com a equipe de saúde da família.
+      - name: equipe_saude_familia.cnes
+        description: CNES (Cadastro Nacional de Estabelecimentos de Saúde) da equipe.
+      - name: equipe_saude_familia.medicos
+        description: Relação de médicos da equipe de saúde da família.
+      - name: equipe_saude_familia.medicos.id_profissional_sus
+        description: Identificador do profissional de saúde no CNES.
+      - name: equipe_saude_familia.medicos.nome
+        description: Nome do profissional de saúde.
+      - name: equipe_saude_familia.enfermeiros
+        description: Relação de enfermeiros da equipe de saúde da família.
+      - name: equipe_saude_familia.enfermeiros.id_profissional_sus
+        description: Identificador do profissional de saúde no CNES.
+      - name: equipe_saude_familia.enfermeiros.nome
+        description: Nome do profissional de saúde.
+      - name: equipe_saude_familia.clinica_familia
+        description: Nome da clínica da família.
+      - name: equipe_saude_familia.id_profissional
+        description: Identificador do profissional de saúde.
+      - name: equipe_saude_familia.clinica_familia
+        description: Relação informações sobre a clínica da família associada à equipe.
+      - name: equipe_saude_familia.clinica_familia.id_cnes
+        description: CNES da clínica da família.
+      - name: equipe_saude_familia.clinica_familia.nome
+        description: Nome da clínica da família.
+      - name: equipe_saude_familia.clinica_familia.telefone
+        description: Telefone para contato com a clínica da família.
+      - name: equipe_saude_familia.datahora_ultima_atualizacao
+        description: Data e hora da última atualização da equipe de saúde da família.
+      - name: equipe_saude_familia.rank
+        description: "Indica a ordem de associação da equipe de saúde da família. O critério
+          de ordenação é baseado na data de associação/atualização (campo: 'datahora_ultima_atualizacao') mais recente."
+      - name: contato
+        description: Esta coluna é do tipo registro e contém informações de contato para
+          o paciente. Inclui números de telefone e endereços de e-mail
+          deduplicados de vários sistemas de origem ('vitacare_tb', 'vitai_tb',
+          'smsrio_tb'). As informações de contato estão vinculadas ao paciente
+          por meio do campo 'cpf'. A estrutura exata e os campos dentro deste
+          tipo de registro podem variar dependendo do sistema de origem e das
+          informações de contato específicas disponíveis para o paciente.
+        data_type: record
+        quote: true
+      - name: contato.telefone
+        description: "ARRAY contendo os números de telefone ordenados. O 
+          critério de ordenação é pelos cadastros pelo ACS na atenção primária 
+          (Vitacare), em seguida pelos informados para Regulação na plataforma 
+          SMS RIO, e por último os informados nas UPAs e Hospitais VITAI."
+      - name: contato.telefone.valor
+        description: Número de telefone.
+      - name: contato.telefone.sistema
+        description: Sistema de origem do número de telefone.
+      - name: contato.telefone.rank
+        description: "Ranking do telefone." 
+      - name: contato.email
+        description: "ARRAY contendo os endereços de e-mail ordenados pelo sistema de origem: VitaCare, Plataforma SMS Rio e Vitai."
+      - name: contato.email.valor
+        description: Número de email.
+      - name: contato.email.sistema
+        description: Sistema de origem do número de email.
+      - name: contato.email.rank
+        description: "Ranking do email." 
+      - name: endereco
+        description: Esta coluna é do tipo registro e contém informações de endereço
+          para o paciente. Inclui detalhes de endereço deduplicados de vários
+          sistemas de origem ('vitacare_tb', 'vitai_tb', 'smsrio_tb'). As
+          informações de endereço estão vinculadas ao paciente por meio do campo
+          'cpf'. A estrutura exata e os campos dentro deste tipo de registro
+          podem variar dependendo do sistema de origem e das informações de
+          endereço específicas disponíveis para o paciente.
+        data_type: record
+        quote: true
+      - name: endereco.logradouro
+        description: Nome da rua/avenida/etc.
+      - name: endereco.numero
+        description: Número do endereço.
+      - name: endereco.complemento
+        description: Complemento do endereço.
+      - name: endereco.bairro
+        description: Bairro do endereço.
+      - name: endereco.municipio
+        description: Município do endereço.
+      - name: endereco.uf
+        description: Unidade federativa (estado) do endereço.
+      - name: endereco.cep
+        description: Código postal (CEP) do endereço.
+      - name: prontuario
+        description: A coluna 'prontuario' é do tipo registro e contém os registros
+          médicos do paciente. Inclui o sistema de onde os dados foram obtidos
+          ('sistema'), o identificador único da unidade de saúde onde o paciente
+          foi tratado ('id_cnes'), o identificador único do paciente na unidade
+          de saúde ('id_paciente') e a classificação do registro. A
+          classificação é usada para ordenar os registros quando há vários
+          registros para o mesmo paciente do mesmo sistema de origem.
+        data_type: record
+        quote: true
+      - name: prontuario.sistema
+        description: Sistema de onde os dados foram obtidos.
+      - name: prontuario.id_cnes
+        description: Identificador único da unidade de saúde.
+      - name: prontuario.id_paciente
+        description: Identificador único do paciente na unidade de saúde.
+      - name: prontuario.classificacao
+        description: Classificação do registro médico.
+      - name: metadados
+        description: A coluna 'metadados' é do tipo registro e contém metadados sobre o
+          registro do paciente. Atualmente, inclui apenas o carimbo de data/hora
+          em que o registro foi criado ('created_at'). O carimbo de data/hora
+          está no formato UTC e segue o formato 'AAAA-MM-DD HH:MM:SS'.
+        data_type: record
+        quote: true
+      - name: metadados.created_at
+        description: Carimbo de data/hora de criação do registro.
