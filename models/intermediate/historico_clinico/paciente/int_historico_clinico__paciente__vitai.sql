@@ -35,7 +35,7 @@ WITH vitai_tb AS (
         {{remove_accents_upper('bairro')}} AS bairro,
         {{remove_accents_upper('municipio')}} AS cidade,
         {{remove_accents_upper('uf')}} AS estado,
-        {{remove_accents_upper('id_cidadao')}} AS id_paciente,
+        {{remove_accents_upper('gid')}} AS id_paciente,
         {{remove_accents_upper('nome_alternativo')}} AS nome_social,
         {{remove_accents_upper('sexo')}} AS genero,
         {{remove_accents_upper('raca_cor')}} AS raca,
