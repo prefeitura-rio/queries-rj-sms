@@ -167,6 +167,8 @@ models:
         description: CPF do paciente
         data_type: string
         quote: true
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: cns
         description: ARRAY contendo todos os números do Cartão Nacional de Saúde
           associados ao paciente. Este número é usado pelo Ministério da Saúde
@@ -175,17 +177,25 @@ models:
           com o campo 'cpf' para garantir o rastreamento preciso do paciente.
         data_type: string
         quote: true
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: dados
-        description: A coluna 'dados' é do tipo STRUCT e contém uma variedade de
+        description: STRUCT contendo uma variedade de
           subcampos relacionados às informações pessoais e demográficas do paciente.
         data_type: record
         quote: true
       - name: dados.nome
         description: Nome de registro.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: dados.nome_social
         description: Nome social.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: dados.data_nascimento
         description: Data de nascimento.
+        policy_tags:
+          - '{{ var ("TAG_DTNASCIMENTO") }}'
       - name: dados.genero
         description: "Gênero do paciente. Os valores possíveis são 'Masculino',
           'Feminino' e nulo (não informado)."
@@ -194,18 +204,26 @@ models:
         'Indigena', 'Parda', 'Preta' e nulo (não informado)."
       - name: dados.obito_indicador
         description: Indica se o paciente é falecido ou não.
+        policy_tags:
+          - '{{ var ("TAG_OBITO") }}'
       - name: dados.obito_data
         description: Indica a data de falecimento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_DTOBITO") }}'
       - name: dados.mae_nome
         description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var ("TAG_NOME_MAE") }}'
       - name: dados.pai_nome
         description: Nome do pai do paciente. A ausência de um valor neste campo não significa
           necessariamente que o pai do paciente seja desconhecido, mas sim que
           o valor não foi fornecido.
+        policy_tags:
+          - '{{ var ("TAG_NOME_PAI") }}'
       - name: dados.identidade_validada_indicador
         description: Indica se a identidade do paciente foi validada em alguma base federal.
       - name: equipe_saude_familia
-        description: Esta coluna é um Array contendo todas as equipes de saúde da família
+        description: Array contendo todas as equipes de saúde da família
           nas quais o paciente está atualmente associado. As equipes são ordenadas de acordo
           com a data de associação/atualização mais recente.
         data_type: record
@@ -248,13 +266,9 @@ models:
         description: "Indica a ordem de associação da equipe de saúde da família. O critério
           de ordenação é baseado na data de associação/atualização (campo: 'datahora_ultima_atualizacao') mais recente."
       - name: contato
-        description: Esta coluna é do tipo registro e contém informações de contato para
+        description: STRUCT contendo informações de contato para
           o paciente. Inclui números de telefone e endereços de e-mail
-          deduplicados de vários sistemas de origem ('vitacare_tb', 'vitai_tb',
-          'smsrio_tb'). As informações de contato estão vinculadas ao paciente
-          por meio do campo 'cpf'. A estrutura exata e os campos dentro deste
-          tipo de registro podem variar dependendo do sistema de origem e das
-          informações de contato específicas disponíveis para o paciente.
+          registrados nos sistemas SMS RIO, VITAI e VITACARE.
         data_type: record
         quote: true
       - name: contato.telefone
@@ -264,66 +278,88 @@ models:
           SMS RIO, e por último os informados nas UPAs e Hospitais VITAI."
       - name: contato.telefone.valor
         description: Número de telefone.
+        policy_tags:
+          - '{{ var ("TAG_TELEFONE") }}'
       - name: contato.telefone.sistema
         description: Sistema de origem do número de telefone.
       - name: contato.telefone.rank
         description: "Ranking do telefone." 
       - name: contato.email
-        description: "ARRAY contendo os endereços de e-mail ordenados pelo sistema de origem: VitaCare, Plataforma SMS Rio e Vitai."
+        description:  "ARRAY contendo os emails ordenados. O 
+          critério de ordenação é pelos cadastros pelo ACS na atenção primária 
+          (Vitacare), em seguida pelos informados para Regulação na plataforma 
+          SMS RIO, e por último os informados nas UPAs e Hospitais VITAI."
       - name: contato.email.valor
         description: Número de email.
+        policy_tags:
+          - '{{ var ("TAG_EMAIL") }}'
       - name: contato.email.sistema
         description: Sistema de origem do número de email.
       - name: contato.email.rank
         description: "Ranking do email." 
       - name: endereco
-        description: Esta coluna é do tipo registro e contém informações de endereço
-          para o paciente. Inclui detalhes de endereço deduplicados de vários
-          sistemas de origem ('vitacare_tb', 'vitai_tb', 'smsrio_tb'). As
-          informações de endereço estão vinculadas ao paciente por meio do campo
-          'cpf'. A estrutura exata e os campos dentro deste tipo de registro
-          podem variar dependendo do sistema de origem e das informações de
-          endereço específicas disponíveis para o paciente.
+        description: Esta coluna é do tipo registro e contém informações de todos os endereços
+          informados em algumas unidade de saúde da rede.
         data_type: record
         quote: true
-      - name: endereco.logradouro
-        description: Nome da rua/avenida/etc.
-      - name: endereco.numero
-        description: Número do endereço.
-      - name: endereco.complemento
-        description: Complemento do endereço.
-      - name: endereco.bairro
-        description: Bairro do endereço.
-      - name: endereco.municipio
-        description: Município do endereço.
-      - name: endereco.uf
-        description: Unidade federativa (estado) do endereço.
       - name: endereco.cep
         description: Código postal (CEP) do endereço.
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: endereco.tipo_logradouro
+        description: Tipo de logradouro. 
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: endereco.logradouro
+        description: Nome da rua/avenida/etc.
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: endereco.numero
+        description: Número do endereço.
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: endereco.complemento
+        description: Complemento do endereço.
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: endereco.bairro
+        description: Bairro do endereço.
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: endereco.cidade
+        description: Município do endereço.
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: endereco.estado
+        description: Unidade federativa (estado) do endereço.
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
+      - name: endereco.datahora_ultima_atualizacao
+        description: Data e hora da última atualização do endereço.
+      - name: endereco.sistema
+        description: Sistema de origem do endereço.
+      - name: endereco.rank
+        description: "Rank do endereço."
       - name: prontuario
-        description: A coluna 'prontuario' é do tipo registro e contém os registros
-          médicos do paciente. Inclui o sistema de onde os dados foram obtidos
-          ('sistema'), o identificador único da unidade de saúde onde o paciente
-          foi tratado ('id_cnes'), o identificador único do paciente na unidade
-          de saúde ('id_paciente') e a classificação do registro. A
-          classificação é usada para ordenar os registros quando há vários
-          registros para o mesmo paciente do mesmo sistema de origem.
+        description: STRUCT contendo a relação de sistemas
+          onde há registro do paciente.
         data_type: record
         quote: true
       - name: prontuario.sistema
         description: Sistema de onde os dados foram obtidos.
       - name: prontuario.id_cnes
-        description: Identificador único da unidade de saúde.
+        description: Identificador único da unidade de saúde para os casos onde
+          o sistema de origem é um prontuário eletrônico.
       - name: prontuario.id_paciente
-        description: Identificador único do paciente na unidade de saúde.
-      - name: prontuario.classificacao
-        description: Classificação do registro médico.
+        description: Identificador único do paciente no sistema de origem.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR") }}'
+      - name: prontuario.rank
+        description: "Ordenação do prontuário no array."
       - name: metadados
-        description: A coluna 'metadados' é do tipo registro e contém metadados sobre o
-          registro do paciente. Atualmente, inclui apenas o carimbo de data/hora
-          em que o registro foi criado ('created_at'). O carimbo de data/hora
-          está no formato UTC e segue o formato 'AAAA-MM-DD HH:MM:SS'.
+        description: STRUCT contendo metadados sobre o registro do paciente.
         data_type: record
         quote: true
       - name: metadados.created_at
-        description: Carimbo de data/hora de criação do registro.
+        description: Marcação de data/hora de criação do registro no no formato UTC,
+          seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
