@@ -52,28 +52,32 @@ with
             metadados
         from vitacare
     ),
+    with_fingerprint as (
+        select 
+            farm_fingerprint(concat(prontuario.fornecedor, prontuario.id_atendimento)) as id_atendimento,
+            merged.*,
+        from merged
+    ),
     with_exhibition_configuration as (
         select 
-            merged.*,
+            with_fingerprint.*,
             struct(
                 safe_cast(
                     case
-                        when paciente.dados.data_nascimento is null then true
-                        when DATE_DIFF(current_date(), paciente.dados.data_nascimento, YEAR) >= 18 then true
-                        when DATE_DIFF(current_date(), paciente.dados.data_nascimento, YEAR) < 18 then false
+                        when paciente.data_nascimento is null then true
+                        when DATE_DIFF(current_date(), paciente.data_nascimento, YEAR) >= 18 then true
+                        when DATE_DIFF(current_date(), paciente.data_nascimento, YEAR) < 18 then false
                     end
                 as boolean) as indicador,
                 safe_cast(
                     case
-                        when paciente.dados.data_nascimento is null then null
-                        when DATE_DIFF(current_date(), paciente.dados.data_nascimento, YEAR) >= 18 then null
-                        when DATE_DIFF(current_date(), paciente.dados.data_nascimento, YEAR) < 18 then "Menor de Idade"
+                        when paciente.data_nascimento is null then null
+                        when DATE_DIFF(current_date(), paciente.data_nascimento, YEAR) >= 18 then null
+                        when DATE_DIFF(current_date(), paciente.data_nascimento, YEAR) < 18 then "Menor de Idade"
                     end
                 as string) as motivo
             ) as registro_exibido
-        from merged
-            left join {{ ref("mart_historico_clinico__paciente") }} as paciente 
-                on paciente.cpf = merged.paciente.cpf
+        from with_fingerprint
     )
 select *
 from with_exhibition_configuration
