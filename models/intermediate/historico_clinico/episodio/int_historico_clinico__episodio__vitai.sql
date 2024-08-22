@@ -180,9 +180,23 @@ with
         from profissional_distinct
         group by 1
     ),
+    paciente_struct as (
+        select
+            prontuario.id_paciente as pk,
+            struct(
+                prontuario.id_paciente as id,
+                paciente_merged.cpf,
+                paciente_merged.cns,
+                paciente_merged.dados.data_nascimento
+            ) as paciente
+        from {{ ref('mart_historico_clinico__paciente') }} as paciente_merged, 
+            unnest(prontuario) as prontuario
+        where sistema = 'VITAI'
+    ),
     -- Monta base do episódio para ser enriquecida
     atendimento_struct as (
         select
+            boletim.gid_paciente as fk_paciente,
             concat(estabelecimentos.cnes, ".", boletim.gid) as id,
             queixa_final.queixa as motivo_atendimento,
             trim(initcap(boletim.atendimento_tipo)) as tipo,
@@ -198,7 +212,6 @@ with
                 then null
                 else cast(alta_data as datetime)
             end as saida_datahora,
-            struct(boletim.gid as id_prontuario, boletim.cpf, boletim.cns) as paciente,
             struct(
                 estabelecimentos.cnes as id_cnes,
                 {{ proper_estabelecimento("nome_estabelecimento") }} as nome,
@@ -206,21 +219,18 @@ with
             ) as estabelecimento,
             struct(boletim.gid as id_atendimento, "vitai" as fornecedor) as prontuario,
             imported_at,
-            updated_at,
-            case
-                when (boletim.cpf is null) and (boletim.cns is null) then 0 else 1
-            end as episodio_com_paciente
+            updated_at
 
         from boletim
-        left join estabelecimentos on boletim.gid_estabelecimento = estabelecimentos.gid
-        left join queixa_final on boletim.gid = queixa_final.gid_boletim
-        left join
-            desfecho_atendimento_final
-            on boletim.gid = desfecho_atendimento_final.gid_boletim
+            left join estabelecimentos on boletim.gid_estabelecimento = estabelecimentos.gid
+            left join queixa_final on boletim.gid = queixa_final.gid_boletim
+            left join
+                desfecho_atendimento_final
+                on boletim.gid = desfecho_atendimento_final.gid_boletim
     )
 select
     -- Paciente
-    atendimento_struct.paciente,
+    paciente_struct.paciente,
 
     -- Tipo e Subtipo
     safe_cast(atendimento_struct.tipo as string) as tipo,
@@ -255,3 +265,4 @@ select
 from atendimento_struct
     left join cid_grouped on atendimento_struct.id = cid_grouped.id
     left join profissional_grouped on atendimento_struct.id = profissional_grouped.id
+    left join paciente_struct on atendimento_struct.fk_paciente = paciente_struct.pk
