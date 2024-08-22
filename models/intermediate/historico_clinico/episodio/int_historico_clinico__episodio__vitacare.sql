@@ -21,11 +21,14 @@ with
         select
             cpf as pk,
             struct(
-                id as id_prontuario,
-                cpf,
-                cns
+                prontuario.id_paciente as id,
+                paciente_merged.cpf,
+                paciente_merged.cns,
+                paciente_merged.dados.data_nascimento
             ) as paciente
-        from {{ ref('raw_prontuario_vitacare__paciente') }}
+        from {{ ref('mart_historico_clinico__paciente') }} as paciente_merged, 
+            unnest(prontuario) as prontuario
+        where sistema = 'VITACARE'
     ),
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  DIM: Profissional

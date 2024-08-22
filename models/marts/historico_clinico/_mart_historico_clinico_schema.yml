@@ -5,13 +5,9 @@ models:
       Tabela com uma visão consolidada dos atendimentos realizados em
       estabelecimentos de saúde.
     columns:
-      - name: id
-        description: >
-          Identificador único para o atendimento, composto pelo CNES do
-          estabelecimento e pelo identificador do atendimento (`gid`). 
-
-          Utilizado para diferenciar atendimentos entre diferentes
-          estabelecimentos.
+      - name: id_atendimento
+        description: |
+          Fingerprint determinístico para o atendimento.
         tests:
           - not_null:
               name: historico_clinico__id_episodio__notnull
