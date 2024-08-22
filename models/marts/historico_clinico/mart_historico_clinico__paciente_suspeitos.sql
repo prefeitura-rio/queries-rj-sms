@@ -1,6 +1,6 @@
 {{
     config(
-        alias="paciente",
+        alias="paciente_suspeitos",
         materialized="table",
         schema="saude_historico_clinico"
     )
@@ -39,7 +39,6 @@ WITH vitacare_tb AS (
         prontuario
     FROM {{ ref('int_historico_clinico__paciente__vitacare') }},
     UNNEST(dados) AS dados
-    WHERE dados.rank=1
     -- AND cpf = cpf_filter
 ),
 
@@ -64,7 +63,6 @@ vitai_tb AS (
         prontuario
     FROM {{ ref('int_historico_clinico__paciente__vitai') }},
     UNNEST(dados) AS dados
-    WHERE dados.rank=1
     -- AND cpf = cpf_filter
 ),
 
@@ -89,7 +87,6 @@ smsrio_tb AS (
         prontuario
     FROM {{ ref("int_historico_clinico__paciente__smsrio") }},
     UNNEST(dados) AS dados
-    WHERE dados.rank=1
     -- AND cpf = cpf_filter
 ),
 
@@ -568,10 +565,6 @@ paciente_integrado AS (
     LEFT JOIN contato_dados ct ON pd.cpf = ct.cpf
     LEFT JOIN endereco_dados ed ON pd.cpf = ed.cpf
     LEFT JOIN prontuario_dados pt ON pd.cpf = pt.cpf
-    WHERE pd.dados.nome IS NOT NULL
-        AND pd.dados.data_nascimento IS NOT NULL
-        AND pd.dados.cpf_valido_indicador IS TRUE
-
 )
 
 

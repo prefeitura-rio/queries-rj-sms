@@ -23,6 +23,7 @@
 WITH vitacare_tb AS (
 SELECT
         {{remove_accents_upper('cpf')}} AS cpf,
+        {{ validate_cpf(remove_accents_upper('cpf')) }} AS cpf_valido_indicador,
         {{remove_accents_upper('cns')}} AS cns,
         {{remove_accents_upper('nome')}} AS nome,
         {{remove_accents_upper('cnes_unidade')}} AS id_cnes, -- use cnes_unidade to get name from  rj-sms.saude_dados_mestres.estabelecimento
@@ -50,8 +51,8 @@ SELECT
         cadastro_permanente
     FROM {{ref('raw_prontuario_vitacare__paciente')}} -- `rj-sms-dev`.`brutos_prontuario_vitacare`.`paciente`
     WHERE cpf IS NOT NULL
-        AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
-        AND TRIM(cpf) != ""
+        AND NOT REGEXP_CONTAINS({{remove_accents_upper('cpf')}}, r'[A-Za-z]')
+        AND TRIM({{remove_accents_upper('cpf')}}) != ""
         -- AND tipo = "rotineiro"
         -- AND cpf = cpf_filter
 ),
@@ -483,6 +484,7 @@ prontuario_dados AS (
 vitacare_paciente AS (
     SELECT
         cpf,
+        cpf_valido_indicador,
         {{proper_br('nome')}} AS nome,
         CASE 
             WHEN nome_social IN ('') THEN NULL
@@ -511,14 +513,34 @@ vitacare_paciente AS (
         pai_nome,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank
     FROM vitacare_tb
-    GROUP BY cpf, nome, nome_social, cpf, data_nascimento, genero, raca, obito_data, mae_nome, pai_nome,updated_at, cadastro_permanente, data_atualizacao_vinculo_equipe
+    GROUP BY cpf, nome, nome_social, cpf, data_nascimento, genero, raca, obito_data, mae_nome, pai_nome,updated_at, cadastro_permanente, data_atualizacao_vinculo_equipe, cpf_valido_indicador
 ),
 
+paciente_metadados AS (
+    SELECT
+        cpf,
+        STRUCT(
+            -- count the distinct values for each field
+            COUNT(DISTINCT nome) AS qtd_nomes,
+            COUNT(DISTINCT nome_social) AS qtd_nomes_sociais,
+            COUNT(DISTINCT data_nascimento) AS qtd_datas_nascimento,
+            COUNT(DISTINCT genero) AS qtd_generos,
+            COUNT(DISTINCT raca) AS qtd_racas,
+            COUNT(DISTINCT obito_indicador) AS qtd_obitos_indicadores,
+            COUNT(DISTINCT obito_data) AS qtd_datas_obitos,
+            COUNT(DISTINCT mae_nome) AS qtd_maes_nomes,
+            COUNT(DISTINCT pai_nome) AS qtd_pais_nomes,
+            COUNT(DISTINCT cpf_valido_indicador) AS qtd_cpfs_validos
+        ) AS metadados
+    FROM vitacare_paciente
+    GROUP BY cpf
+),
 
 paciente_dados AS (
     SELECT
-        cpf,
+        pc.cpf,
         ARRAY_AGG(STRUCT(
+                cpf_valido_indicador,
                 nome,
                 nome_social,
                 data_nascimento,
@@ -528,9 +550,12 @@ paciente_dados AS (
                 obito_data,
                 mae_nome,
                 pai_nome,
-                rank
+                rank,
+                pm.metadados
         )) AS dados
-    FROM vitacare_paciente
+    FROM vitacare_paciente pc
+    JOIN paciente_metadados as pm
+        ON pc.cpf = pm.cpf
     GROUP BY cpf
 ),
 

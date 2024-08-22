@@ -18,6 +18,7 @@
 WITH smsrio_tb AS (
     SELECT 
         {{remove_accents_upper('cpf')}} AS cpf,
+        {{ validate_cpf(remove_accents_upper('cpf')) }} AS cpf_valido_indicador,
         {{remove_accents_upper('cns_lista')}} AS cns,
         {{remove_accents_upper('nome')}} AS nome,
         {{remove_accents_upper('telefone_lista')}} AS telefones,
@@ -43,9 +44,8 @@ WITH smsrio_tb AS (
         CAST(NULL AS STRING) AS id_cnes
     FROM {{ref("raw_plataforma_smsrio__paciente")}} -- `rj-sms-dev`.`brutos_plataforma_smsrio`.`paciente`
     WHERE cpf IS NOT NULL
-        AND NOT REGEXP_CONTAINS(cpf, r'[A-Za-z]')
-        AND TRIM(cpf) NOT IN  ("","00000000000","01234567890","98765432100")
-        
+        AND NOT REGEXP_CONTAINS({{remove_accents_upper('cpf')}}, r'[A-Za-z]')
+        AND TRIM({{remove_accents_upper('cpf')}}) NOT IN  ("","00000000000")
 ),
 
 
@@ -398,6 +398,7 @@ prontuario_dados AS (
 smsrio_paciente AS (
     SELECT
         cpf,
+        cpf_valido_indicador,
         {{proper_br('nome')}} AS nome,
         {{proper_br('nome_social')}} AS nome_social,
         data_nascimento,
@@ -424,17 +425,38 @@ smsrio_paciente AS (
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at) AS rank
     FROM smsrio_tb
     GROUP BY
-        cpf, nome,nome_social, cpf, data_nascimento, genero, obito_indicador, obito_data, mae_nome, pai_nome, updated_at,
+        cpf, nome,nome_social, cpf, data_nascimento, genero, obito_indicador, obito_data, mae_nome, pai_nome, updated_at,cpf_valido_indicador,
         CASE
             WHEN raca IN ("NONE", "None", "NAO INFORMADO", "SEM INFORMACAO") THEN NULL
             ELSE INITCAP(raca)
         END
 ),
 
-paciente_dados AS (
+paciente_metadados AS (
     SELECT
         cpf,
+        STRUCT(
+            -- count the distinct values for each field
+            COUNT(DISTINCT nome) AS qtd_nomes,
+            COUNT(DISTINCT nome_social) AS qtd_nomes_sociais,
+            COUNT(DISTINCT data_nascimento) AS qtd_datas_nascimento,
+            COUNT(DISTINCT genero) AS qtd_generos,
+            COUNT(DISTINCT raca) AS qtd_racas,
+            COUNT(DISTINCT obito_indicador) AS qtd_obitos_indicadores,
+            COUNT(DISTINCT obito_data) AS qtd_datas_obitos,
+            COUNT(DISTINCT mae_nome) AS qtd_maes_nomes,
+            COUNT(DISTINCT pai_nome) AS qtd_pais_nomes,
+            COUNT(DISTINCT cpf_valido_indicador) AS qtd_cpfs_validos
+        ) AS metadados
+    FROM smsrio_paciente
+    GROUP BY cpf
+),
+
+paciente_dados AS (
+    SELECT
+        pc.cpf,
         ARRAY_AGG(STRUCT(
+                cpf_valido_indicador,
                 nome,
                 nome_social,
                 data_nascimento,
@@ -444,9 +466,12 @@ paciente_dados AS (
                 obito_data,
                 mae_nome,
                 pai_nome,
-                rank
+                rank,
+                pm.metadados
         )) AS dados
-    FROM smsrio_paciente
+    FROM smsrio_paciente pc
+    JOIN paciente_metadados as pm
+        ON pc.cpf = pm.cpf
     GROUP BY cpf
 ),
 
