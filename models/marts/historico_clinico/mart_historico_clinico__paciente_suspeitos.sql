@@ -33,6 +33,7 @@ WITH vitacare_tb AS (
         dados.mae_nome,
         dados.pai_nome,
         dados.metadados,
+        dados.rank,
         equipe_saude_familia,
         contato,
         endereco,
@@ -58,6 +59,7 @@ vitai_tb AS (
         dados.mae_nome,
         dados.pai_nome,
         dados.metadados,
+        dados.rank,
         contato,
         endereco,
         prontuario
@@ -82,6 +84,7 @@ smsrio_tb AS (
         dados.mae_nome,
         dados.pai_nome,
         dados.metadados,
+        dados.rank,
         contato,
         endereco,
         prontuario
@@ -535,11 +538,18 @@ paciente_dados AS (
                 ELSE NULL
             END AS cpf_valido_indicador,
             CASE 
+                WHEN sm.cpf IS NOT NULL THEN sm.rank
+                WHEN vc.cpf IS NOT NULL THEN vc.rank
+                WHEN vi.cpf IS NOT NULL THEN vi.rank
+                ELSE NULL
+            END AS rank,
+            CASE 
                 WHEN sm.cpf IS NOT NULL THEN sm.metadados
                 WHEN vc.cpf IS NOT NULL THEN vc.metadados
                 WHEN vi.cpf IS NOT NULL THEN vi.metadados
                 ELSE NULL
             END AS metadados
+
         ) AS dados
     FROM all_cpfs cpfs
     LEFT JOIN vitacare_tb vc ON cpfs.cpf = vc.cpf
