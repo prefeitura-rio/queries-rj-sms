@@ -167,6 +167,11 @@ models:
         description: CPF do paciente
         data_type: string
         quote: true
+        tests:
+          - not_null:
+              name: mart_historico_clinico__paciente__cpf__not_null
+          - unique:
+              name: mart_historico_clinico__paciente__cpf__unique
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
       - name: cns
@@ -186,6 +191,9 @@ models:
         quote: true
       - name: dados.nome
         description: Nome de registro.
+        tests:
+          - not_null:
+              name: mart_historico_clinico__paciente__nome__not_null
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
       - name: dados.nome_social
@@ -194,6 +202,9 @@ models:
           - '{{ var ("TAG_NOME") }}'
       - name: dados.data_nascimento
         description: Data de nascimento.
+        tests:
+          - not_null:
+              name: mart_historico_clinico__paciente__data_nascimento__not_null
         policy_tags:
           - '{{ var ("TAG_DTNASCIMENTO") }}'
       - name: dados.genero
