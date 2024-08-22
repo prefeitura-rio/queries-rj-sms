@@ -2,7 +2,7 @@
     config(
         alias="paciente",
         materialized="table",
-        schema="saude_historico_clinico"
+        schema="saude_dados_mestres"
     )
 }}
 
