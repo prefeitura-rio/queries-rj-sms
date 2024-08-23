@@ -196,12 +196,12 @@ with
                                             and cobertura_total_dias > 60
                                         )
                                     then ""
-                                    else "Sem RP, menos de 90 dias"
+                                    else "Sem RP, menos de 90 dias de estoque"
                                 end
                             when
                                 rp_vigente_indicador = "sim"
                                 and cobertura_total_dias <= 30
-                            then "Com RP, menos de 30 dias"
+                            then "Com RP, menos de 30 dias de estoque"
                             else ""
                         end
                     )
