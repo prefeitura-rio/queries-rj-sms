@@ -12,7 +12,7 @@
 -- rj-sms.brutos_plataforma_smsrio.paciente (SMSRIO)
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
--- dbt run --select int_historico_clinico__paciente__vitacare int_historico_clinico__paciente__smsrio int_historico_clinico__paciente__vitai mart_historico_clinico__paciente
+-- dbt run --select int_historico_clinico__paciente__vitacare int_historico_clinico__paciente__smsrio int_historico_clinico__paciente__vitai mart_historico_clinico__paciente mart_historico_clinico__paciente_suspeitos
 
 -- Declaration of the variable to filter by CPF (optional)
 -- DECLARE cpf_filter STRING DEFAULT "";
@@ -104,6 +104,7 @@ cns_dedup AS (
         cpf,
         cns,
         ROW_NUMBER() OVER (PARTITION BY cpf  ORDER BY merge_order ASC, rank ASC) AS rank,
+        merge_order,
         sistema
     FROM(
         SELECT 
@@ -147,6 +148,24 @@ cns_dedup AS (
     ORDER BY  merge_order ASC, rank ASC 
 ),
 
+cns_contagem AS (
+    SELECT
+        cpf,
+        CASE
+            WHEN cc.cpf_count > 1 THEN NULL
+            ELSE cd.cns
+        END AS cns
+    FROM cns_dedup cd
+    LEFT JOIN (
+        SELECT 
+            cns, 
+            COUNT(DISTINCT cpf) AS cpf_count
+        FROM cns_dedup
+        GROUP BY cns
+    ) AS cc
+        ON cd.cns = cc.cns
+    ORDER BY  merge_order ASC, rank ASC 
+),
 
 cns_dados AS (
     SELECT 
@@ -154,7 +173,8 @@ cns_dados AS (
         ARRAY_AGG(
             cns
         ) AS cns
-    FROM cns_dedup
+    FROM cns_contagem
+    WHERE cns IS NOT NULL
     GROUP BY cpf
 ),
 
