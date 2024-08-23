@@ -233,6 +233,8 @@ models:
           - '{{ var ("TAG_NOME_PAI") }}'
       - name: dados.identidade_validada_indicador
         description: Indica se a identidade do paciente foi validada em alguma base federal.
+      - name: dados.cpf_valido_indicador
+        description: Indica se o CPF do paciente é válido.
       - name: equipe_saude_familia
         description: Array contendo todas as equipes de saúde da família
           nas quais o paciente está atualmente associado. As equipes são ordenadas de acordo
