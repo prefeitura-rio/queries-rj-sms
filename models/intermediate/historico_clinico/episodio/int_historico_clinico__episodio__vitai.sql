@@ -206,7 +206,11 @@ with
             gid_boletim,
             case
                 when (lower(resumo_alta_descricao) = 'none' or lower(resumo_alta_descricao) = '')
+                    and (lower(desfecho_internacao) = 'none' or lower(desfecho_internacao) = '')
                 then null
+                when (lower(resumo_alta_descricao) = 'none' or lower(resumo_alta_descricao) = '')
+                    and (lower(desfecho_internacao) != 'none' and lower(desfecho_internacao) != '')
+                then upper(desfecho_internacao)
                 else concat(upper(desfecho_internacao),'\n',upper(trim(resumo_alta_descricao)))
             end as desfecho,
             row_number() over (
@@ -217,7 +221,7 @@ with
     desfecho_atendimento_final as (
         select
             gid_boletim,
-            desfecho
+            REGEXP_REPLACE(desfecho,'[Ó|O]BITO {1,}\n[Ó|O]BITO','OBITO') as desfecho
         from desfecho_atendimento_all
         where ordenacao = 1
     ),
