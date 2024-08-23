@@ -536,13 +536,7 @@ paciente_dados AS (
                 WHEN vc.cpf IS NOT NULL THEN vc.cpf_valido_indicador
                 WHEN vi.cpf IS NOT NULL THEN vi.cpf_valido_indicador
                 ELSE NULL
-            END AS cpf_valido_indicador,
-            CASE 
-                WHEN sm.cpf IS NOT NULL THEN sm.metadados
-                WHEN vc.cpf IS NOT NULL THEN vc.metadados
-                WHEN vi.cpf IS NOT NULL THEN vi.metadados
-                ELSE NULL
-            END AS metadados
+            END AS cpf_valido_indicador
         ) AS dados
     FROM all_cpfs cpfs
     LEFT JOIN vitacare_tb vc ON cpfs.cpf = vc.cpf
