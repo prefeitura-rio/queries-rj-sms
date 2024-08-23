@@ -46,14 +46,19 @@ with
         select
             boletim.*,
             'Consulta' as tipo,
+            atendimento.gid_profissional,
+            if(atendimento.cid_codigo in ('None', ''), null, cid_codigo) as cid_codigo,
+            if(atendimento.cid_nome in ('None', ''), null, cid_nome) as cid_nome,
             CASE 
                 WHEN trim(lower(boletim.atendimento_tipo)) = 'emergencia' THEN 'Emergência'
                 WHEN trim(lower(boletim.atendimento_tipo)) = 'consulta' THEN 'Ambulatorial'
                 ELSE null
             END  as subtipo,
-            atendimento.gid_profissional,
-            if(atendimento.cid_codigo in ('None', ''), null, cid_codigo) as cid_codigo,
-            if(atendimento.cid_nome in ('None', ''), null, cid_nome) as cid_nome,
+            array(
+                select as struct 
+                cast(null as string) as subtipo,
+                cast(null as string) as descricao
+            ) as exames_realizados
         from boletim
         left join
             {{ ref("raw_prontuario_vitai__atendimento") }} as atendimento
@@ -84,29 +89,40 @@ with
         select
             boletim.*,
             'Internação' as tipo,
+            safe_cast(null as string) as gid_profissional,
+            internacao_distinct.cid_codigo,
+            internacao_distinct.cid_nome,
             CASE 
                 WHEN trim(lower(internacao_distinct.internacao_tipo)) = 'emergencia' THEN 'Emergência'
                 ELSE trim(initcap(internacao_distinct.internacao_tipo)) 
             END as subtipo,
-            safe_cast(null as string) as gid_profissional,
-            internacao_distinct.cid_codigo,
-            internacao_distinct.cid_nome
+            array(
+                select as struct 
+                cast(null as string) as subtipo,
+                cast(null as string) as descricao
+            ) as exames_realizados
         from boletim
         left join ( select * from internacao_all where ordenacao=1) internacao_distinct
             on boletim.gid = internacao_distinct.gid_boletim
         where internacao_distinct.gid_boletim is not null and boletim.internacao_data is not null
     ),
-    exame as (
+    exame_dupl as (
         select
             boletim.*,
             'Exame' as tipo,
+            exame.exame as descricao,
+            safe_cast(null as string) as gid_profissional,
+            safe_cast(null as string) as cid_codigo,
+            safe_cast(null as string) as cid_descricao,
             CASE 
                 WHEN trim(lower(exame.tipo)) = 'laboratorio' THEN 'Laboratório'
                 ELSE trim(initcap(exame.tipo)) 
             END as subtipo,
-            safe_cast(null as string) as gid_profissional,
-            safe_cast(null as string) as cid_codigo,
-            safe_cast(null as string) as cid_descricao
+            array(
+                select as struct 
+                cast(null as string) as subtipo,
+                cast(null as string) as descricao
+            ) as exames_realizados
         from boletim
         left join
             {{ ref("raw_prontuario_vitai__exame") }} as exame
@@ -118,6 +134,36 @@ with
             exame.gid_boletim is not null
             and atendimento.gid_boletim is null
             and boletim.internacao_data is null
+    ),
+    exame as (
+        select
+            gid,
+            gid_paciente,
+            gid_estabelecimento,
+            atendimento_tipo,
+            especialidade_nome,
+            internacao_data,
+            cns,
+            cpf,
+            imported_at,
+            updated_at,
+            entrada_datahora,
+            saida_datahora,
+            tipo,
+            gid_profissional,
+            cid_codigo,
+            cid_descricao,
+            array_to_string(
+                array_agg(distinct subtipo order by subtipo desc),
+                ' e ') as subtipo,
+            array_agg(
+                struct( 
+                    cast(subtipo as string) as subtipo,
+                    cast(descricao as string) as descricao
+                )
+            ) as exames_realizados
+        from exame_dupl
+        group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
     ),
     episodios as (
         select *
@@ -250,6 +296,7 @@ with
             queixa_final.queixa as motivo_atendimento,
             episodios_distinct.tipo,
             episodios_distinct.subtipo,
+            episodios_distinct.exames_realizados,
             desfecho_atendimento_final.desfecho,
             episodios_distinct.entrada_datahora,
             episodios_distinct.saida_datahora,
@@ -278,6 +325,7 @@ with
             gid_estabelecimento,
             tipo,
             subtipo,
+            exames_realizados,
             entrada_datahora,
             saida_datahora,
             imported_at,
@@ -300,6 +348,7 @@ with
     -- Tipo e Subtipo
     safe_cast(atendimento_struct.tipo as string) as tipo,
     safe_cast(atendimento_struct.subtipo as string) as subtipo,
+    exames_realizados,
 
     -- Entrada e Saída
     safe_cast(atendimento_struct.entrada_datahora as datetime) as entrada_datahora,
