@@ -39,13 +39,20 @@ with
     final as (
         select
             * except (status),
-            if(id_ata is not null, 'sim', 'nao') as rp_vigente_indicador,
             if(
-                id_ata is not null,
-                '',
-                {{ clean_name_string("status") }}
-            ) as status,
+                contains_substr(status, "extrato"), 'sim', 'nao'
+            ) as rp_vigente_indicador,
+            --status as status_ze,
+            case
+                when
+                    {{ clean_name_string("status") }} = "PROCESSO NA GL" and ata in ("FRACASSADO", "DESERTO")
+                then {{ clean_name_string("ata") }}
+                when contains_substr({{ clean_name_string("status") }}, "EXTRATO")
+                then ""
+                else {{ clean_name_string("status") }}
+            end as status
         from transformed
     )
 
-select * from final
+select *
+from final

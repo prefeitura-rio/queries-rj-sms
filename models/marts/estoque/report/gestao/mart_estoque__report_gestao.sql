@@ -17,9 +17,15 @@ with
             remume_indicador = 'sim'
             and (
                 remume_listagem_basico_indicador = "sim"
-                --- or remume_listagem_uso_interno_indicador = "sim"
+            -- - or remume_listagem_uso_interno_indicador = "sim"
             )
     ),  # TODO: revisar critério de seleção de medicamentos
+
+    substitutos as (
+        select "65050803616" as id_material, "65050826403" as id_material_substituto,
+        union all
+        select "65050826403" as id_material, "65050803616" as id_material_substituto
+    ),
 
     posicao as (
         select *
@@ -160,113 +166,95 @@ with
         left join ap_zeradas as za using (id_material)
     ),
 
-    sources_joined_old as (
-        select
-            m.id_material,
-            m.nome,
-            coalesce(pqrs.pqrs_categoria, "S") as pqrs_categoria,  -- itens sem qualquer movimento não são classificados
-            pqrs.usuarios_atendidos_mes,
-            m.hierarquia_n1_categoria,
-            m.hierarquia_n2_subcategoria,
-            m.cadastrado_sistema_vitacare_indicador,
-            m.ativo_indicador,
-            p.qtd_aps,
-            p.qtd_tpc,
-            round(p.cmd, 0) as cmd,
-            coalesce(
-                round({{ dbt_utils.safe_divide("p.qtd_aps", "p.cmd") }}, 2),
-                if(cmd is null, null, 0)
-            ) as cobertura_aps_dias,
-            coalesce(
-                round({{ dbt_utils.safe_divide("p.qtd_tpc", "p.cmd") }}, 2),
-                if(cmd is null, null, 0)
-            ) as cobertura_tpc_dias,
-            coalesce(
-                round({{ dbt_utils.safe_divide("p.qtd_aps + p.qtd_tpc", "p.cmd") }}, 2),
-                if(cmd is null, null, 0)
-            ) as cobertura_total_dias,
-            if(p.qtd_aps = 0, 10, za.zeradas_ap) as zeradas_ap,
-            if(
-                p.qtd_aps = 0,
-                (select count(distinct id_cnes) from posicao_aps),
-                zu.zerados_ubs
-            ) as zerados_ubs,  -- correção para incluir unidades com estoques positivos porém vencidos
-            -- zu.zerados_ubs as zerados_ubs_sem_correcao,
-            m.farmacia_popular_disponibilidade_indicador,
-            coalesce(rp.rp_vigente_indicador, "nao") as rp_vigente_indicador,
-            rp.vencimento_data,
-            concat(
-                upper(substr(status, 1, 1)), lower(substr(status, 2))
-            ) as registro_preco_status,
-        from medicamentos as m
-        left join posicao_pivoted as p using (id_material)
-        left join ubs_zeradas as zu using (id_material)
-        left join ap_zeradas as za using (id_material)
-        left join curva_pqrs as pqrs using (id_material)
-        left join registro_preco as rp using (id_material)
-        order by cobertura_total_dias asc
-    ),
-
     -- - status e motivo_status
     sources_joined_com_cobertura_e_status as (
         select
             *,
             case
-                when ativo_indicador = "nao"
-                then "0. Item descontinuado"
                 when
-                    pqrs_categoria = "P"
-                    and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias = 0
-                then "1. Muito Crítico: s/ RP e estoque zerado"
-                when
-                    pqrs_categoria = "P"
-                    and rp_vigente_indicador = "sim"
-                    and cobertura_total_dias = 0
-                then "1. Muito Crítico: c/ RP e estoque zerado "
-                when
-                    pqrs_categoria = "P"
-                    and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias < 15
-                then "2. Crítico: s/ RP e estoque baixo (<15 dias)"
-                when
-                    pqrs_categoria = "P"
-                    and rp_vigente_indicador = "sim"
-                    and cobertura_total_dias < 15
-                then "2. Crítico: c/ RP e estoque baixo (<15 dias)"
-                when
-                    pqrs_categoria = "P"
-                    and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias >= 15
-                then "3. Atenção: s/ RP e estoque >= 15 dias"
-                when
-                    pqrs_categoria in ("Q", "R", "S")
-                    and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias = 0
-                then "1. Muito Crítico: s/ RP e estoque zerado"
-                when
-                    pqrs_categoria in ("Q", "R", "S")
-                    and rp_vigente_indicador = "sim"
-                    and cobertura_total_dias = 0
-                then "1. Muito Crítico: c/ RP e estoque zerado"
-                when
-                    pqrs_categoria in ("Q", "R", "S")
-                    and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias < 15
-                then "2. Crítico: s/ RP e estoque baixo (<15 dias)"
-                when
-                    pqrs_categoria in ("Q", "R", "S")
-                    and rp_vigente_indicador = "sim"
-                    and cobertura_total_dias < 15
-                then "3. Atenção: c/ RP e estoque baixo (<15 dias)"
-                when
-                    pqrs_categoria in ("Q", "R", "S")
-                    and rp_vigente_indicador = "nao"
-                    and cobertura_total_dias >= 15
-                then "4. Atenção: s/ RP e estoque >= 15 dias"
+                    farmacia_popular_disponibilidade_indicador = "nao"
+                    and registro_preco_status not in ("Suspenso pela anvisa")
+                then
+                    (
+                        case
+                            when
+                                rp_vigente_indicador = "nao"
+                                and cobertura_total_dias <= 90
+                            then
+                                case
+                                    when
+                                        (
+                                            contains_substr(
+                                                registro_preco_status, "homolog"
+                                            )
+                                            and cobertura_total_dias > 40
+                                        )
+                                        or (
+                                            contains_substr(
+                                                registro_preco_status, "analise"
+                                            )
+                                            and cobertura_total_dias > 60
+                                        )
+                                    then ""
+                                    else "Sem RP, menos de 90 dias"
+                                end
+                            when
+                                rp_vigente_indicador = "sim"
+                                and cobertura_total_dias <= 30
+                            then "Com RP, menos de 30 dias"
+                            else ""
+                        end
+                    )
                 else ""
             end as status
         from sources_com_cobertura
+    ),
+
+    -- corrige acentuação
+    sources_acentuacao_corrigada as (
+        select
+
+            * except (
+                farmacia_popular_disponibilidade_indicador,
+                rp_vigente_indicador,
+                registro_preco_status
+            ),
+
+            if(
+                farmacia_popular_disponibilidade_indicador = "nao", "não", "sim"
+            ) as farmacia_popular_disponibilidade_indicador,
+
+            if(rp_vigente_indicador = "nao", "não", "sim") as rp_vigente_indicador,
+
+            case
+                when registro_preco_status = "Em analise"
+                then "Em análise"
+                when registro_preco_status = "Aguardando publicacao"
+                then "Aguardando publicação"
+                when registro_preco_status = "Processo na gl"
+                then "Processo na GL"
+                when registro_preco_status = ""
+                then null
+                else registro_preco_status
+            end as registro_preco_status,
+
+        from sources_joined_com_cobertura_e_status
+    ),
+
+    -- indica os registros que vão ser exibidos
+    source_exibidos as (
+        select
+            *,
+            if(
+                status != ""
+                and (
+                    pqrs_categoria in ('P', 'Q')
+                    or id_material in ("65051001688", "65051000878", "65051001840")  # TODO: revisar regra
+                ),
+                'sim',
+                'nao'
+            ) as exibir_registro_indicador
+        from sources_acentuacao_corrigada
     ),
 
     -- final
@@ -295,12 +283,13 @@ with
             vencimento_data,
             registro_preco_status,
             status,
-        from sources_joined_com_cobertura_e_status
+            exibir_registro_indicador
+        from source_exibidos
+        where
+            (hierarquia_n1_categoria = "Medicamento" or id_material = "65058200201")
+            and ativo_indicador = "sim"
+        order by cobertura_total_dias asc, status, nome asc
     )
 
-select *,
+select *
 from final
-where (hierarquia_n1_categoria = "Medicamento" or id_material = "65058200201")
--- and ativo_indicador = "sim"
-order by cobertura_total_dias asc, status, nome asc
-
