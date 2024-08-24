@@ -8,7 +8,9 @@ with
                     "int_estoque__dispensacao_serie_historica_com_outliers_identificados"
                 )
             }}
-        where data >= date_sub(current_date('America/Sao_Paulo'), interval 60 day)
+        where
+            data >= date_sub(current_date('America/Sao_Paulo'), interval 90 day)
+            and {{ dbt_date.day_of_week("data") }} <> 7  -- antenção primária não abre as domingos
     )
 
 select *

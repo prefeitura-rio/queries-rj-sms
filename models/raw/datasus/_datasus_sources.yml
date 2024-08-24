@@ -7,3 +7,4 @@ sources:
     tables:
     - name: cbo
     - name: cbo_fam
+    - name: cid10

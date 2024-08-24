@@ -840,3 +840,92 @@ models:
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
+  - name: raw_prontuario_vitai__m_estabelecimento
+    description: >
+      Tabela contendo informações básicas sobre os estabelecimentos de saúde.
+    columns:
+      - name: gid
+        description: Identificador único do estabelecimento.
+      - name: cnes
+        description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) do estabelecimento.
+      - name: cnpj
+        description: CNPJ do estabelecimento.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: sigla
+        description: Sigla do estabelecimento.
+      - name: nome_estabelecimento
+        description: Nome do estabelecimento de saúde.
+      - name: idsetor
+        description: Identificador do setor do estabelecimento.
+      - name: secretaria_gid
+        description: Identificador único da secretaria à qual o estabelecimento pertence.
+      - name: cliente
+        description: Nome ou identificação do cliente do estabelecimento.
+      - name: baseurl
+        description: URL base do estabelecimento ou sistema relacionado.
+      - name: updated_at
+        description: Data e hora da última atualização das informações do estabelecimento.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o data lake.
+  - name: raw_prontuario_vitai__relato_cirurgico
+    description: >
+      Tabela contendo informações detalhadas sobre os relatos cirúrgicos realizados nos estabelecimentos de saúde.
+    columns:
+      - name: gid
+        description: Identificador único do relato cirúrgico.
+      - name: boletim_gid
+        description: Identificador único do boletim associado ao relato cirúrgico.
+      - name: paciente_gid
+        description: Identificador único do paciente associado ao relato cirúrgico.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: estabelecimento_gid
+        description: Identificador único do estabelecimento de saúde onde ocorreu a cirurgia.
+      - name: cir_data
+        description: Data da cirurgia.
+      - name: nome_especialidade
+        description: Nome da especialidade médica responsável pela cirurgia.
+      - name: status
+        description: Status atual do relato cirúrgico.
+      - name: checkin_sala
+        description: Horário de check-in na sala de cirurgia.
+      - name: cirurgia_inicio
+        description: Horário de início da cirurgia.
+      - name: cirurgia_fim
+        description: Horário de término da cirurgia.
+      - name: checkout_sala
+        description: Horário de check-out da sala de cirurgia.
+      - name: tempo_sala
+        description: Tempo total na sala de cirurgia.
+      - name: anestesia
+        description: Tipo de anestesia utilizada na cirurgia.
+      - name: contaminacao
+        description: Nível de contaminação observado durante a cirurgia.
+      - name: codigo_procedimento
+        description: Código do procedimento cirúrgico realizado.
+      - name: descricao_procedimento
+        description: Descrição do procedimento cirúrgico realizado.
+      - name: codigo_diagnostico
+        description: Código do diagnóstico relacionado à cirurgia.
+      - name: descricao_diagnostico
+        description: Descrição do diagnóstico relacionado à cirurgia.
+      - name: leito_paciente
+        description: Identificação do leito do paciente.
+      - name: equipe
+        description: Equipe médica responsável pela cirurgia.
+      - name: cir_datafinalizado
+        description: Data de finalização do relato cirúrgico.
+      - name: cliente
+        description: Nome ou identificação do cliente associado ao relato cirúrgico.
+      - name: baseurl
+        description: URL base relacionada ao sistema do relato cirúrgico.
+      - name: estabelecimento_sigla
+        description: Sigla do estabelecimento de saúde onde ocorreu a cirurgia.
+      - name: codigo_interno
+        description: Código interno do relato cirúrgico.
+      - name: updated_at
+        description: Data e hora da última atualização do relato cirúrgico.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o data lake.
+

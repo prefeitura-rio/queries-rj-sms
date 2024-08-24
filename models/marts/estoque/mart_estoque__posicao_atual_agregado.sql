@@ -23,6 +23,7 @@ with
             material_descricao,
             material_remume_indicador,
             busca_material_id_descricao_case_insensitive,
+            max(data_particao) as data_particao,
             sum(material_quantidade) as material_quantidade,
             avg(material_consumo_medio) as material_consumo_medio
         from source

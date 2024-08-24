@@ -1,6 +1,7 @@
 {{
     config(
         alias="equipe_contato",
+        tags="smsrio_equipe"
     )
 }}
 with source as (
