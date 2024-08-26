@@ -63,7 +63,18 @@ vitacare_cns_ranked AS (
         cpf,
         cns,
         ROW_NUMBER() OVER (PARTITION BY cpf, cns ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank,
-    FROM vitacare_tb
+    FROM (
+        SELECT 
+            cpf,
+            CASE 
+                WHEN TRIM(cns) IN ('NONE') THEN NULL
+                ELSE TRIM(cns)
+            END AS cns,
+            data_atualizacao_vinculo_equipe,
+            cadastro_permanente,
+            updated_at
+        FROM vitacare_tb
+    )
     WHERE cns IS NOT NULL
     GROUP BY cpf, cns, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
 ),
