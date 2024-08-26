@@ -129,6 +129,8 @@ models:
         seguir_em_frente:
             +schema: projeto_seguir_em_frente
             +tags: "daily"
+        historico_clinico_app:
+            +tags: "hci_app"
 
 tests:
   rj_sms:
