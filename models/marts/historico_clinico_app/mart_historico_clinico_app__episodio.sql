@@ -12,9 +12,11 @@ with
         select
             *
         from {{ ref('mart_historico_clinico__episodio') }}
+        where paciente_cpf is not null
     ),
     formatado as (
         select
+            paciente_cpf as cpf,
             entrada_datahora as entry_datetime,
             saida_datahora as exit_datetime,
             estabelecimento.nome as location,
