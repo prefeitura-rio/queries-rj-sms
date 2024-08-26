@@ -16,9 +16,11 @@ with
             apresentacao,
             categoria as hierarquia_n1_categoria,
             subcategoria as hierarquia_n2_subcategoria,
+            ativo_indicador,
             controlado_indicador,
             controlado_tipo,
             coalesce(safe_cast(consumo_minimo as int64), 1) as consumo_minimo,
+            abastecimento_responsavel,
             abastecimento_frequencia,
             classificacao_xyz,
             remume_indicador,
@@ -72,6 +74,7 @@ with
                 remume_disponibilidade_cer_indicador, "nao"
             ) as remume_disponibilidade_cer_indicador,
             remume_disponibilidade_unidades_especificas_lista,
+            coalesce(disponibilidade_farmacia_popular_indicador, "nao") as farmacia_popular_disponibilidade_indicador,
             if(
                 contains_substr(cadastrado_sistema_vitacare_indicador, "nao"),
                 "nao",

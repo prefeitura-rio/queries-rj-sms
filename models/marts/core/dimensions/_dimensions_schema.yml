@@ -9,6 +9,9 @@ models:
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
+        tests:
+          - unique:
+              name: core__dim_material__id_material__unique
       - name: descricao
         description: Esta é uma descrição do material. Fornece informações detalhadas
           sobre o material, incluindo seu nome e quaisquer outros detalhes
@@ -57,6 +60,10 @@ models:
           exemplo, um material do grupo medicamento pode pertencer às
           subcategorias como antibióticos, analgésicos, etc.
         data_type: string
+      - name: ativo_indicador
+        description: Este campo indica se item está ativo.
+        data_type: string
+        quote: true
       - name: controlado_indicador
         description: Este campo indica se o material é controlado ou não. Um material
           controlado é aquele que está sujeito a regulamentações ou restrições
@@ -73,6 +80,15 @@ models:
         description: Quantidade mínima do medicamento dispensada para um paciente
         data_type: int64
         quote: true
+      - name: abastecimento_responsavel
+        description: Indica quem é o responsável pelo abastecimento do item.
+        data_type: string
+        quote: true
+      - name: abastecimento_frequencia
+        data_type: string
+        quote: true
+        description: Esta coluna representa a frequência de abastecimento do material específico. 
+          Fornece informações sobre com que frequência o material é abastecido ou reabastecido.
       - name: classificacao_xyz
         description: "Classificação da criticidade do medicamento, onde: X (Críticos):
           São itens cruciais para o tratamento imediato e eficaz dos pacientes.
@@ -183,6 +199,11 @@ models:
           material está disponível. A lista é representada pelo CNES de cada
           unidade separada por vírgula.
         data_type: string
+      - name: farmacia_popular_disponibilidade_indicador
+        description: Esta coluna indica se o material pode ser obtido através da
+          farmácia popular.
+        data_type: string
+        quote: true
       - name: cadastrado_sistema_vitacare_indicador
         description: Esta coluna indica se o material está registrado no Prontuário da
           Vitacare. É um valor de string que pode ser 'sim' se o material
