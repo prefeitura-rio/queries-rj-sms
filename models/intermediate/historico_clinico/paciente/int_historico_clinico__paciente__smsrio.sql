@@ -43,9 +43,7 @@ WITH smsrio_tb AS (
         updated_at,
         CAST(NULL AS STRING) AS id_cnes
     FROM {{ref("raw_plataforma_smsrio__paciente")}} -- `rj-sms-dev`.`brutos_plataforma_smsrio`.`paciente`
-    WHERE cpf IS NOT NULL
-        AND NOT REGEXP_CONTAINS({{remove_accents_upper('cpf')}}, r'[A-Za-z]')
-        AND TRIM({{remove_accents_upper('cpf')}}) NOT IN  ("","00000000000")
+    WHERE {{validate_cpf('cpf')}}
 ),
 
 
