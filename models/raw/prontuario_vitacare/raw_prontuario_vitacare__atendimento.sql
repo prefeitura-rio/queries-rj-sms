@@ -7,18 +7,20 @@
 
 with
     bruto_atendimento_eventos_com_repeticao as (
-        select * 
+        select 
+            *,
+            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as gid
         from {{ source("dev_brutos_prontuario_vitacare_staging", "atendimento_eventos") }} 
     ),
     bruto_atendimento_eventos_ranqueados as (
         select
             *,
-            row_number() over (partition by source_id order by datalake_loaded_at desc) as rank
+            row_number() over (partition by gid order by datalake_loaded_at desc) as rank
         from bruto_atendimento_eventos_com_repeticao
     )
 select
     -- PK
-    safe_cast(source_id as string) as id,
+    safe_cast(gid as string) as gid,
 
     -- Chaves
     safe_cast(patient_cpf as string) as cpf,

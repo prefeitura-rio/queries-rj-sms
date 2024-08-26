@@ -64,7 +64,7 @@ with
     ),
     condicoes as (
         select 
-            id as fk_atendimento,
+            gid as fk_atendimento,
             json_extract_scalar(condicao_json, "$.cod_cid10") as id
         from bruto_atendimento,
             unnest(json_extract_array(condicoes)) as condicao_json
@@ -92,7 +92,7 @@ with
     ),
     prescricoes as (
         select 
-            id as fk_atendimento,
+            gid as fk_atendimento,
             replace(json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
             upper(json_extract_scalar(prescricoes_json, "$.nome_medicamento")) as nome,
             json_extract_scalar(prescricoes_json, "$.uso_continuado") as uso_continuo
@@ -178,7 +178,7 @@ with
 
             -- Prontuário
             struct(
-                bruto_atendimento.id as id_atendimento,
+                bruto_atendimento.gid as id_atendimento,
                 'vitacare' as fornecedor
             ) as prontuario,
 
@@ -197,9 +197,9 @@ with
             inner join dim_profissional
                 on bruto_atendimento.cns_profissional = dim_profissional.pk
             left join dim_condicoes_atribuidas
-                on bruto_atendimento.id = dim_condicoes_atribuidas.fk_atendimento
+                on bruto_atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
             left join dim_prescricoes_atribuidas
-                on bruto_atendimento.id = dim_prescricoes_atribuidas.fk_atendimento
+                on bruto_atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
     )
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Finalização
