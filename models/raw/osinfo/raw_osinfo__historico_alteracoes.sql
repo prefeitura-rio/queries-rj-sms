@@ -12,18 +12,18 @@ with
     usuario as (select * from {{ source("osinfo", "usuario") }})
 
 select
-    ha.id_historico_alteracoes as historicoalteracoesid,
-    ha.id_tipo_arquivo as tipoarquivoid,
-    ha.cod_organizacao as codigoorganizacao,
-    ha.data_modificacao as datamodificacao,
-    ha.valor_anterior as valoranterior,
-    ha.valor_novo as valornovo,
-    ha.mes_referencia as mesreferencia,
-    ha.ano_referencia as anoreferencia,
-    ha.id_registro as registroid,
-    ha.tipo_alteracao as tipoalteracao,
-    ha.cod_usuario as codigousuario,
-    u.login as loginusuario,
-    u.nome as nomeusuario,
+    ha.id_historico_alteracoes as id,
+    ha.id_tipo_arquivo,
+    ha.cod_organizacao as id_organizacao,
+    ha.data_modificacao as modificacao_data,
+    ha.valor_anterior,
+    ha.valor_novo,
+    ha.mes_referencia as referencia_mes,
+    ha.ano_referencia as referencia_ano,
+    ha.id_registro,
+    ha.tipo_alteracao as alteracao_tipo,
+    ha.cod_usuario as usuario_cod,
+    u.login as usuario_login,
+    u.nome as usuario_nome,
 from historico_alteracoes ha
 inner join usuario u on ha.cod_usuario = u.cod_usuario

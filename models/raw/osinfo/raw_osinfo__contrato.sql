@@ -7,20 +7,20 @@
 with source as (select * from {{ source("osinfo", "contrato") }})
 
 select
-    id_contrato as contratoid,
-    numero_contrato as numerocontrato,
-    cod_organizacao as codigoorganizacao,
-    data_atualizacao as dataatualizacao,
-    data_assinatura as dataassinatura,
-    periodo_vigencia as periodovigencia,
-    data_publicacao as datapublicacao,
-    data_inicio as datainicio,
-    valor_total as valortotal,
-    valor_ano1 as valorano1,
-    valor_parcelas as valorparcelas,
-    valor_fixo as valorfixo,
-    valor_variavel as valorvariavel,
-    observacao as observacao,
-    ap as ap
+    id_contrato,
+    numero_contrato as numero,
+    cod_organizacao as organizacao_cod,
+    data_atualizacao as atualizacao_data,
+    data_assinatura as assinatura_data,
+    periodo_vigencia as vigencia_periodo,
+    data_publicacao as publicao_data,
+    data_inicio as inicio_data,
+    valor_total,
+    valor_ano1,
+    valor_parcelas,
+    valor_fixo,
+    valor_variavel,
+    observacao,
+    ap as area_programatica
 from source
 where id_secretaria = '1'
