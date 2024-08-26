@@ -15,22 +15,22 @@ with
     agencia as (select * from {{ source("osinfo", "agencia") }})
 
 select
-    rd.cod_unidade as unidadecodigo,
-    rd.referencia_mes as mesreferencia,
-    rd.referencia_ano as anoreferencia,
-    rd.valor as valorreceita,
-    c.numero_contrato as numerocontrato,
-    c.id_contrato as contratoid,
-    rd.id_conta_bancaria as contabancariaid,
-    cb.codigo_cc as codigocontacorrente,
-    cb.digito_cc as digitocontacorrente,
-    cbt.tipo as tipoconta,
-    a.id_agencia as agenciaid,
-    a.agencia as nomeagencia,
-    a.numero_agencia as numeroagencia,
-    a.digito as digitoagencia,
-    a.id_banco as bancoid,
-    ri.receita_item as itemreceita
+    rd.cod_unidade as id_unidade,
+    rd.referencia_mes,
+    rd.referencia_ano,
+    rd.valor,
+    c.id_contrato,
+    c.numero_contrato as contrato_numero,
+    rd.id_conta_bancaria,
+    cb.codigo_cc as conta_bancaria_codigo,
+    cb.digito_cc as conta_bancaria_digito,
+    cbt.tipo as conta_bancaria_tipo,
+    a.id_agencia,
+    a.agencia as agencia_nome,
+    a.numero_agencia as agencia_numero,
+    a.digito as agencia_digito,
+    a.id_banco,
+    ri.receita_item as item
 from receita_dados rd
 inner join contrato c on rd.id_instrumento_contratual = c.id_contrato
 inner join receita_item ri on rd.id_item = ri.id_receita_item

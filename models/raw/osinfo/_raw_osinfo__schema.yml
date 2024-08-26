@@ -1,6 +1,10 @@
 models:
   - name: raw_osinfo__conta_bancaria
     columns:
+      - name: id
+        description: Identificador único da conta bancária.
+        data_type: string
+        quote: true
       - name: id_banco
         description: Identificador único do banco.
         data_type: string
@@ -463,5 +467,73 @@ models:
         quote: true
       - name: unidade_medida
         description: "Unidade de medida do item ou serviço (ex: Unidade, Litros, etc.)."
+        data_type: string
+        quote: true
+  - name: raw_osinfo__receitas
+    columns:
+      - name: id_unidade
+        description: Código da organização associada à receita.
+        data_type: string
+        quote: true
+      - name: referencia_mes
+        description: Mês de referência da receita.
+        data_type: int64
+        quote: true
+      - name: referencia_ano
+        description: Ano de referência da receita.
+        data_type: int64
+        quote: true
+      - name: valor
+        description: Valor da receita registrada.
+        data_type: numeric
+        quote: true
+      - name: id_contrato
+        description: Identificador único do contrato relacionado à receita.
+        data_type: string
+        quote: true
+      - name: contrato_numero
+        description: Número do contrato relacionado à receita.
+        data_type: string
+        quote: true
+      - name: id_conta_bancaria
+        description: Identificador da conta bancária associada à receita.
+        data_type: string
+        quote: true
+      - name: conta_bancaria_codigo
+        description: Código da conta corrente onde a receita foi depositada.
+        data_type: string
+        quote: true
+      - name: conta_bancaria_digito
+        description: Dígito verificador da conta corrente.
+        data_type: string
+        quote: true
+      - name: conta_bancaria_tipo
+        description: "Tipo de conta (por exemplo: Execução, Folha de Pagamento,
+          Provisionamento)."
+        data_type: string
+        quote: true
+      - name: id_agencia
+        description: Identificador da agência bancária associada.
+        data_type: string
+        quote: true
+      - name: agencia_nome
+        description: Nome da agência bancária associada à conta.
+        data_type: string
+        quote: true
+      - name: agencia_numero
+        description: Número da agência bancária.
+        data_type: string
+        quote: true
+      - name: agencia_digito
+        description: Dígito verificador da agência bancária, se aplicável.
+        data_type: string
+        quote: true
+      - name: id_banco
+        description: Identificador único do banco associado.
+        data_type: string
+        quote: true
+      - name: item
+        description: "Descrição do item ou tipo de receita (ex: Obtenção de Recursos
+          Externos)."
         data_type: string
         quote: true

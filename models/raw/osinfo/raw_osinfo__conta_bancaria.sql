@@ -12,6 +12,7 @@ with
     conta_bancaria_tipo as (select * from {{ source("osinfo", "conta_bancaria_tipo") }})
 
 select
+    cb.id_conta_bancaria as id,
     b.id_banco,
     b.cod_banco as banco_codigo,
     b.banco as banco_nome,
