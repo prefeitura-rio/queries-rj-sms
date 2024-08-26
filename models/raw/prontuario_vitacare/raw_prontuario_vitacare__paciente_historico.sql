@@ -12,11 +12,11 @@ WITH tb AS (
         CAST(NULL AS STRING) AS id,
 
         -- Outras Chaves
-
         {{remove_accents_upper('N_CPF')}} AS cpf,
         {{remove_accents_upper('N_DNV')}} AS dnv,
         {{remove_accents_upper('NIS')}} AS nis,
         {{remove_accents_upper('N_CNS_DA_PESSOA_CADASTRADA')}} AS cns,
+        cast(null as string) as id_local,
 
         -- Informações Pessoais
         {{remove_accents_upper('NOME_DA_PESSOA_CADASTRADA')}} AS nome,
@@ -97,6 +97,7 @@ padronized AS (
       WHEN REGEXP_CONTAINS(cns, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$') THEN NULL
       ELSE CAST(cns AS STRING)
     END AS cns,
+    cast(null as string) as id_local,
 
     -- INFORMAÇÕES PESSOAIS
     CASE 
