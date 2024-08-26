@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: mart_historico_clinico__episodio
+    description: >
+      Tabela com uma visão consolidada dos atendimentos realizados em
+      estabelecimentos de saúde.
+  - name: mart_historico_clinico__paciente
+    description: >
+      Tabela com uma visão consolidada dos pacientes atendidos em
+      estabelecimentos de saúde.
+  - name: mart_historico_clinico__sumario
+    description: >
+      Tabela com uma visão consolidada dos sumários de atendimentos realizados
+      em estabelecimentos de saúde.
