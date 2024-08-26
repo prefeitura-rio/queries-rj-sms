@@ -97,6 +97,9 @@ models:
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
         +tags: "vitai"
+      osinfo:
+        +schema: brutos_osinfo
+        +tags: "daily"
       seguir_em_frente:
         +schema: brutos_seguir_em_frente
         +tags: "daily"

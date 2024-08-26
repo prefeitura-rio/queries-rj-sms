@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+  - name: osinfo
+    database:   rj-cvl
+    schema: adm_contrato_gestao
+    tables:
+    - name: administracao_perfil
+    - name: administracao_unidade
+    - name: administracao_unidade_perfil
+    - name: agencia
+    - name: banco
+    - name: conta_bancaria
+    - name: conta_bancaria_tipo
+    - name: contrato
+    - name: contrato_terceiros
+    - name: despesas
+    - name: estado_entrega
+    - name: fechamento
+    - name: fornecedor
+    - name: historico_alteracoes
+    - name: itens_nota_fiscal
+    - name: looker_despesas
+    - name: plano_contas
+    - name: receita_dados
+    - name: receita_item
+    - name: rubrica
+    - name: saldo_dados
+    - name: saldo_item
+    - name: secretaria
+    - name: tipo_arquivo
+    - name: tipo_documento
+    - name: usuario
+    - name: usuario_sistema
