@@ -537,3 +537,50 @@ models:
           Externos)."
         data_type: string
         quote: true
+  - name: raw_osinfo__saldos
+    columns:
+      - name: id
+        description: Identificador único do saldo.
+        data_type: string
+        quote: true
+      - name: id_item
+        description: Identificador do item do saldo.
+        data_type: string
+        quote: true
+      - name: item_nome
+        description: "Descrição do item de saldo (ex: Conta Corrente, Aplicação
+          Financeira)."
+        data_type: string
+        quote: true
+      - name: receita_referencia_mes
+        data_type: int64
+        quote: true
+        description: Mês de referência do saldo.
+      - name: receita_referencia_ano
+        data_type: int64
+        quote: true
+        description: Ano de referência do saldo.
+      - name: valor
+        data_type: numeric
+        quote: true
+        description: Valor do saldo registrado.
+      - name: id_contrato
+        data_type: string
+        quote: true
+        description: Identificador único do contrato associado ao saldo.
+      - name: contrato_numero
+        data_type: string
+        quote: true
+        description: Número do contrato associado ao saldo.
+      - name: id_organizacao
+        data_type: string
+        quote: true
+        description: Código da organização responsável pelo saldo.
+      - name: id_conta_bancaria
+        data_type: string
+        quote: true
+        description: Identificador da conta bancária associada ao saldo.
+      - name: extrato_imagem
+        data_type: string
+        quote: true
+        description: Imagem ou link do extrato relacionado ao saldo
