@@ -9,7 +9,7 @@ with source as (select * from {{ source("osinfo", "contrato") }})
 select
     id_contrato,
     numero_contrato as numero,
-    cod_organizacao as organizacao_cod,
+    cod_organizacao as id_organizacao,
     data_atualizacao as atualizacao_data,
     data_assinatura as assinatura_data,
     periodo_vigencia as vigencia_periodo,

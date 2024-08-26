@@ -53,7 +53,7 @@ models:
         description: Dígito verificador da conta corrente, se aplicável.
         data_type: string
         quote: true
-      - name: instituicao_codigo
+      - name: id_instituicao
         description: Código da instituição associada à conta.
         data_type: string
         quote: true
@@ -142,7 +142,7 @@ models:
         description: Número do contrato.
         data_type: string
         quote: true
-      - name: organizacao_cod
+      - name: id_organizacao
         description: Código da organização responsável pelo contrato.
         data_type: string
         quote: true
@@ -204,11 +204,11 @@ models:
         description: Número do contrato.
         data_type: string
         quote: true
-      - name: organizacao_cod
+      - name: id_organizacao
         description: Código da organização responsável pelo contrato.
         data_type: string
         quote: true
-      - name: unidade_cod
+      - name: id_unidade
         description: Código da unidade associada à despesa.
         data_type: string
         quote: true
@@ -248,7 +248,7 @@ models:
         data_type: string
         quote: true
         description: Número da agência bancária.
-      - name: agendia_digito
+      - name: agencia_digito
         data_type: string
         quote: true
         description: Dígito verificador da agência, se aplicável.

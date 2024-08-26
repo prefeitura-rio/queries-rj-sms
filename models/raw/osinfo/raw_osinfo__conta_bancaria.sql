@@ -25,7 +25,7 @@ select
     a.flg_ativo as agencia_ativo_indicaodr,
     cb.codigo_cc as codigo,
     cb.digito_cc as digito,
-    cb.cod_instituicao as instituicao_codigo,
+    cb.cod_instituicao as id_instituicao,
     cb.flg_ativo as ativo_indicador,
     cbt.tipo as tipo,
 from banco b
