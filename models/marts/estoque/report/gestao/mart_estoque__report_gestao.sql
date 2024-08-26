@@ -3,7 +3,7 @@
         alias="report_gestao",
         schema="projeto_estoque",
         materialized="table",
-        tag=["report", "weekly"],
+        tag=["report"],
     )
 }}
 
