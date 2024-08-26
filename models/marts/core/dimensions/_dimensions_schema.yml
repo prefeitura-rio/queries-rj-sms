@@ -9,6 +9,9 @@ models:
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
+        tests:
+          - unique:
+              name: core__dim_material__id_material__unique
       - name: descricao
         description: Esta é uma descrição do material. Fornece informações detalhadas
           sobre o material, incluindo seu nome e quaisquer outros detalhes
