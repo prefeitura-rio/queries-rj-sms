@@ -36,7 +36,7 @@ with
             p.id_material,
             p.qtd_pos,
             r.qtd_relatorio,
-            round(p.cmd_pos, 0) cmd_pos,
+            cmd_pos,
             r.cmd
         from posicao_consolidada as p
         left join relatorio as r using (id_material)
@@ -44,4 +44,4 @@ with
 
 select *, abs(qtd_pos - qtd_relatorio) as dif_qtd, abs(cmd_pos - cmd) as dif_cmd
 from joined
-where abs(qtd_pos - qtd_relatorio) > 0 or abs(cmd_pos - cmd) > 0
+where abs(qtd_pos - qtd_relatorio) > 0 or abs(cmd_pos - cmd) > 0.01
