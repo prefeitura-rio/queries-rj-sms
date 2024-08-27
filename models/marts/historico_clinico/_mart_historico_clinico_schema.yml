@@ -10,7 +10,7 @@ models:
           Fingerprint determinístico para o atendimento.
         tests:
           - not_null:
-              name: historico_clinico__id_episodio__notnull
+              name: historico_clinico__id_episodio__not_null
           - unique:
               name: historico_clinico__id_episodio__unique
       - name: tipo
