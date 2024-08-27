@@ -28,14 +28,20 @@ with
         select *
         from vitai
         union all
-        select * from vitacare
-    )
-select
-    cpf as paciente_cpf,
-    array_agg(distinct alergia) as alergias,
-    array_agg(distinct cns ignore nulls) as cns,
-    safe_cast(current_datetime() as datetime) as processed_at
-from total
-where cpf is not null
-group by cpf
+        select *
+        from vitacare
+    ),
 
+    final as (
+        select
+            cpf as paciente_cpf,
+            array_agg(distinct alergia) as alergias,
+            -- array_agg(distinct cns ignore nulls) as cns,
+            struct(current_timestamp() as created_at) as metadados
+        from total
+        where cpf is not null
+        group by cpf
+    )
+
+select *
+from final

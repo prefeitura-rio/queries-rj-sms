@@ -128,24 +128,12 @@ models:
       garante que os identificadores dos pacientes sejam consistentes e
       precisos.
     columns:
-      - name: paciente_cns
-        description: |
-          Número do Sistema Único de Saúde do paciente.
-        tests:
-          - unique:
-              name: mart_historico_clinico__alergia__paciente_cns__unique
-              config:
-                where: "paciente_cns is not null"
-        policy_tags:
-          - '{{ var ("TAG_CNS") }}'
       - name: paciente_cpf
         description: |
           Cadastro de Pessoas Físicas do paciente.
         tests:
           - unique:
               name: mart_historico_clinico__alergia__paciente_cpf__unique
-              config:
-                where: "paciente_cpf is not null" 
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
       - name: alergias
