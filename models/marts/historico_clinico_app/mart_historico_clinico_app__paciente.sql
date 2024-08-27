@@ -19,7 +19,7 @@ with
             dados.nome_social as social_name,
             cpf,
             cns[safe_offset(0)] as cns,
-            dados.data_nascimento as birth_date,
+            safe_cast(dados.data_nascimento as string) as birth_date,
             dados.genero as gender,
             dados.raca as race,
             contato.telefone[safe_offset(0)].valor as phone,
