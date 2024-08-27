@@ -108,6 +108,10 @@ models:
         +tags: "daily"
     intermediate:
         +materialized: ephemeral
+        historico_clinico:
+          +tags: "hci"
+          paciente:
+            +tags: "paciente"
     marts:
         +materialized: table
         core:
@@ -129,11 +133,13 @@ models:
             +tags: ["daily", "estoque"]
         gerenciamento:
             +tags: "daily"
+        historico_clinico:
+            +tags: "hci"
+        historico_clinico_app:
+            +tags: "hci_app"
         seguir_em_frente:
             +schema: projeto_seguir_em_frente
             +tags: "daily"
-        historico_clinico_app:
-            +tags: "hci_app"
 
 tests:
   rj_sms:
