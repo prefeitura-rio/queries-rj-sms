@@ -22,7 +22,7 @@ with
     select
         paciente_cpf,
         med.nome as nome_medicamento
-    from {{ ref('mart_historico_clinico__medicamentos') }},
+    from {{ ref('mart_historico_clinico__medicamento_cronico') }},
         unnest(medicamentos) as med
   ),
   medicamentos_cronicos_grouped as (

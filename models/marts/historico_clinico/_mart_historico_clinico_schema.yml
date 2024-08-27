@@ -32,9 +32,7 @@ models:
       - name: paciente
         description: >
           Informações sobre os pacientes envolvidos no atendimento, incluindo
-          CPF e CNS. 
-
-          Agrupados por identificador de prontuário.
+          CPF e CNS. Agrupados por identificador de prontuário.
       - name: paciente.id_prontuario
         description: |
           Prontuário relacionado ao atendimento.
@@ -52,7 +50,6 @@ models:
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
           relacionados ao atendimento. 
-
           Inclui informações como código e nome do CID.
       - name: cid.id
         description: |
@@ -131,23 +128,24 @@ models:
       garante que os identificadores dos pacientes sejam consistentes e
       precisos.
     columns:
-      - name: id_paciente
-        description: >
-          Identificador único do paciente. Este campo é utilizado para associar
-          os dados de alergia com o paciente correspondente.
-        tests:
-          - not_null:
-              name: mart_historico_clinico__alergia__id_paciente__not_null
-        policy_tags:
-          - '{{ var ("TAG_IDENTIFICADOR") }}'
-      - name: cns
+      - name: paciente_cns
         description: |
           Número do Sistema Único de Saúde do paciente.
+        tests:
+          - unique:
+              name: mart_historico_clinico__alergia__paciente_cns__unique
+              config:
+                where: "paciente_cns is not null"
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
-      - name: cpf
+      - name: paciente_cpf
         description: |
           Cadastro de Pessoas Físicas do paciente.
+        tests:
+          - unique:
+              name: mart_historico_clinico__alergia__paciente_cpf__unique
+              config:
+                where: "paciente_cpf is not null" 
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
       - name: alergias
@@ -158,6 +156,13 @@ models:
         tests:
           - not_null:
               name: mart_historico_clinico__alergia__array_alergias__not_null
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+      - name: metadados
+        description: Metadados do registro
+      - name: metadados.created_at
+        description: Marcação de data/hora de criação do registro no formato UTC,
+          seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
   - name: mart_historico_clinico__paciente
     description: "O modelo é um registro abrangente do histórico do paciente que
       integra dados de várias fontes, incluindo 'VITACARE', 'VITAI' e 'SMSRIO'.
@@ -374,5 +379,45 @@ models:
         data_type: record
         quote: true
       - name: metadados.created_at
-        description: Marcação de data/hora de criação do registro no no formato UTC,
+        description: Marcação de data/hora de criação do registro no formato UTC,
+          seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
+  - name: mart_historico_clinico__medicamento_cronico
+    description: "Tabela contendo os medicamentos de uso contínuo prescrito para o paciente
+    nos últimos 12 meses."
+    columns:
+      - name: paciente_cpf
+        description: CPF do paciente.
+        data_type: string
+        tests:
+          - unique:
+              name: mart_historico_clinico__medicamentos__paciente_cpf__unique
+          - not_null:
+              name: mart_historico_clinico__medicamentos__paciente_cpf__not_null
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: medicamentos
+        description: Array contendo todos os medicamentos de uso contínuo prescritos nos últimos 12 meses.
+        data_type: string
+      - name: medicamentos.id
+        description: Código de identificação do medicamento.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
+      - name: medicamentos.nome
+        description: Nome do medicamento.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
+      - name: medicamentos.concentracao
+        description: Concentração do medicamento prescrito.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
+      - name: medicamentos.datahora_prescricao
+        description: Data hora da prescricao do medicamento.
+        data_type: string
+      - name: metadados
+        description: Metadados do registro
+      - name: metadados.created_at
+        description: Marcação de data/hora de criação do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
