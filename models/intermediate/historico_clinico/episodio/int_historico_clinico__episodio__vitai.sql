@@ -1,7 +1,7 @@
 {{
     config(
         schema="intermediario_historico_clinico",
-        alias="episodio_assistencial_vitai_regras",
+        alias="episodio_assistencial_vitai",
         materialized="table",
     )
 }}
@@ -14,30 +14,19 @@ with
             atendimento_tipo,
             especialidade_nome,
             case
-                when (internacao_data in ("None", "NaT")) or (internacao_data is null)
-                then null
+                when {{process_null('internacao_data')}} is null then null
                 else cast(internacao_data as datetime)
             end as internacao_data,
-            case
-                when regexp_replace(cns, '[^0-9]', '') = ''
-                then null
-                else regexp_replace(cns, '[^0-9]', '')
-            end as cns,
-            case
-                when regexp_replace(cpf, '[^0-9]', '') = ''
-                then null
-                else regexp_replace(cpf, '[^0-9]', '')
-            end as cpf,
+            {{clean_numeric('cns')}} as cns,
+            {{clean_numeric('cpf')}} as cpf,
             imported_at,
             updated_at,
             case
-                when (data_entrada in ("None", "NaT")) or (data_entrada is null)
-                then null
+                when {{process_null('data_entrada')}} is null then null
                 else cast(data_entrada as datetime)
             end as entrada_datahora,
             case
-                when (alta_data in ("None", "NaT")) or (data_entrada is null)
-                then null
+                when {{process_null('alta_data')}} is null then null
                 else cast(alta_data as datetime)
             end as saida_datahora,
         from {{ ref("raw_prontuario_vitai__boletim") }}
@@ -47,8 +36,8 @@ with
             boletim.*,
             'Consulta' as tipo,
             atendimento.gid_profissional,
-            if(atendimento.cid_codigo in ('None', ''), null, cid_codigo) as cid_codigo,
-            if(atendimento.cid_nome in ('None', ''), null, cid_nome) as cid_nome,
+            {{process_null('atendimento.cid_codigo')}} as cid_codigo,
+            {{process_null('atendimento.cid_nome')}}  as cid_nome,
             CASE 
                 WHEN trim(lower(boletim.atendimento_tipo)) = 'emergencia' THEN 'Emergência'
                 WHEN trim(lower(boletim.atendimento_tipo)) = 'consulta' THEN 'Ambulatorial'
@@ -56,7 +45,7 @@ with
             END  as subtipo,
             array(
                 select as struct 
-                cast(null as string) as subtipo,
+                cast(null as string) as tipo,
                 cast(null as string) as descricao
             ) as exames_realizados
         from boletim
@@ -70,16 +59,8 @@ with
         select
             gid_boletim,  
             internacao_tipo,
-            if(
-                internacao.id_diagnostico in ('None', ''),
-                null,
-                internacao.id_diagnostico
-            ) as cid_codigo,
-            if(
-                internacao.diagnostico_descricao in ('None', ''),
-                null,
-                internacao.diagnostico_descricao
-            ) as cid_nome,
+            {{process_null('internacao.id_diagnostico')}} as cid_codigo,
+            {{process_null('internacao.diagnostico_descricao')}} as cid_nome,
             row_number() over (
                 partition by gid_boletim order by internacao_data desc
             ) as ordenacao
@@ -98,7 +79,7 @@ with
             END as subtipo,
             array(
                 select as struct 
-                cast(null as string) as subtipo,
+                cast(null as string) as tipo,
                 cast(null as string) as descricao
             ) as exames_realizados
         from boletim
@@ -106,32 +87,28 @@ with
             on boletim.gid = internacao_distinct.gid_boletim
         where internacao_distinct.gid_boletim is not null and boletim.internacao_data is not null
     ),
+    -- Monta relação de exames em cada episódio, retirando duplicadas de exames refeitos e agrupando episodios com exames de imagem e laboratorio
+    -- como um só
     exame_dupl as (
         select
             boletim.*,
             'Exame' as tipo,
-            exame.exame as descricao,
+            exame_table.exame_descricao,
             safe_cast(null as string) as gid_profissional,
             safe_cast(null as string) as cid_codigo,
             safe_cast(null as string) as cid_descricao,
             CASE 
-                WHEN trim(lower(exame.tipo)) = 'laboratorio' THEN 'Laboratório'
-                ELSE trim(initcap(exame.tipo)) 
-            END as subtipo,
-            array(
-                select as struct 
-                cast(null as string) as subtipo,
-                cast(null as string) as descricao
-            ) as exames_realizados
+                WHEN trim(lower(exame_table.tipo)) = 'laboratorio' THEN 'Laboratório'
+                ELSE trim(initcap(exame_table.tipo)) 
+            END as subtipo
         from boletim
-        left join
-            {{ ref("raw_prontuario_vitai__exame") }} as exame
-            on boletim.gid = exame.gid_boletim
+        left join (select distinct gid_boletim, tipo, exame_descricao  from {{ref("raw_prontuario_vitai__exame")}} ) as exame_table
+            on boletim.gid = exame_table.gid_boletim
         left join
             {{ ref("raw_prontuario_vitai__atendimento") }} as atendimento
             on boletim.gid = atendimento.gid_boletim
         where
-            exame.gid_boletim is not null
+            exame_table.gid_boletim is not null
             and atendimento.gid_boletim is null
             and boletim.internacao_data is null
     ),
@@ -158,8 +135,8 @@ with
                 ' e ') as subtipo,
             array_agg(
                 struct( 
-                    cast(subtipo as string) as subtipo,
-                    cast(descricao as string) as descricao
+                    cast(subtipo as string) as tipo,
+                    cast(exame_descricao as string) as descricao
                 )
             ) as exames_realizados
         from exame_dupl
@@ -193,8 +170,7 @@ with
             gid_boletim,
             gid_profissional,
             case
-                when (queixa = 'none' or queixa = '')
-                then null
+                when {{process_null('queixa')}} is null then null
                 else upper(trim(queixa))
             end as queixa
         from queixa_all
@@ -205,11 +181,9 @@ with
         select
             gid_boletim,
             case
-                when (lower(resumo_alta_descricao) = 'none' or lower(resumo_alta_descricao) = '')
-                    and (lower(desfecho_internacao) = 'none' or lower(desfecho_internacao) = '')
+                when {{process_null('resumo_alta_descricao')}} is null and {{process_null('desfecho_internacao')}} is  null
                 then null
-                when (lower(resumo_alta_descricao) = 'none' or lower(resumo_alta_descricao) = '')
-                    and (lower(desfecho_internacao) != 'none' and lower(desfecho_internacao) != '')
+                when {{process_null('resumo_alta_descricao')}} is null and {{process_null('desfecho_internacao')}} is not null
                 then upper(desfecho_internacao)
                 else concat(upper(desfecho_internacao),'\n',upper(trim(resumo_alta_descricao)))
             end as desfecho,
@@ -276,19 +250,9 @@ with
         select distinct
             queixa_final.gid_boletim as gid_boletim,
             queixa_final.gid_profissional as profissional_id,
-            case
-                when regexp_replace(profissional.cpf, '[^0-9]', '') = ''
-                then null
-                else regexp_replace(profissional.cpf, '[^0-9]', '')
-            end as profissional_cpf,
-            case
-                when regexp_replace(profissional.cns, '[^0-9]', '') = ''
-                then null
-                else regexp_replace(profissional.cns, '[^0-9]', '')
-            end as profissional_cns,
-            if(
-                profissional.nome = 'None', null, profissional.nome
-            ) as profissional_nome,
+            {{clean_numeric('profissional.cns')}} as profissional_cns,
+            {{clean_numeric('profissional.cpf')}} as profissional_cpf,
+            {{process_null('profissional.nome')}} as profissional_nome,
             profissional.cbo_descricao
         from queixa_final
         left join profissional on queixa_final.gid_profissional = profissional.gid
