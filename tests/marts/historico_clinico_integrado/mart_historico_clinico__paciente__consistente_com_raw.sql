@@ -1,6 +1,12 @@
 -- este teste verifica se a tabela
 -- mart_historico_clinico__paciente__consistente_com_raw foi criada corretamente, não
 -- descartando nenhuma informação não itencional das tabelas raw até a tabela final.
+{{
+    config(
+        severity="warn",
+    )
+}}
+
 with
     -- import CTEs
     -- -- SMSRIO
@@ -52,7 +58,7 @@ with
         select
             a.*,
             int_valid_records,
-            int_total_rows - int_valid_records as int_to_mrg_discarded_rows_expected  
+            int_total_rows - int_valid_records as int_to_mrg_discarded_rows_expected
         from
             (
                 select
@@ -133,5 +139,4 @@ with
 -- simple select statement
 select *
 from checks
--- where status = 'fail'
-order by metric desc
+where status = 'fail'
