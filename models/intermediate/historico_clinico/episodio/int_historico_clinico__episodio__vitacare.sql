@@ -185,7 +185,7 @@ with
             -- Metadados
             struct(
                 updated_at,
-                loaded_at,
+                loaded_at as imported_at,
                 current_datetime() as processed_at
             ) as metadados
 

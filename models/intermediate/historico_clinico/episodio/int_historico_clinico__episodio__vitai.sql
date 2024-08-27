@@ -259,7 +259,7 @@ select
     -- Metadados
     struct(
         safe_cast(updated_at as datetime) as updated_at,
-        safe_cast(imported_at as datetime) as loaded_at,
+        safe_cast(imported_at as datetime) as imported_at,
         safe_cast(current_datetime() as datetime) as processed_at
     ) as metadados
 from atendimento_struct

@@ -5,6 +5,14 @@ models:
       Tabela com uma visão consolidada dos atendimentos realizados em
       estabelecimentos de saúde.
     columns:
+      - name: paciente_cpf
+        description: >
+          Cadastro de Pessoas Físicas do paciente.
+        tests:
+          - not_null:
+              name: mart_historico_clinico__episodio__paciente_cpf__not_null
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: id_atendimento
         description: |
           Fingerprint determinístico para o atendimento.
@@ -13,6 +21,28 @@ models:
               name: historico_clinico__id_episodio__not_null
           - unique:
               name: historico_clinico__id_episodio__unique
+      - name: paciente
+        description: >
+          Informações sobre os pacientes envolvidos no atendimento, incluindo
+          CPF e CNS. Agrupados por identificador de prontuário.
+      - name: paciente.id_prontuario
+        description: |
+          Identificador do paciente no prontuário relacionado ao atendimento.
+      - name: paciente.cpf
+        description: |
+          CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: paciente.cns
+        description: |
+          CNS do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: paciente.data_nascimento
+        description: |
+          Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_DTNASCIMENTO") }}'
       - name: tipo
         description: >
           Tipo de atendimento classificado como 'Exames', 'Consulta' ou
@@ -29,38 +59,49 @@ models:
         description: >
           Data e hora de término do atendimento. Representa o momento em que o
           atendimento terminou.
-      - name: paciente
+      - name: motivo_atendimento
         description: >
-          Informações sobre os pacientes envolvidos no atendimento, incluindo
-          CPF e CNS. Agrupados por identificador de prontuário.
-      - name: paciente.id_prontuario
-        description: |
-          Prontuário relacionado ao atendimento.
-      - name: paciente.cpf
-        description: |
-          CPF do paciente.
+          Motivo do atendimento, obtido a partir do boletim de atendimento.
+      - name: desfecho_atendimento
+        description: >
+          Desfecho do atendimento, obtido a partir do boletim de atendimento.
         policy_tags:
-          - '{{ var ("TAG_CPF") }}'
-      - name: paciente.cns
-        description: |
-          CNS do paciente.
-        policy_tags:
-          - '{{ var ("TAG_CNS") }}'
-      - name: cid
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+      - name: condicoes
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
           relacionados ao atendimento. 
-          Inclui informações como código e nome do CID.
-      - name: cid.id
+      - name: condicoes.id
         description: |
           Código CID ativo
-      - name: cid.descricao
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+      - name: condicoes.descricao
         description: |
-          Descrição do CID associado 
-      - name: alergia
+          Descrição do CID associado ao atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+      - name: prescricoes
         description: >
-          Descrições das alergias associadas ao atendimento, extraídas dos
-          registros de alergias.
+          Informações sobre as medicações prescritas durante o atendimento.
+      - name: prescricoes.id
+        description: |
+          ID do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
+      - name: prescricoes.nome
+        description: |
+          Nome do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
+      - name: prescricoes.concentracao
+        description: |
+          Concentração do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
+      - name: prescricoes.uso_continuo
+        description: >
+          Indica se o medicamento prescrito é de uso contínuo.
       - name: estabelecimento
         description: >
           Informações sobre o estabelecimento de saúde onde o atendimento foi
@@ -98,6 +139,9 @@ models:
           CPF do profissional responsável pelo atendimento.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+      - name: profissional_saude_responsavel.especialidade
+        description: |
+          Especialidade do profissional responsável pelo atendimento.
       - name: prontuario
         description: >
           Informações adicionais sobre o atendimento, como o fornecedor e o
@@ -117,9 +161,21 @@ models:
       - name: metadados.updated_at
         description: |
           Data de última atualização.
-      - name: episodio_informativo
+      - name: metadados.imported_at
+        description: |
+          Data de importação para o datalake
+      - name: metadados.processed_at
+        description: |
+          Data de processamento do registro
+      - name: exibicao
+        description: >
+          Indica se o episódio deve ser exibido na interface do usuário.
+      - name: exibicao.indicador
         description: |
           Flag que indica se o episodio é relevante para a aplicação do HCI
+      - name: exibicao.motivos
+        description: |
+          Motivos pelos quais o episódio foi marcado para ter a exibição suprimida
   - name: mart_historico_clinico__alergia
     description: >
       Este modelo agrega informações sobre alergias dos pacientes e combina
@@ -148,8 +204,8 @@ models:
           - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: metadados
         description: Metadados do registro
-      - name: metadados.created_at
-        description: Marcação de data/hora de criação do registro no formato UTC,
+      - name: metadados.processed_at
+        description: Marcação de data/hora de processamento do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
   - name: mart_historico_clinico__paciente
     description: "O modelo é um registro abrangente do histórico do paciente que
@@ -366,8 +422,8 @@ models:
         description: STRUCT contendo metadados sobre o registro do paciente.
         data_type: record
         quote: true
-      - name: metadados.created_at
-        description: Marcação de data/hora de criação do registro no formato UTC,
+      - name: metadados.processed_at
+        description: Marcação de data/hora de processamento do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
   - name: mart_historico_clinico__medicamento_cronico
     description: "Tabela contendo os medicamentos de uso contínuo prescrito para o paciente
@@ -406,6 +462,6 @@ models:
         data_type: string
       - name: metadados
         description: Metadados do registro
-      - name: metadados.created_at
-        description: Marcação de data/hora de criação do registro no formato UTC,
+      - name: metadados.processed_at
+        description: Marcação de data/hora de processamento do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
