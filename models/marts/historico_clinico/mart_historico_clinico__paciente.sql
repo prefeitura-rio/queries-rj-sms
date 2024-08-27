@@ -576,7 +576,7 @@ paciente_integrado AS (
         ct.contato,
         ed.endereco,
         pt.prontuario,
-        STRUCT(CURRENT_TIMESTAMP() AS created_at) AS metadados
+        STRUCT(CURRENT_TIMESTAMP() AS processed_at) AS metadados
     FROM paciente_dados pd
     LEFT JOIN cns_dados cns ON pd.cpf = cns.cpf
     LEFT JOIN equipe_saude_familia_dados esf ON pd.cpf = esf.cpf

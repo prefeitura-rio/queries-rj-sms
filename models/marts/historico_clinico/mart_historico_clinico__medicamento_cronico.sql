@@ -50,7 +50,7 @@ with
             array_agg(
                 struct(id, nome, concentracao, datahora_prescricao)
             ) as medicamentos,
-            struct(current_timestamp() as created_at) as metadados
+            struct(current_timestamp() as processed_at) as metadados
         from uso_continuado
         group by cpf
     )

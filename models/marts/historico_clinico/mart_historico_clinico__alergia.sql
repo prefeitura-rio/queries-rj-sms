@@ -37,7 +37,7 @@ with
             cpf as paciente_cpf,
             array_agg(distinct alergia) as alergias,
             -- array_agg(distinct cns ignore nulls) as cns,
-            struct(current_timestamp() as created_at) as metadados
+            struct(current_timestamp() as processed_at) as metadados
         from total
         where cpf is not null
         group by cpf
