@@ -50,9 +50,7 @@ SELECT
         updated_at,
         cadastro_permanente
     FROM {{ref('raw_prontuario_vitacare__paciente')}} -- `rj-sms-dev`.`brutos_prontuario_vitacare`.`paciente`
-    WHERE cpf IS NOT NULL
-        AND NOT REGEXP_CONTAINS({{remove_accents_upper('cpf')}}, r'[A-Za-z]')
-        AND TRIM({{remove_accents_upper('cpf')}}) != ""
+    WHERE {{validate_cpf('cpf')}}
         -- AND tipo = "rotineiro"
         -- AND cpf = cpf_filter
 ),
