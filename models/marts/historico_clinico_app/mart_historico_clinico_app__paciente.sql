@@ -3,7 +3,7 @@
         alias="paciente",
         materialized="table",
         cluster_by="cpf",
-        schema="projeto_hci_aplicacao",
+        schema="app_historico_clinico",
     )
 }}
 
