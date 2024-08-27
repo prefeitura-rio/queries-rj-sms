@@ -23,6 +23,10 @@ with
         from {{ ref("raw_prontuario_vitai__alergia") }}
 
     ),
+    paciente_mrg as (
+        select cpf, c as cns
+        from {{ ref("mart_historico_clinico__paciente")}}, unnest(cns) as c
+    ),
     alergias_std as (
         select
             gid,
@@ -81,10 +85,15 @@ with
         select distinct
             gid_paciente,
             if(cns in ('', 'None'), null, cns) as cns,
-            if(cpf in ('', 'None'), null, cpf) as cpf
-        from {{ ref("raw_prontuario_vitai__boletim") }}
+            if(cpf in ('', 'None'), null, cpf) as cpf,
+        from {{ ref("raw_prontuario_vitai__boletim") }} 
     )
 
-select alergias_agg.gid_paciente as id_paciente, cns, cpf, alergias
+select 
+    alergias_agg.gid_paciente as id_paciente, 
+    boletim.cns, 
+    IF(boletim.cpf is null,paciente_mrg.cpf,boletim.cpf) as cpf, 
+    alergias
 from alergias_agg
 left join boletim on boletim.gid_paciente = alergias_agg.gid_paciente
+left join paciente_mrg on boletim.cns = paciente_mrg.cns

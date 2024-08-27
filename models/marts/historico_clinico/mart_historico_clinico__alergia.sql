@@ -32,11 +32,11 @@ with
         select * from vitacare
     )
 select
-    id_paciente,
-    cns as paciente_cns,
     cpf as paciente_cpf,
-    array_agg(alergia) as alergias,
+    array_agg(distinct alergia) as alergias,
+    array_agg(distinct cns ignore nulls) as cns,
     safe_cast(current_datetime() as datetime) as processed_at
 from total
-group by id_paciente, cns, cpf
+where cpf is not null
+group by cpf
 

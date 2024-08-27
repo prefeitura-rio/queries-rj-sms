@@ -131,23 +131,17 @@ models:
       garante que os identificadores dos pacientes sejam consistentes e
       precisos.
     columns:
-      - name: id_paciente
-        description: >
-          Identificador único do paciente. Este campo é utilizado para associar
-          os dados de alergia com o paciente correspondente.
-        tests:
-          - not_null:
-              name: alergia__id_paciente__notnull
-        policy_tags:
-          - '{{ var ("TAG_IDENTIFICADOR") }}'
       - name: cns
         description: |
           Número do Sistema Único de Saúde do paciente.
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
-      - name: cpf
+      - name: paciente_cpf
         description: |
           Cadastro de Pessoas Físicas do paciente.
+        tests:
+          - not_null:
+              name: alergia__cpf_paciente__notnull
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
       - name: alergias
@@ -158,6 +152,9 @@ models:
         tests:
           - not_null:
               name: alergia__descricao_alergia__notnull
+      - name: processed_at
+        description: >
+          Data de último processamento da base.
   - name: mart_historico_clinico__paciente
     description: "O modelo é um registro abrangente do histórico do paciente que
       integra dados de várias fontes, incluindo 'VITACARE', 'VITAI' e 'SMSRIO'.
