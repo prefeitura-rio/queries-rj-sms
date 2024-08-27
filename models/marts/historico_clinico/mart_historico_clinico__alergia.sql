@@ -28,25 +28,14 @@ with
         select *
         from vitai
         union all
-        select *
-        from vitacare
-    ),
-
-    final as (
-        select
-            cns as paciente_cns,
-            cpf as paciente_cpf,
-            array_agg(alergia) as alergias,
-            struct(current_timestamp() as created_at) as metadados
-        from total
-        group by id_paciente, cns, cpf
-        having {{ validate_cpf("cpf") }} or cns is not null
+        select * from vitacare
     )
+select
+    cpf as paciente_cpf,
+    array_agg(distinct alergia) as alergias,
+    array_agg(distinct cns ignore nulls) as cns,
+    safe_cast(current_datetime() as datetime) as processed_at
+from total
+where cpf is not null
+group by cpf
 
--- select paciente_cpf, count(1) as records
--- from final
--- group by 1
--- having records > 1
-select *
-from final
-where paciente_cpf is null
