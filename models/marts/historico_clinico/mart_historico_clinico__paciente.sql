@@ -2,7 +2,8 @@
     config(
         alias="paciente",
         materialized="table",
-        schema="saude_dados_mestres"
+        schema="saude_dados_mestres",
+        tag=["hci", "paciente"]
     )
 }}
 
