@@ -137,7 +137,7 @@ models:
           os dados de alergia com o paciente correspondente.
         tests:
           - not_null:
-              name: alergia__id_paciente__notnull
+              name: mart_historico_clinico__alergia__id_paciente__not_null
         policy_tags:
           - '{{ var ("TAG_IDENTIFICADOR") }}'
       - name: cns
@@ -157,7 +157,7 @@ models:
           apenas valores distintos.
         tests:
           - not_null:
-              name: alergia__descricao_alergia__notnull
+              name: mart_historico_clinico__alergia__array_alergias__not_null
   - name: mart_historico_clinico__paciente
     description: "O modelo é um registro abrangente do histórico do paciente que
       integra dados de várias fontes, incluindo 'VITACARE', 'VITAI' e 'SMSRIO'.
