@@ -24,9 +24,9 @@ with
             dados.raca as race,
             contato.telefone[safe_offset(0)].valor as phone,
             struct(
-                equipe_saude_familia[safe_offset(0)].clinica_familia.id_cnes,
-                equipe_saude_familia[safe_offset(0)].clinica_familia.nome,
-                equipe_saude_familia[safe_offset(0)].clinica_familia.telefone
+                equipe_saude_familia[safe_offset(0)].clinica_familia.id_cnes as cnes,
+                equipe_saude_familia[safe_offset(0)].clinica_familia.nome as name,
+                equipe_saude_familia[safe_offset(0)].clinica_familia.telefone as phone
             ) as family_clinic,
             struct(
                 equipe_saude_familia[safe_offset(0)].id_ine as ine_code,
