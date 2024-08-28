@@ -73,7 +73,7 @@ with
                     )
             end as filter_tags,
             struct(
-                (flag__episodio_sem_informacao or flag__paciente_tem_restricao or flag__paciente_sem_cpf) as indicador,
+                not(flag__episodio_sem_informacao or flag__paciente_tem_restricao or flag__paciente_sem_cpf) as indicador,
                 flag__episodio_sem_informacao as episodio_sem_informacao,
                 flag__paciente_tem_restricao as paciente_restrito,
                 flag__paciente_sem_cpf as paciente_sem_cpf
