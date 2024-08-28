@@ -56,7 +56,7 @@ select
     safe_cast(indicacaoclinica as string) as indicacao_clinica,
     safe_cast(mnemonico as string) as mnemonico,
     safe_cast(tipo as string) as tipo,
-    safe_cast(exame as string) as exame,
+    safe_cast(exame as string) as exame_descricao,
     safe_cast(medico_solicitante_nome as string) as medico_solicitante_nome,
     safe_cast(statusitem as string) as status_item,
     safe_cast(cpf as string) as cpf,

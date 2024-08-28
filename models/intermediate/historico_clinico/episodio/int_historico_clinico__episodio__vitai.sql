@@ -5,33 +5,45 @@
         materialized="table",
     )
 }}
--- Cria tabela padronizada da entidade episodio assistencial da vitai 
 with
-    -- Traz boletins com chaves de paciente tratadas
+    paciente_mrg as (
+        select
+            id_paciente,
+            cpf,
+            cns,
+            dados.data_nascimento
+        from {{ ref('mart_historico_clinico__paciente') }} as paciente_merged, 
+            unnest(prontuario) as prontuario
+        where sistema = 'VITAI'
+    ),
     boletim as (
         select
-            gid,
-            gid_paciente,
-            gid_estabelecimento,
-            atendimento_tipo,
-            especialidade_nome,
+            b.gid,
+            b.gid_paciente,
+            b.gid_estabelecimento,
+            b.atendimento_tipo,
+            b.especialidade_nome,
             case
-                when {{process_null('internacao_data')}} is null then null
-                else cast(internacao_data as datetime)
+                when {{process_null('b.internacao_data')}} is null then null
+                else cast(b.internacao_data as datetime)
             end as internacao_data,
-            {{clean_numeric('cns')}} as cns,
-            {{clean_numeric('cpf')}} as cpf,
-            imported_at,
-            updated_at,
+            b.imported_at,
+            b.updated_at,
             case
-                when {{process_null('data_entrada')}} is null then null
-                else cast(data_entrada as datetime)
+                when {{process_null('b.data_entrada')}} is null then null
+                else cast(b.data_entrada as datetime)
             end as entrada_datahora,
             case
-                when {{process_null('alta_data')}} is null then null
-                else cast(alta_data as datetime)
+                when {{process_null('b.alta_data')}} is null then null
+                else cast(b.alta_data as datetime)
             end as saida_datahora,
-        from {{ ref("raw_prontuario_vitai__boletim") }}
+            IF({{clean_numeric('b.cpf')}} is null, 
+                paciente_mrg.cpf,
+                {{clean_numeric('b.cpf')}}) as cpf,
+            paciente_mrg.cns as cns,
+            paciente_mrg.data_nascimento
+        from {{ ref("raw_prontuario_vitai__boletim") }} as b
+        left join paciente_mrg on b.gid_paciente = paciente_mrg.id_paciente
     ),
     consulta as (
         select
@@ -122,12 +134,13 @@ with
             atendimento_tipo,
             especialidade_nome,
             internacao_data,
-            cns,
-            cpf,
             imported_at,
             updated_at,
             entrada_datahora,
             saida_datahora,
+            cpf,
+            cns,
+            data_nascimento,
             tipo,
             gid_profissional,
             cid_codigo,
@@ -142,7 +155,7 @@ with
                 )
             ) as exames_realizados
         from exame_dupl
-        group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+        group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17
     ),
     episodios as (
         select *
@@ -178,7 +191,7 @@ with
         from queixa_all
         where ordenacao = 1
     ),
-     -- Desfecho do atendimento
+    -- Desfecho do atendimento
     desfecho_atendimento_all as (
         select
             gid_boletim,
@@ -270,7 +283,7 @@ with
             desfecho_atendimento_final.desfecho,
             episodios_distinct.entrada_datahora,
             episodios_distinct.saida_datahora,
-            struct(episodios_distinct.gid as id_prontuario, episodios_distinct.cpf, episodios_distinct.cns) as paciente,
+            struct(episodios_distinct.cpf, episodios_distinct.cns,episodios_distinct.data_nascimento) as paciente,
             struct(
                     profissional_distinct.profissional_id as id,
                     profissional_distinct.profissional_cpf as cpf,
@@ -301,7 +314,8 @@ with
             imported_at,
             updated_at,
             cpf,
-            cns 
+            cns,
+            data_nascimento
             from episodios
         ) as episodios_distinct
         left join estabelecimentos on episodios_distinct.gid_estabelecimento = estabelecimentos.gid
@@ -313,7 +327,7 @@ with
     )
     select    
     -- Paciente
-    paciente_struct.paciente,
+    atendimento_struct.paciente,
 
     -- Tipo e Subtipo
     safe_cast(atendimento_struct.tipo as string) as tipo,
@@ -343,7 +357,7 @@ with
     -- Metadados
     struct(
         safe_cast(updated_at as datetime) as updated_at,
-        safe_cast(imported_at as datetime) as loaded_at,
+        safe_cast(imported_at as datetime) as imported_at,
         safe_cast(current_datetime() as datetime) as processed_at
     ) as metadados
     from atendimento_struct

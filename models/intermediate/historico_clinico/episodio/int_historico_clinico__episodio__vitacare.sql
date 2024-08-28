@@ -21,7 +21,6 @@ with
         select
             cpf as pk,
             struct(
-                prontuario.id_paciente as id,
                 paciente_merged.cpf,
                 paciente_merged.cns,
                 paciente_merged.dados.data_nascimento
@@ -159,7 +158,7 @@ with
             dim_estabelecimento.estabelecimento,
 
             -- Profissional
-            ARRAY(
+            (
                 SELECT AS STRUCT
                     dim_profissional.id as id,
                     dim_profissional.cpf as cpf,

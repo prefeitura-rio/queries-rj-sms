@@ -155,9 +155,6 @@ models:
       - name: metadados
         description: |
           Metadados do registro
-      - name: metadados.imported_at
-        description: |
-          Data de importação para o datalake
       - name: metadados.updated_at
         description: |
           Data de última atualização.
