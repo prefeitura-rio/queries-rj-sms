@@ -15,6 +15,13 @@ with
         where
             exibicao.indicador = false
     ),
+    episodios_com_cid as (
+        select
+            id_atendimento
+        from {{ ref('mart_historico_clinico__episodio') }}, unnest(condicoes) as cid
+        where
+            cid.id is not null
+    ),
     todos_episodios as (
         select
             *,
@@ -29,7 +36,9 @@ with
             case 
                 when 
                     tipo like '%Exame%' or
-                    array_length(condicoes) > 0 or
+                    tipo like '%Laborat%' or
+                    tipo like '%Imagem%' or
+                    id_atendimento in (select * from episodios_com_cid) or
                     motivo_atendimento is not null or
                     desfecho_atendimento is not null
                 then false
