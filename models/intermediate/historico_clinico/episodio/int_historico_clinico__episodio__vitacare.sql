@@ -21,11 +21,13 @@ with
         select
             cpf as pk,
             struct(
-                id as id_prontuario,
-                cpf,
-                cns
+                paciente_merged.cpf,
+                paciente_merged.cns,
+                paciente_merged.dados.data_nascimento
             ) as paciente
-        from {{ ref('raw_prontuario_vitacare__paciente') }}
+        from {{ ref('mart_historico_clinico__paciente') }} as paciente_merged, 
+            unnest(prontuario) as prontuario
+        where sistema = 'VITACARE'
     ),
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  DIM: Profissional
@@ -47,7 +49,7 @@ with
             id_cnes as pk,
             struct(
                 id_cnes,
-                concat(tipo_sms, ' ', nome_complemento) as nome,
+                {{ proper_estabelecimento('nome_limpo') }} as nome,
                 tipo_sms as estabelecimento_tipo
             ) as estabelecimento
         from {{ ref("dim_estabelecimento") }}
@@ -61,7 +63,7 @@ with
     ),
     condicoes as (
         select 
-            id as fk_atendimento,
+            gid as fk_atendimento,
             json_extract_scalar(condicao_json, "$.cod_cid10") as id
         from bruto_atendimento,
             unnest(json_extract_array(condicoes)) as condicao_json
@@ -89,7 +91,7 @@ with
     ),
     prescricoes as (
         select 
-            id as fk_atendimento,
+            gid as fk_atendimento,
             replace(json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
             upper(json_extract_scalar(prescricoes_json, "$.nome_medicamento")) as nome,
             json_extract_scalar(prescricoes_json, "$.uso_continuado") as uso_continuo
@@ -143,8 +145,8 @@ with
             safe_cast(datahora_fim as datetime) as saida_datahora,
 
             -- Motivo e Desfecho
-            soap_subjetivo_motivo as motivo_atendimento,
-            soap_plano_observacoes as desfecho_atendimento,
+            upper(soap_subjetivo_motivo) as motivo_atendimento,
+            upper(soap_plano_observacoes) as desfecho_atendimento,
 
             -- Condições
             dim_condicoes_atribuidas.condicoes,
@@ -156,12 +158,12 @@ with
             dim_estabelecimento.estabelecimento,
 
             -- Profissional
-            ARRAY(
+            (
                 SELECT AS STRUCT
                     dim_profissional.id as id,
                     dim_profissional.cpf as cpf,
                     dim_profissional.cns as cns,
-                    dim_profissional.nome as nome,
+                    {{ proper_br('dim_profissional.nome') }} as nome,
                     safe_cast(
                         case 
                             when cbo_descricao_profissional like '%Médic%' then 'Médico(a)'
@@ -175,31 +177,15 @@ with
 
             -- Prontuário
             struct(
-                bruto_atendimento.id as id_atendimento,
+                bruto_atendimento.gid as id_atendimento,
                 'vitacare' as fornecedor
             ) as prontuario,
 
             -- Metadados
             struct(
                 updated_at,
-                loaded_at,
-                current_datetime() as processed_at,
-                safe_cast(
-                    (
-                        ifnull(ARRAY_LENGTH(dim_condicoes_atribuidas.condicoes) > 0, false) and 
-                        datahora_inicio is not null and
-                        soap_subjetivo_motivo is not null
-                    ) as boolean
-                ) as tem_informacoes_basicas,
-                safe_cast(
-                    (
-                        dim_paciente.paciente.cpf is not null or
-                        dim_paciente.paciente.cns is not null
-                    ) as boolean
-                ) as tem_identificador_paciente,
-                safe_cast(
-                    false as boolean
-                ) as tem_informacoes_sensiveis
+                loaded_at as imported_at,
+                current_datetime() as processed_at
             ) as metadados
 
         from bruto_atendimento
@@ -210,9 +196,9 @@ with
             inner join dim_profissional
                 on bruto_atendimento.cns_profissional = dim_profissional.pk
             left join dim_condicoes_atribuidas
-                on bruto_atendimento.id = dim_condicoes_atribuidas.fk_atendimento
+                on bruto_atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
             left join dim_prescricoes_atribuidas
-                on bruto_atendimento.id = dim_prescricoes_atribuidas.fk_atendimento
+                on bruto_atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
     )
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  Finalização

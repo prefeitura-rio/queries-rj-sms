@@ -9,15 +9,11 @@
 
 
 with 
-    vitai as (
-        select * from {{ ref("int_historico_clinico__episodio__vitai") }}
-    ),
-    vitacare as (
-        select * from {{ ref("int_historico_clinico__episodio__vitacare") }}
-    ),
-    merged as (
+    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    --  MERGING DATA: Merging Data from Different Sources
+    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    merged_data as (
         select
-            paciente.cpf as paciente_cpf,
             paciente, 
             tipo,
             subtipo,
@@ -26,17 +22,14 @@ with
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
-            null as prescricoes,
+            null as prescricoes, -- VITAI source does not have prescription data
             estabelecimento, 
             profissional_saude_responsavel,
             prontuario,
             metadados
-        from vitai
-
-        union all
-
-        select 
-            paciente.cpf as paciente_cpf,
+        from {{ ref("int_historico_clinico__episodio__vitai") }}
+            union all
+        select
             paciente, 
             tipo,
             subtipo,
@@ -50,7 +43,24 @@ with
             profissional_saude_responsavel,
             prontuario,
             metadados
-        from vitacare
+        from {{ ref("int_historico_clinico__episodio__vitacare") }}
+    ),
+    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    --  FINGERPRINT: Adding Unique Hashed Field
+    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    fingerprinted as (
+        select 
+            -- Patient Unique Identifier: for clustering purposes
+            paciente.cpf as paciente_cpf,
+
+            -- Encounter Unique Identifier: for testing purposes
+            farm_fingerprint(concat(prontuario.fornecedor, prontuario.id_atendimento)) as id_atendimento,
+
+            -- Encounter Data
+            merged_data.*,
+        from merged_data
     )
-select *
-from merged
+select 
+    *,
+from fingerprinted
+where paciente_cpf is not null

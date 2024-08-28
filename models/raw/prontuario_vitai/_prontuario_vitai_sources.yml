@@ -63,4 +63,16 @@ sources:
           error_after: {count: 24, period: hour}
       - name: cirurgia_eventos
       - name: m_estabelecimento_eventos
+      - name: resumo_alta_eventos
+        loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
+        freshness:
+          warn_after: {count: 4, period: hour}
+          error_after: {count: 24, period: hour}
+      - name: internacao_eventos
+        loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
+        freshness:
+          warn_after: {count: 4, period: hour}
+          error_after: {count: 24, period: hour}
 

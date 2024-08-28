@@ -928,4 +928,115 @@ models:
         description: Data e hora da última atualização do relato cirúrgico.
       - name: imported_at
         description: Data e hora da importação dos dados para o data lake.
-
+  - name: raw_prontuario_vitai__internacao
+    description: >
+      Tabela contendo informações detalhadas sobre as internações realizados nos estabelecimentos de saúde.
+    columns:
+      - name: gid
+        description: Identificador único da internação.
+      - name: boletim_gid
+        description: Identificador único do boletim associado a internação.
+      - name: paciente_gid
+        description: Identificador único do paciente associado ao internação.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: estabelecimento_gid
+        description: Identificador único do estabelecimento de saúde onde ocorreu a internação.
+      - name: id_procedimento
+        description: Identificador do procedimento realizado.
+      - name: id_diagnostico
+        description: Identificador do diagnotico.
+      - name: internacao_tipo
+        description: Descricao do tipo de internação realizada.
+      - name: cpf
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        description: CPF do paciente internado.
+      - name: cns
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+        description: CNS do paciente internado.
+      - name: estabelecimento_sigla
+        description: Sigla do estabelecimetno de saúdew onde ocorreu a internação.
+      - name: procedimento_nome
+        description: Descrição do procedimento realizado.
+      - name: diagnostico_descricao
+        description: Descrição do diagnostico realizado.
+      - name: alta_motivo
+        description: Motivo da alta do paciente.
+      - name: risco
+        description: Risco do paciente.
+      - name: entrada_data
+        description: Data de entrada do paciente.
+      - name: internacao_data
+        description: Data de internação do paciente.
+      - name: obito_data
+        description: Data de óbito do paciente.
+      - name: cliente
+        description: Nome ou identificação do cliente associado ao relato cirúrgico.
+      - name: baseurl
+        description: URL base relacionada ao sistema do relato cirúrgico.
+      - name: updated_at
+        description: Data e hora da última atualização do relato cirúrgico.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o data lake.
+      - name: created_at
+        description: Data e hora da criação do registro de internação.
+  - name: raw_prontuario_vitai__resumo_alta
+    description: |
+      Tabela contendo informações detalhadas sobre os resumos de alta realizados nos estabelecimentos de saúde.
+    columns:
+      - name: gid
+        description: Identificador único do resumo de alta
+      - name: gid_boletim
+        description: ID do boletim associado ao evento.
+      - name: gid_paciente
+        description: ID do paciente associado ao evento.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR") }}'
+      - name: gid_estabelecimento
+        description: ID do estabelecimento onde o evento ocorreu.
+      - name: id_alta_medica
+        description: Identificador único da alta médica associada ao evento.
+      - name: updated_at
+        description: Timestamp indicando a última atualização do evento.
+      - name: alta_tipo
+        description: Tipo de alta médica.
+      - name: resumo_alta_datahora
+        description: Data e hora do resumo da alta médica.
+      - name: recomendacao
+        description: Recomendações associadas ao evento de alta.
+      - name: resumo_alta_descricao
+        description: Resumo da alta médica.
+      - name: alta_conduta
+        description: Conduta tomada durante a alta.
+      - name: alta_exames
+        description: Exames realizados durante a alta.
+      - name: alta_tratamento
+        description: Tratamento dado durante a alta.
+      - name: id_unr
+        description: Identificador da unidade de referência.
+      - name: unr_nome
+        description: Nome da unidade de referência.
+      - name: cid_codigo_alta
+        description: Código CID da alta médica.
+      - name: cid_descricao_alta
+        description: Descrição CID da alta médica.
+      - name: desfecho_internacao
+        description: Desfecho da internação.
+      - name: servico_descricao
+        description: Descrição do serviço prestado.
+      - name: exclusao_alta_datahora
+        description: Data e hora da exclusão da alta médica, se aplicável.
+      - name: exclusao_motivo
+        description: Motivo da exclusão da alta médica, se aplicável.
+      - name: profissional_alta
+        description: Nome do profissional que executou a alta médica.
+      - name: cliente
+        description: Nome ou identificação do cliente associado ao relato cirúrgico.
+      - name: baseurl
+        description: URL base relacionada ao sistema do relato cirúrgico.
+      - name: estabelecimento_sigla
+        description: Sigla do estabelecimento associado ao evento.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o data lake.

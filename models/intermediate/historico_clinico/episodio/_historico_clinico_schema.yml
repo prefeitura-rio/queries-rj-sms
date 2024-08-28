@@ -5,21 +5,21 @@ models:
     description: |
       Tabela com uma visão consolidada dos atendimentos realizados em estabelecimentos de saúde.
     columns:
-      - name: id
-        description: |
-          Identificador único para o atendimento, composto pelo CNES do estabelecimento e pelo identificador do atendimento (`gid`). 
-          Utilizado para diferenciar atendimentos entre diferentes estabelecimentos.
-        tests:
-          - not_null:
-              name: historico_clinico__id_episodio_vitai__notnull
-          - unique:
-              name: historico_clinico__id_episodio_vitai__unique
       - name: tipo
         description: |
           Tipo de atendimento classificado como 'Exames', 'Consulta' ou 'Internação', baseado no tipo de atendimento informado no boletim.
       - name: subtipo
         description: |
           Subtipo do atendimento, obtido a partir do tipo de atendimento do boletim. 
+      - name: exames_realizados 
+        description: |
+          No caso de tipo de episódio como 'Exame', detalha tipos de exames realizados e descrição
+      - name: exames_realizados.subtipo
+        description: |
+          Subtipo do exame, pode ser preenchido com 'Imagem' ou 'Laboratório'
+      - name: exames_realizados.descricao
+        description: |
+          Descrição do exame realizado
       - name: entrada_datahora
         description: |
           Data e hora de início do atendimento. Representa o momento em que o atendimento começou.
@@ -106,6 +106,11 @@ models:
       - name: prontuario.id_atendimento
         description: |
           ID do atendimento.
+        tests:
+          - not_null:
+              name: historico_clinico__id_episodio_vitai__notnull
+          - unique:
+              name: historico_clinico__id_episodio_vitai__unique
       - name: prontuario.fornecedor
         description: |
           Fornecedor do prontuário.
