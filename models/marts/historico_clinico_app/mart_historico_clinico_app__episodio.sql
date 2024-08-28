@@ -8,93 +8,34 @@
 }}
 
 with
+    paciente_restritos as (
+        select 
+            cpf
+        from {{ ref('mart_historico_clinico_app__paciente') }}
+        where
+            exibicao.indicador = false
+    ),
     todos_episodios as (
         select
-            *
+            *,
+            case
+                when paciente_cpf in (select cpf from paciente_restritos) then true
+                else false
+            end as flag__paciente_tem_restricao,
+            case
+                when paciente_cpf is null then true
+                else false
+            end as flag__paciente_sem_cpf,
+            case 
+                when 
+                    tipo like '%Exame%' or
+                    array_length(condicoes) > 0 or
+                    motivo_atendimento is not null or
+                    desfecho_atendimento is not null
+                then false
+                else true
+            end as flag__episodio_sem_informacao
         from {{ ref('mart_historico_clinico__episodio') }}
-    ),
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- REGRAS DE EXIBIÇÃO
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- Regra 1: Sem Identificador de Paciente
-    regra_sem_identificador as (
-        select 
-            todos_episodios.id_atendimento,
-            safe_cast(
-                case
-                    when paciente.cpf is null then true
-                    else false
-                end
-            as boolean) as tem_exibicao_limitada,
-            safe_cast(
-                case
-                    when paciente.cpf is null then "Paciente sem CPF"
-                    else null
-                end
-            as string) as motivo
-        from todos_episodios
-    ),
-    -- Regras 2: Sem Informações Básicas
-    regra_sem_dados_basicos as (
-        select 
-            todos_episodios.id_atendimento,
-            safe_cast(
-                case
-                    when 
-                        todos_episodios.tipo != "Exame" and
-                        array_length(todos_episodios.condicoes) = 0 and 
-                        todos_episodios.motivo_atendimento is null and
-                        todos_episodios.desfecho_atendimento is null
-                        then true
-                    else false
-                end
-            as boolean) as tem_exibicao_limitada,
-            safe_cast(
-                case
-                    when 
-                        todos_episodios.tipo != "Exame" and
-                        array_length(todos_episodios.condicoes) = 0 and 
-                        todos_episodios.motivo_atendimento is null and
-                        todos_episodios.desfecho_atendimento is null
-                        then "Episódio Não Informativo"
-                    else null
-                end
-            as string) as motivo
-        from todos_episodios
-    ),
-    -- Regra 3: Pacientes Não Restrito
-    regra_paciente_restrito as (
-        select
-            todos_episodios.id_atendimento,
-            todos_pacientes.exibicao.indicador as indicador,
-            safe_cast(
-                case
-                    when todos_pacientes.exibicao.indicador = false then "Paciente Restrito"
-                    else null
-                end
-            as string) as motivo
-        from todos_episodios
-            inner join {{ ref('mart_historico_clinico_app__paciente') }} as todos_pacientes
-                on todos_episodios.paciente_cpf = todos_pacientes.cpf
-    ),
-    -- Juntando Regras
-    todas_regras as (
-        select * from regra_sem_identificador
-        union all
-        select * from regra_sem_dados_basicos
-        union all
-        select * from regra_paciente_restrito
-    ),
-    -- Agrupando Regras
-    regras_exibicao as (
-        select 
-            id_atendimento,
-            struct(
-                not(logical_or(tem_exibicao_limitada)) as indicador,
-                array_agg(motivo ignore nulls) as motivos
-            ) as exibicao
-        from todas_regras
-        group by id_atendimento
     ),
     ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- FORMATAÇÃO
@@ -130,14 +71,18 @@ with
                     array(
                         select estabelecimento.estabelecimento_tipo
                     )
-            end as filter_tags
+            end as filter_tags,
+            struct(
+                (flag__episodio_sem_informacao or flag__paciente_tem_restricao or flag__paciente_sem_cpf) as indicador,
+                flag__episodio_sem_informacao as episodio_sem_informacao,
+                flag__paciente_tem_restricao as paciente_restrito,
+                flag__paciente_sem_cpf as paciente_sem_cpf
+            ) as exibicao
         from todos_episodios
     )
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
--- JUNTANDO INFORMAÇÕES DE EXIBICAO
+-- FINAL
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select
-    formatado.*,
-    regras_exibicao.* except(id_atendimento)
+    *
 from formatado
-    left join regras_exibicao using (id_atendimento)
