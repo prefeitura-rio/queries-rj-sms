@@ -1,0 +1,586 @@
+models:
+  - name: raw_osinfo__conta_bancaria
+    columns:
+      - name: id
+        description: Identificador único da conta bancária.
+        data_type: string
+        quote: true
+      - name: id_banco
+        description: Identificador único do banco.
+        data_type: string
+        quote: true
+      - name: banco_codigo
+        description: Código do banco.
+        data_type: string
+        quote: true
+      - name: banco_nome
+        description: Nome completo do banco.
+        data_type: string
+        quote: true
+      - name: banco_nome_fantasia
+        description: Nome fantasia do banco.
+        data_type: string
+        quote: true
+      - name: banco_ativo_indicador
+        description: Indica se o banco está ativo (S para Sim, N para Não).
+        data_type: string
+        quote: true
+      - name: id_agencia
+        description: Identificador único da agência.
+        data_type: string
+        quote: true
+      - name: agencia_numero
+        description: Número da agência bancária.
+        data_type: string
+        quote: true
+      - name: agencia_digito
+        description: Dígito verificador da agência, se aplicável.
+        data_type: string
+        quote: true
+      - name: agencia_nome
+        description: Nome da agência bancária.
+        data_type: string
+        quote: true
+      - name: agencia_ativo_indicaodr
+        description: Indica se a agência está ativa (S para Sim, N para Não).
+        data_type: string
+        quote: true
+      - name: codigo
+        description: Número da conta corrente.
+        data_type: string
+        quote: true
+      - name: digito
+        description: Dígito verificador da conta corrente, se aplicável.
+        data_type: string
+        quote: true
+      - name: id_instituicao
+        description: Código da instituição associada à conta.
+        data_type: string
+        quote: true
+      - name: ativo_indicador
+        description: Indica se a conta está ativa (S para Sim, N para Não).
+        data_type: string
+        quote: true
+      - name: tipo
+        description: Tipo de conta (por exemplo, Execução, Provisionamento).
+        data_type: string
+        quote: true
+  - name: raw_osinfo__contrato_terceiros
+    columns:
+      - name: id_contrato_terceiro
+        description: Identificador único do contrato com terceiros.
+        data_type: string
+        quote: true
+      - name: id_organizacao
+        description: Código da organização responsável pelo contrato.
+        data_type: string
+        quote: true
+      - name: id_unidade
+        description: Código da unidade associada ao contrato.
+        data_type: string
+        quote: true
+      - name: id_instrumento_contratual
+        description: Identificador do instrumento contratual utilizado (contratoid da
+          tabela contrato)
+        data_type: string
+        quote: true
+      - name: numero
+        description: Número do contrato.
+        data_type: string
+        quote: true
+      - name: valor_mensal
+        description: Valor mensal estipulado no contrato.
+        data_type: numeric
+        quote: true
+      - name: contato_inicio_mes
+        description: Mês de início do contrato.
+        data_type: int64
+        quote: true
+      - name: contrato_fim_mes
+        description: Mês de término do contrato.
+        data_type: int64
+        quote: true
+      - name: contrato_inicio_ano
+        description: Ano de início do contrato.
+        data_type: int64
+        quote: true
+      - name: contrato_fim_ano
+        description: Ano de término do contrato.
+        data_type: int64
+        quote: true
+      - name: contrato_assinatura_ano
+        description: Ano de assinatura do contrato.
+        data_type: int64
+        quote: true
+      - name: vigencia
+        description: Vigência do contrato em meses.
+        data_type: string
+        quote: true
+      - name: cnpj
+        description: CNPJ da empresa contratada.
+        data_type: string
+        quote: true
+      - name: razao_social
+        description: Razão social da empresa contratada.
+        data_type: string
+        quote: true
+      - name: servico
+        description: Descrição do serviço prestado pela empresa contratada.
+        data_type: string
+        quote: true
+      - name: imagem_contrato
+        description: Link ou referência a imagem do contrato, se aplicável.
+        data_type: string
+        quote: true
+  - name: raw_osinfo__contrato
+    columns:
+      - name: id_contrato
+        description: Identificador único do contrato.
+        data_type: string
+        quote: true
+      - name: numero
+        description: Número do contrato.
+        data_type: string
+        quote: true
+      - name: id_organizacao
+        description: Código da organização responsável pelo contrato.
+        data_type: string
+        quote: true
+      - name: atualizacao_data
+        description: Data da última atualização do contrato.
+        data_type: date
+        quote: true
+      - name: assinatura_data
+        description: Data de assinatura do contrato.
+        data_type: date
+        quote: true
+      - name: vigencia_periodo
+        description: Período de vigência do contrato.
+        data_type: string
+        quote: true
+      - name: publicao_data
+        description: Data de publicação do contrato.
+        data_type: date
+        quote: true
+      - name: inicio_data
+        description: Data de início do contrato.
+        data_type: date
+        quote: true
+      - name: valor_total
+        description: Valor total do contrato.
+        data_type: numeric
+        quote: true
+      - name: valor_ano1
+        description: Valor previsto para o primeiro ano.
+        data_type: numeric
+        quote: true
+      - name: valor_parcelas
+        description: Valor das parcelas do contrato.
+        data_type: numeric
+        quote: true
+      - name: valor_fixo
+        description: Valor fixo estipulado no contrato.
+        data_type: numeric
+        quote: true
+      - name: valor_variavel
+        description: Valor variável estipulado no contrato.
+        data_type: numeric
+        quote: true
+      - name: observacao
+        description: Observações adicionais sobre o contrato.
+        data_type: string
+        quote: true
+      - name: area_programatica
+        description: Área programática associada ao contrato.
+        data_type: string
+        quote: true
+  - name: raw_osinfo__despesas
+    columns:
+      - name: id_contrato
+        description: Identificador único do contrato.
+        data_type: string
+        quote: true
+      - name: contrato_numero
+        description: Número do contrato.
+        data_type: string
+        quote: true
+      - name: id_organizacao
+        description: Código da organização responsável pelo contrato.
+        data_type: string
+        quote: true
+      - name: id_unidade
+        description: Código da unidade associada à despesa.
+        data_type: string
+        quote: true
+      - name: unidade_nome_fantasia
+        description: Nome fantasia da unidade.
+        data_type: string
+        quote: true
+      - name: referencia_mes
+        description: Mês de referência da despesa.
+        data_type: string
+        quote: true
+      - name: referencia_ano
+        description: Ano de referência da despesa.
+        data_type: string
+        quote: true
+      - name: codigo_bancario
+        description: Código bancário associado ao pagamento.
+        data_type: string
+        quote: true
+      - name: id_conta_bancaria
+        description: Identificador da conta bancária utilizada.
+        data_type: string
+        quote: true
+      - name: conta_bancaria_codigo
+        data_type: string
+        quote: true
+        description: Código da conta corrente utilizada no pagamento.
+      - name: conta_bancaria_digito
+        data_type: string
+        quote: true
+        description: Dígito verificador da conta corrente, se aplicável.
+      - name: id_agencia
+        data_type: string
+        quote: true
+        description: Código da agência bancária.
+      - name: agencia_numero
+        data_type: string
+        quote: true
+        description: Número da agência bancária.
+      - name: agencia_digito
+        data_type: string
+        quote: true
+        description: Dígito verificador da agência, se aplicável.
+      - name: banco_cod
+        data_type: string
+        quote: true
+        description: Código do banco.
+      - name: banco_nome
+        data_type: string
+        quote: true
+        description: Nome completo do banco.
+      - name: conta_bancaria_tipo
+        data_type: string
+        quote: true
+        description: Tipo de conta (por exemplo, Execução, Provisionamento).
+      - name: contratada_cnpj
+        data_type: string
+        quote: true
+        description: CNPJ da empresa contratada.
+      - name: contratada_razaosocial
+        data_type: string
+        quote: true
+        description: Razão social da empresa contratada.
+      - name: colaborador_cpf
+        data_type: string
+        quote: true
+        description: CPF do colaborador favorecido.
+      - name: colaborar_nome
+        data_type: string
+        quote: true
+        description: Nome do colaborador favorecido.
+      - name: documento_pago_numero
+        data_type: string
+        quote: true
+        description: Número do documento pago.
+      - name: documento_pago_tipo
+        data_type: string
+        quote: true
+        description: Tipo de documento (Folha, Nota Fiscal, DARF etc.)
+      - name: documento_pago_serie
+        data_type: string
+        quote: true
+        description: Número de série do documento pago.
+      - name: documento_pago_descricao
+        data_type: string
+        quote: true
+        description: Link ou referência a imagem do documento pago.
+      - name: documento_emissao_data
+        data_type: date
+        quote: true
+        description: Data de emissão do documento.
+      - name: documento_vencimento_data
+        data_type: date
+        quote: true
+        description: Data de vencimento do documento.
+      - name: documento_pagamento_data
+        data_type: date
+        quote: true
+        description: Data de pagamento do documento.
+      - name: documento_apuracao_data
+        data_type: date
+        quote: true
+        description: "Data da apuração ou competência (contabilidade) do documento. "
+      - name: documento_valor
+        data_type: numeric
+        quote: true
+        description: Valor do documento financeiro relacionado à despesa.
+      - name: documento_valor_pago
+        data_type: numeric
+        quote: true
+        description: Valor efetivamente pago.
+      - name: plano_contas_cod
+        data_type: string
+        quote: true
+        description: Código do plano de contas associado à despesa.
+      - name: plano_contas_descricao
+        data_type: string
+        quote: true
+        description: Descrição do plano de contas associado.
+      - name: id_rubrica
+        data_type: string
+        quote: true
+        description: Identificador da rubrica associada à despesa.
+      - name: rubrica_descricao
+        data_type: string
+        quote: true
+        description: Descrição da rubrica.
+      - name: parcela_mes
+        data_type: int64
+        quote: true
+        description: Número da parcela no mês, se parcelado.
+      - name: parcela_total
+        data_type: int64
+        quote: true
+        description: Número total de parcelas.
+      - name: nota_fiscal_validada_sigma
+        data_type: string
+        quote: true
+        description: "Indicação se a nota fiscal foi validada pelo sistema SIGMA
+          (Aplicável somente a compra de materiais): -1 null, 0 false, 1 true."
+      - name: validacao_data
+        data_type: date
+        quote: true
+        description: Data de validação da despesa no SIGMA (Não está em uso)
+  - name: raw_osinfo__historico_alteracoes
+    columns:
+      - name: id
+        description: Identificador único da alteração no histórico.
+        data_type: string
+        quote: true
+      - name: id_tipo_arquivo
+        description: Identificador do tipo de arquivo associado à alteração.
+        data_type: string
+        quote: true
+      - name: id_organizacao
+        description: Código da organização responsável pela alteração.
+        data_type: int64
+        quote: true
+      - name: modificacao_data
+        description: Data e hora da modificação.
+        data_type: datetime
+        quote: true
+      - name: valor_anterior
+        description: Valor anterior ao da modificação.
+        data_type: string
+        quote: true
+      - name: valor_novo
+        description: Valor novo após a modificação.
+        data_type: string
+        quote: true
+      - name: referencia_mes
+        description: Mês de referência da alteração.
+        data_type: int64
+        quote: true
+      - name: referencia_ano
+        description: Ano de referência da alteração.
+        data_type: int64
+        quote: true
+      - name: id_registro
+        description: Identificador do registro alterado.
+        data_type: string
+        quote: true
+      - name: alteracao_tipo
+        description: "Tipo de alteração realizada (ex: Exclusão, Importação)."
+        data_type: string
+        quote: true
+      - name: usuario_cod
+        description: Código do usuário que realizou a alteração.
+        data_type: string
+        quote: true
+      - name: usuario_login
+        description: Login do usuário que realizou a alteração.
+        data_type: string
+        quote: true
+      - name: usuario_nome
+        description: Nome do usuário que realizou a alteração.
+        data_type: string
+        quote: true
+  - name: raw_osinfo__itens_nota_fiscal
+    columns:
+      - name: id
+        description: Identificador único do item na nota fiscal.
+        data_type: string
+        quote: true
+      - name: codigo
+        description: Código do item na nota fiscal.
+        data_type: string
+        quote: true
+      - name: material_qtd
+        description: Quantidade do material ou serviço descrito na nota fiscal.
+        data_type: numeric
+        quote: true
+      - name: valor_unitario
+        description: Valor unitário do item ou serviço.
+        data_type: numeric
+        quote: true
+      - name: referencia_mes
+        description: Mês de referência da nota fiscal.
+        data_type: int64
+        quote: true
+      - name: referencia_ano
+        description: Ano de referência da nota fiscal.
+        data_type: int64
+        quote: true
+      - name: id_fornecedor
+        description: Identificador do fornecedor.
+        data_type: string
+        quote: true
+      - name: fornecedor_cnpj
+        description: Código do fornecedor (CNPJ).
+        data_type: string
+        quote: true
+      - name: fornecedor_nome
+        description: Nome do fornecedor.
+        data_type: string
+        quote: true
+      - name: pessoa_tipo
+        description: Tipo de pessoa jurídica ou física (J para Jurídica, F para Física).
+        data_type: string
+        quote: true
+      - name: valor_total
+        description: Valor total do item ou serviço na nota fiscal.
+        data_type: numeric
+        quote: true
+      - name: documento_numero
+        description: Número do documento fiscal associado ao item.
+        data_type: string
+        quote: true
+      - name: id_instituicao
+        description: Código da instituição associada à nota fiscal.
+        data_type: string
+        quote: true
+      - name: descricao
+        description: Descrição do item ou serviço.
+        data_type: string
+        quote: true
+      - name: unidade_medida
+        description: "Unidade de medida do item ou serviço (ex: Unidade, Litros, etc.)."
+        data_type: string
+        quote: true
+  - name: raw_osinfo__receitas
+    columns:
+      - name: id_unidade
+        description: Código da organização associada à receita.
+        data_type: string
+        quote: true
+      - name: referencia_mes
+        description: Mês de referência da receita.
+        data_type: int64
+        quote: true
+      - name: referencia_ano
+        description: Ano de referência da receita.
+        data_type: int64
+        quote: true
+      - name: valor
+        description: Valor da receita registrada.
+        data_type: numeric
+        quote: true
+      - name: id_contrato
+        description: Identificador único do contrato relacionado à receita.
+        data_type: string
+        quote: true
+      - name: contrato_numero
+        description: Número do contrato relacionado à receita.
+        data_type: string
+        quote: true
+      - name: id_conta_bancaria
+        description: Identificador da conta bancária associada à receita.
+        data_type: string
+        quote: true
+      - name: conta_bancaria_codigo
+        description: Código da conta corrente onde a receita foi depositada.
+        data_type: string
+        quote: true
+      - name: conta_bancaria_digito
+        description: Dígito verificador da conta corrente.
+        data_type: string
+        quote: true
+      - name: conta_bancaria_tipo
+        description: "Tipo de conta (por exemplo: Execução, Folha de Pagamento,
+          Provisionamento)."
+        data_type: string
+        quote: true
+      - name: id_agencia
+        description: Identificador da agência bancária associada.
+        data_type: string
+        quote: true
+      - name: agencia_nome
+        description: Nome da agência bancária associada à conta.
+        data_type: string
+        quote: true
+      - name: agencia_numero
+        description: Número da agência bancária.
+        data_type: string
+        quote: true
+      - name: agencia_digito
+        description: Dígito verificador da agência bancária, se aplicável.
+        data_type: string
+        quote: true
+      - name: id_banco
+        description: Identificador único do banco associado.
+        data_type: string
+        quote: true
+      - name: item
+        description: "Descrição do item ou tipo de receita (ex: Obtenção de Recursos
+          Externos)."
+        data_type: string
+        quote: true
+  - name: raw_osinfo__saldos
+    columns:
+      - name: id
+        description: Identificador único do saldo.
+        data_type: string
+        quote: true
+      - name: id_item
+        description: Identificador do item do saldo.
+        data_type: string
+        quote: true
+      - name: item_nome
+        description: "Descrição do item de saldo (ex: Conta Corrente, Aplicação
+          Financeira)."
+        data_type: string
+        quote: true
+      - name: receita_referencia_mes
+        data_type: int64
+        quote: true
+        description: Mês de referência do saldo.
+      - name: receita_referencia_ano
+        data_type: int64
+        quote: true
+        description: Ano de referência do saldo.
+      - name: valor
+        data_type: numeric
+        quote: true
+        description: Valor do saldo registrado.
+      - name: id_contrato
+        data_type: string
+        quote: true
+        description: Identificador único do contrato associado ao saldo.
+      - name: contrato_numero
+        data_type: string
+        quote: true
+        description: Número do contrato associado ao saldo.
+      - name: id_organizacao
+        data_type: string
+        quote: true
+        description: Código da organização responsável pelo saldo.
+      - name: id_conta_bancaria
+        data_type: string
+        quote: true
+        description: Identificador da conta bancária associada ao saldo.
+      - name: extrato_imagem
+        data_type: string
+        quote: true
+        description: Imagem ou link do extrato relacionado ao saldo

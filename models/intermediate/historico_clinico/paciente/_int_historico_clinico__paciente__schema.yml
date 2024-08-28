@@ -1,0 +1,89 @@
+models:
+  - name: int_historico_clinico__paciente__smsrio
+    columns:
+      - name: cpf
+        data_type: string
+        tests:
+          - not_null:
+              name: int_historico_clinico__paciente__smsrio__cpf__not_null
+          - unique:
+              name: int_historico_clinico__paciente__smsrio__cpf__unique
+      - name: nome
+        quote: true
+      - name: cns
+        data_type: record
+        quote: true
+      - name: dados
+        data_type: record
+        quote: true
+      - name: contato
+        data_type: record
+        quote: true
+      - name: endereco
+        data_type: record
+        quote: true
+      - name: prontuario
+        data_type: record
+        quote: true
+      - name: metadados
+        data_type: record
+        quote: true
+  - name: int_historico_clinico__paciente__vitacare
+    columns:
+      - name: cpf
+        data_type: string
+        tests:
+          - not_null:
+              name: int_historico_clinico__paciente__vitacare__cpf__not_null
+          - unique:
+              name: int_historico_clinico__paciente__vitacare__cpf__unique
+        quote: true
+      - name: cns
+        data_type: record
+        quote: true
+      - name: dados
+        data_type: record
+        quote: true
+      - name: equipe_saude_familia
+        data_type: record
+        quote: true
+      - name: contato
+        data_type: record
+        quote: true
+      - name: endereco
+        data_type: record
+        quote: true
+      - name: prontuario
+        data_type: record
+        quote: true
+      - name: metadados
+        data_type: record
+        quote: true
+  - name: int_historico_clinico__paciente__vitai
+    columns:
+      - name: cpf
+        data_type: string
+        tests:
+          - not_null:
+              name: int_historico_clinico__paciente__vitai__cpf__not_null
+          - unique:
+              name: int_historico_clinico__paciente__vitai__cpf__unique
+        quote: true
+      - name: cns
+        data_type: record
+        quote: true
+      - name: dados
+        data_type: record
+        quote: true
+      - name: contato
+        data_type: record
+        quote: true
+      - name: endereco
+        data_type: record
+        quote: true
+      - name: prontuario
+        data_type: record
+        quote: true
+      - name: metadados
+        data_type: record
+        quote: true

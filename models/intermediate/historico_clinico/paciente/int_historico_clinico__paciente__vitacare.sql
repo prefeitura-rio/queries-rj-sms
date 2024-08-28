@@ -50,9 +50,7 @@ SELECT
         updated_at,
         cadastro_permanente
     FROM {{ref('raw_prontuario_vitacare__paciente')}} -- `rj-sms-dev`.`brutos_prontuario_vitacare`.`paciente`
-    WHERE cpf IS NOT NULL
-        AND NOT REGEXP_CONTAINS({{remove_accents_upper('cpf')}}, r'[A-Za-z]')
-        AND TRIM({{remove_accents_upper('cpf')}}) != ""
+    WHERE {{validate_cpf('cpf')}}
         -- AND tipo = "rotineiro"
         -- AND cpf = cpf_filter
 ),
@@ -63,7 +61,18 @@ vitacare_cns_ranked AS (
         cpf,
         cns,
         ROW_NUMBER() OVER (PARTITION BY cpf, cns ORDER BY data_atualizacao_vinculo_equipe DESC, cadastro_permanente DESC, updated_at DESC) AS rank,
-    FROM vitacare_tb
+    FROM (
+        SELECT 
+            cpf,
+            CASE 
+                WHEN TRIM(cns) IN ('NONE') THEN NULL
+                ELSE TRIM(cns)
+            END AS cns,
+            data_atualizacao_vinculo_equipe,
+            cadastro_permanente,
+            updated_at
+        FROM vitacare_tb
+    )
     WHERE cns IS NOT NULL
     GROUP BY cpf, cns, data_atualizacao_vinculo_equipe, cadastro_permanente, updated_at
 ),

@@ -47,9 +47,7 @@ WITH vitai_tb AS (
         updated_at,
         gid_estabelecimento AS id_cnes -- use gid to get id_cnes from  rj-sms.brutos_prontuario_vitai.estabelecimento
     FROM {{ref('raw_prontuario_vitai__paciente')}} -- `rj-sms-dev`.`brutos_prontuario_vitai`.`paciente`
-    WHERE cpf IS NOT NULL
-        AND NOT REGEXP_CONTAINS({{remove_accents_upper('cpf')}}, r'[A-Za-z]')
-        AND TRIM({{remove_accents_upper('cpf')}}) != ""
+    WHERE {{validate_cpf('cpf')}}
 ),
 
 -- CNS
@@ -58,7 +56,16 @@ vitai_cns_ranked AS (
         cpf,
         cns,
         ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY updated_at DESC) AS rank
-    FROM vitai_tb
+    FROM (
+        SELECT 
+            cpf,
+            CASE 
+                WHEN TRIM(cns) IN ('NONE') THEN NULL
+                ELSE TRIM(cns)
+            END AS cns,
+            updated_at
+        FROM vitai_tb
+    )
     WHERE
         cns IS NOT NULL
         AND TRIM(cns) NOT IN ("")
