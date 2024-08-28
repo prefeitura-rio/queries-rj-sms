@@ -3,153 +3,177 @@
         schema="saude_historico_clinico",
         alias="episodio_assistencial",
         materialized="table",
-        cluster_by = "paciente_cpf",
+        cluster_by="paciente_cpf",
     )
 }}
 
 
-with 
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    --  MERGING DATA: Merging Data from Different Sources
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+with
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- MERGING DATA: Merging Data from Different Sources
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     merged_data as (
         select
-            paciente, 
+            paciente,
             tipo,
             subtipo,
             entrada_datahora,
             saida_datahora,
+            exames_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
-            null as prescricoes, -- VITAI source does not have prescription data
-            estabelecimento, 
+            null as prescricoes,  -- VITAI source does not have prescription data
+            estabelecimento,
             profissional_saude_responsavel,
             prontuario,
             metadados
         from {{ ref("int_historico_clinico__episodio__vitai") }}
-            union all
+        union all
         select
-            paciente, 
+            paciente,
             tipo,
             subtipo,
             entrada_datahora,
             saida_datahora,
+            array(
+                select as struct
+                    cast(null as string) as tipo, cast(null as string) as descricao
+            ) as exames_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
             prescricoes,
-            estabelecimento, 
+            estabelecimento,
             profissional_saude_responsavel,
             prontuario,
             metadados
         from {{ ref("int_historico_clinico__episodio__vitacare") }}
     ),
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    --  FINGERPRINT: Adding Unique Hashed Field
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- FINGERPRINT: Adding Unique Hashed Field
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fingerprinted as (
-        select 
+        select
             -- Patient Unique Identifier: for clustering purposes
             paciente.cpf as paciente_cpf,
 
             -- Encounter Unique Identifier: for testing purposes
-            farm_fingerprint(concat(prontuario.fornecedor, prontuario.id_atendimento)) as id_atendimento,
+            farm_fingerprint(
+                concat(prontuario.fornecedor, prontuario.id_atendimento)
+            ) as id_atendimento,
 
             -- Encounter Data
             merged_data.*,
         from merged_data
     ),
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    --  EXHIBITION CONFIGURATION: Configuring Exhibition Rules
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- EXHIBITION CONFIGURATION: Configuring Exhibition Rules
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- IS DATA FROM A MINOR?
     exhibition_minor_age as (
-        select 
+        select
             fingerprinted.id_atendimento,
             safe_cast(
                 case
-                    when paciente.data_nascimento is null then false
-                    when DATE_DIFF(current_date(), paciente.data_nascimento, YEAR) >= 18 then false
-                    when DATE_DIFF(current_date(), paciente.data_nascimento, YEAR) < 18 then true
-                end
-            as boolean) as tem_exibicao_limitada,
+                    when paciente.data_nascimento is null
+                    then false
+                    when date_diff(current_date(), paciente.data_nascimento, year) >= 18
+                    then false
+                    when date_diff(current_date(), paciente.data_nascimento, year) < 18
+                    then true
+                end as boolean
+            ) as tem_exibicao_limitada,
             safe_cast(
                 case
-                    when paciente.data_nascimento is null then null
-                    when DATE_DIFF(current_date(), paciente.data_nascimento, YEAR) >= 18 then null
-                    when DATE_DIFF(current_date(), paciente.data_nascimento, YEAR) < 18 then "Menor de Idade"
-                end
-            as string) as motivo
+                    when paciente.data_nascimento is null
+                    then null
+                    when date_diff(current_date(), paciente.data_nascimento, year) >= 18
+                    then null
+                    when date_diff(current_date(), paciente.data_nascimento, year) < 18
+                    then "Menor de Idade"
+                end as string
+            ) as motivo
         from fingerprinted
     ),
     -- IS THE PATIENT UNIDENTIFIED?
     exhibition_no_identifier as (
-        select 
+        select
             fingerprinted.id_atendimento,
             safe_cast(
                 case
-                    when paciente.cpf is null and array_length(paciente.cns) = 0 then true
+                    when paciente.cpf is null and array_length(paciente.cns) = 0
+                    then true
                     else false
-                end
-            as boolean) as tem_exibicao_limitada,
+                end as boolean
+            ) as tem_exibicao_limitada,
             safe_cast(
                 case
-                    when paciente.cpf is null and array_length(paciente.cns) = 0 then "Paciente sem CPF e CNS"
+                    when paciente.cpf is null and array_length(paciente.cns) = 0
+                    then "Paciente sem CPF e CNS"
                     else null
-                end
-            as string) as motivo
+                end as string
+            ) as motivo
         from fingerprinted
     ),
     -- IS THE EPISODE MISSING BASIC DATA?
     exhibition_missing_basic_data as (
-        select 
+        select
             fingerprinted.id_atendimento,
             safe_cast(
                 case
-                    when 
-                        array_length(fingerprinted.condicoes) = 0 and 
-                        fingerprinted.motivo_atendimento is null and
-                        fingerprinted.desfecho_atendimento is null
-                        then true
+                    when
+                        array_length(fingerprinted.condicoes) = 0
+                        and fingerprinted.motivo_atendimento is null
+                        and fingerprinted.desfecho_atendimento is null
+                        and (
+                            array_length(fingerprinted.exames_realizados) = 0
+                            and fingerprinted.prontuario.fornecedor = 'vitai'
+                        )  -- Caso de exames na vitai
+                    then true
                     else false
-                end
-            as boolean) as tem_exibicao_limitada,
+                end as boolean
+            ) as tem_exibicao_limitada,
             safe_cast(
                 case
-                    when 
-                        array_length(fingerprinted.condicoes) = 0 and 
-                        fingerprinted.motivo_atendimento is null and
-                        fingerprinted.desfecho_atendimento is null
-                        then "Episódio Não Informativo"
+                    when
+                        array_length(fingerprinted.condicoes) = 0
+                        and fingerprinted.motivo_atendimento is null
+                        and fingerprinted.desfecho_atendimento is null
+                        and (
+                            array_length(fingerprinted.exames_realizados) = 0
+                            and fingerprinted.prontuario.fornecedor = 'vitai'
+                        )  -- Caso de exames na vitai
+                    then "Episódio Não Informativo"
                     else null
-                end
-            as string) as motivo
+                end as string
+            ) as motivo
         from fingerprinted
     ),
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    --  JOINING EXHIBITION RULES
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- JOINING EXHIBITION RULES
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     exhibition_configurations as (
-        select * from exhibition_minor_age
+        select *
+        from exhibition_minor_age
         union all
-        select * from exhibition_no_identifier
+        select *
+        from exhibition_no_identifier
         union all
-        select * from exhibition_missing_basic_data
+        select *
+        from exhibition_missing_basic_data
     ),
     exhibitions as (
-        select 
+        select
             id_atendimento,
             struct(
-                not(logical_or(tem_exibicao_limitada)) as indicador,
+                not (logical_or(tem_exibicao_limitada)) as indicador,
                 array_agg(motivo ignore nulls) as motivos
             ) as exibicao
         from exhibition_configurations
         group by id_atendimento
     )
 
-select 
-    fingerprinted.*,
-    exhibitions.exibicao
+select fingerprinted.*, exhibitions.exibicao
 from fingerprinted
-    inner join exhibitions using (id_atendimento)
+inner join exhibitions using (id_atendimento)

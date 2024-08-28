@@ -11,6 +11,15 @@ models:
       - name: subtipo
         description: |
           Subtipo do atendimento, obtido a partir do tipo de atendimento do boletim. 
+      - name: exames_realizados 
+        description: |
+          No caso de tipo de episódio como 'Exame', detalha tipos de exames realizados e descrição
+      - name: exames_realizados.subtipo
+        description: |
+          Subtipo do exame, pode ser preenchido com 'Imagem' ou 'Laboratório'
+      - name: exames_realizados.descricao
+        description: |
+          Descrição do exame realizado
       - name: entrada_datahora
         description: |
           Data e hora de início do atendimento. Representa o momento em que o atendimento começou.
