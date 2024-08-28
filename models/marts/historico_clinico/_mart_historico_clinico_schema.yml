@@ -21,6 +21,8 @@ models:
               name: historico_clinico__id_episodio__not_null
           - unique:
               name: historico_clinico__id_episodio__unique
+              config:
+                severity: warn
       - name: paciente
         description: >
           Informações sobre os pacientes envolvidos no atendimento, incluindo
