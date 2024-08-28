@@ -58,10 +58,17 @@ with
             array(
                 select descricao from unnest(condicoes) where descricao is not null
             ) as active_cids,
-            struct(
-                profissional_saude_responsavel[safe_offset(0)].nome as name,
-                profissional_saude_responsavel[safe_offset(0)].especialidade as role
-            ) as responsible,
+            case
+                when 
+                    profissional_saude_responsavel[safe_offset(0)].nome is not null and
+                    profissional_saude_responsavel[safe_offset(0)].especialidade is not null
+                then 
+                    struct(
+                        profissional_saude_responsavel[safe_offset(0)].nome as name,
+                        profissional_saude_responsavel[safe_offset(0)].especialidade as role
+                    )
+                else null
+            end as responsible,
             motivo_atendimento as clinical_motivation,
             desfecho_atendimento as clinical_outcome,
             case 

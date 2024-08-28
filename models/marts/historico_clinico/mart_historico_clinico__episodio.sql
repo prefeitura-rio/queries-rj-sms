@@ -59,7 +59,14 @@ with
             -- Encounter Data
             merged_data.*,
         from merged_data
+    ),
+    ranked as (
+        select
+            *,
+            row_number() over (partition by id_atendimento) as rank
+        from fingerprinted
     )
 select 
     *,
-from fingerprinted
+from ranked
+where rank = 1
