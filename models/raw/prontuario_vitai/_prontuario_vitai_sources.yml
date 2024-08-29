@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_prontuario_vitai_staging
-    database: rj-sms
+    database: rj-sms-dev
     schema: brutos_prontuario_vitai_staging
     tables:
       - name: estoque_posicao
@@ -70,6 +70,12 @@ sources:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: internacao_eventos
+        loaded_at_field: "CAST(datahora AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
+        freshness:
+          warn_after: {count: 4, period: hour}
+          error_after: {count: 24, period: hour}
+      - name: alta_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
