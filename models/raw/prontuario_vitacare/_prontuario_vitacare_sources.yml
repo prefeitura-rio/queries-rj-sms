@@ -28,3 +28,5 @@ sources:
       - name: profissionais_historico
       - name: prescricoes_historico
       - name: alergias_historico
+      - name: solicitacao_historico
+      - name: procedimentos_historico
