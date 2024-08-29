@@ -19,6 +19,7 @@ with
             subtipo,
             entrada_datahora,
             saida_datahora,
+            exames_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
@@ -35,6 +36,10 @@ with
             subtipo,
             entrada_datahora,
             saida_datahora,
+            array(
+                select as struct
+                    cast(null as string) as tipo, cast(null as string) as descricao
+            ) as exames_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
