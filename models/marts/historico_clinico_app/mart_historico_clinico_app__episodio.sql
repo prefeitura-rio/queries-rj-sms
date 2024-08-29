@@ -65,6 +65,15 @@ with
                 end
             as string) as exhibition_type,
             array(
+                select
+                    struct(
+                        tipo as type,
+                        descricao as description
+                    )
+                from unnest(exames_realizados) 
+                where tipo is not null
+            ) as clinical_exams,
+            array(
                 select descricao from unnest(condicoes) where descricao is not null
             ) as active_cids,
             case
