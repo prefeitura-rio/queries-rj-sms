@@ -137,9 +137,9 @@ models:
         gerenciamento:
             +tags: "daily"
         historico_clinico:
-            +tags: "hci"
+            +tags: ["daily", "hci"]
         historico_clinico_app:
-            +tags: "hci_app"
+            +tags: ["daily", "hci_app"]
         seguir_em_frente:
             +schema: projeto_seguir_em_frente
             +tags: "daily"
