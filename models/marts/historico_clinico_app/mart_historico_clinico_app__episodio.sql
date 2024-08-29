@@ -69,12 +69,12 @@ with
             ) as active_cids,
             case
                 when 
-                    profissional_saude_responsavel[safe_offset(0)].nome is not null and
-                    profissional_saude_responsavel[safe_offset(0)].especialidade is not null
+                    profissional_saude_responsavel.nome is not null and
+                    profissional_saude_responsavel.especialidade is not null
                 then 
                     struct(
-                        profissional_saude_responsavel[safe_offset(0)].nome as name,
-                        profissional_saude_responsavel[safe_offset(0)].especialidade as role
+                        profissional_saude_responsavel.nome as name,
+                        profissional_saude_responsavel.especialidade as role
                     )
                 else null
             end as responsible,
