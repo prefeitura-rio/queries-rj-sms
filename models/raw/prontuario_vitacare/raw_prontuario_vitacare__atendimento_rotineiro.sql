@@ -1,6 +1,6 @@
 {{
     config(
-        alias="atendimento",
+        alias="atendimento_rotineiro",
         materialized="table",
     )
 }}
@@ -10,7 +10,7 @@ with
         select 
             *,
             concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as gid
-        from {{ source("dev_brutos_prontuario_vitacare_staging", "atendimento_eventos") }} 
+        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }} 
     ),
     bruto_atendimento_eventos_ranqueados as (
         select
