@@ -18,6 +18,13 @@ sources:
         freshness:
           warn_after: {count: 30, period: day}
           error_after: {count: 60, period: day}
-      - name: atendimentos_historico
       - name: atendimento_eventos
       - name: atendimentos_historico
+      - name: vacinas_historico
+      - name: condicoes_historico
+      - name: encaminhamentos_historico
+      - name: exame_historico
+      - name: indicadores_historico
+      - name: profissionais_historico
+      - name: prescricoes_historico
+      - name: alergias_historico
