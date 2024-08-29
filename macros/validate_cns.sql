@@ -1,4 +1,5 @@
 {% macro validate_cns(cns_column) %}
+        -- CNS validation based on https://integracao.esusab.ufsc.br/v211/docs/algoritmo_CNS.html
         CASE
             WHEN LENGTH(TRIM({{ cns_column }})) != 15 THEN FALSE
 
