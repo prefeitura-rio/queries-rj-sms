@@ -123,6 +123,7 @@ cns_dedup AS (
                 1 AS merge_order
             FROM vitacare_tb,
             UNNEST(cns) AS cns
+            WHERE cns.cns_valido_indicador
             UNION ALL 
             SELECT 
                 cpf,
@@ -132,6 +133,7 @@ cns_dedup AS (
                 2 AS merge_order
             FROM vitai_tb,
             UNNEST(cns) AS cns
+            WHERE cns.cns_valido_indicador
             UNION ALL 
             SELECT 
                 cpf,
@@ -141,6 +143,7 @@ cns_dedup AS (
                 3 AS merge_order
             FROM smsrio_tb,
             UNNEST(cns) AS cns
+            WHERE cns.cns_valido_indicador
         )
         ORDER BY  merge_order ASC, rank ASC 
     )

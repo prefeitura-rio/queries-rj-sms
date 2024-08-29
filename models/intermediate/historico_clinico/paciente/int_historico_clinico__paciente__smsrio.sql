@@ -97,16 +97,28 @@ cns_dedup AS (
     ORDER BY  merge_order ASC, rank ASC 
 ),
 
+cns_validated AS (
+    SELECT
+        cns,
+        {{validate_cns('cns')}} AS cns_valido_indicador,
+    FROM (
+        SELECT DISTINCT cns FROM cns_dedup
+    )
+),
+
 cns_dados AS (
     SELECT 
         cpf,
         ARRAY_AGG(
                 STRUCT(
-                    cns, 
-                    rank
+                    cd.cns, 
+                    cv.cns_valido_indicador,
+                    cd.rank
                 )
         ) AS cns
-    FROM cns_dedup
+    FROM cns_dedup cd
+    JOIN cns_validated cv
+        ON cd.cns = cv.cns
     GROUP BY cpf
 ),
 
