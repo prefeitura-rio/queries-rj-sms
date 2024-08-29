@@ -8,35 +8,41 @@
 with
     fato_atendimento as (
         select
-            concat(nullif(unidade_cnes, ''), '.', nullif(acto_id, '')) as gid,
+            -- PK
             acto_id,
-            patient_cpf,
-            unidade_ap,
-            unidade_cnes,
-            struct(
-                profissional_cns as cns,
-                profissional_cpf as cpf,
-                profissional_nome as nome,
-                profissional_cbo as cbo,
-                profissional_cbo_descricao as descricao,
-                struct(
-                profissional_equipe_nome as nome,
-                profissional_equipe_cod_ine as cod_ine
-                ) as equipe
-            ) as profissional,
-            datahora_inicio_atendimento,
-            datahora_fim_atendimento,
-            datahora_marcacao_atendimento,
-            tipo_consulta,
+            concat(nullif(unidade_cnes, ''), '.', nullif(acto_id, '')) as gid,
+
+            -- Chaves
+            patient_cpf as cpf,
+            unidade_cnes as cnes_unidade,
+
+            -- Profissional
+            profissional_cns as cns_profissional,
+            profissional_cpf as cpf_profissional,
+            profissional_nome as nome_profissional,
+            profissional_cbo as cbo_profissional,
+            profissional_cbo_descricao as cbo_descricao_profissional,
+            profissional_equipe_nome as nome_equipe_profissional,
+            profissional_equipe_cod_ine as cod_ine_equipe_profissional,
+
+            -- Dados da Consulta
+            datahora_inicio_atendimento as datahora_inicio,
+            datahora_fim_atendimento as datahora_fim,
+            datahora_marcacao_atendimento as datahora_marcacao,
+            tipo_consulta as tipo,
             eh_coleta,
-            subjetivo_motivo,
-            safe_cast(null as string) as plano_procedimentos_clinicos,
-            plano_observacoes,
-            avaliacao_observacoes,
-            objetivo_descricao,
-            notas_observacoes,
-            datahora_fim_atendimento as updated_at,
-            imported_at
+
+            -- Campos Livres
+            subjetivo_motivo as soap_subjetivo_motivo,
+            safe_cast(null as string) as soap_plano_procedimentos_clinicos,
+            plano_observacoes as soap_plano_observacoes,
+            avaliacao_observacoes as soap_avaliacao_observacoes,
+            objetivo_descricao as soap_objetivo_descricao,
+            notas_observacoes as soap_notas_observacoes,
+            
+            -- Metadados
+            safe_cast(datahora_fim_atendimento as datetime) as updated_at,
+            safe_cast(imported_at as datetime) as loaded_at
         from {{ source("brutos_prontuario_vitacare_staging", "atendimentos_historico") }} 
     ),
     dim_alergias as (
@@ -92,7 +98,7 @@ with
                 data_solicitacao
                 )
             ) as exames_solicitados
-        from {{ source("brutos_prontuario_vitacare_staging", "solicitacao_historico") }} 
+        from {{ source("brutos_prontuario_vitacare_staging", "exame_historico") }} 
         group by acto_id
     ),
     dim_vacinas as (
@@ -130,15 +136,15 @@ with
         from {{ source("brutos_prontuario_vitacare_staging", "prescricoes_historico") }} 
         group by acto_id
     ),
-    dim_procedimentos as (
-        select
-            acto_id,
-            array_agg(
-                procedimento_obs
-            ) as procedimentos
-        from {{ source("brutos_prontuario_vitacare_staging", "procedimentos_historico") }} 
-        group by acto_id
-    ),
+    -- dim_procedimentos as (
+    --     select
+    --         acto_id,
+    --         array_agg(
+    --             procedimento_obs
+    --         ) as procedimentos
+    --     from {{ source("brutos_prontuario_vitacare_staging", "procedimentos_historico") }} 
+    --     group by acto_id
+    -- ),
     atendimentos_eventos_historicos as (
         select 
             atendimentos.*,
@@ -149,7 +155,7 @@ with
             dim_exames.exames_solicitados,
             dim_vacinas.vacinas,
             dim_prescricoes.prescricoes,
-            dim_procedimentos.procedimentos
+            -- dim_procedimentos.procedimentos
         from fato_atendimento
             left join dim_alergias using (acto_id)
             left join dim_condicoes using (acto_id)
@@ -158,8 +164,8 @@ with
             left join dim_exames using (acto_id)
             left join dim_vacinas using (acto_id)
             left join dim_prescricoes using (acto_id)
-            left join dim_procedimentos using (acto_id)
+            -- left join dim_procedimentos using (acto_id)
     )
 select
-    *
+    * except(acto_id)
 from atendimentos_eventos_historicos
