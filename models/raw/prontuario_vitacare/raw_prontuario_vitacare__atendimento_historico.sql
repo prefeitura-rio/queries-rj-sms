@@ -8,6 +8,7 @@
 with
     fato_atendimento as (
         select
+            concat(nullif(unidade_cnes, ''), '.', nullif(acto_id, '')) as gid,
             acto_id,
             patient_cpf,
             unidade_ap,
@@ -29,7 +30,7 @@ with
             tipo_consulta,
             eh_coleta,
             subjetivo_motivo,
-            safe_cast(null as string) as plano_procedimentos_clinicos
+            safe_cast(null as string) as plano_procedimentos_clinicos,
             plano_observacoes,
             avaliacao_observacoes,
             objetivo_descricao,
