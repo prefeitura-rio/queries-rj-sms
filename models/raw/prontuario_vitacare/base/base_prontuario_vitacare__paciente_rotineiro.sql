@@ -1,6 +1,6 @@
 {{
     config(
-        alias="paciente_rotineiro",
+        alias="_base_paciente_rotineiro",
         materialized="incremental",
         unique_key="id",
     )
