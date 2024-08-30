@@ -9,10 +9,10 @@
 with
     atendimentos as (
         select *, 'rotineiro' as tipo,
-        from {{ ref("raw_prontuario_vitacare__atendimento_rotineiro") }}
+        from {{ ref("base_prontuario_vitacare__atendimento_rotineiro") }}
         union all
         select *, 'historico' as tip
-        from {{ ref("raw_prontuario_vitacare__atendimento_historico") }}
+        from {{ ref("base_prontuario_vitacare__atendimento_historico") }}
     ),
     atendimentos_ranqueados as (
         select
