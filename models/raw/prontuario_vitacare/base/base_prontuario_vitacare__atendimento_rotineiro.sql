@@ -1,6 +1,6 @@
 {{
     config(
-        alias="atendimento_rotineiro",
+        alias="_base_atendimento_rotineiro",
         materialized="table",
     )
 }}

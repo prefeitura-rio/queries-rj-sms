@@ -1,6 +1,6 @@
 {{
     config(
-        alias="atendimento_historico",
+        alias="_base_atendimento_historico",
         materialized="table",
     )
 }}
@@ -50,25 +50,25 @@ with
             safe_cast(datahora_fim_atendimento as datetime) as updated_at,
             safe_cast(atendimentos.imported_at as datetime) as loaded_at
         from
-            {{ source("brutos_prontuario_vitacare_staging", "atendimentos_historico") }} as atendimentos
-        left join dim_equipe on atendimentos.profissional_equipe_cod_ine = dim_equipe.n_ine
+            {{ source("brutos_prontuario_vitacare_staging", "atendimentos_historico") }}
+            as atendimentos
+        left join
+            dim_equipe on atendimentos.profissional_equipe_cod_ine = dim_equipe.n_ine
     ),
     dim_alergias as (
         select
             acto_id,
-            array_agg(
-                to_json_string(struct(alergias_anamnese_descricao as descricao))
+            to_json_string(
+                array_agg(struct(alergias_anamnese_descricao as descricao))
             ) as alergias
         from {{ source("brutos_prontuario_vitacare_staging", "alergias_historico") }}
         group by acto_id
-    ), 
+    ),
     dim_condicoes as (
         select
             acto_id,
-            array_agg(
-                to_json_string(
-                    struct(cod_cid10, "" as cod_ciap2, estado, data_diagnostico)
-                )
+            to_json_string(
+                array_agg(struct(cod_cid10, "" as cod_ciap2, estado, data_diagnostico))
             ) as condicoes
         from {{ source("brutos_prontuario_vitacare_staging", "condicoes_historico") }}
         group by acto_id
@@ -76,8 +76,8 @@ with
     dim_encaminhamentos as (
         select
             acto_id,
-            array_agg(
-                to_json_string(struct(encaminhamento_especialidade as descricao))
+            to_json_string(
+                array_agg(struct(encaminhamento_especialidade as descricao))
             ) as encaminhamentos
         from
             {{
@@ -90,8 +90,8 @@ with
     dim_indicadores as (
         select
             acto_id,
-            array_agg(
-                to_json_string(struct(indicadores_nome as nome, valor))
+            to_json_string(
+                array_agg(struct(indicadores_nome as nome, valor))
             ) as indicadores
         from {{ source("brutos_prontuario_vitacare_staging", "indicadores_historico") }}
         group by acto_id
@@ -99,8 +99,8 @@ with
     dim_exames as (
         select
             acto_id,
-            array_agg(
-                to_json_string(
+            to_json_string(
+                array_agg(
                     struct(
                         nome_exame, cod_exame, quantidade, material, data_solicitacao
                     )
@@ -112,8 +112,8 @@ with
     dim_vacinas as (
         select
             acto_id,
-            array_agg(
-                to_json_string(
+            to_json_string(
+                array_agg(
                     struct(
                         nome_vacina,
                         cod_vacina,
@@ -135,8 +135,8 @@ with
     dim_prescricoes as (
         select
             acto_id,
-            array_agg(
-                to_json_string(
+            to_json_string(
+                array_agg(
                     struct(
                         nome_medicamento,
                         cod_medicamento,
