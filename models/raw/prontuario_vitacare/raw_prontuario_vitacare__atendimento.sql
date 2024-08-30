@@ -1,14 +1,19 @@
+{% set partitions_to_replace = [
+    "current_date('America/Sao_Paulo')",
+    "date_sub(current_date('America/Sao_Paulo'), interval 1 day)",
+] %}
 
 {{
     config(
         alias="atendimento",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         cluster_by="cpf",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
-            "granularity": "day"
-    }
+            "granularity": "day",
+        },
     )
 }}
 
@@ -28,3 +33,7 @@ with
     )
 select *
 from atendimentos
+{% if is_incremental() %}
+        -- recalculate yesterday + today
+        where data_particao in ({{ partitions_to_replace | join(',') }})
+{% endif %}
