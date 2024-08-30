@@ -13,7 +13,6 @@ with
     bruto_atendimento as (
         select *
         from {{ ref("raw_prontuario_vitacare__atendimento") }}
-        where data_particao = "2024-08-01"
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Paciente
@@ -34,6 +33,7 @@ with
     dim_profissional as (
         select cns as pk, id_profissional_sus as id, cns, nome, cpf,
         from {{ ref("dim_profissional_saude") }}
+        qualify row_number() over (partition by cpf order by id desc) = 1
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Estabelecimento
@@ -177,7 +177,7 @@ with
 
             -- Prontuário
             struct(
-                bruto_atendimento.gid as id_atendimento, 'vitacare' as fornecedor
+                atendimento.gid as id_atendimento, 'vitacare' as fornecedor
             ) as prontuario,
 
             -- Metadados
@@ -185,19 +185,19 @@ with
                 updated_at, loaded_at as imported_at, current_datetime() as processed_at
             ) as metadados
 
-        from bruto_atendimento
-        left join dim_paciente on bruto_atendimento.cpf = dim_paciente.pk
+        from bruto_atendimento as atendimento
+        left join dim_paciente on atendimento.cpf = dim_paciente.pk
         left join
             dim_estabelecimento
-            on bruto_atendimento.cnes_unidade = dim_estabelecimento.pk
+            on atendimento.cnes_unidade = dim_estabelecimento.pk
         left join
-            dim_profissional on bruto_atendimento.cns_profissional = dim_profissional.pk
+            dim_profissional on atendimento.cns_profissional = dim_profissional.pk
         left join
             dim_condicoes_atribuidas
-            on bruto_atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
+            on atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
         left join
             dim_prescricoes_atribuidas
-            on bruto_atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
+            on atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- Finalização

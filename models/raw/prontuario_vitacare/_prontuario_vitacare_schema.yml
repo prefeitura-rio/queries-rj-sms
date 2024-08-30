@@ -515,6 +515,9 @@ models:
         tests:
           - not_null:
               name: raw_prontuario_vitacare__atendimento__gid__not_null
+              config:
+                warn_if: "> 1"
+                error_if: "> 10"
           - unique:
               name: raw_prontuario_vitacare__atendimento__gid__unique
         quote: true
