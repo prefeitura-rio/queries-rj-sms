@@ -6,6 +6,11 @@
 }}
 
 with
+    dim_equipe as (
+        select *
+        from {{ source("brutos_prontuario_vitacare_staging", "equipes_historico") }}
+    ),
+
     fato_atendimento as (
         select
             -- PK
@@ -22,7 +27,7 @@ with
             profissional_nome as nome_profissional,
             profissional_cbo as cbo_profissional,
             profissional_cbo_descricao as cbo_descricao_profissional,
-            "" as cod_equipe_profissional,  -- # TODO: join com a tabela equipe 
+            dim_equipe.codigo as cod_equipe_profissional,
             profissional_equipe_cod_ine as cod_ine_equipe_profissional,
             profissional_equipe_nome as nome_equipe_profissional,
 
@@ -43,9 +48,10 @@ with
 
             -- Metadados
             safe_cast(datahora_fim_atendimento as datetime) as updated_at,
-            safe_cast(imported_at as datetime) as loaded_at
+            safe_cast(atendimentos.imported_at as datetime) as loaded_at
         from
-            {{ source("brutos_prontuario_vitacare_staging", "atendimentos_historico") }}
+            {{ source("brutos_prontuario_vitacare_staging", "atendimentos_historico") }} as atendimentos
+        left join dim_equipe on atendimentos.profissional_equipe_cod_ine = dim_equipe.n_ine
     ),
     dim_alergias as (
         select
@@ -55,7 +61,7 @@ with
             ) as alergias
         from {{ source("brutos_prontuario_vitacare_staging", "alergias_historico") }}
         group by acto_id
-    ),  -- TODO: ver como é representado as alergias na base de eventos
+    ), 
     dim_condicoes as (
         select
             acto_id,
@@ -80,7 +86,7 @@ with
                 )
             }}
         group by acto_id
-    ),  -- TODO: ver como é representado as encaminhamentos na base de eventos
+    ),
     dim_indicadores as (
         select
             acto_id,

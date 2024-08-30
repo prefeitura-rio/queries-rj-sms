@@ -23,6 +23,7 @@ sources:
       - name: vacinas_historico
       - name: condicoes_historico
       - name: encaminhamentos_historico
+      - name: equipes_historico
       - name: exame_historico
       - name: indicadores_historico
       - name: profissionais_historico
