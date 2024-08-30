@@ -166,7 +166,8 @@ models:
         data_type: datetime
   - name: raw_prontuario_vitacare__paciente
     description: >
-      Tabela contendo informações dos pacientes a partir do prontuário VitaCare, incluindo dados históricos e rotineiros.
+      Tabela contendo informações dos pacientes a partir do prontuário VitaCare,
+      incluindo dados históricos e rotineiros.
     columns:
       - name: id
         description: Identificador único do paciente.
@@ -241,7 +242,8 @@ models:
       - name: codigo_ine_equipe_saude
         description: Código INE da equipe de saúde responsável pelo paciente.
       - name: data_atualizacao_vinculo_equipe
-        description: Data da última atualização do vínculo do paciente com a equipe de saúde.
+        description: Data da última atualização do vínculo do paciente com a equipe de
+          saúde.
       - name: numero_familia
         description: Número da família do paciente.
       - name: numero_prontuario
@@ -280,7 +282,8 @@ models:
         description: Tipo do registro, se é historico ou rotineiro.
   - name: raw_prontuario_vitacare__paciente_rotineiro
     description: >
-      Tabela contendo informações dos pacientes a partir do prontuário VitaCare, incluindo dados históricos e rotineiros.
+      Tabela contendo informações dos pacientes a partir do prontuário VitaCare,
+      incluindo dados históricos e rotineiros.
     columns:
       - name: id
         description: Identificador único do paciente.
@@ -355,7 +358,8 @@ models:
       - name: codigo_ine_equipe_saude
         description: Código INE da equipe de saúde responsável pelo paciente.
       - name: data_atualizacao_vinculo_equipe
-        description: Data da última atualização do vínculo do paciente com a equipe de saúde.
+        description: Data da última atualização do vínculo do paciente com a equipe de
+          saúde.
       - name: numero_familia
         description: Número da família do paciente.
       - name: numero_prontuario
@@ -392,7 +396,8 @@ models:
         description: Data e hora da importação dos dados para o datalake.
   - name: raw_prontuario_vitacare__paciente_historico
     description: >
-      Tabela contendo informações dos pacientes a partir do prontuário VitaCare, incluindo dados históricos e rotineiros.
+      Tabela contendo informações dos pacientes a partir do prontuário VitaCare,
+      incluindo dados históricos e rotineiros.
     columns:
       - name: id
         description: Identificador único do paciente.
@@ -467,7 +472,8 @@ models:
       - name: codigo_ine_equipe_saude
         description: Código INE da equipe de saúde responsável pelo paciente.
       - name: data_atualizacao_vinculo_equipe
-        description: Data da última atualização do vínculo do paciente com a equipe de saúde.
+        description: Data da última atualização do vínculo do paciente com a equipe de
+          saúde.
       - name: numero_familia
         description: Número da família do paciente.
       - name: numero_prontuario
@@ -502,3 +508,109 @@ models:
         description: Data e hora da última atualização do registro.
       - name: imported_at
         description: Data e hora da importação dos dados para o datalake.
+  - name: raw_prontuario_vitacare__atendimento
+    columns:
+      - name: gid
+        data_type: string
+        tests:
+          - not_null:
+              name: raw_prontuario_vitacare__atendimento__gid__not_null
+          - unique:
+              name: raw_prontuario_vitacare__atendimento__gid__unique
+        quote: true
+      - name: cpf
+        data_type: string
+        quote: true
+      - name: cnes_unidade
+        data_type: string
+        quote: true
+      - name: cns_profissional
+        data_type: string
+        quote: true
+      - name: cpf_profissional
+        data_type: string
+        quote: true
+      - name: nome_profissional
+        data_type: string
+        quote: true
+      - name: cbo_profissional
+        data_type: string
+        quote: true
+      - name: cbo_descricao_profissional
+        data_type: string
+        quote: true
+      - name: cod_equipe_profissional
+        data_type: string
+        quote: true
+      - name: cod_ine_equipe_profissional
+        data_type: string
+        quote: true
+      - name: nome_equipe_profissional
+        data_type: string
+        quote: true
+      - name: tipo
+        data_type: string
+        quote: true
+      - name: eh_coleta
+        data_type: string
+        quote: true
+      - name: datahora_marcacao
+        data_type: datetime
+        quote: true
+      - name: datahora_inicio
+        data_type: datetime
+        quote: true
+      - name: datahora_fim
+        data_type: datetime
+        quote: true
+      - name: soap_subjetivo_motivo
+        data_type: string
+        quote: true
+      - name: soap_objetivo_descricao
+        data_type: string
+        quote: true
+      - name: soap_avaliacao_observacoes
+        data_type: string
+        quote: true
+      - name: soap_plano_procedimentos_clinicos
+        data_type: string
+        quote: true
+      - name: soap_plano_observacoes
+        data_type: string
+        quote: true
+      - name: soap_notas_observacoes
+        data_type: string
+        quote: true
+      - name: prescricoes
+        data_type: string
+        quote: true
+      - name: condicoes
+        data_type: string
+        quote: true
+      - name: exames_solicitados
+        data_type: string
+        quote: true
+      - name: alergias_anamnese
+        data_type: string
+        quote: true
+      - name: vacinas
+        data_type: string
+        quote: true
+      - name: indicadores
+        data_type: string
+        quote: true
+      - name: encaminhamentos
+        data_type: string
+        quote: true
+      - name: updated_at
+        data_type: datetime
+        quote: true
+      - name: loaded_at
+        data_type: datetime
+        quote: true
+      - name: data_particao
+        data_type: date
+        quote: true
+      - name: origem
+        data_type: string
+        quote: true

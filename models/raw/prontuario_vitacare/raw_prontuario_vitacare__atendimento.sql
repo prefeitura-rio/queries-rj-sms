@@ -19,6 +19,7 @@
 
 
 with
+
     atendimentos as (
         select *, 'rotineiro' as origem,
         from {{ ref("base_prontuario_vitacare__atendimento_rotineiro") }}
@@ -26,13 +27,21 @@ with
         select *, 'historico' as origem
         from {{ ref("base_prontuario_vitacare__atendimento_historico") }}
     ),
-    atendimentos_ranqueados as (
+
+    atendimentos_deduplicados as (
         select *
         from atendimentos
         qualify row_number() over (partition by gid order by updated_at desc) = 1
+    ),
+
+    atendimentos_validos as (
+        select * 
+        from atendimentos_deduplicados
+        where gid is not null
     )
+
 select *
-from atendimentos
+from atendimentos_validos
 {% if is_incremental() %}
         -- recalculate yesterday + today
         where data_particao in ({{ partitions_to_replace | join(',') }})
