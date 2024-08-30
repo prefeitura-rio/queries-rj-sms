@@ -62,7 +62,8 @@ select
 
     -- Metadados
     safe_cast(source_updated_at as datetime) as updated_at,
-    safe_cast(datalake_loaded_at as datetime) as loaded_at
+    safe_cast(datalake_loaded_at as datetime) as loaded_at,
+    safe_cast({{ process_null('data__datahora_inicio_atendimento') }} as date) as data_particao,
 
 from bruto_atendimento_eventos_ranqueados 
 where rank = 1

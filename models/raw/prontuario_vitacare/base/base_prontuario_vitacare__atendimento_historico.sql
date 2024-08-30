@@ -163,7 +163,8 @@ with
             dim_encaminhamentos.encaminhamentos,
             -- dim_procedimentos.procedimentos,
             atendimentos.updated_at,
-            atendimentos.loaded_at
+            atendimentos.loaded_at,
+            safe_cast(atendimentos.datahora_inicio as date) as data_particao,
 
         from fato_atendimento as atendimentos
         left join dim_alergias using (acto_id)
