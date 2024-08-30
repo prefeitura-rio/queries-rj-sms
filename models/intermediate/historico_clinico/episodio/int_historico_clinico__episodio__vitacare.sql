@@ -7,16 +7,17 @@
 }}
 
 with
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  Separação de Atendimentos
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- Separação de Atendimentos
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     bruto_atendimento as (
-        select * 
-        from {{ ref('raw_prontuario_vitacare__atendimento') }} 
+        select *
+        from {{ ref("raw_prontuario_vitacare__atendimento") }}
+        where data_particao = "2024-08-01"
     ),
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  DIM: Paciente
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- DIM: Paciente
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     dim_paciente as (
         select
             cpf as pk,
@@ -25,81 +26,68 @@ with
                 paciente_merged.cns,
                 paciente_merged.dados.data_nascimento
             ) as paciente
-        from {{ ref('mart_historico_clinico__paciente') }} as paciente_merged, 
-            unnest(prontuario) as prontuario
-        where sistema = 'VITACARE'
+        from {{ ref("mart_historico_clinico__paciente") }} as paciente_merged
     ),
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  DIM: Profissional
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- DIM: Profissional
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     dim_profissional as (
-        select
-            cns as pk,
-            id_profissional_sus as id,
-            cns,
-            nome,
-            cpf,
+        select cns as pk, id_profissional_sus as id, cns, nome, cpf,
         from {{ ref("dim_profissional_saude") }}
     ),
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  DIM: Estabelecimento
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- DIM: Estabelecimento
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     dim_estabelecimento as (
         select
             id_cnes as pk,
             struct(
                 id_cnes,
-                {{ proper_estabelecimento('nome_limpo') }} as nome,
+                {{ proper_estabelecimento("nome_limpo") }} as nome,
                 tipo_sms as estabelecimento_tipo
             ) as estabelecimento
         from {{ ref("dim_estabelecimento") }}
     ),
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  DIM: Condições
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    cid_descricao as (
-        select *
-        from {{ ref("raw_datasus__cid10") }}
-    ),
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- DIM: Condições
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    cid_descricao as (select * from {{ ref("raw_datasus__cid10") }}),
     condicoes as (
-        select 
+        select
             gid as fk_atendimento,
             json_extract_scalar(condicao_json, "$.cod_cid10") as id
-        from bruto_atendimento,
-            unnest(json_extract_array(condicoes)) as condicao_json
+        from bruto_atendimento, unnest(json_extract_array(condicoes)) as condicao_json
     ),
     dim_condicoes_atribuidas as (
-        select 
+        select
             fk_atendimento,
             array_agg(
-                struct(
-                    condicoes.id as id,
-                    cid_descricao.descricao as descricao
-                )
+                struct(condicoes.id as id, cid_descricao.descricao as descricao)
             ) as condicoes
         from condicoes
-            left join cid_descricao
-                on condicoes.id = cid_descricao.codigo_cid
+        left join cid_descricao on condicoes.id = cid_descricao.codigo_cid
         group by fk_atendimento
     ),
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  DIM: Medicamento Prescrito
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- DIM: Medicamento Prescrito
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     materiais as (
-        select id_material, descricao, concentracao
-        from {{ ref("dim_material") }}
+        select id_material, descricao, concentracao from {{ ref("dim_material") }}
     ),
     prescricoes as (
-        select 
+        select
             gid as fk_atendimento,
-            replace(json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", "") as id,
+            replace(
+                json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", ""
+            ) as id,
             upper(json_extract_scalar(prescricoes_json, "$.nome_medicamento")) as nome,
             json_extract_scalar(prescricoes_json, "$.uso_continuado") as uso_continuo
-        from bruto_atendimento,
+        from
+            bruto_atendimento,
             unnest(json_extract_array(prescricoes)) as prescricoes_json
     ),
     dim_prescricoes_atribuidas as (
-        select 
+        select
             fk_atendimento,
             array_agg(
                 struct(
@@ -110,33 +98,41 @@ with
                 )
             ) as prescricoes
         from prescricoes
-            left join materiais
-                on prescricoes.id = materiais.id_material
+        left join materiais on prescricoes.id = materiais.id_material
         group by fk_atendimento
     ),
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  FATO: Atendimento
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- FATO: Atendimento
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fato_atendimento as (
         select
+            gid as id,
+
             -- Paciente
             dim_paciente.paciente,
 
             -- Tipo e Subtipo
             safe_cast(
-                case 
-                    when eh_coleta = 'True' then 'Exames Complementares'
-                    when vacinas != '[]' then 'Vacinação'
-                    when datahora_marcacao is null then 'Demanda Expontânea'
+                case
+                    when eh_coleta = 'True'
+                    then 'Exames Complementares'
+                    when vacinas != '[]'
+                    then 'Vacinação'
+                    when datahora_marcacao is null
+                    then 'Demanda Expontânea'
                     else 'Agendada'
                 end as string
             ) as tipo,
             safe_cast(
-                case 
-                    when eh_coleta = 'True' then 'N/A'
-                    when vacinas != '[]' 
-                        then JSON_EXTRACT_SCALAR(JSON_EXTRACT(vacinas, '$[0]'), '$.nome_vacina')
-                    else nullif(tipo,'')
+                case
+                    when eh_coleta = 'True'
+                    then 'N/A'
+                    when vacinas != '[]'
+                    then
+                        json_extract_scalar(
+                            json_extract(vacinas, '$[0]'), '$.nome_vacina'
+                        )
+                    else nullif(tipo, '')
                 end as string
             ) as subtipo,
 
@@ -159,49 +155,53 @@ with
 
             -- Profissional
             (
-                SELECT AS STRUCT
+                select as struct
                     dim_profissional.id as id,
                     dim_profissional.cpf as cpf,
                     dim_profissional.cns as cns,
-                    {{ proper_br('dim_profissional.nome') }} as nome,
+                    {{ proper_br("dim_profissional.nome") }} as nome,
                     safe_cast(
-                        case 
-                            when cbo_descricao_profissional like '%Médic%' then 'Médico(a)'
-                            when cbo_descricao_profissional like '%Enferm%' then 'Enfermeiro(a)'
-                            when cbo_descricao_profissional like '%dentista%' then 'Dentista'
-                            when cbo_descricao_profissional like '%social%' then 'Assistente Social'
+                        case
+                            when cbo_descricao_profissional like '%Médic%'
+                            then 'Médico(a)'
+                            when cbo_descricao_profissional like '%Enferm%'
+                            then 'Enfermeiro(a)'
+                            when cbo_descricao_profissional like '%dentista%'
+                            then 'Dentista'
+                            when cbo_descricao_profissional like '%social%'
+                            then 'Assistente Social'
                             else cbo_descricao_profissional
-                        end
-                    as string) as especialidade
+                        end as string
+                    ) as especialidade
             ) as profissional_saude_responsavel,
 
             -- Prontuário
             struct(
-                bruto_atendimento.gid as id_atendimento,
-                'vitacare' as fornecedor
+                bruto_atendimento.gid as id_atendimento, 'vitacare' as fornecedor
             ) as prontuario,
 
             -- Metadados
             struct(
-                updated_at,
-                loaded_at as imported_at,
-                current_datetime() as processed_at
+                updated_at, loaded_at as imported_at, current_datetime() as processed_at
             ) as metadados
 
         from bruto_atendimento
-            inner join dim_paciente
-                on bruto_atendimento.cpf = dim_paciente.pk
-            inner join dim_estabelecimento
-                on bruto_atendimento.cnes_unidade = dim_estabelecimento.pk
-            inner join dim_profissional
-                on bruto_atendimento.cns_profissional = dim_profissional.pk
-            left join dim_condicoes_atribuidas
-                on bruto_atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
-            left join dim_prescricoes_atribuidas
-                on bruto_atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
+        left join dim_paciente on bruto_atendimento.cpf = dim_paciente.pk
+        left join
+            dim_estabelecimento
+            on bruto_atendimento.cnes_unidade = dim_estabelecimento.pk
+        left join
+            dim_profissional on bruto_atendimento.cns_profissional = dim_profissional.pk
+        left join
+            dim_condicoes_atribuidas
+            on bruto_atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
+        left join
+            dim_prescricoes_atribuidas
+            on bruto_atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
     )
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  Finalização
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+-- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+-- Finalização
+-- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select *
 from fato_atendimento
+where paciente.cpf is not null and id is not null

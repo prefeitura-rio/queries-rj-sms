@@ -37,12 +37,10 @@ with
     atendimentos_validos as (
         select * 
         from atendimentos_deduplicados
-        where gid is not null
     )
 
 select *
 from atendimentos_validos
 {% if is_incremental() %}
-        -- recalculate yesterday + today
         where data_particao in ({{ partitions_to_replace | join(',') }})
 {% endif %}
