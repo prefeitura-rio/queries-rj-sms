@@ -55,7 +55,7 @@ select
     safe_cast(abe_obs_ as string) as abe_obs,
     safe_cast(status as string) as alta_status,
     safe_cast(datahora as timestamp) as datahora,
-    safe_cast(baseurl as string) as baseurl,
+    safe_cast(baseurl as string) as base_url,
     safe_cast(cliente as string) as cliente,
     safe_cast(created_at as timestamp) as created_at,
     safe_cast(datalake__imported_at as timestamp) as imported_at
