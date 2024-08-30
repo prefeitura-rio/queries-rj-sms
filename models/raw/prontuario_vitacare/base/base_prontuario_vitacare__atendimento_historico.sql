@@ -34,9 +34,9 @@ with
             -- Dados da Consulta
             tipo_consulta as tipo,
             eh_coleta,
-            datahora_marcacao_atendimento as datahora_marcacao,
-            datahora_inicio_atendimento as datahora_inicio,
-            datahora_fim_atendimento as datahora_fim,
+            safe_cast(datahora_marcacao_atendimento as datetime) as datahora_marcacao,
+            safe_cast(datahora_inicio_atendimento as datetime) as datahora_inicio,
+            safe_cast(datahora_fim_atendimento as datetime) as datahora_fim,
 
             -- Campos Livres
             subjetivo_motivo as soap_subjetivo_motivo,
