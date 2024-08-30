@@ -19,6 +19,7 @@ with
             subtipo,
             entrada_datahora,
             saida_datahora,
+            exames_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
@@ -35,6 +36,10 @@ with
             subtipo,
             entrada_datahora,
             saida_datahora,
+            array(
+                select as struct
+                    cast(null as string) as tipo, cast(null as string) as descricao
+            ) as exames_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
@@ -59,8 +64,14 @@ with
             -- Encounter Data
             merged_data.*,
         from merged_data
+    ),
+    ranked as (
+        select
+            *,
+            row_number() over (partition by id_atendimento) as rank
+        from fingerprinted
     )
 select 
     *,
-from fingerprinted
-where paciente_cpf is not null
+from ranked
+where rank = 1
