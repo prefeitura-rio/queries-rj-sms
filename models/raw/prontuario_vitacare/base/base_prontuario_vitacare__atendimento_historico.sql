@@ -119,7 +119,7 @@ with
                         calendario_vacinal_atualizado,
                         "" as dose_vtc,
                         tipo_registro,
-                        estrategia_imunizacao
+                        estrategia_imunizacao,
                     )
                 )
             ) as vacinas
