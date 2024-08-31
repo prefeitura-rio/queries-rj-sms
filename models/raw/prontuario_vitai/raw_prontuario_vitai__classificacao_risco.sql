@@ -56,5 +56,6 @@ select
     safe_cast(codigo as string) as codigo,
     safe_cast(cliente as string) as cliente,
     safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at
+    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    safe_cast(data_particao as date) as data_particao
 from latest_events
