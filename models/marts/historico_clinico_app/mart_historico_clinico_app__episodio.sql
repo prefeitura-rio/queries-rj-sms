@@ -19,7 +19,7 @@ with
         where exibicao.indicador = false
     ),
     episodios_com_cid as (
-        select id_atendimento
+        select id_episodio
         from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
         where cid.id is not null
     ),
@@ -39,7 +39,7 @@ with
                     tipo like '%Exame%'
                     or tipo like '%Laborat%'
                     or tipo like '%Imagem%'
-                    or id_atendimento in (select * from episodios_com_cid)
+                    or id_episodio in (select * from episodios_com_cid)
                     or motivo_atendimento is not null
                     or desfecho_atendimento is not null
                 then false
@@ -53,7 +53,7 @@ with
     formatado as (
         select
             paciente_cpf as cpf,
-            id_atendimento,
+            id_episodio,
             safe_cast(entrada_datahora as string) as entry_datetime,
             safe_cast(saida_datahora as string) as exit_datetime,
             safe_cast(estabelecimento.nome as string) as location,

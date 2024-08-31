@@ -450,4 +450,3 @@ with
     )
 
 select * from final
-where  {{validate_cpf('paciente.cpf')}}

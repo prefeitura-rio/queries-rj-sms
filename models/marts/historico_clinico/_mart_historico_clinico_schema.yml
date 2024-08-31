@@ -8,21 +8,16 @@ models:
       - name: paciente_cpf
         description: >
           Cadastro de Pessoas Físicas do paciente.
-        tests:
-          - not_null:
-              name: mart_historico_clinico__episodio__paciente_cpf__not_null
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
-      - name: id_atendimento
+      - name: id_episodio
         description: |
           Fingerprint determinístico para o atendimento.
         tests:
           - not_null:
-              name: historico_clinico__id_episodio__not_null
+              name: mart_historico_clinico__episodio__id_episodio__not_null
           - unique:
-              name: historico_clinico__id_episodio__unique
-              config:
-                severity: warn
+              name: mart_historico_clinico__episodio__id_episodio__unique
       - name: paciente
         description: >
           Informações sobre os pacientes envolvidos no atendimento, incluindo

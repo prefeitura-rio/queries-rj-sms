@@ -68,7 +68,7 @@ with
             -- Encounter Unique Identifier: for testing purposes
             farm_fingerprint(
                 concat(prontuario.fornecedor, prontuario.id_atendimento)
-            ) as id_atendimento,
+            ) as id_episodio,
 
             -- Encounter Data
             merged_data.*,
@@ -77,8 +77,9 @@ with
     deduped as (
         select *
         from fingerprinted
-        qualify row_number() over (partition by id_atendimento) = 1
+        qualify row_number() over (partition by id_episodio) = 1
     )
 select *
 from deduped
+
 

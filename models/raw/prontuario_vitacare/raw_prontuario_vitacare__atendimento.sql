@@ -37,6 +37,7 @@ with
     atendimentos_validos as (
         select * 
         from atendimentos_deduplicados
+        where gid is not null
     )
 
 select *

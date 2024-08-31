@@ -220,6 +220,7 @@ with
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select *
 from fato_atendimento
+where id is not null
     {% if is_incremental() %}
-        where data_particao in ({{ partitions_to_replace | join(",") }})
+        and data_particao in ({{ partitions_to_replace | join(",") }})
     {% endif %}
