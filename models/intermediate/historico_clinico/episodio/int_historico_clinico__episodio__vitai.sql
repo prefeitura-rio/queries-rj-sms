@@ -2,23 +2,9 @@
     config(
         schema="intermediario_historico_clinico",
         alias="episodio_assistencial_vitai",
-        materialized="incremental",
-        incremental_strategy="insert_overwrite",
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "day",
-        },
+        materialized="table",
     )
 }}
-
--- Criação de variáveis para facilitar a substituição de partições
-{% set partitions_to_replace = [
-    "current_date('America/Sao_Paulo')",
-    "date_sub(current_date('America/Sao_Paulo'), interval 1 day)",
-] %}
-
-
 with
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabelas uteis para o episodio
@@ -456,13 +442,10 @@ with
                 safe_cast(updated_at as datetime) as updated_at,
                 safe_cast(imported_at as datetime) as imported_at,
                 safe_cast(current_datetime() as datetime) as processed_at
-            ) as metadados
+            ) as metadados,
+            safe_cast(entrada_datahora as date) as data_particao
         from atendimento_struct
         left join cid_grouped on atendimento_struct.id = cid_grouped.id
     )
 
-select *
-from final
-{% if is_incremental() -%}
-    where data_particao in ({{ partitions_to_replace | join(",") }})
-{% endif %}
+select * from final
