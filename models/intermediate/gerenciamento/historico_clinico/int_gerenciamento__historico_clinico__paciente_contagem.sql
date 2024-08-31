@@ -139,4 +139,4 @@ with
 -- simple select statement
 select *
 from checks
-where status = 'fail'
+--where status = 'fail'
