@@ -1,9 +1,13 @@
 {{
     config(
         alias="paciente",
-        materialized="table",
-        cluster_by="cpf",
         schema="app_historico_clinico",
+        materialized="table",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
@@ -92,7 +96,8 @@ with
                 )
                 from unnest(equipe_saude_familia[safe_offset(0)].enfermeiros)
             ) as nursing_responsible,
-            dados.identidade_validada_indicador as validated
+            dados.identidade_validada_indicador as validated,
+            safe_cast(cpf as int64) as cpf_particao
         from todos_pacientes
     )
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -100,8 +105,9 @@ with
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select
     regras_exibicao.cpf,
-    formatado.* except(cpf),
-    regras_exibicao.exibicao
+    formatado.* except(cpf, cpf_particao),
+    regras_exibicao.exibicao,
+    cpf_particao
 from regras_exibicao
     left join formatado on (
         regras_exibicao.cpf = formatado.cpf and 

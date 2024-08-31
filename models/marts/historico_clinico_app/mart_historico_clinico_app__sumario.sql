@@ -1,9 +1,13 @@
 {{
     config(
         alias="sumario",
-        materialized="table",
-        cluster_by="cpf",
         schema="app_historico_clinico",
+        materialized="table",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
@@ -15,7 +19,7 @@ with
   alergias_grouped as (
     select
     paciente_cpf,
-    alergias as allergies
+    alergias as allergies,
     from {{ ref('mart_historico_clinico__alergia') }}
   ),
   medicamentos_cronicos_single as (
@@ -35,7 +39,8 @@ with
 select
     base.cpf,
     alergias_grouped.allergies,
-    medicamentos_cronicos_grouped.continuous_use_medications
+    medicamentos_cronicos_grouped.continuous_use_medications,
+    safe_cast(base.cpf as int64) as cpf_particao,
 from base
     left join alergias_grouped 
       on alergias_grouped.paciente_cpf = base.cpf

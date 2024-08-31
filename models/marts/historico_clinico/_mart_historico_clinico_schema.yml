@@ -56,6 +56,19 @@ models:
         description: >
           Data e hora de término do atendimento. Representa o momento em que o
           atendimento terminou.
+      - name: exames_realizados
+        description: >
+          Lista de exames realizados durante o atendimento.
+      - name: exames_realizados.tipo
+        description: >
+          Tipo do exame realizado.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+      - name: exames_realizados.descricao
+        description: >
+          Descrição do exame realizado.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: motivo_atendimento
         description: >
           Motivo do atendimento, obtido a partir do boletim de atendimento.
@@ -170,6 +183,11 @@ models:
       - name: exibicao.motivos
         description: |
           Motivos pelos quais o episódio foi marcado para ter a exibição suprimida
+      - name: cpf_particao
+        description: >
+          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
   - name: mart_historico_clinico__alergia
     description: >
       Este modelo agrega informações sobre alergias dos pacientes e combina
@@ -201,6 +219,11 @@ models:
       - name: metadados.processed_at
         description: Marcação de data/hora de processamento do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
+      - name: cpf_particao
+        description: >
+          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
   - name: mart_historico_clinico__paciente
     description: "O modelo é um registro abrangente do histórico do paciente que
       integra dados de várias fontes, incluindo 'VITACARE', 'VITAI' e 'SMSRIO'.
@@ -419,6 +442,11 @@ models:
       - name: metadados.processed_at
         description: Marcação de data/hora de processamento do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
+      - name: cpf_particao
+        description: >
+          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
   - name: mart_historico_clinico__medicamento_cronico
     description: "Tabela contendo os medicamentos de uso contínuo prescrito para o paciente
     nos últimos 12 meses."
@@ -459,3 +487,8 @@ models:
       - name: metadados.processed_at
         description: Marcação de data/hora de processamento do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
+      - name: cpf_particao
+        description: >
+          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'

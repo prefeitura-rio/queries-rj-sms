@@ -3,7 +3,11 @@
         schema="saude_historico_clinico",
         alias="medicamento_cronico",
         materialized="table",
-        cluster_by="paciente_cpf",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
@@ -38,7 +42,8 @@ with
             prescricoes.id,
             {{ proper_br("coalesce(materiais.descricao, prescricoes.nome)") }} as nome,
             materiais.concentracao,
-            prescricoes.datahora_prescricao
+            prescricoes.datahora_prescricao,
+            safe_cast(prescricoes.cpf as int64) as cpf_particao
         from prescricoes
         inner join materiais on prescricoes.id = materiais.id_material
         where prescricoes.uso_continuo = true
@@ -47,12 +52,13 @@ with
     final as (
         select
             cpf as paciente_cpf,
+            cpf_particao,
             array_agg(
                 struct(id, nome, concentracao, datahora_prescricao)
             ) as medicamentos,
             struct(current_timestamp() as processed_at) as metadados
         from uso_continuado
-        group by cpf
+        group by cpf, cpf_particao
     )
 
-select * from final
+select paciente_cpf, medicamentos, metadados, cpf_particao from final

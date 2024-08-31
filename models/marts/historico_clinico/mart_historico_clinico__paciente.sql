@@ -1,9 +1,14 @@
 {{
     config(
         alias="paciente",
-        materialized="table",
         schema="saude_dados_mestres",
-        tag=["hci", "paciente"]
+        tag=["hci", "paciente"],
+        materialized="table",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
@@ -576,7 +581,8 @@ paciente_integrado AS (
         ct.contato,
         ed.endereco,
         pt.prontuario,
-        STRUCT(CURRENT_TIMESTAMP() AS processed_at) AS metadados
+        STRUCT(CURRENT_TIMESTAMP() AS processed_at) AS metadados,
+        safe_cast(pd.cpf as int64) as cpf_particao 
     FROM paciente_dados pd
     LEFT JOIN cns_dados cns ON pd.cpf = cns.cpf
     LEFT JOIN equipe_saude_familia_dados esf ON pd.cpf = esf.cpf
