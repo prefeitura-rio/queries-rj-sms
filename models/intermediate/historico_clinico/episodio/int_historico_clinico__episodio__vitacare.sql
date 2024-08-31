@@ -221,9 +221,6 @@ with
 select *
 from fato_atendimento
 where
-
-    {{validate_cpf('paciente.cpf')}} and id is not null
-
     {% if is_incremental() %}
-        and data_particao in ({{ partitions_to_replace | join(",") }})
+        where data_particao in ({{ partitions_to_replace | join(",") }})
     {% endif %}

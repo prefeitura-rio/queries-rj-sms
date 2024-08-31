@@ -9,7 +9,6 @@
             "data_type": "int64",
             "range": {"start": 0, "end": 100000000000, "interval": 34722222},
         },
-        
     )
 }}
 
@@ -75,10 +74,11 @@ with
             merged_data.*,
         from merged_data
     ),
-    ranked as (
-        select *, row_number() over (partition by id_atendimento) as rank
+    deduped as (
+        select *
         from fingerprinted
+        qualify row_number() over (partition by id_atendimento) = 1
     )
-select distinct *,
-from ranked
-where rank = 1 and paciente_cpf is not null
+select *
+from deduped
+
