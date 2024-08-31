@@ -26,7 +26,7 @@ with
     bruto_atendimento as (
         select *
         from {{ ref("raw_prontuario_vitacare__atendimento") }}
-        where data_particao = "2024-08-01"
+        -- where data_particao = "2024-08-01"
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Paciente
@@ -218,7 +218,6 @@ with
 -- Finalização
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select *
-
 from fato_atendimento
 where
 
