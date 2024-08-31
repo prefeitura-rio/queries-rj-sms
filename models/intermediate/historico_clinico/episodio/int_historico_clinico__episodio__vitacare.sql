@@ -199,7 +199,8 @@ with
                 updated_at, loaded_at as imported_at, current_datetime() as processed_at
             ) as metadados,
 
-            atendimento.data_particao
+            atendimento.data_particao,
+            safe_cast(dim_paciente.paciente.cpf as int64) as cpf_particao,
 
         from bruto_atendimento as atendimento
         left join dim_paciente on atendimento.cpf = dim_paciente.pk
@@ -221,7 +222,7 @@ select *
 from fato_atendimento
 where
 
-    paciente.cpf is not null and id is not null
+    {{validate_cpf('paciente.cpf')}} and id is not null
 
     {% if is_incremental() %}
         and data_particao in ({{ partitions_to_replace | join(",") }})
