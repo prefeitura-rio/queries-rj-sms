@@ -6,9 +6,9 @@
     )
 }}
 with
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabelas uteis para o episodio
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     -- Desfecho do atendimento
     alta_adm as (
@@ -27,7 +27,8 @@ with
             {{process_null('resumo_alta.resumo_alta_descricao')}} as resumo_alta_descricao,
             {{process_null('resumo_alta.desfecho_internacao')}} as resumo_alta_tipo,
             row_number() over (
-                partition by resumo_alta.gid_boletim order by resumo_alta.resumo_alta_datahora desc
+                partition by resumo_alta.gid_boletim 
+                order by resumo_alta.resumo_alta_datahora desc
             ) as ordenacao
         from {{ ref("raw_prontuario_vitai__resumo_alta") }}
     ),
@@ -36,7 +37,11 @@ with
             case 
                 when resumo_alta_descricao is null then resumo_alta_tipo 
                 when resumo_alta_tipo is null then resumo_alta_descricao 
-                else concat(trim(upper(resumo_alta_tipo)),'\n',trim(upper(resumo_alta_descricao)))
+                else concat(
+                    trim(upper(resumo_alta_tipo)),
+                    '\n',
+                    trim(upper(resumo_alta_descricao))
+                )
             end as desfecho_atendimento
         from desfecho_atendimento_all
         where ordenacao = 1
@@ -74,22 +79,27 @@ with
             b.atendimento_tipo,
             b.especialidade_nome,
             case
-                when {{process_null('b.internacao_data')}} is null then null
+                when {{process_null('b.internacao_data')}} is null 
+                then null
                 else cast(b.internacao_data as datetime)
             end as internacao_data,
             b.imported_at,
             b.updated_at,
             case
-                when {{process_null('b.data_entrada')}} is null then null
+                when {{process_null('b.data_entrada')}} is null 
+                then null
                 else cast(b.data_entrada as datetime)
             end as entrada_datahora,
             case
-                when {{process_null('b.alta_data')}} is null then null
+                when {{process_null('b.alta_data')}} is null 
+                then null
                 else cast(b.alta_data as datetime)
             end as saida_datahora,
-            IF({{clean_numeric('b.cpf')}} is null, 
+            IF(
+                {{clean_numeric('b.cpf')}} is null, 
                 paciente_mrg.cpf,
-                {{clean_numeric('b.cpf')}}) as cpf,
+                {{clean_numeric('b.cpf')}}
+            ) as cpf,
             paciente_mrg.cns as cns,
             paciente_mrg.data_nascimento
         from {{ ref("raw_prontuario_vitai__boletim") }} as b
@@ -104,9 +114,9 @@ with
         select gid, cns, cpf, {{ proper_br("nome") }} as nome, cbo_descricao
         from profissional_int
     ),
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabela de consultas
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Como cada atendimento appenda informações no boletim, pegamos a queixa do
     -- ultimo atendimento
     queixa_all as (
@@ -125,7 +135,8 @@ with
             gid_boletim,
             gid_profissional,
             case
-                when {{process_null('queixa')}} is null then null
+                when {{process_null('queixa')}} is null 
+                then null
                 else upper(trim(queixa))
             end as queixa
         from queixa_all
@@ -153,15 +164,15 @@ with
                 profissional_distinct.profissional_cns as cns,
                 {{proper_br('profissional_distinct.profissional_nome')}} as nome,
                 profissional_distinct.cbo_descricao as especialidade
-                ) as profissional_saude_responsavel,
+            ) as profissional_saude_responsavel,
             {{process_null('atendimento.cid_codigo')}} as cid_codigo,
             {{process_null('atendimento.cid_nome')}}  as cid_nome,
             alta_adm.alta_tipo_detalhado  as desfecho_atendimento,
-            CASE 
-                WHEN trim(lower(boletim.atendimento_tipo)) = 'emergencia' THEN 'Emergência'
-                WHEN trim(lower(boletim.atendimento_tipo)) = 'consulta' THEN 'Ambulatorial'
-                ELSE null
-            END  as subtipo,
+            case 
+                when trim(lower(boletim.atendimento_tipo)) = 'emergencia' THEN 'Emergência'
+                when trim(lower(boletim.atendimento_tipo)) = 'consulta' THEN 'Ambulatorial'
+                else null
+            end  as subtipo,
             array(
                 select as struct 
                 cast(null as string) as tipo,
@@ -177,9 +188,9 @@ with
             on alta_adm.gid_boletim = boletim.gid
         where atendimento.gid_boletim is not null and boletim.internacao_data is null
     ),
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabela de internações
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     
     -- Alguns hospitais podem por pacientes em obs antes de internar, gerando duplicadas na tabela. Vale o ultimo registros nesse caso
     internacao_all as (
@@ -189,7 +200,7 @@ with
             {{process_null('i.id_diagnostico')}} as cid_codigo,
             {{process_null('i.diagnostico_descricao')}} as cid_nome,
             {{process_null('i.gid_profissional')}} as gid_profissional,
-            INITCAP({{process_null('i.profissional_nome')}}) as profissional_nome,
+            initcap({{process_null('i.profissional_nome')}}) as profissional_nome,
             profissional_int.cns as profissional_cns,
             profissional_int.cpf as profissional_cpf,
             profissional_int.cbo_descricao as profissional_cbo,
@@ -213,8 +224,8 @@ with
             ) as profissional_saude_responsavel,
             internacao_distinct.cid_codigo,
             internacao_distinct.cid_nome,
-            REGEXP_REPLACE(
-                REGEXP_REPLACE(
+            regexp_replace(
+                regexp_replace(
                     desfecho_atendimento,
                     '[Ó|O]BITO {1,}\n[Ó|O]BITO',
                     'OBITO'
@@ -222,10 +233,10 @@ with
                 'TRANSFER[E|Ê]NCIA {1,}\nTRANSF[E|Ê]RENCIA', 
                 'TRANSFERÊNCIA'
             ) as desfecho_atendimento,
-            CASE 
-                WHEN trim(lower(internacao_distinct.internacao_tipo)) = 'emergencia' THEN 'Emergência'
-                ELSE trim(initcap(internacao_distinct.internacao_tipo)) 
-            END as subtipo,
+            case 
+                when trim(lower(internacao_distinct.internacao_tipo)) = 'emergencia' THEN 'Emergência'
+                else trim(initcap(internacao_distinct.internacao_tipo)) 
+            end as subtipo,
             array(
                 select as struct 
                 cast(null as string) as tipo,
@@ -238,9 +249,9 @@ with
             on desfecho_atendimento_final.gid_boletim = boletim.gid
         where internacao_distinct.gid_boletim is not null and boletim.internacao_data is not null
     ),
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabela de exames
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     -- Monta relação de exames em cada episódio, retirando duplicadas de exames refeitos e agrupando episodios com exames de imagem e laboratorio
     -- como um só
@@ -258,10 +269,11 @@ with
             exame_table.exame_descricao,
             safe_cast(null as string) as cid_codigo,
             safe_cast(null as string) as cid_descricao,
-            CASE 
-                WHEN trim(lower(exame_table.tipo)) = 'laboratorio' THEN 'Laboratório'
-                ELSE trim(initcap(exame_table.tipo)) 
-            END as subtipo
+            case 
+                when trim(lower(exame_table.tipo)) = 'laboratorio' 
+                then 'Laboratório'
+                else trim(initcap(exame_table.tipo)) 
+            end as subtipo
         from boletim
         left join (select distinct gid_boletim, tipo, exame_descricao  from {{ref("raw_prontuario_vitai__exame")}} ) as exame_table
             on boletim.gid = exame_table.gid_boletim
@@ -305,9 +317,9 @@ with
         from exame_dupl
         group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
     ),
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Montagem do episódio e enriquecimento
-    --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     episodios as (
         select *
         from consulta
@@ -346,18 +358,28 @@ with
             episodios_distinct.desfecho_atendimento,
             episodios_distinct.entrada_datahora,
             episodios_distinct.saida_datahora,
-            struct(episodios_distinct.cpf, episodios_distinct.cns,episodios_distinct.data_nascimento) as paciente,
-           profissional_saude_responsavel,
+            struct(
+                episodios_distinct.cpf, 
+                episodios_distinct.cns,
+                episodios_distinct.data_nascimento
+            ) as paciente,
+            profissional_saude_responsavel,
             struct(
                 estabelecimentos.cnes as id_cnes,
                 {{ proper_estabelecimento("nome_estabelecimento") }} as nome,
                 estabelecimentos.tipo_sms_simplificado as estabelecimento_tipo
             ) as estabelecimento,
-            struct(episodios_distinct.gid as id_atendimento, "vitai" as fornecedor) as prontuario,
+            struct(
+                episodios_distinct.gid as id_atendimento, 
+                "vitai" as fornecedor
+            ) as prontuario,
             episodios_distinct.imported_at,
             episodios_distinct.updated_at,
             case
-                when (episodios_distinct.cpf is null) and (episodios_distinct.cns is null) then 0 else 1
+                when (episodios_distinct.cpf is null) 
+                and (episodios_distinct.cns is null) 
+                then 0 
+                else 1
             end as episodio_com_paciente
 
         from (
@@ -377,43 +399,48 @@ with
             desfecho_atendimento
             from episodios
         ) as episodios_distinct
-        left join estabelecimentos on episodios_distinct.gid_estabelecimento = estabelecimentos.gid
+        left join 
+            estabelecimentos 
+            on episodios_distinct.gid_estabelecimento = estabelecimentos.gid
         left join queixa_final on episodios_distinct.gid = queixa_final.gid_boletim
+    ),
+    final as (
+        select    
+            -- Paciente
+            atendimento_struct.paciente,
+
+            -- Tipo e Subtipo
+            safe_cast(atendimento_struct.tipo as string) as tipo,
+            safe_cast(atendimento_struct.subtipo as string) as subtipo,
+            exames_realizados,
+
+            -- Entrada e Saída
+            safe_cast(atendimento_struct.entrada_datahora as datetime) as entrada_datahora,
+            safe_cast(atendimento_struct.saida_datahora as datetime) as saida_datahora,
+
+            -- Motivo e Desfecho
+            safe_cast(atendimento_struct.motivo_atendimento as string) as motivo_atendimento,
+            safe_cast(desfecho_atendimento as string) as desfecho_atendimento,
+            
+            -- Condições
+            cid_grouped.condicoes,
+
+            -- Estabelecimento
+            atendimento_struct.estabelecimento,
+
+            -- Profissional
+            atendimento_struct.profissional_saude_responsavel,
+
+            -- Prontuário
+            atendimento_struct.prontuario,
+
+            -- Metadados
+            struct(
+                safe_cast(updated_at as datetime) as updated_at,
+                safe_cast(imported_at as datetime) as imported_at,
+                safe_cast(current_datetime() as datetime) as processed_at
+            ) as metadados
+            from atendimento_struct
+            left join cid_grouped on atendimento_struct.id = cid_grouped.id
     )
-    select    
-    -- Paciente
-    atendimento_struct.paciente,
-
-    -- Tipo e Subtipo
-    safe_cast(atendimento_struct.tipo as string) as tipo,
-    safe_cast(atendimento_struct.subtipo as string) as subtipo,
-    exames_realizados,
-
-    -- Entrada e Saída
-    safe_cast(atendimento_struct.entrada_datahora as datetime) as entrada_datahora,
-    safe_cast(atendimento_struct.saida_datahora as datetime) as saida_datahora,
-
-    -- Motivo e Desfecho
-    safe_cast(atendimento_struct.motivo_atendimento as string) as motivo_atendimento,
-    safe_cast(desfecho_atendimento as string) as desfecho_atendimento,
-    
-    -- Condições
-    cid_grouped.condicoes,
-
-    -- Estabelecimento
-    atendimento_struct.estabelecimento,
-
-    -- Profissional
-    atendimento_struct.profissional_saude_responsavel,
-
-    -- Prontuário
-    atendimento_struct.prontuario,
-
-    -- Metadados
-    struct(
-        safe_cast(updated_at as datetime) as updated_at,
-        safe_cast(imported_at as datetime) as imported_at,
-        safe_cast(current_datetime() as datetime) as processed_at
-    ) as metadados
-    from atendimento_struct
-    left join cid_grouped on atendimento_struct.id = cid_grouped.id
+    select * from final
