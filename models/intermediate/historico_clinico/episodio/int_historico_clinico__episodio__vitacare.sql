@@ -2,9 +2,22 @@
     config(
         schema="intermediario_historico_clinico",
         alias="episodio_assistencial_vitacare",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
+
+
+{% set partitions_to_replace = [
+    "current_date('America/Sao_Paulo')",
+    "date_sub(current_date('America/Sao_Paulo'), interval 1 day)",
+] %}
+
 
 with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -13,6 +26,7 @@ with
     bruto_atendimento as (
         select *
         from {{ ref("raw_prontuario_vitacare__atendimento") }}
+        where data_particao = "2024-08-01"
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Paciente
@@ -183,15 +197,15 @@ with
             -- Metadados
             struct(
                 updated_at, loaded_at as imported_at, current_datetime() as processed_at
-            ) as metadados
+            ) as metadados,
+
+            atendimento.data_particao
 
         from bruto_atendimento as atendimento
         left join dim_paciente on atendimento.cpf = dim_paciente.pk
         left join
-            dim_estabelecimento
-            on atendimento.cnes_unidade = dim_estabelecimento.pk
-        left join
-            dim_profissional on atendimento.cns_profissional = dim_profissional.pk
+            dim_estabelecimento on atendimento.cnes_unidade = dim_estabelecimento.pk
+        left join dim_profissional on atendimento.cns_profissional = dim_profissional.pk
         left join
             dim_condicoes_atribuidas
             on atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
@@ -199,9 +213,17 @@ with
             dim_prescricoes_atribuidas
             on atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
     )
+
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- Finalização
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select *
+
 from fato_atendimento
-where paciente.cpf is not null and id is not null
+where
+
+    paciente.cpf is not null and id is not null
+
+    {% if is_incremental() %}
+        and data_particao in ({{ partitions_to_replace | join(",") }})
+    {% endif %}
