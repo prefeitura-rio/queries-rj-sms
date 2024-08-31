@@ -68,5 +68,6 @@ select
     safe_cast(procedimentocodigo as string) as procedimento_codigo,
     safe_cast(procedimentonome as string) as procedimento_nome,
     safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at
+    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    safe_cast(data_particao as date) as data_particao
 from latest_events

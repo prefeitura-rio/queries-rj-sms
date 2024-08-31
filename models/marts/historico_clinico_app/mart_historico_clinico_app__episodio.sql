@@ -1,9 +1,14 @@
 {{
     config(
         alias="episodio_assistencial",
+        schema="app_historico_clinico",
         materialized="table",
         cluster_by="cpf",
-        schema="app_historico_clinico",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
@@ -102,7 +107,8 @@ with
                 flag__episodio_sem_informacao as episodio_sem_informacao,
                 flag__paciente_tem_restricao as paciente_restrito,
                 flag__paciente_sem_cpf as paciente_sem_cpf
-            ) as exibicao
+            ) as exibicao,
+            cpf_particao
         from todos_episodios
     )
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--

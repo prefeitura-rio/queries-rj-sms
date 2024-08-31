@@ -4,6 +4,12 @@
         alias="episodio_assistencial",
         materialized="table",
         cluster_by="paciente_cpf",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
+        
     )
 }}
 
@@ -27,7 +33,8 @@ with
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
-            metadados
+            metadados,
+            cpf_particao,
         from {{ ref("int_historico_clinico__episodio__vitai") }}
         union all
         select
@@ -47,7 +54,8 @@ with
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
-            metadados
+            metadados,
+            cpf_particao,
         from {{ ref("int_historico_clinico__episodio__vitacare") }}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
