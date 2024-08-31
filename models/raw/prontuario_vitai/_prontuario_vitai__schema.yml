@@ -934,20 +934,24 @@ models:
     columns:
       - name: gid
         description: Identificador único da internação.
-      - name: boletim_gid
+      - name: gid_boletim
         description: Identificador único do boletim associado a internação.
-      - name: paciente_gid
+      - name: gid_paciente
         description: Identificador único do paciente associado ao internação.
         policy_tags:
           - '{{ var("TAG_IDENTIFICADOR") }}'
-      - name: estabelecimento_gid
+      - name: gid_estabelecimento
         description: Identificador único do estabelecimento de saúde onde ocorreu a internação.
+      - name: gid_profissional
+        description: Identificador único do profissional responsável pela internação.      
       - name: id_procedimento
         description: Identificador do procedimento realizado.
       - name: id_diagnostico
         description: Identificador do diagnotico.
       - name: internacao_tipo
         description: Descricao do tipo de internação realizada.
+      - name: especialidade
+        description: Descricao da especialidade de internação realizada.
       - name: cpf
         policy_tags:
           - '{{ var("TAG_CPF") }}'
@@ -956,25 +960,19 @@ models:
         policy_tags:
           - '{{ var("TAG_CNS") }}'
         description: CNS do paciente internado.
-      - name: estabelecimento_sigla
-        description: Sigla do estabelecimetno de saúdew onde ocorreu a internação.
       - name: procedimento_nome
         description: Descrição do procedimento realizado.
+      - name: profissional_nome
+        description: Nome do profissional responsável pela internação.
       - name: diagnostico_descricao
         description: Descrição do diagnostico realizado.
-      - name: alta_motivo
-        description: Motivo da alta do paciente.
-      - name: risco
-        description: Risco do paciente.
-      - name: entrada_data
-        description: Data de entrada do paciente.
+      - name: saida_data
+        description: Data de saída do paciente.
       - name: internacao_data
         description: Data de internação do paciente.
-      - name: obito_data
-        description: Data de óbito do paciente.
       - name: cliente
         description: Nome ou identificação do cliente associado ao relato cirúrgico.
-      - name: baseurl
+      - name: base_url
         description: URL base relacionada ao sistema do relato cirúrgico.
       - name: updated_at
         description: Data e hora da última atualização do relato cirúrgico.

@@ -1,6 +1,6 @@
 {{
     config(
-        alias="paciente_historico",
+        alias="_base_paciente_historico",
         materialized="table",
     )
 }}
