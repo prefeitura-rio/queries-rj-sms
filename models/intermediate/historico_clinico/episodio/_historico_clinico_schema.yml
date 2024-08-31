@@ -119,9 +119,9 @@ models:
           ID do atendimento.
         tests:
           - not_null:
-              name: historico_clinico__id_episodio_vitai__notnull
+              name: int_historico_clinico__episodio__vitai__id_episodio__not_null
           - unique:
-              name: historico_clinico__id_episodio_vitai__unique
+              name: int_historico_clinico__episodio__vitai__id_episodio__unique
       - name: prontuario.fornecedor
         description: |
           Fornecedor do prontuário.
