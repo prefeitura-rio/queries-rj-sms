@@ -24,9 +24,8 @@ with
     -- Separação de Atendimentos
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     bruto_atendimento as (
-        select *
-        from {{ ref("raw_prontuario_vitacare__atendimento") }}
-        -- where data_particao = "2024-08-01"
+        select * from {{ ref("raw_prontuario_vitacare__atendimento") }}
+    -- where data_particao = "2024-08-01"
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Paciente
@@ -213,14 +212,16 @@ with
         left join
             dim_prescricoes_atribuidas
             on atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
-    )
+    ),
+
+    episodios_validos as (select * from fato_atendimento where id is not null)
 
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- Finalização
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select *
-from fato_atendimento
+from episodios_validos
 
-    {% if is_incremental() -%}
-        where data_particao in ({{ partitions_to_replace | join(",") }})
-    {% endif %}
+{% if is_incremental() -%}
+    where data_particao in ({{ partitions_to_replace | join(",") }})
+{% endif %}

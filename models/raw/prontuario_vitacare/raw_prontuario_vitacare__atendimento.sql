@@ -34,14 +34,13 @@ with
         qualify row_number() over (partition by gid order by updated_at desc) = 1
     ),
 
-    atendimentos_validos as (
+    atendimentos_unicos as (
         select * 
         from atendimentos_deduplicados
-        where gid is not null
     )
 
 select *
-from atendimentos_validos
+from atendimentos_unicos
 {% if is_incremental() %}
         where data_particao in ({{ partitions_to_replace | join(',') }})
 {% endif %}

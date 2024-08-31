@@ -5,6 +5,7 @@ with
     -- import CTEs
     -- -- Episodio Assistencial
     -- -- -- Vitacare
+
     raw_episodio_vitacare as (
         select * from {{ ref("raw_prontuario_vitacare__atendimento") }}
     ),
