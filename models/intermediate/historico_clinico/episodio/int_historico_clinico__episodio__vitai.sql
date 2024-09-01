@@ -439,7 +439,9 @@ with
                 safe_cast(updated_at as datetime) as updated_at,
                 safe_cast(imported_at as datetime) as imported_at,
                 safe_cast(current_datetime() as datetime) as processed_at
-            ) as metadados
+            ) as metadados,
+            safe_cast(entrada_datahora as date) as data_particao,
+            safe_cast(atendimento_struct.paciente.cpf as int64) as cpf_particao
             from atendimento_struct
             left join cid_grouped on atendimento_struct.id = cid_grouped.id
     )
