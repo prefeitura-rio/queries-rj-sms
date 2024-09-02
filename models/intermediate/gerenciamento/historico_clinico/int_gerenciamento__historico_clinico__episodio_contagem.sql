@@ -28,7 +28,7 @@ with
 
     -- -- -- Vitai
     raw_episodio_vitai as (
-        select * from {{ ref("raw_prontuario_vitai__atendimento") }}
+        select * from {{ ref("raw_prontuario_vitai__boletim") }}
     ),
 
     int_episodio_vitai as (
