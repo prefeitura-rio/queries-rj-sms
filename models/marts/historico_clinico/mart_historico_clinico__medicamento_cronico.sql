@@ -62,6 +62,7 @@ with
     uso_continuado_somente_concentracao_mais_recente as (
         select * from uso_continuado
         qualify row_number() over (partition by cpf, nome order by datahora_prescricao desc) = 1
+        order by cpf, nome
     ),
 
     final as (
@@ -77,3 +78,5 @@ with
     )
 
 select paciente_cpf, medicamentos, metadados, cpf_particao from final
+where paciente_cpf = "02046836707"
+
