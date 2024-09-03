@@ -76,15 +76,25 @@ models:
       cnes_web:
         +schema: brutos_cnes_web
         +tags: "weekly"
+        +labels:
+          dado_publico: sim
       cnes_ftp:
         +schema: brutos_cnes_ftp
         +tags: "weekly"
+        +labels:
+          dado_publico: sim
       datasus:
         +schema: brutos_datasus
         +tags: "weekly"
+        +labels:
+          dado_publico: sim
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
         +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_sensivel_saude: nao
+          contem_pii: nao
       historico_clinico_integrado:
         +schema: brutos_historico_clinico_integrado
         +tags: "daily"
@@ -113,6 +123,10 @@ models:
         +materialized: ephemeral
         historico_clinico:
           +tags: "hci"
+          +labels:
+            dado_publico: nao
+            dado_sensivel_saude: sim
+            contem_pii: sim
           paciente:
             +tags: "paciente"
     marts:
@@ -138,11 +152,23 @@ models:
             +tags: "daily"
         historico_clinico:
             +tags: ["daily", "hci"]
+            +labels:
+              dados_publicos: nao
+              dado_sensivel_saude: sim
+              contem_pii: sim
         historico_clinico_app:
             +tags: ["daily", "hci_app"]
+            +labels:
+              dados_publicos: nao
+              dado_sensivel_saude: sim
+              contem_pii: sim
         seguir_em_frente:
             +schema: projeto_seguir_em_frente
             +tags: "daily"
+            +labels:
+              dados_publicos: nao
+              dado_sensivel_saude: sim
+              contem_pii: sim
 
 tests:
   rj_sms:
