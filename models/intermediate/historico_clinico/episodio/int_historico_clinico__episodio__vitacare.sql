@@ -68,14 +68,34 @@ with
     condicoes as (
         select
             gid as fk_atendimento,
-            json_extract_scalar(condicao_json, "$.cod_cid10") as id
+
+            json_extract_scalar(condicao_json, "$.cod_cid10") as id,
+
+            case
+                when json_extract_scalar(condicao_json, "$.estado") = "N.E"
+                then "NAO ESPECIFICADO"
+                else json_extract_scalar(condicao_json, "$.estado")
+            end as situacao,
+
+            json_extract_scalar(
+                condicao_json, "$.data_diagnostico"
+            ) as data_diagnostico,
+
         from bruto_atendimento, unnest(json_extract_array(condicoes)) as condicao_json
+        order by fk_atendimento, data_diagnostico desc
     ),
+
     dim_condicoes_atribuidas as (
         select
             fk_atendimento,
             array_agg(
-                struct(condicoes.id as id, cid_descricao.descricao as descricao)
+                struct(
+                    condicoes.id as id,
+                    cid_descricao.descricao as descricao,
+                    condicoes.situacao as situacao,
+                    condicoes.data_diagnostico as data_diagnostico
+                )
+                order by data_diagnostico desc, descricao
             ) as condicoes
         from condicoes
         left join cid_descricao on condicoes.id = cid_descricao.codigo_cid
