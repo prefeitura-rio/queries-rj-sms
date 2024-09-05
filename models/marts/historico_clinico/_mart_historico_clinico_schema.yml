@@ -91,6 +91,12 @@ models:
           Descrição do CID associado ao atendimento.
         policy_tags:
           - '{{ var ("TAG_DADOS_CLINICOS") }}'
+      - name: condicoes.situacao
+        description: |
+          Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
+      - name: condicoes.data_diagnostico
+        description: |
+          Data do diagnóstico da condição na Atenção Primária. Para a UPAs e Hospitais, este campo é vazio.
       - name: prescricoes
         description: >
           Informações sobre as medicações prescritas durante o atendimento.
@@ -487,6 +493,9 @@ models:
       - name: metadados.processed_at
         description: Marcação de data/hora de processamento do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
+      - name: data_particao
+        description: >
+          Campo utilizado para particionamento de dados através da data do evento.
       - name: cpf_particao
         description: >
           Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
