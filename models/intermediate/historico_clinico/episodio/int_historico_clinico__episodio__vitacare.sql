@@ -75,10 +75,10 @@ with
         select
             fk_atendimento,
             array_agg(
-                struct(condicoes.id as id, cid_descricao.descricao as descricao)
+                struct(condicoes.id as id, cid_descricao.subcategoria_descricao as descricao)
             ) as condicoes
         from condicoes
-        left join cid_descricao on condicoes.id = cid_descricao.codigo_cid
+        left join cid_descricao on condicoes.id = cid_descricao.id_subcategoria
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -132,7 +132,7 @@ with
                     when vacinas != '[]'
                     then 'Vacinação'
                     when datahora_marcacao is null
-                    then 'Demanda Expontânea'
+                    then 'Demanda Espontânea'
                     else 'Agendada'
                 end as string
             ) as tipo,

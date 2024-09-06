@@ -333,6 +333,7 @@ with
             episodios.cid_codigo as cid_id,
             episodios.cid_nome as cid_nome,
         from episodios
+        where (cid_codigo is not null or cid_nome is not null)
     ),
     cid_grouped as (
         select
