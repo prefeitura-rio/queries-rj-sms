@@ -90,7 +90,7 @@ with
             {{clean_cid('best_agrupador')}} as descricao_agg
         from  deduped, unnest(condicoes) as cid 
         LEFT JOIN {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
-        on agg_4_dig.id_categoria = regexp_replace(cid.id,r'\.','')
+        on agg_4_dig.id_subcategoria = regexp_replace(cid.id,r'\.','')
         where char_length(regexp_replace(cid.id,r'\.','')) = 4
         and cid.situacao != 'RESOLVIDO'
     ),
@@ -106,20 +106,44 @@ with
         and cid.situacao != 'RESOLVIDO'
     ),
     all_cids as (
-    select id_episodio, data_diagnostico, descricao_agg
+    select distinct id_episodio, data_diagnostico, descricao_agg
     from (
         select * from eps_cid_subcat where descricao_agg != ''
         union all
         select * from eps_cid_cat where descricao_agg != ''
     )
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY id_episodio,descricao_agg ORDER BY data_diagnostico DESC) = 1
+    qualify row_number() over (partition by id_episodio,descricao_agg order by data_diagnostico desc) = 1
+    ),
+    summarization as (
+        select 
+            id_episodio, 
+            array_agg(descricao_agg ignore nulls order by data_diagnostico desc) as condicoes_resumo
+        from all_cids
+        group by 1
     )
+
     select 
-        id_episodio, 
-        p aciente_cpf, 
-        array_agg(agg ignore nulls order by data_diagnostico desc) as cid_resumo
-    from all_cids
-    group by 1,2
+        deduped.paciente_cpf,
+        deduped.id_episodio,
+        deduped.paciente,
+        deduped.tipo,
+        deduped.subtipo,
+        deduped.entrada_datahora,
+        deduped.saida_datahora,
+        deduped.exames_realizados,
+        deduped.motivo_atendimento,
+        deduped.desfecho_atendimento,
+        deduped.condicoes,
+        summarization.condicoes_resumo,
+        deduped.prescricoes,
+        deduped.estabelecimento,
+        deduped.profissional_saude_responsavel,
+        deduped.prontuario,
+        deduped.metadados,
+        deduped.cpf_particao, 
+    from deduped
+    left join summarization
+    on deduped.id_episodio = summarization.id_episodio
 
 
 

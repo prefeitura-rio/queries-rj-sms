@@ -58,14 +58,19 @@ models:
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
           relacionados ao atendimento. 
-
           Inclui informações como código e nome do CID.
       - name: condicoes.id
         description: |
           Código CID ativo
       - name: condicoes.descricao
         description: |
-          Descrição do CID associado 
+          Descrição do CID associado
+      - name: condicoes.situacao
+        description: |
+          Situação do CID associado ao atendimento. Na Vitai assume apenas o valor "ATIVO".
+      - name: condicoes.data_diagnostico
+        description: |
+          Data do diagnóstico da condição na Atenção Primária. Para a Vitai, este campo é vazio.
       - name: alergias
         description: >
           Descrições das alergias associadas ao atendimento, extraídas dos
@@ -140,6 +145,14 @@ models:
       - name: metadados.imported_at
         description: |
           Data de importação do registro.
+      - name: data_particao
+        description: >
+          Campo utilizado para particionamento de dados através da data do evento.
+      - name: cpf_particao
+        description: >
+          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
   - name: int_historico_clinico__episodio__vitacare
     description: >
       Tabela com uma visão consolidada dos atendimentos realizados em
@@ -208,7 +221,13 @@ models:
           Código CID ativo
       - name: condicoes.descricao
         description: |
-          Descrição do CID associado 
+          Descrição do CID associado
+      - name: condicoes.situacao
+        description: |
+          Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
+      - name: condicoes.data_diagnostico
+        description: |
+          Data do diagnóstico da condição. Campo preenchido somente para episódios da Atenção Primária.
       - name: alergias
         description: >
           Descrições das alergias associadas ao atendimento, extraídas dos
@@ -300,3 +319,11 @@ models:
           Flag que indica se o episodio tem identificador de pacientes.
       - name: metadados.tem_dados_sensiveis
         description: Flag que indica se o episodio tem dados sensíveis.
+      - name: data_particao
+        description: >
+          Campo utilizado para particionamento de dados através da data do evento.
+      - name: cpf_particao
+        description: >
+          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'

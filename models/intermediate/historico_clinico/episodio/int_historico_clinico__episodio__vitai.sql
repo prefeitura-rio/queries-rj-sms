@@ -339,7 +339,12 @@ with
         select
             id,
             array_agg(
-                struct(cid_id as id, cid_nome as descricao) ignore nulls
+                struct(
+                    cid_id as id,
+                    cid_nome as descricao,
+                    "ATIVO" as situacao,
+                    "" as data_diagnostico
+                ) ignore nulls
             ) as condicoes,
         from cid_distinct
         group by 1
@@ -450,4 +455,5 @@ with
         left join cid_grouped on atendimento_struct.id = cid_grouped.id
     )
 
-select * from final
+select *
+from final
