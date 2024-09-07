@@ -44,7 +44,7 @@ models:
         quote: true
         description: Data de atualização do arquivo no DataSUS.
   - name: raw_datasus__cid10
-    description: Tabela contendo os cargos do CBO.
+    description: Tabela contendo a Classificação Internacional de Doenças (CID-10).
     columns:
       - name: id_subcategoria
         description: Subcategoria do CID.

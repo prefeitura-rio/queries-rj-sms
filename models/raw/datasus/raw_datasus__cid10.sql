@@ -1,7 +1,13 @@
 {{
     config(
         alias="cid10",
-        schema = "brutos_datasus"
+        schema = "brutos_datasus",
+        labels = {
+            'dado_publico': 'sim',
+            'dado_pessoal': 'nao',
+            'dado_anonimizado': 'nao',
+            'dado_sensivel_saude': 'nao',
+        }
     )
 }}
 select 
