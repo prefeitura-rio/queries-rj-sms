@@ -21,7 +21,7 @@ with
     episodios_com_cid as (
         select id_episodio
         from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
-        where cid.id is not null
+        where cid.id is not null and cid.situacao <> 'RESOLVIDO'
     ),
     todos_episodios as (
         select
