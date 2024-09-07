@@ -120,8 +120,9 @@ with
             array_agg(descricao_agg ignore nulls order by data_diagnostico desc) as condicoes_resumo
         from all_cids
         group by 1
-    )
+    ),
 
+    final as (
     select 
         deduped.paciente_cpf,
         deduped.id_episodio,
@@ -133,8 +134,7 @@ with
         deduped.exames_realizados,
         deduped.motivo_atendimento,
         deduped.desfecho_atendimento,
-        deduped.condicoes,
-        summarization.condicoes_resumo,
+        struct(deduped.condicoes as relacao, summarization.condicoes_resumo as resumo) as condicoes,
         deduped.prescricoes,
         deduped.estabelecimento,
         deduped.profissional_saude_responsavel,
@@ -144,6 +144,8 @@ with
     from deduped
     left join summarization
     on deduped.id_episodio = summarization.id_episodio
+)
 
+select * from final
 
 

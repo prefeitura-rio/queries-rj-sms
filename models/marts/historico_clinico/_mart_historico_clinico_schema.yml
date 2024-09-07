@@ -81,25 +81,32 @@ models:
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
           relacionados ao atendimento. 
-      - name: condicoes.id
+      - name: condicoes.relacao
+        description: |
+          Lista de cids associados ao atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+      - name: condicoes.relacao.id
         description: |
           Código CID ativo
         policy_tags:
           - '{{ var ("TAG_DADOS_CLINICOS") }}'
-      - name: condicoes.descricao
+      - name: condicoes.relacao.descricao
         description: |
           Descrição do CID associado ao atendimento.
         policy_tags:
           - '{{ var ("TAG_DADOS_CLINICOS") }}'
-      - name: condicoes.situacao
+      - name: condicoes.relacao.situacao
         description: |
           Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
-      - name: condicoes.data_diagnostico
+      - name: condicoes.relacao.data_diagnostico
         description: |
           Data do diagnóstico da condição na Atenção Primária. Para a UPAs e Hospitais, este campo é vazio.
-      - name: condicoes_resumo
+      - name: condicoes.resumo
         description: |
           Descreve de forma resumida os cids marcados como "Ativos" ou "Não especificados"
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: prescricoes
         description: >
           Informações sobre as medicações prescritas durante o atendimento.
@@ -161,6 +168,8 @@ models:
       - name: profissional_saude_responsavel.especialidade
         description: |
           Especialidade do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: prontuario
         description: >
           Informações adicionais sobre o atendimento, como o fornecedor e o
