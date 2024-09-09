@@ -330,9 +330,14 @@ with
     cid_distinct as (
         select distinct
             episodios.gid as id,
-            episodios.cid_codigo as cid_id,
+            IF(episodios.cid_codigo is null, c.id_subcategoria, episodios.cid_codigo) as cid_id,
             episodios.cid_nome as cid_nome,
         from episodios
+        left join (
+            select distinct id_subcategoria, subcategoria_descricao
+            from {{ ref('raw_datasus__cid10') }} 
+        ) as c
+        on c.subcategoria_descricao = episodios.cid_nome
         where (cid_codigo is not null or cid_nome is not null)
     ),
     cid_grouped as (

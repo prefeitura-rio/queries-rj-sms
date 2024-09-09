@@ -60,11 +60,11 @@ models:
         description: Descrição do nome da categoria do CID.
       - name: categoria_descricao_abv
         description: Descrição abreviada do nome da categoria do CID.
-      - name: grupo_descricao
+      - name: grupo.grupo_descricao
         description: Descrição do nome do grupo do CID. Um CID pode pertencer a mais de um grupo.
-      - name: grupo_descricao_abv
+      - name: grupo.grupo_descricao_abv
         description: Descrição abreviada do nome do grupo do CID. Um CID pode pertencer a mais de um grupo.
-      - name: grupo_descricao_len
+      - name: grupo.grupo_descricao_len
         description: Quantidade de caracteres do nome do grupo.
       - name: capitulo_descricao
         description: Descrição do nome do capítulo do CID.

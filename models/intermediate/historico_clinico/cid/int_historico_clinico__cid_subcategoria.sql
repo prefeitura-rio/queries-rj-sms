@@ -4,13 +4,13 @@ with cids as (
   id_categoria,
   subcategoria_descricao,
   categoria_descricao,
-  grupo_descricao,
-  grupo_descricao_abv,
+  g.grupo_descricao,
+  g.grupo_descricao_abv,
   char_length(subcategoria_descricao) as len_subcategoria,
   char_length(categoria_descricao) as len_categoria,
-  char_length(grupo_descricao) as len_grupo,
-  dense_rank() over (partition by id_subcategoria order by grupo_descricao_len asc) as ranking
-  from {{ref("raw_datasus__cid10")}}
+  char_length(g.grupo_descricao) as len_grupo,
+  dense_rank() over (partition by id_subcategoria order by g.grupo_descricao_len asc) as ranking
+  from {{ref("raw_datasus__cid10")}}, unnest(grupo) as g
 ),
 --- 4 DIGITOS ---
 pivoting_4_dig as (
@@ -48,4 +48,8 @@ agg_4_dig as (
   left join ( select * from cids where ranking = 1) as cids_u
   on get_best_agg_4_dig.id_subcategoria = cids_u.id_subcategoria
 )
-select * from agg_4_dig
+select * from agg_4_dig where id_subcategoria != 'U071' and id_subcategoria != 'U072'
+union all
+select 'U071','COVID19, virus identificado','U07','COVID19'
+union all
+select 'U072','COVID19, virus não identificado','U07','COVID19'

@@ -72,6 +72,7 @@ with
             array(
                 select descricao from unnest(condicoes.relacao) where descricao is not null
             ) as active_cids,
+            condicoes.resumo as active_cids_summarized,
             case
                 when
                     profissional_saude_responsavel.nome is not null

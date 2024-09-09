@@ -2,12 +2,12 @@ with cids as (
   select distinct
   id_categoria,
   categoria_descricao,
-  grupo_descricao,
-  grupo_descricao_abv,
+  g.grupo_descricao,
+  g.grupo_descricao_abv,
   char_length(categoria_descricao) as len_categoria,
-  char_length(grupo_descricao) as len_grupo,
-  dense_rank() over (partition by id_subcategoria order by grupo_descricao_len asc) as ranking
-  from {{ref("raw_datasus__cid10")}}
+  char_length(g.grupo_descricao) as len_grupo,
+  dense_rank() over (partition by id_subcategoria order by g.grupo_descricao_len asc) as ranking
+  from {{ref("raw_datasus__cid10")}}, unnest(grupo) as g
 ),
 -- 3 DIGITOS --
 pivoting_3_dig as (
@@ -51,5 +51,6 @@ agg_3_dig as (
   left join ( select * from cids where ranking = 1) as cids_u
   on get_best_agg_3_dig.id_categoria = cids_u.id_categoria
 )
-select * from agg_3_dig 
-order by 1
+select * from agg_3_dig where id_categoria != 'U07'
+union all
+select 'U07', 'COVID19'

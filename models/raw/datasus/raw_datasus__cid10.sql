@@ -18,9 +18,14 @@ select
     safe_cast(subcategoria_descricao as string) as subcategoria_descricao,
     safe_cast(categoria_descricao as string) as categoria_descricao,
     safe_cast(categoria_descricao_abv as string) as categoria_descricao_abv,
-    safe_cast(grupo_descricao as string) as grupo_descricao,
-    safe_cast(grupo_descricao_abv as string) as grupo_descricao_abv,
-    safe_cast(grupo_descricao_len as int) as grupo_descricao_len,
-    safe_cast(capitulo_descricao as string) as capitulo_descricao 
+    safe_cast(capitulo_descricao as string) as capitulo_descricao,
+    array_agg(
+        struct(
+            safe_cast(grupo_descricao as string) as grupo_descricao,
+            safe_cast(grupo_descricao_abv as string) as grupo_descricao_abv,
+            safe_cast(grupo_descricao_len as int) as grupo_descricao_len
+        )
+    ) as grupo
 from 
 {{ source("brutos_datasus_staging", "cid10") }}
+group by 1,2,3,4,5,6,7,8
