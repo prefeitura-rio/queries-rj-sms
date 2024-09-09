@@ -78,8 +78,74 @@ with
         select *
         from fingerprinted
         qualify row_number() over (partition by id_episodio) = 1
+    ),
+
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- CID: Add CID summarization
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    eps_cid_subcat as (
+        select  
+            id_episodio, 
+            data_diagnostico, 
+            {{clean_cid('best_agrupador')}} as descricao_agg
+        from  deduped, unnest(condicoes) as cid 
+        LEFT JOIN {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
+        on agg_4_dig.id_subcategoria = regexp_replace(cid.id,r'\.','')
+        where char_length(regexp_replace(cid.id,r'\.','')) = 4
+        and cid.situacao != 'RESOLVIDO'
+    ),
+    eps_cid_cat as (
+        select 
+            id_episodio, 
+            data_diagnostico, 
+            {{clean_cid('best_agrupador')}} as descricao_agg
+        from  deduped, unnest(condicoes) as cid 
+        LEFT JOIN {{ ref("int_historico_clinico__cid_categoria") }} as agg_3_dig
+        on agg_3_dig.id_categoria = regexp_replace(cid.id,r'\.','')
+        where char_length(regexp_replace(cid.id,r'\.','')) = 3
+        and cid.situacao != 'RESOLVIDO'
+    ),
+    all_cids as (
+    select distinct id_episodio, data_diagnostico, descricao_agg
+    from (
+        select * from eps_cid_subcat where descricao_agg != ''
+        union all
+        select * from eps_cid_cat where descricao_agg != ''
     )
-select *
-from deduped
+    qualify row_number() over (partition by id_episodio,descricao_agg order by data_diagnostico desc) = 1
+    ),
+    summarization as (
+        select 
+            id_episodio, 
+            array_agg(descricao_agg ignore nulls order by data_diagnostico desc) as condicoes_resumo
+        from all_cids
+        group by 1
+    ),
+
+    final as (
+    select 
+        deduped.paciente_cpf,
+        deduped.id_episodio,
+        deduped.paciente,
+        deduped.tipo,
+        deduped.subtipo,
+        deduped.entrada_datahora,
+        deduped.saida_datahora,
+        deduped.exames_realizados,
+        deduped.motivo_atendimento,
+        deduped.desfecho_atendimento,
+        struct(deduped.condicoes as relacao, summarization.condicoes_resumo as resumo) as condicoes,
+        deduped.prescricoes,
+        deduped.estabelecimento,
+        deduped.profissional_saude_responsavel,
+        deduped.prontuario,
+        deduped.metadados,
+        deduped.cpf_particao, 
+    from deduped
+    left join summarization
+    on deduped.id_episodio = summarization.id_episodio
+)
+
+select * from final
 
 

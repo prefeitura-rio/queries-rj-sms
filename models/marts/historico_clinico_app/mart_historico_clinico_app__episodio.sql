@@ -20,8 +20,8 @@ with
     ),
     episodios_com_cid as (
         select id_episodio
-        from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
-        where cid.id is not null
+        from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes.relacao) as cid
+        where cid.id is not null and cid.situacao <> 'RESOLVIDO'
     ),
     todos_episodios as (
         select
@@ -70,7 +70,7 @@ with
                 where tipo is not null
             ) as clinical_exams,
             array(
-                select descricao from unnest(condicoes) where descricao is not null
+                select descricao from unnest(condicoes.relacao) where descricao is not null
             ) as active_cids,
             case
                 when

@@ -27,21 +27,31 @@ models:
       - name: paciente.data_nascimento
         description: |
           Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_DTNASCIMENTO") }}'
       - name: tipo
         description: |
           Tipo de atendimento classificado como 'Exames', 'Consulta' ou 'Internação', baseado no tipo de atendimento informado no boletim.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: subtipo
         description: |
           Subtipo do atendimento, obtido a partir do tipo de atendimento do boletim. 
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: exames_realizados 
         description: |
           No caso de tipo de episódio como 'Exame', detalha tipos de exames realizados e descrição
       - name: exames_realizados.tipo
         description: |
           Tipo do exame, pode ser preenchido com 'Imagem' ou 'Laboratório'
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: exames_realizados.descricao
         description: |
           Descrição do exame realizado
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: entrada_datahora
         description: |
           Data e hora de início do atendimento. Representa o momento em que o atendimento começou.
@@ -51,9 +61,13 @@ models:
       - name: motivo_atendimento
         description: |
           Queixa inicial do paciente
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: desfecho_atendimento
         description: |
           Desfecho do episódio
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: condicoes
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
@@ -62,9 +76,13 @@ models:
       - name: condicoes.id
         description: |
           Código CID ativo
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: condicoes.descricao
         description: |
           Descrição do CID associado
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: condicoes.situacao
         description: |
           Situação do CID associado ao atendimento. Na Vitai assume apenas o valor "ATIVO".
@@ -75,6 +93,8 @@ models:
         description: >
           Descrições das alergias associadas ao atendimento, extraídas dos
           registros de alergias.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: estabelecimento
         description: >
           Informações sobre o estabelecimento de saúde onde o atendimento foi
@@ -110,6 +130,8 @@ models:
       - name: profissional_saude_responsavel.especialidade
         description: |
           Especialidade do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: profissional_saude_responsavel.cpf
         description: |
           CPF do profissional responsável pelo atendimento.
@@ -173,10 +195,14 @@ models:
         description: >
           Tipo de atendimento classificado como 'Exames', 'Consulta' ou
           'Internação', baseado no tipo de atendimento informado no boletim.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: subtipo
         description: >
           Subtipo do atendimento, obtido a partir do tipo de atendimento do
           boletim. 
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: entrada_datahora
         description: >
           Data e hora de início do atendimento. Representa o momento em que o
@@ -189,7 +215,6 @@ models:
         description: >
           Informações sobre os pacientes envolvidos no atendimento, incluindo
           CPF e CNS. 
-
           Agrupados por identificador de prontuário.
       - name: paciente.id_prontuario
         description: |
@@ -204,24 +229,36 @@ models:
           CNS do paciente.
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
+      - name: paciente.data_nascimento
+        description: |
+          Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_DTNASCIMENTO") }}'
       - name: motivo_atendimento
         description: |
           Queixa inicial do paciente
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: desfecho_atendimento
         description: |
           Desfecho do episódio
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: condicoes
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
           relacionados ao atendimento. 
-
           Inclui informações como código e nome do CID.
       - name: condicoes.id
         description: |
           Código CID ativo
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: condicoes.descricao
         description: |
           Descrição do CID associado
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: condicoes.situacao
         description: |
           Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
@@ -232,6 +269,8 @@ models:
         description: >
           Descrições das alergias associadas ao atendimento, extraídas dos
           registros de alergias.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: prescricoes
         description: >
           Informações sobre as prescrições médicas realizadas durante o
@@ -239,12 +278,18 @@ models:
       - name: prescricoes.id
         description: |
           ID da prescrição.
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
       - name: prescricoes.nome
         description: |
           Nome do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
       - name: prescricoes.concentracao
         description: |
           Concentração do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_MEDICAMENTO") }}'
       - name: prescricoes.uso_continuo
         description: |
           Flag que indica se o medicamento é de uso contínuo.
@@ -283,6 +328,8 @@ models:
       - name: profissional_saude_responsavel.especialidade
         description: |
           Especialidade do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: profissional_saude_responsavel.cpf
         description: |
           CPF do profissional responsável pelo atendimento.
