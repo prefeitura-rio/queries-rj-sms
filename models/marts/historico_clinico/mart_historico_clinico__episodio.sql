@@ -86,42 +86,49 @@ with
     eps_cid_subcat as (
         select  
             id_episodio, 
-            data_diagnostico, 
-            {{clean_cid('best_agrupador')}} as descricao_agg
+            cid.id,
+            cid.descricao,
+            cid.situacao,
+            cid.data_diagnostico, 
+            IF(cid.situacao = 'RESOLVIDO',null,{{clean_cid('best_agrupador')}}) as descricao_agg
         from  deduped, unnest(condicoes) as cid 
         LEFT JOIN {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
         on agg_4_dig.id_subcategoria = regexp_replace(cid.id,r'\.','')
         where char_length(regexp_replace(cid.id,r'\.','')) = 4
-        and cid.situacao != 'RESOLVIDO'
     ),
     eps_cid_cat as (
         select 
             id_episodio, 
-            data_diagnostico, 
-            {{clean_cid('best_agrupador')}} as descricao_agg
+            cid.id,
+            cid.descricao,
+            cid.situacao,
+            cid.data_diagnostico,
+            IF(cid.situacao = 'RESOLVIDO',null,{{clean_cid('best_agrupador')}})  as descricao_agg
         from  deduped, unnest(condicoes) as cid 
         LEFT JOIN {{ ref("int_historico_clinico__cid_categoria") }} as agg_3_dig
         on agg_3_dig.id_categoria = regexp_replace(cid.id,r'\.','')
         where char_length(regexp_replace(cid.id,r'\.','')) = 3
-        and cid.situacao != 'RESOLVIDO'
     ),
     all_cids as (
-    select distinct id_episodio, data_diagnostico, descricao_agg
+    select     
+        id_episodio,
+        array_agg(
+            struct(
+                id, 
+                descricao, 
+                situacao,
+                data_diagnostico, 
+                descricao_agg as descricao_resumo
+            )
+            order by data_diagnostico desc, descricao
+        ) as condicoes
     from (
-        select * from eps_cid_subcat where descricao_agg != ''
+        select * from eps_cid_subcat
         union all
-        select * from eps_cid_cat where descricao_agg != ''
+        select * from eps_cid_cat
     )
-    qualify row_number() over (partition by id_episodio,descricao_agg order by data_diagnostico desc) = 1
+    group by 1
     ),
-    summarization as (
-        select 
-            id_episodio, 
-            array_agg(descricao_agg ignore nulls order by data_diagnostico desc) as condicoes_resumo
-        from all_cids
-        group by 1
-    ),
-
     final as (
     select 
         deduped.paciente_cpf,
@@ -134,7 +141,7 @@ with
         deduped.exames_realizados,
         deduped.motivo_atendimento,
         deduped.desfecho_atendimento,
-        struct(deduped.condicoes as relacao, summarization.condicoes_resumo as resumo) as condicoes,
+        all_cids.condicoes,
         deduped.prescricoes,
         deduped.estabelecimento,
         deduped.profissional_saude_responsavel,
@@ -142,8 +149,8 @@ with
         deduped.metadados,
         deduped.cpf_particao, 
     from deduped
-    left join summarization
-    on deduped.id_episodio = summarization.id_episodio
+    left join all_cids 
+    on all_cids.id_episodio = deduped.id_episodio
 )
 
 select * from final

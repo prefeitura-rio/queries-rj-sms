@@ -86,23 +86,23 @@ models:
           Lista de cids associados ao atendimento.
         policy_tags:
           - '{{ var ("TAG_DADOS_CLINICOS") }}'
-      - name: condicoes.relacao.id
+      - name: condicoes.id
         description: |
           Código CID ativo
         policy_tags:
           - '{{ var ("TAG_DADOS_CLINICOS") }}'
-      - name: condicoes.relacao.descricao
+      - name: condicoes.descricao
         description: |
           Descrição do CID associado ao atendimento.
         policy_tags:
           - '{{ var ("TAG_DADOS_CLINICOS") }}'
-      - name: condicoes.relacao.situacao
+      - name: condicoes.situacao
         description: |
           Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
-      - name: condicoes.relacao.data_diagnostico
+      - name: condicoes.data_diagnostico
         description: |
           Data do diagnóstico da condição na Atenção Primária. Para a UPAs e Hospitais, este campo é vazio.
-      - name: condicoes.resumo
+      - name: condicoes.descricao_resumo
         description: |
           Descreve de forma resumida os cids marcados como "Ativos" ou "Não especificados"
         policy_tags:
