@@ -11,6 +11,10 @@
     )
 }}
 
+{% set partitions_to_replace = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 5 day)"
+) %}
+
 with
     bruto_atendimento_eventos_com_repeticao as (
         select *, concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as gid
@@ -112,5 +116,5 @@ with
 select *
 from final
 {% if is_incremental() %}
-        where data_particao in ({{ partitions_to_replace | join(',') }})
+    where data_particao >= {{ partitions_to_replace }}
 {% endif %}

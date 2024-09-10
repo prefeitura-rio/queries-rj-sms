@@ -13,10 +13,9 @@
 }}
 
 
-{% set partitions_to_replace = [
-    "current_date('America/Sao_Paulo')",
-    "date_sub(current_date('America/Sao_Paulo'), interval 1 day)",
-] %}
+{% set partitions_to_replace = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 5 day)"
+) %}
 
 
 with
@@ -242,6 +241,6 @@ with
 select *
 from episodios_validos
 
-{% if is_incremental() -%}
-    where data_particao in ({{ partitions_to_replace | join(",") }})
+{% if is_incremental() %}
+    where data_particao >= {{ partitions_to_replace }}
 {% endif %}
