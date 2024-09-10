@@ -351,6 +351,15 @@ models:
         description: Código da microárea de atuação da unidade de saúde.
       - name: cnes_unidade
         description: Número CNES da unidade de saúde onde o paciente é atendido.
+        tests:
+          - assert_chegando_todas_unidades_de_saude:
+              name: base_prontuario_vitacare__paciente_rotineiro__chegando_todas_unidades
+              prontuario: vitacare
+              filter: prontuario_estoque_tem_dado = 'sim'
+              config:
+                where: safe_cast(data_particao as date) =
+                  date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
+                severity: warn
       - name: nome_unidade
         description: Nome da unidade de saúde onde o paciente é atendido.
       - name: codigo_equipe_saude
@@ -729,6 +738,15 @@ models:
       - name: cnes_unidade
         data_type: string
         quote: true
+        tests:
+          - assert_chegando_todas_unidades_de_saude:
+              name: base_prontuario_vitacare__atendimento_rotineiro__chegando_todas_unidades
+              prontuario: vitacare
+              filter: prontuario_estoque_tem_dado = 'sim'
+              config:
+                where: safe_cast(data_particao as date) =
+                  date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
+                severity: warn
       - name: cns_profissional
         data_type: string
         quote: true
