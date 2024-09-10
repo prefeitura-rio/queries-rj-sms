@@ -2,6 +2,11 @@
     config(
         alias="_base_atendimento_historico",
         materialized="table",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
@@ -225,7 +230,7 @@ with
             -- dim_procedimentos.procedimentos,
             atendimentos.updated_at,
             atendimentos.loaded_at,
-            safe_cast(atendimentos.datahora_inicio as date) as data_particao,
+            safe_cast(atendimentos.datahora_fim as date) as data_particao,
 
         from fato_atendimento as atendimentos
         left join dim_alergias using (gid)
