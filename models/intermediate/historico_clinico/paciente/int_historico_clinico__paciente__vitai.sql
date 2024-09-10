@@ -482,15 +482,15 @@ paciente_dados AS (
         pc.cpf,
         ARRAY_AGG(STRUCT(
                 cpf_valido_indicador,
-                nome,
-                nome_social,
+                {{ proper_br("nome") }} as nome,
+                {{ proper_br("nome_social") }} as nome_social,
                 data_nascimento,
-                genero,
-                raca,
+                {{ proper_br("genero") }} as genero,
+                {{ proper_br("raca") }} as raca,
                 obito_indicador,
                 obito_data,
-                mae_nome,
-                pai_nome,
+                {{ proper_br("mae_nome") }} as mae_nome,
+                {{ proper_br("pai_nome") }} as pai_nome,
                 rank,
                 pm.metadados
         )) AS dados

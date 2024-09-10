@@ -286,17 +286,13 @@ models:
           - '{{ var ("TAG_NOME") }}'
       - name: dados.data_nascimento
         description: Data de nascimento.
-        tests:
-          - not_null:
-              name: mart_historico_clinico__paciente__data_nascimento__not_null
         policy_tags:
           - '{{ var ("TAG_DTNASCIMENTO") }}'
       - name: dados.genero
         description: "Gênero do paciente. Os valores possíveis são 'Masculino',
           'Feminino' e nulo (não informado)."
       - name: dados.raca
-        description: "Raça do paciente. Os valores possíveis são 'Amarela','Branca', 
-        'Indigena', 'Parda', 'Preta' e nulo (não informado)."
+        description: "Raça do paciente. Os valores possíveis são 'Amarela','Branca', 'Indigena', 'Parda', 'Preta' e nulo (não informado)."
       - name: dados.obito_indicador
         description: Indica se o paciente é falecido ou não.
         policy_tags:

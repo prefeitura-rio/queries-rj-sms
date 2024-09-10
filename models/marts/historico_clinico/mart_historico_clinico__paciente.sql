@@ -590,7 +590,7 @@ paciente_integrado AS (
     LEFT JOIN endereco_dados ed ON pd.cpf = ed.cpf
     LEFT JOIN prontuario_dados pt ON pd.cpf = pt.cpf
     WHERE pd.dados.nome IS NOT NULL
-        AND pd.dados.data_nascimento IS NOT NULL
+        -- AND pd.dados.data_nascimento IS NOT NULL
         AND pd.dados.cpf_valido_indicador IS TRUE
 
 )

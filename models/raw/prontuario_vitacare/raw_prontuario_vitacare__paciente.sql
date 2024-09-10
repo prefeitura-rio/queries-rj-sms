@@ -28,7 +28,36 @@ with
     corrige_cadastro as (
         select
 
-            * except (cadastro_permanente),
+            * except (cadastro_permanente, nome_social, sexo, raca_cor, nome_mae),
+
+            case
+                when nome_social in ('') then null else nome_social
+            end as nome_social,
+
+            case
+                when sexo in ("M", "MALE")
+                then initcap("MASCULINO")
+                when sexo in ("F", "FEMALE")
+                then initcap("FEMININO")
+                else null
+            end as sexo,
+
+            case
+                when trim(raca_cor) in ("", "NAO INFORMADO", "SEM INFORMACAO")
+                then null
+                else initcap(raca_cor)
+            end as raca_cor,
+
+            case
+                when data_obito is null
+                then false
+                when data_obito is not null
+                then true
+                else null
+            end as obito_indicador,
+
+
+            case when nome_mae in ("NONE") then null else nome_mae end as nome_mae,
 
             case
                 when cadastro_permanente = "True" or codigo_ine_equipe_saude is not null
@@ -41,8 +70,6 @@ with
             case
                 when codigo_ine_equipe_saude is not null then true else false
             end as equipe_familia_indicador,
-
-            case when obito = "True" then true else false end as obito_indicador,
 
         from paciente_deduplicado
     ),

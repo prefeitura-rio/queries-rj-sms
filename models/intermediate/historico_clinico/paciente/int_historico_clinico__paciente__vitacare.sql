@@ -550,61 +550,6 @@ with
     ),
 
     -- PACIENTE DADOS
-    vitacare_paciente as (
-        select
-            cpf,
-            cpf_valido_indicador,
-            {{ proper_br("nome") }} as nome,
-            case
-                when nome_social in ('') then null else {{ proper_br("nome_social") }}
-            end as nome_social,
-            date(data_nascimento) as data_nascimento,
-            case
-                when genero in ("M", "MALE")
-                then initcap("MASCULINO")
-                when genero in ("F", "FEMALE")
-                then initcap("FEMININO")
-                else null
-            end as genero,
-            case
-                when trim(raca) in ("", "NAO INFORMADO", "SEM INFORMACAO")
-                then null
-                else initcap(raca)
-            end as raca,
-            case
-                when obito_data is null
-                then false
-                when obito_data is not null
-                then true
-                else null
-            end as obito_indicador,
-            obito_data as obito_data,
-            case when mae_nome in ("NONE") then null else mae_nome end as mae_nome,
-            pai_nome,
-            row_number() over (
-                partition by cpf
-                order by
-                    data_atualizacao_vinculo_equipe desc,
-                    cadastro_permanente_indicador desc,
-                    updated_at desc
-            ) as rank
-        from paciente
-        group by
-            cpf,
-            nome,
-            nome_social,
-            cpf,
-            data_nascimento,
-            genero,
-            raca,
-            obito_data,
-            mae_nome,
-            pai_nome,
-            updated_at,
-            cadastro_permanente_indicador,
-            data_atualizacao_vinculo_equipe,
-            cpf_valido_indicador
-    ),
 
     paciente_metadados as (
         select
@@ -623,7 +568,7 @@ with
                 count(distinct cpf_valido_indicador) as qtd_cpfs_validos,
                 "VITACARE" as sistema
             ) as metadados
-        from vitacare_paciente
+        from paciente
         group by cpf
     ),
 
@@ -633,15 +578,15 @@ with
             array_agg(
                 struct(
                     cpf_valido_indicador,
-                    nome,
-                    nome_social,
+                    {{ proper_br("nome") }} as nome,
+                    {{ proper_br("nome_social") }} as nome_social,
                     data_nascimento,
-                    genero,
-                    raca,
+                    {{ proper_br("genero") }} as genero,
+                    {{ proper_br("raca") }} as raca,
                     obito_indicador,
                     obito_data,
-                    mae_nome,
-                    pai_nome,
+                    {{ proper_br("mae_nome") }} as mae_nome,
+                    {{ proper_br("pai_nome") }} as pai_nome,
                     rank,
                     pm.metadados
                 )
