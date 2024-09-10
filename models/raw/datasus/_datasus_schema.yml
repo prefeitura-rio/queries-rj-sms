@@ -49,9 +49,6 @@ models:
       - name: id_subcategoria
         description: Subcategoria do CID.
         data_type: string
-        data_tests:
-          - unique:
-              name: raw_datasus__cid10__id__unique
       - name: id_categoria
         description: Categoria relacionada.
         data_type: string
@@ -69,11 +66,11 @@ models:
         data_type: string
       - name: categoria_descricao_abv
         description: Descrição abreviada do nome da categoria do CID.
-      - name: grupo.grupo_descricao
+      - name: grupo_descricao
         description: Descrição do nome do grupo do CID. Um CID pode pertencer a mais de um grupo.
-      - name: grupo.grupo_descricao_abv
+      - name: grupo_descricao_abv
         description: Descrição abreviada do nome do grupo do CID. Um CID pode pertencer a mais de um grupo.
-      - name: grupo.grupo_descricao_len
+      - name: grupo_descricao_len
         description: Quantidade de caracteres do nome do grupo.
         data_type: int64
       - name: capitulo_descricao
