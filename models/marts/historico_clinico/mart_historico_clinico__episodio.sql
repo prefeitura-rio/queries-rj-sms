@@ -93,7 +93,7 @@ with
             IF(cid.situacao = 'RESOLVIDO',null,{{clean_cid('best_agrupador')}}) as descricao_agg
         from  deduped, unnest(condicoes) as cid 
         LEFT JOIN {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
-        on agg_4_dig.id_subcategoria = regexp_replace(cid.id,r'\.','')
+        on agg_4_dig.id = regexp_replace(cid.id,r'\.','')
         where char_length(regexp_replace(cid.id,r'\.','')) = 4
     ),
     eps_cid_cat as (
@@ -118,7 +118,7 @@ with
                 descricao, 
                 situacao,
                 data_diagnostico, 
-                descricao_agg as descricao_resumo
+                descricao_agg as resumo
             )
             order by data_diagnostico desc, descricao
         ) as condicoes

@@ -73,7 +73,7 @@ with
                 select descricao from unnest(condicoes) where descricao is not null
             ) as active_cids,
             array(
-                select distinct descricao_resumo from unnest(condicoes) where descricao_resumo is not null and descricao_resumo != ''
+                select distinct resumo from unnest(condicoes) where resumo is not null and resumo != ''
             ) as active_cids_summarized,
             case
                 when

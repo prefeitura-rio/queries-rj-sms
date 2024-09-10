@@ -1,56 +1,50 @@
-with cids as (
-  select distinct
-  id_categoria,
-  categoria_descricao,
-  g.grupo_descricao,
-  g.grupo_descricao_abv,
-  char_length(categoria_descricao) as len_categoria,
-  char_length(g.grupo_descricao) as len_grupo,
-  dense_rank() over (partition by id_subcategoria order by g.grupo_descricao_len asc) as ranking
-  from {{ref("raw_datasus__cid10")}}, unnest(grupo) as g
-),
--- 3 DIGITOS --
-pivoting_3_dig as (
-  select *
-  from ( 
-    select distinct
-      id_categoria,
-      categoria_descricao,
-      grupo_descricao,
-      grupo_descricao_abv,
-      len_categoria,
-      len_grupo,
-    from cids where ranking = 1
-  ) 
-  UNPIVOT(len FOR agrupador IN (len_categoria,len_grupo))
-),
-get_min_len_3_dig as (
-  select  id_categoria, min(len) as min_len
-  from pivoting_3_dig
-  group by 1
-),
-get_best_agg_3_dig as (
-  select 
-    get_min_len_3_dig.*,
-    pivoting_3_dig.len, 
-    pivoting_3_dig.agrupador, 
-    row_number() over(partition by get_min_len_3_dig.id_categoria) as ranking
-  from get_min_len_3_dig
-  left join pivoting_3_dig
-  on pivoting_3_dig.id_categoria = get_min_len_3_dig.id_categoria
-   and pivoting_3_dig.len = get_min_len_3_dig.min_len
-),
-agg_3_dig as (
-  select 
-  get_best_agg_3_dig.id_categoria,
-  CASE
-    WHEN agrupador = 'len_categoria' THEN categoria_descricao
-    WHEN agrupador = 'len_grupo' THEN grupo_descricao
-  END as best_agrupador
-  from (select * from get_best_agg_3_dig where ranking=1) as get_best_agg_3_dig
-  left join ( select * from cids where ranking = 1) as cids_u
-  on get_best_agg_3_dig.id_categoria = cids_u.id_categoria
-)
+with
+    cids as (
+        select distinct
+            categoria.id as id_categoria,
+            categoria.descricao as categoria_descricao,
+            grupo.descricao as grupo_descricao,
+            grupo.abreviatura as grupo_abreviatura,
+            char_length(categoria.descricao) as len_categoria,
+            char_length(grupo.descricao) as len_grupo,
+        from {{ ref("dim_condicao_cid10") }}, unnest(grupo) as grupo
+        qualify dense_rank() over (partition by id order by grupo.comprimento asc) = 1
+    ),
+
+    -- 3 DIGITOS --
+    pivoting_3_dig as (
+        select * from cids unpivot (len for agrupador in (len_categoria, len_grupo))
+    ),
+
+    get_min_len_3_dig as (
+        select id_categoria, min(len) as min_len from pivoting_3_dig group by 1
+    ),
+
+    get_best_agg_3_dig as (
+        select get_min_len_3_dig.*, pivoting_3_dig.len, pivoting_3_dig.agrupador,
+        from get_min_len_3_dig
+        left join
+            pivoting_3_dig
+            on pivoting_3_dig.id_categoria = get_min_len_3_dig.id_categoria
+            and pivoting_3_dig.len = get_min_len_3_dig.min_len
+        qualify row_number() over (partition by get_min_len_3_dig.id_categoria) = 1
+    ),
+
+    agg_3_dig as (
+        select
+            get_best_agg_3_dig.id_categoria,
+            case
+                when agrupador = 'len_categoria'
+                then categoria_descricao
+                when agrupador = 'len_grupo'
+                then grupo_descricao
+            end as best_agrupador
+        from get_best_agg_3_dig
+        left join
+            cids
+            on get_best_agg_3_dig.id_categoria = cids.id_categoria
+    )
+
 select * from agg_3_dig where id_categoria != 'U07'
 union all
 select 'U07', 'COVID19'

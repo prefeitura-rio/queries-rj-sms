@@ -54,7 +54,7 @@ with
             grupo
 
         from grupo_agrupado
-        order by ordem
+        order by ordem, id
 
     )
 
