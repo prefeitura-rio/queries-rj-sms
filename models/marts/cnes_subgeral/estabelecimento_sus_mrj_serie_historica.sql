@@ -88,7 +88,7 @@ joined AS (
         turno.turno_atendimento,
 
         CASE 
-            when (cnes_web.nome_fantasia like 'SMS %') or (cnes_web.nome_fantasia = 'RIOSAUDE') then 1
+            when (cnes_web.nome_fantasia like 'SMS %') or (cnes_web.nome_fantasia = 'RIOSAUDE') or (cnes_web.nome_fantasia = 'SMSDC %') then 1
             else 0 
         END AS indicador_estabelecimento_sms
 
@@ -138,7 +138,7 @@ SELECT
     endereco_complemento,
     endereco_latitude,
     endereco_longitude,
-    indicador_estabelecimento_sms
+    indicador_estabelecimento_sms,
     indicador_vinculo_sus,
     indicador_atendimento_internacao_sus,	
     indicador_atendimento_ambulatorial_sus,
