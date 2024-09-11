@@ -118,7 +118,7 @@ with
                 descricao, 
                 situacao,
                 data_diagnostico, 
-                IF(descricao_agg is null, descricao, descricao_agg) as resumo
+                descricao_agg as resumo
             )
             order by data_diagnostico desc, descricao
         ) as condicoes
