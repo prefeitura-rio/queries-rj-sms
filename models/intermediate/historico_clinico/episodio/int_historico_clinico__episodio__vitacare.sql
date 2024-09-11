@@ -63,7 +63,11 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Condições
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    cid_descricao as (select * from {{ ref("dim_condicao_cid10") }}),
+    cid_descricao as (
+        select distinct id, descricao from {{ ref("dim_condicao_cid10") }}
+        union all
+        select distinct categoria.id as id, categoria.descricao as descricao from {{ ref("dim_condicao_cid10") }}
+    ),
     condicoes as (
         select
         distinct

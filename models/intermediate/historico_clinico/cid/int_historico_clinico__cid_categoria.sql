@@ -1,3 +1,5 @@
+--Cria tabela de de-para da categoria e sua descrição resumida. 
+--O resumo de descrição é construído como o nível de agrupamento da categoria que possui o menor número de caracteres.
 with
     cids as (
         select distinct
@@ -46,5 +48,6 @@ with
     )
 
 select * from agg_3_dig where id_categoria != 'U07'
+-- Contornando CIDs de COVID que atualmente fazem parte de um grupos de "códigos para uso de emergência", sendo não informativo para o resumo
 union all
 select 'U07', 'COVID19'

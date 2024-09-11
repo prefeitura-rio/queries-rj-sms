@@ -1,3 +1,5 @@
+--Cria tabela de de-para da subcategoria e sua descrição resumida. 
+--O resumo de descrição é construído como o nível de agrupamento da subcategoria que possui o menor número de caracteres.
 with
     cids as (
         select
@@ -61,6 +63,7 @@ with
 select *
 from agg_4_dig
 where id not in  ('U071', 'U072')
+-- Contornando CIDs de COVID que atualmente fazem parte de um grupos de "códigos para uso de emergência", sendo não informativo para o resumo
 union all
 select 'U071', 'COVID19, virus identificado', 'U07', 'COVID19'
 union all
