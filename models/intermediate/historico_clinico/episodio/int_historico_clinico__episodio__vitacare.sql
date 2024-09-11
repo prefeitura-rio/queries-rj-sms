@@ -102,7 +102,9 @@ with
                 order by data_diagnostico desc, cid_descricao.descricao
             ) as condicoes
         from condicoes
-        left join cid_descricao on condicoes.id = cid_descricao.id
+        left join (
+            select distinct id, descricao from cid_descricao
+            ) as cid_descricao on condicoes.id = cid_descricao.id
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--

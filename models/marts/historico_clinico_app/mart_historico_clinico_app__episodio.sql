@@ -70,7 +70,7 @@ with
                 where tipo is not null
             ) as clinical_exams,
             array(
-                select descricao from unnest(condicoes) where descricao is not null and situacao <> 'RESOLVIDO'
+                select distinct descricao from unnest(condicoes) where descricao is not null and situacao <> 'RESOLVIDO'
             ) as active_cids,
             array(
                 select distinct resumo from unnest(condicoes) where resumo is not null and resumo != ''
