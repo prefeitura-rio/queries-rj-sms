@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: mart_cnes_subgeral__estabelecimento_sus_mrj_serie_historica
+    description: Esta tabela contém dados a respeito de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
+    columns:
+      - name: ano
+        description: Ano de referência dos dados
+      - name: mes
+        description: Mês de referência dos dados
+      - name: esfera
+        description: Classificação administrativa da esfera governamental (federal, estadual, municipal)
+      - name: id_ap
+        description: Código da Área de Planejamento
+      - name: ap
+        description: Descrição da Área de Planejamento
+      - name: cep
+        description: CEP do estabelecimento
+      - name: id_estabelecimento_cnes
+        description: Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento
+      - name: nome_razao_social
+        description: Razão social do estabelecimento conforme registro oficial
+      - name: nome_fantasia
+        description: Nome fantasia do estabelecimento
+      - name: id_natureza_juridica
+        description: Código da natureza jurídica do estabelecimento
+      - name: natureza_juridica
+        description: Descrição da natureza jurídica do estabelecimento
+      - name: tipo_gestao
+        description: Código indicativo do tipo de gestão (e.g., municipal, estadual)
+      - name: tipo_gestao_descr
+        description: Descrição do tipo de gestão
+      - name: tipo_unidade
+        description: Código do tipo de unidade de saúde
+      - name: tipo_unidade_descr
+        description: Descrição do tipo de unidade de saúde
+      - name: tipo_unidade_agrupado
+        description: Classificação agrupada do tipo de unidade
+      - name: tipo_turno
+        description: Código indicativo do turno de atendimento (manhã, tarde, integral)
+      - name: turno_atendimento
+        description: Descrição do turno de atendimento
+      - name: endereco_bairro
+        description: Bairro onde o estabelecimento está localizado
+      - name: endereco_logradouro
+        description: Logradouro do endereço do estabelecimento
+      - name: endereco_numero
+        description: Número do endereço do estabelecimento
+      - name: endereco_complemento
+        description: Complemento do endereço do estabelecimento
+      - name: endereco_latitude
+        description: Latitude do estabelecimento para georreferenciamento
+      - name: endereco_longitude
+        description: Longitude do estabelecimento para georreferenciamento
+      - name: indicador_estabelecimento_sms
+        description: Indicador se o estabelecimento é parte da rede municipal de saúde
+      - name: indicador_vinculo_sus
+        description: Indica se o estabelecimento possui vínculo com o SUS
+      - name: indicador_atendimento_internacao_sus
+        description: Indica se o estabelecimento oferece serviços de internação pelo SUS
+      - name: indicador_atendimento_ambulatorial_sus
+        description: Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS
+      - name: indicador_atendimento_sadt_sus
+        description: Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia pelo SUS
+      - name: indicador_atendimento_urgencia_sus
+        description: Indica se o estabelecimento oferece serviços de urgência pelo SUS
+      - name: indicador_atendimento_outros_sus
+        description: Indica se o estabelecimento oferece outros tipos de serviços pelo SUS não especificados anteriormente
+      - name: indicador_atendimento_vigilancia_sus
+        description: Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS
+      - name: indicador_atendimento_regulacao_sus
+        description: Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS

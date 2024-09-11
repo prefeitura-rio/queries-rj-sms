@@ -1,0 +1,18 @@
+sources:
+  - name: brutos_cnes_web_staging
+    database: rj-sms
+    schema: brutos_cnes_web_staging
+    tables:
+      - name: tbNaturezaJuridica
+
+  - name: brutos_datasus
+    database: rj-sms-dev
+    schema: brutos_datasus
+    tables:
+      - name: tipo_gestao
+
+  - name: subgeral_padronizacoes
+    database: rj-sms-sandbox
+    schema: subgeral_padronizacoes
+    tables:
+      - name: padronizacao_estabelecimentos

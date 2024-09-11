@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_cnes_ftp
+    database: rj-sms
+    schema: brutos_cnes_ftp
+    tables:
+      - name: estabelecimento
