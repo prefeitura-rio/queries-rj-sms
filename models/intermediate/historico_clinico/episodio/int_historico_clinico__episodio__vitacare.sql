@@ -63,9 +63,10 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Condições
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    cid_descricao as (select * from {{ ref("raw_datasus__cid10") }}),
+    cid_descricao as (select * from {{ ref("dim_condicao_cid10") }}),
     condicoes as (
         select
+        distinct
             gid as fk_atendimento,
 
             json_extract_scalar(condicao_json, "$.cod_cid10") as id,
@@ -90,14 +91,14 @@ with
             array_agg(
                 struct(
                     condicoes.id as id,
-                    cid_descricao.subcategoria_descricao as descricao,
+                    cid_descricao.descricao,
                     condicoes.situacao as situacao,
                     condicoes.data_diagnostico as data_diagnostico
                 )
-                order by data_diagnostico desc, subcategoria_descricao
+                order by data_diagnostico desc, cid_descricao.descricao
             ) as condicoes
         from condicoes
-        left join cid_descricao on condicoes.id = cid_descricao.id_subcategoria
+        left join cid_descricao on condicoes.id = cid_descricao.id
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -244,3 +245,4 @@ from episodios_validos
 {% if is_incremental() %}
     where data_particao >= {{ partitions_to_replace }}
 {% endif %}
+
