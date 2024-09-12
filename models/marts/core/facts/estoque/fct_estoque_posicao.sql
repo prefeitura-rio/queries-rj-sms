@@ -2,14 +2,20 @@
     config(
         alias="posicao",
         schema="saude_estoque",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "month",
         },
-        materialized="incremental",
     )
 }}
+
+{% set partition_to_replace = (
+    "current_date('America/Sao_Paulo')"
+) %}
+
 
 with
     -- sources
@@ -216,8 +222,6 @@ select
     data_carga,
 from posicao_consolidada_com_remume
 
-{% if is_incremental() -%}
-
-    where data_particao > (select max(data_particao) from {{ this }})
-
-{%- endif %}
+{% if is_incremental() %}
+    where data_particao = {{ partitions_to_replace }}
+{% endif %}
