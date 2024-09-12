@@ -7,7 +7,7 @@ default:
       project: rj-sms-dev
       dataset: gerenciamento__dbt
       location: US
-      threads: 6
+      threads: 10
       keyfile: /tmp/credentials.json
     prod:
       type: bigquery
@@ -15,7 +15,7 @@ default:
       project: rj-sms
       dataset: gerenciamento__dbt
       location: US
-      threads: 6
+      threads: 10
       keyfile: /tmp/credentials.json
     ci:
       type: bigquery
@@ -23,6 +23,6 @@ default:
       project: rj-sms-dev
       dataset: gerenciamento__dbt
       location: US
-      threads: 6
+      threads: 10
       keyfile: /tmp/credentials.json
 
