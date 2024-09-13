@@ -18,3 +18,4 @@ sources:
     - name: rlEstabEquipeProf
     - name: tbTipoEquipe
     - name: tbArea
+    - name: tbNaturezaJuridica

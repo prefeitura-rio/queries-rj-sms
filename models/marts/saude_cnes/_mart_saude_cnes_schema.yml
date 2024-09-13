@@ -24,7 +24,7 @@ models:
         description: Nome fantasia do estabelecimento
       - name: id_natureza_juridica
         description: Código da natureza jurídica do estabelecimento
-      - name: natureza_juridica
+      - name: natureza_juridica_descr
         description: Descrição da natureza jurídica do estabelecimento
       - name: tipo_gestao
         description: Código indicativo do tipo de gestão (e.g., municipal, estadual)
@@ -70,3 +70,67 @@ models:
         description: Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS
       - name: indicador_atendimento_regulacao_sus
         description: Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS
+      - name: area_programatica
+        description: Refined sanitary district code used for categorizing the establishment within a specific administrative area.
+      - name: tipo_sms_agrupado
+        description: Grouping variable for SMS related to health communication strategies or categories.
+      - name: tipo
+        description: Description of the unit, indicating the type classification of the healthcare facility unit.
+      - name: tipo_sms
+        description: Category or type of SMS related to health services.
+      - name: tipo_sms_simplificado
+        description: Simplified version of the SMS category, used for general classification.
+      - name: cnpj_mantenedora
+        description: CNPJ of the entity maintaining the establishment, crucial for legal and financial accountability.
+      - name: ativa
+        description: Indicates operational status of the establishment based on the presence of a deactivation reason.
+      - name: id_unidade
+        description: Identifier for a specific unit within the establishment.
+      - name: nome_limpo
+        description: Cleaned or formatted name of the establishment for reporting or formal use.
+      - name: nome_sigla
+        description: Abbreviated form of the establishment’s name.
+      - name: nome_complemento
+        description: Additional naming details that complement the primary name of the establishment.
+      - name: responsavel_sms
+        description: Person responsible for the SMS system or health management.
+      - name: administracao
+        description: Describes the type of administration or management style of the establishment.
+      - name: prontuario_tem
+        description: Indicates whether patient records are maintained.
+      - name: prontuario_versao
+        description: Version control for patient records.
+      - name: prontuario_estoque_tem_dado
+        description: Indicates if patient records contain data.
+      - name: prontuario_estoque_motivo_sem_dado
+        description: Reason provided when patient records do not contain data.
+      - name: telefone
+        description: Primary telephone contact number for the establishment.
+      - name: email
+        description: Primary email address for communication with the establishment.
+      - name: facebook
+        description: Facebook page of the establishment.
+      - name: instagram
+        description: Instagram profile of the establishment.
+      - name: twitter
+        description: Twitter handle of the establishment.
+      - name: aberto_sempre
+        description: Indicates whether the establishment operates continuously, 24/7.
+      - name: diretor_clinico_cpf
+        description: CPF number of the clinical director, important for legal identification.
+      - name: diretor_clinico_conselho
+        description: Professional council registration number of the clinical director.
+      - name: data_atualizao_registro
+        description: Date when the record was last updated.
+      - name: usuario_atualizador_registro
+        description: Username or identifier of the person who last updated the record.
+      - name: mes_particao
+        description: Month used for data partitioning purposes.
+      - name: ano_particao
+        description: Year used for data partitioning purposes.
+      - name: data_particao
+        description: Specific date used for data partitioning.
+      - name: data_carga
+        description: Date when data was loaded into the database.
+      - name: data_snapshot
+        description: Date when the data snapshot was taken.
