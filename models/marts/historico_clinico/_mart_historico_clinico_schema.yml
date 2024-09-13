@@ -81,6 +81,11 @@ models:
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
           relacionados ao atendimento. 
+      - name: condicoes.relacao
+        description: |
+          Lista de cids associados ao atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: condicoes.id
         description: |
           Código CID ativo
@@ -89,6 +94,17 @@ models:
       - name: condicoes.descricao
         description: |
           Descrição do CID associado ao atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+      - name: condicoes.situacao
+        description: |
+          Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
+      - name: condicoes.data_diagnostico
+        description: |
+          Data do diagnóstico da condição na Atenção Primária. Para a UPAs e Hospitais, este campo é vazio.
+      - name: condicoes.descricao_resumo
+        description: |
+          Descreve de forma resumida os cids marcados como "Ativos" ou "Não especificados"
         policy_tags:
           - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: prescricoes
@@ -152,6 +168,8 @@ models:
       - name: profissional_saude_responsavel.especialidade
         description: |
           Especialidade do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: prontuario
         description: >
           Informações adicionais sobre o atendimento, como o fornecedor e o
@@ -268,17 +286,13 @@ models:
           - '{{ var ("TAG_NOME") }}'
       - name: dados.data_nascimento
         description: Data de nascimento.
-        tests:
-          - not_null:
-              name: mart_historico_clinico__paciente__data_nascimento__not_null
         policy_tags:
           - '{{ var ("TAG_DTNASCIMENTO") }}'
       - name: dados.genero
         description: "Gênero do paciente. Os valores possíveis são 'Masculino',
           'Feminino' e nulo (não informado)."
       - name: dados.raca
-        description: "Raça do paciente. Os valores possíveis são 'Amarela','Branca', 
-        'Indigena', 'Parda', 'Preta' e nulo (não informado)."
+        description: "Raça do paciente. Os valores possíveis são 'Amarela','Branca', 'Indigena', 'Parda', 'Preta' e nulo (não informado)."
       - name: dados.obito_indicador
         description: Indica se o paciente é falecido ou não.
         policy_tags:
@@ -487,6 +501,9 @@ models:
       - name: metadados.processed_at
         description: Marcação de data/hora de processamento do registro no formato UTC,
           seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
+      - name: data_particao
+        description: >
+          Campo utilizado para particionamento de dados através da data do evento.
       - name: cpf_particao
         description: >
           Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.

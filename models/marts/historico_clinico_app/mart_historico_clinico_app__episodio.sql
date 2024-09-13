@@ -21,7 +21,7 @@ with
     episodios_com_cid as (
         select id_episodio
         from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
-        where cid.id is not null
+        where cid.id is not null and cid.situacao <> 'RESOLVIDO'
     ),
     todos_episodios as (
         select
@@ -72,6 +72,9 @@ with
             array(
                 select descricao from unnest(condicoes) where descricao is not null
             ) as active_cids,
+            array(
+                select distinct resumo from unnest(condicoes) where resumo is not null and resumo != ''
+            ) as active_cids_summarized,
             case
                 when
                     profissional_saude_responsavel.nome is not null

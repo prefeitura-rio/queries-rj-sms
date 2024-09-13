@@ -330,15 +330,26 @@ with
     cid_distinct as (
         select distinct
             episodios.gid as id,
-            episodios.cid_codigo as cid_id,
+            IF(episodios.cid_codigo is null, c.id_subcategoria, episodios.cid_codigo) as cid_id,
             episodios.cid_nome as cid_nome,
         from episodios
+        left join (
+            select distinct id_subcategoria, subcategoria_descricao
+            from {{ ref('raw_datasus__cid10') }} 
+        ) as c
+        on c.subcategoria_descricao = episodios.cid_nome
+        where (cid_codigo is not null or cid_nome is not null)
     ),
     cid_grouped as (
         select
             id,
             array_agg(
-                struct(cid_id as id, cid_nome as descricao) ignore nulls
+                struct(
+                    cid_id as id,
+                    cid_nome as descricao,
+                    "ATIVO" as situacao,
+                    "" as data_diagnostico
+                ) ignore nulls
             ) as condicoes,
         from cid_distinct
         group by 1
@@ -449,4 +460,5 @@ with
         left join cid_grouped on atendimento_struct.id = cid_grouped.id
     )
 
-select * from final
+select *
+from final

@@ -13,10 +13,9 @@
 }}
 
 
-{% set partitions_to_replace = [
-    "current_date('America/Sao_Paulo')",
-    "date_sub(current_date('America/Sao_Paulo'), interval 1 day)",
-] %}
+{% set partitions_to_replace = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
+) %}
 
 
 with
@@ -68,17 +67,37 @@ with
     condicoes as (
         select
             gid as fk_atendimento,
-            json_extract_scalar(condicao_json, "$.cod_cid10") as id
+
+            json_extract_scalar(condicao_json, "$.cod_cid10") as id,
+
+            case
+                when json_extract_scalar(condicao_json, "$.estado") = "N.E"
+                then "NAO ESPECIFICADO"
+                else json_extract_scalar(condicao_json, "$.estado")
+            end as situacao,
+
+            json_extract_scalar(
+                condicao_json, "$.data_diagnostico"
+            ) as data_diagnostico,
+
         from bruto_atendimento, unnest(json_extract_array(condicoes)) as condicao_json
+        order by fk_atendimento, data_diagnostico desc
     ),
+
     dim_condicoes_atribuidas as (
         select
             fk_atendimento,
             array_agg(
-                struct(condicoes.id as id, cid_descricao.descricao as descricao)
+                struct(
+                    condicoes.id as id,
+                    cid_descricao.subcategoria_descricao as descricao,
+                    condicoes.situacao as situacao,
+                    condicoes.data_diagnostico as data_diagnostico
+                )
+                order by data_diagnostico desc, subcategoria_descricao
             ) as condicoes
         from condicoes
-        left join cid_descricao on condicoes.id = cid_descricao.codigo_cid
+        left join cid_descricao on condicoes.id = cid_descricao.id_subcategoria
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -132,7 +151,7 @@ with
                     when vacinas != '[]'
                     then 'Vacinação'
                     when datahora_marcacao is null
-                    then 'Demanda Expontânea'
+                    then 'Demanda Espontânea'
                     else 'Agendada'
                 end as string
             ) as tipo,
@@ -222,6 +241,6 @@ with
 select *
 from episodios_validos
 
-{% if is_incremental() -%}
-    where data_particao in ({{ partitions_to_replace | join(",") }})
+{% if is_incremental() %}
+    where data_particao >= {{ partitions_to_replace }}
 {% endif %}
