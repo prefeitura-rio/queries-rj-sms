@@ -12,14 +12,9 @@
     )
 }}
 
-{% set partition_to_replace = (
-    "current_date('America/Sao_Paulo')"
-) %}
-
-
 with
     -- sources
-    --- Vitacare
+    -- - Vitacare
     vitacare_atual as (
         select * from {{ ref("int_estoque__posicao_hoje_vitacare_com_zerados_remume") }}
     ),
@@ -37,7 +32,7 @@ with
         from vitacare_dias_anteriores
     ),
 
-    --- Vitai
+    -- - Vitai
     vitai_atual as (
         select * from {{ ref("int_estoque__posicao_hoje_vitai_com_zerados_remume") }}
     ),
@@ -55,7 +50,7 @@ with
         from vitai_dias_anteriores
     ),
 
-    --- TPC
+    -- - TPC
     particao_mais_recente as (
         select max(data_particao) as data_particao
         from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
@@ -168,11 +163,16 @@ with
         select
             pos.*,
             if(remume.id_material is null, "nao", "sim") as material_remume_indicador,
-            remume_listagem_basico_indicador as material_remume_listagem_basico_indicador,
-            remume_listagem_uso_interno_indicador as material_remume_listagem_uso_interno_indicador,
-            remume_listagem_hospitalar_indicador as material_remume_listagem_hospitalar_indicador,
-            remume_listagem_antiseptico_indicador as material_remume_listagem_antiseptico_indicador,
-            remume_listagem_estrategico_indicador as material_remume_listagem_estrategico_indicador,
+            remume_listagem_basico_indicador
+            as material_remume_listagem_basico_indicador,
+            remume_listagem_uso_interno_indicador
+            as material_remume_listagem_uso_interno_indicador,
+            remume_listagem_hospitalar_indicador
+            as material_remume_listagem_hospitalar_indicador,
+            remume_listagem_antiseptico_indicador
+            as material_remume_listagem_antiseptico_indicador,
+            remume_listagem_estrategico_indicador
+            as material_remume_listagem_estrategico_indicador,
         from posicao_consolidada as pos
         left join
             {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
@@ -180,48 +180,52 @@ with
             on pos.id_cnes = remume.id_cnes
             and pos.id_material = remume.id_material
 
+    ),
+
+    final as (
+        select
+            -- Primary Key
+            -- Foreign Keys
+            id_cnes,
+            id_material,
+            id_lote,
+            concat(id_cnes, "-", id_material) as id_cnes_material,
+            case
+                when id_cnes = 'tpc'  -- TPC
+                then "-"
+                when estabelecimento_tipo = 'CENTRO DE SAUDE/UNIDADE BASICA'
+                then concat("ap-", estabelecimento_area_programatica, "-", id_material)
+                when estabelecimento_tipo <> 'CENTRO DE SAUDE/UNIDADE BASICA'
+                then concat("cnes-", id_cnes, "-", id_material)
+                else "-"
+            end as id_curva_abc,
+
+            -- Common Fields
+            material_descricao,
+            material_unidade,
+            estoque_secao,
+            estoque_reservado_para_abastecimento,
+            lote_data_vencimento,
+            material_quantidade,
+            material_valor_unitario,
+            material_valor_total,
+            material_remume_indicador,
+            material_remume_listagem_basico_indicador,
+            material_remume_listagem_uso_interno_indicador,
+            material_remume_listagem_hospitalar_indicador,
+            material_remume_listagem_antiseptico_indicador,
+            material_remume_listagem_estrategico_indicador,
+
+            -- Metadata
+            sistema_origem,
+            data_particao,
+            data_snapshot,
+            data_carga,
+        from posicao_consolidada_com_remume
     )
 
-select
-    -- Primary Key
-    -- Foreign Keys
-    id_cnes,
-    id_material,
-    id_lote,
-    concat(id_cnes, "-", id_material) as id_cnes_material,
-    case
-        when id_cnes = 'tpc'  -- TPC
-        then "-"
-        when estabelecimento_tipo = 'CENTRO DE SAUDE/UNIDADE BASICA'
-        then concat("ap-", estabelecimento_area_programatica, "-", id_material)
-        when estabelecimento_tipo <> 'CENTRO DE SAUDE/UNIDADE BASICA'
-        then concat("cnes-", id_cnes, "-", id_material)
-        else "-"
-    end as id_curva_abc,
-
-    -- Common Fields
-    material_descricao,
-    material_unidade,
-    estoque_secao,
-    estoque_reservado_para_abastecimento,
-    lote_data_vencimento,
-    material_quantidade,
-    material_valor_unitario,
-    material_valor_total,
-    material_remume_indicador,
-    material_remume_listagem_basico_indicador,
-    material_remume_listagem_uso_interno_indicador,
-    material_remume_listagem_hospitalar_indicador,
-    material_remume_listagem_antiseptico_indicador,
-    material_remume_listagem_estrategico_indicador,
-    
-    -- Metadata
-    sistema_origem,
-    data_particao,
-    data_snapshot,
-    data_carga,
-from posicao_consolidada_com_remume
-
+select *
+from final
 {% if is_incremental() %}
-    where data_particao = {{ partitions_to_replace }}
+    where data_particao = current_date('America/Sao_Paulo')
 {% endif %}
