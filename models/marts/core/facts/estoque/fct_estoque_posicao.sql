@@ -2,6 +2,13 @@
     config(
         alias="posicao",
         schema="saude_estoque",
+        labels = {
+            "dominio": "estoque",
+            "dado_publico": "nao",
+            "dado_pessoal": "nao",
+            "dado_anonimizado": "nao",
+            "dado_sensivel_saude": "nao"
+        },
         materialized="incremental",
         incremental_strategy="insert_overwrite",
         partition_by={

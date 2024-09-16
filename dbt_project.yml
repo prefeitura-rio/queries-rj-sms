@@ -131,6 +131,7 @@ models:
           dado_pessoal: sim
           dado_anonimizado: nao
           dado_sensivel_saude: sim
+          dominio: historico_clinico
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
         +tags: "vitai"
@@ -139,6 +140,7 @@ models:
           dado_pessoal: sim
           dado_anonimizado: nao
           dado_sensivel_saude: sim
+          dominio: historico_clinico
       osinfo:
         +schema: brutos_osinfo
         +tags: "daily"
@@ -180,6 +182,7 @@ models:
             dado_pessoal: sim
             dado_anonimizado: nao
             dado_sensivel_saude: sim
+            dominio: historico_clinico
           paciente:
             +tags: "paciente"
     marts:
