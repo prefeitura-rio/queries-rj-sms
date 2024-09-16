@@ -24,7 +24,7 @@ models:
         description: Data de vecimento do lote
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
-        tests:
+        data_tests:
           - dbt_expectations.expect_column_values_to_not_be_null:
               name: raw_estoque_central_tpc__estoque_posicao__material_quantidade__not_null
               config:
@@ -35,7 +35,7 @@ models:
       - name: material_valor_total
         description: Valor em reais somando todas as unidades disponíveis do
           medicamento/insumo
-        tests:
+        data_tests:
           - dbt_expectations.expect_column_sum_to_be_between:
               name: raw_estoque_central_tpc__estoque_posicao__material_valor_total__between
               min_value: 60000000

@@ -5,7 +5,7 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        tests:
+        data_tests:
           - unique:
               name: raw_sheets__estabelecimento_auxiliar__id_cnes__unique
           - relationships:
@@ -46,7 +46,7 @@ models:
         description: Este é o identificador único para cada material. É usado para
           rastrear e gerenciar materiais no sistema.
         data_type: string
-        tests:
+        data_tests:
           - unique:
               name: raw_sheets__material_mestre__id_material__unique
       - name: descricao
@@ -263,7 +263,7 @@ models:
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_EMAIL") }}'
-        tests:
+        data_tests:
           - unique:
               name: raw_sheets__gerenciamento_acesso_looker_farmacia__email__unique
               config:
