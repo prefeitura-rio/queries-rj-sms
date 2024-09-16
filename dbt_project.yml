@@ -105,18 +105,40 @@ models:
           dado_pessoal: nao
           dado_anonimizado: nao
           dado_sensivel_saude: nao
+          dominio: estoque
       historico_clinico_integrado:
         +schema: brutos_historico_clinico_integrado
         +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_anonimizado: nao
+          dado_sensivel_saude: sim
+          dominio: historico_clinico
       plataforma_smsrio:
         +schema: brutos_plataforma_smsrio
         +tags: ["smsrio", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_anonimizado: nao
+          dado_sensivel_saude: nao
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_anonimizado: nao
+          dado_sensivel_saude: sim
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
         +tags: "vitai"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_anonimizado: nao
+          dado_sensivel_saude: sim
       osinfo:
         +schema: brutos_osinfo
         +tags: "daily"
@@ -128,12 +150,27 @@ models:
       seguir_em_frente:
         +schema: brutos_seguir_em_frente
         +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_anonimizado: nao
+          dado_sensivel_saude: sim
       sheets:
         +schema: brutos_sheets
         +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_anonimizado: nao
+          dado_sensivel_saude: nao
       sih:
         +schema: brutos_sih
         +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_anonimizado: nao
+          dado_sensivel_saude: nao
     intermediate:
         +materialized: ephemeral
         historico_clinico:
@@ -151,19 +188,41 @@ models:
           +tags: "core"
           dimensions:
             +schema: saude_dados_mestres
+            +labels:
+              dado_publico: nao
+              dado_pessoal: nao
+              dado_anonimizado: nao
+              dado_sensivel_saude: nao
           facts:
             sisreg:
               +schema: saude_sisreg
               +tags: "daily"
+              +labels:
+                dado_publico: nao
+                dado_pessoal: nao
+                dado_anonimizado: nao
+                dado_sensivel_saude: nao
             estoque:
               +schema: saude_estoque
               +tags: "daily"
+              +labels:
+                dado_publico: nao
+                dado_pessoal: sim
+                dado_anonimizado: nao
+                dado_sensivel_saude: sim
+                dominio: estoque
         dengue:
             +schema: projeto_dengue
             +tags: "daily"
         estoque:
             +schema: projeto_estoque
             +tags: ["daily", "estoque"]
+            +labels:
+              dado_publico: nao
+              dado_pessoal: sim
+              dado_anonimizado: nao
+              dado_sensivel_saude: sim
+              dominio: estoque
         gerenciamento:
             +tags: "daily"
         historico_clinico:
@@ -173,6 +232,7 @@ models:
               dado_pessoal: sim
               dado_anonimizado: nao
               dado_sensivel_saude: sim
+              dominio: historico_clinico
         historico_clinico_app:
             +tags: ["daily", "hci_app"]
             +labels:
@@ -180,6 +240,7 @@ models:
               dado_pessoal: sim
               dado_anonimizado: nao
               dado_sensivel_saude: sim
+              dominio: historico_clinico
         seguir_em_frente:
             +schema: projeto_seguir_em_frente
             +tags: "daily"
@@ -188,6 +249,7 @@ models:
               dado_pessoal: sim
               dado_anonimizado: nao
               dado_sensivel_saude: sim
+              dominio: seguir_em_frente
 
 tests:
   rj_sms:
