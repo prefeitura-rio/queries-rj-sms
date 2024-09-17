@@ -9,8 +9,7 @@
             "dado_anonimizado": "nao",
             "dado_sensivel_saude": "nao"
         },
-        materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        materialized="table",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -22,66 +21,56 @@
 with
     -- sources
     -- - Vitacare
-    vitacare_atual as (
-        select * from {{ ref("int_estoque__posicao_hoje_vitacare_com_zerados_remume") }}
+    vitacare_atual_zerados as (
+        select * from {{ ref("int_estoque__posicao_hoje_vitacare_zerados") }}
     ),
-    vitacare_dias_anteriores as (
+    vitacare_posicao_historico as (
         select *
         from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
-        where data_particao < current_date('America/Sao_Paulo')
     ),
 
     vitacare_completa as (
         select *
-        from vitacare_atual
+        from vitacare_atual_zerados
         union all
         select *
-        from vitacare_dias_anteriores
+        from vitacare_posicao_historico
     ),
 
     -- - Vitai
-    vitai_atual as (
-        select * from {{ ref("int_estoque__posicao_hoje_vitai_com_zerados_remume") }}
+    vitai_atual_zerados as (
+        select * from {{ ref("int_estoque__posicao_hoje_vitai_zerados") }}
     ),
-    vitai_dias_anteriores as (
+    vitai_posicao_historico as (
         select *
         from {{ ref("raw_prontuario_vitai__estoque_posicao") }}
-        where data_particao < current_date('America/Sao_Paulo')
     ),
 
     vitai_completa as (
         select *
-        from vitai_atual
+        from vitai_atual_zerados
         union all
         select *
-        from vitai_dias_anteriores
+        from vitai_posicao_historico
     ),
 
     -- - TPC
-    particao_mais_recente as (
-        select max(data_particao) as data_particao
-        from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
+    tpc_atual_zerados as (
+        select * from {{ ref("int_estoque__posicao_hoje_tpc_zerados") }}
     ),
 
-    tpc_atual as (
-        select * from {{ ref("int_estoque__posicao_hoje_tpc_com_zerados_remume") }}
-    ),
-
-    tpc_dias_anteriores as (
+    tpc_posicao_historico as (
         select *
         from {{ ref("raw_estoque_central_tpc__estoque_posicao") }}
-        where
-            data_particao < date_sub(
-                (select data_particao from particao_mais_recente), interval 1 day
-            )
     ),
+
 
     tpc_completa as (
         select *
-        from tpc_atual
+        from tpc_atual_zerados
         union all
         select *
-        from tpc_dias_anteriores
+        from tpc_posicao_historico
     ),
 
     -- constroi a posicação para cada source
@@ -233,6 +222,3 @@ with
 
 select *
 from final
-{% if is_incremental() %}
-    where data_particao = current_date('America/Sao_Paulo')
-{% endif %}

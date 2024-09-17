@@ -1,6 +1,5 @@
 -- contem a data da poiscao mais recente de cada estabelecimento
 with
-    posicao as (select * from {{ ref("fct_estoque_posicao") }}),
 
     estabelecimentos as (select * from {{ ref("dim_estabelecimento") }}),
 
