@@ -12,7 +12,7 @@
 }}
 
 {% set partitions_to_replace = (
-    "date_sub(current_date('America/Sao_Paulo'), interval 5 day)"
+    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
 ) %}
 
 with
@@ -107,7 +107,7 @@ with
             safe_cast(source_updated_at as datetime) as updated_at,
             safe_cast(datalake_loaded_at as datetime) as loaded_at,
             safe_cast(
-                safe_cast(source_updated_at as datetime) as date
+                safe_cast(data__datahora_fim_atendimento as datetime) as date
             ) as data_particao,
 
         from bruto_atendimento_eventos_ranqueados
@@ -115,6 +115,4 @@ with
 
 select *
 from final
-{% if is_incremental() %}
-    where data_particao >= {{ partitions_to_replace }}
-{% endif %}
+{% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}

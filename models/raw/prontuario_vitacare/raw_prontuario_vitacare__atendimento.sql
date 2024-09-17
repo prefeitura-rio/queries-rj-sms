@@ -15,7 +15,7 @@
 }}
 
 {% set partitions_to_replace = (
-    "date_sub(current_date('America/Sao_Paulo'), interval 5 day)"
+    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
 ) %}
 
 with
