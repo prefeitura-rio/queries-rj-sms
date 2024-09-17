@@ -5,13 +5,7 @@ sources:
     schema: brutos_cnes_ftp
     tables:
       - name: estabelecimento
-
-  - name: brutos_datasus
-    database: rj-sms-dev
-    schema: brutos_datasus
-    tables:
-      - name: tipo_gestao
-
+      
   - name: subgeral_padronizacoes
     database: rj-sms-sandbox
     schema: subgeral_padronizacoes

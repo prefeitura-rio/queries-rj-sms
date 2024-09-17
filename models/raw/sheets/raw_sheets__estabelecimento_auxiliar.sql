@@ -16,19 +16,26 @@ select
     format("%07d", cast(id_cnes as int64)) as id_cnes,  -- fix cases where 0 on the left is lost
 
     -- Common fields
+    indicador_estabelecimento_sms,
+
     if(agrupador_sms = "nan", null, agrupador_sms) as agrupador_sms,
     if(tipo_sms = "nan", null, tipo_sms) as tipo_sms,
     if(tipo_sms_simplificado = "nan", null, tipo_sms_simplificado) as tipo_sms_simplificado,
     safe_cast(nome_fantasia as string) as nome_fantasia,
     if(nome_limpo = "nan", null, nome_limpo) as nome_limpo,
-    if(sigla = "nan", null, sigla) as nome_sigla,
-    if(distrito_sanitario = "nan", null, distrito_sanitario) as area_programatica,
+    if(nome_sigla = "nan", null, nome_sigla) as nome_sigla,
+    if(area_programatica = "nan", null, area_programatica) as area_programatica,
     if(prontuario_tem = "nan", null, prontuario_tem) as prontuario_tem,
     if(prontuario_versao = "nan", null, prontuario_versao) as prontuario_versao,
     if(prontuario_estoque_tem_dado = "nan", null, prontuario_estoque_tem_dado) as prontuario_estoque_tem_dado,
     if(prontuario_estoque_motivo_sem_dado = "nan", null, prontuario_estoque_motivo_sem_dado) as prontuario_estoque_motivo_sem_dado,
     if(responsavel_sms = "nan", null, responsavel_sms) as responsavel_sms,
     if(administracao = "nan", null, administracao) as administracao,
+
+    tipo_unidade_subgeral,
+    tipo_unidade_agrupado_subgeral,
+    esfera_subgeral,
+    area_programatica_descr
 
 from source
 
