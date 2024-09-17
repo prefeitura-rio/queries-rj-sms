@@ -122,8 +122,8 @@ with
         queixa_final.gid_profissional,
         CASE 
         WHEN edit_distance(left(queixa_final.queixa,char_length(queixa_inicial.queixa)),queixa_inicial.queixa) <= (char_length(queixa_inicial.queixa))/2
-            THEN queixa_final.queixa
-        ELSE CONCAT(queixa_inicial.queixa,'\n',queixa_final.queixa)
+            THEN upper(trim(queixa_final.queixa))
+        ELSE CONCAT(upper(trim(queixa_inicial.queixa)),'\n',upper(trim(queixa_final.queixa)))
         END as queixa
     from 
         (select distinct gid_boletim from queixas_all ) as boletins
@@ -465,9 +465,9 @@ with
 
             -- Motivo e Desfecho
             safe_cast(
-                trim(atendimento_struct.motivo_atendimento) as string
+                atendimento_struct.motivo_atendimento as string
             ) as motivo_atendimento,
-            safe_cast(trim(desfecho_atendimento) as string) as desfecho_atendimento,
+            safe_cast(desfecho_atendimento as string) as desfecho_atendimento,
 
             -- Condições
             cid_grouped.condicoes,
