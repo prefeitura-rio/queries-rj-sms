@@ -10,7 +10,8 @@ with
     -- Tabelas uteis para o episodio
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Desfecho do atendimento
-    alta_adm as (
+
+    alta_adm as ( -- Alta administrativa (consultas)
         select 
             gid_boletim,
             {{ process_null("alta_tipo_detalhado") }} as alta_adm_tipo,
@@ -18,7 +19,7 @@ with
         from {{ ref("raw_prontuario_vitai__alta") }}
         qualify row_number() over ( partition by gid_boletim order by datahora desc) = 1
     ),
-    alta_internacao as (
+    alta_internacao as ( -- Resumo de alta (internação)
         select
             resumo_alta.gid_boletim,
             resumo_alta.resumo_alta_datahora,
@@ -98,13 +99,12 @@ with
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabela de consultas
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    -- Como cada atendimento appenda informações no boletim, pegamos a queixa do
-    -- ultimo atendimento
+    -- Se o ultimo atendimento conter as informações de queixa do primeiro, puxamos apenas o ultimo. Caso contrário, concatenamos o primeiro e o segundo 
     queixas_all as 
     (
     select
         gid_boletim,
-        queixa,
+        trim(upper(queixa)) as queixa,
         inicio_datahora,
         gid_profissional,
         row_number() over (
@@ -120,7 +120,7 @@ with
     select distinct 
         boletins.gid_boletim, 
         queixa_final.gid_profissional,
-        CASE 
+        CASE -- compara os caracteres que deveriam ser da queixa inicial e calcula se distancia de Levenshtein é pequena o suficiente
         WHEN edit_distance(left(queixa_final.queixa,char_length(queixa_inicial.queixa)),queixa_inicial.queixa) <= (char_length(queixa_inicial.queixa))/2
             THEN upper(trim(queixa_final.queixa))
         ELSE CONCAT(upper(trim(queixa_inicial.queixa)),'\n',upper(trim(queixa_final.queixa)))
@@ -128,24 +128,20 @@ with
     from 
         (select distinct gid_boletim from queixas_all ) as boletins
     left join (
-
         select gid_boletim, queixa, gid_profissional
         from queixas_all 
         where ordenacao_desc = 1
-
     ) as queixa_final
-        on queixa_final.gid_boletim = boletins.gid_boletim
+    on queixa_final.gid_boletim = boletins.gid_boletim
     left join (
-
         select gid_boletim, queixa
         from queixas_all 
         where ordenacao_asc = 1
-        
     ) as queixa_inicial
-        on queixa_inicial.gid_boletim = boletins.gid_boletim
+    on queixa_inicial.gid_boletim = boletins.gid_boletim
 
     ),
-    -- Monta estrurra array aninhada de profissionais do episódio
+    -- Monta estrutura array aninhada de profissionais do episódio
     profissional_distinct as (
         select distinct
             queixa_final.gid_boletim as gid_boletim,
@@ -157,6 +153,7 @@ with
         from queixa_final
         left join profissional on queixa_final.gid_profissional = profissional.gid
     ),
+    -- Tabela final de consulta
     consulta as (
         select
             boletim.*,
