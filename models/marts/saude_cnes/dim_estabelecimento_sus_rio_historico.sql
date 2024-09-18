@@ -11,7 +11,7 @@ WITH
 versao_atual AS (
     SELECT MAX(data_particao) AS versao 
     FROM {{ ref("raw_cnes_web__tipo_unidade") }}
-),
+), -- OBS: Não faz mais sentido pegar a versão de alguma outra tabela, sem ser tipo_unidade?
 
 -- Obtendo todos os estabelecimentos do MRJ que possuem vinculo com o SUS
 estabelecimentos_brutos AS (
@@ -80,35 +80,52 @@ estabelecimentos_atributos_cnes_web AS (
     WHERE data_particao = (SELECT versao FROM versao_atual)
 ),
 
--- Obtendo atributos dos estabelecimentos via tabela proveniente da SUBGERAL
-estabelecimentos_atributos_subgeral AS (
-    SELECT 
-        ESFERA AS esfera,
-        AP AS id_ap,
-        AP_TITULO AS ap,
-        CNES AS id_estabelecimento_cnes,
-        TIPO_UNIDADE_AGRUPADO AS tipo_unidade_agrupado
-    FROM {{ source("subgeral_padronizacoes", "padronizacao_estabelecimentos") }}
-),
-
--- Obtendo atributos dos estabelecimentos via tabela proveniente da DIT
-estabelecimentos_atributos_dit AS (
-    SELECT * 
+-- Obtendo atributos auxiliares dos estabelecimentos via classificação interna construída pela SMS
+estabelecimentos_atributos AS (
+    SELECT
+        id_cnes,
+        indicador_estabelecimento_sms,
+        tipo_unidade_subgeral,
+        tipo_unidade_agrupado_subgeral,
+        esfera_subgeral,
+        area_programatica,
+        area_programatica_descr,
+        agrupador_sms,
+        tipo_sms,
+        tipo_sms_simplificado,
+        nome_limpo,
+        nome_sigla,
+        prontuario_tem,
+        prontuario_versao,
+        responsavel_sms,
+        administracao,
+        prontuario_estoque_tem_dado,
+        prontuario_estoque_motivo_sem_dado
     FROM {{ ref("raw_sheets__estabelecimento_auxiliar") }}
 ),
 
 -- Obtendo atributos de contato para os estabelecimentos
 contatos_aps AS (
-    SELECT * 
+    SELECT
+        id_cnes,
+        telefone,
+        email,
+        facebook,
+        instagram,
+        twitter
     FROM {{ ref("raw_plataforma_smsrio__estabelecimento_contato") }}
 ),
 
 -- Carregando tabelas utilizadas para mapear códigos em suas descrições textuais
 tp_gestao AS (
-    SELECT 
-        DISTINCT id_tipo_gestao AS id_tipo_gestao,
-        UPPER(tipo_gestao_descr) AS tipo_gestao_descr
-    FROM {{ source("brutos_datasus", "tipo_gestao") }}
+    SELECT * FROM UNNEST([
+        STRUCT("D" AS id_tipo_gestao, "DUPLA" AS tipo_gestao_descr),
+        STRUCT("E", "ESTADUAL"),
+        STRUCT("M", "MUNICIPAL"),
+        STRUCT("Z", "SEM GESTAO"),
+        STRUCT("S", "SEM GESTAO"),
+        STRUCT("-Z", "NAO INFORMADO")
+    ])
 ),
 
 nat_jur AS (
@@ -139,118 +156,181 @@ turno AS (
 -- Juntando todos os atributos e mappings, para enriquecer a tabela final de estabelecimentos
 estabelecimentos_final AS (
     SELECT
-        brutos.*,
-        cnes_web.*,
-        subgeral.tipo_unidade_agrupado,
-        subgeral.esfera,
-        subgeral.id_ap,
-        subgeral.ap,
+        -- Brutos FTP DATASUS
+        brutos.ano,
+        brutos.mes,
+        brutos.cep,
+        brutos.id_estabelecimento_cnes,
+        brutos.id_natureza_juridica,
+        brutos.tipo_gestao,
+        brutos.tipo_unidade,
+        brutos.tipo_turno,
+        brutos.indicador_vinculo_sus,
+        brutos.indicador_atendimento_internacao_sus,
+        brutos.indicador_atendimento_ambulatorial_sus,
+        brutos.indicador_atendimento_sadt_sus,
+        brutos.indicador_atendimento_urgencia_sus,
+        brutos.indicador_atendimento_outros_sus,
+        brutos.indicador_atendimento_vigilancia_sus,
+        brutos.indicador_atendimento_regulacao_sus,
+
+        -- CNES Web
+        cnes_web.nome_razao_social,
+        cnes_web.nome_fantasia,
+        cnes_web.cnpj_mantenedora,
+        cnes_web.endereco_bairro,
+        cnes_web.endereco_logradouro,
+        cnes_web.endereco_numero,
+        cnes_web.endereco_complemento,
+        cnes_web.endereco_latitude,
+        cnes_web.endereco_longitude,
+        cnes_web.id_motivo_desativacao,
+        cnes_web.id_unidade,
+        cnes_web.aberto_sempre,
+        cnes_web.diretor_clinico_cpf,
+        cnes_web.diretor_clinico_conselho,
+        cnes_web.data_atualizao_registro,
+        cnes_web.usuario_atualizador_registro,
+        cnes_web.mes_particao,
+        cnes_web.ano_particao,
+        cnes_web.data_particao,
+        cnes_web.data_carga,
+        cnes_web.data_snapshot,
+        cnes_web.email AS email_cnes,
+        SPLIT(cnes_web.telefone, "/") AS telefone_cnes,
+
+        -- Atributos criados in house
+        estabelecimentos_atributos.indicador_estabelecimento_sms,
+        estabelecimentos_atributos.tipo_unidade_subgeral AS tipo_unidade_alternativo,
+        estabelecimentos_atributos.tipo_unidade_agrupado_subgeral AS tipo_unidade_agrupado,
+        estabelecimentos_atributos.esfera_subgeral AS esfera,
+        estabelecimentos_atributos.area_programatica AS id_ap,
+        estabelecimentos_atributos.area_programatica_descr AS ap,
+        estabelecimentos_atributos.agrupador_sms,
+        estabelecimentos_atributos.tipo_sms,
+        estabelecimentos_atributos.tipo_sms_simplificado,
+        estabelecimentos_atributos.nome_limpo,
+        estabelecimentos_atributos.nome_sigla,
+        estabelecimentos_atributos.prontuario_tem,
+        estabelecimentos_atributos.prontuario_versao,
+        estabelecimentos_atributos.responsavel_sms,
+        estabelecimentos_atributos.administracao,
+        estabelecimentos_atributos.prontuario_estoque_tem_dado,
+        estabelecimentos_atributos.prontuario_estoque_motivo_sem_dado,
+            REGEXP_REPLACE(
+            estabelecimentos_atributos.nome_limpo,
+            r'(CF |CSE |CMS |UPA 24h |POLICLINICA |HOSPITAL MUNICIPAL |COORD DE EMERGENCIA REGIONAL CER |MATERNIDADE )',
+            ''
+        ) AS nome_complemento,
+
+        -- Mappings oficiais do CNES / DATASUS
         tp_gestao.tipo_gestao_descr,
         nat_jur.natureza_juridica_descr,
         tp_unidade.tipo_unidade_descr,
         turno.turno_atendimento,
-        SPLIT(cnes_web.telefone, "/") AS telefone_cnes,
+
+        -- Informações de Contato
         contatos_aps.telefone AS telefone_aps,
-        cnes_web.email AS email_cnes,
-        contatos_aps.email AS email_aps,
         contatos_aps.facebook,
         contatos_aps.instagram,
         contatos_aps.twitter,
-        estabelecimentos_atributos_dit.agrupador_sms,
-        estabelecimentos_atributos_dit.tipo_sms,
-        estabelecimentos_atributos_dit.tipo_sms_simplificado,
-        estabelecimentos_atributos_dit.nome_limpo,
-        REGEXP_REPLACE(
-            estabelecimentos_atributos_dit.nome_limpo,
-            r'(CF |CSE |CMS |UPA 24h |POLICLINICA |HOSPITAL MUNICIPAL |COORD DE EMERGENCIA REGIONAL CER |MATERNIDADE )',
-            ''
-        ) AS nome_complemento,
-        estabelecimentos_atributos_dit.nome_sigla,
-        estabelecimentos_atributos_dit.prontuario_tem,
-        estabelecimentos_atributos_dit.prontuario_versao,
-        estabelecimentos_atributos_dit.responsavel_sms,
-        estabelecimentos_atributos_dit.administracao,
-        estabelecimentos_atributos_dit.prontuario_estoque_tem_dado,
-        estabelecimentos_atributos_dit.prontuario_estoque_motivo_sem_dado,
-        COALESCE(
-            estabelecimentos_atributos_dit.area_programatica, cnes_web.id_distrito_sanitario
-        ) AS id_distrito_sanitario_corrigido,  
-        CASE 
-            WHEN (cnes_web.nome_fantasia LIKE 'SMS %' OR cnes_web.nome_fantasia LIKE 'SMSDC %' OR cnes_web.nome_fantasia = 'RIOSAUDE') THEN 1
-            ELSE 0 
-        END AS indicador_estabelecimento_sms
+        contatos_aps.email AS email_aps,
+
     FROM estabelecimentos_brutos AS brutos
     LEFT JOIN estabelecimentos_atributos_cnes_web AS cnes_web ON brutos.id_estabelecimento_cnes = cnes_web.id_cnes
-    LEFT JOIN estabelecimentos_atributos_subgeral AS subgeral ON brutos.id_estabelecimento_cnes = subgeral.id_estabelecimento_cnes
     LEFT JOIN nat_jur ON brutos.id_natureza_juridica = nat_jur.id_natureza_juridica
     LEFT JOIN tp_unidade ON brutos.tipo_unidade = tp_unidade.id_tipo_unidade
     LEFT JOIN turno ON brutos.tipo_turno = turno.id_turno_atendimento
     LEFT JOIN tp_gestao ON brutos.tipo_gestao = tp_gestao.id_tipo_gestao
-    LEFT JOIN estabelecimentos_atributos_dit ON brutos.id_estabelecimento_cnes = estabelecimentos_atributos_dit.id_cnes
+    LEFT JOIN estabelecimentos_atributos ON brutos.id_estabelecimento_cnes = estabelecimentos_atributos.id_cnes
     LEFT JOIN contatos_aps ON brutos.id_estabelecimento_cnes = contatos_aps.id_cnes
 )
 
 -- Seleção final
 SELECT 
+    -- Identificação
     ano,
     mes,
-    esfera,
-    id_distrito_sanitario_corrigido AS area_programatica,
-    id_ap,
-    ap,
-    cep AS endereco_cep,
     id_estabelecimento_cnes AS id_cnes,
+    id_unidade,
     nome_razao_social,
     nome_fantasia,
+    nome_limpo,
+    nome_sigla,
+    nome_complemento,
+    cnpj_mantenedora,
+
+    -- Responsabilização
+    esfera,
     id_natureza_juridica,
     natureza_juridica_descr,
     tipo_gestao,
     tipo_gestao_descr,
-    tipo_unidade AS id_tipo_unidade,
-    tipo_unidade_descr AS tipo,  -- Renomear para tipo_cnes
-    tipo_unidade_agrupado,
+    responsavel_sms,
+    administracao,
+    diretor_clinico_cpf,
+    diretor_clinico_conselho,
+
+    -- Atributos
     tipo_turno,
     turno_atendimento,
-    agrupador_sms AS tipo_sms_agrupado,
+    aberto_sempre,
+
+    -- Tipagem dos Estabelecimentos (CNES)
+    tipo_unidade AS id_tipo_unidade,
+    tipo_unidade_descr AS tipo, -- Renomear para tipo_cnes?
+
+    -- Tipagem dos Estabelecimentos (DIT)
     tipo_sms,
     tipo_sms_simplificado,
-    cnpj_mantenedora,
+    agrupador_sms AS tipo_sms_agrupado,
+
+    -- Tipagem dos Estabelecimentos (SUBGERAL)
+    tipo_unidade_alternativo,
+    tipo_unidade_agrupado,
+
+    -- Localização
+    id_ap,
+    ap,
+    cep AS endereco_cep,
     endereco_bairro,
     endereco_logradouro,
     endereco_numero,
     endereco_complemento,
     endereco_latitude,
     endereco_longitude,
-    IF(id_motivo_desativacao = "", "sim", "não") AS ativa,
-    indicador_estabelecimento_sms,
-    indicador_vinculo_sus,
-    indicador_atendimento_internacao_sus,	
-    indicador_atendimento_ambulatorial_sus,
-    indicador_atendimento_sadt_sus,
-    indicador_atendimento_urgencia_sus,  
-    indicador_atendimento_outros_sus, 
-    indicador_atendimento_vigilancia_sus,
-    indicador_atendimento_regulacao_sus,
-    id_unidade,
-    nome_limpo,
-    nome_sigla,
-    nome_complemento,
-    responsavel_sms,
-    administracao,
+
+    -- Status
+    CASE 
+        WHEN id_motivo_desativacao IS NULL OR id_motivo_desativacao = '' THEN 'sim' 
+        ELSE 'não' 
+    END AS ativa,
+
+    -- Prontuário
     prontuario_tem,
     prontuario_versao,
     prontuario_estoque_tem_dado,
     prontuario_estoque_motivo_sem_dado,
+
+    -- Informações de contato
     COALESCE(telefone_aps, telefone_cnes) AS telefone,
     COALESCE(email_aps, email_cnes) AS email,
     facebook,
     instagram,
     twitter,
-    aberto_sempre,
-    diretor_clinico_cpf,
-    diretor_clinico_conselho,
 
-    -- Metadata
+    -- Indicadores
+    indicador_estabelecimento_sms,
+    indicador_vinculo_sus,
+    indicador_atendimento_internacao_sus,
+    indicador_atendimento_ambulatorial_sus,
+    indicador_atendimento_sadt_sus,
+    indicador_atendimento_urgencia_sus,
+    indicador_atendimento_outros_sus,
+    indicador_atendimento_vigilancia_sus,
+    indicador_atendimento_regulacao_sus,
+
+    -- Metadados
     data_atualizao_registro,
     usuario_atualizador_registro,
     mes_particao,
@@ -258,4 +338,5 @@ SELECT
     data_particao,
     data_carga,
     data_snapshot
+
 FROM estabelecimentos_final
