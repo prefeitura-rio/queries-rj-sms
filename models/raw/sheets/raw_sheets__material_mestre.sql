@@ -9,7 +9,7 @@ with
     source as (select * from {{ source("brutos_sheets_staging", "material_mestre") }}),
     casted as (
         select
-            codigo as id_material,
+            {{clean_numeric_string("codigo")}} as id_material,
             denominacao_generica as descricao,
             concentracao,
             forma_farmaceutica,

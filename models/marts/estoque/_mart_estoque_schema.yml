@@ -3,7 +3,7 @@ models:
   - name: mart_estoque__posicao_atual
     description: Posição do início do dia dos estoques de medicamentos e insumos das
       unidades de saúde
-    tests:
+    data_tests:
       - dbt_expectations.expect_table_row_count_to_be_between:
           name: mart_estoque__posicao_atual__row_count_to_be_between
           min_value: 95000
@@ -146,7 +146,7 @@ models:
         description: Estimativa do consumo diário baseada na média de consumo dos
           últimos 90 dias
         data_type: float64
-        tests:
+        data_tests:
           - dbt_expectations.expect_column_mean_to_be_between:
               name: mart_estoque__posicao_atual__material_consumo_medio__mean_between
               min_value: 30

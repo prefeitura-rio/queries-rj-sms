@@ -12,7 +12,7 @@ models:
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitacare__estoque_posicao__id_cnes__not_null
           - relationships:
@@ -68,7 +68,7 @@ models:
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
         data_type: string
-        tests:
+        data_tests:
           - assert_chegando_todas_unidades_de_saude:
               name: raw_prontuario_vitacare__estoque_movimento__chegando_todas_unidades
               prontuario: vitacare
@@ -154,7 +154,7 @@ models:
       - name: material_quantidade
         description: Quantidade movimentada do medicamento/insumo
         data_type: float64
-        tests:
+        data_tests:
           - dbt_expectations.expect_column_values_to_be_between:
               name: raw_prontuario_vitacare__estoque_movimento__material_quantidade__positive
               min_value: 0
@@ -351,7 +351,7 @@ models:
         description: Código da microárea de atuação da unidade de saúde.
       - name: cnes_unidade
         description: Número CNES da unidade de saúde onde o paciente é atendido.
-        tests:
+        data_tests:
           - assert_chegando_todas_unidades_de_saude:
               name: base_prontuario_vitacare__paciente_rotineiro__chegando_todas_unidades
               prontuario: vitacare
@@ -521,7 +521,7 @@ models:
     columns:
       - name: gid
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitacare__atendimento__gid__not_null
               config:
@@ -738,7 +738,7 @@ models:
       - name: cnes_unidade
         data_type: string
         quote: true
-        tests:
+        data_tests:
           - assert_chegando_todas_unidades_de_saude:
               name: base_prontuario_vitacare__atendimento_rotineiro__chegando_todas_unidades
               prontuario: vitacare

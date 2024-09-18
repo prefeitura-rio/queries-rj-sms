@@ -9,7 +9,7 @@ models:
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
-        tests:
+        data_tests:
           - unique:
               name: core__dim_material__id_material__unique
       - name: descricao
@@ -221,7 +221,7 @@ models:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
         data_type: string
-        tests:
+        data_tests:
           - unique:
               name: core__dim_estabelecimento__id_cnes__unique
       - name: id_tipo_unidade
@@ -370,7 +370,7 @@ models:
       - name: id_profissional_sus
         description: Código SUS do profissional
         data_type: string
-        tests:
+        data_tests:
           - unique:
               name: core__dim_profissional_saude__id_ine__unique
       - name: cpf
@@ -480,7 +480,7 @@ models:
     columns:
       - name: id_ine
         description: Código da Equipe (Identificador Nacional de Equipe - INE)
-        tests:
+        data_tests:
           - unique:
               name: core__dim_equipe__id_ine__unique
       - name: equipe_sequencial

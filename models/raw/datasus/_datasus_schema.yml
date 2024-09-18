@@ -6,7 +6,7 @@ models:
         description: Identificador da família.
         data_type: string
         quote: true
-        tests:
+        data_tests:
           - unique:
               name: raw_datasus__cbo_fam__id_cbo_familia__unique
       - name: descricao
@@ -28,7 +28,7 @@ models:
         description: " Identificador do cargo."
         data_type: string
         quote: true
-        tests:
+        data_tests:
           - unique:
               name: raw_datasus__cbo__id_cbo__unique
       - name: descricao

@@ -3,7 +3,7 @@ models:
     columns:
       - name: cpf
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: int_historico_clinico__paciente__smsrio__cpf__not_null
           - unique:
@@ -32,7 +32,7 @@ models:
     columns:
       - name: cpf
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: int_historico_clinico__paciente__vitacare__cpf__not_null
           - unique:
@@ -63,7 +63,7 @@ models:
     columns:
       - name: cpf
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: int_historico_clinico__paciente__vitai__cpf__not_null
           - unique:
