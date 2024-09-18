@@ -9,7 +9,7 @@ models:
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__estoque_posicao__id_cnes__not_null
           - relationships:
@@ -22,7 +22,7 @@ models:
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
           - '{{ var("TAG_MATERIAL") }}'
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__estoque_posicao__id_material__not_null
       - name: estoque_secao
@@ -54,7 +54,7 @@ models:
     description: Movimentação diária dos estoques de medicamentos e insumos das
       unidades de saúde que utilizam o prontuário Timed (Vitai) para gestão de
       estoque de farmácia e almoxarifado
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           name: raw_prontuario_vitai__estoque_movimento__unique_combination_of_columns
           combination_of_columns:
@@ -75,7 +75,7 @@ models:
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__estoque_movimento__id_cnes__not_null
           - relationships:
@@ -86,7 +86,7 @@ models:
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
           - '{{ var("TAG_MATERIAL") }}'
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__estoque_movimento__id_material__not_null
               config:
@@ -125,7 +125,7 @@ models:
         description: Quantidade do material movida
       - name: material_valor_total
         description: Valor monetário (em reais) do material movimentado
-        tests:
+        data_tests:
           - dbt_expectations.expect_column_values_to_be_between:
               name: raw_prontuario_vitai__estoque_movimento__material_valor_total__between
               min_value: 0
@@ -147,7 +147,7 @@ models:
         data_type: string
         policy_tags:
           - '{{ var("TAG_IDENTIFICADOR") }}'
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__paciente__id__not_null
       - name: gid_estabelecimento
@@ -250,7 +250,7 @@ models:
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__paciente__imported_at__not_null
 
@@ -260,7 +260,7 @@ models:
       - name: gid
         description: Identificador global do profissional na base da Vitai.
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__profissional__id__not_null
         policy_tags:
@@ -318,7 +318,7 @@ models:
       - name: gid
         description: Identificador global do boletim na base da Vitai.
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__boletim__id__not_null
       - name: gid_estabelecimento
@@ -450,7 +450,7 @@ models:
       - name: gid
         description: Identificador global da ocorrência de alergia na base da Vitai.
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__alergia__id__not_null
         policy_tags:
@@ -522,7 +522,7 @@ models:
       - name: gid
         description: Identificador global do atendimento na base da Vitai.
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__atendimento__id__not_null
       - name: gid_paciente
@@ -581,7 +581,7 @@ models:
       - name: gid
         description: Identificador global da ocorrência de uma cirurgia na base da Vitai.
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__cirurgia__id__not_null
       - name: gid_paciente
@@ -638,7 +638,7 @@ models:
       - name: gid
         description: Identificador global da classificação de risco na base da Vitai.
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__classificacao_risco__id__not_null
       - name: gid_paciente
@@ -694,7 +694,7 @@ models:
       - name: gid
         description: Identificador global do diagnóstico na base da Vitai.
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__diagnostico__id__not_null
       - name: id_boletim
@@ -751,7 +751,7 @@ models:
       - name: gid
         description: Identificador global do exame na base da Vitai.
         data_type: string
-        tests:
+        data_tests:
           - not_null:
               name: raw_prontuario_vitai__exame__id__not_null
       - name: gid_paciente

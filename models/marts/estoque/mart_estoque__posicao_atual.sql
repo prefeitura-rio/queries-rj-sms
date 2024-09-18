@@ -120,81 +120,91 @@ with
         left join material as mat on (pos.id_material = mat.id_material)
         left join sigma as sig on (pos.id_material = sig.cd_material)
         where est.prontuario_estoque_tem_dado = "sim" or pos.id_cnes = "tpc"
+    ),
+
+    final as (
+
+        select
+            -- Foreign keys
+            id_cnes,
+            id_curva_abc,
+            id_material,
+            id_cnes_material,
+
+            -- Common fields
+            estabelecimento_tipo_cnes,
+            estabelecimento_tipo_sms,
+            estabelecimento_tipo_sms_simplificado,
+            estabelecimento_tipo_sms_agrupado,
+            estabelecimento_area_programatica,
+            estabelecimento_nome_limpo,
+            estabelecimento_nome_sigla,
+            estabelecimento_administracao,
+            estabelecimento_responsavel_sms,
+            abc_categoria as material_abc_categoria,
+            material_hierarquia_n1_categoria,
+            material_hierarquia_n2_subcategoria,
+            material_remume_indicador,
+            material_remume_listagem_basico_indicador,
+            material_remume_listagem_uso_interno_indicador,
+            material_remume_listagem_hospitalar_indicador,
+            material_remume_listagem_antiseptico_indicador,
+            material_remume_listagem_estrategico_indicador,
+            material_controlado_indicador,
+            material_controlado_tipo,
+            material_descricao_full as material_descricao,
+            material_unidade,
+            material_cadastro_esta_correto,
+            estoque_secao,
+            id_lote,
+            lote_data_vencimento,
+            if(
+                current_date('America/Sao_Paulo') > lote_data_vencimento, "nao", "sim"
+            ) as lote_validade_dentro_indicador,
+            date_diff(
+                lote_data_vencimento, current_date('America/Sao_Paulo'), day
+            ) as lote_dias_para_vencer,
+            material_quantidade,
+            material_valor_unitario,
+            material_valor_total,
+            material_consumo_medio,
+            if(
+                material_quantidade = 0,
+                0,
+                {{
+                    dbt_utils.safe_divide(
+                        "material_quantidade", "material_consumo_medio"
+                    )
+                }}
+            ) as estoque_cobertura_dias,
+            abc_justificativa_ausencia,
+            cmm_justificativa_ausencia,
+
+            -- Metadata 
+            concat(
+                id_material,
+                " - ",
+                upper(material_descricao_full),
+                " - ",
+                lower(material_descricao_full),
+                " - ",
+                initcap(material_descricao_full)
+            ) as busca_material_id_descricao_case_insensitive,
+            sistema_origem,
+            data_particao,
+            date_diff(
+                current_date('America/Sao_Paulo'), data_particao, day
+            ) as dias_desde_ultima_atualizacao,
+            data_carga,
+
+        from posicao_final
+        where sistema_origem <> "vitai"  -- retirado por falta de dados
+        order by
+            estabelecimento_tipo_sms_agrupado,
+            estabelecimento_area_programatica,
+            estabelecimento_nome_limpo,
+            material_descricao
     )
 
-select
-    -- Foreign keys
-    id_cnes,
-    id_curva_abc,
-    id_material,
-    id_cnes_material,
 
-    -- Common fields
-    estabelecimento_tipo_cnes,
-    estabelecimento_tipo_sms,
-    estabelecimento_tipo_sms_simplificado,
-    estabelecimento_tipo_sms_agrupado,
-    estabelecimento_area_programatica,
-    estabelecimento_nome_limpo,
-    estabelecimento_nome_sigla,
-    estabelecimento_administracao,
-    estabelecimento_responsavel_sms,
-    abc_categoria as material_abc_categoria,
-    material_hierarquia_n1_categoria,
-    material_hierarquia_n2_subcategoria,
-    material_remume_indicador,
-    material_remume_listagem_basico_indicador,
-    material_remume_listagem_uso_interno_indicador,
-    material_remume_listagem_hospitalar_indicador,
-    material_remume_listagem_antiseptico_indicador,
-    material_remume_listagem_estrategico_indicador,
-    material_controlado_indicador,
-    material_controlado_tipo,
-    material_descricao_full as material_descricao,
-    material_unidade,
-    material_cadastro_esta_correto,
-    estoque_secao,
-    id_lote,
-    lote_data_vencimento,
-    if(
-        current_date('America/Sao_Paulo') > lote_data_vencimento, "nao", "sim"
-    ) as lote_validade_dentro_indicador,
-    date_diff(
-        lote_data_vencimento, current_date('America/Sao_Paulo'), day
-    ) as lote_dias_para_vencer,
-    material_quantidade,
-    material_valor_unitario,
-    material_valor_total,
-    material_consumo_medio,
-    if(
-        material_quantidade = 0,
-        0,
-        {{ dbt_utils.safe_divide("material_quantidade", "material_consumo_medio") }}
-    ) as estoque_cobertura_dias,
-    abc_justificativa_ausencia,
-    cmm_justificativa_ausencia,
-
-    -- Metadata 
-    concat(
-        id_material,
-        " - ",
-        upper(material_descricao_full),
-        " - ",
-        lower(material_descricao_full),
-        " - ",
-        initcap(material_descricao_full)
-    ) as busca_material_id_descricao_case_insensitive,
-    sistema_origem,
-    data_particao,
-    date_diff(
-        current_date('America/Sao_Paulo'), data_particao, day
-    ) as dias_desde_ultima_atualizacao,
-    data_carga,
-
-from posicao_final
-where sistema_origem <> "vitai"  -- retirado por falta de dados
-order by
-    estabelecimento_tipo_sms_agrupado,
-    estabelecimento_area_programatica,
-    estabelecimento_nome_limpo,
-    material_descricao
+select * from final 

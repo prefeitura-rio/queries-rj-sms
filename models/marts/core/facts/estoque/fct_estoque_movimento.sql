@@ -2,7 +2,13 @@
     config(
         alias="movimento",
         schema="saude_estoque",
-        labels={"contains_pii": "yes"},
+        labels = {
+            "dominio": "estoque",
+            "dado_publico": "nao",
+            "dado_pessoal": "sim",
+            "dado_anonimizado": "nao",
+            "dado_sensivel_saude": "sim"
+        },
         partition_by={
             "field": "data_particao",
             "data_type": "date",

@@ -1,7 +1,7 @@
 models:
   - name: raw_sisreg__oferta_programada
     description: Tabela contendo as escalas programadas no SISREG
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           name: raw_sisreg__oferta_programada__unique_combination_of_columns
           combination_of_columns:
@@ -13,7 +13,7 @@ models:
           para rastrear e gerenciar cada escala ambulatorial individual dentro
           do sistema.
         data_type: STRING
-        tests:
+        data_tests:
           - not_null:
               name: raw_sisreg__oferta_programada__id_escala_ambulatorial__not_null
       - name: id_central_executante
@@ -28,7 +28,7 @@ models:
           usado para rastrear e gerenciar procedimentos em diferentes sistemas e
           bancos de dados.
         data_type: STRING
-        tests:
+        data_tests:
           - not_null:
               name: raw_sisreg__oferta_programada__id_procedimento_unificado__not_null
       - name: id_procedimento_unificado
@@ -46,7 +46,7 @@ models:
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
-        tests:
+        data_tests:
           - not_null:
               name: raw_sisreg__escala__profissional_executante_cpf__not_null
       - name: central_executante_nome
