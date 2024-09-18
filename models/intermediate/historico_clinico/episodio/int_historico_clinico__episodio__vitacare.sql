@@ -180,8 +180,8 @@ with
             safe_cast(datahora_fim as datetime) as saida_datahora,
 
             -- Motivo e Desfecho
-            upper(soap_subjetivo_motivo) as motivo_atendimento,
-            upper(soap_plano_observacoes) as desfecho_atendimento,
+            upper(trim(soap_subjetivo_motivo)) as motivo_atendimento,
+            upper(trim(soap_plano_observacoes)) as desfecho_atendimento,
 
             -- Condições
             dim_condicoes_atribuidas.condicoes,
