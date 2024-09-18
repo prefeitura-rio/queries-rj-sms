@@ -252,7 +252,7 @@ models:
               dado_pessoal: sim
               dado_anonimizado: nao
               dado_sensivel_saude: sim
-              dominio: seguir_em_frente
+              dominio: seguir_em_frente 
 
 tests:
   rj_sms:
