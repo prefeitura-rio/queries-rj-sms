@@ -1,3 +1,5 @@
+--- Contém a relação de relaórios de que devem ser gerados para os estabelecimentos que possuem estoque de medicamentos controlados
+
 {{
     config(
         alias="report_medicamentos_controlados__relacao_relatorios",
