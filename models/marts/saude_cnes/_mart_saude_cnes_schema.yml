@@ -122,23 +122,23 @@ models:
         description: "Conta do Twitter do estabelecimento."
 
       # Indicadores
-      - name: indicador_estabelecimento_sms
+      - name: estabelecimento_sms_indicador
         description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
-      - name: indicador_vinculo_sus
+      - name: vinculo_sus_indicador
         description: "Indica se o estabelecimento possui vínculo com o SUS."
-      - name: indicador_atendimento_internacao_sus
+      - name: atendimento_internacao_sus_indicador
         description: "Indica se o estabelecimento oferece serviços de internação pelo SUS."
-      - name: indicador_atendimento_ambulatorial_sus
+      - name: atendimento_ambulatorial_sus_indicador
         description: "Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS."
-      - name: indicador_atendimento_sadt_sus
+      - name: atendimento_sadt_sus_indicador
         description: "Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia (SADT) pelo SUS."
-      - name: indicador_atendimento_urgencia_sus
+      - name: atendimento_urgencia_sus_indicador
         description: "Indica se o estabelecimento oferece serviços de urgência pelo SUS."
-      - name: indicador_atendimento_outros_sus
+      - name: atendimento_outros_sus_indicador
         description: "Indica se o estabelecimento oferece outros tipos de serviços pelo SUS."
-      - name: indicador_atendimento_vigilancia_sus
+      - name: atendimento_vigilancia_sus_indicador
         description: "Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS."
-      - name: indicador_atendimento_regulacao_sus
+      - name: atendimento_regulacao_sus_indicador
         description: "Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS."
 
       # Metadados

@@ -2,6 +2,11 @@
     config(
         schema="mart_saude_cnes__estabelecimento_sus_rio_historico",
         alias="estabelecimento_sus_rio_historico",
+        partition_by = {
+            'field': 'data_carga', 
+            'data_type': 'timestamp',
+            'granularity': 'day'
+        }
     )
 }}
 
@@ -24,14 +29,14 @@ estabelecimentos_brutos AS (
         tipo_gestao,
         tipo_unidade,
         tipo_turno,
-        indicador_vinculo_sus,
-        indicador_atendimento_internacao_sus,	
-        indicador_atendimento_ambulatorial_sus,
-        indicador_atendimento_sadt_sus,
-        indicador_atendimento_urgencia_sus,  
-        indicador_atendimento_outros_sus, 
-        indicador_atendimento_vigilancia_sus,
-        indicador_atendimento_regulacao_sus
+        indicador_vinculo_sus as vinculo_sus_indicador,
+        indicador_atendimento_internacao_sus as atendimento_internacao_sus_indicador,	
+        indicador_atendimento_ambulatorial_sus as atendimento_ambulatorial_sus_indicador,
+        indicador_atendimento_sadt_sus as atendimento_sadt_sus_indicador,
+        indicador_atendimento_urgencia_sus as atendimento_urgencia_sus_indicador,  
+        indicador_atendimento_outros_sus as atendimento_outros_sus_indicador, 
+        indicador_atendimento_vigilancia_sus as atendimento_vigilancia_sus_indicador,
+        indicador_atendimento_regulacao_sus as atendimento_regulacao_sus_indicador
     FROM {{ source("brutos_cnes_ftp", "estabelecimento") }}
     WHERE 
         sigla_uf = "RJ"
@@ -84,7 +89,7 @@ estabelecimentos_atributos_cnes_web AS (
 estabelecimentos_atributos AS (
     SELECT
         id_cnes,
-        indicador_estabelecimento_sms,
+        indicador_estabelecimento_sms as estabelecimento_sms_indicador,
         tipo_unidade_subgeral,
         tipo_unidade_agrupado_subgeral,
         esfera_subgeral,
@@ -126,7 +131,7 @@ tp_gestao AS (
         STRUCT("S", "SEM GESTAO"),
         STRUCT("-Z", "NAO INFORMADO")
     ])
-),
+),  -- Definição proveniente do CNES FTP DATASUS
 
 nat_jur AS (
     SELECT 
@@ -165,14 +170,14 @@ estabelecimentos_final AS (
         brutos.tipo_gestao,
         brutos.tipo_unidade,
         brutos.tipo_turno,
-        brutos.indicador_vinculo_sus,
-        brutos.indicador_atendimento_internacao_sus,
-        brutos.indicador_atendimento_ambulatorial_sus,
-        brutos.indicador_atendimento_sadt_sus,
-        brutos.indicador_atendimento_urgencia_sus,
-        brutos.indicador_atendimento_outros_sus,
-        brutos.indicador_atendimento_vigilancia_sus,
-        brutos.indicador_atendimento_regulacao_sus,
+        brutos.vinculo_sus_indicador,
+        brutos.atendimento_internacao_sus_indicador,	
+        brutos.atendimento_ambulatorial_sus_indicador,
+        brutos.atendimento_sadt_sus_indicador,
+        brutos.atendimento_urgencia_sus_indicador,  
+        brutos.atendimento_outros_sus_indicador, 
+        brutos.atendimento_vigilancia_sus_indicador,
+        brutos.atendimento_regulacao_sus_indicador,
 
         -- CNES Web
         cnes_web.nome_razao_social,
@@ -200,7 +205,7 @@ estabelecimentos_final AS (
         SPLIT(cnes_web.telefone, "/") AS telefone_cnes,
 
         -- Atributos criados in house
-        estabelecimentos_atributos.indicador_estabelecimento_sms,
+        estabelecimentos_atributos.estabelecimento_sms_indicador,
         estabelecimentos_atributos.tipo_unidade_subgeral AS tipo_unidade_alternativo,
         estabelecimentos_atributos.tipo_unidade_agrupado_subgeral AS tipo_unidade_agrupado,
         estabelecimentos_atributos.esfera_subgeral AS esfera,
@@ -237,20 +242,20 @@ estabelecimentos_final AS (
         contatos_aps.email AS email_aps,
 
     FROM estabelecimentos_brutos AS brutos
-    LEFT JOIN estabelecimentos_atributos_cnes_web AS cnes_web ON brutos.id_estabelecimento_cnes = cnes_web.id_cnes
-    LEFT JOIN nat_jur ON brutos.id_natureza_juridica = nat_jur.id_natureza_juridica
-    LEFT JOIN tp_unidade ON brutos.tipo_unidade = tp_unidade.id_tipo_unidade
-    LEFT JOIN turno ON brutos.tipo_turno = turno.id_turno_atendimento
+    LEFT JOIN estabelecimentos_atributos_cnes_web AS cnes_web ON cast(brutos.id_estabelecimento_cnes as int64) = cast(cnes_web.id_cnes as int64)
+    LEFT JOIN nat_jur ON cast(brutos.id_natureza_juridica as int64) = cast(nat_jur.id_natureza_juridica as int64)
+    LEFT JOIN tp_unidade ON cast(brutos.tipo_unidade as int64) = cast(tp_unidade.id_tipo_unidade as int64)
+    LEFT JOIN turno ON cast(brutos.tipo_turno as int64) = cast(turno.id_turno_atendimento as int64)
     LEFT JOIN tp_gestao ON brutos.tipo_gestao = tp_gestao.id_tipo_gestao
-    LEFT JOIN estabelecimentos_atributos ON brutos.id_estabelecimento_cnes = estabelecimentos_atributos.id_cnes
-    LEFT JOIN contatos_aps ON brutos.id_estabelecimento_cnes = contatos_aps.id_cnes
+    LEFT JOIN estabelecimentos_atributos ON cast(brutos.id_estabelecimento_cnes as int64) = cast(estabelecimentos_atributos.id_cnes as int64)
+    LEFT JOIN contatos_aps ON cast(brutos.id_estabelecimento_cnes as int64) = cast(contatos_aps.id_cnes as int64)
 )
 
 -- Seleção final
 SELECT 
     -- Identificação
-    ano,
-    mes,
+    cast(ano as int64) as ano,
+    cast(mes as int64) as mes,
     id_estabelecimento_cnes AS id_cnes,
     id_unidade,
     nome_razao_social,
@@ -320,15 +325,15 @@ SELECT
     twitter,
 
     -- Indicadores
-    indicador_estabelecimento_sms,
-    indicador_vinculo_sus,
-    indicador_atendimento_internacao_sus,
-    indicador_atendimento_ambulatorial_sus,
-    indicador_atendimento_sadt_sus,
-    indicador_atendimento_urgencia_sus,
-    indicador_atendimento_outros_sus,
-    indicador_atendimento_vigilancia_sus,
-    indicador_atendimento_regulacao_sus,
+    estabelecimento_sms_indicador,
+    vinculo_sus_indicador,
+    atendimento_internacao_sus_indicador,	
+    atendimento_ambulatorial_sus_indicador,
+    atendimento_sadt_sus_indicador,
+    atendimento_urgencia_sus_indicador,  
+    atendimento_outros_sus_indicador, 
+    atendimento_vigilancia_sus_indicador,
+    atendimento_regulacao_sus_indicador,
 
     -- Metadados
     data_atualizao_registro,

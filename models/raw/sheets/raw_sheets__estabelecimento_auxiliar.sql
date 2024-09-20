@@ -16,7 +16,7 @@ select
     format("%07d", cast(id_cnes as int64)) as id_cnes,  -- fix cases where 0 on the left is lost
 
     -- Common fields
-    indicador_estabelecimento_sms,
+    cast(indicador_estabelecimento_sms as int64) as indicador_estabelecimento_sms,
 
     if(agrupador_sms = "nan", null, agrupador_sms) as agrupador_sms,
     if(tipo_sms = "nan", null, tipo_sms) as tipo_sms,
@@ -24,7 +24,7 @@ select
     safe_cast(nome_fantasia as string) as nome_fantasia,
     if(nome_limpo = "nan", null, nome_limpo) as nome_limpo,
     if(nome_sigla = "nan", null, nome_sigla) as nome_sigla,
-    if(area_programatica = "nan", null, area_programatica) as area_programatica,
+    if(area_programatica = "nan", null, cast(area_programatica as int64)) as area_programatica,
     if(prontuario_tem = "nan", null, prontuario_tem) as prontuario_tem,
     if(prontuario_versao = "nan", null, prontuario_versao) as prontuario_versao,
     if(prontuario_estoque_tem_dado = "nan", null, prontuario_estoque_tem_dado) as prontuario_estoque_tem_dado,
