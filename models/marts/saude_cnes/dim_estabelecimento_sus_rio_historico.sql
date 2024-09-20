@@ -249,99 +249,103 @@ estabelecimentos_final AS (
     LEFT JOIN tp_gestao ON brutos.tipo_gestao = tp_gestao.id_tipo_gestao
     LEFT JOIN estabelecimentos_atributos ON cast(brutos.id_estabelecimento_cnes as int64) = cast(estabelecimentos_atributos.id_cnes as int64)
     LEFT JOIN contatos_aps ON cast(brutos.id_estabelecimento_cnes as int64) = cast(contatos_aps.id_cnes as int64)
-)
+),
 
 -- Seleção final
-SELECT 
-    -- Identificação
-    cast(ano as int64) as ano,
-    cast(mes as int64) as mes,
-    id_estabelecimento_cnes AS id_cnes,
-    id_unidade,
-    nome_razao_social,
-    nome_fantasia,
-    nome_limpo,
-    nome_sigla,
-    nome_complemento,
-    cnpj_mantenedora,
+final as (
+    SELECT 
+        -- Identificação
+        cast(ano as int64) as ano,
+        cast(mes as int64) as mes,
+        lpad(id_estabelecimento_cnes, 7, '0') AS id_cnes,
+        id_unidade,
+        nome_razao_social,
+        nome_fantasia,
+        nome_limpo,
+        nome_sigla,
+        nome_complemento,
+        lpad(cnpj_mantenedora, 14, '0') AS cnpj_mantenedora,
 
-    -- Responsabilização
-    esfera,
-    id_natureza_juridica,
-    natureza_juridica_descr,
-    tipo_gestao,
-    tipo_gestao_descr,
-    responsavel_sms,
-    administracao,
-    diretor_clinico_cpf,
-    diretor_clinico_conselho,
+        -- Responsabilização
+        esfera,
+        cast(id_natureza_juridica as int64) as id_natureza_juridica,
+        natureza_juridica_descr,
+        tipo_gestao,
+        tipo_gestao_descr,
+        responsavel_sms,
+        administracao,
+        lpad(diretor_clinico_cpf, 11, '0') AS diretor_clinico_cpf,
+        diretor_clinico_conselho,
 
-    -- Atributos
-    tipo_turno,
-    turno_atendimento,
-    aberto_sempre,
+        -- Atributos
+        cast(tipo_turno as int64) as tipo_turno,
+        turno_atendimento,
+        aberto_sempre,
 
-    -- Tipagem dos Estabelecimentos (CNES)
-    tipo_unidade AS id_tipo_unidade,
-    tipo_unidade_descr AS tipo, -- Renomear para tipo_cnes?
+        -- Tipagem dos Estabelecimentos (CNES)
+        cast(tipo_unidade as int64) AS id_tipo_unidade,
+        tipo_unidade_descr AS tipo, -- Renomear para tipo_cnes?
 
-    -- Tipagem dos Estabelecimentos (DIT)
-    tipo_sms,
-    tipo_sms_simplificado,
-    agrupador_sms AS tipo_sms_agrupado,
+        -- Tipagem dos Estabelecimentos (DIT)
+        tipo_sms,
+        tipo_sms_simplificado,
+        agrupador_sms AS tipo_sms_agrupado,
 
-    -- Tipagem dos Estabelecimentos (SUBGERAL)
-    tipo_unidade_alternativo,
-    tipo_unidade_agrupado,
+        -- Tipagem dos Estabelecimentos (SUBGERAL)
+        tipo_unidade_alternativo,
+        tipo_unidade_agrupado,
 
-    -- Localização
-    id_ap,
-    ap,
-    cep AS endereco_cep,
-    endereco_bairro,
-    endereco_logradouro,
-    endereco_numero,
-    endereco_complemento,
-    endereco_latitude,
-    endereco_longitude,
+        -- Localização
+        id_ap,
+        ap,
+        lpad(cep, 8, '0') as endereco_cep,
+        endereco_bairro,
+        endereco_logradouro,
+        endereco_numero,
+        endereco_complemento,
+        endereco_latitude,
+        endereco_longitude,
 
-    -- Status
-    CASE 
-        WHEN id_motivo_desativacao IS NULL OR id_motivo_desativacao = '' THEN 'sim' 
-        ELSE 'não' 
-    END AS ativa,
+        -- Status
+        CASE 
+            WHEN id_motivo_desativacao IS NULL OR id_motivo_desativacao = '' THEN 'sim' 
+            ELSE 'não' 
+        END AS ativa,
 
-    -- Prontuário
-    prontuario_tem,
-    prontuario_versao,
-    prontuario_estoque_tem_dado,
-    prontuario_estoque_motivo_sem_dado,
+        -- Prontuário
+        prontuario_tem,
+        prontuario_versao,
+        prontuario_estoque_tem_dado,
+        prontuario_estoque_motivo_sem_dado,
 
-    -- Informações de contato
-    COALESCE(telefone_aps, telefone_cnes) AS telefone,
-    COALESCE(email_aps, email_cnes) AS email,
-    facebook,
-    instagram,
-    twitter,
+        -- Informações de contato
+        COALESCE(telefone_aps, telefone_cnes) AS telefone,
+        COALESCE(email_aps, email_cnes) AS email,
+        facebook,
+        instagram,
+        twitter,
 
-    -- Indicadores
-    estabelecimento_sms_indicador,
-    vinculo_sus_indicador,
-    atendimento_internacao_sus_indicador,	
-    atendimento_ambulatorial_sus_indicador,
-    atendimento_sadt_sus_indicador,
-    atendimento_urgencia_sus_indicador,  
-    atendimento_outros_sus_indicador, 
-    atendimento_vigilancia_sus_indicador,
-    atendimento_regulacao_sus_indicador,
+        -- Indicadores
+        estabelecimento_sms_indicador,
+        vinculo_sus_indicador,
+        atendimento_internacao_sus_indicador,	
+        atendimento_ambulatorial_sus_indicador,
+        atendimento_sadt_sus_indicador,
+        atendimento_urgencia_sus_indicador,  
+        atendimento_outros_sus_indicador, 
+        atendimento_vigilancia_sus_indicador,
+        atendimento_regulacao_sus_indicador,
 
-    -- Metadados
-    data_atualizao_registro,
-    usuario_atualizador_registro,
-    mes_particao,
-    ano_particao,
-    data_particao,
-    data_carga,
-    data_snapshot
+        -- Metadados
+        data_atualizao_registro,
+        usuario_atualizador_registro,
+        mes_particao,
+        ano_particao,
+        data_particao,
+        data_carga,
+        data_snapshot
 
-FROM estabelecimentos_final
+    FROM estabelecimentos_final
+)
+
+select * from final
