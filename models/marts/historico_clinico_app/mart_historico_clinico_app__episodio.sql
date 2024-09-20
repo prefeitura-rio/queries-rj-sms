@@ -88,6 +88,7 @@ with
             end as responsible,
             motivo_atendimento as clinical_motivation,
             desfecho_atendimento as clinical_outcome,
+            obito as deceased,
             case
                 when estabelecimento.estabelecimento_tipo is null
                 then []

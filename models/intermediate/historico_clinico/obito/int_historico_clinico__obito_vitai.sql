@@ -1,10 +1,5 @@
-{{
-    config(
-        schema="intermediario_historico_clinico",
-        alias="obito_vitai",
-        materialized="table",
-    )
-}}
+-- Cria tabela de episódios vitai com desfecho óbito para sinalização
+
 -- Óbitos assinalados em episódios vitai
 with alta_adm as (
     select * from 
@@ -50,7 +45,7 @@ obitos as (
     or alta_internacao.desfecho_internacao = 'ÓBITO'
 ),
 -- FILTROS --
--- Filtro de obitos com episodios posteriores
+-- Filtro de obitos com episodios posteriores na vitai ou vitacare
 ultimo_boletim_vitai as (
   select 
     cpf, 
@@ -62,10 +57,6 @@ ultimo_boletim_vitai as (
   from boletim
   group by 1
 ),
-atendimento as (
-    select * from
-    {{ref('raw_prontuario_vitacare__atendimento')}}
-),
 ultimo_boletim_vitacare as(
   select 
     cpf, 
@@ -74,7 +65,7 @@ ultimo_boletim_vitacare as(
             date from datahora_inicio
             )
     ) as ultima_entrada
-  from atendimento
+  from  {{ref('raw_prontuario_vitacare__atendimento')}}
   group by 1
 ),
 ultimo_boletim as(

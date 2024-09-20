@@ -81,6 +81,9 @@ models:
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
           relacionados ao atendimento. 
+      - name: obito
+        description: >
+          Indica se o paciente foi a óbito.
       - name: condicoes.relacao
         description: |
           Lista de cids associados ao atendimento.
