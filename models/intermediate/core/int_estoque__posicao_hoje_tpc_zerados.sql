@@ -1,4 +1,5 @@
--- posicao do dia de hoje adicionado os materiais remume que estão zerados
+-- Relação de posições REMUME zeradas no TPC
+
 with
     particao_mais_recente as (
         select max(data_particao) as data_particao
@@ -55,8 +56,5 @@ with
     )
 
 -- Une os itens zerados com a posição atual
-select *
-from posicao_atual
-union all
 select *
 from posicao_zeradas_estruturada

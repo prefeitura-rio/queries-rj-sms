@@ -144,7 +144,7 @@ models:
       - name: prontuario.id_atendimento
         description: |
           ID do atendimento.
-        tests:
+        data_tests:
           - not_null:
               name: int_historico_clinico__episodio__vitai__id_episodio__not_null
           - unique:

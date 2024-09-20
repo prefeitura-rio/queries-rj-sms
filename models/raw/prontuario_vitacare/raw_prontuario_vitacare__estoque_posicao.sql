@@ -1,7 +1,14 @@
 {{
     config(
         alias="estoque_posicao",
-        tags="vitacare_estoque"
+        tags="vitacare_estoque",
+        labels = {
+            "dominio": "estoque",
+            "dado_publico": "nao",
+            "dado_pessoal": "nao",
+            "dado_anonimizado": "nao",
+            "dado_sensivel_saude": "nao"
+        }
     )
 }}
 
