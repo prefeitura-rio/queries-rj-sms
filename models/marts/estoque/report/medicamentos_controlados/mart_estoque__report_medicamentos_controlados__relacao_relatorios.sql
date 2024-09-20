@@ -27,6 +27,12 @@ with
     estabelecimento as (
         select *, concat(endereco_logradouro, ', ', endereco_numero) as endereco
         from {{ ref("dim_estabelecimento") }}
+    ),
+
+    farmaceuticos as (
+        select id_cnes, array_agg(struct(farmaceutico_nome as nome, farmaceutico_crf as crf)) as farmaceutico
+        from {{ ref("raw_sheets__aps_farmacias") }}
+        group by 1
     )
 
 select
@@ -35,6 +41,8 @@ select
     est.area_programatica as estabelecimento_area_programatica,
     est.endereco as estabelecimento_endereco,
     cc.controlado_tipo,
+    f.farmaceutico,
 from cnes_controlados as cc
 left join estabelecimento as est using (id_cnes)
+left join farmaceuticos as f using (id_cnes)
 order by est.nome_limpo, cc.controlado_tipo
