@@ -6,9 +6,3 @@ sources:
     tables:
       - name: estabelecimento
       - name: leito
-
-  - name: brutos_cnes_web_staging
-    database: rj-sms
-    schema: brutos_cnes_web_staging
-    tables:
-      - name: tbLeito

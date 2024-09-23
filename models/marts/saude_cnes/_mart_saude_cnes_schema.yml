@@ -156,3 +156,174 @@ models:
         description: "Data em que os dados foram carregados no banco de dados."
       - name: data_snapshot
         description: "Data em que o snapshot dos dados foi capturado."
+
+  - name: leito_sus_rio_historico
+    description: Esta tabela contém dados sobre todos os leitos dos estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
+    columns:
+      # Identificação
+      - name: ano
+        description: "Ano de referência dos dados."
+      - name: mes
+        description: "Mês de referência dos dados."
+      - name: id_cnes
+        description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
+      - name: id_unidade
+        description: "Identificador específico do estabelecimento de saúde"
+      - name: nome_razao_social
+        description: "Razão social do estabelecimento conforme registro oficial."
+      - name: nome_fantasia
+        description: "Nome fantasia do estabelecimento."
+      - name: nome_limpo
+        description: "Nome do estabelecimento formatado."
+      - name: nome_sigla
+        description: "Sigla do nome do estabelecimento."
+      - name: nome_complemento
+        description: "Detalhes adicionais que complementam o nome principal do estabelecimento."
+      - name: cnpj_mantenedora
+        description: "CNPJ da entidade mantenedora do estabelecimento, importante para identificação legal e financeira."
+
+      # Responsabilização
+      - name: esfera
+        description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
+      - name: id_natureza_juridica
+        description: "Código da natureza jurídica do estabelecimento."
+      - name: natureza_juridica_descr
+        description: "Descrição da natureza jurídica do estabelecimento."
+      - name: tipo_gestao
+        description: "Código indicativo do tipo de gestão (e.g., municipal, estadual)."
+      - name: tipo_gestao_descr
+        description: "Descrição do tipo de gestão do estabelecimento."
+      - name: responsavel_sms
+        description: "Setor da SMS responsável pelo estabelecimento."
+      - name: administracao
+        description: "Administração do estabelecimento."
+      - name: diretor_clinico_cpf
+        description: "CPF do diretor clínico do estabelecimento."
+      - name: diretor_clinico_conselho
+        description: "Número de registro no conselho profissional do diretor clínico."
+
+      # Atributos
+      - name: tipo_turno
+        description: "Código indicativo do turno de atendimento (manhã, tarde, integral)."
+      - name: turno_atendimento
+        description: "Descrição do turno de atendimento."
+      - name: aberto_sempre
+        description: "Indica se o estabelecimento opera continuamente, 24 horas por dia."
+
+      # Tipagem dos Estabelecimentos (CNES)
+      - name: id_tipo_unidade
+        description: "Código do tipo de unidade de saúde."
+      - name: tipo
+        description: "Descrição do tipo de unidade de saúde."
+
+      # Tipagem dos Estabelecimentos (DIT)
+      - name: tipo_sms
+        description: "Categoria relacionada a serviços de saúde."
+      - name: tipo_sms_simplificado
+        description: "Versão simplificada da categoria de SMS, utilizada para classificação geral."
+      - name: tipo_sms_agrupado
+        description: "Variável de agrupamento relacionada a tipagem do estabelecimento."
+
+      # Tipagem dos Estabelecimentos (SUBGERAL)
+      - name: tipo_unidade_alternativo
+        description: "Classificação alternativa do tipo de unidade conforme categorização interna."
+      - name: tipo_unidade_agrupado
+        description: "Classificação agrupada do tipo de unidade de saúde."
+
+      # Localização
+      - name: id_ap
+        description: "Código da Área Programática."
+      - name: ap
+        description: "Descrição da Área Programática."
+      - name: endereco_cep
+        description: "CEP do estabelecimento."
+      - name: endereco_bairro
+        description: "Bairro onde o estabelecimento está localizado."
+      - name: endereco_logradouro
+        description: "Logradouro do endereço do estabelecimento."
+      - name: endereco_numero
+        description: "Número do endereço do estabelecimento."
+      - name: endereco_complemento
+        description: "Complemento do endereço do estabelecimento."
+      - name: endereco_latitude
+        description: "Latitude do estabelecimento para georreferenciamento."
+      - name: endereco_longitude
+        description: "Longitude do estabelecimento para georreferenciamento."
+
+      # Status
+      - name: ativa
+        description: "Indica o status operacional do estabelecimento ('sim' para ativo, 'não' para inativo)."
+
+      # Prontuário
+      - name: prontuario_tem
+        description: "Indica se o estabelecimento mantém prontuários dos pacientes."
+      - name: prontuario_versao
+        description: "Versão do prontuário utilizado pelo estabelecimento."
+      - name: prontuario_estoque_tem_dado
+        description: "Indica se os prontuários contêm dados disponíveis."
+      - name: prontuario_estoque_motivo_sem_dado
+        description: "Motivo pelo qual os prontuários não contêm dados."
+
+      # Informações de Contato
+      - name: telefone
+        description: "Número de telefone principal para contato com o estabelecimento."
+      - name: email
+        description: "Endereço de e-mail principal do estabelecimento."
+      - name: facebook
+        description: "Página do Facebook do estabelecimento."
+      - name: instagram
+        description: "Perfil do Instagram do estabelecimento."
+      - name: twitter
+        description: "Conta do Twitter do estabelecimento."
+
+      # Indicadores
+      - name: estabelecimento_sms_indicador
+        description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
+      - name: vinculo_sus_indicador
+        description: "Indica se o estabelecimento possui vínculo com o SUS."
+      - name: atendimento_internacao_sus_indicador
+        description: "Indica se o estabelecimento oferece serviços de internação pelo SUS."
+      - name: atendimento_ambulatorial_sus_indicador
+        description: "Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS."
+      - name: atendimento_sadt_sus_indicador
+        description: "Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia (SADT) pelo SUS."
+      - name: atendimento_urgencia_sus_indicador
+        description: "Indica se o estabelecimento oferece serviços de urgência pelo SUS."
+      - name: atendimento_outros_sus_indicador
+        description: "Indica se o estabelecimento oferece outros tipos de serviços pelo SUS."
+      - name: atendimento_vigilancia_sus_indicador
+        description: "Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS."
+      - name: atendimento_regulacao_sus_indicador
+        description: "Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS."
+
+      # Metadados
+      - name: data_atualizao_registro
+        description: "Data em que o registro foi atualizado pela última vez."
+      - name: usuario_atualizador_registro
+        description: "Identificador do usuário que atualizou o registro pela última vez."
+      - name: mes_particao
+        description: "Mês utilizado para fins de particionamento dos dados."
+      - name: ano_particao
+        description: "Ano utilizado para fins de particionamento dos dados."
+      - name: data_particao
+        description: "Data específica utilizada para particionamento dos dados."
+      - name: data_carga
+        description: "Data em que os dados foram carregados no banco de dados."
+      - name: data_snapshot
+        description: "Data em que o snapshot dos dados foi capturado."
+
+     # Campos específicos da tabela de leitos
+    - name: tipo_leito
+      description: "Identificador do tipo de leito disponível."
+    - name: tipo_leito_descr
+      description: "Descrição do tipo de leito disponível."
+    - name: tipo_especialidade_leito
+      description: "Identificador da especialidade do leito."
+    - name: tipo_especialidade_leito_descr
+      description: "Descrição da especialidade do leito."
+    - name: quantidade_total
+      description: "Quantidade total de leitos disponíveis."
+    - name: quantidade_contratado
+      description: "Quantidade de leitos contratados."
+    - name: quantidade_sus
+      description: "Quantidade de leitos disponíveis pelo Sistema Único de Saúde (SUS)."
