@@ -19,3 +19,4 @@ sources:
     - name: tbTipoEquipe
     - name: tbArea
     - name: tbNaturezaJuridica
+    - name: tbLeito
