@@ -1,9 +1,9 @@
 {{
     config(
-        schema="mart_saude_cnes__estabelecimento_sus_rio_historico",
+        schema="saude_cnes",
         alias="estabelecimento_sus_rio_historico",
         partition_by = {
-            'field': 'data_carga', 
+            'field': 'data_particao', 
             'data_type': 'timestamp',
             'granularity': 'day'
         }
@@ -37,7 +37,7 @@ estabelecimentos_brutos AS (
         indicador_atendimento_outros_sus as atendimento_outros_sus_indicador, 
         indicador_atendimento_vigilancia_sus as atendimento_vigilancia_sus_indicador,
         indicador_atendimento_regulacao_sus as atendimento_regulacao_sus_indicador
-    FROM {{ source("brutos_cnes_ftp", "estabelecimento") }}
+    FROM {{ ref("raw_cnes_ftp__estabelecimento") }}
     WHERE 
         sigla_uf = "RJ"
         AND id_municipio_6 = "330455"
