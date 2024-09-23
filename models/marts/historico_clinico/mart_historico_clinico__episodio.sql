@@ -25,6 +25,10 @@ with
             entrada_datahora,
             saida_datahora,
             exames_realizados,
+            array(
+                select as struct
+                    cast(null as string) as descricao, cast(null as string) as observacao
+            ) as procedimentos_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
@@ -46,6 +50,7 @@ with
                 select as struct
                     cast(null as string) as tipo, cast(null as string) as descricao
             ) as exames_realizados,
+            procedimentos_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
@@ -139,6 +144,7 @@ with
         deduped.entrada_datahora,
         deduped.saida_datahora,
         deduped.exames_realizados,
+        deduped.procedimentos_realizados,
         deduped.motivo_atendimento,
         deduped.desfecho_atendimento,
         all_cids.condicoes,

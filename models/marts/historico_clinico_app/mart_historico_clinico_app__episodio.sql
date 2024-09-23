@@ -21,7 +21,7 @@ with
     episodios_com_cid as (
         select id_episodio
         from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
-        where cid.id is not null and cid.situacao <> 'RESOLVIDO'
+        where cid.id is not null
     ),
     todos_episodios as (
         select
@@ -70,7 +70,14 @@ with
                 where tipo is not null
             ) as clinical_exams,
             array(
-                select descricao from unnest(condicoes) where descricao is not null
+                select struct(descricao as description, observacao as observation)
+                from unnest(procedimentos_realizados)
+                where tipo is not null
+            ) as procedures,
+            array(
+                select struct(descricao as description , situacao as status) 
+                from unnest(condicoes) 
+                where descricao is not null
             ) as active_cids,
             array(
                 select distinct resumo from unnest(condicoes) where resumo is not null and resumo != ''
