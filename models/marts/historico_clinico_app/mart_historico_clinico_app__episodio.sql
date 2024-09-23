@@ -70,7 +70,7 @@ with
                 where tipo is not null
             ) as clinical_exams,
             array(
-                select struct(descricao as description, observacao as observation)
+                select struct(descricao as description, observacao as notes)
                 from unnest(procedimentos_realizados)
                 where tipo is not null
             ) as procedures,
@@ -78,7 +78,7 @@ with
                 select struct(descricao as description , situacao as status) 
                 from unnest(condicoes) 
                 where descricao is not null
-            ) as active_cids,
+            ) as cids,
             array(
                 select distinct resumo from unnest(condicoes) where resumo is not null and resumo != ''
             ) as active_cids_summarized,
