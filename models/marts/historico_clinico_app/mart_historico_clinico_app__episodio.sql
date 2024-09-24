@@ -36,12 +36,14 @@ with
             end as flag__paciente_sem_cpf,
             case
                 when
-                    tipo like '%Exame%'
-                    or tipo like '%Laborat%'
-                    or tipo like '%Imagem%'
-                    or id_episodio in (select * from episodios_com_cid)
-                    or motivo_atendimento is not null
-                    or desfecho_atendimento is not null
+                    tipo like '%Exame%' then false
+                when 
+                    tipo not like '%Exame%' and 
+                    (
+                        id_episodio in (select * from episodios_com_cid)
+                        or motivo_atendimento is not null
+                        or desfecho_atendimento is not null
+                    )
                 then false
                 else true
             end as flag__episodio_sem_informacao
