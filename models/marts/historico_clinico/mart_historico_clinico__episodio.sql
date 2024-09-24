@@ -104,7 +104,7 @@ with
             cid.descricao,
             cid.situacao,
             cid.data_diagnostico, 
-            IF(cid.situacao = 'RESOLVIDO',null,{{clean_cid('best_agrupador')}}) as descricao_agg
+            IF(cid.situacao = 'RESOLVIDO',null,best_agrupador) as descricao_agg
         from  deduped, unnest(condicoes) as cid 
         LEFT JOIN {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
         on agg_4_dig.id = regexp_replace(cid.id,r'\.','')
@@ -117,7 +117,7 @@ with
             cid.descricao,
             cid.situacao,
             cid.data_diagnostico,
-            IF(cid.situacao = 'RESOLVIDO',null,{{clean_cid('best_agrupador')}})  as descricao_agg
+            IF(cid.situacao = 'RESOLVIDO',null,best_agrupador)  as descricao_agg
         from  deduped, unnest(condicoes) as cid 
         LEFT JOIN {{ ref("int_historico_clinico__cid_categoria") }} as agg_3_dig
         on agg_3_dig.id_categoria = regexp_replace(cid.id,r'\.','')

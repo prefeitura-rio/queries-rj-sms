@@ -26,6 +26,7 @@ with
             END as desfecho_atendimento,
         from {{ ref("raw_prontuario_vitai__alta") }}
         qualify row_number() over ( partition by gid_boletim order by datahora desc) = 1
+        qualify row_number() over ( partition by gid_boletim order by datahora desc) = 1
     ),
     alta_internacao as ( -- Resumo de alta (internação)
         select
