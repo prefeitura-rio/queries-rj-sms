@@ -2,6 +2,7 @@
 -- que possuem estoque de medicamentos controlados
 {{
     config(
+        enabled= false,
         alias="report_medicamentos_controlados__relacao_relatorios",
         schema="projeto_estoque",
         materialized="table",
