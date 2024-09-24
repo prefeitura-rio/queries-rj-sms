@@ -62,7 +62,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     deceased as (
         select boletim_obito
-        from {{ref('int_historico_clinico__obito_vitai')}}, unnest(gid_boletim_obito) as boletim_obito    
+        from {{ref('int_historico_clinico__obito__vitai')}}, unnest(gid_boletim_obito) as boletim_obito    
     ),
     merged_data_deceased as (
         select *, IF(deceased.boletim_obito is null, False, True) as obito

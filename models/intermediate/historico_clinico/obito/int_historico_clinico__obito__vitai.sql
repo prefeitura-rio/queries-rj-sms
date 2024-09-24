@@ -1,3 +1,10 @@
+{{
+    config(
+        schema="intermediario_historico_clinico",
+        alias="obito_vitai",
+        materialized="table",
+    )
+}}
 -- Cria tabela de episódios vitai com desfecho óbito para sinalização
 
 -- Óbitos assinalados em episódios vitai
@@ -24,12 +31,8 @@ obitos as (
             else {{clean_numeric_string('boletim.cns')}} 
         end as cns, 
         extract(
-            date from cast(
-                coalesce(
-                    {{process_null('alta_adm.obito_data')}},
-                    boletim.alta_data
-                ) 
-            as datetime)) as obito_data, 
+            date from datetime({{process_null('boletim.alta_data')}})
+        ) as obito_data, 
         boletim.gid as gid_boletim_obito
     from boletim
     left join alta_adm
@@ -51,7 +54,7 @@ ultimo_boletim_vitai as (
     cpf, 
     max(
         extract(
-            date from cast({{process_null('data_entrada')}} as datetime)
+            date from datetime({{process_null('alta_data')}})
             )
     ) as ultima_entrada 
   from boletim
@@ -62,7 +65,7 @@ ultimo_boletim_vitacare as(
     cpf, 
     max(
         extract(
-            date from datahora_inicio
+            date from datahora_fim
             )
     ) as ultima_entrada
   from  {{ref('raw_prontuario_vitacare__atendimento')}}
@@ -79,30 +82,23 @@ ultimo_boletim as(
     )
     group by 1
 ),
--- Filtro de óbitos em episódios dentro das querys utilizadas no HCI
-boletins_vitai as (
-    select distinct prontuario.id_atendimento 
-    from {{ref('int_historico_clinico__episodio__vitai')}}
-),
 -- Final -- 
 obitos_flags as (
     select obitos.*, 
         ultimo_boletim.ultima_entrada,
-        IF(ultimo_boletim.ultima_entrada > date_add(obito_data, interval 1 day),
+        IF(
+            (ultimo_boletim.ultima_entrada > date_add(obito_data, interval 1 day)) OR (obito_data is null),
             1,
             0) as tem_boletim_pos_obito
     from obitos
     left join ultimo_boletim
     on obitos.cpf = ultimo_boletim.cpf
-    left join boletins_vitai
-    on obitos.gid_boletim_obito = boletins_vitai.id_atendimento
-    where boletins_vitai.id_atendimento is not null
 )
 select 
     cpf, 
-    obito_data,
+    max(obito_data) as obito_data,
     array_agg(distinct cns ignore nulls) as cns, 
     array_agg(distinct gid_boletim_obito ignore nulls) as gid_boletim_obito
 from obitos_flags 
 where tem_boletim_pos_obito = 0
-group by 1,2
+group by 1

@@ -17,11 +17,6 @@ with
             *
         from {{ ref('mart_historico_clinico__paciente') }}
     ),
-    todos_obitos as (
-        select 
-            * 
-        from {{ ref('int_historico_clinico__obito_vitai') }}
-    ),
     ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     --  REGRAS DE EXIBIÇÃO
     ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -74,12 +69,7 @@ with
             safe_cast(dados.data_nascimento as string) as birth_date,
             dados.genero as gender,
             dados.raca as race,
-            case 
-                when (dados.obito_indicador is false) 
-                    and (todos_obitos.cpf is not null) 
-                    then true
-                else dados.obito_indicador
-            end as deceased,
+            dados.obito_indicador as deceased,
             contato.telefone[safe_offset(0)].valor as phone,
             struct(
                 equipe_saude_familia[safe_offset(0)].clinica_familia.id_cnes as cnes,
@@ -110,8 +100,6 @@ with
             dados.identidade_validada_indicador as validated,
             safe_cast(todos_pacientes.cpf as int64) as cpf_particao
         from todos_pacientes
-        left join todos_obitos
-            on todos_pacientes.cpf = todos_obitos.cpf 
     )
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 --  JUNTANDO INFORMAÇÕES DE EXIBICAO
