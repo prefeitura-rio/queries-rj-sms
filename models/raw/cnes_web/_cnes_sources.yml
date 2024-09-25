@@ -21,3 +21,5 @@ sources:
     - name: tbNaturezaJuridica
     - name: tbLeito
     - name: tbSubGruposHabilitacao
+    - name: tbTipoEquipamento
+    - name: tbEquipamento
