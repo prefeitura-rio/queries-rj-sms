@@ -20,3 +20,4 @@ sources:
     - name: tbArea
     - name: tbNaturezaJuridica
     - name: tbLeito
+    - name: tbSubGruposHabilitacao
