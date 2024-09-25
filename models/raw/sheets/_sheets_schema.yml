@@ -8,10 +8,11 @@ models:
         data_tests:
           - unique:
               name: raw_sheets__estabelecimento_auxiliar__id_cnes__unique
-          - relationships:
-              name: raw_sheets__estabelecimento_auxiliar__id_cnes__relationship
-              to: ref('dim_estabelecimento_sus_rio_historico')
-              field: id_cnes
+# comentando momentaneamente até finalizarmos a tabela auxiliar
+#          - relationships:
+#              name: raw_sheets__estabelecimento_auxiliar__id_cnes__relationship
+#              to: ref('dim_estabelecimento_sus_rio_historico')
+#              field: id_cnes
       - name: indicador_estabelecimento_sms
         description: Indica se o estabelecimento é pertencente a rede assistencial da Secretaria Municipal de Saúde do Rio de Janeiro (1=SIM, 0=NAO)
       - name: tipo_sms

@@ -4,7 +4,7 @@
         alias="estabelecimento_sus_rio_historico",
         partition_by = {
             'field': 'data_particao', 
-            'data_type': 'timestamp',
+            'data_type': 'date',
             'granularity': 'day'
         }
     )
@@ -339,9 +339,9 @@ final as (
         -- Metadados
         data_atualizao_registro,
         usuario_atualizador_registro,
-        mes_particao,
-        ano_particao,
-        data_particao,
+        safe_cast(mes_particao as int64) as mes_particao,
+        safe_cast(ano_particao as int64) as ano_particao,
+        parse_date('%Y-%m-%d', data_particao) as data_particao,
         data_carga,
         data_snapshot
 

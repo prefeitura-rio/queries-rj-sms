@@ -1,17 +1,16 @@
 {{
     config(
-        schema="mart_saude_cnes__leito_rio_historico",
+        schema="saude_cnes",
         alias="leito_sus_rio_historico"
     )
 }}
 
 with
 
--- Obtendo a data mais atual
-versao_atual AS (
-    SELECT MAX(data_particao) AS versao 
-    FROM {{ ref("raw_cnes_web__tipo_unidade") }}
-), -- OBS: Não faz mais sentido pegar a versão de alguma outra tabela, sem ser tipo_unidade?
+versao_atual as (
+    select MAX(data_particao) as versao 
+    from {{ ref("raw_cnes_web__tipo_unidade") }}
+), 
 
 leitos_mapping_cnesftp as (
     select * from unnest([
@@ -33,22 +32,22 @@ leitos_mapping_cnesweb as (
 ),
 
 estabelecimentos_mrj_sus as (
-    select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where data_particao = (select versao from versao_atual)
+    select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
 leitos_mrj_sus as (
     select 
-    lt.tipo_leito,
-    lt.tipo_especialidade_leito,
-    lt.quantidade_total,
-    lt.quantidade_contratado,
-    lt.quantidade_sus,
+        lt.tipo_leito,
+        lt.tipo_especialidade_leito,
+        lt.quantidade_total,
+        lt.quantidade_contratado,
+        lt.quantidade_sus,
 
-    ftp.tipo_leito_descr,
-    web.tipo_especialidade_leito_descr,
-    estabs.*
+        ftp.tipo_leito_descr,
+        web.tipo_especialidade_leito_descr,
+        estabs.*
 
-    from  {{ source("brutos_cnes_ftp", "leito") }} as lt
+    from  {{ ref("raw_cnes_ftp__leito") }} as lt
     left join leitos_mapping_cnesftp as ftp on safe_cast(lt.tipo_leito as int64) = ftp.tipo_leito
     left join leitos_mapping_cnesweb as web on safe_cast(lt.tipo_especialidade_leito as int64) = safe_cast(web.tipo_especialidade_leito as int64)
     left join estabelecimentos_mrj_sus as estabs on lt.ano = estabs.ano and lt.mes = estabs.mes and safe_cast(lt.id_estabelecimento_cnes as int64) = safe_cast(estabs.id_cnes as int64)
@@ -57,7 +56,7 @@ leitos_mrj_sus as (
 ),
 
 final as (
-    SELECT 
+    select 
         --------------------------------- ESTABELECIMENTOS
         -- Identificação
         ano,
@@ -156,9 +155,9 @@ final as (
         quantidade_contratado,
         quantidade_sus
 
-    FROM leitos_mrj_sus
-    WHERE id_cnes is not null
-    ORDER BY ano asc, mes asc, id_cnes asc, tipo_leito_descr asc, tipo_especialidade_leito_descr asc
+    from leitos_mrj_sus
+    where id_cnes is not null
+    order by ano asc, mes asc, id_cnes asc, tipo_leito_descr asc, tipo_especialidade_leito_descr asc
 )
 
 select * from final
