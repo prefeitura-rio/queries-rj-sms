@@ -52,7 +52,7 @@ leitos_mrj_sus as (
     left join leitos_mapping_cnesweb as web on safe_cast(lt.tipo_especialidade_leito as int64) = safe_cast(web.tipo_especialidade_leito as int64)
     left join estabelecimentos_mrj_sus as estabs on lt.ano = estabs.ano and lt.mes = estabs.mes and safe_cast(lt.id_estabelecimento_cnes as int64) = safe_cast(estabs.id_cnes as int64)
     
-    where lt.ano >= 2008 and lt.id_estabelecimento_cnes in (select distinct id_cnes from estabelecimentos_mrj_sus)
+    where lt.ano >= 2008 and safe_cast(lt.id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
 ),
 
 final as (
