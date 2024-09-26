@@ -131,7 +131,7 @@ with
             ) as cids,
             array(
                 select distinct resumo from unnest(condicoes) where resumo is not null and resumo != ''
-            ) as active_cids_summarized,
+            ) as cids_summarized,
             case
                 when
                     profissional_saude_responsavel.nome is not null
