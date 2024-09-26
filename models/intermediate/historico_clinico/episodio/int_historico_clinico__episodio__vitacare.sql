@@ -43,8 +43,8 @@ with
     -- DIM: Profissional
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     dim_profissional as (
-        select cns as pk, id_profissional_sus as id, cns, nome, cpf,
-        from {{ ref("dim_profissional_saude") }}
+        select ep.cns as pk, ep.id_profissional_sus as id, ep.cns, ep.nome, ep.cpf, c.cbo
+        from {{ ref("dim_profissional_saude") }} as ep, unnest(ep.cbo) as c
         qualify row_number() over (partition by cpf order by id desc) = 1
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -196,11 +196,11 @@ with
             (
                 select as struct
                     dim_profissional.id as id,
-                    coalesce(dim_profissional.cpf, bruto_atendimento.cpf_profissional) as cpf,
-                    coalesce(dim_profissional.cns, bruto_atendimento.cns_profissional) as cns,
+                    coalesce(dim_profissional.cpf, atendimento.cpf_profissional) as cpf,
+                    coalesce(dim_profissional.cns, atendimento.cns_profissional) as cns,
                     coalesce(
                         {{ proper_br("dim_profissional.nome") }},
-                        {{ proper_br("bruto_atendimento.nome_profissional") }}
+                        {{ proper_br("atendimento.nome_profissional") }}
                     ) as nome,
                     safe_cast(
                         coalesce(
@@ -225,7 +225,7 @@ with
                                 when cbo_descricao_profissional like '%social%'
                                 then 'Assistente Social'
                                 else cbo_descricao_profissional
-                            end,
+                            end
                         )
                         as string
                     ) as especialidade
