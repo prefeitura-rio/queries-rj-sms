@@ -24,8 +24,8 @@ final as (
 
       -- foreign keys
       id_cnes,
-      id_tipo_unidade,
-      id_ap as area_programatica,
+      safe_cast(id_tipo_unidade as string) as id_tipo_unidade,
+      safe_cast(id_ap as string) as area_programatica,
       cnpj_mantenedora,
 
       -- common fields
@@ -64,8 +64,8 @@ final as (
       -- metadata
       data_atualizao_registro,
       usuario_atualizador_registro,
-      mes_particao,
-      ano_particao,
+      safe_cast(mes_particao as string) as mes_particao,
+      safe_cast(ano_particao as string) as ano_particao,
       data_particao,
       data_carga,
       data_snapshot
