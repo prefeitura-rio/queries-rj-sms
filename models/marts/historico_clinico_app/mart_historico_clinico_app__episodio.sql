@@ -23,6 +23,11 @@ with
         from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
         where cid.id is not null
     ),
+    episodios_com_procedimento as (
+        select id_episodio
+        from {{ ref("mart_historico_clinico__episodio") }}, unnest(procedimentos_realizados) as p
+        where p.descricao is not null
+    ),
     todos_episodios as (
         select
             *,
@@ -57,6 +62,7 @@ with
                     tipo not like '%Exame%' and 
                     (
                         id_episodio in (select * from episodios_com_cid)
+                        or id_episodio in (select * from episodios_com_procedimento)
                         or motivo_atendimento is not null
                         or desfecho_atendimento is not null
                     )
