@@ -48,6 +48,9 @@ models:
         description: >
           Subtipo do atendimento, obtido a partir do tipo de atendimento do
           boletim. 
+      - name: entrada
+        description: >
+          Data de início do atendimento.
       - name: entrada_datahora
         description: >
           Data e hora de início do atendimento. Representa o momento em que o
@@ -90,6 +93,9 @@ models:
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
           relacionados ao atendimento. 
+      - name: obito_indicador
+        description: >
+          Indica se o paciente foi a óbito.
       - name: condicoes.relacao
         description: |
           Lista de cids associados ao atendimento.
