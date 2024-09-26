@@ -11,6 +11,7 @@ sources:
       - name: material_remume
       - name: compras_registro_preco
       - name: compras_atas_processos_vigentes
+      - name: aps_farmacias
   - name: brutos_sheets
     database: rj-sms
     schema: brutos_sheets

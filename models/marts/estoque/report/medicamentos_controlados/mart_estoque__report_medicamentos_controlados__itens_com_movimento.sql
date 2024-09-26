@@ -1,5 +1,6 @@
 {{
     config(
+        enabled= false,
         alias="report_medicamentos_controlados__itens_com_movimento",
         schema="projeto_estoque",
         materialized="table",
@@ -9,19 +10,33 @@
 
 
 with
-    -- SOURCES
-    movimento as (
+    posicao_inicial_por_estabelecimento as (
         select *
-        from {{ ref("fct_estoque_movimento") }}
+        from
+            {{ ref('int_estoque__report_controlados__primeira_posicao_por_estabelecimento') }}
+    ),
+
+    menor_data_posicao as (
+        select min(data_particao) as menor_data
+        from posicao_inicial_por_estabelecimento
+    ),
+
+    primeiro_dia_mes as (
+        select date_trunc(current_date('America/Sao_Paulo'), month) as data
+    ),
+
+    movimento as (
+        select mov.*
+
+        from {{ ref("fct_estoque_movimento") }} as mov
+
+        inner join posicao_inicial_por_estabelecimento as pos
+        on mov.id_cnes = pos.id_cnes and mov.data_particao >= pos.data_particao
+
         where
-            sistema_origem = 'vitacare'
-            and material_quantidade <> 0
-            and data_particao >= date_sub(
-                current_date('America/Sao_Paulo'),
-                interval {{ dbt_date.day_of_month("current_date('America/Sao_Paulo')") }} -1 day
-            )
-            and id_cnes in ("2280787", "7523246", "2288370")  -- Nilza Rosa (22), Nelio de
-    -- Oliveira (10), Pindaro de Carvalho (21)
+            mov.sistema_origem = 'vitacare'
+            and mov.material_quantidade <> 0
+
     ),
 
     posicao as (
@@ -31,11 +46,7 @@ with
             data_particao,
             sum(material_quantidade) as posicao_quantidade
         from {{ ref("fct_estoque_posicao") }}
-        where
-            data_particao = date_sub(
-                current_date('America/Sao_Paulo'),
-                interval {{ dbt_date.day_of_month("current_date('America/Sao_Paulo')") }} -1 day
-            )
+        inner join posicao_inicial_por_estabelecimento using (id_cnes, data_particao)
         group by 1, 2, 3
     ),
 
@@ -168,8 +179,8 @@ with
         order by id_cnes, id_material, ordem
     ),
 
-    -- FINAL TABLE
-    final as (
+    --
+    joined as (
         select
             eventos.*,
             coalesce(posicao_quantidade, 0) as posicao_inicial,
@@ -184,36 +195,41 @@ with
         from eventos_final as eventos
         left join posicao using (id_cnes, id_material)
         left join estabelecimento as est using (id_cnes)
+    ),
+
+    final as (
+        select
+            id_cnes,
+            estabelecimento_nome,
+            estabelecimento_area_programatica,
+            estabelecimento_endereco,
+            id_material,
+            upper(
+                trim(
+                    regexp_replace(
+                        regexp_replace(normalize(nome, nfd), r"\pM", ''),
+                        r'[^ A-Za-z0-9.,]',
+                        ' '
+                    )
+                )
+            ) as nome,
+            controlado_tipo,
+            id_lote,
+            format_date('%d-%m-%Y', data_validade) as data_validade_br,
+            if(tipo_evento = "saida", "saída", tipo_evento) as tipo_evento,
+            evento,
+            movimento_tipo,
+            movimento_justificativa,
+            data_evento,
+            format_date('%d-%m-%Y', data_evento) as data_evento_br,
+            ordem,
+            -- posicao_inicial,
+            movimento_quantidade,
+            -- movimento_quantidade_acumulada,
+            posicao_final
+        from joined
+        where data_evento >= (select data from primeiro_dia_mes)
     )
 
-select
-    id_cnes,
-    estabelecimento_nome,
-    estabelecimento_area_programatica,
-    estabelecimento_endereco,
-    id_material,
-    upper(
-        trim(
-            regexp_replace(
-                regexp_replace(normalize(nome, nfd), r"\pM", ''),
-                r'[^ A-Za-z0-9.,]',
-                ' '
-            )
-        )
-    ) as nome,
-    controlado_tipo,
-    id_lote,
-    format_date('%d-%m-%Y', data_validade) as data_validade_br,
-    if(tipo_evento = "saida", "saída", tipo_evento) as tipo_evento,
-    evento,
-    movimento_tipo,
-    movimento_justificativa,
-    data_evento,
-    format_date('%d-%m-%Y', data_evento) as data_evento_br,
-    ordem,
-    -- posicao_inicial,
-    movimento_quantidade,
-    -- movimento_quantidade_acumulada,
-    posicao_final
+select *
 from final
-
