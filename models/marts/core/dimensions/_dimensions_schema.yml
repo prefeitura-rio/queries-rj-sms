@@ -521,7 +521,7 @@ models:
       - name: outros_profissionais
         description: Código SUS dos outros profissionais atribuidos a equipe
   - name: dim_condicao_cid10
-    description: Tabela contendo a Classificação Internacional de Doenças (CID-10).
+    description: Tabela contendo a Classificação Internacional de Doenças (CID-10). Contém CID S44.6 e S44.5 com mesmas entradas pois S44.6 foi alterado para S44.5 em 2002.
     columns:
       - name: id
         description: Identificação da subcategoria do CID.

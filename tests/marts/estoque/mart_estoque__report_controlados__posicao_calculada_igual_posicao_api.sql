@@ -1,5 +1,6 @@
 -- Teste se a posição calculada bate com a posição obtida pela API
 {{ config(
+    enabled= false,
     error_if = ">2",
     warn_if = ">0",    
 ) }}

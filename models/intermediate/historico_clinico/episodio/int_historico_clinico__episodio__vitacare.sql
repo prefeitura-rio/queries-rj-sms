@@ -63,9 +63,14 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Condições
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    cid_descricao as (select * from {{ ref("raw_datasus__cid10") }}),
+    cid_descricao as (
+        select distinct id, descricao from {{ ref("dim_condicao_cid10") }}
+        union all
+        select distinct categoria.id as id, categoria.descricao as descricao from {{ ref("dim_condicao_cid10") }}
+    ),
     condicoes as (
         select
+        distinct
             gid as fk_atendimento,
 
             json_extract_scalar(condicao_json, "$.cod_cid10") as id,
@@ -90,14 +95,16 @@ with
             array_agg(
                 struct(
                     condicoes.id as id,
-                    cid_descricao.subcategoria_descricao as descricao,
+                    cid_descricao.descricao,
                     condicoes.situacao as situacao,
                     condicoes.data_diagnostico as data_diagnostico
                 )
-                order by data_diagnostico desc, subcategoria_descricao
+                order by data_diagnostico desc, cid_descricao.descricao
             ) as condicoes
         from condicoes
-        left join cid_descricao on condicoes.id = cid_descricao.id_subcategoria
+        left join (
+            select distinct id, descricao from cid_descricao
+            ) as cid_descricao on condicoes.id = cid_descricao.id
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -173,8 +180,8 @@ with
             safe_cast(datahora_fim as datetime) as saida_datahora,
 
             -- Motivo e Desfecho
-            upper(soap_subjetivo_motivo) as motivo_atendimento,
-            upper(soap_plano_observacoes) as desfecho_atendimento,
+            upper(trim(soap_subjetivo_motivo)) as motivo_atendimento,
+            upper(trim(soap_plano_observacoes)) as desfecho_atendimento,
 
             -- Condições
             dim_condicoes_atribuidas.condicoes,
@@ -244,3 +251,4 @@ from episodios_validos
 {% if is_incremental() %}
     where data_particao >= {{ partitions_to_replace }}
 {% endif %}
+
