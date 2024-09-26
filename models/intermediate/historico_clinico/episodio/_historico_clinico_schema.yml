@@ -247,6 +247,8 @@ models:
       - name: procedimentos_realizados
         description: >
           Procedimentos realizados durante o episódio.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: procedimentos_realizados.descricao
         description: >
           Descrição do tipo de procedimento realizado durante o episódio.

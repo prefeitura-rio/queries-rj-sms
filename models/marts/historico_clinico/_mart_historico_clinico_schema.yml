@@ -86,9 +86,13 @@ models:
       - name: procedimentos_realizados.descricao
         description: >
           Descrição do tipo de procedimento realizado durante o episódio.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: procedimentos_realizados.observacao
         description: >
           Campo aberto de observações referentes ao procedimento.
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: condicoes
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
