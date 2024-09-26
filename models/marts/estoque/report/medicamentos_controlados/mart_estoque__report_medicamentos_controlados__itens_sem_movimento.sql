@@ -1,5 +1,6 @@
 {{
     config(
+        enabled= false,
         alias="report_medicamentos_controlados__itens_sem_movimento",
         schema="projeto_estoque",
         materialized="table",

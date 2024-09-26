@@ -43,12 +43,12 @@ with
             safe_cast(datahora_fim_atendimento as datetime) as datahora_fim,
 
             -- Campos Livres
-            subjetivo_motivo as soap_subjetivo_motivo,
-            objetivo_descricao as soap_objetivo_descricao,
-            avaliacao_observacoes as soap_avaliacao_observacoes,
+            safe_cast({{ process_null('subjetivo_motivo') }} as string) as soap_subjetivo_motivo,
+            safe_cast({{ process_null('objetivo_descricao') }}  as string) as soap_objetivo_descricao,
+            safe_cast({{ process_null('avaliacao_observacoes') }} as string) as soap_avaliacao_observacoes,
             safe_cast(null as string) as soap_plano_procedimentos_clinicos,
-            plano_observacoes as soap_plano_observacoes,
-            notas_observacoes as soap_notas_observacoes,
+            safe_cast({{ process_null('plano_observacoes') }}  as string) as soap_plano_observacoes,
+            safe_cast({{ process_null('notas_observacoes') }}  as string) as soap_notas_observacoes,
 
             -- Metadados
             safe_cast(datahora_fim_atendimento as datetime) as updated_at,

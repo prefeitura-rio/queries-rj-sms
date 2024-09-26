@@ -344,3 +344,76 @@ models:
           aceita os tipo de estabelecimentos utilizados no agrupador SMS ou o
           CNES da unidade.
         data_type: STRING
+  - name: raw_sheets__aps_farmacias
+    description: O modelo aps_farmacias fornece informações abrangentes sobre
+      farmácias da atenção primária à saúde, incluindo seus
+      identificadores únicos, nomes, endereços, horários de funcionamento,
+      status operacional e detalhes sobre o farmacêutico associado.
+    columns:
+      - name: area_programatica
+        description: Esta coluna representa a área programática da farmácia. É um campo
+          do tipo string que fornece informações sobre a área específica onde a
+          farmácia está localizada.
+        data_type: string
+        quote: true
+      - name: id_cnes
+        description: Esta coluna representa o ID CNES da unidade de saúde. É um identificador
+          único atribuído a cada farmácia para fins de identificação e
+          rastreamento.
+        data_type: string
+        quote: true
+      - name: nome
+        description: Esta coluna representa o nome da unidade de saúde. É um campo do tipo
+          string que fornece o nome oficial da farmácia.
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: endereco
+        description: Esta coluna contém o endereço da unidade de saúde. É do tipo string e pode
+          incluir nome da rua, número, bairro, cidade e estado.
+        data_type: string
+        quote: true
+      - name: horario_seg_a_sexta
+        description: Esta coluna contém o horário de funcionamento da farmácia de
+          segunda a sexta-feira. É do tipo string e geralmente inclui os
+          horários de abertura e fechamento.
+        data_type: string
+        quote: true
+      - name: horario_sabado
+        description: Esta coluna contém o horário de funcionamento da farmácia aos
+          sábados. É do tipo string e geralmente inclui os horários de abertura
+          e fechamento.
+        data_type: string
+        quote: true
+      - name: farmacia_indicador
+        description: Esta coluna indica se a unidade de saúde possui uma farmácia. Os valores são
+          derivados da coluna 'tem_farmacia' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: farmaceutico_nome
+        description: Esta coluna contém o nome do farmacêutico no local. O nome é
+          formatado com letras maiúsculas adequadas, com a primeira letra de
+          cada palavra em maiúscula, exceto para certas preposições e
+          conjunções. O nome é derivado da coluna 'nome_farmaceutico_rt' nos
+          dados de origem.
+        data_type: string
+        quote: true
+      - name: farmaceutico_crf
+        description: Esta coluna contém o número de registro no CRF (Conselho Regional
+          de Farmácia) do farmacêutico no local. Os valores são derivados da
+          coluna 'crf' nos dados de origem.
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR") }}'
+      - name: farmaceutico_vinculo
+        description: Esta coluna representa o status do vínculo empregatício do farmacêutico com a
+          farmácia. O valor está em letras minúsculas.
+        data_type: string
+        quote: true
+      - name: obs
+        description: Esta coluna contém quaisquer observações ou notas adicionais
+          relacionadas à farmácia.
+        data_type: string
+        quote: true
