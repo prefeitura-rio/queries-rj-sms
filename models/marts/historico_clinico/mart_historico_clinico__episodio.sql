@@ -58,6 +58,20 @@ with
         from {{ ref("int_historico_clinico__episodio__vitacare") }}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- DECEASED: Adding deceased flag
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    deceased as (
+        select boletim_obito
+        from {{ref('int_historico_clinico__obito__vitai')}}, unnest(gid_boletim_obito) as boletim_obito    
+    ),
+    merged_data_deceased as (
+        select *, IF(deceased.boletim_obito is null, False, True) as obito_indicador
+        from merged_data
+        left join deceased
+        on merged_data.prontuario.id_atendimento = deceased.boletim_obito
+
+    ),
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- FINGERPRINT: Adding Unique Hashed Field
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fingerprinted as (
@@ -71,8 +85,8 @@ with
             ) as id_episodio,
 
             -- Encounter Data
-            merged_data.*,
-        from merged_data
+            merged_data_deceased.*,
+        from merged_data_deceased
     ),
     deduped as (
         select *
@@ -136,11 +150,13 @@ with
         deduped.paciente,
         deduped.tipo,
         deduped.subtipo,
+        cast(deduped.entrada_datahora as date) as entrada_data,
         deduped.entrada_datahora,
         deduped.saida_datahora,
         deduped.exames_realizados,
         deduped.motivo_atendimento,
         deduped.desfecho_atendimento,
+        deduped.obito_indicador,
         all_cids.condicoes,
         deduped.prescricoes,
         deduped.estabelecimento,
