@@ -91,6 +91,7 @@ with
     --=-=-=-=--=-=-=-=-=-=-=-==-=
     --  ENRIQUECIMENTO DE CPF  --
     --=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    -- Cópia de mart_historico_clinico__paciente na parte de cns
     cpf_profissionais as (
         select distinct *
         from (
