@@ -1073,7 +1073,7 @@ models:
       - name: tipo_habilitacao
         description: "Tipo de habilitação."
 
-  - name: dim_habilitacao_sus_rio_historico
+  - name: dim_equipamento_sus_rio_historico
     description: Esta tabela contém dados sobre todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
 
     columns:
