@@ -1,64 +1,54 @@
 {{
     config(
         schema="saude_cnes",
-        alias="leito_sus_rio_historico"
+        alias="equipamento_sus_rio_historico"
     )
 }}
 
 with
-
 versao_atual as (
     select MAX(data_particao) as versao 
     from {{ ref("raw_cnes_web__tipo_unidade") }}
-), 
-
-leitos_mapping_cnesftp as (
-    select * from unnest([
-        STRUCT(1 as tipo_leito, "CIRURGICO" as tipo_leito_descr),
-        STRUCT(2, "CLINICO"),
-        STRUCT(3, "COMPLEMENTAR"),
-        STRUCT(4, "OBSTETRICO"),
-        STRUCT(5, "PEDIATRICO"),
-        STRUCT(6, "OUTROS"),
-        STRUCT(7, "HOSPITAL / DIA")
-    ])
-),
-
-leitos_mapping_cnesweb as (
-    select
-        id_leito_especialidade as tipo_especialidade_leito,
-        leito_especialidade as tipo_especialidade_leito_descr
-    from {{ ref("raw_cnes_web__leito") }}
-    where data_particao = (select versao from versao_atual)
 ),
 
 estabelecimentos_mrj_sus as (
     select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
-leitos_mrj_sus as (
-    select 
-        lt.tipo_leito,
-        lt.tipo_especialidade_leito,
-        lt.quantidade_total,
-        lt.quantidade_contratado,
-        lt.quantidade_sus,
+equip as (
+  select 
+    ano,
+    mes,
+    lpad(id_estabelecimento_cnes, 7, '0') as id_cnes,
+    safe_cast(tipo_equipamento as int64) as equipamento_tipo,
+    safe_cast(id_equipamento as int64) as equipamento_especifico_tipo,
+    safe_cast(quantidade_equipamentos as int64) as equipamentos_quantidade,
+    safe_cast(quantidade_equipamentos_ativos as int64) as equipamentos_quantidade_ativos,
 
-        ftp.tipo_leito_descr,
-        web.tipo_especialidade_leito_descr,
-        estabs.*
+  from {{ ref("raw_cnes_ftp__equipamento") }}
+  where indicador_equipamento_disponivel_sus = 1 and ano >= 2008 and safe_cast(id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+),
 
-    from  {{ ref("raw_cnes_ftp__leito") }} as lt
-    left join leitos_mapping_cnesftp as ftp on safe_cast(lt.tipo_leito as int64) = ftp.tipo_leito
-    left join leitos_mapping_cnesweb as web on safe_cast(lt.tipo_especialidade_leito as int64) = safe_cast(web.tipo_especialidade_leito as int64)
-    left join estabelecimentos_mrj_sus as estabs on lt.ano = estabs.ano and lt.mes = estabs.mes and safe_cast(lt.id_estabelecimento_cnes as int64) = safe_cast(estabs.id_cnes as int64)
-    
-    where lt.ano >= 2008 and safe_cast(lt.id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+equip_mapping_geral as (
+  select
+    equipamento_tipo,
+    equipamento
+  from {{ref ("raw_cnes_web__tipo_equipamento") }}
+  where data_particao = (SELECT versao FROM versao_atual)
+),
+
+equip_mapping_especifico as (
+  select
+    equipamento_especifico_tipo,
+    equipamento_tipo,
+    equipamento_especifico
+  from {{ref ("raw_cnes_web__tipo_equipamento_especifico") }}
+  where data_particao = (SELECT versao FROM versao_atual)
 ),
 
 final as (
     select
-        STRUCT (
+        struct (
             data_atualizao_registro,
             usuario_atualizador_registro,
             mes_particao,
@@ -68,11 +58,11 @@ final as (
             data_snapshot
         ) as metadados,
 
-        STRUCT(
+        struct (
             -- Identificação
-            ano,
-            mes,
-            id_cnes,
+            estabs.ano,
+            estabs.mes,
+            estabs.id_cnes,
             id_unidade,
             nome_razao_social,
             nome_fantasia,
@@ -149,19 +139,19 @@ final as (
             atendimento_regulacao_sus_indicador
         ) as estabelecimentos,
 
-        STRUCT (
-            tipo_leito,
-            tipo_leito_descr,
-            tipo_especialidade_leito,
-            tipo_especialidade_leito_descr,
-            quantidade_total,
-            quantidade_contratado,
-            quantidade_sus
-        ) as leitos
+        struct(
+            equip.equipamento_tipo,
+            equipamento,
+            equipamento_especifico_tipo,
+            equipamento_especifico,
+            equipamentos_quantidade,
+            equipamentos_quantidade_ativos
+        ) as equipamentos
 
-    from leitos_mrj_sus
-    where id_cnes is not null
-    order by ano asc, mes asc, id_cnes asc, tipo_leito_descr asc, tipo_especialidade_leito_descr asc
+    from equip
+    left join estabelecimentos_mrj_sus as estabs using (id_cnes, ano, mes)
+    left join equip_mapping_geral as map_geral using (equipamento_tipo)
+    left join equip_mapping_especifico as map_espec using (equipamento_tipo, equipamento_especifico_tipo)
 )
 
 select * from final

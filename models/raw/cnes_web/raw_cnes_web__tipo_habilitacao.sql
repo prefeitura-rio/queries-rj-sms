@@ -1,3 +1,5 @@
+-- ATENCAO: ID_HABILITACAO NAO É UNIQUE, PORTANTO PODE GERAR CARDINALIDADE AO SER UTILIZADO EM JOINS
+
 {{
     config(
         alias="tipo_habilitacao",

@@ -206,6 +206,7 @@ final AS (
     LEFT JOIN cbo_fam AS ocupf ON LEFT(p.id_cbo_familia, 4) = ocupf.id_cbo_familia
     LEFT JOIN tipo_vinculo ON p.id_tipo_vinculo = tipo_vinculo.codigo_tipo_vinculo
     LEFT JOIN vinculo AS vinculacao ON p.id_vinculacao = vinculacao.id_vinculacao
+    -- Removido temporariamente por estar gerando cardinalidade (cada cns unico possui mais de um cod_sus associado no cnes web)
     --left join (select * from profissionais_cnesweb where ordenacao = 1) as cod_sus on p.profissional_cns = cod_sus.cns
 )
 
