@@ -155,9 +155,10 @@ with
             material_descricao_full as material_descricao,
             material_unidade,
             material_cadastro_esta_correto,
-            estoque_secao,
+            {{ proper_br("estoque_secao") }} as estoque_secao,
             id_lote,
             lote_data_vencimento,
+            lote_status,
             if(
                 current_date('America/Sao_Paulo') > lote_data_vencimento, "nao", "sim"
             ) as lote_validade_dentro_indicador,

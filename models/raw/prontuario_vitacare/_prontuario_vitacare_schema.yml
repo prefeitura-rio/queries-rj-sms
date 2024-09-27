@@ -5,13 +5,21 @@ models:
       saúde que utilizam o prontuário VitaCare para  gestão de estoque de
       farmácia e almoxarifado
     columns:
-      - name: id_estoque_posicao
+      - name: id
         description: Identificador único do registro
+        data_type: string
+        data_tests:
+          - unique:
+              name: raw_prontuario_vitacare__estoque_posicao__id__unique
+              config:
+                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
       - name: area_programatica
         description: Área programática da unidade de saúde onde o item está localizado
+        data_type: string
       - name: id_cnes
         description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
           unidade de saúde onde o item está localizado
+        data_type: string
         data_tests:
           - not_null:
               name: raw_prontuario_vitacare__estoque_posicao__id_cnes__not_null
@@ -28,31 +36,54 @@ models:
                 severity: warn
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
+        data_type: string
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: string
       - name: id_atc
         description: Código de identificação do material cadastrado no prontuário no
           padrão ATC
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: string
       - name: estabelecimento_nome
         description: Nome da unidade de saúde onde o item está localizado
+        data_type: string
+      - name: lote_status
+        description: Status to lote, podendo ser 'active', 'suspended', 'recovered',
+          'removed'
+        data_type: string
+        quote: true
       - name: lote_data_cadastro
         description: Data de cadastro do lote
+        data_type: date
       - name: lote_data_vencimento
         description: Data de vecimento do lote
+        data_type: date
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
+        data_type: string
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
+        data_type: float64
+      - name: localizacao
+        description: Armazém onde está localizado o material
+        data_type: string
+        quote: true
       - name: data_particao
         description: Data de referencia da posição do estoque
+        data_type: date
+      - name: data_replicacao
+        data_type: date
+        quote: true
+        description: Data de quando os dados foram replicados da unidade de saúde.
       - name: data_carga
         description: Data e hora (GMT-3) no qual foi feito o download do dataset
+        data_type: datetime
   - name: raw_prontuario_vitacare__estoque_movimento
     description: Movimentação diária dos estoques de medicamentos e insumos das
       unidades de saúde que utilizam o prontuário Vitacare para gestão de

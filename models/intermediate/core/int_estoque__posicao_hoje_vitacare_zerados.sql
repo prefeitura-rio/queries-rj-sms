@@ -47,18 +47,21 @@ with
     -- Transforma as posições zeradas na mesma estrutura da posição atual
     final as (
         select
-            "" as id_estoque_posicao,
+            "" as id,
             "" as area_programatica,
             pz.id_cnes,
             "" as id_lote,
             pz.id_material,
             "" as id_atc,
             "" as estabelecimento_nome,
+            'active' as lote_status,
             cast(null as date) as lote_data_cadastro,
             cast(null as date) as lote_data_vencimento,
             mat.nome as material_descricao,
             pz.material_quantidade,
+            'farmacia geral' as localizacao,
             pz.data_particao,
+            safe_cast(null as datetime) as data_replicacao,
             pz.data_particao as data_carga,
         from posicao_zeradas as pz
         left join materiais as mat on pz.id_material = mat.id_material
