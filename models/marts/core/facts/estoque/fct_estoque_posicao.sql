@@ -80,7 +80,7 @@ with
             estoque.id_lote,
             estoque.id_material,
             "nao" as estoque_reservado_para_abastecimento,
-            estoque.localizacao as estoque_secao,
+            estoque.armazem as estoque_secao,
             estoque.material_descricao,
             "" as material_unidade,  -- payload da viticare não possui esta informação
             estoque.lote_data_vencimento,

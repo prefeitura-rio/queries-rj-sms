@@ -35,7 +35,11 @@ with
 
     -- Filtra as posições zeradas
     posicao_zeradas as (
-        select remume.id_material, remume.id_cnes, 0 as material_quantidade, remume.data_particao
+        select
+            remume.id_material,
+            remume.id_cnes,
+            0 as material_quantidade,
+            remume.data_particao
         from remume
         left join
             materiais_com_estoque as em_estoque
@@ -45,7 +49,7 @@ with
     ),
 
     -- Transforma as posições zeradas na mesma estrutura da posição atual
-    final as (
+    estrutura_padronizada as (
         select
             "" as id,
             "" as area_programatica,
@@ -59,12 +63,32 @@ with
             cast(null as date) as lote_data_vencimento,
             mat.nome as material_descricao,
             pz.material_quantidade,
-            'farmacia geral' as localizacao,
+            'farmacia geral' as armazem,
             pz.data_particao,
             safe_cast(null as datetime) as data_replicacao,
             pz.data_particao as data_carga,
         from posicao_zeradas as pz
         left join materiais as mat on pz.id_material = mat.id_material
+    ),
+
+    final as (
+
+        select
+            id,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "id_cnes",
+                        "id_material",
+                        "id_lote",
+                        "armazem",
+                        "material_quantidade",
+                        "data_particao",
+                    ]
+                )
+            }} as id_surrogate,
+            * except (id)
+        from estrutura_padronizada
     )
 
 select *

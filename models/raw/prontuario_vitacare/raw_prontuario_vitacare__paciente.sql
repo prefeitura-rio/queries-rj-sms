@@ -2,6 +2,7 @@
     config(
         alias="paciente",
         materialized="table",
+        grants = {'roles/bigquery.dataViewer': ['group:dit-geral-rw@regulacaoriorj.com.br']}
     )
 }}
 

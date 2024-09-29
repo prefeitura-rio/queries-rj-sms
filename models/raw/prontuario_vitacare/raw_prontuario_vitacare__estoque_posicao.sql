@@ -28,12 +28,12 @@ with
             code as id_material,
             lote as id_lote,
             status as lote_status,
-            warehouse as localizacao,
+            warehouse as armazem,
             dtacrilote as lote_data_cadastro,
             dtavalidadelote as lote_data_vencimento,
             estoquelote as material_quantidade,
             id,
-            dtaReplicacao as data_replicacao,
+            dtareplicacao as data_replicacao,
             _data_carga as data_carga,
             ano_particao as ano_particao,
             mes_particao as mes_particao,
@@ -46,7 +46,18 @@ with
         select
             -- Primary key
             concat(id_cnes, '.', id, '.', data_particao) as id,
-
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "id_cnes",
+                        "id_material",
+                        "id_lote",
+                        "armazem",
+                        "material_quantidade",
+                        "data_particao",
+                    ]
+                )
+            }} as id_surrogate,
             -- Foreign Keys
             safe_cast(area_programatica as string) as area_programatica,
             safe_cast(id_cnes as string) as id_cnes,
@@ -63,7 +74,7 @@ with
             safe_cast(lote_data_vencimento as date) as lote_data_vencimento,
             material_descricao,
             safe_cast(material_quantidade as float64) as material_quantidade,
-            lower({{ clean_name_string("localizacao") }}) as localizacao,
+            lower({{ clean_name_string("armazem") }}) as armazem,
 
             -- Metadata
             safe_cast(data_particao as date) as data_particao,
@@ -74,4 +85,5 @@ with
         where safe_cast(material_quantidade as float64) > 0
     )
 
- select * from final
+select *
+from final
