@@ -17,14 +17,17 @@ estabelecimentos_mrj_sus as (
     select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
-profissionais_mrj as (
+profissionais_mrj_non_unique as (
 select
     ano,
     mes,
     concat(ano, '-', lpad(cast(mes as string), 2, '0')) data_registro,
     id_estabelecimento_cnes,
     sigla_uf,
-    cartao_nacional_saude as profissional_cns,
+    case 
+        when cartao_nacional_saude = "nan" then NULL 
+        else cartao_nacional_saude 
+    end as profissional_cns,
     nome as profissional_nome,
     cbo_2002 as id_cbo,
     substring(tipo_vinculo, 1, 4) as id_tipo_vinculo,
@@ -48,6 +51,10 @@ where
         or indicador_vinculo_autonomo_sus = 1
     )
     and safe_cast(id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+),
+
+profissionais_mrj as (
+    select distinct * from profissionais_mrj_non_unique
 ),
 
 /* --- GERANDO CARDINALIDADE:
