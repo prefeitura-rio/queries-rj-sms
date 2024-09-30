@@ -25,6 +25,10 @@ with
             entrada_datahora,
             saida_datahora,
             exames_realizados,
+            array(
+                select as struct
+                    cast(null as string) as descricao, cast(null as string) as observacao
+            ) as procedimentos_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
@@ -46,6 +50,7 @@ with
                 select as struct
                     cast(null as string) as tipo, cast(null as string) as descricao
             ) as exames_realizados,
+            procedimentos_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
@@ -104,7 +109,7 @@ with
             cid.descricao,
             cid.situacao,
             cid.data_diagnostico, 
-            IF(cid.situacao = 'RESOLVIDO',null,best_agrupador) as descricao_agg
+            best_agrupador as descricao_agg
         from  deduped, unnest(condicoes) as cid 
         LEFT JOIN {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
         on agg_4_dig.id = regexp_replace(cid.id,r'\.','')
@@ -117,7 +122,7 @@ with
             cid.descricao,
             cid.situacao,
             cid.data_diagnostico,
-            IF(cid.situacao = 'RESOLVIDO',null,best_agrupador)  as descricao_agg
+            best_agrupador  as descricao_agg
         from  deduped, unnest(condicoes) as cid 
         LEFT JOIN {{ ref("int_historico_clinico__cid_categoria") }} as agg_3_dig
         on agg_3_dig.id_categoria = regexp_replace(cid.id,r'\.','')
@@ -154,6 +159,7 @@ with
         deduped.entrada_datahora,
         deduped.saida_datahora,
         deduped.exames_realizados,
+        deduped.procedimentos_realizados,
         deduped.motivo_atendimento,
         deduped.desfecho_atendimento,
         deduped.obito_indicador,

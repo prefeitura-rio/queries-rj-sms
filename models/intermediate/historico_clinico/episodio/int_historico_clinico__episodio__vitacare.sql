@@ -108,6 +108,39 @@ with
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- DIM: Procedimentos
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    procedimentos as (
+        select
+            gid as fk_atendimento,
+            case 
+                when  json_extract_scalar(procedimentos_json, '$.procedimento_clinico') = ''
+                    then null
+                else upper(json_extract_scalar(procedimentos_json, '$.procedimento_clinico'))
+            end as procedimento,
+            case 
+                when  json_extract_scalar(procedimentos_json, '$.observacao') = ''
+                    then null
+                else upper(json_extract_scalar(procedimentos_json, '$.observacao'))
+            end as observacao,
+
+        from bruto_atendimento , unnest(json_extract_array(soap_plano_procedimentos_clinicos)) as procedimentos_json
+        order by fk_atendimento
+    ),
+
+    dim_procedimentos_realizados as (
+        select
+            fk_atendimento,
+            array_agg(
+                struct(
+                    procedimento as descricao,
+                    observacao 
+                )
+            ) as procedimentos_realizados
+        from procedimentos
+        group by fk_atendimento
+    ),
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Medicamento Prescrito
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     materiais as (
@@ -186,6 +219,9 @@ with
             -- Condições
             dim_condicoes_atribuidas.condicoes,
 
+            -- Procedimentos
+            dim_procedimentos_realizados.procedimentos_realizados,
+
             -- Prescricoes
             dim_prescricoes_atribuidas.prescricoes,
 
@@ -235,6 +271,9 @@ with
         left join
             dim_condicoes_atribuidas
             on atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
+        left join
+            dim_procedimentos_realizados
+            on atendimento.gid = dim_procedimentos_realizados.fk_atendimento
         left join
             dim_prescricoes_atribuidas
             on atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
