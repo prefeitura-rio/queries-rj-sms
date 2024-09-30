@@ -19,7 +19,7 @@ versao_atual AS (
 ), -- OBS: Não faz mais sentido pegar a versão de alguma outra tabela, sem ser tipo_unidade?
 
 -- Obtendo todos os estabelecimentos do MRJ que possuem vinculo com o SUS
-estabelecimentos_brutos AS (
+estabelecimentos_brutos_non_unique AS (
     SELECT
         ano,
         mes,
@@ -39,7 +39,8 @@ estabelecimentos_brutos AS (
         indicador_atendimento_regulacao_sus as atendimento_regulacao_sus_indicador
     FROM {{ ref("raw_cnes_ftp__estabelecimento") }}
     WHERE 
-        sigla_uf = "RJ"
+        ano >= 2010 
+        AND sigla_uf = "RJ"
         AND id_municipio_6 = "330455"
         AND (
             indicador_vinculo_sus = 1
@@ -51,6 +52,10 @@ estabelecimentos_brutos AS (
             OR indicador_atendimento_vigilancia_sus = 1
             OR indicador_atendimento_regulacao_sus = 1
         )
+),
+
+estabelecimentos_brutos as (
+    select distinct * from estabelecimentos_brutos_non_unique
 ),
 
 -- Obtendo atributos dos estabelecimentos via tabela desnormalizada proveniente do CNES WEB

@@ -36,7 +36,7 @@ estabelecimentos_mrj_sus as (
     select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
-leitos_mrj_sus as (
+leitos_mrj_sus_non_unique as (
     select 
         lt.tipo_leito,
         lt.tipo_especialidade_leito,
@@ -53,7 +53,11 @@ leitos_mrj_sus as (
     left join leitos_mapping_cnesweb as web on safe_cast(lt.tipo_especialidade_leito as int64) = safe_cast(web.tipo_especialidade_leito as int64)
     left join estabelecimentos_mrj_sus as estabs on lt.ano = estabs.ano and lt.mes = estabs.mes and safe_cast(lt.id_estabelecimento_cnes as int64) = safe_cast(estabs.id_cnes as int64)
     
-    where lt.ano >= 2008 and safe_cast(lt.id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+    where lt.ano >= 2010 and safe_cast(lt.id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+),
+
+leitos_mrj_sus as (
+    select distinct * from leitos_mrj_sus_non_unique
 ),
 
 final as (
@@ -70,8 +74,6 @@ final as (
 
         STRUCT(
             -- Identificação
-            ano,
-            mes,
             id_cnes,
             id_unidade,
             nome_razao_social,
@@ -150,6 +152,8 @@ final as (
         ) as estabelecimentos,
 
         STRUCT (
+            ano,
+            mes,
             tipo_leito,
             tipo_leito_descr,
             tipo_especialidade_leito,

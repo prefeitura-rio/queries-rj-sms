@@ -43,7 +43,7 @@ select
 from {{ ref("raw_cnes_ftp__profissional") }}
 
 where
-    ano >= 2008
+    ano >= 2010
     and sigla_uf = "RJ"
     and (
         indicador_atende_sus = 1
@@ -105,8 +105,6 @@ final AS (
 
         STRUCT(
             -- Identificação
-            estabs.ano,
-            estabs.mes,
             estabs.id_cnes,
             estabs.id_unidade,
             estabs.nome_razao_social,
@@ -187,9 +185,11 @@ final AS (
         STRUCT(
             --cod_sus.id_codigo_sus as profissional_codigo_sus,
             p.data_registro,
+            estabs.ano,
+            estabs.mes,
             hci.cpf,
-            p.profissional_cns,
-            p.profissional_nome,
+            p.profissional_cns as cns,
+            p.profissional_nome as nome,
             vinculacao.descricao AS vinculacao,
             tipo_vinculo.descricao AS vinculo_tipo,
             p.id_cbo,
@@ -198,12 +198,13 @@ final AS (
             ocupf.descricao AS cbo_familia,
             p.id_registro_conselho,
             p.id_tipo_conselho,
-            hci.dados as profissional_dados_hci,
-            hci.endereco as endereco_profissional_hci,
             p.carga_horaria_outros,
             p.carga_horaria_hospitalar,
             p.carga_horaria_ambulatorial,
-            p.carga_horaria_total
+            p.carga_horaria_total,
+            hci.dados as profissional_dados_hci,
+            hci.endereco as endereco_profissional_hci
+            
         ) AS profissionais
         
     FROM profissionais_mrj AS p
