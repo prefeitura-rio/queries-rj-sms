@@ -167,21 +167,24 @@ with
             cns
         FROM cns_contagem
         WHERE cns IS NOT NULL
-    )
-select
-    profissionais_datasus.id_codigo_sus as id_profissional_sus,
-    cns_dados.cpf as cpf,
-    profissionais_datasus.cns,
-    profissionais_datasus.nome,
-    cbo_agg.cbo,
-    conselho_agg.conselho
-from profissionais_datasus
-left join
-    cns_dados 
-    on profissionais_datasus.cns = cns_dados.cns
-left join
-    cbo_agg 
-    on profissionais_datasus.id_codigo_sus = cbo_agg.profissional_codigo_sus
-left join
-    conselho_agg 
-    on profissionais_datasus.id_codigo_sus = conselho_agg.profissional_codigo_sus
+    ),
+final as (
+    select
+        profissionais_datasus.id_codigo_sus as id_profissional_sus,
+        cns_dados.cpf as cpf,
+        profissionais_datasus.cns,
+        profissionais_datasus.nome,
+        cbo_agg.cbo,
+        conselho_agg.conselho
+    from profissionais_datasus
+    left join
+        cns_dados 
+        on profissionais_datasus.cns = cns_dados.cns
+    left join
+        cbo_agg 
+        on profissionais_datasus.id_codigo_sus = cbo_agg.profissional_codigo_sus
+    left join
+        conselho_agg 
+        on profissionais_datasus.id_codigo_sus = conselho_agg.profissional_codigo_sus
+) 
+select * from final
