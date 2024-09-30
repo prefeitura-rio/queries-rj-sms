@@ -1,5 +1,6 @@
 {{
     config(
+        schema="brutos_prontuario_vitacare_staging",
         alias="_base_paciente_historico",
         materialized="table",
     )

@@ -120,12 +120,21 @@ models:
       - name: estoque_secao
         description: Sub-estoque onde o medicamento/insumo está armazenado
         data_type: string
+      - name: estoque_secao_caf_indicador
+        description: Indica se o estoque está na principal localidade de armazenamento (CAF)
+        data_type: string
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
         data_type: string
       - name: lote_data_vencimento
         description: Data de vencimento do lote
         data_type: date
+      - name: lote_status
+        description: Status do lote de acordo com o sistema de origem
+        data_type: string
+      - name: lote_status_padronizado
+        description: Status do lote padronizado para utilização nos dashboards
+        data_type: string
       - name: lote_validade_dentro_indicador
         description: Indica se o lote está vencido ou não
         data_type: string
@@ -295,8 +304,17 @@ models:
       - name: estoque_secao
         description: Sub-estoque onde o medicamento/insumo está armazenado
         data_type: string
+      - name: estoque_secao_caf_indicador
+        description: Indica se o estoque está na principal localidade de armazenamento (CAF)
+        data_type: string
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
+        data_type: string
+      - name: lote_status
+        description: Status do lote de acordo com o sistema de origem
+        data_type: string
+      - name: lote_status_padronizado
+        description: Status do lote padronizado para utilização nos dashboards
         data_type: string
       - name: lote_data_vencimento
         description: Data de vencimento do lote
