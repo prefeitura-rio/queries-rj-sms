@@ -1,5 +1,15 @@
 with
-versao_atual_sisreg as (select max(data_particao) as versao from  {{ ref("fct_sisreg_oferta_programada_serie_historica") }}),
+
+padronizacao_procedimentos as (
+    select 
+        id_procedimento,
+        descricao as procedimento,
+        parametro_consultas_por_hora as procedimento_consultas_hora,
+        parametro_reservas as procedimento_proporcao_reservas,
+        parametro_retornos as procedimento_proporcao_retornos
+
+    from {{ ref("raw_sheets__assistencial_procedimento") }}
+),
 
 oferta_programada_mensal_por_procedimento_cbo as (
     select 
@@ -18,7 +28,10 @@ oferta_programada_mensal_por_procedimento_cbo as (
 
     where
         -- selecionando versao mais atual
-        data_particao = (select versao from versao_atual_sisreg)
+        data_particao = (select max(data_particao) as versao from {{ ref("fct_sisreg_oferta_programada_serie_historica") }})
+
+        -- selecionando periodo de interesse
+        and procedimento_vigencia_ano >= 2020
 
         -- selecionando ocupações de interesse
         and regexp_contains(id_cbo2002, r'^(3222|2251|2235|2231|2252|2232|2236|2234|2237|2515|2253|3251|2238|5152|2239)')
@@ -87,17 +100,16 @@ oferta_programada_mensal as (
 
 profissionais as (
     select
-        profissionais.cpf as cpf,
-        profissionais.profissional_cns as cns,
-        profissionais.profissional_nome as profissional,
+        profissionais.cpf,
+        profissionais.cns,
+        profissionais.nome as profissional,
         profissionais.id_cbo as id_cbo_2002,
         upper(profissionais.cbo) as ocupacao,
         upper(profissionais.cbo_familia) as ocupacao_agg,
-        (profissionais.carga_horaria_ambulatorial * 4.5) as carga_horaria_ambulatorial_mensal,
-
+        round(sum((profissionais.carga_horaria_ambulatorial * 4.5))) as carga_horaria_ambulatorial_mensal,
+        profissionais.ano,
+        profissionais.mes,
         estabelecimentos.id_cnes,
-        estabelecimentos.ano,
-        estabelecimentos.mes,
         estabelecimentos.nome_fantasia as estabelecimento,
         estabelecimentos.esfera,
         estabelecimentos.natureza_juridica_descr as natureza_juridica,
@@ -115,6 +127,9 @@ profissionais as (
         -- selecionando os registros mais atuais
         metadados.data_particao = (select max(metadados.data_particao) from {{ ref("dim_profissional_sus_rio_historico") }})
 
+        -- filtrando por anos de interesse
+        and profissionais.ano >= 2020
+
         -- filtrando por estabelecimentos que possuem oferta no sisreg
         and estabelecimentos.id_cnes in (select distinct id_cnes from oferta_programada_mensal)
 
@@ -123,6 +138,89 @@ profissionais as (
         and profissionais.carga_horaria_ambulatorial > 0
         and regexp_contains(profissionais.id_cbo, r'^(3222|2251|2235|2231|2252|2232|2236|2234|2237|2515|2253|3251|2238|5152|2239)')
         and profissionais.id_cbo not in ("225142", "225130", "223293", "223565", "322245")
-)   
 
-select * from profissionais
+    group by 
+        profissionais.cpf,
+        profissionais.cns,
+        profissional,
+        id_cbo_2002,
+        ocupacao,
+        ocupacao_agg,
+        profissionais.ano,
+        profissionais.mes,
+        estabelecimentos.id_cnes,
+        estabelecimento,
+        estabelecimentos.esfera,
+        natureza_juridica,
+        tipo_gestao,
+        turno,
+        estabelecimentos.tipo,
+        estabelecimentos.tipo_unidade_alternativo,
+        estabelecimentos.tipo_unidade_agrupado,
+        estabelecimentos.id_ap,
+        estabelecimentos.ap,
+        estabelecimentos.endereco_bairro
+),
+
+
+mva as (
+    select 
+        coalesce(ofer.cpf, prof.cpf) as cpf,
+        prof.profissional,
+        coalesce(ofer.id_cbo_2002, prof.id_cbo_2002) as id_cbo_2002,
+        prof.ocupacao,
+        prof.ocupacao_agg,
+        coalesce(ofer.id_cnes, prof.id_cnes) as id_cnes,
+        prof.cns,
+        prof.estabelecimento,
+        prof.esfera as esfera_estabelecimento,
+        prof.natureza_juridica as natureza_juridica_estabelecimento,
+        prof.tipo_gestao as tipo_gestao_estabelecimento,
+        prof.turno as turno_estabelecimento,
+        prof.tipo as tipo_estabelecimento,
+        prof.tipo_unidade_alternativo as tipo_estabelecimento_alternativo,
+        prof.tipo_unidade_agrupado as tipo_estabelecimento_agrupado,
+        prof.id_ap as id_ap_estabelecimento,
+        prof.ap as ap_estabelecimento,
+        prof.endereco_bairro as endereco_bairro_estabelecimento,
+        ofer.id_procedimento,
+        coalesce(ofer.ano, prof.ano) as ano,
+        coalesce(ofer.mes, prof.mes) as mes,
+
+        prof.carga_horaria_ambulatorial_mensal,
+        case 
+            when ofer.vagas_programadas_mensal_todas_unidade is not NULL and prof.carga_horaria_ambulatorial_mensal is NULL then NULL
+            when ofer.vagas_programadas_mensal_todas_unidade is NULL and prof.carga_horaria_ambulatorial_mensal is not NULL then prof.carga_horaria_ambulatorial_mensal
+            else round(prof.carga_horaria_ambulatorial_mensal * ofer.procedimento_distribuicao)
+        end as carga_horaria_procedimento_esperada_mensal,
+
+        -- primeira vez
+        ofer.vagas_programadas_mensal_primeira_vez,
+        ofer.vagas_programadas_mensal_primeira_vez_unidade,
+
+        -- retorno
+        ofer.vagas_programadas_mensal_retorno,
+        ofer.vagas_programadas_mensal_retorno_unidade,
+
+        -- total
+        ofer.vagas_programadas_mensal_todas,
+        ofer.vagas_programadas_mensal_todas_unidade,
+
+        ofer.procedimento_distribuicao,
+
+        case 
+            when ofer.vagas_programadas_mensal_todas_unidade is NULL then 0
+            else  1
+        end as sisreg_dados,
+
+        case 
+            when prof.carga_horaria_ambulatorial_mensal is NULL then 0
+            else  1
+        end as cnes_dados
+
+    from oferta_programada_mensal as ofer
+    full outer join profissionais as prof
+    using (cpf, id_cnes, ano, mes, id_cbo_2002)
+)
+
+select * from mva
