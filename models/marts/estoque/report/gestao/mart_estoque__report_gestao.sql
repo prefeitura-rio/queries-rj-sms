@@ -29,13 +29,23 @@ with
 
     posicao as (
         select *
-        from {{ ref("mart_estoque__posicao_atual_agregado") }}
+        from {{ ref("mart_estoque__posicao_atual") }}
         inner join medicamentos using (id_material)
-        where estabelecimento_tipo_sms_agrupado in ("APS", "TPC")
+        where
+            lote_status_padronizado in ("Ativo")
+            and estabelecimento_tipo_sms_agrupado in ("APS", "TPC")
     ),
 
-    posicao_aps as (
-        select * from posicao where estabelecimento_tipo_sms_agrupado = "APS"
+    posicao_aps_sumarized as (
+        select
+            id_material,
+            id_cnes,
+            estabelecimento_area_programatica,
+            sum(material_quantidade) as material_quantidade,
+            avg(material_consumo_medio) as material_consumo_medio
+        from posicao
+        where estabelecimento_tipo_sms_agrupado = "APS"
+        group by id_material, id_cnes, estabelecimento_area_programatica
     ),
 
     curva_pqrs as (
@@ -52,7 +62,7 @@ with
     -- dias de estoque
     cmd as (
         select id_material, sum(material_consumo_medio) as cmd
-        from posicao_aps
+        from posicao_aps_sumarized
         group by id_material
     ),
 
@@ -82,7 +92,7 @@ with
             count(
                 distinct case when material_quantidade = 0 then id_cnes else null end
             ) as zerados_ubs,
-        from posicao_aps
+        from posicao_aps_sumarized
         group by id_material
         order by zerados_ubs
     ),
@@ -99,7 +109,7 @@ with
                     "sum(material_quantidade)", "sum(material_consumo_medio)"
                 )
             }} as cobertura,
-        from posicao_aps
+        from posicao_aps_sumarized
         group by id_material, estabelecimento_area_programatica
         order by id_material, estabelecimento_area_programatica
     ),
@@ -146,7 +156,7 @@ with
             if(s.qtd_aps = 0, 10, za.zeradas_ap) as zeradas_ap,
             if(
                 s.qtd_aps = 0,
-                (select count(distinct id_cnes) from posicao_aps),
+                (select count(distinct id_cnes) from posicao_aps_sumarized),
                 zu.zerados_ubs
             ) as zerados_ubs,  -- correção para incluir unidades com estoques positivos porém vencidos
             coalesce(

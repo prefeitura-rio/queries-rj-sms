@@ -155,9 +155,32 @@ with
             material_descricao_full as material_descricao,
             material_unidade,
             material_cadastro_esta_correto,
-            estoque_secao,
+            {{ proper_br("estoque_secao") }} as estoque_secao,
+            case
+                when sistema_origem = "vitacare" and estoque_secao = "farmacia geral"
+                then "Sim"
+                when sistema_origem = "vitacare" and estoque_secao <> "farmacia geral"
+                then "Não"
+                when id_cnes = "6927254"  -- newton bethlen, enquanto não chegam dados com o novo payload  # TODO: retirar após atualizacao
+                then "Sim"
+                when sistema_origem = "tpc"
+                then "Sim"
+                else "Desconhecido"
+            end as estoque_secao_caf_indicador,
             id_lote,
             lote_data_vencimento,
+            lote_status,
+            case
+                when current_date('America/Sao_Paulo') > lote_data_vencimento
+                then "Vencido"
+                when lote_status = "removed"
+                then "Removido"
+                when lote_status = "suspended"
+                then "Suspenso"
+                when lote_status = "active" or lote_status = "recovered"
+                then "Ativo"
+                else "Ativo"
+            end as lote_status_padronizado,
             if(
                 current_date('America/Sao_Paulo') > lote_data_vencimento, "nao", "sim"
             ) as lote_validade_dentro_indicador,
@@ -198,7 +221,6 @@ with
             data_carga,
 
         from posicao_final
-        where sistema_origem <> "vitai"  -- retirado por falta de dados
         order by
             estabelecimento_tipo_sms_agrupado,
             estabelecimento_area_programatica,
@@ -206,5 +228,6 @@ with
             material_descricao
     )
 
-
-select * from final 
+select *
+from final
+where sistema_origem <> "vitai"  -- retirado por falta de dados 
