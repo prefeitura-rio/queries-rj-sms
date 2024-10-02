@@ -15,7 +15,7 @@ estabelecimentos_mrj_sus as (
     select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
-equip as (
+equip_non_unique as (
   select 
     ano,
     mes,
@@ -26,7 +26,11 @@ equip as (
     safe_cast(quantidade_equipamentos_ativos as int64) as equipamentos_quantidade_ativos,
 
   from {{ ref("raw_cnes_ftp__equipamento") }}
-  where indicador_equipamento_disponivel_sus = 1 and ano >= 2008 and safe_cast(id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+  where indicador_equipamento_disponivel_sus = 1 and ano >= 2010 and safe_cast(id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+),
+
+equip as (
+  select distinct * from equip_non_unique
 ),
 
 equip_mapping_geral as (
@@ -60,8 +64,6 @@ final as (
 
         struct (
             -- Identificação
-            estabs.ano,
-            estabs.mes,
             estabs.id_cnes,
             id_unidade,
             nome_razao_social,
@@ -140,6 +142,8 @@ final as (
         ) as estabelecimentos,
 
         struct(
+            estabs.ano,
+            estabs.mes,
             equip.equipamento_tipo,
             equipamento,
             equipamento_especifico_tipo,

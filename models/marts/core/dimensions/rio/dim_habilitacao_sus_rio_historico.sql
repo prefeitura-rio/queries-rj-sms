@@ -15,7 +15,7 @@ estabelecimentos_mrj_sus as (
     select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
-habilitacoes as (
+habilitacoes_non_unique as (
   select
     ano,
     mes,
@@ -38,7 +38,11 @@ habilitacoes as (
     end as habilitacao_mes_fim
   from
     {{ref("raw_cnes_ftp__habilitacao")}}
-  where ano >= 2008 and safe_cast(id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+  where ano >= 2010 and safe_cast(id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
+),
+
+habilitacoes as (
+  select distinct * from habilitacoes_non_unique
 ),
 
 habilitacoes_mapping_cnesweb AS (
@@ -86,8 +90,6 @@ final as (
 
         struct (
             -- Identificação
-            estabs.ano,
-            estabs.mes,
             estabs.id_cnes,
             id_unidade,
             nome_razao_social,
@@ -166,6 +168,8 @@ final as (
         ) as estabelecimentos,
 
         struct (
+            estabs.ano,
+            estabs.mes,
             hab.id_habilitacao,
             habilitacao,
             habilitacao_ativa_indicador,
