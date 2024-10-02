@@ -49,9 +49,6 @@ where
     -- selecionando apenas estabelecimentos que oferecem vagas no sisreg
     and estabelecimentos.id_cnes in (select distinct id_cnes from {{ ref('int_mva__oferta_programada_mensal') }})
 
-    -- selecionando apenas estabelecimentos da secretaria municipal de saude
-    and estabelecimentos.estabelecimento_sms_indicador = 1
-
     -- selecionando apenas profissionais com carga horaria ambulatorial
     and profissionais.carga_horaria_ambulatorial > 0
 
