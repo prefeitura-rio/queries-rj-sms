@@ -32,33 +32,25 @@ with
     final as (
         select
             -- PK
-            safe_cast(gid as string) as gid,
+            gid as gid,
 
             -- Chaves
-            safe_cast(patient_cpf as string) as cpf,
-            safe_cast(payload_cnes as string) as cnes_unidade,
+            patient_cpf as cpf,
+            payload_cnes as cnes_unidade,
 
             -- Profissional
-            safe_cast(data__profissional__cns as string) as cns_profissional,
-            safe_cast(data__profissional__cpf as string) as cpf_profissional,
-            safe_cast(data__profissional__nome as string) as nome_profissional,
-            safe_cast(data__profissional__cbo as string) as cbo_profissional,
-            safe_cast(
-                data__profissional__cbo_descricao as string
-            ) as cbo_descricao_profissional,
-            safe_cast(
-                data__profissional__equipe__cod_equipe as string
-            ) as cod_equipe_profissional,
-            safe_cast(
-                data__profissional__equipe__cod_ine as string
-            ) as cod_ine_equipe_profissional,
-            safe_cast(
-                data__profissional__equipe__nome as string
-            ) as nome_equipe_profissional,
+            data__profissional__cns as cns_profissional,
+            data__profissional__cpf as cpf_profissional,
+            data__profissional__nome as nome_profissional,
+            data__profissional__cbo as cbo_profissional,
+            data__profissional__cbo_descricao as cbo_descricao_profissional,
+            data__profissional__equipe__cod_equipe as cod_equipe_profissional,
+            data__profissional__equipe__cod_ine as cod_ine_equipe_profissional,
+            data__profissional__equipe__nome as nome_equipe_profissional,
 
             -- Dados da Consulta
-            safe_cast(data__tipo_consulta as string) as tipo,
-            safe_cast(data__eh_coleta as string) as eh_coleta,
+            data__tipo_consulta as tipo,
+            data__eh_coleta as eh_coleta,
             safe_cast(
                 {{ process_null("data__datahora_marcacao_atendimento") }} as datetime
             ) as datahora_marcacao,
@@ -70,33 +62,21 @@ with
             ) as datahora_fim,
 
             -- Campos Livres
-            safe_cast(
-                {{ process_null("data__soap_subjetivo_motivo") }} as string
-            ) as soap_subjetivo_motivo,
-            safe_cast(
-                {{ process_null("data__soap_objetivo_descricao") }} as string
-            ) as soap_objetivo_descricao,
-            safe_cast(
-                {{ process_null("data__soap_avaliacao_observacoes") }} as string
-            ) as soap_avaliacao_observacoes,
-            safe_cast(
-                {{ process_null("data__soap_plano_procedimentos_clinicos") }} as string
-            ) as soap_plano_procedimentos_clinicos,
-            safe_cast(
-                {{ process_null("data__soap_plano_observacoes") }} as string
-            ) as soap_plano_observacoes,
-            safe_cast(
-                {{ process_null("data__notas_observacoes") }} as string
-            ) as soap_notas_observacoes,
+            {{ process_null("data__soap_subjetivo_motivo") }} as soap_subjetivo_motivo,
+            {{ process_null("data__soap_objetivo_descricao") }} as soap_objetivo_descricao,
+            {{ process_null("data__soap_avaliacao_observacoes") }} as soap_avaliacao_observacoes,
+            {{ process_null("data__soap_plano_procedimentos_clinicos") }} as soap_plano_procedimentos_clinicos,
+            {{ process_null("data__soap_plano_observacoes") }} as soap_plano_observacoes,
+            {{ process_null("data__notas_observacoes") }} as soap_notas_observacoes,
 
             -- JSONs
-            safe_cast(data__prescricoes as string) as prescricoes,
-            safe_cast(data__condicoes as string) as condicoes,
-            safe_cast(data__exames_solicitados as string) as exames_solicitados,
-            safe_cast(data__alergias_anamnese as string) as alergias_anamnese,
-            safe_cast(data__vacinas as string) as vacinas,
-            safe_cast(data__indicadores as string) as indicadores,
-            safe_cast(data__encaminhamentos as string) as encaminhamentos,
+            data__prescricoes as prescricoes,
+            data__condicoes as condicoes,
+            data__exames_solicitados as exames_solicitados,
+            data__alergias_anamnese as alergias_anamnese,
+            data__vacinas as vacinas,
+            data__indicadores as indicadores,
+            data__encaminhamentos as encaminhamentos,
 
             -- Metadados
             safe_cast(source_updated_at as datetime) as updated_at,
