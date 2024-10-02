@@ -90,19 +90,13 @@ with
             ) as soap_notas_observacoes,
 
             -- JSONs
-            safe_cast({{ dict_to_json("data__prescricoes") }} as string) as prescricoes,
-            safe_cast({{ dict_to_json("data__condicoes") }} as string) as condicoes,
-            safe_cast(
-                {{ dict_to_json("data__exames_solicitados") }} as string
-            ) as exames_solicitados,
-            safe_cast(
-                {{ dict_to_json("data__alergias_anamnese") }} as string
-            ) as alergias_anamnese,
-            safe_cast({{ dict_to_json("data__vacinas") }} as string) as vacinas,
-            safe_cast({{ dict_to_json("data__indicadores") }} as string) as indicadores,
-            safe_cast(
-                {{ dict_to_json("data__encaminhamentos") }} as string
-            ) as encaminhamentos,
+            safe_cast(data__prescricoes as string) as prescricoes,
+            safe_cast(data__condicoes as string) as condicoes,
+            safe_cast(data__exames_solicitados as string) as exames_solicitados,
+            safe_cast(data__alergias_anamnese as string) as alergias_anamnese,
+            safe_cast(data__vacinas as string) as vacinas,
+            safe_cast(data__indicadores as string) as indicadores,
+            safe_cast(data__encaminhamentos as string) as encaminhamentos,
 
             -- Metadados
             safe_cast(source_updated_at as datetime) as updated_at,
