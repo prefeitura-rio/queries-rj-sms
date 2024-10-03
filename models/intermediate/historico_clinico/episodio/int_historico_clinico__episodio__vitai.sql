@@ -192,10 +192,7 @@ with
                 then 'Ambulatorial'
                 else null
             end as subtipo,
-            array(
-                select as struct
-                    cast(null as string) as tipo, cast(null as string) as descricao
-            ) as exames_realizados
+            array<struct<tipo string, descricao string>>[] as exames_realizados
         from boletim
         left join alta_adm 
             on boletim.gid = alta_adm.gid_boletim 
@@ -257,10 +254,7 @@ with
                 then 'Emergência'
                 else trim(initcap(internacao_distinct.internacao_tipo))
             end as subtipo,
-            array(
-                select as struct
-                    cast(null as string) as tipo, cast(null as string) as descricao
-            ) as exames_realizados
+            array<struct<tipo string, descricao string>>[] as exames_realizados
         from boletim
         left join
             (select * from internacao_all where ordenacao = 1) internacao_distinct

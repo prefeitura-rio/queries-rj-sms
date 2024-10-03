@@ -102,9 +102,9 @@ with
                 order by data_diagnostico desc, cid_descricao.descricao
             ) as condicoes
         from condicoes
-        left join (
-            select distinct id, descricao from cid_descricao
-            ) as cid_descricao on condicoes.id = cid_descricao.id
+            left join (
+                select distinct id, descricao from cid_descricao
+                ) as cid_descricao on condicoes.id = cid_descricao.id
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -127,7 +127,14 @@ with
         from bruto_atendimento , unnest(json_extract_array(soap_plano_procedimentos_clinicos)) as procedimentos_json
         order by fk_atendimento
     ),
-
+    procedimentos_sem_nulos as (
+        select
+            *
+        from procedimentos
+        where 
+            procedimentos.procedimento is not null and
+            procedimentos.observacao is not null
+    ),
     dim_procedimentos_realizados as (
         select
             fk_atendimento,
@@ -137,7 +144,7 @@ with
                     observacao 
                 )
             ) as procedimentos_realizados
-        from procedimentos
+        from procedimentos_sem_nulos
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -170,7 +177,7 @@ with
                 )
             ) as prescricoes
         from prescricoes
-        left join materiais on prescricoes.id = materiais.id_material
+            left join materiais on prescricoes.id = materiais.id_material
         group by fk_atendimento
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
