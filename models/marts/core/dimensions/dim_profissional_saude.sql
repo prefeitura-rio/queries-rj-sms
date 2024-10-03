@@ -74,14 +74,38 @@ with
 
     cbo_distinct as (
         select distinct
-            profissional_codigo_sus, id_cbo, cbo, id_cbo_familia, cbo_familia
+            profissional_codigo_sus,
+            id_cbo,
+            cbo,
+            case 
+                when regexp_contains(lower(cbo),'^medic')
+                    then 'MÉDICOS'
+                when regexp_contains(lower(cbo),'^cirurgiao[ |-|]dentista')
+                    then 'DENTISTAS'
+                when regexp_contains(lower(cbo),'psic')
+                    then 'PSICÓLOGOS'  
+                when regexp_contains(lower(cbo),'fisioterap')
+                    then 'FISIOTERAPEUTAS'
+                when regexp_contains(lower(cbo),'nutri[ç|c]')
+                    then 'NUTRICIONISTAS'
+                when regexp_contains(lower(cbo),'fono')
+                    then 'FONOAUDIÓLOGOS'   
+                when regexp_contains(lower(cbo),'farm')
+                    then 'FARMACÊUTICOS'  
+                when ((regexp_contains(lower(cbo),'enferm')) and (lower(cbo) !='socorrista (exceto medicos e enfermeiros)'))
+                    then 'ENFERMEIROS'  
+                else
+                    'OUTROS PROFISSIONAIS'
+            end as cbo_agrupador,
+            id_cbo_familia,
+            cbo_familia, 
         from alocacao
     ),
 
     cbo_agg as (
         select
             profissional_codigo_sus,
-            array_agg(struct(id_cbo, cbo, id_cbo_familia, cbo_familia)) as cbo
+            array_agg(struct(id_cbo, cbo, cbo_agrupador, id_cbo_familia, cbo_familia)) as cbo
         from cbo_distinct
         group by 1
     ),
