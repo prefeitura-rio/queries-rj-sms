@@ -260,8 +260,6 @@ estabelecimentos_final AS (
 final as (
     SELECT 
         -- Identificação
-        cast(ano as int64) as ano,
-        cast(mes as int64) as mes,
         lpad(id_estabelecimento_cnes, 7, '0') AS id_cnes,
         id_unidade,
         nome_razao_social,
@@ -344,6 +342,8 @@ final as (
         -- Metadados
         data_atualizao_registro,
         usuario_atualizador_registro,
+        cast(ano as int64) as ano,
+        cast(mes as int64) as mes,
         safe_cast(mes_particao as int64) as mes_particao,
         safe_cast(ano_particao as int64) as ano_particao,
         parse_date('%Y-%m-%d', data_particao) as data_particao,
