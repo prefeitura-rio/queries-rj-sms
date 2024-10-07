@@ -43,8 +43,12 @@ models:
         description: "Administração do estabelecimento."
       - name: diretor_clinico_cpf
         description: "CPF do diretor clínico do estabelecimento."
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
 
       # Atributos
       - name: tipo_turno
