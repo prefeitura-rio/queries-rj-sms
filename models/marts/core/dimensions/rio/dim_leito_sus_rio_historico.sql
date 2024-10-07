@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         schema="saude_cnes",
         alias="leito_sus_rio_historico"
     )

@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         schema="saude_cnes",
         alias="habilitacao_sus_rio_historico"
     )
