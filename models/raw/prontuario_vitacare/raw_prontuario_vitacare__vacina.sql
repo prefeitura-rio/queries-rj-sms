@@ -99,7 +99,7 @@ with
             -- Metadata
             ano_particao,
             mes_particao,
-            data_particao,
+            safe_cast(data_particao as date) as data_particao,
             imported_at,
 
         from renamed
