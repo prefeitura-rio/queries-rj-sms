@@ -47,9 +47,7 @@ WITH vitai_tb AS (
         updated_at,
         gid_estabelecimento AS id_cnes -- use gid to get id_cnes from  rj-sms.brutos_prontuario_vitai.estabelecimento
     FROM {{ref('raw_prontuario_vitai__paciente')}} -- `rj-sms-dev`.`brutos_prontuario_vitai`.`paciente`
-    WHERE cpf IS NOT NULL
-        AND NOT REGEXP_CONTAINS({{remove_accents_upper('cpf')}}, r'[A-Za-z]')
-        AND TRIM({{remove_accents_upper('cpf')}}) != ""
+    WHERE {{validate_cpf('cpf')}}
 ),
 
 -- CNS
@@ -496,15 +494,15 @@ paciente_dados AS (
         pc.cpf,
         ARRAY_AGG(STRUCT(
                 cpf_valido_indicador,
-                nome,
-                nome_social,
+                {{ proper_br("nome") }} as nome,
+                {{ proper_br("nome_social") }} as nome_social,
                 data_nascimento,
-                genero,
-                raca,
+                {{ proper_br("genero") }} as genero,
+                {{ proper_br("raca") }} as raca,
                 obito_indicador,
                 obito_data,
-                mae_nome,
-                pai_nome,
+                {{ proper_br("mae_nome") }} as mae_nome,
+                {{ proper_br("pai_nome") }} as pai_nome,
                 rank,
                 pm.metadados
         )) AS dados

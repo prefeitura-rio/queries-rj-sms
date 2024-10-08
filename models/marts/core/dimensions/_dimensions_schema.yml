@@ -9,6 +9,9 @@ models:
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
+        data_tests:
+          - unique:
+              name: core__dim_material__id_material__unique
       - name: descricao
         description: Esta é uma descrição do material. Fornece informações detalhadas
           sobre o material, incluindo seu nome e quaisquer outros detalhes
@@ -57,6 +60,10 @@ models:
           exemplo, um material do grupo medicamento pode pertencer às
           subcategorias como antibióticos, analgésicos, etc.
         data_type: string
+      - name: ativo_indicador
+        description: Este campo indica se item está ativo.
+        data_type: string
+        quote: true
       - name: controlado_indicador
         description: Este campo indica se o material é controlado ou não. Um material
           controlado é aquele que está sujeito a regulamentações ou restrições
@@ -73,6 +80,15 @@ models:
         description: Quantidade mínima do medicamento dispensada para um paciente
         data_type: int64
         quote: true
+      - name: abastecimento_responsavel
+        description: Indica quem é o responsável pelo abastecimento do item.
+        data_type: string
+        quote: true
+      - name: abastecimento_frequencia
+        data_type: string
+        quote: true
+        description: Esta coluna representa a frequência de abastecimento do material específico. 
+          Fornece informações sobre com que frequência o material é abastecido ou reabastecido.
       - name: classificacao_xyz
         description: "Classificação da criticidade do medicamento, onde: X (Críticos):
           São itens cruciais para o tratamento imediato e eficaz dos pacientes.
@@ -183,6 +199,11 @@ models:
           material está disponível. A lista é representada pelo CNES de cada
           unidade separada por vírgula.
         data_type: string
+      - name: farmacia_popular_disponibilidade_indicador
+        description: Esta coluna indica se o material pode ser obtido através da
+          farmácia popular.
+        data_type: string
+        quote: true
       - name: cadastrado_sistema_vitacare_indicador
         description: Esta coluna indica se o material está registrado no Prontuário da
           Vitacare. É um valor de string que pode ser 'sim' se o material
@@ -200,7 +221,7 @@ models:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
         data_type: string
-        tests:
+        data_tests:
           - unique:
               name: core__dim_estabelecimento__id_cnes__unique
       - name: id_tipo_unidade
@@ -349,7 +370,7 @@ models:
       - name: id_profissional_sus
         description: Código SUS do profissional
         data_type: string
-        tests:
+        data_tests:
           - unique:
               name: core__dim_profissional_saude__id_ine__unique
       - name: cpf
@@ -374,6 +395,9 @@ models:
         data_type: string
       - name: cbo.cbo
         description: Descrição do CBO associado ao profissional
+        data_type: string
+      - name: cbo.cbo_agrupador
+        description: Descrição agrupada do cbo profissional
         data_type: string
       - name: cbo.id_cbo_familia
         description: ID de familia de CBO associado ao CBO
@@ -410,6 +434,9 @@ models:
         data_type: STRING
       - name: cbo_nome
         description: Descrição da especialidade do profissional
+        data_type: STRING
+      - name: cbo_agrupador
+        description: Descrição agrupada do cbo profissional
         data_type: STRING
       - name: id_cbo_familia
         description: Id da família de especialidade do profissional
@@ -459,7 +486,7 @@ models:
     columns:
       - name: id_ine
         description: Código da Equipe (Identificador Nacional de Equipe - INE)
-        tests:
+        data_tests:
           - unique:
               name: core__dim_equipe__id_ine__unique
       - name: equipe_sequencial
@@ -499,3 +526,50 @@ models:
         description: Código SUS dos dentistas atribuidos a equipe
       - name: outros_profissionais
         description: Código SUS dos outros profissionais atribuidos a equipe
+  - name: dim_condicao_cid10
+    description: Tabela contendo a Classificação Internacional de Doenças (CID-10). Contém CID S44.6 e S44.5 com mesmas entradas pois S44.6 foi alterado para S44.5 em 2002.
+    columns:
+      - name: id
+        description: Identificação da subcategoria do CID.
+        data_type: string
+        data_tests:
+          - unique:
+              name: dim_condicao_cid10__id__unique
+      - name: descricao
+        description: Descrição do nome da subcategoria do CID.
+        data_type: string
+      - name: ordem
+        description: Ordenação dos CIDs usada para facilitar ranges. Como "Entre A00 e B86".
+        data_type: int64
+      - name: categoria
+        description: Categoria relacionada.
+        data_type: string
+      - name: categoria.id
+        description: Identificador da categoria.
+        data_type: string
+      - name: categoria.descricao
+        description: Descrição do nome da categoria do CID.
+        data_type: string
+      - name: categoria.abreviatura
+        description: Descrição abreviada do nome da categoria do CID.
+      - name: capitulo
+        description: Capítulo relacionado.
+        data_type: string
+      - name: capitulo.id
+        description: Identificador do capítulo relacionado.
+        data_type: string
+      - name: capitulo.descricao
+        description: Descrição do nome do capítulo do CID.
+        data_type: string
+      - name: grupo
+        description: Grupos relacionado. Um CID pode pertencer a mais de um grupo.
+        data_type: string
+      - name: grupo.descricao
+        description: Descrição do nome do grupo do CID.
+      - name: grupo.abreviatura
+        description: Descrição abreviada do nome do grupo do CID. Um CID pode pertencer a mais de um grupo.
+      - name: grupo.comprimento
+        description: Quantidade de caracteres do nome do grupo.
+        data_type: int64
+      
+

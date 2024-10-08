@@ -1,8 +1,14 @@
 {{
     config(
         alias="paciente",
+        schema="saude_dados_mestres",
+        tag=["hci", "paciente"],
         materialized="table",
-        schema="saude_dados_mestres"
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
@@ -42,6 +48,12 @@ WITH vitacare_tb AS (
     WHERE dados.rank=1
     -- AND cpf = cpf_filter
 ),
+-- VITAI: Deceased base table
+base_obitos_vitai as (
+        select 
+            * 
+        from {{ ref('int_historico_clinico__obito__vitai') }}
+    ),
 
 -- VITAI: Patient base table
 vitai_tb AS (
@@ -536,8 +548,19 @@ paciente_dados AS (
             END AS data_nascimento,
             COALESCE(vc.genero, sm.genero, vi.genero) AS genero,
             COALESCE(vc.raca, sm.raca, vi.raca) AS raca,
-            COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) AS obito_indicador,
-            COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) AS obito_data,
+            CASE 
+                WHEN ((COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) is False 
+                        or COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) is null))
+                    and (base_obitos_vitai.cpf is not null)
+                    THEN True
+                ELSE COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador)
+            END AS obito_indicador,
+            CASE 
+                WHEN COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) is null 
+                    and (base_obitos_vitai.obito_data is not null)
+                    THEN base_obitos_vitai.obito_data
+                ELSE  COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) 
+            END AS obito_data,
             CASE 
                 WHEN sm.cpf IS NOT NULL THEN sm.mae_nome
                 WHEN vc.cpf IS NOT NULL THEN vc.mae_nome
@@ -559,18 +582,13 @@ paciente_dados AS (
                 WHEN vc.cpf IS NOT NULL THEN vc.cpf_valido_indicador
                 WHEN vi.cpf IS NOT NULL THEN vi.cpf_valido_indicador
                 ELSE NULL
-            END AS cpf_valido_indicador,
-            CASE 
-                WHEN sm.cpf IS NOT NULL THEN sm.metadados
-                WHEN vc.cpf IS NOT NULL THEN vc.metadados
-                WHEN vi.cpf IS NOT NULL THEN vi.metadados
-                ELSE NULL
-            END AS metadados
+            END AS cpf_valido_indicador
         ) AS dados
     FROM all_cpfs cpfs
     LEFT JOIN vitacare_tb vc ON cpfs.cpf = vc.cpf
     LEFT JOIN vitai_tb vi ON cpfs.cpf = vi.cpf
-    LEFT JOIN smsrio_tb sm ON cpfs.cpf = sm.cpf 
+    LEFT JOIN smsrio_tb sm ON cpfs.cpf = sm.cpf
+    LEFT JOIN base_obitos_vitai on cpfs.cpf = base_obitos_vitai.cpf
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the
@@ -584,7 +602,8 @@ paciente_integrado AS (
         ct.contato,
         ed.endereco,
         pt.prontuario,
-        STRUCT(CURRENT_TIMESTAMP() AS created_at) AS metadados
+        STRUCT(CURRENT_TIMESTAMP() AS processed_at) AS metadados,
+        safe_cast(pd.cpf as int64) as cpf_particao 
     FROM paciente_dados pd
     LEFT JOIN cns_dados cns ON pd.cpf = cns.cpf
     LEFT JOIN equipe_saude_familia_dados esf ON pd.cpf = esf.cpf
@@ -592,7 +611,7 @@ paciente_integrado AS (
     LEFT JOIN endereco_dados ed ON pd.cpf = ed.cpf
     LEFT JOIN prontuario_dados pt ON pd.cpf = pt.cpf
     WHERE pd.dados.nome IS NOT NULL
-        AND pd.dados.data_nascimento IS NOT NULL
+        -- AND pd.dados.data_nascimento IS NOT NULL
         AND pd.dados.cpf_valido_indicador IS TRUE
 
 )

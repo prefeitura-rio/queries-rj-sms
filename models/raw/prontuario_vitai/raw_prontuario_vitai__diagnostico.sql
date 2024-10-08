@@ -57,5 +57,6 @@ select
     safe_cast(baseurl as string) as base_url,
     safe_cast(sigla as string) as sigla,
     safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at
+    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    safe_cast(data_particao as date) as data_particao
 from latest_events

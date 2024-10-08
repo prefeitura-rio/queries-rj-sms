@@ -1,5 +1,6 @@
 {{
     config(
+        enabled= false,
         alias="paciente_suspeitos",
         materialized="table",
         schema="saude_dados_mestres"

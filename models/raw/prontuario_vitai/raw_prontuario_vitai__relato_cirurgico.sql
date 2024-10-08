@@ -71,4 +71,6 @@ select
     -- Metadados
     safe_cast(datahora as string) as updated_at,
     safe_cast(datalake__imported_at as string) as imported_at,
+    safe_cast(data_particao as date) as data_particao
+    
 from latest_events

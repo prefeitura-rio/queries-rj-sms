@@ -6,7 +6,7 @@ models:
         description: Identificador da família.
         data_type: string
         quote: true
-        tests:
+        data_tests:
           - unique:
               name: raw_datasus__cbo_fam__id_cbo_familia__unique
       - name: descricao
@@ -28,7 +28,7 @@ models:
         description: " Identificador do cargo."
         data_type: string
         quote: true
-        tests:
+        data_tests:
           - unique:
               name: raw_datasus__cbo__id_cbo__unique
       - name: descricao
@@ -43,3 +43,36 @@ models:
         data_type: string
         quote: true
         description: Data de atualização do arquivo no DataSUS.
+  - name: raw_datasus__cid10
+    description: Tabela contendo a Classificação Internacional de Doenças (CID-10).
+    columns:
+      - name: id_subcategoria
+        description: Subcategoria do CID.
+        data_type: string
+      - name: id_categoria
+        description: Categoria relacionada.
+        data_type: string
+      - name: id_capitulo
+        description: Número do capítulo relacionado.
+        data_type: string
+      - name: ordem
+        description: Ordenação dos CIDs usada para facilitar ranges. Como "Entre A00 e B86".
+        data_type: int64
+      - name: subcategoria_descricao
+        description: Descrição do nome da subcategoria do CID.
+        data_type: string
+      - name: categoria_descricao
+        description: Descrição do nome da categoria do CID.
+        data_type: string
+      - name: categoria_descricao_abv
+        description: Descrição abreviada do nome da categoria do CID.
+      - name: grupo_descricao
+        description: Descrição do nome do grupo do CID. Um CID pode pertencer a mais de um grupo.
+      - name: grupo_descricao_abv
+        description: Descrição abreviada do nome do grupo do CID. Um CID pode pertencer a mais de um grupo.
+      - name: grupo_descricao_len
+        description: Quantidade de caracteres do nome do grupo.
+        data_type: int64
+      - name: capitulo_descricao
+        description: Descrição do nome do capítulo do CID.
+        data_type: string

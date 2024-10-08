@@ -14,12 +14,16 @@ sources:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: paciente_historico_eventos
-        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 30, period: day}
-          error_after: {count: 60, period: day}
-  - name: dev_brutos_prontuario_vitacare_staging
-    database: rj-sms-dev
-    schema: brutos_prontuario_vitacare_staging
-    tables:
-    - name: atendimento_eventos
+      - name: atendimento_eventos
+      - name: atendimentos_historico
+      - name: vacinas_historico
+      - name: condicoes_historico
+      - name: encaminhamentos_historico
+      - name: equipes_historico
+      - name: exame_historico
+      - name: indicadores_historico
+      - name: profissionais_historico
+      - name: prescricoes_historico
+      - name: alergias_historico
+      - name: solicitacao_historico
+      - name: procedimentos_historico

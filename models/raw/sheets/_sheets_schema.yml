@@ -5,13 +5,9 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        tests:
+        data_tests:
           - unique:
               name: raw_sheets__estabelecimento_auxiliar__id_cnes__unique
-          - relationships:
-              name: raw_sheets__estabelecimento_auxiliar__id_cnes__relationship
-              to: ref('dim_estabelecimento')
-              field: id_cnes
       - name: tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades
       - name: tipo_sms_simplificado
@@ -46,7 +42,7 @@ models:
         description: Este é o identificador único para cada material. É usado para
           rastrear e gerenciar materiais no sistema.
         data_type: string
-        tests:
+        data_tests:
           - unique:
               name: raw_sheets__material_mestre__id_material__unique
       - name: descricao
@@ -68,6 +64,9 @@ models:
           material é apresentado ou embalado. Por exemplo, um material pode ser
           apresentado em uma garrafa, uma cartela, um tubo, etc.
         data_type: string
+      - name: nome
+        data_type: string
+        quote: true
       - name: hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
           material em um grupo específico com base em suas características ou
@@ -81,6 +80,10 @@ models:
           exemplo, um material do grupo medicamento pode pertencer às
           subcategorias como antibióticos, analgésicos, etc.
         data_type: string
+      - name: ativo_indicador
+        description: Este campo indica se item está ativo.
+        data_type: string
+        quote: true
       - name: controlado_indicador
         description: Este campo indica se o material é controlado ou não. Um material
           controlado é aquele que está sujeito a regulamentações ou restrições
@@ -97,9 +100,16 @@ models:
         description: Quantidade mínima do medicamento dispensada para um paciente
         data_type: int64
         quote: true
+      - name: abastecimento_responsavel
+        description: Responsável pelo abastecimento do item.
+        data_type: string
+        quote: true
       - name: abastecimento_frequencia
         data_type: string
         quote: true
+        description: Esta coluna representa a frequência de abastecimento do material
+          específico. Fornece informações sobre com que frequência o material é
+          abastecido ou reabastecido.
       - name: classificacao_xyz
         description: >
           Classificação da criticidade do medicamento, onde: 
@@ -217,6 +227,11 @@ models:
           material está disponível. A lista é representada pelo CNES de cada
           unidade separada por vírgula.
         data_type: string
+      - name: farmacia_popular_disponibilidade_indicador
+        description: Esta coluna indica se o material pode ser obtido através da
+          farmácia popular.
+        data_type: string
+        quote: true
       - name: cadastrado_sistema_vitacare_indicador
         description: Esta coluna indica se o material está registrado no Prontuário da
           Vitacare. É um valor de string que pode ser 'sim' se o material
@@ -244,7 +259,7 @@ models:
         data_type: STRING
         policy_tags:
           - '{{ var ("TAG_EMAIL") }}'
-        tests:
+        data_tests:
           - unique:
               name: raw_sheets__gerenciamento_acesso_looker_farmacia__email__unique
               config:
@@ -311,3 +326,76 @@ models:
           aceita os tipo de estabelecimentos utilizados no agrupador SMS ou o
           CNES da unidade.
         data_type: STRING
+  - name: raw_sheets__aps_farmacias
+    description: O modelo aps_farmacias fornece informações abrangentes sobre
+      farmácias da atenção primária à saúde, incluindo seus
+      identificadores únicos, nomes, endereços, horários de funcionamento,
+      status operacional e detalhes sobre o farmacêutico associado.
+    columns:
+      - name: area_programatica
+        description: Esta coluna representa a área programática da farmácia. É um campo
+          do tipo string que fornece informações sobre a área específica onde a
+          farmácia está localizada.
+        data_type: string
+        quote: true
+      - name: id_cnes
+        description: Esta coluna representa o ID CNES da unidade de saúde. É um identificador
+          único atribuído a cada farmácia para fins de identificação e
+          rastreamento.
+        data_type: string
+        quote: true
+      - name: nome
+        description: Esta coluna representa o nome da unidade de saúde. É um campo do tipo
+          string que fornece o nome oficial da farmácia.
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: endereco
+        description: Esta coluna contém o endereço da unidade de saúde. É do tipo string e pode
+          incluir nome da rua, número, bairro, cidade e estado.
+        data_type: string
+        quote: true
+      - name: horario_seg_a_sexta
+        description: Esta coluna contém o horário de funcionamento da farmácia de
+          segunda a sexta-feira. É do tipo string e geralmente inclui os
+          horários de abertura e fechamento.
+        data_type: string
+        quote: true
+      - name: horario_sabado
+        description: Esta coluna contém o horário de funcionamento da farmácia aos
+          sábados. É do tipo string e geralmente inclui os horários de abertura
+          e fechamento.
+        data_type: string
+        quote: true
+      - name: farmacia_indicador
+        description: Esta coluna indica se a unidade de saúde possui uma farmácia. Os valores são
+          derivados da coluna 'tem_farmacia' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: farmaceutico_nome
+        description: Esta coluna contém o nome do farmacêutico no local. O nome é
+          formatado com letras maiúsculas adequadas, com a primeira letra de
+          cada palavra em maiúscula, exceto para certas preposições e
+          conjunções. O nome é derivado da coluna 'nome_farmaceutico_rt' nos
+          dados de origem.
+        data_type: string
+        quote: true
+      - name: farmaceutico_crf
+        description: Esta coluna contém o número de registro no CRF (Conselho Regional
+          de Farmácia) do farmacêutico no local. Os valores são derivados da
+          coluna 'crf' nos dados de origem.
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR") }}'
+      - name: farmaceutico_vinculo
+        description: Esta coluna representa o status do vínculo empregatício do farmacêutico com a
+          farmácia. O valor está em letras minúsculas.
+        data_type: string
+        quote: true
+      - name: obs
+        description: Esta coluna contém quaisquer observações ou notas adicionais
+          relacionadas à farmácia.
+        data_type: string
+        quote: true

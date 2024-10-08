@@ -2,7 +2,13 @@
     config(
         alias="estoque_posicao",
         schema="brutos_prontuario_vitai",
-        labels={"contains_pii": "no"},
+        labels={
+            "dominio": "estoque",
+            "dado_publico": "nao",
+            "dado_pessoal": "nao",
+            "dado_anonimizado": "nao",
+            "dado_sensivel_saude": "nao"
+        },
         partition_by={
             "field": "data_particao",
             "data_type": "date",

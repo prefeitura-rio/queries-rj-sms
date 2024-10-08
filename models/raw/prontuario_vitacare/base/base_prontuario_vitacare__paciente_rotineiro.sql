@@ -1,13 +1,9 @@
 {{
     config(
-        alias="paciente_rotineiro",
+        schema="brutos_prontuario_vitacare_staging",
+        alias="_base_paciente_rotineiro",
         materialized="incremental",
         unique_key="id",
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "month",
-        },
     )
 }}
 
@@ -17,24 +13,27 @@
 
 with
     events_from_window as (
-        select *
+        select 
+            *,
+            concat(nullif(payload_cnes, ''), '.', nullif(data__id, '')) as gid
         from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos") }}
         {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
     ),
     events_ranked_by_freshness as (
-        select *, row_number() over (partition by data__id order by source_updated_at desc) as rank
+        select *, row_number() over (partition by gid order by source_updated_at desc) as rank
         from events_from_window
     ),
     latest_events as (select * from events_ranked_by_freshness where rank = 1)
 select
     -- PK
-    safe_cast(NULLIF(data__id, '') as string) as id,
+    safe_cast(gid as string) as id,
 
     -- Outras Chaves
     safe_cast(NULLIF(patient_cpf, '') as string) as cpf,
     safe_cast(NULLIF(data__dnv, '') as string) as dnv,
     safe_cast(NULLIF(data__nis, '') as string) as nis,
     safe_cast(NULLIF(data__cns, '') as string) as cns,
+    safe_cast(NULLIF(data__id, '') as string) as id_local,
 
     -- Informações Pessoais
     safe_cast(NULLIF(data__nome, '') as string) as nome,
