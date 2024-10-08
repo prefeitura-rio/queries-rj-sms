@@ -188,6 +188,7 @@ with
     telefone_dedup as (
         select
             cpf,
+            ddd,
             valor,
             row_number() over (
                 partition by cpf order by merge_order asc, rank asc
@@ -208,6 +209,7 @@ with
                     (
                         select
                             cpf,
+                            telefone.ddd,
                             telefone.valor,
                             telefone.rank,
                             "VITACARE" as sistema,
@@ -216,6 +218,7 @@ with
                         union all
                         select
                             cpf,
+                            telefone.ddd,
                             telefone.valor,
                             telefone.rank,
                             "SMSRIO" as sistema,
@@ -224,6 +227,7 @@ with
                         union all
                         select
                             cpf,
+                            telefone.ddd,
                             telefone.valor,
                             telefone.rank,
                             "VITAI" as sistema,
@@ -291,7 +295,7 @@ with
         select
             coalesce(t.cpf, e.cpf) as cpf,
             struct(
-                array_agg(struct(t.valor, t.sistema, t.rank)) as telefone,
+                array_agg(struct(t.ddd, t.valor, t.sistema, t.rank)) as telefone,
                 array_agg(struct(e.valor, e.sistema, e.rank)) as email
             ) as contato
         from telefone_dedup t
