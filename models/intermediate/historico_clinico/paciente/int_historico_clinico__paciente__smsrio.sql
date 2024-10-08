@@ -1,13 +1,8 @@
 {{
     config(
-        alias="paciente_vitacare",
-        schema="intermediario_historico_clinico",
+        alias="paciente_smsrio",
         materialized="table",
-        partition_by={
-            "field": "cpf_particao",
-            "data_type": "int64",
-            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
-        },
+        schema="intermediario_historico_clinico",
     )
 }}
 
@@ -568,8 +563,7 @@ with
             ct.contato,
             ed.endereco,
             pt.prontuario,
-            struct(current_timestamp() as created_at) as metadados,
-            cast(pd.cpf as int64) as cpf_particao
+            struct(current_timestamp() as created_at) as metadados
         from paciente_dados pd
         left join cns_dados cns on pd.cpf = cns.cpf
         left join contato_dados ct on pd.cpf = ct.cpf
