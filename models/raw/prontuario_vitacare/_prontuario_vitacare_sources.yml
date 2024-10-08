@@ -14,10 +14,6 @@ sources:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
       - name: paciente_historico_eventos
-        loaded_at_field: "CAST(updated_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 30, period: day}
-          error_after: {count: 60, period: day}
       - name: atendimento_eventos
       - name: atendimentos_historico
       - name: vacinas_historico
