@@ -325,7 +325,7 @@ endereco_dados AS (
             bairro, 
             cidade, 
             estado, 
-            datahora_ultima_atualizacao,
+            TIMESTAMP(datahora_ultima_atualizacao) AS datahora_ultima_atualizacao,
             sistema,
             rank
         )) AS endereco
@@ -456,15 +456,15 @@ paciente_dados AS (
         pc.cpf,
         ARRAY_AGG(STRUCT(
                 cpf_valido_indicador,
-                nome,
-                nome_social,
+                {{ proper_br("nome") }} AS nome,
+                {{ proper_br("nome_social") }} AS nome_social,
                 data_nascimento,
-                genero,
-                raca,
+                {{ proper_br("genero") }} as genero,
+                {{ proper_br("raca") }} as raca,
                 obito_indicador,
                 obito_data,
-                mae_nome,
-                pai_nome,
+                {{proper_br('mae_nome')}} AS mae_nome,
+                {{proper_br('pai_nome')}} AS pai_nome,
                 rank,
                 pm.metadados
         )) AS dados

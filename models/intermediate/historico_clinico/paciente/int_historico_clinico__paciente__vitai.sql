@@ -336,7 +336,7 @@ endereco_dados AS (
             bairro, 
             cidade, 
             estado, 
-            datahora_ultima_atualizacao,
+            TIMESTAMP(datahora_ultima_atualizacao) AS datahora_ultima_atualizacao,
             sistema,
             rank
         )) AS endereco
