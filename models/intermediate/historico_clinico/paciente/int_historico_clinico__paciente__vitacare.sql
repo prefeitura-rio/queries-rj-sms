@@ -471,7 +471,9 @@ with
                     bairro,
                     cidade,
                     estado,
-                    TIMESTAMP(datahora_ultima_atualizacao) AS datahora_ultima_atualizacao,
+                    timestamp(
+                        datahora_ultima_atualizacao
+                    ) as datahora_ultima_atualizacao,
                     sistema,
                     rank
                 )
@@ -550,7 +552,6 @@ with
     ),
 
     -- PACIENTE DADOS
-
     paciente_metadados as (
         select
             cpf,
@@ -581,8 +582,8 @@ with
                     {{ proper_br("nome") }} as nome,
                     {{ proper_br("nome_social") }} as nome_social,
                     data_nascimento,
-                    {{ proper_br("genero") }} as genero,
-                    {{ proper_br("raca") }} as raca,
+                    lower(genero) as genero,
+                    lower(raca) as raca,
                     obito_indicador,
                     obito_data,
                     {{ proper_br("mae_nome") }} as mae_nome,
