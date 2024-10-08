@@ -6,13 +6,13 @@
     )
 }}
 
--- This code integrates patient data from SMSRIO:
--- rj-sms.brutos_plataforma_smsrio.paciente (SMSRIO)
+-- This code integrates patient data from smsrio:
+-- rj-sms.brutos_plataforma_smsrio.paciente (smsrio)
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
 -- Declaration of the variable to filter by CPF (optional)
 -- DECLARE cpf_filter STRING DEFAULT "";
--- SMSRIO: Patient base table
+-- smsrio: Patient base table
 with
     smsrio_tb as (
         select
@@ -135,7 +135,7 @@ with
         where not (trim(valor) in ("NONE", "NULL", "") and (rank >= 2))
     ),
 
-    -- CONTATO SMSRIO: Extracts and ranks email
+    -- CONTATO smsrio: Extracts and ranks email
     smsrio_contato_email as (
         select
             cpf,
@@ -180,7 +180,7 @@ with
                     sistema
                 from
                     (
-                        select cpf, valor, rank, "SMSRIO" as sistema, 2 as merge_order
+                        select cpf, valor, rank, "smsrio" as sistema, 2 as merge_order
                         from smsrio_contato_telefone
                     )
                 order by merge_order asc, rank asc
@@ -210,7 +210,7 @@ with
                     sistema
                 from
                     (
-                        select cpf, valor, rank, "SMSRIO" as sistema, 2 as merge_order
+                        select cpf, valor, rank, "smsrio" as sistema, 2 as merge_order
                         from smsrio_contato_email
                     )
                 order by merge_order asc, rank asc
@@ -223,8 +223,12 @@ with
         select
             coalesce(t.cpf, e.cpf) as cpf,
             struct(
-                array_agg(struct(t.valor, t.sistema, t.rank)) as telefone,
-                array_agg(struct(lower(e.valor), e.sistema, e.rank)) as email
+                array_agg(
+                    struct(t.valor, lower(t.sistema) as sistema, t.rank)
+                ) as telefone,
+                array_agg(
+                    struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
+                ) as email
             ) as contato
         from telefone_dedup t
         full outer join email_dedup e on t.cpf = e.cpf
@@ -311,7 +315,7 @@ with
                             estado,
                             datahora_ultima_atualizacao,
                             rank,
-                            "SMSRIO" as sistema,
+                            "smsrio" as sistema,
                             2 as merge_order
                         from smsrio_endereco
                     )
@@ -337,7 +341,7 @@ with
                     timestamp(
                         datahora_ultima_atualizacao
                     ) as datahora_ultima_atualizacao,
-                    sistema,
+                    lower(sistema) as sistema,
                     rank
                 )
             ) as endereco
@@ -349,7 +353,7 @@ with
     smsrio_prontuario as (
         select
             cpf,
-            'SMSRIO' as sistema,
+            'smsrio' as sistema,
             id_cnes,
             id_paciente,
             row_number() over (partition by cpf order by updated_at desc) as rank
@@ -383,7 +387,7 @@ with
                     (
                         select
                             vi.cpf,
-                            "SMSRIO" as sistema,
+                            "smsrio" as sistema,
                             id_cnes,
                             id_paciente,
                             rank,
@@ -397,7 +401,11 @@ with
     ),
 
     prontuario_dados as (
-        select cpf, array_agg(struct(sistema, id_cnes, id_paciente, rank)) as prontuario
+        select
+            cpf,
+            array_agg(
+                struct(lower(sistema) as sistema, id_cnes, id_paciente, rank)
+            ) as prontuario
         from prontuario_dedup
         group by cpf
     ),
@@ -469,7 +477,7 @@ with
                 count(distinct mae_nome) as qtd_maes_nomes,
                 count(distinct pai_nome) as qtd_pais_nomes,
                 count(distinct cpf_valido_indicador) as qtd_cpfs_validos,
-                "SMSRIO" as sistema
+                "smsrio" as sistema
             ) as metadados
         from smsrio_paciente
         group by cpf

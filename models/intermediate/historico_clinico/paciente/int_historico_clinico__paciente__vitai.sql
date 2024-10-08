@@ -6,8 +6,8 @@
     )
 }}
 
--- This code integrates patient data from VITAI:
--- rj-sms.brutos_prontuario_vitai.paciente (VITAI)
+-- This code integrates patient data from vitai:
+-- rj-sms.brutos_prontuario_vitai.paciente (vitai)
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
 -- Declaration of the variable to filter by CPF (optional)
@@ -159,7 +159,7 @@ with
                     sistema
                 from
                     (
-                        select cpf, valor, rank, "VITAI" as sistema, 3 as merge_order
+                        select cpf, valor, rank, "vitai" as sistema, 3 as merge_order
                         from vitai_contato_telefone
                     )
                 order by merge_order asc, rank asc
@@ -189,7 +189,7 @@ with
                     sistema
                 from
                     (
-                        select cpf, valor, rank, "VITAI" as sistema, 3 as merge_order
+                        select cpf, valor, rank, "vitai" as sistema, 3 as merge_order
                         from vitai_contato_email
                     )
                 order by merge_order asc, rank asc
@@ -202,8 +202,12 @@ with
         select
             coalesce(t.cpf, e.cpf) as cpf,
             struct(
-                array_agg(struct(t.valor, t.sistema, t.rank)) as telefone,
-                array_agg(struct(lower(e.valor), e.sistema, e.rank)) as email
+                array_agg(
+                    struct(t.valor, lower(t.sistema) as sistema, t.rank)
+                ) as telefone,
+                array_agg(
+                    struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
+                ) as email
             ) as contato
         from telefone_dedup t
         full outer join email_dedup e on t.cpf = e.cpf
@@ -295,7 +299,7 @@ with
                             estado,
                             datahora_ultima_atualizacao,
                             rank,
-                            "VITAI" as sistema,
+                            "vitai" as sistema,
                             3 as merge_order
                         from vitai_endereco
                     )
@@ -321,7 +325,7 @@ with
                     timestamp(
                         datahora_ultima_atualizacao
                     ) as datahora_ultima_atualizacao,
-                    sistema,
+                    lower(sistema) as sistema,
                     rank
                 )
             ) as endereco
@@ -333,7 +337,7 @@ with
     vitai_prontuario as (
         select
             cpf,
-            'VITAI' as sistema,
+            'vitai' as sistema,
             id_cnes,
             id_paciente,
             row_number() over (partition by cpf order by updated_at desc) as rank
@@ -374,7 +378,7 @@ with
                     (
                         select
                             vi.cpf,
-                            "VITAI" as sistema,
+                            "vitai" as sistema,
                             id_cnes,
                             id_paciente,
                             rank,
@@ -388,7 +392,11 @@ with
     ),
 
     prontuario_dados as (
-        select cpf, array_agg(struct(sistema, id_cnes, id_paciente, rank)) as prontuario
+        select
+            cpf,
+            array_agg(
+                struct(lower(sistema) as sistema, id_cnes, id_paciente, rank)
+            ) as prontuario
         from prontuario_dedup
         group by cpf
     ),
@@ -457,7 +465,7 @@ with
                 count(distinct mae_nome) as qtd_maes_nomes,
                 count(distinct pai_nome) as qtd_pais_nomes,
                 count(distinct cpf_valido_indicador) as qtd_cpfs_validos,
-                "VITAI" as sistema
+                "vitai" as sistema
             ) as metadados
         from vitai_paciente
         group by cpf

@@ -11,8 +11,8 @@
     )
 }}
 
--- This code integrates patient data from VITACARE:
--- rj-sms.brutos_prontuario_vitacare.paciente (VITACARE)
+-- This code integrates patient data from vitacare:
+-- rj-sms.brutos_prontuario_vitacare.paciente (vitacare)
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
 -- Declaration of the variable to filter by CPF (optional)
@@ -108,7 +108,7 @@ with
         select cpf, array_agg(struct(cns, rank)) as cns from cns_dedup group by cpf
     ),
 
-    -- EQUIPE SAUDE FAMILIA VITACARE: Extracts and ranks family health teams
+    -- EQUIPE SAUDE FAMILIA vitacare: Extracts and ranks family health teams
     -- clinica da familia
     source_clinica_familia as (
         select *
@@ -308,7 +308,7 @@ with
                     sistema
                 from
                     (
-                        select cpf, valor, rank, "VITACARE" as sistema, 1 as merge_order
+                        select cpf, valor, rank, "vitacare" as sistema, 1 as merge_order
                         from vitacare_contato_telefone
                     )
                 order by merge_order asc, rank asc
@@ -338,7 +338,7 @@ with
                     sistema
                 from
                     (
-                        select cpf, valor, rank, "VITACARE" as sistema, 1 as merge_order
+                        select cpf, valor, rank, "vitacare" as sistema, 1 as merge_order
                         from vitacare_contato_email
                     )
                 order by merge_order asc, rank asc
@@ -351,8 +351,12 @@ with
         select
             coalesce(t.cpf, e.cpf) as cpf,
             struct(
-                array_agg(struct(t.valor, t.sistema, t.rank)) as telefone,
-                array_agg(struct(lower(e.valor), e.sistema, e.rank)) as email
+                array_agg(
+                    struct(t.valor, lower(t.sistema) as sistema, t.rank)
+                ) as telefone,
+                array_agg(
+                    struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
+                ) as email
             ) as contato
         from telefone_dedup t
         full outer join email_dedup e on t.cpf = e.cpf
@@ -448,7 +452,7 @@ with
                             estado,
                             datahora_ultima_atualizacao,
                             rank,
-                            "VITACARE" as sistema,
+                            "vitacare" as sistema,
                             1 as merge_order
                         from vitacare_endereco
                     )
@@ -474,7 +478,7 @@ with
                     timestamp(
                         datahora_ultima_atualizacao
                     ) as datahora_ultima_atualizacao,
-                    sistema,
+                    lower(sistema) as sistema,
                     rank
                 )
             ) as endereco
@@ -486,7 +490,7 @@ with
     vitacare_prontuario as (
         select
             cpf,
-            'VITACARE' as sistema,
+            'vitacare' as sistema,
             id_cnes,
             id_paciente,
             row_number() over (
@@ -532,7 +536,7 @@ with
                     (
                         select
                             vi.cpf,
-                            "VITACARE" as sistema,
+                            "vitacare" as sistema,
                             id_cnes,
                             id_paciente,
                             rank,
@@ -546,7 +550,11 @@ with
     ),
 
     prontuario_dados as (
-        select cpf, array_agg(struct(sistema, id_cnes, id_paciente, rank)) as prontuario
+        select
+            cpf,
+            array_agg(
+                struct(lower(sistema) as sistema, id_cnes, id_paciente, rank)
+            ) as prontuario
         from prontuario_dedup
         group by cpf
     ),
@@ -567,7 +575,7 @@ with
                 count(distinct mae_nome) as qtd_maes_nomes,
                 count(distinct pai_nome) as qtd_pais_nomes,
                 count(distinct cpf_valido_indicador) as qtd_cpfs_validos,
-                "VITACARE" as sistema
+                "vitacare" as sistema
             ) as metadados
         from paciente
         group by cpf
