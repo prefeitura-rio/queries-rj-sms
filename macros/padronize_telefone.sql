@@ -2,7 +2,7 @@
     case
         when
             length(trim({{ telefone_column }})) = 0
-            or trim({{ telefone_column }}) in ('NONE', 'NULL', '0')
+            or trim({{ telefone_column }}) in ('NONE', 'NULL', '0', "()", "")
             or trim({{ telefone_column }}) like '00%'
             or trim({{ telefone_column }}) like '000%'
             or trim({{ telefone_column }}) like '0000%'

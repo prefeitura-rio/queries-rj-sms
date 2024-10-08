@@ -258,42 +258,19 @@ with
         order by merge_order asc, rank asc
     ),
 
-    email_dedup as (
-        select
-            cpf,
-            valor,
-            row_number() over (
-                partition by cpf order by merge_order asc, rank asc
-            ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    valor,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, valor order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select cpf, valor, rank, "smsrio" as sistema, 2 as merge_order
-                        from smsrio_contato_email
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
-    ),
-
     contato_dados as (
         select
             coalesce(t.cpf, e.cpf) as cpf,
             struct(
                 array_agg(
-                    struct(t.valor, lower(t.sistema) as sistema, t.rank)
+                    struct(
+                        t.valor_original,
+                        t.ddd,
+                        t.valor,
+                        t.valor_tipo,
+                        lower(t.sistema) as sistema,
+                        t.rank
+                    )
                 ) as telefone,
                 array_agg(
                     struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)

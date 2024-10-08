@@ -230,14 +230,41 @@ with
         select
             cpf,
             tipo,
-            case when trim(valor) in ("()", "") then null else valor end as valor,
+            valor_original,
+            case
+                when length(valor) in (10, 11)
+                then substr(valor, 1, 2)  -- Keep only the first 2 digits (DDD)
+                else null
+            end as ddd,
+            case
+                when length(valor) in (8, 9)
+                then valor  -- For numbers with 8 or 9 digits, keep the original value
+                when length(valor) = 10
+                then substr(valor, 3, 8)  -- Keep only the last 8 digits (discard the first 2)
+                when length(valor) = 11
+                then substr(valor, 3, 9)  -- Keep only the last 9 digits (discard the first 2)
+                else null
+            end as valor,
+            case
+                when length(valor) = 8
+                then 'fixo'
+                when length(valor) = 9
+                then 'celular'
+                when length(valor) = 10
+                then 'ddd_fixo'
+                when length(valor) = 11
+                then 'ddd_celular'
+                else null
+            end as valor_tipo,
+            length(valor) as len,
             rank
         from
             (
                 select
                     cpf,
                     'telefone' as tipo,
-                    telefone as valor,
+                    telefone as valor_original,
+                    {{ padronize_telefone("telefone") }} as valor,
                     row_number() over (
                         partition by cpf
                         order by
@@ -290,7 +317,10 @@ with
     telefone_dedup as (
         select
             cpf,
+            valor_original,
+            ddd,
             valor,
+            valor_tipo,
             row_number() over (
                 partition by cpf order by merge_order asc, rank asc
             ) as rank,
@@ -299,7 +329,10 @@ with
             (
                 select
                     cpf,
+                    valor_original,
+                    ddd,
                     valor,
+                    valor_tipo,
                     rank,
                     merge_order,
                     row_number() over (
@@ -308,7 +341,15 @@ with
                     sistema
                 from
                     (
-                        select cpf, valor, rank, "vitacare" as sistema, 1 as merge_order
+                        select
+                            cpf,
+                            valor_original,
+                            ddd,
+                            valor,
+                            valor_tipo,
+                            rank,
+                            "vitacare" as sistema,
+                            1 as merge_order
                         from vitacare_contato_telefone
                     )
                 order by merge_order asc, rank asc
@@ -352,7 +393,14 @@ with
             coalesce(t.cpf, e.cpf) as cpf,
             struct(
                 array_agg(
-                    struct(t.valor, lower(t.sistema) as sistema, t.rank)
+                    struct(
+                        t.valor_original,
+                        t.ddd,
+                        t.valor,
+                        t.valor_tipo,
+                        lower(t.sistema) as sistema,
+                        t.rank
+                    )
                 ) as telefone,
                 array_agg(
                     struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
@@ -617,12 +665,6 @@ with
             ed.endereco,
             pt.prontuario,
             struct(current_timestamp() as created_at) as metadados
-        from paciente_dados pd
-        left join cns_dados cns on pd.cpf = cns.cpf
-        left join
-            equipe_saude_familia_dados esf on pd.cpf = esf.cpf
-            struct(current_timestamp() as created_at) as metadados,
-            cast(pd.cpf as int64) as cpf_particao
         from paciente_dados pd
         left join cns_dados cns on pd.cpf = cns.cpf
         left join dim_equipe_familia esf on pd.cpf = esf.cpf
