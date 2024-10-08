@@ -13,9 +13,9 @@
 }}
 
 -- This code integrates patient data from three sources:
--- rj-sms.brutos_prontuario_vitacare.paciente (VITACARE)
--- rj-sms.brutos_plataforma_vitai.paciente (VITAI)
--- rj-sms.brutos_plataforma_smsrio.paciente (SMSRIO)
+-- rj-sms.brutos_prontuario_vitacare.paciente (vitacare)
+-- rj-sms.brutos_plataforma_vitai.paciente (vitai)
+-- rj-sms.brutos_plataforma_smsrio.paciente (smsrio)
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
 -- dbt run --select int_historico_clinico__paciente__vitacare
@@ -23,7 +23,7 @@
 -- mart_historico_clinico__paciente mart_historico_clinico__paciente_suspeitos
 -- Declaration of the variable to filter by CPF (optional)
 -- DECLARE cpf_filter STRING DEFAULT "";
--- VITACARE: Patient base table
+-- vitacare: Patient base table
 with
     vitacare_tb as (
         select
@@ -50,12 +50,12 @@ with
         where dados.rank = 1
     -- AND cpf = cpf_filter
     ),
-    -- VITAI: Deceased base table
+    -- vitai: Deceased base table
     base_obitos_vitai as (
         select * from {{ ref("int_historico_clinico__obito__vitai") }}
     ),
 
-    -- VITAI: Patient base table
+    -- vitai: Patient base table
     vitai_tb as (
         select
             cpf,
@@ -79,7 +79,7 @@ with
     -- AND cpf = cpf_filter
     ),
 
-    -- SMSRIO: Patient base table
+    -- smsrio: Patient base table
     smsrio_tb as (
         select
             cpf,
@@ -108,7 +108,7 @@ with
     -- Merge data from different sources
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- CNS Dados: Merges CNS data, grouping by patient 
-    -- UNION 1. Vitacare | 2. Vitai | 3. SMSRIO
+    -- UNION 1. Vitacare | 2. Vitai | 3. smsrio
     cns_dedup as (
         select
             cpf,
@@ -135,7 +135,7 @@ with
                             cpf,
                             cns.cns as cns,
                             cns.rank as rank,
-                            "VITACARE" as sistema,
+                            "vitacare" as sistema,
                             1 as merge_order
                         from vitacare_tb, unnest(cns) as cns
                         union all
@@ -143,7 +143,7 @@ with
                             cpf,
                             cns.cns as cns,
                             cns.rank as rank,
-                            "VITAI" as sistema,
+                            "vitai" as sistema,
                             2 as merge_order
                         from vitai_tb, unnest(cns) as cns
                         union all
@@ -151,7 +151,7 @@ with
                             cpf,
                             cns.cns as cns,
                             cns.rank as rank,
-                            "SMSRIO" as sistema,
+                            "smsrio" as sistema,
                             3 as merge_order
                         from smsrio_tb, unnest(cns) as cns
                     )
@@ -180,11 +180,11 @@ with
     ),
 
     -- Equipe Saude Familia Dados: Groups family health team data by patient.
-    -- ONLY VITACARE
+    -- ONLY vitacare
     equipe_saude_familia_dados as (select cpf, equipe_saude_familia from vitacare_tb),
 
     -- Contato Dados: Merges contact data 
-    -- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
+    -- UNION: 1. Vitacare | 2. smsrio | 3. Vitai
     telefone_dedup as (
         select
             cpf,
@@ -213,7 +213,7 @@ with
                             telefone.ddd,
                             telefone.valor,
                             telefone.rank,
-                            "VITACARE" as sistema,
+                            "vitacare" as sistema,
                             1 as merge_order
                         from vitacare_tb, unnest(contato.telefone) as telefone  -- Expandindo os elementos da array struct de telefone
                         union all
@@ -222,7 +222,7 @@ with
                             telefone.ddd,
                             telefone.valor,
                             telefone.rank,
-                            "SMSRIO" as sistema,
+                            "smsrio" as sistema,
                             2 as merge_order
                         from smsrio_tb, unnest(contato.telefone) as telefone
                         union all
@@ -231,7 +231,7 @@ with
                             telefone.ddd,
                             telefone.valor,
                             telefone.rank,
-                            "VITAI" as sistema,
+                            "vitai" as sistema,
                             3 as merge_order
                         from vitai_tb, unnest(contato.telefone) as telefone
                     )
@@ -266,7 +266,7 @@ with
                             cpf,
                             email.valor,
                             email.rank,
-                            "VITACARE" as sistema,
+                            "vitacare" as sistema,
                             1 as merge_order
                         from vitacare_tb, unnest(contato.email) as email  -- Expandindo os elementos da array struct de email
                         union all
@@ -274,7 +274,7 @@ with
                             cpf,
                             email.valor,
                             email.rank,
-                            "SMSRIO" as sistema,
+                            "smsrio" as sistema,
                             2 as merge_order
                         from smsrio_tb, unnest(contato.email) as email
                         union all
@@ -282,7 +282,7 @@ with
                             cpf,
                             email.valor,
                             email.rank,
-                            "VITAI" as sistema,
+                            "vitai" as sistema,
                             3 as merge_order
                         from vitai_tb, unnest(contato.email) as email
                     )
@@ -305,7 +305,7 @@ with
     ),
 
     -- Endereco Dados: Merges address information
-    -- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
+    -- UNION: 1. Vitacare | 2. smsrio | 3. Vitai
     endereco_dedup as (
         select
             cpf,
@@ -356,7 +356,7 @@ with
                             endereco.estado,
                             endereco.datahora_ultima_atualizacao,
                             endereco.rank,
-                            "VITACARE" as sistema,
+                            "vitacare" as sistema,
                             1 as merge_order
                         from vitacare_tb, unnest(endereco) as endereco  -- Expandindo os elementos da array struct de endereço
                         union all
@@ -372,7 +372,7 @@ with
                             endereco.estado,
                             endereco.datahora_ultima_atualizacao,
                             endereco.rank,
-                            "SMSRIO" as sistema,
+                            "smsrio" as sistema,
                             2 as merge_order
                         from smsrio_tb, unnest(endereco) as endereco
                         union all
@@ -388,7 +388,7 @@ with
                             endereco.estado,
                             endereco.datahora_ultima_atualizacao,
                             endereco.rank,
-                            "VITAI" as sistema,
+                            "vitai" as sistema,
                             3 as merge_order
                         from vitai_tb, unnest(endereco) as endereco
                     )
@@ -421,7 +421,7 @@ with
     ),
 
     -- Prontuario Dados: Merges system medical record data
-    -- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
+    -- UNION: 1. Vitacare | 2. smsrio | 3. Vitai
     prontuario_dedup as (
         select
             cpf,
@@ -448,7 +448,7 @@ with
                     (
                         select
                             vc.cpf,
-                            "VITACARE" as sistema,
+                            "vitacare" as sistema,
                             prontuario.id_cnes,
                             prontuario.id_paciente,
                             prontuario.rank,
@@ -457,7 +457,7 @@ with
                         union all
                         select
                             sm.cpf,
-                            "SMSRIO" as sistema,
+                            "smsrio" as sistema,
                             prontuario.id_cnes,
                             prontuario.id_paciente,
                             prontuario.rank,
@@ -466,7 +466,7 @@ with
                         union all
                         select
                             vi.cpf,
-                            "VITAI" as sistema,
+                            "vitai" as sistema,
                             prontuario.id_cnes,
                             prontuario.id_paciente,
                             prontuario.rank,
@@ -502,15 +502,15 @@ with
     ),
 
     -- merge priority:
-    -- nome:             1. SMSRIO   | 2. Vitacare  | 3. Vitai
+    -- nome:             1. smsrio   | 2. Vitacare  | 3. Vitai
     -- nome_social:      1. Vitai    
-    -- data_nascimento:  1. SMSRIO   | 2. Vitacare  | 3. Vitai
-    -- genero:           1. Vitacare | 2. SMSRIO    | 3. Vitai
-    -- raca:             1. Vitacare | 2. SMSRIO    | 3. Vitai
-    -- obito_indicador:  1. Vitacare | 2. SMSRIO    | 3. Vitai
-    -- obito_data:       1. Vitacare | 2. SMSRIO    | 3. Vitai
-    -- mae_nome:         1. SMSRIO   | 2. Vitacare  | 3. Vitai
-    -- pai_nome:         1. SMSRIO   | 2. Vitacare  | 3. Vitai
+    -- data_nascimento:  1. smsrio   | 2. Vitacare  | 3. Vitai
+    -- genero:           1. Vitacare | 2. smsrio    | 3. Vitai
+    -- raca:             1. Vitacare | 2. smsrio    | 3. Vitai
+    -- obito_indicador:  1. Vitacare | 2. smsrio    | 3. Vitai
+    -- obito_data:       1. Vitacare | 2. smsrio    | 3. Vitai
+    -- mae_nome:         1. smsrio   | 2. Vitacare  | 3. Vitai
+    -- pai_nome:         1. smsrio   | 2. Vitacare  | 3. Vitai
     paciente_dados as (
         select
             cpfs.cpf,
@@ -527,8 +527,8 @@ with
                 case
                     when vc.cpf is not null
                     then vc.nome_social
-                    -- WHEN sm.cpf THEN sm.nome_social  -- SMSRIO não possui nome social
-                    -- WHEN vi.cpf IS NOT NULL THEN vi.nome_social  -- VITAI não
+                    -- WHEN sm.cpf THEN sm.nome_social  -- smsrio não possui nome social
+                    -- WHEN vi.cpf IS NOT NULL THEN vi.nome_social  -- vitai não
                     -- possui nome social
                     else null
                 end as nome_social,
