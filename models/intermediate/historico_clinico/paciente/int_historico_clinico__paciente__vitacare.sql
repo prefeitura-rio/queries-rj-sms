@@ -352,7 +352,7 @@ with
             coalesce(t.cpf, e.cpf) as cpf,
             struct(
                 array_agg(struct(t.valor, t.sistema, t.rank)) as telefone,
-                array_agg(struct(e.valor, e.sistema, e.rank)) as email
+                array_agg(struct(lower(e.valor), e.sistema, e.rank)) as email
             ) as contato
         from telefone_dedup t
         full outer join email_dedup e on t.cpf = e.cpf
@@ -464,13 +464,13 @@ with
             array_agg(
                 struct(
                     cep,
-                    tipo_logradouro,
-                    logradouro,
+                    lower(tipo_logradouro),
+                    {{ proper_br("logradouro") }} as logradouro,
                     numero,
-                    complemento,
-                    bairro,
-                    cidade,
-                    estado,
+                    lower(complemento) as complemento,
+                    {{ proper_br("bairro") }} as bairro,
+                    {{ proper_br("cidade") }} as cidade,
+                    {{ proper_br("estado") }} as estado,
                     timestamp(
                         datahora_ultima_atualizacao
                     ) as datahora_ultima_atualizacao,
