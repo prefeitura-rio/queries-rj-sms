@@ -468,7 +468,7 @@ with
             array_agg(
                 struct(
                     cep,
-                    lower(tipo_logradouro),
+                    lower(tipo_logradouro) as tipo_logradouro,
                     {{ proper_br("logradouro") }} as logradouro,
                     numero,
                     lower(complemento) as complemento,
