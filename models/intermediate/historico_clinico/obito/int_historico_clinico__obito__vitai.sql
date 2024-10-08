@@ -162,4 +162,5 @@ select
     array_agg(distinct gid_boletim_obito ignore nulls) as gid_boletim_obito
 from obitos_flags 
 where tem_boletim_pos_obito = 0
+and cpf is not null
 group by 1
