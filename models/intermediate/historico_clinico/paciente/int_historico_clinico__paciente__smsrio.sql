@@ -570,7 +570,6 @@ with
             pt.prontuario,
             struct(current_timestamp() as created_at) as metadados,
             cast(pd.cpf as int64) as cpf_particao
-
         from paciente_dados pd
         left join cns_dados cns on pd.cpf = cns.cpf
         left join contato_dados ct on pd.cpf = ct.cpf
