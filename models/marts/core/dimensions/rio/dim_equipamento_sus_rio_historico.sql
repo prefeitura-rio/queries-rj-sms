@@ -54,6 +54,8 @@ equip_mapping_especifico as (
 final as (
     select
         struct (
+            estabs.ano_competencia,
+            estabs.mes_competencia,
             data_atualizao_registro,
             usuario_atualizador_registro,
             mes_particao,
@@ -143,8 +145,6 @@ final as (
         ) as estabelecimentos,
 
         struct(
-            estabs.ano,
-            estabs.mes,
             equip.equipamento_tipo,
             equipamento,
             equipamento_especifico_tipo,
@@ -154,7 +154,7 @@ final as (
         ) as equipamentos
 
     from equip
-    left join estabelecimentos_mrj_sus as estabs using (id_cnes, ano, mes)
+    left join estabelecimentos_mrj_sus as estabs on equip.id_cnes = estabs.id_cnes and equip.ano = estabs.ano_competencia and equip.mes = estabs.mes_competencia
     left join equip_mapping_geral as map_geral using (equipamento_tipo)
     left join equip_mapping_especifico as map_espec using (equipamento_tipo, equipamento_especifico_tipo)
 )

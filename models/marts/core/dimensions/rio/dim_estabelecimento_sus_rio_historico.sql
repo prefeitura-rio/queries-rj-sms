@@ -342,8 +342,8 @@ final as (
         -- Metadados
         data_atualizao_registro,
         usuario_atualizador_registro,
-        cast(ano as int64) as ano,
-        cast(mes as int64) as mes,
+        cast(ano as int64) as ano_competencia,
+        cast(mes as int64) as mes_competencia,
         safe_cast(mes_particao as int64) as mes_particao,
         safe_cast(ano_particao as int64) as ano_particao,
         parse_date('%Y-%m-%d', data_particao) as data_particao,

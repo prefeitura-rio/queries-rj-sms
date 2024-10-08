@@ -5,9 +5,9 @@ models:
 
     columns:
       # Identificação
-      - name: ano
+      - name: ano_competencia
         description: "Ano de referência dos dados."
-      - name: mes
+      - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
@@ -166,9 +166,9 @@ models:
     columns:
       # --------------------------------- ESTABELECIMENTOS
       # Identificação
-      - name: ano
+      - name: ano_competencia
         description: "Ano de referência dos dados."
-      - name: mes
+      - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
@@ -339,9 +339,9 @@ models:
     columns:
       # --------------------------------- ESTABELECIMENTOS
       # Identificação
-      - name: ano
+      - name: ano_competencia
         description: "Ano de referência dos dados."
-      - name: mes
+      - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
@@ -518,9 +518,9 @@ models:
     columns:
       # --------------------------------- ESTABELECIMENTOS
       # Identificação
-      - name: ano
+      - name: ano_competencia
         description: "Ano de referência dos dados."
-      - name: mes
+      - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
@@ -689,9 +689,9 @@ models:
     columns:
       # --------------------------------- ESTABELECIMENTOS
       # Identificação
-      - name: ano
+      - name: ano_competencia
         description: "Ano de referência dos dados."
-      - name: mes
+      - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."

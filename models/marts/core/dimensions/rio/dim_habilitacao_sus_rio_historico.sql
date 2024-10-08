@@ -80,6 +80,8 @@ habilitacoes_mapping_cnesweb AS (
 final as (
     select
         struct (
+            estabs.ano_competencia,
+            estabs.mes_competencia,
             data_atualizao_registro,
             usuario_atualizador_registro,
             mes_particao,
@@ -169,8 +171,6 @@ final as (
         ) as estabelecimentos,
 
         struct (
-            estabs.ano,
-            estabs.mes,
             hab.id_habilitacao,
             habilitacao,
             habilitacao_ativa_indicador,
@@ -185,7 +185,7 @@ final as (
         
     from habilitacoes as hab
     left join habilitacoes_mapping_cnesweb as map on safe_cast(hab.id_habilitacao as int64) = safe_cast(map.id_habilitacao as int64)
-    left join estabelecimentos_mrj_sus as estabs on (hab.ano = estabs.ano and hab.mes = estabs.mes and safe_cast(hab.id_cnes as int64) = safe_cast(estabs.id_cnes as int64))
+    left join estabelecimentos_mrj_sus as estabs on (hab.ano = estabs.ano_competencia and hab.mes = estabs.mes_competencia and safe_cast(hab.id_cnes as int64) = safe_cast(estabs.id_cnes as int64))
 )
 
 select * from final

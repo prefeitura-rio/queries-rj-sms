@@ -52,7 +52,7 @@ leitos_mrj_sus_non_unique as (
     from  {{ ref("raw_cnes_ftp__leito") }} as lt
     left join leitos_mapping_cnesftp as ftp on safe_cast(lt.tipo_leito as int64) = ftp.tipo_leito
     left join leitos_mapping_cnesweb as web on safe_cast(lt.tipo_especialidade_leito as int64) = safe_cast(web.tipo_especialidade_leito as int64)
-    left join estabelecimentos_mrj_sus as estabs on lt.ano = estabs.ano and lt.mes = estabs.mes and safe_cast(lt.id_estabelecimento_cnes as int64) = safe_cast(estabs.id_cnes as int64)
+    left join estabelecimentos_mrj_sus as estabs on lt.ano = estabs.ano_competencia and lt.mes = estabs.mes_competencia and safe_cast(lt.id_estabelecimento_cnes as int64) = safe_cast(estabs.id_cnes as int64)
     
     where lt.ano >= 2010 and safe_cast(lt.id_estabelecimento_cnes as int64) in (select distinct safe_cast(id_cnes as int64) from estabelecimentos_mrj_sus)
 ),
@@ -64,6 +64,8 @@ leitos_mrj_sus as (
 final as (
     select
         STRUCT (
+            ano_competencia,
+            mes_competencia,
             data_atualizao_registro,
             usuario_atualizador_registro,
             mes_particao,
@@ -153,8 +155,6 @@ final as (
         ) as estabelecimentos,
 
         STRUCT (
-            ano,
-            mes,
             tipo_leito,
             tipo_leito_descr,
             tipo_especialidade_leito,
@@ -166,7 +166,7 @@ final as (
 
     from leitos_mrj_sus
     where id_cnes is not null
-    order by ano asc, mes asc, id_cnes asc, tipo_leito_descr asc, tipo_especialidade_leito_descr asc
+    order by ano_competencia asc, mes_competencia asc, id_cnes asc, tipo_leito_descr asc, tipo_especialidade_leito_descr asc
 )
 
 select * from final

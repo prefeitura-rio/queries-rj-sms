@@ -95,6 +95,8 @@ profissional_dados_hci as (select distinct cns, cpf, dados, endereco from {{ ref
 final AS (
     SELECT
         STRUCT(
+            estabs.ano_competencia,
+            estabs.mes_competencia,
             estabs.data_atualizao_registro,
             estabs.usuario_atualizador_registro,
             estabs.mes_particao,
@@ -186,8 +188,6 @@ final AS (
         STRUCT(
             --cod_sus.id_codigo_sus as profissional_codigo_sus,
             p.data_registro,
-            estabs.ano,
-            estabs.mes,
             hci.cpf,
             p.profissional_cns as cns,
             p.profissional_nome as nome,
@@ -210,7 +210,7 @@ final AS (
         
     FROM profissionais_mrj AS p
     LEFT JOIN profissional_dados_hci AS hci ON SAFE_CAST(p.profissional_cns AS INT64) = (SELECT SAFE_CAST(cns AS INT64) FROM UNNEST(hci.cns) AS cns LIMIT 1)
-    LEFT JOIN estabelecimentos_mrj_sus AS estabs ON p.ano = estabs.ano AND p.mes = estabs.mes AND SAFE_CAST(p.id_estabelecimento_cnes AS INT64) = SAFE_CAST(estabs.id_cnes AS INT64)
+    LEFT JOIN estabelecimentos_mrj_sus AS estabs ON p.ano = estabs.ano_competencia AND p.mes = estabs.mes_competencia AND SAFE_CAST(p.id_estabelecimento_cnes AS INT64) = SAFE_CAST(estabs.id_cnes AS INT64)
     LEFT JOIN cbo AS ocup ON p.id_cbo = ocup.id_cbo
     LEFT JOIN cbo_fam AS ocupf ON LEFT(p.id_cbo_familia, 4) = ocupf.id_cbo_familia
     LEFT JOIN tipo_vinculo ON p.id_tipo_vinculo = tipo_vinculo.codigo_tipo_vinculo
