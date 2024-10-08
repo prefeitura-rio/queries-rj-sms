@@ -198,6 +198,7 @@ with
             (
                 select
                     cpf,
+                    ddd,
                     valor,
                     rank,
                     merge_order,
