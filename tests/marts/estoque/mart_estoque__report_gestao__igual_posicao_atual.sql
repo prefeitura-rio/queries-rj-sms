@@ -14,6 +14,9 @@ with
         where
             lote_status_padronizado in ("Ativo")
             and estabelecimento_tipo_sms_agrupado in ("APS", "TPC")
+            and not (
+                sistema_origem = "vitacare" and estoque_secao_caf_indicador = "Não"
+            )  
         group by 1, 2
     ),
 

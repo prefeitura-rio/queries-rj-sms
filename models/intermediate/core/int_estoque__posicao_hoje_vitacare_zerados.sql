@@ -8,7 +8,17 @@ with
     ),
 
     posicao_atual as (
-        select raw.*
+        select raw.*, case
+                when current_date('America/Sao_Paulo') > lote_data_vencimento
+                then "Vencido"
+                when lote_status = "removed"
+                then "Removido"
+                when lote_status = "suspended"
+                then "Suspenso"
+                when lote_status = "active" or lote_status = "recovered"
+                then "Ativo"
+                else "Ativo"
+            end as lote_status_padronizado,
         from {{ ref("raw_prontuario_vitacare__estoque_posicao") }} as raw
         inner join
             posicao_mais_recente_por_estabelecimento as recente
@@ -16,10 +26,13 @@ with
             and recente.data_particao = raw.data_particao
     ),
 
+
+    posicao_atual_ativos as (select * from posicao_atual where lote_status_padronizado = "Ativo"),
+
     materiais as (select * from {{ ref("dim_material") }}),
 
     -- relacão de unidades que posição de estoque na data atual
-    unidades_vitacare as (select distinct id_cnes, data_particao from posicao_atual),
+    unidades_vitacare as (select distinct id_cnes, data_particao from posicao_atual_ativos),
 
     -- relação de itens remume por estabelecimento
     remume as (
@@ -31,7 +44,7 @@ with
     ),
 
     -- materias em estoque
-    materiais_com_estoque as (select distinct id_cnes, id_material from posicao_atual),
+    materiais_com_estoque as (select distinct id_cnes, id_material from posicao_atual_ativos),
 
     -- Filtra as posições zeradas
     posicao_zeradas as (

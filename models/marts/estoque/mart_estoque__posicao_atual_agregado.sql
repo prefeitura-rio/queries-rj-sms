@@ -10,8 +10,11 @@ with
     source as (
         select *
         from {{ ref("mart_estoque__posicao_atual") }}
-        where lote_status_padronizado in ("Ativo")
-        and not (sistema_origem = "vitacare" and estoque_secao_caf_indicador = "Não") -- dados da vitacare fora do estoque central não são confiáveis
+        where
+            lote_status_padronizado in ("Ativo")
+            and not (
+                sistema_origem = "vitacare" and estoque_secao_caf_indicador = "Não"
+            )  -- dados da vitacare fora do estoque central não são confiáveis
     ),
 
     agregado as (
