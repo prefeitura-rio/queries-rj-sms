@@ -21,6 +21,26 @@ select
     profissional_cns,
     id_cbo,
     cbo as cbo_nome,
+    case 
+        when regexp_contains(lower(cbo),'^medic')
+            then 'MÉDICOS'
+        when regexp_contains(lower(cbo),'^cirurgiao[ |-|]dentista')
+            then 'DENTISTAS'
+        when regexp_contains(lower(cbo),'psic')
+            then 'PSICÓLOGOS'  
+        when regexp_contains(lower(cbo),'fisioterap')
+            then 'FISIOTERAPEUTAS'
+        when regexp_contains(lower(cbo),'nutri[ç|c]')
+            then 'NUTRICIONISTAS'
+        when regexp_contains(lower(cbo),'fono')
+            then 'FONOAUDIÓLOGOS'   
+        when regexp_contains(lower(cbo),'farm')
+            then 'FARMACÊUTICOS'  
+        when ((regexp_contains(lower(cbo),'enferm')) and (lower(cbo) !='socorrista (exceto medicos e enfermeiros)'))
+            then 'ENFERMEIROS'  
+        else
+            'OUTROS PROFISSIONAIS'
+    end as cbo_agrupador,
     id_cbo_familia,
     cbo_familia as cbo_familia_nome,
     id_registro_conselho,
