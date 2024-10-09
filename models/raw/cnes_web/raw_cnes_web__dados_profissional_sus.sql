@@ -1,3 +1,5 @@
+-- ATENCAO: CADA CNS UNICO PODE POSSUIR MAIS DE UM ID_CODIGO_SUS, PORTANTO, PODE GERAR CARDINALIDADE AO PERFORMAR JOINS
+
 {{
     config(
         alias="dados_profissionais_sus",

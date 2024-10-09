@@ -12,3 +12,7 @@ models:
     description: >
       Tabela com uma visão consolidada dos sumários de atendimentos realizados
       em estabelecimentos de saúde.
+  - name: mart_historico_clinico_app__sistema
+    description: >
+      Tabela com uma visão consolidada do comportamendo dos usuários do HCI em
+      termos de utilização do sistema.
