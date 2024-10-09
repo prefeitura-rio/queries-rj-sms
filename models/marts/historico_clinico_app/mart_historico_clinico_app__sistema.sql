@@ -1,6 +1,6 @@
 {{
     config(
-        alias="consulta",
+        alias="uso_sistema",
         schema="app_historico_clinico",
         materialized="table",
     )
