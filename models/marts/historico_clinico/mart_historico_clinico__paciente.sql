@@ -133,8 +133,8 @@ cns_dedup AS (
                 cns.rank AS rank,
                 "VITACARE" AS sistema,
                 1 AS merge_order
-            FROM vitacare_tb,
-            UNNEST(cns) AS cns
+            FROM vitacare_tb, UNNEST(cns) AS cns
+            WHERE cns.cns_valido_indicador IS true
             UNION ALL 
             SELECT 
                 cpf,
@@ -142,8 +142,8 @@ cns_dedup AS (
                 cns.rank AS rank,
                 "VITAI" AS sistema,
                 2 AS merge_order
-            FROM vitai_tb,
-            UNNEST(cns) AS cns
+            FROM vitai_tb, UNNEST(cns) AS cns
+            WHERE cns.cns_valido_indicador IS true
             UNION ALL 
             SELECT 
                 cpf,
@@ -151,8 +151,8 @@ cns_dedup AS (
                 cns.rank AS rank,
                 "SMSRIO" AS sistema,
                 3 AS merge_order
-            FROM smsrio_tb,
-            UNNEST(cns) AS cns
+            FROM smsrio_tb, UNNEST(cns) AS cns
+            WHERE cns.cns_valido_indicador IS true
         )
         ORDER BY  merge_order ASC, rank ASC 
     )
