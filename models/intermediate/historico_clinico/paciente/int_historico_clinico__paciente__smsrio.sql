@@ -22,7 +22,7 @@ with
             {{ remove_accents_upper("nome") }} as nome,
             {{ remove_accents_upper("telefone_lista") }} as telefones,
             {{ remove_accents_upper("email") }} as email,
-            {{ remove_accents_upper("endereco_cep") }} as cep,
+            {{ padronize_cep(remove_accents_upper("endereco_cep")) }} as cep,
             {{ remove_accents_upper("endereco_tipo_logradouro") }} as tipo_logradouro,
             {{ remove_accents_upper("endereco_logradouro") }} as logradouro,
             {{ remove_accents_upper("endereco_numero") }} as numero,

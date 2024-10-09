@@ -20,7 +20,8 @@
 -- contact, address and medical record into a single view.
 -- dbt run --select int_historico_clinico__paciente__vitacare
 -- int_historico_clinico__paciente__smsrio int_historico_clinico__paciente__vitai
--- mart_historico_clinico__paciente mart_historico_clinico__paciente_suspeitos
+-- mart_historico_clinico__paciente
+-- mart_historico_clinico__paciente_suspeitos
 -- Declaration of the variable to filter by CPF (optional)
 -- DECLARE cpf_filter STRING DEFAULT "";
 -- vitacare: Patient base table
