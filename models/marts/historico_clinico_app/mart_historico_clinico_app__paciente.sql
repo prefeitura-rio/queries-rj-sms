@@ -99,7 +99,7 @@ select
     formatado.*,
     struct(
         true as indicador,
-        null as motivos,
+        array<string>[] as motivos,
         ap_cadastro_por_paciente.ap_cadastro,
         unidades_cadastro_por_paciente.unidades_cadastro
     ) as exibicao
