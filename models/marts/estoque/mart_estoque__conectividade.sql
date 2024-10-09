@@ -40,7 +40,7 @@ with
             case
                 when dias_desde_atualizacao = 0
                 then "Atualizado"
-                when dias_desde_atualizacao <= 2
+                when dias_desde_atualizacao <= 1
                 then "Atenção"
                 else "Não confiável"
             end as confiabilidade
