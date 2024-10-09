@@ -49,44 +49,6 @@ with
         group by cpf
     ),
     ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    --  REGRAS DE EXIBIÇÃO
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- Regra 1: Menor de Idade
-    regra_menor_de_idade as (
-        select 
-            todos_pacientes.cpf,
-            safe_cast(
-                case
-                    when todos_pacientes.dados.data_nascimento is null then false
-                    when DATE_DIFF(current_date(), todos_pacientes.dados.data_nascimento, YEAR) >= 18 then false
-                    when DATE_DIFF(current_date(), todos_pacientes.dados.data_nascimento, YEAR) < 18 then true
-                end
-            as boolean) as tem_exibicao_limitada,
-            safe_cast(
-                case
-                    when todos_pacientes.dados.data_nascimento is null then null
-                    when DATE_DIFF(current_date(), todos_pacientes.dados.data_nascimento, YEAR) >= 18 then null
-                    when DATE_DIFF(current_date(), todos_pacientes.dados.data_nascimento, YEAR) < 18 then "Menor de Idade"
-                end
-            as string) as motivo
-        from todos_pacientes
-    ),
-    -- Juntando Regras
-    todas_regras as (
-        select * from regra_menor_de_idade
-        -- union all
-        -- (...)
-    ),
-    -- Agrupando Regras
-    regras_exibicao as (
-        select 
-            cpf,
-            not(logical_or(tem_exibicao_limitada)) as indicador,
-            array_agg(motivo ignore nulls) as motivos
-        from todas_regras
-        group by cpf
-    ),
-    ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     --  FORMATAÇÃO
     ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     formatado as (
@@ -134,19 +96,13 @@ with
 --  JUNTANDO INFORMAÇÕES DE EXIBICAO
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select
-    regras_exibicao.cpf,
-    formatado.* except(cpf, cpf_particao),
+    formatado.*,
     struct(
-        regras_exibicao.indicador,
-        regras_exibicao.motivos,
+        true as indicador,
+        null as motivos,
         ap_cadastro_por_paciente.ap_cadastro,
         unidades_cadastro_por_paciente.unidades_cadastro
-    ) as exibicao,
-    cpf_particao
-from regras_exibicao
-    left join formatado on (
-        regras_exibicao.cpf = formatado.cpf and 
-        regras_exibicao.indicador = true
-    )
-    left join ap_cadastro_por_paciente on ap_cadastro_por_paciente.cpf = regras_exibicao.cpf
-    left join unidades_cadastro_por_paciente on unidades_cadastro_por_paciente.cpf = regras_exibicao.cpf
+    ) as exibicao
+from formatado
+    left join ap_cadastro_por_paciente on ap_cadastro_por_paciente.cpf = formatado.cpf
+    left join unidades_cadastro_por_paciente on unidades_cadastro_por_paciente.cpf = formatado.cpf
