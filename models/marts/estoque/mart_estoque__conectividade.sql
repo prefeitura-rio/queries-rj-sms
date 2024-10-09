@@ -39,7 +39,7 @@ with
             *,
             case
                 when dias_desde_atualizacao = 0
-                then "Confiável"
+                then "Atualizado"
                 when dias_desde_atualizacao <= 2
                 then "Atenção"
                 else "Não confiável"
