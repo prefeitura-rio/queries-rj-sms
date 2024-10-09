@@ -104,9 +104,30 @@ with
         order by merge_order asc, rank asc
     ),
 
-    cns_dados as (
-        select cpf, array_agg(struct(cns, rank)) as cns from cns_dedup group by cpf
-    ),
+cns_validated as (
+    select
+        cns,
+        {{validate_cns('cns')}} as cns_valido_indicador,
+    from (
+        select distinct cns from cns_dedup
+    )
+),
+
+cns_dados as (
+    select 
+        cpf,
+        array_agg(
+                struct(
+                    cd.cns, 
+                    cv.cns_valido_indicador,
+                    cd.rank
+                )
+        ) as cns
+    from cns_dedup cd
+    join cns_validated cv
+        on cd.cns = cv.cns
+    group by cpf
+),
 
     -- EQUIPE SAUDE FAMILIA vitacare: Extracts and ranks family health teams
     -- clinica da familia

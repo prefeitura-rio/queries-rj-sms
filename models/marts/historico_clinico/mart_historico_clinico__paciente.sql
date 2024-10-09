@@ -139,6 +139,7 @@ with
                             "vitacare" as sistema,
                             1 as merge_order
                         from vitacare_tb, unnest(cns) as cns
+                        where cns.cns_valido_indicador is true
                         union all
                         select
                             cpf,
@@ -147,6 +148,7 @@ with
                             "vitai" as sistema,
                             2 as merge_order
                         from vitai_tb, unnest(cns) as cns
+                        where cns.cns_valido_indicador is true
                         union all
                         select
                             cpf,
@@ -155,13 +157,13 @@ with
                             "smsrio" as sistema,
                             3 as merge_order
                         from smsrio_tb, unnest(cns) as cns
+                        where cns.cns_valido_indicador is true
                     )
                 order by merge_order asc, rank asc
             )
         where dedup_rank = 1
         order by merge_order asc, rank asc
     ),
-
     cns_contagem as (
         select cpf, case when cc.cpf_count > 1 then null else cd.cns end as cns
         from cns_dedup cd

@@ -91,9 +91,29 @@ with
         where dedup_rank = 1
         order by merge_order asc, rank asc
     ),
+    cns_validated AS (
+        SELECT
+            cns,
+            {{validate_cns('cns')}} AS cns_valido_indicador,
+        FROM (
+            SELECT DISTINCT cns FROM cns_dedup
+        )
+    ),
 
-    cns_dados as (
-        select cpf, array_agg(struct(cns, rank)) as cns from cns_dedup group by cpf
+    cns_dados AS (
+        SELECT 
+            cpf,
+            ARRAY_AGG(
+                    STRUCT(
+                        cd.cns, 
+                        cv.cns_valido_indicador,
+                        cd.rank
+                    )
+            ) AS cns
+        FROM cns_dedup cd
+        JOIN cns_validated cv
+            ON cd.cns = cv.cns
+        GROUP BY cpf
     ),
 
     -- CONTATO TELEPHONE

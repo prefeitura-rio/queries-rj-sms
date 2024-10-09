@@ -97,6 +97,14 @@ models:
           dado_pessoal: sim
           dado_anonimizado: nao
           dado_sensivel_saude: nao
+      monitoramento:
+        +schema: gerenciamento__historico_clinico__logs
+        +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_anonimizado: nao
+          dado_sensivel_saude: nao
       estoque_central_tpc:
         +schema: brutos_estoque_central_tpc
         +tags: "daily"
