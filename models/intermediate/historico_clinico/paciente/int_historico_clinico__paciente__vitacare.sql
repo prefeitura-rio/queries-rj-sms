@@ -543,7 +543,7 @@ cns_dados as (
                     lower(complemento) as complemento,
                     {{ proper_br("bairro") }} as bairro,
                     {{ proper_br("cidade") }} as cidade,
-                    {{ proper_br("estado") }} as estado,
+                    lower(estado) as estado,
                     timestamp(
                         datahora_ultima_atualizacao
                     ) as datahora_ultima_atualizacao,
