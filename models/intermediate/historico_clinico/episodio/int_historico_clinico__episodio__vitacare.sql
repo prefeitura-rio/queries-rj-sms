@@ -43,8 +43,8 @@ with
     -- DIM: Profissional
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     dim_profissional as (
-        select cns as pk, id_profissional_sus as id, cns, nome, cpf,
-        from {{ ref("dim_profissional_saude") }}
+        select ep.cns as pk, ep.id_profissional_sus as id, ep.cns, ep.nome, ep.cpf, c.cbo
+        from {{ ref("dim_profissional_saude") }} as ep, unnest(ep.cbo) as c
         qualify row_number() over (partition by cpf order by id desc) = 1
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -239,21 +239,38 @@ with
             (
                 select as struct
                     dim_profissional.id as id,
-                    dim_profissional.cpf as cpf,
-                    dim_profissional.cns as cns,
-                    {{ proper_br("dim_profissional.nome") }} as nome,
+                    coalesce(dim_profissional.cpf, atendimento.cpf_profissional) as cpf,
+                    coalesce(dim_profissional.cns, atendimento.cns_profissional) as cns,
+                    coalesce(
+                        {{ proper_br("dim_profissional.nome") }},
+                        {{ proper_br("atendimento.nome_profissional") }}
+                    ) as nome,
                     safe_cast(
-                        case
-                            when cbo_descricao_profissional like '%Médic%'
-                            then 'Médico(a)'
-                            when cbo_descricao_profissional like '%Enferm%'
-                            then 'Enfermeiro(a)'
-                            when cbo_descricao_profissional like '%dentista%'
-                            then 'Dentista'
-                            when cbo_descricao_profissional like '%social%'
-                            then 'Assistente Social'
-                            else cbo_descricao_profissional
-                        end as string
+                        coalesce(
+                            case
+                                when dim_profissional.cbo like '%Médic%'
+                                then 'Médico(a)'
+                                when dim_profissional.cbo like '%Enferm%'
+                                then 'Enfermeiro(a)'
+                                when dim_profissional.cbo like '%dentista%'
+                                then 'Dentista'
+                                when dim_profissional.cbo like '%social%'
+                                then 'Assistente Social'
+                                else dim_profissional.cbo
+                            end,
+                            case
+                                when cbo_descricao_profissional like '%Médic%'
+                                then 'Médico(a)'
+                                when cbo_descricao_profissional like '%Enferm%'
+                                then 'Enfermeiro(a)'
+                                when cbo_descricao_profissional like '%dentista%'
+                                then 'Dentista'
+                                when cbo_descricao_profissional like '%social%'
+                                then 'Assistente Social'
+                                else cbo_descricao_profissional
+                            end
+                        )
+                        as string
                     ) as especialidade
             ) as profissional_saude_responsavel,
 

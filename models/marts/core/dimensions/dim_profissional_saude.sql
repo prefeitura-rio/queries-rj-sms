@@ -74,14 +74,38 @@ with
 
     cbo_distinct as (
         select distinct
-            profissional_codigo_sus, id_cbo, cbo, id_cbo_familia, cbo_familia
+            profissional_codigo_sus,
+            id_cbo,
+            cbo,
+            case 
+                when regexp_contains(lower(cbo),'^medic')
+                    then 'MÉDICOS'
+                when regexp_contains(lower(cbo),'^cirurgiao[ |-|]dentista')
+                    then 'DENTISTAS'
+                when regexp_contains(lower(cbo),'psic')
+                    then 'PSICÓLOGOS'  
+                when regexp_contains(lower(cbo),'fisioterap')
+                    then 'FISIOTERAPEUTAS'
+                when regexp_contains(lower(cbo),'nutri[ç|c]')
+                    then 'NUTRICIONISTAS'
+                when regexp_contains(lower(cbo),'fono')
+                    then 'FONOAUDIÓLOGOS'   
+                when regexp_contains(lower(cbo),'farm')
+                    then 'FARMACÊUTICOS'  
+                when ((regexp_contains(lower(cbo),'enferm')) and (lower(cbo) !='socorrista (exceto medicos e enfermeiros)'))
+                    then 'ENFERMEIROS'  
+                else
+                    'OUTROS PROFISSIONAIS'
+            end as cbo_agrupador,
+            id_cbo_familia,
+            cbo_familia, 
         from alocacao
     ),
 
     cbo_agg as (
         select
             profissional_codigo_sus,
-            array_agg(struct(id_cbo, cbo, id_cbo_familia, cbo_familia)) as cbo
+            array_agg(struct(id_cbo, cbo, cbo_agrupador, id_cbo_familia, cbo_familia)) as cbo
         from cbo_distinct
         group by 1
     ),
@@ -98,33 +122,93 @@ with
         from conselho_distinct
         group by 1
     ),
-
+    --=-=-=-=--=-=-=-=-=-=-=-==-=
+    --  ENRIQUECIMENTO DE CPF  --
+    --=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    -- Cópia de mart_historico_clinico__paciente na parte de cns
     cpf_profissionais as (
-        select distinct patient_cns.cns_valor as cns, patient.cpf as cpf
-        from {{ ref("raw_hci__paciente") }} as patient
-        left join
-            {{ ref("raw_hci__cns_paciente") }} as patient_cns
-            on patient.id_paciente = patient_cns.id_paciente
+        select distinct *
+        from (
+            select
+                cpf,
+                c.cns,
+                c.rank AS rank,
+                "VITAI" AS sistema,
+                2 AS merge_order
+            from {{ ref('int_historico_clinico__paciente__vitai') }}, unnest(cns) as c
+            union all
+            select
+                cpf,
+                c.cns,
+                c.rank AS rank,
+                "SMSRIO" AS sistema,
+                3 AS merge_order
+            from {{ ref('int_historico_clinico__paciente__smsrio') }}, unnest(cns) as c
+        )
     ),
-
-    final as (
-        select
-            profissionais_datasus.id_codigo_sus as id_profissional_sus,
-            cpf_profissionais.cpf as cpf,
-            profissionais_datasus.cns,
-            profissionais_datasus.nome,
-            cbo_agg.cbo,
-            conselho_agg.conselho
-        from profissionais_datasus
-        left join cpf_profissionais on profissionais_datasus.cns = cpf_profissionais.cns
-        left join
-            cbo_agg
-            on profissionais_datasus.id_codigo_sus = cbo_agg.profissional_codigo_sus
-        left join
-            conselho_agg
-            on profissionais_datasus.id_codigo_sus
-            = conselho_agg.profissional_codigo_sus
-    )
-
-select *
-from final
+    cns_dedup AS (
+        SELECT
+            cpf,
+            cns,
+            ROW_NUMBER() OVER (PARTITION BY cpf  ORDER BY merge_order ASC, rank ASC) AS rank,
+            merge_order,
+            sistema
+        FROM(
+            SELECT 
+                cpf,
+                cns,
+                rank,
+                merge_order,
+                ROW_NUMBER() OVER (PARTITION BY cpf, cns ORDER BY merge_order, rank ASC) AS dedup_rank,
+                sistema
+            FROM cpf_profissionais
+            ORDER BY  merge_order ASC, rank ASC 
+        )
+        WHERE dedup_rank = 1
+        ORDER BY  merge_order ASC, rank ASC 
+    ),
+    cns_contagem AS (
+        SELECT
+            cpf,
+            CASE
+                WHEN cc.cpf_count > 1 THEN NULL
+                ELSE cd.cns
+            END AS cns
+        FROM cns_dedup cd
+        LEFT JOIN (
+            SELECT 
+                cns, 
+                COUNT(DISTINCT cpf) AS cpf_count
+            FROM cns_dedup
+            GROUP BY cns
+        ) AS cc
+            ON cd.cns = cc.cns
+        ORDER BY  merge_order ASC, rank ASC 
+    ),
+    cns_dados AS (
+        SELECT 
+            cpf,
+            cns
+        FROM cns_contagem
+        WHERE cns IS NOT NULL
+    ),
+final as (
+    select
+        profissionais_datasus.id_codigo_sus as id_profissional_sus,
+        cns_dados.cpf as cpf,
+        profissionais_datasus.cns,
+        profissionais_datasus.nome,
+        cbo_agg.cbo,
+        conselho_agg.conselho
+    from profissionais_datasus
+    left join
+        cns_dados 
+        on profissionais_datasus.cns = cns_dados.cns
+    left join
+        cbo_agg 
+        on profissionais_datasus.id_codigo_sus = cbo_agg.profissional_codigo_sus
+    left join
+        conselho_agg 
+        on profissionais_datasus.id_codigo_sus = conselho_agg.profissional_codigo_sus
+) 
+select * from final
