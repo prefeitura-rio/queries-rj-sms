@@ -396,6 +396,9 @@ models:
       - name: cbo.cbo
         description: Descrição do CBO associado ao profissional
         data_type: string
+      - name: cbo.cbo_agrupador
+        description: Descrição agrupada do cbo profissional
+        data_type: string
       - name: cbo.id_cbo_familia
         description: ID de familia de CBO associado ao CBO
         data_type: string
@@ -431,6 +434,9 @@ models:
         data_type: STRING
       - name: cbo_nome
         description: Descrição da especialidade do profissional
+        data_type: STRING
+      - name: cbo_agrupador
+        description: Descrição agrupada do cbo profissional
         data_type: STRING
       - name: id_cbo_familia
         description: Id da família de especialidade do profissional

@@ -7,7 +7,15 @@
 }}
 
 with
-    source as (select * from {{ ref("mart_estoque__posicao_atual") }}),
+    source as (
+        select *
+        from {{ ref("mart_estoque__posicao_atual") }}
+        where
+            lote_status_padronizado in ("Ativo")
+            and not (
+                sistema_origem = "vitacare" and estoque_secao_caf_indicador = "Não"
+            )  -- dados da vitacare fora do estoque central não são confiáveis
+    ),
 
     agregado as (
         select
@@ -27,7 +35,6 @@ with
             sum(material_quantidade) as material_quantidade,
             avg(material_consumo_medio) as material_consumo_medio
         from source
-        where lote_validade_dentro_indicador = "sim"
         group by
             id_cnes,
             id_material,
@@ -41,10 +48,15 @@ with
             material_remume_indicador,
             material_descricao,
             busca_material_id_descricao_case_insensitive
+    ),
+
+    final as (
+        select
+            *,
+            {{ dbt_utils.safe_divide("material_quantidade", "material_consumo_medio") }}
+            as estoque_cobertura_dias
+        from agregado
     )
 
-select
-    *,
-    {{ dbt_utils.safe_divide("material_quantidade", "material_consumo_medio") }}
-    as estoque_cobertura_dias
-from agregado
+select *
+from final

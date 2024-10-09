@@ -14,8 +14,16 @@ with
     alta_adm as ( -- Alta administrativa (consultas)
         select 
             gid_boletim,
-            {{ process_null("alta_tipo_detalhado") }} as alta_adm_tipo,
-            {{clean_abe_obs('abe_obs')}} as alta_adm_descricao
+            CASE
+                WHEN 
+                    {{ process_null("alta_tipo_detalhado") }} is null and {{clean_abe_obs('abe_obs')}} is null THEN null 
+                ELSE
+                    CONCAT(
+                        IF({{ process_null("alta_tipo_detalhado") }} is null,'',upper(trim({{ process_null("alta_tipo_detalhado") }}))),
+                        '\n',
+                        IF({{clean_abe_obs('abe_obs')}} is null,'',upper(trim({{clean_abe_obs('abe_obs')}})))
+                    ) 
+            END as desfecho_atendimento,
         from {{ ref("raw_prontuario_vitai__alta") }}
         qualify row_number() over ( partition by gid_boletim order by datahora desc) = 1
     ),
@@ -23,11 +31,20 @@ with
         select
             resumo_alta.gid_boletim,
             resumo_alta.resumo_alta_datahora,
-            {{ process_null("resumo_alta.desfecho_internacao") }} as resumo_alta_tipo,
-            CASE 
-                WHEN lower(trim(resumo_alta.resumo_alta_descricao)) in ('acima','anexo','no prontuário','no prontuario') THEN null
-                ELSE {{ process_null("resumo_alta.resumo_alta_descricao") }}
-            END as resumo_alta_descricao
+            concat(
+                IF(
+                    {{ process_null("resumo_alta.desfecho_internacao") }} is null,
+                    '',
+                    upper(trim({{ process_null("resumo_alta.desfecho_internacao") }}))
+                ),
+                '\n',
+                IF(
+                    (resumo_alta.resumo_alta_descricao is null) 
+                    or (lower(trim(resumo_alta.resumo_alta_descricao)) in ('acima','anexo','no prontuário','no prontuario')), 
+                    '',
+                    upper(trim({{process_null("resumo_alta.resumo_alta_descricao") }}))
+                )
+            ) as desfecho_atendimento
         from {{ ref("raw_prontuario_vitai__resumo_alta") }} as resumo_alta
         qualify row_number() over ( partition by resumo_alta.gid_boletim order by resumo_alta.resumo_alta_datahora desc) = 1
     ),
@@ -167,16 +184,7 @@ with
             ) as profissional_saude_responsavel,
             {{ process_null("atendimento.cid_codigo") }} as cid_codigo,
             {{ process_null("atendimento.cid_nome") }} as cid_nome,
-            CASE
-                WHEN 
-                    alta_adm.alta_adm_tipo is null and alta_adm.alta_adm_descricao is null THEN null 
-                ELSE
-                    CONCAT(
-                        IF(alta_adm.alta_adm_tipo is null,'',upper(trim(alta_adm.alta_adm_tipo))),
-                        '\n',
-                        IF(alta_adm.alta_adm_descricao is null,'',upper(trim(alta_adm.alta_adm_descricao)))
-                    ) 
-            END as desfecho_atendimento,
+            coalesce(alta_adm.desfecho_atendimento, alta_internacao.desfecho_atendimento) as desfecho_atendimento,
             case
                 when trim(lower(boletim.atendimento_tipo)) = 'emergencia'
                 then 'Emergência'
@@ -184,13 +192,12 @@ with
                 then 'Ambulatorial'
                 else null
             end as subtipo,
-            array(
-                select as struct
-                    cast(null as string) as tipo, cast(null as string) as descricao
-            ) as exames_realizados
+            array<struct<tipo string, descricao string>>[] as exames_realizados
         from boletim
         left join alta_adm 
             on boletim.gid = alta_adm.gid_boletim 
+        left join alta_internacao 
+            on boletim.gid = alta_internacao.gid_boletim 
         left join
             {{ ref("raw_prontuario_vitai__atendimento") }} as atendimento
             on boletim.gid = atendimento.gid_boletim
@@ -233,33 +240,21 @@ with
             ) as profissional_saude_responsavel,
             internacao_distinct.cid_codigo,
             internacao_distinct.cid_nome,
-            CASE 
-                WHEN 
-                    alta_internacao.resumo_alta_tipo is null and alta_internacao.resumo_alta_descricao is null THEN null 
-                ELSE 
-                    regexp_replace(
+            regexp_replace(
                         regexp_replace(
-                            concat(
-                                IF(alta_internacao.resumo_alta_tipo is null,'',upper(trim(alta_internacao.resumo_alta_tipo))),
-                                '\n',
-                                IF(alta_internacao.resumo_alta_descricao is null, '',upper(trim(alta_internacao.resumo_alta_descricao)))
-                            ),
-                            '[Ó|O]BITO {1,}\n[Ó|O]BITO',
+                            coalesce(alta_internacao.desfecho_atendimento,alta_adm.desfecho_atendimento),
+                            '[Ó|O]BITO *\n[Ó|O]BITO$',
                             'OBITO'
                         ),
                         'TRANSFER[E|Ê]NCIA {1,}\nTRANSF[E|Ê]RENCIA',
                         'TRANSFERÊNCIA'
-                    )
-            END as desfecho_atendimento,
+            ) as desfecho_atendimento,
             case
                 when trim(lower(internacao_distinct.internacao_tipo)) = 'emergencia'
                 then 'Emergência'
                 else trim(initcap(internacao_distinct.internacao_tipo))
             end as subtipo,
-            array(
-                select as struct
-                    cast(null as string) as tipo, cast(null as string) as descricao
-            ) as exames_realizados
+            array<struct<tipo string, descricao string>>[] as exames_realizados
         from boletim
         left join
             (select * from internacao_all where ordenacao = 1) internacao_distinct
@@ -267,6 +262,9 @@ with
         left join
             alta_internacao
             on alta_internacao.gid_boletim = boletim.gid
+        left join
+            alta_adm
+            on alta_adm.gid_boletim = boletim.gid
         where
             internacao_distinct.gid_boletim is not null
             and boletim.internacao_data is not null
@@ -462,9 +460,9 @@ with
 
             -- Motivo e Desfecho
             safe_cast(
-                atendimento_struct.motivo_atendimento as string
+                trim(atendimento_struct.motivo_atendimento) as string
             ) as motivo_atendimento,
-            safe_cast(desfecho_atendimento as string) as desfecho_atendimento,
+            safe_cast(trim(desfecho_atendimento) as string) as desfecho_atendimento,
 
             -- Condições
             cid_grouped.condicoes,
