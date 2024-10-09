@@ -52,7 +52,7 @@ with
 
         select
             -- Primary Key
-            concat(id_cnes, ".", id) as id,
+            concat(id_cnes, "-", id) as id,
             {{
                 dbt_utils.generate_surrogate_key(
                     [
@@ -63,7 +63,7 @@ with
             }} as id_surrogate,
 
             -- Foreign Key
-            id_cnes,
+            {{clean_numeric("id_cnes")}} as id_cnes,
             id_microarea,
             id_equipe,
             id_equipe_ine,
@@ -105,5 +105,5 @@ with
         from renamed
     )
 
-select distinct * -- # TODO: Remover depois de vitacare corrigir a duplicidade
+select * -- # TODO: Remover depois de vitacare corrigir a duplicidade
 from final
