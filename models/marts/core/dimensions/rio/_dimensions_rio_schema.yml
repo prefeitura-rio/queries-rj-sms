@@ -204,6 +204,8 @@ models:
         description: "Administração do estabelecimento."
       - name: diretor_clinico_cpf
         description: "CPF do diretor clínico do estabelecimento."
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
 
@@ -377,6 +379,8 @@ models:
         description: "Administração do estabelecimento."
       - name: diretor_clinico_cpf
         description: "CPF do diretor clínico do estabelecimento."
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
 
@@ -556,6 +560,8 @@ models:
         description: "Administração do estabelecimento."
       - name: diretor_clinico_cpf
         description: "CPF do diretor clínico do estabelecimento."
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
 
@@ -727,6 +733,8 @@ models:
         description: "Administração do estabelecimento."
       - name: diretor_clinico_cpf
         description: "CPF do diretor clínico do estabelecimento."
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
 
@@ -845,10 +853,16 @@ models:
         description: "Data do registro"
       - name: cpf
         description: "CPF do profissional."
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: profissional_cns
         description: "Número do CNS (Cartão Nacional de Saúde) do profissional."
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: profissional_nome
         description: "Nome completo do profissional."
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: vinculacao
         description: "Descrição da vinculação do profissional."
       - name: vinculo_tipo
@@ -863,12 +877,18 @@ models:
         description: "Descrição da família do Código Brasileiro de Ocupações (CBO) do profissional."
       - name: id_registro_conselho
         description: "Identificador de registro no conselho profissional."
+        policy_tags:
+          - '{{ var ("TAG_RG") }}'
       - name: id_tipo_conselho
         description: "Tipo de conselho do profissional."
       - name: profissional_dados_hci
         description: "Dados adicionais do profissional provenientes do HCI."
+        policy_tags:
+          - '{{ var ("TAG_DADOS_CLINICOS") }}'
       - name: endereco_profissional_hci
         description: "Endereço do profissional proveniente do HCI."
+        policy_tags:
+          - '{{ var ("TAG_ENDERECO") }}'
       - name: carga_horaria_outros
         description: "Carga horária em outros tipos de serviços fora do ambiente hospitalar ou ambulatorial."
       - name: carga_horaria_hospitalar
