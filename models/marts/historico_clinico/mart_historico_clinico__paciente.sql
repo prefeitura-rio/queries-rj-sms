@@ -48,6 +48,12 @@ WITH vitacare_tb AS (
     WHERE dados.rank=1
     -- AND cpf = cpf_filter
 ),
+-- VITAI: Deceased base table
+base_obitos_vitai as (
+        select 
+            * 
+        from {{ ref('int_historico_clinico__obito__vitai') }}
+    ),
 
 -- VITAI: Patient base table
 vitai_tb AS (
@@ -539,8 +545,19 @@ paciente_dados AS (
             END AS data_nascimento,
             COALESCE(vc.genero, sm.genero, vi.genero) AS genero,
             COALESCE(vc.raca, sm.raca, vi.raca) AS raca,
-            COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) AS obito_indicador,
-            COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) AS obito_data,
+            CASE 
+                WHEN ((COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) is False 
+                        or COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) is null))
+                    and (base_obitos_vitai.cpf is not null)
+                    THEN True
+                ELSE COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador)
+            END AS obito_indicador,
+            CASE 
+                WHEN COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) is null 
+                    and (base_obitos_vitai.obito_data is not null)
+                    THEN base_obitos_vitai.obito_data
+                ELSE  COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) 
+            END AS obito_data,
             CASE 
                 WHEN sm.cpf IS NOT NULL THEN sm.mae_nome
                 WHEN vc.cpf IS NOT NULL THEN vc.mae_nome
@@ -567,7 +584,8 @@ paciente_dados AS (
     FROM all_cpfs cpfs
     LEFT JOIN vitacare_tb vc ON cpfs.cpf = vc.cpf
     LEFT JOIN vitai_tb vi ON cpfs.cpf = vi.cpf
-    LEFT JOIN smsrio_tb sm ON cpfs.cpf = sm.cpf 
+    LEFT JOIN smsrio_tb sm ON cpfs.cpf = sm.cpf
+    LEFT JOIN base_obitos_vitai on cpfs.cpf = base_obitos_vitai.cpf
 ),
 
 ---- FINAL JOIN: Joins all the data previously processed, creating the

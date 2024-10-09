@@ -21,7 +21,12 @@ with
     episodios_com_cid as (
         select id_episodio
         from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
-        where cid.id is not null and cid.situacao <> 'RESOLVIDO'
+        where cid.id is not null
+    ),
+    episodios_com_procedimento as (
+        select id_episodio
+        from {{ ref("mart_historico_clinico__episodio") }}, unnest(procedimentos_realizados) as p
+        where p.descricao is not null
     ),
     todos_episodios as (
         select
@@ -57,6 +62,7 @@ with
                     tipo not like '%Exame%' and 
                     (
                         id_episodio in (select * from episodios_com_cid)
+                        or id_episodio in (select * from episodios_com_procedimento)
                         or motivo_atendimento is not null
                         or desfecho_atendimento is not null
                     )
@@ -120,11 +126,18 @@ with
                 where tipo is not null
             ) as clinical_exams,
             array(
-                select distinct descricao from unnest(condicoes) where descricao is not null and situacao <> 'RESOLVIDO'
-            ) as active_cids,
+                select struct(descricao as description, observacao as notes)
+                from unnest(procedimentos_realizados)
+                where tipo is not null
+            ) as procedures,
+            array(
+                select struct(descricao as description , situacao as status) 
+                from unnest(condicoes) 
+                where descricao is not null
+            ) as cids,
             array(
                 select distinct resumo from unnest(condicoes) where resumo is not null and resumo != ''
-            ) as active_cids_summarized,
+            ) as cids_summarized,
             case
                 when
                     profissional_saude_responsavel.nome is not null
@@ -138,6 +151,7 @@ with
             end as responsible,
             motivo_atendimento as clinical_motivation,
             desfecho_atendimento as clinical_outcome,
+            obito_indicador as deceased,
             case
                 when estabelecimento.estabelecimento_tipo is null
                 then []

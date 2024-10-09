@@ -6,89 +6,94 @@ models:
     columns:
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
-        data_type: STRING
+        data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
-        data_type: STRING
+        data_type: string
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
-        data_type: STRING
+        data_type: string
       - name: id_curva_abc
         description: Identificador usado para agrupar os medicamentos/insumos em classes
           de consumo
-        data_type: STRING
+        data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
         policy_tags:
           - '{{ var ("TAG_MATERIAL") }}'
-        data_type: STRING
+        data_type: string
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
-        data_type: STRING
+        data_type: string
       - name: estoque_secao
         description: Local dentro da unidade de saúde onde está armazenado o
           medicamento/insumo
-        data_type: STRING
-      - name: lote_data_vencimento
-        description: Data de vecimento do lote
-        data_type: DATE
-      - name: material_quantidade
-        description: Quantidade disponível do medicamento/insumo
-        data_type: FLOAT64
-      - name: material_valor_unitario
-        description: Valor em reais de uma unidade do medicamento/insumo
-        data_type: FLOAT64
-      - name: material_valor_total
-        description: Valor em reais somando todas as unidades disponíveis do
-          medicamento/insumo
-        data_type: FLOAT64
-      - name: material_remume_indicador
-        description: Esta coluna indica se o material está listado na Lista Municipal de
-          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
-          disponibilidade e regulamentação do material.
-        data_type: STRING
-      - name: material_remume_listagem_basico_indicador
-        description: Esta coluna indica se o material faz parte da lista "Componentes
-          Básicos" da REMUME.
-        data_type: STRING
-      - name: material_remume_listagem_uso_interno_indicador
-        description: Esta coluna indica se o material faz parte da lista "Uso interno
-          nas UAPs" da REMUME.
-        data_type: STRING
-      - name: material_remume_listagem_hospitalar_indicador
-        description: Esta coluna indica se o material faz parte da lista "Componentes
-          Hospitalares" da REMUME.
-        data_type: STRING
-      - name: material_remume_listagem_antiseptico_indicador
-        description: Esta coluna indica se o material faz parte da lista
-          "Saneantes/Antispeticos" da REMUME.
-        data_type: STRING
-      - name: material_remume_listagem_estrategico_indicador
-        description: Esta coluna indica se o material faz parte da lista "Componentes
-          Estratégicos" da REMUME.
-        data_type: STRING
+        data_type: string
       - name: estoque_reservado_para_abastecimento
         description: Este campo indica se o material está reservado para abastecimento
           de outras unidades de saúde. Este campo só se aplica para estoques na
           TPC.
-        data_type: STRING
+        data_type: string
+      - name: lote_status
+        description: Status do lote no sistema de origem. Atualmente é preenchido
+          somente no Vitacare.
+        data_type: string
+        quote: true
+      - name: lote_data_vencimento
+        description: Data de vecimento do lote
+        data_type: date
+      - name: material_quantidade
+        description: Quantidade disponível do medicamento/insumo
+        data_type: float64
+      - name: material_valor_unitario
+        description: Valor em reais de uma unidade do medicamento/insumo
+        data_type: float64
+      - name: material_valor_total
+        description: Valor em reais somando todas as unidades disponíveis do
+          medicamento/insumo
+        data_type: float64
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
+        data_type: string
+      - name: material_remume_listagem_basico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Básicos" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_uso_interno_indicador
+        description: Esta coluna indica se o material faz parte da lista "Uso interno
+          nas UAPs" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_hospitalar_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Hospitalares" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_antiseptico_indicador
+        description: Esta coluna indica se o material faz parte da lista
+          "Saneantes/Antispeticos" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_estrategico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Estratégicos" da REMUME.
+        data_type: string
       - name: sistema_origem
         description: Sistema de origem do registro
-        data_type: STRING
+        data_type: string
       - name: data_particao
         description: Data de referencia da posição do estoque
-        data_type: DATE
+        data_type: date
       - name: data_snapshot
         description: Momento no qual foi feito o snapshot do registro
-        data_type: DATETIME
+        data_type: datetime
       - name: data_carga
         description: Momento (GMT-3) no qual foi feito o download do dataset
-        data_type: DATETIME
+        data_type: datetime
   - name: fct_estoque_movimento
     columns:
       - name: id_cnes

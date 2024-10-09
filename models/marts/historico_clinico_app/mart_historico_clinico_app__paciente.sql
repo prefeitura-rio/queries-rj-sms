@@ -93,11 +93,12 @@ with
         select 
             dados.nome as registration_name,
             dados.nome_social as social_name,
-            cpf,
-            cns[safe_offset(0)] as cns,
+            todos_pacientes.cpf,
+            todos_pacientes.cns[safe_offset(0)] as cns,
             safe_cast(dados.data_nascimento as string) as birth_date,
             dados.genero as gender,
             dados.raca as race,
+            dados.obito_indicador as deceased,
             contato.telefone[safe_offset(0)].valor as phone,
             struct(
                 equipe_saude_familia[safe_offset(0)].clinica_familia.id_cnes as cnes,
@@ -126,7 +127,7 @@ with
                 from unnest(equipe_saude_familia[safe_offset(0)].enfermeiros)
             ) as nursing_responsible,
             dados.identidade_validada_indicador as validated,
-            safe_cast(cpf as int64) as cpf_particao
+            safe_cast(todos_pacientes.cpf as int64) as cpf_particao
         from todos_pacientes
     )
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
