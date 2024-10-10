@@ -34,7 +34,7 @@ select
     substring(tipo_vinculo, 1, 4) as id_tipo_vinculo,
     substring(tipo_vinculo, 1, 2) as id_vinculacao,
     left(lpad(cbo_2002, 6, '0'), 4) as id_cbo_familia,
-    lpad(id_registro_conselho, 9, '0') as id_registro_conselho,
+    lpad(id_registro_conselho, 8, '0') as id_registro_conselho,
     tipo_conselho as id_tipo_conselho,
     carga_horaria_outros,
     carga_horaria_hospitalar,
