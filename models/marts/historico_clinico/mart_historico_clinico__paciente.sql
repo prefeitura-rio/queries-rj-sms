@@ -13,322 +13,304 @@
 }}
 
 -- This code integrates patient data from three sources:
--- rj-sms.brutos_prontuario_vitacare.paciente (VITACARE)
--- rj-sms.brutos_plataforma_vitai.paciente (VITAI)
--- rj-sms.brutos_plataforma_smsrio.paciente (SMSRIO)
+-- rj-sms.brutos_prontuario_vitacare.paciente (vitacare)
+-- rj-sms.brutos_plataforma_vitai.paciente (vitai)
+-- rj-sms.brutos_plataforma_smsrio.paciente (smsrio)
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
--- dbt run --select int_historico_clinico__paciente__vitacare int_historico_clinico__paciente__smsrio int_historico_clinico__paciente__vitai mart_historico_clinico__paciente mart_historico_clinico__paciente_suspeitos
-
+-- dbt run --select int_historico_clinico__paciente__vitacare
+-- int_historico_clinico__paciente__smsrio int_historico_clinico__paciente__vitai
+-- mart_historico_clinico__paciente
+-- mart_historico_clinico__paciente_suspeitos
 -- Declaration of the variable to filter by CPF (optional)
 -- DECLARE cpf_filter STRING DEFAULT "";
-
--- VITACARE: Patient base table
-WITH vitacare_tb AS (
-    SELECT 
-        cpf,
-        cns,
-        dados.nome,
-        dados.cpf_valido_indicador,
-        dados.nome_social,
-        dados.data_nascimento,
-        dados.genero,
-        dados.raca,
-        dados.obito_indicador,
-        dados.obito_data,
-        dados.mae_nome,
-        dados.pai_nome,
-        dados.metadados,
-        equipe_saude_familia,
-        contato,
-        endereco,
-        prontuario
-    FROM {{ ref('int_historico_clinico__paciente__vitacare') }},
-    UNNEST(dados) AS dados
-    WHERE dados.rank=1
-    -- AND cpf = cpf_filter
-),
--- VITAI: Deceased base table
-base_obitos_vitai as (
-        select 
-            * 
-        from {{ ref('int_historico_clinico__obito__vitai') }}
-    ),
-
--- VITAI: Patient base table
-vitai_tb AS (
-    SELECT 
-        cpf,
-        cns,
-        dados.nome,
-        dados.cpf_valido_indicador,
-        dados.nome_social,
-        dados.data_nascimento,
-        dados.genero,
-        dados.raca,
-        dados.obito_indicador,
-        dados.obito_data,
-        dados.mae_nome,
-        dados.pai_nome,
-        dados.metadados,
-        contato,
-        endereco,
-        prontuario
-    FROM {{ ref('int_historico_clinico__paciente__vitai') }},
-    UNNEST(dados) AS dados
-    WHERE dados.rank=1
-    -- AND cpf = cpf_filter
-),
-
--- SMSRIO: Patient base table
-smsrio_tb AS (
-    SELECT 
-        cpf,
-        cns,
-        dados.nome,
-        dados.cpf_valido_indicador,
-        dados.nome_social,
-        dados.data_nascimento,
-        dados.genero,
-        dados.raca,
-        dados.obito_indicador,
-        dados.obito_data,
-        dados.mae_nome,
-        dados.pai_nome,
-        dados.metadados,
-        contato,
-        endereco,
-        prontuario
-    FROM {{ ref("int_historico_clinico__paciente__smsrio") }},
-    UNNEST(dados) AS dados
-    WHERE dados.rank=1
-    -- AND cpf = cpf_filter
-),
-
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
---  Merge data from different sources
----=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-
--- CNS Dados: Merges CNS data, grouping by patient 
--- UNION 1. Vitacare | 2. Vitai | 3. SMSRIO
-cns_dedup AS (
-    SELECT
-        cpf,
-        cns,
-        ROW_NUMBER() OVER (PARTITION BY cpf  ORDER BY merge_order ASC, rank ASC) AS rank,
-        merge_order,
-        sistema
-    FROM(
-        SELECT 
+-- vitacare: Patient base table
+with
+    vitacare_tb as (
+        select
             cpf,
             cns,
-            rank,
+            dados.nome,
+            dados.cpf_valido_indicador,
+            dados.nome_social,
+            dados.data_nascimento,
+            dados.genero,
+            dados.raca,
+            dados.obito_indicador,
+            dados.obito_data,
+            dados.mae_nome,
+            dados.pai_nome,
+            dados.metadados,
+            equipe_saude_familia,
+            contato,
+            endereco,
+            prontuario
+        from
+            {{ ref("int_historico_clinico__paciente__vitacare") }},
+            unnest(dados) as dados
+        where dados.rank = 1
+    -- AND cpf = cpf_filter
+    ),
+    -- vitai: Deceased base table
+    base_obitos_vitai as (
+        select * from {{ ref("int_historico_clinico__obito__vitai") }}
+    ),
+
+    -- vitai: Patient base table
+    vitai_tb as (
+        select
+            cpf,
+            cns,
+            dados.nome,
+            dados.cpf_valido_indicador,
+            dados.nome_social,
+            dados.data_nascimento,
+            dados.genero,
+            dados.raca,
+            dados.obito_indicador,
+            dados.obito_data,
+            dados.mae_nome,
+            dados.pai_nome,
+            dados.metadados,
+            contato,
+            endereco,
+            prontuario
+        from {{ ref("int_historico_clinico__paciente__vitai") }}, unnest(dados) as dados
+        where dados.rank = 1
+    -- AND cpf = cpf_filter
+    ),
+
+    -- smsrio: Patient base table
+    smsrio_tb as (
+        select
+            cpf,
+            cns,
+            dados.nome,
+            dados.cpf_valido_indicador,
+            dados.nome_social,
+            dados.data_nascimento,
+            dados.genero,
+            dados.raca,
+            dados.obito_indicador,
+            dados.obito_data,
+            dados.mae_nome,
+            dados.pai_nome,
+            dados.metadados,
+            contato,
+            endereco,
+            prontuario
+        from
+            {{ ref("int_historico_clinico__paciente__smsrio") }}, unnest(dados) as dados
+        where dados.rank = 1
+    -- AND cpf = cpf_filter
+    ),
+
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- Merge data from different sources
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- CNS Dados: Merges CNS data, grouping by patient 
+    -- UNION 1. Vitacare | 2. Vitai | 3. smsrio
+    cns_dedup as (
+        select
+            cpf,
+            cns,
+            row_number() over (
+                partition by cpf order by merge_order asc, rank asc
+            ) as rank,
             merge_order,
-            ROW_NUMBER() OVER (PARTITION BY cpf, cns ORDER BY merge_order, rank ASC) AS dedup_rank,
             sistema
-        FROM (
-            SELECT
-                cpf,
-                cns.cns AS cns,
-                cns.rank AS rank,
-                "VITACARE" AS sistema,
-                1 AS merge_order
-            FROM vitacare_tb,
-            UNNEST(cns) AS cns
-            UNION ALL 
-            SELECT 
-                cpf,
-                cns.cns AS cns,
-                cns.rank AS rank,
-                "VITAI" AS sistema,
-                2 AS merge_order
-            FROM vitai_tb,
-            UNNEST(cns) AS cns
-            UNION ALL 
-            SELECT 
-                cpf,
-                cns.cns AS cns,
-                cns.rank AS rank,
-                "SMSRIO" AS sistema,
-                3 AS merge_order
-            FROM smsrio_tb,
-            UNNEST(cns) AS cns
-        )
-        ORDER BY  merge_order ASC, rank ASC 
-    )
-    WHERE dedup_rank = 1
-    ORDER BY  merge_order ASC, rank ASC 
-),
+        from
+            (
+                select
+                    cpf,
+                    cns,
+                    rank,
+                    merge_order,
+                    row_number() over (
+                        partition by cpf, cns order by merge_order, rank asc
+                    ) as dedup_rank,
+                    sistema
+                from
+                    (
+                        select
+                            cpf,
+                            cns.cns as cns,
+                            cns.rank as rank,
+                            "vitacare" as sistema,
+                            1 as merge_order
+                        from vitacare_tb, unnest(cns) as cns
+                        where cns.cns_valido_indicador is true
+                        union all
+                        select
+                            cpf,
+                            cns.cns as cns,
+                            cns.rank as rank,
+                            "vitai" as sistema,
+                            2 as merge_order
+                        from vitai_tb, unnest(cns) as cns
+                        where cns.cns_valido_indicador is true
+                        union all
+                        select
+                            cpf,
+                            cns.cns as cns,
+                            cns.rank as rank,
+                            "smsrio" as sistema,
+                            3 as merge_order
+                        from smsrio_tb, unnest(cns) as cns
+                        where cns.cns_valido_indicador is true
+                    )
+                order by merge_order asc, rank asc
+            )
+        where dedup_rank = 1
+        order by merge_order asc, rank asc
+    ),
+    cns_contagem as (
+        select cpf, case when cc.cpf_count > 1 then null else cd.cns end as cns
+        from cns_dedup cd
+        left join
+            (
+                select cns, count(distinct cpf) as cpf_count from cns_dedup group by cns
+            ) as cc
+            on cd.cns = cc.cns
+        order by merge_order asc, rank asc
+    ),
 
-cns_contagem AS (
-    SELECT
-        cpf,
-        CASE
-            WHEN cc.cpf_count > 1 THEN NULL
-            ELSE cd.cns
-        END AS cns
-    FROM cns_dedup cd
-    LEFT JOIN (
-        SELECT 
-            cns, 
-            COUNT(DISTINCT cpf) AS cpf_count
-        FROM cns_dedup
-        GROUP BY cns
-    ) AS cc
-        ON cd.cns = cc.cns
-    ORDER BY  merge_order ASC, rank ASC 
-),
+    cns_dados as (
+        select cpf, array_agg(cns) as cns
+        from cns_contagem
+        where cns is not null
+        group by cpf
+    ),
 
-cns_dados AS (
-    SELECT 
-        cpf,
-        ARRAY_AGG(
-            cns
-        ) AS cns
-    FROM cns_contagem
-    WHERE cns IS NOT NULL
-    GROUP BY cpf
-),
+    -- Equipe Saude Familia Dados: Groups family health team data by patient.
+    -- ONLY vitacare
+    equipe_saude_familia_dados as (select cpf, equipe_saude_familia from vitacare_tb),
 
+    -- Contato Dados: Merges contact data 
+    -- UNION: 1. Vitacare | 2. smsrio | 3. Vitai
+    telefone_dedup as (
+        select
+            cpf,
+            ddd,
+            valor,
+            row_number() over (
+                partition by cpf order by merge_order asc, rank asc
+            ) as rank,
+            sistema
+        from
+            (
+                select
+                    cpf,
+                    ddd,
+                    valor,
+                    rank,
+                    merge_order,
+                    row_number() over (
+                        partition by cpf, valor order by merge_order, rank asc
+                    ) as dedup_rank,
+                    sistema
+                from
+                    (
+                        select
+                            cpf,
+                            telefone.ddd,
+                            telefone.valor,
+                            telefone.rank,
+                            "vitacare" as sistema,
+                            1 as merge_order
+                        from vitacare_tb, unnest(contato.telefone) as telefone  -- Expandindo os elementos da array struct de telefone
+                        union all
+                        select
+                            cpf,
+                            telefone.ddd,
+                            telefone.valor,
+                            telefone.rank,
+                            "smsrio" as sistema,
+                            2 as merge_order
+                        from smsrio_tb, unnest(contato.telefone) as telefone
+                        union all
+                        select
+                            cpf,
+                            telefone.ddd,
+                            telefone.valor,
+                            telefone.rank,
+                            "vitai" as sistema,
+                            3 as merge_order
+                        from vitai_tb, unnest(contato.telefone) as telefone
+                    )
+                order by merge_order asc, rank asc
+            )
+        where dedup_rank = 1
+        order by merge_order asc, rank asc
+    ),
 
--- Equipe Saude Familia Dados: Groups family health team data by patient.
--- ONLY VITACARE
-equipe_saude_familia_dados AS (
-    SELECT
-        cpf,
-        equipe_saude_familia
-    FROM vitacare_tb
-),
-
--- Contato Dados: Merges contact data 
--- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
-telefone_dedup AS (
-    SELECT
-        cpf,
-        valor, 
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
-        sistema
-    FROM (
-        SELECT 
+    email_dedup as (
+        select
             cpf,
             valor,
-            rank,
-            merge_order,
-            ROW_NUMBER() OVER (PARTITION BY cpf, valor ORDER BY merge_order, rank ASC) AS dedup_rank,
+            row_number() over (
+                partition by cpf order by merge_order asc, rank asc
+            ) as rank,
             sistema
-        FROM (
-            SELECT
-                cpf,
-                telefone.valor, 
-                telefone.rank,
-                "VITACARE" AS sistema,
-                1 AS merge_order
-            FROM vitacare_tb,
-            UNNEST(contato.telefone) AS telefone -- Expandindo os elementos da array struct de telefone
-            UNION ALL 
-            SELECT 
-                cpf,
-                telefone.valor, 
-                telefone.rank,
-                "SMSRIO" AS sistema,
-                2 AS merge_order
-            FROM smsrio_tb,
-            UNNEST(contato.telefone) AS telefone
-            UNION ALL 
-            SELECT 
-                cpf,
-                telefone.valor, 
-                telefone.rank,
-                "VITAI" AS sistema,
-                3 AS merge_order
-            FROM vitai_tb,
-            UNNEST(contato.telefone) AS telefone
-        )
-        ORDER BY merge_order ASC, rank ASC
-    )
-    WHERE dedup_rank = 1
-    ORDER BY merge_order ASC, rank ASC
-),
+        from
+            (
+                select
+                    cpf,
+                    valor,
+                    rank,
+                    merge_order,
+                    row_number() over (
+                        partition by cpf, valor order by merge_order, rank asc
+                    ) as dedup_rank,
+                    sistema
+                from
+                    (
+                        select
+                            cpf,
+                            email.valor,
+                            email.rank,
+                            "vitacare" as sistema,
+                            1 as merge_order
+                        from vitacare_tb, unnest(contato.email) as email  -- Expandindo os elementos da array struct de email
+                        union all
+                        select
+                            cpf,
+                            email.valor,
+                            email.rank,
+                            "smsrio" as sistema,
+                            2 as merge_order
+                        from smsrio_tb, unnest(contato.email) as email
+                        union all
+                        select
+                            cpf,
+                            email.valor,
+                            email.rank,
+                            "vitai" as sistema,
+                            3 as merge_order
+                        from vitai_tb, unnest(contato.email) as email
+                    )
+                order by merge_order asc, rank asc
+            )
+        where dedup_rank = 1
+        order by merge_order asc, rank asc
+    ),
 
-email_dedup AS (
-    SELECT
-        cpf,
-        valor, 
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
-        sistema
-    FROM (
-        SELECT 
-            cpf,
-            valor,
-            rank,
-            merge_order,
-            ROW_NUMBER() OVER (PARTITION BY cpf, valor ORDER BY merge_order, rank ASC) AS dedup_rank,
-            sistema
-        FROM (
-            SELECT
-                cpf,
-                email.valor, 
-                email.rank,
-                "VITACARE" AS sistema,
-                1 AS merge_order
-            FROM vitacare_tb,
-            UNNEST(contato.email) AS email -- Expandindo os elementos da array struct de email
-            UNION ALL 
-            SELECT 
-                cpf,
-                email.valor, 
-                email.rank,
-                "SMSRIO" AS sistema,
-                2 AS merge_order
-            FROM smsrio_tb,
-            UNNEST(contato.email) AS email
-            UNION ALL 
-            SELECT 
-                cpf,
-                email.valor, 
-                email.rank,
-                "VITAI" AS sistema,
-                3 AS merge_order
-            FROM vitai_tb,
-            UNNEST(contato.email) AS email
-        )
-        ORDER BY merge_order ASC, rank ASC
-    )
-    WHERE dedup_rank = 1
-    ORDER BY merge_order ASC, rank ASC
-),
+    contato_dados as (
+        select
+            coalesce(t.cpf, e.cpf) as cpf,
+            struct(
+                array_agg(struct(t.ddd, t.valor, t.sistema, t.rank)) as telefone,
+                array_agg(struct(e.valor, e.sistema, e.rank)) as email
+            ) as contato
+        from telefone_dedup t
+        full outer join email_dedup e on t.cpf = e.cpf
+        group by coalesce(t.cpf, e.cpf)
+    ),
 
-contato_dados AS (
-    SELECT 
-        COALESCE(t.cpf, e.cpf) AS cpf,
-        STRUCT(
-            ARRAY_AGG(STRUCT(t.valor, t.sistema,t.rank)) AS telefone,
-            ARRAY_AGG(STRUCT(e.valor, e.sistema, e.rank)) AS email    
-        ) AS contato
-    FROM telefone_dedup t
-    FULL OUTER JOIN email_dedup e
-        ON t.cpf = e.cpf
-    GROUP BY COALESCE(t.cpf, e.cpf)
-),
-
--- Endereco Dados: Merges address information
--- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
-endereco_dedup AS (
-    SELECT
-        cpf,
-        cep, 
-        tipo_logradouro, 
-        logradouro, 
-        numero, 
-        complemento, 
-        bairro, 
-        cidade, 
-        estado, 
-        datahora_ultima_atualizacao,
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank,
-        sistema
-    FROM (
-        SELECT 
+    -- Endereco Dados: Merges address information
+    -- UNION: 1. Vitacare | 2. smsrio | 3. Vitai
+    endereco_dedup as (
+        select
             cpf,
             cep,
             tipo_logradouro,
@@ -339,281 +321,326 @@ endereco_dedup AS (
             cidade,
             estado,
             datahora_ultima_atualizacao,
-            merge_order,
-            rank,
-            ROW_NUMBER() OVER (PARTITION BY cpf, datahora_ultima_atualizacao ORDER BY merge_order, rank ASC) AS dedup_rank,
+            row_number() over (
+                partition by cpf order by merge_order asc, rank asc
+            ) as rank,
             sistema
-        FROM (
-            SELECT
-                cpf,
-                endereco.cep, 
-                endereco.tipo_logradouro, 
-                endereco.logradouro, 
-                endereco.numero, 
-                endereco.complemento, 
-                endereco.bairro, 
-                endereco.cidade, 
-                endereco.estado, 
-                endereco.datahora_ultima_atualizacao,
-                endereco.rank,
-                "VITACARE" AS sistema,
-                1 AS merge_order
-            FROM vitacare_tb,
-            UNNEST(endereco) AS endereco -- Expandindo os elementos da array struct de endereço
-            UNION ALL 
-            SELECT 
-                cpf,
-                endereco.cep, 
-                endereco.tipo_logradouro, 
-                endereco.logradouro, 
-                endereco.numero, 
-                endereco.complemento, 
-                endereco.bairro, 
-                endereco.cidade, 
-                endereco.estado, 
-                endereco.datahora_ultima_atualizacao,
-                endereco.rank,
-                "SMSRIO" AS sistema,
-                2 AS merge_order
-            FROM smsrio_tb,
-            UNNEST(endereco) AS endereco
-            UNION ALL 
-            SELECT 
-                cpf,
-                endereco.cep, 
-                endereco.tipo_logradouro, 
-                endereco.logradouro, 
-                endereco.numero, 
-                endereco.complemento, 
-                endereco.bairro, 
-                endereco.cidade, 
-                endereco.estado, 
-                endereco.datahora_ultima_atualizacao,
-                endereco.rank,
-                "VITAI" AS sistema,
-                3 AS merge_order
-            FROM vitai_tb,
-            UNNEST(endereco) AS endereco
-        )
-        ORDER BY merge_order ASC, rank ASC
-    )
-    WHERE dedup_rank = 1
+        from
+            (
+                select
+                    cpf,
+                    cep,
+                    tipo_logradouro,
+                    logradouro,
+                    numero,
+                    complemento,
+                    bairro,
+                    cidade,
+                    estado,
+                    datahora_ultima_atualizacao,
+                    merge_order,
+                    rank,
+                    row_number() over (
+                        partition by cpf, datahora_ultima_atualizacao
+                        order by merge_order, rank asc
+                    ) as dedup_rank,
+                    sistema
+                from
+                    (
+                        select
+                            cpf,
+                            endereco.cep,
+                            endereco.tipo_logradouro,
+                            endereco.logradouro,
+                            endereco.numero,
+                            endereco.complemento,
+                            endereco.bairro,
+                            endereco.cidade,
+                            endereco.estado,
+                            endereco.datahora_ultima_atualizacao,
+                            endereco.rank,
+                            "vitacare" as sistema,
+                            1 as merge_order
+                        from vitacare_tb, unnest(endereco) as endereco  -- Expandindo os elementos da array struct de endereço
+                        union all
+                        select
+                            cpf,
+                            endereco.cep,
+                            endereco.tipo_logradouro,
+                            endereco.logradouro,
+                            endereco.numero,
+                            endereco.complemento,
+                            endereco.bairro,
+                            endereco.cidade,
+                            endereco.estado,
+                            endereco.datahora_ultima_atualizacao,
+                            endereco.rank,
+                            "smsrio" as sistema,
+                            2 as merge_order
+                        from smsrio_tb, unnest(endereco) as endereco
+                        union all
+                        select
+                            cpf,
+                            endereco.cep,
+                            endereco.tipo_logradouro,
+                            endereco.logradouro,
+                            endereco.numero,
+                            endereco.complemento,
+                            endereco.bairro,
+                            endereco.cidade,
+                            endereco.estado,
+                            endereco.datahora_ultima_atualizacao,
+                            endereco.rank,
+                            "vitai" as sistema,
+                            3 as merge_order
+                        from vitai_tb, unnest(endereco) as endereco
+                    )
+                order by merge_order asc, rank asc
+            )
+        where dedup_rank = 1
     -- ORDER BY merge_order ASC, rank ASC
-),
+    ),
 
-endereco_dados AS (
-    SELECT 
-        cpf,
-        ARRAY_AGG(STRUCT(
-            cep, 
-            tipo_logradouro, 
-            logradouro, 
-            numero, 
-            complemento, 
-            bairro, 
-            cidade, 
-            estado, 
-            datahora_ultima_atualizacao,
-            sistema,
-            rank
-        )) AS endereco
-    FROM endereco_dedup
-    GROUP BY cpf
-),
-
-
--- Prontuario Dados: Merges system medical record data
--- UNION: 1. Vitacare | 2. SMSRIO | 3. Vitai
-prontuario_dedup AS (
-    SELECT
-        cpf,
-        sistema, 
-        id_cnes, 
-        id_paciente, 
-        ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY merge_order ASC, rank ASC) AS rank
-    FROM (
-        SELECT 
+    endereco_dados as (
+        select
             cpf,
-            sistema, 
-            id_cnes, 
-            id_paciente, 
-            rank,
-            merge_order,
-            ROW_NUMBER() OVER (PARTITION BY cpf, id_cnes, id_paciente ORDER BY merge_order, rank ASC) AS dedup_rank
-        FROM (
-            SELECT
-                vc.cpf,
-                "VITACARE" AS sistema,
-                prontuario.id_cnes, 
-                prontuario.id_paciente, 
-                prontuario.rank,
-                1 AS merge_order
-            FROM vitacare_tb vc,
-            UNNEST(prontuario) AS prontuario
-            UNION ALL 
-            SELECT 
-                sm.cpf,
-                "SMSRIO" AS sistema,
-                prontuario.id_cnes, 
-                prontuario.id_paciente, 
-                prontuario.rank,
-                2 AS merge_order
-            FROM smsrio_tb sm,
-            UNNEST(prontuario) AS prontuario
-            UNION ALL 
-            SELECT 
-                vi.cpf,
-                "VITAI" AS sistema,
-                prontuario.id_cnes, 
-                prontuario.id_paciente, 
-                prontuario.rank,
-                3 AS merge_order
-            FROM vitai_tb vi,
-            UNNEST(prontuario) AS prontuario
-        )
-        ORDER BY merge_order ASC, rank ASC
+            array_agg(
+                struct(
+                    cep,
+                    tipo_logradouro,
+                    logradouro,
+                    numero,
+                    complemento,
+                    bairro,
+                    cidade,
+                    estado,
+                    datahora_ultima_atualizacao,
+                    sistema,
+                    rank
+                )
+            ) as endereco
+        from endereco_dedup
+        group by cpf
+    ),
+
+    -- Prontuario Dados: Merges system medical record data
+    -- UNION: 1. Vitacare | 2. smsrio | 3. Vitai
+    prontuario_dedup as (
+        select
+            cpf,
+            sistema,
+            id_cnes,
+            id_paciente,
+            row_number() over (
+                partition by cpf order by merge_order asc, rank asc
+            ) as rank
+        from
+            (
+                select
+                    cpf,
+                    sistema,
+                    id_cnes,
+                    id_paciente,
+                    rank,
+                    merge_order,
+                    row_number() over (
+                        partition by cpf, id_cnes, id_paciente
+                        order by merge_order, rank asc
+                    ) as dedup_rank
+                from
+                    (
+                        select
+                            vc.cpf,
+                            "vitacare" as sistema,
+                            prontuario.id_cnes,
+                            prontuario.id_paciente,
+                            prontuario.rank,
+                            1 as merge_order
+                        from vitacare_tb vc, unnest(prontuario) as prontuario
+                        union all
+                        select
+                            sm.cpf,
+                            "smsrio" as sistema,
+                            prontuario.id_cnes,
+                            prontuario.id_paciente,
+                            prontuario.rank,
+                            2 as merge_order
+                        from smsrio_tb sm, unnest(prontuario) as prontuario
+                        union all
+                        select
+                            vi.cpf,
+                            "vitai" as sistema,
+                            prontuario.id_cnes,
+                            prontuario.id_paciente,
+                            prontuario.rank,
+                            3 as merge_order
+                        from vitai_tb vi, unnest(prontuario) as prontuario
+                    )
+                order by merge_order asc, rank asc
+            )
+        where dedup_rank = 1
+        order by merge_order asc, rank asc
+    ),
+
+    prontuario_dados as (
+        select cpf, array_agg(struct(sistema, id_cnes, id_paciente, rank)) as prontuario
+        from prontuario_dedup
+        group by cpf
+    ),
+
+    -- Paciente Dados: Merges patient data
+    all_cpfs as (
+        select distinct cpf
+        from
+            (
+                select cpf
+                from vitacare_tb
+                union all
+                select cpf
+                from vitai_tb
+                union all
+                select cpf
+                from smsrio_tb
+            )
+    ),
+
+    -- merge priority:
+    -- nome:             1. smsrio   | 2. Vitacare  | 3. Vitai
+    -- nome_social:      1. Vitai    
+    -- data_nascimento:  1. smsrio   | 2. Vitacare  | 3. Vitai
+    -- genero:           1. Vitacare | 2. smsrio    | 3. Vitai
+    -- raca:             1. Vitacare | 2. smsrio    | 3. Vitai
+    -- obito_indicador:  1. Vitacare | 2. smsrio    | 3. Vitai
+    -- obito_data:       1. Vitacare | 2. smsrio    | 3. Vitai
+    -- mae_nome:         1. smsrio   | 2. Vitacare  | 3. Vitai
+    -- pai_nome:         1. smsrio   | 2. Vitacare  | 3. Vitai
+    paciente_dados as (
+        select
+            cpfs.cpf,
+            struct(
+                case
+                    when sm.cpf is not null
+                    then sm.nome
+                    when vc.cpf is not null
+                    then vc.nome
+                    when vi.cpf is not null
+                    then vi.nome
+                    else null
+                end as nome,
+                case
+                    when vc.cpf is not null
+                    then vc.nome_social
+                    -- WHEN sm.cpf THEN sm.nome_social  -- smsrio não possui nome social
+                    -- WHEN vi.cpf IS NOT NULL THEN vi.nome_social  -- vitai não
+                    -- possui nome social
+                    else null
+                end as nome_social,
+                case
+                    when sm.cpf is not null
+                    then sm.data_nascimento
+                    when vc.cpf is not null
+                    then vc.data_nascimento
+                    when vi.cpf is not null
+                    then vi.data_nascimento
+                    else null
+                end as data_nascimento,
+                coalesce(vc.genero, sm.genero, vi.genero) as genero,
+                coalesce(vc.raca, sm.raca, vi.raca) as raca,
+                case
+                    when
+                        (
+                            (
+                                coalesce(
+                                    vc.obito_indicador,
+                                    sm.obito_indicador,
+                                    vi.obito_indicador
+                                )
+                                is false
+                                or coalesce(
+                                    vc.obito_indicador,
+                                    sm.obito_indicador,
+                                    vi.obito_indicador
+                                )
+                                is null
+                            )
+                        )
+                        and (base_obitos_vitai.cpf is not null)
+                    then true
+                    else
+                        coalesce(
+                            vc.obito_indicador, sm.obito_indicador, vi.obito_indicador
+                        )
+                end as obito_indicador,
+                case
+                    when
+                        coalesce(vc.obito_data, sm.obito_data, vi.obito_data) is null
+                        and (base_obitos_vitai.obito_data is not null)
+                    then base_obitos_vitai.obito_data
+                    else coalesce(vc.obito_data, sm.obito_data, vi.obito_data)
+                end as obito_data,
+                case
+                    when sm.cpf is not null
+                    then sm.mae_nome
+                    when vc.cpf is not null
+                    then vc.mae_nome
+                    when vi.cpf is not null
+                    then vi.mae_nome
+                    else null
+                end as mae_nome,
+                case
+                    when sm.cpf is not null
+                    then sm.pai_nome
+                    when vc.cpf is not null
+                    then vc.pai_nome
+                    when vi.cpf is not null
+                    then vi.pai_nome
+                    else null
+                end as pai_nome,
+                case
+                    when sm.cpf is not null then true else false
+                end as identidade_validada_indicador,
+                case
+                    when sm.cpf is not null
+                    then sm.cpf_valido_indicador
+                    when vc.cpf is not null
+                    then vc.cpf_valido_indicador
+                    when vi.cpf is not null
+                    then vi.cpf_valido_indicador
+                    else null
+                end as cpf_valido_indicador
+            ) as dados
+        from all_cpfs cpfs
+        left join vitacare_tb vc on cpfs.cpf = vc.cpf
+        left join vitai_tb vi on cpfs.cpf = vi.cpf
+        left join smsrio_tb sm on cpfs.cpf = sm.cpf
+        left join base_obitos_vitai on cpfs.cpf = base_obitos_vitai.cpf
+    ),
+
+    -- -- FINAL JOIN: Joins all the data previously processed, creating the
+    -- -- integrated table of the patients.
+    paciente_integrado as (
+        select
+            pd.cpf,
+            cns.cns,
+            pd.dados,
+            esf.equipe_saude_familia,
+            ct.contato,
+            ed.endereco,
+            pt.prontuario,
+            struct(current_timestamp() as processed_at) as metadados,
+            safe_cast(pd.cpf as int64) as cpf_particao
+        from paciente_dados pd
+        left join cns_dados cns on pd.cpf = cns.cpf
+        left join equipe_saude_familia_dados esf on pd.cpf = esf.cpf
+        left join contato_dados ct on pd.cpf = ct.cpf
+        left join endereco_dados ed on pd.cpf = ed.cpf
+        left join prontuario_dados pt on pd.cpf = pt.cpf
+        where
+            pd.dados.nome is not null
+            -- AND pd.dados.data_nascimento IS NOT NULL
+            and pd.dados.cpf_valido_indicador is true
+
     )
-    WHERE dedup_rank = 1
-    ORDER BY merge_order ASC, rank ASC
-),
 
-prontuario_dados AS (
-    SELECT 
-        cpf,
-        ARRAY_AGG(STRUCT(
-            sistema, 
-            id_cnes, 
-            id_paciente, 
-            rank
-        )) AS prontuario
-    FROM prontuario_dedup
-    GROUP BY cpf
-),
-
-
--- Paciente Dados: Merges patient data
-all_cpfs AS (
-    SELECT 
-        DISTINCT cpf
-    FROM (
-        SELECT 
-            cpf
-        FROM vitacare_tb
-        UNION ALL
-        SELECT 
-            cpf
-        FROM vitai_tb
-        UNION ALL
-        SELECT 
-            cpf
-        FROM smsrio_tb
-    )
-),
-
--- merge priority:
--- nome:             1. SMSRIO   | 2. Vitacare  | 3. Vitai
--- nome_social:      1. Vitai    
--- data_nascimento:  1. SMSRIO   | 2. Vitacare  | 3. Vitai
--- genero:           1. Vitacare | 2. SMSRIO    | 3. Vitai
--- raca:             1. Vitacare | 2. SMSRIO    | 3. Vitai
--- obito_indicador:  1. Vitacare | 2. SMSRIO    | 3. Vitai
--- obito_data:       1. Vitacare | 2. SMSRIO    | 3. Vitai
--- mae_nome:         1. SMSRIO   | 2. Vitacare  | 3. Vitai
--- pai_nome:         1. SMSRIO   | 2. Vitacare  | 3. Vitai
-
-paciente_dados AS (
-    SELECT 
-        cpfs.cpf,
-        STRUCT(
-            CASE 
-                WHEN sm.cpf IS NOT NULL THEN sm.nome
-                WHEN vc.cpf IS NOT NULL THEN vc.nome
-                WHEN vi.cpf IS NOT NULL THEN vi.nome
-                ELSE NULL
-            END AS nome,
-            CASE 
-                WHEN vc.cpf IS NOT NULL THEN vc.nome_social
-                -- WHEN sm.cpf THEN sm.nome_social  -- SMSRIO não possui nome social
-                -- WHEN vi.cpf IS NOT NULL THEN vi.nome_social  -- VITAI não possui nome social
-                ELSE NULL
-            END AS nome_social,
-            CASE 
-                WHEN sm.cpf IS NOT NULL THEN sm.data_nascimento
-                WHEN vc.cpf IS NOT NULL THEN vc.data_nascimento
-                WHEN vi.cpf IS NOT NULL THEN vi.data_nascimento
-                ELSE NULL
-            END AS data_nascimento,
-            COALESCE(vc.genero, sm.genero, vi.genero) AS genero,
-            COALESCE(vc.raca, sm.raca, vi.raca) AS raca,
-            CASE 
-                WHEN ((COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) is False 
-                        or COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador) is null))
-                    and (base_obitos_vitai.cpf is not null)
-                    THEN True
-                ELSE COALESCE(vc.obito_indicador, sm.obito_indicador, vi.obito_indicador)
-            END AS obito_indicador,
-            CASE 
-                WHEN COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) is null 
-                    and (base_obitos_vitai.obito_data is not null)
-                    THEN base_obitos_vitai.obito_data
-                ELSE  COALESCE(vc.obito_data, sm.obito_data, vi.obito_data) 
-            END AS obito_data,
-            CASE 
-                WHEN sm.cpf IS NOT NULL THEN sm.mae_nome
-                WHEN vc.cpf IS NOT NULL THEN vc.mae_nome
-                WHEN vi.cpf IS NOT NULL THEN vi.mae_nome
-                ELSE NULL
-            END AS mae_nome,
-            CASE 
-                WHEN sm.cpf IS NOT NULL THEN sm.pai_nome
-                WHEN vc.cpf IS NOT NULL THEN vc.pai_nome
-                WHEN vi.cpf IS NOT NULL THEN vi.pai_nome
-                ELSE NULL
-            END AS pai_nome,
-            CASE 
-                WHEN sm.cpf IS NOT NULL THEN TRUE
-                ELSE FALSE 
-            END AS identidade_validada_indicador,
-            CASE 
-                WHEN sm.cpf IS NOT NULL THEN sm.cpf_valido_indicador
-                WHEN vc.cpf IS NOT NULL THEN vc.cpf_valido_indicador
-                WHEN vi.cpf IS NOT NULL THEN vi.cpf_valido_indicador
-                ELSE NULL
-            END AS cpf_valido_indicador
-        ) AS dados
-    FROM all_cpfs cpfs
-    LEFT JOIN vitacare_tb vc ON cpfs.cpf = vc.cpf
-    LEFT JOIN vitai_tb vi ON cpfs.cpf = vi.cpf
-    LEFT JOIN smsrio_tb sm ON cpfs.cpf = sm.cpf
-    LEFT JOIN base_obitos_vitai on cpfs.cpf = base_obitos_vitai.cpf
-),
-
----- FINAL JOIN: Joins all the data previously processed, creating the
----- integrated table of the patients.
-paciente_integrado AS (
-    SELECT
-        pd.cpf,
-        cns.cns,
-        pd.dados,
-        esf.equipe_saude_familia,
-        ct.contato,
-        ed.endereco,
-        pt.prontuario,
-        STRUCT(CURRENT_TIMESTAMP() AS processed_at) AS metadados,
-        safe_cast(pd.cpf as int64) as cpf_particao 
-    FROM paciente_dados pd
-    LEFT JOIN cns_dados cns ON pd.cpf = cns.cpf
-    LEFT JOIN equipe_saude_familia_dados esf ON pd.cpf = esf.cpf
-    LEFT JOIN contato_dados ct ON pd.cpf = ct.cpf
-    LEFT JOIN endereco_dados ed ON pd.cpf = ed.cpf
-    LEFT JOIN prontuario_dados pt ON pd.cpf = pt.cpf
-    WHERE pd.dados.nome IS NOT NULL
-        -- AND pd.dados.data_nascimento IS NOT NULL
-        AND pd.dados.cpf_valido_indicador IS TRUE
-
-)
-
-
-SELECT 
-    * 
-FROM paciente_integrado
+select *
+from paciente_integrado

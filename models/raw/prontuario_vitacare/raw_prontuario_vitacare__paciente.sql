@@ -30,9 +30,7 @@ with
 
             * except (cadastro_permanente, nome_social, sexo, raca_cor, nome_mae),
 
-            case
-                when nome_social in ('') then null else nome_social
-            end as nome_social,
+            case when nome_social in ('') then null else nome_social end as nome_social,
 
             case
                 when sexo in ("M", "MALE")
@@ -55,7 +53,6 @@ with
                 then true
                 else null
             end as obito_indicador,
-
 
             case when nome_mae in ("NONE") then null else nome_mae end as nome_mae,
 
@@ -96,7 +93,7 @@ with
 
             {{ remove_accents_upper("telefone") }} as telefone,
             {{ remove_accents_upper("email") }} as email,
-            {{ remove_accents_upper("endereco_cep") }} as cep,
+            {{ padronize_cep(remove_accents_upper("endereco_cep")) }} as cep,
             {{ remove_accents_upper("endereco_tipo_logradouro") }} as tipo_logradouro,
             {{
                 remove_accents_upper(
