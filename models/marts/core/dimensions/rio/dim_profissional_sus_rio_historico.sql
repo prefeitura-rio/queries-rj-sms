@@ -1,6 +1,6 @@
 {{
     config(
-        enabled=false,
+        enabled=true,
         schema="saude_cnes",
         alias="profissional_sus_rio_historico",
         materialized="table",
@@ -23,18 +23,18 @@ select
     ano,
     mes,
     concat(ano, '-', lpad(cast(mes as string), 2, '0')) data_registro,
-    id_estabelecimento_cnes,
+    lpad(id_estabelecimento_cnes, 7, '0') AS id_estabelecimento_cnes,
     sigla_uf,
     case 
         when cartao_nacional_saude = "nan" then NULL 
         else cartao_nacional_saude 
     end as profissional_cns,
     nome as profissional_nome,
-    cbo_2002 as id_cbo,
+    lpad(cbo_2002, 6, '0') as id_cbo,
     substring(tipo_vinculo, 1, 4) as id_tipo_vinculo,
     substring(tipo_vinculo, 1, 2) as id_vinculacao,
-    left(cbo_2002, 4) as id_cbo_familia,
-    id_registro_conselho,
+    left(lpad(cbo_2002, 6, '0'), 4) as id_cbo_familia,
+    lpad(id_registro_conselho, 9, '0') as id_registro_conselho,
     tipo_conselho as id_tipo_conselho,
     carga_horaria_outros,
     carga_horaria_hospitalar,

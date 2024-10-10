@@ -208,6 +208,8 @@ models:
           - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
 
       # Atributos
       - name: tipo_turno
@@ -383,6 +385,8 @@ models:
           - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
 
       # Atributos
       - name: tipo_turno
@@ -564,6 +568,8 @@ models:
           - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
 
       # Atributos
       - name: tipo_turno
@@ -737,6 +743,8 @@ models:
           - '{{ var ("TAG_CPF") }}'
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
+        policy_tags:
+          - '{{ var ("TAG_CRM") }}'
 
       # Atributos
       - name: tipo_turno
@@ -789,7 +797,6 @@ models:
       # Status
       - name: ativa
         description: "Indica o status operacional do estabelecimento ('sim' para ativo, 'não' para inativo)."
-
       # Prontuário
       - name: prontuario_tem
         description: "Indica se o estabelecimento mantém prontuários dos pacientes."
@@ -847,19 +854,19 @@ models:
         description: "Data em que os dados foram carregados no banco de dados."
       - name: data_snapshot
         description: "Data em que o snapshot dos dados foi capturado."
-
-      # ---------------------------  PROFISSIONAIS
       - name: data_registro
         description: "Data do registro"
+
+      # ---------------------------  PROFISSIONAIS
       - name: cpf
         description: "CPF do profissional."
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
-      - name: profissional_cns
+      - name: cns
         description: "Número do CNS (Cartão Nacional de Saúde) do profissional."
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
-      - name: profissional_nome
+      - name: nome
         description: "Nome completo do profissional."
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
@@ -878,7 +885,7 @@ models:
       - name: id_registro_conselho
         description: "Identificador de registro no conselho profissional."
         policy_tags:
-          - '{{ var ("TAG_RG") }}'
+          - '{{ var ("TAG_CRM") }}'
       - name: id_tipo_conselho
         description: "Tipo de conselho do profissional."
       - name: profissional_dados_hci
@@ -897,3 +904,16 @@ models:
         description: "Carga horária em ambiente ambulatorial."
       - name: carga_horaria_total
         description: "Carga horária total do profissional."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - metadados.data_particao
+            - metadados.ano_competencia
+            - metadados.mes_competencia
+            - estabelecimentos.id_cnes
+            - profissionais.cns
+            - profissionais.id_cbo
+            - profissionais.vinculo_tipo
+            - profissionais.id_tipo_conselho
+          config:
+            severity: warn
