@@ -15,7 +15,7 @@ jobs:
           python-version: "3.7"
       
       - name: Install DBT
-        run: "pip install dbt-core==1.8.0 dbt-bigquery==1.8.2"
+        run: "pip install dbt-core dbt-bigquery"
       - name: install sqlfluff
         run: "pip install sqlfluff sqlfluff-templater-dbt"
       - name: Get changed files
