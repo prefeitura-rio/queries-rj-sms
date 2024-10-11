@@ -9,16 +9,32 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
       - name: Install Python
         uses: "actions/setup-python@v2"
         with:
           python-version: "3.8"
-      - name: Install DBT
-        run: "pip install dbt-core dbt-bigquery"
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Setup a local virtual environment (if no poetry.toml file)
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+
+      - name: Install the project dependencies
+        run: poetry install
+
       - name: Install DBT Dependencies
         run: "dbt deps"
-      - name: install sqlfluff
-        run: "pip install sqlfluff sqlfluff-templater-dbt"
+
       - name: Get changed files
         id: get_file_changes
         uses: trilom/file-changes-action@v1.2.4
