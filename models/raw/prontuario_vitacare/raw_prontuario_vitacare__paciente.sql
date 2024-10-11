@@ -21,8 +21,7 @@ with
         qualify
             row_number() over (
                 partition by cnes_unidade, cpf, cns order by updated_at desc
-            )
-            = 1
+            ) = 1
     ),
 
     corrige_cadastro as (
