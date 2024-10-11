@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=true,
         schema="saude_cnes",
         alias="estabelecimento_sus_rio_historico",
         partition_by = {
@@ -107,7 +108,6 @@ nat_jur AS (
         descricao AS natureza_juridica_descr 
     FROM {{ ref("raw_cnes_web__natureza_juridica") }}
     WHERE data_particao = (SELECT versao FROM versao_atual)
-
 ),
 
 tp_unidade AS (
@@ -223,14 +223,14 @@ estabelecimentos_final AS (
 final as (
     SELECT 
         -- Identificação
-        lpad(id_estabelecimento_cnes, 7, '0') AS id_cnes,
+        lpad(id_estabelecimento_cnes, 7, '0') as id_cnes,
         id_unidade,
         nome_razao_social,
         nome_fantasia,
         nome_limpo,
         nome_sigla,
         nome_complemento,
-        lpad(cnpj_mantenedora, 14, '0') AS cnpj_mantenedora,
+        lpad(cnpj_mantenedora, 14, '0') as cnpj_mantenedora,
 
         -- Responsabilização
         esfera,
@@ -240,7 +240,7 @@ final as (
         tipo_gestao_descr,
         responsavel_sms,
         administracao,
-        lpad(diretor_clinico_cpf, 11, '0') AS diretor_clinico_cpf,
+        lpad(diretor_clinico_cpf, 11, '0') as diretor_clinico_cpf,
         diretor_clinico_conselho,
 
         -- Atributos
@@ -250,12 +250,12 @@ final as (
 
         -- Tipagem dos Estabelecimentos (CNES)
         cast(tipo_unidade as int64) AS id_tipo_unidade,
-        tipo_unidade_descr AS tipo, -- Renomear para tipo_cnes?
+        tipo_unidade_descr as tipo, -- Renomear para tipo_cnes?
 
         -- Tipagem dos Estabelecimentos (DIT)
         tipo_sms,
         tipo_sms_simplificado,
-        agrupador_sms AS tipo_sms_agrupado,
+        agrupador_sms as tipo_sms_agrupado,
 
         -- Tipagem dos Estabelecimentos (SUBGERAL)
         tipo_unidade_alternativo,
@@ -273,10 +273,10 @@ final as (
         endereco_longitude,
 
         -- Status
-        CASE 
-            WHEN id_motivo_desativacao IS NULL OR id_motivo_desativacao = '' THEN 'sim' 
-            ELSE 'não' 
-        END AS ativa,
+        case 
+            when id_motivo_desativacao is null or id_motivo_desativacao = '' then 'sim' 
+            else 'não' 
+        end as ativa,
 
         -- Prontuário
         prontuario_tem,
@@ -313,7 +313,8 @@ final as (
         data_carga,
         data_snapshot
 
-    FROM estabelecimentos_final
+    from estabelecimentos_final
+    order by ano_competencia asc, mes_competencia asc, id_cnes asc
 )
 
 select * from final
