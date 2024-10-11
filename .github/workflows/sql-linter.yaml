@@ -28,15 +28,15 @@ jobs:
           # Set the command in the $() brackets as an output to use in later steps
           echo "::set-output name=lintees::$(
           # Issue where grep regular expressions don't work as expected on the
-          # Github Actions shell, check dbt/models/ folder
+          # Github Actions shell, check models/ folder
           echo \
           $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
           tr -s ' ' '\n' |
-          grep -E '^dbt/models.*[.]sql$' |
+          grep -E '^models.*[.]sql$' |
           tr -s '\n' ' ') \
           $(echo ${{ steps.get_file_changes.outputs.files_added }} |
           tr -s ' ' '\n' |
-          grep -E '^dbt/models.*[.]sql$' |
+          grep -E '^models.*[.]sql$' |
           tr -s '\n' ' ')
           )"
 
