@@ -12,10 +12,11 @@ jobs:
       - name: Install Python
         uses: "actions/setup-python@v2"
         with:
-          python-version: "3.7"
-      
+          python-version: "3.8"
       - name: Install DBT
         run: "pip install dbt-core dbt-bigquery"
+      - name: Install DBT Dependencies
+        run: "dbt deps"
       - name: install sqlfluff
         run: "pip install sqlfluff sqlfluff-templater-dbt"
       - name: Get changed files
