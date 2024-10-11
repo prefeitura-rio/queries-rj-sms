@@ -6,7 +6,7 @@ templater = dbt
 
 runaway_limit = 10
 
-max_line_length = 80
+max_line_length = 120
 
 indent_unit = space
 
