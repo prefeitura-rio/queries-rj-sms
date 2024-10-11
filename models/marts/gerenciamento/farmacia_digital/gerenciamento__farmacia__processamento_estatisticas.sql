@@ -42,7 +42,7 @@ with
             id_cnes as unidade_cnes,
             nome_limpo as unidade_nome
         from {{ref('dim_estabelecimento')}}
-        where prontuario_versao = 'vitai'
+        where prontuario_versao = 'vitai' and prontuario_estoque_tem_dado = 'sim'
     ),
     vitai_agrupado as (
         select 
@@ -94,7 +94,7 @@ with
             id_cnes as unidade_cnes,
             nome_limpo as unidade_nome
         from {{ref('dim_estabelecimento')}}
-        where prontuario_versao = 'vitacare'
+        where prontuario_versao = 'vitacare' and prontuario_estoque_tem_dado = 'sim'
     ),
     vitacare_agrupado as (
         select 
