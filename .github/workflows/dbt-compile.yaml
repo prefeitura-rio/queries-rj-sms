@@ -26,6 +26,9 @@ jobs:
     - name: Install dbt
       run:  pip install dbt-core dbt-bigquery setuptools
 
+    - name: Install DBT Dependencies
+      run:  dbt deps
+
     - name: Compile dbt models
       run: dbt compile --profiles-dir . --profile default --target dev
 
