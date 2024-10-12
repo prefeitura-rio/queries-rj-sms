@@ -29,7 +29,7 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Install DBT Dependencies
-        run: "dbt deps"
+        run: "poetry run dbt deps"
 
       - name: Get changed files
         id: get_file_changes
