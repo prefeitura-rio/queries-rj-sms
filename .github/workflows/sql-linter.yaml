@@ -40,6 +40,11 @@ jobs:
         uses: trilom/file-changes-action@v1.2.4
         with:
           output: ' '
+      
+      - name: Display changed files
+        run: |
+          echo "Modified files: ${{ steps.get_file_changes.outputs.files_modified }}"
+          echo "Added files: ${{ steps.get_file_changes.outputs.files_added }}"
 
       - name: Get changed .sql files in /models to lint
         id: get_files_to_lint
@@ -81,7 +86,7 @@ jobs:
         id: sqlfluff_json
         if: steps.get_files_to_lint.outputs.lintees != ''
         shell: bash -l {0}
-        run: sqlfluff lint --format github-annotation --annotation-level failure --verbose ${{ steps.get_files_to_lint.outputs.lintees }} > annotations.json
+        run: sqlfluff lint . > annotations.json
 
       - name: Annotate
         uses: yuzutech/annotations-action@v0.3.0
