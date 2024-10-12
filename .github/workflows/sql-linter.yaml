@@ -86,7 +86,7 @@ jobs:
         id: sqlfluff_json
         if: steps.get_files_to_lint.outputs.lintees != ''
         shell: bash -l {0}
-        run: sqlfluff lint . > annotations.json
+        run: sqlfluff lint ./models/ > annotations.json
 
       - name: Annotate
         uses: yuzutech/annotations-action@v0.3.0
