@@ -59,6 +59,23 @@ jobs:
           grep -E '^models.*[.]sql$' |
           tr -s '\n' ' ')
           )"
+      
+      - name: Lint each SQL file individually
+        run: |
+          # Loop through each changed SQL file and lint them individually
+          for file in ${{ steps.get_file_changes.outputs.files_modified }} ${{ steps.get_file_changes.outputs.files_added }}; do
+            if [[ $file == *.sql ]]; then
+              echo "Linting $file"
+              sqlfluff lint failure $file || exit_code=$?
+            fi
+          done
+        shell: bash
+
+      - name: Fail if any file had a linting error
+        run: |
+          if [[ -n "$exit_code" ]]; then
+            exit $exit_code
+          fi
 
       - name: Lint dbt models
         id: sqlfluff_json
