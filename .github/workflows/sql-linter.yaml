@@ -29,7 +29,8 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Add Poetry virtualenv to PATH
-        run: echo "::add-path::$(poetry env info --path)/bin"
+        run: |
+          echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
 
       - name: Install DBT Dependencies
         run: "dbt deps"
