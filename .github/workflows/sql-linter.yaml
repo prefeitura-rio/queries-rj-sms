@@ -28,8 +28,8 @@ jobs:
       - name: Install the project dependencies
         run: poetry install --no-interaction
 
-      - name: Activate virtual environment
-        run: source .venv/bin/activate
+      - name: Add Poetry virtualenv to PATH
+        run: echo "::add-path::$(poetry env info --path)/bin"
 
       - name: Install DBT Dependencies
         run: "dbt deps"
