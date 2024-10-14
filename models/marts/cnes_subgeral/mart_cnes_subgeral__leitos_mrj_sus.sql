@@ -1,31 +1,47 @@
 {{
     config(
         enabled=true,
-        schema="cnes_subgeral_tabelao",
-        alias="habilitacoes_mrj_sus_tabelao"
+        schema="cnes_subgeral",
+        alias="leitos_mrj_sus"
     )
 }}
 
-with 
+with
 versao_atual as (
     select MAX(data_particao) as versao 
-    from {{ ref("dim_habilitacao_sus_rio_historico") }}
-),
+    from {{ ref("raw_cnes_web__tipo_unidade") }}
+), 
 
 estabelecimentos_mrj_sus as (
-    select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select safe_cast(versao as string) as versao from versao_atual)
+    select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
-habilitacoes as (
-    select * from {{ref("dim_habilitacao_sus_rio_historico")}}
+leitos_mrj_sus_tabelao as (
+    select 
+        lt.ano_competencia,
+        lt.mes_competencia,
+        lt.id_cnes,
+        lt.tipo_leito,
+        lt.tipo_leito_descr,
+        lt.tipo_especialidade_leito,
+        lt.tipo_especialidade_leito_descr,
+        lt.quantidade_total,
+        lt.quantidade_contratado,
+        lt.quantidade_sus,
+        lt.data_particao,
+
+        estabs.* except (id_cnes, ano_competencia, mes_competencia, data_particao)
+
+    from  {{ref("dim_leito_sus_rio_historico")}} as lt
+    left join estabelecimentos_mrj_sus as estabs on lt.ano_competencia = estabs.ano_competencia and lt.mes_competencia = estabs.mes_competencia and safe_cast(lt.id_cnes as int64) = safe_cast(estabs.id_cnes as int64)
 ),
 
 final as (
     select
         STRUCT (
-            hab.data_particao,
-            hab.ano_competencia,
-            hab.mes_competencia,
+            data_particao,
+            ano_competencia,
+            mes_competencia,
             data_atualizao_registro,
             usuario_atualizador_registro,
             mes_particao,
@@ -35,7 +51,7 @@ final as (
         ) as metadados,
 
         STRUCT(
-            hab.id_cnes,
+            id_cnes,
             id_unidade,
             nome_razao_social,
             nome_fantasia,
@@ -92,18 +108,15 @@ final as (
             atendimento_regulacao_sus_indicador
         ) as estabelecimentos,
 
-        id_habilitacao,
-        habilitacao,
-        habilitacao_ativa_indicador,
-        nivel_habilitacao,
-        tipo_origem,
-        habilitacao_ano_inicio,
-        habilitacao_mes_inicio,
-        habilitacao_ano_fim,
-        habilitacao_mes_fim
-      
-    from habilitacoes as hab
-    left join estabelecimentos_mrj_sus as estabs on hab.ano_competencia = estabs.ano_competencia and hab.mes_competencia = estabs.mes_competencia and safe_cast(hab.id_cnes as int64) = safe_cast(estabs.id_cnes as int64)
+        tipo_leito,
+        tipo_leito_descr,
+        tipo_especialidade_leito,
+        tipo_especialidade_leito_descr,
+        quantidade_total,
+        quantidade_contratado,
+        quantidade_sus
+
+    from leitos_mrj_sus_tabelao
 )
 
-select * from final
+select * from final where metadados.data_particao = (select parse_date('%Y-%m-%d', versao) from versao_atual)

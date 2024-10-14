@@ -1,31 +1,31 @@
 {{
     config(
         enabled=true,
-        schema="cnes_subgeral_tabelao",
-        alias="equipamentos_mrj_sus_tabelao"
+        schema="cnes_subgeral",
+        alias="habilitacoes_mrj_sus"
     )
 }}
 
 with 
 versao_atual as (
     select MAX(data_particao) as versao 
-    from {{ ref("raw_cnes_web__tipo_unidade") }}
+    from {{ ref("dim_habilitacao_sus_rio_historico") }}
 ),
 
 estabelecimentos_mrj_sus as (
-    select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
+    select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select safe_cast(versao as string) as versao from versao_atual)
 ),
 
-equip as (
-    select * from {{ref("dim_equipamento_sus_rio_historico")}}
+habilitacoes as (
+    select * from {{ref("dim_habilitacao_sus_rio_historico")}}
 ),
 
 final as (
     select
-        struct (
-            equip.data_particao,
-            equip.ano_competencia,
-            equip.mes_competencia,
+        STRUCT (
+            hab.data_particao,
+            hab.ano_competencia,
+            hab.mes_competencia,
             data_atualizao_registro,
             usuario_atualizador_registro,
             mes_particao,
@@ -34,8 +34,8 @@ final as (
             data_snapshot
         ) as metadados,
 
-        struct (
-            equip.id_cnes,
+        STRUCT(
+            hab.id_cnes,
             id_unidade,
             nome_razao_social,
             nome_fantasia,
@@ -92,15 +92,18 @@ final as (
             atendimento_regulacao_sus_indicador
         ) as estabelecimentos,
 
-        equipamento_tipo,
-        equipamento,
-        equipamento_especifico_tipo,
-        equipamento_especifico,
-        equipamentos_quantidade,
-        equipamentos_quantidade_ativos
-
-    from equip
-    left join estabelecimentos_mrj_sus as estabs on equip.id_cnes = estabs.id_cnes and equip.ano_competencia = estabs.ano_competencia and equip.mes_competencia = estabs.mes_competencia
+        id_habilitacao,
+        habilitacao,
+        habilitacao_ativa_indicador,
+        nivel_habilitacao,
+        tipo_origem,
+        habilitacao_ano_inicio,
+        habilitacao_mes_inicio,
+        habilitacao_ano_fim,
+        habilitacao_mes_fim
+      
+    from habilitacoes as hab
+    left join estabelecimentos_mrj_sus as estabs on hab.ano_competencia = estabs.ano_competencia and hab.mes_competencia = estabs.mes_competencia and safe_cast(hab.id_cnes as int64) = safe_cast(estabs.id_cnes as int64)
 )
 
-select * from final where metadados.data_particao = (select parse_date('%Y-%m-%d', versao) from versao_atual)
+select * from final

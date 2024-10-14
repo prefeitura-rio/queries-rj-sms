@@ -4,6 +4,7 @@ models:
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
           compare_model: ref("int_estabelecimento_sus_rio_historico__brutos_filtrados")
+          name: core__dim_estabelecimento_sus_rio_historico__cardinalidade
 
     columns:
     # Identificação
@@ -166,7 +167,8 @@ models:
     description: Esta tabela contém dados sobre os leitos de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
-          compare_model: ref("int_leito_sus_rio_historico__brutos_filtrados")    
+          compare_model: ref("int_leito_sus_rio_historico__brutos_filtrados")
+          name: core__dim_leito_sus_rio_historico__cardinalidade
     
     columns:
       # Identificação
@@ -198,7 +200,8 @@ models:
     description: Esta tabela contém dados sobre as habilitações de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
-          compare_model: ref("int_habilitacao_sus_rio_historico__brutos_filtrados")    
+          compare_model: ref("int_habilitacao_sus_rio_historico__brutos_filtrados")
+          name: core__dim_habilitacao_sus_rio_historico__cardinalidade
     
     columns:
       - name: data_particao
@@ -234,7 +237,8 @@ models:
     description: Esta tabela contém dados sobre os equipamentos de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
-          compare_model: ref("int_equipamento_sus_rio_historico__brutos_filtrados")    
+          compare_model: ref("int_equipamento_sus_rio_historico__brutos_filtrados")
+          name: core__dim_equipamento_sus_rio_historico__cardinalidade
     
     columns:
       - name: data_particao
@@ -262,7 +266,8 @@ models:
     description: Esta tabela contém dados sobre todos os profissionais de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
-          compare_model: ref("int_profissional_sus_rio_historico__brutos_filtrados")    
+          compare_model: ref("int_profissional_sus_rio_historico__brutos_filtrados")
+          name: core__dim_profissional_sus_rio_historico__cardinalidade
     
     columns:
       - name: data_particao

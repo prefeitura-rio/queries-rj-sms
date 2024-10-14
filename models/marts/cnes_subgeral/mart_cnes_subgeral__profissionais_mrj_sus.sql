@@ -2,8 +2,8 @@
 {{
     config(
         enabled=true,
-        schema="cnes_subgeral_tabelao",
-        alias="profissionais_mrj_sus_tabelao"
+        schema="cnes_subgeral",
+        alias="profissionais_mrj_sus"
     )
 }}
 

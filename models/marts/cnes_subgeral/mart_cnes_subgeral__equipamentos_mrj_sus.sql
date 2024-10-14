@@ -1,47 +1,31 @@
 {{
     config(
         enabled=true,
-        schema="cnes_subgeral_tabelao",
-        alias="leitos_mrj_sus_tabelao"
+        schema="cnes_subgeral",
+        alias="equipamentos_mrj_sus"
     )
 }}
 
-with
+with 
 versao_atual as (
     select MAX(data_particao) as versao 
     from {{ ref("raw_cnes_web__tipo_unidade") }}
-), 
+),
 
 estabelecimentos_mrj_sus as (
     select * from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
-leitos_mrj_sus_tabelao as (
-    select 
-        lt.ano_competencia,
-        lt.mes_competencia,
-        lt.id_cnes,
-        lt.tipo_leito,
-        lt.tipo_leito_descr,
-        lt.tipo_especialidade_leito,
-        lt.tipo_especialidade_leito_descr,
-        lt.quantidade_total,
-        lt.quantidade_contratado,
-        lt.quantidade_sus,
-        lt.data_particao,
-
-        estabs.* except (id_cnes, ano_competencia, mes_competencia, data_particao)
-
-    from  {{ref("dim_leito_sus_rio_historico")}} as lt
-    left join estabelecimentos_mrj_sus as estabs on lt.ano_competencia = estabs.ano_competencia and lt.mes_competencia = estabs.mes_competencia and safe_cast(lt.id_cnes as int64) = safe_cast(estabs.id_cnes as int64)
+equip as (
+    select * from {{ref("dim_equipamento_sus_rio_historico")}}
 ),
 
 final as (
     select
-        STRUCT (
-            data_particao,
-            ano_competencia,
-            mes_competencia,
+        struct (
+            equip.data_particao,
+            equip.ano_competencia,
+            equip.mes_competencia,
             data_atualizao_registro,
             usuario_atualizador_registro,
             mes_particao,
@@ -50,8 +34,8 @@ final as (
             data_snapshot
         ) as metadados,
 
-        STRUCT(
-            id_cnes,
+        struct (
+            equip.id_cnes,
             id_unidade,
             nome_razao_social,
             nome_fantasia,
@@ -108,15 +92,15 @@ final as (
             atendimento_regulacao_sus_indicador
         ) as estabelecimentos,
 
-        tipo_leito,
-        tipo_leito_descr,
-        tipo_especialidade_leito,
-        tipo_especialidade_leito_descr,
-        quantidade_total,
-        quantidade_contratado,
-        quantidade_sus
+        equipamento_tipo,
+        equipamento,
+        equipamento_especifico_tipo,
+        equipamento_especifico,
+        equipamentos_quantidade,
+        equipamentos_quantidade_ativos
 
-    from leitos_mrj_sus_tabelao
+    from equip
+    left join estabelecimentos_mrj_sus as estabs on equip.id_cnes = estabs.id_cnes and equip.ano_competencia = estabs.ano_competencia and equip.mes_competencia = estabs.mes_competencia
 )
 
 select * from final where metadados.data_particao = (select parse_date('%Y-%m-%d', versao) from versao_atual)
