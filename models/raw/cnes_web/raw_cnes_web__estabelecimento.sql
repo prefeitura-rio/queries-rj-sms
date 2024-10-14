@@ -80,5 +80,6 @@ select
         '-01'
     ) as data_particao,
     safe_cast(_data_carga as datetime) as data_carga,
-    safe_cast(_data_snapshot as datetime) as data_snapshot
+    safe_cast(concat(safe_cast(_data_snapshot as string), '-01') as datetime) as data_snapshot
+    
 from source

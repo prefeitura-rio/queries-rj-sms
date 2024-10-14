@@ -8,10 +8,19 @@ models:
         data_tests:
           - unique:
               name: raw_sheets__estabelecimento_auxiliar__id_cnes__unique
+# comentando momentaneamente até finalizarmos a tabela auxiliar
+#          - relationships:
+#              name: raw_sheets__estabelecimento_auxiliar__id_cnes__relationship
+#              to: ref('dim_estabelecimento_sus_rio_historico')
+#              field: id_cnes
+      - name: indicador_estabelecimento_sms
+        description: Indica se o estabelecimento é pertencente a rede assistencial da Secretaria Municipal de Saúde do Rio de Janeiro (1=SIM, 0=NAO)
       - name: tipo_sms
         description: Classificação alternativa ao CNES de tipos de unidades
       - name: tipo_sms_simplificado
         description: Classificação alternativa ao CNES de tipos de unidades abreviada
+      - name: agrupador_sms
+        description: Classificação alternativa ao CNES
       - name: nome_fantasia
         description: Nome fantasia de unidade de saúde
       - name: nome_limpo
@@ -35,6 +44,15 @@ models:
         description: Subcretaria responsável dentro da SMS
       - name: administracao
         description: Administradora da unidade de saúde.
+      - name: tipo_unidade_subgeral
+        description: Classificação alternativa ao CNES de tipos de unidades
+      - name: tipo_unidade_agrupado_subgeral
+        description: Classificação alternativa ao CNES
+      - name: esfera_subgeral
+        description: Classificação alternativa de esfera 
+      - name: area_programatica_descr
+        description: Descrição da Área Programática
+      
   - name: raw_sheets__material_mestre
     description: Tabela cadastral de materiais da SMS-Rio
     columns:
