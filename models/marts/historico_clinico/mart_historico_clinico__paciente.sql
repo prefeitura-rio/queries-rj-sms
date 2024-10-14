@@ -105,6 +105,22 @@ with
     -- AND cpf = cpf_filter
     ),
 
+    -- Paciente Dados: Merges patient data
+    all_cpfs as (
+        select distinct cpf
+        from
+            (
+                select cpf
+                from vitacare_tb
+                union all
+                select cpf
+                from vitai_tb
+                union all
+                select cpf
+                from smsrio_tb
+            )
+    ),
+
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- Merge data from different sources
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -297,14 +313,15 @@ with
 
     contato_dados as (
         select
-            coalesce(t.cpf, e.cpf) as cpf,
+            a.cpf as cpf,
             struct(
                 array_agg(struct(t.ddd, t.valor, t.sistema, t.rank)) as telefone,
                 array_agg(struct(e.valor, e.sistema, e.rank)) as email
             ) as contato
-        from telefone_dedup t
-        full outer join email_dedup e on t.cpf = e.cpf
-        group by coalesce(t.cpf, e.cpf)
+        from all_cpfs a
+        left join telefone_dedup t on a.cpf = t.cpf
+        left join email_dedup e on a.cpf = e.cpf
+        group by a.cpf
     ),
 
     -- Endereco Dados: Merges address information
@@ -486,22 +503,6 @@ with
         select cpf, array_agg(struct(sistema, id_cnes, id_paciente, rank)) as prontuario
         from prontuario_dedup
         group by cpf
-    ),
-
-    -- Paciente Dados: Merges patient data
-    all_cpfs as (
-        select distinct cpf
-        from
-            (
-                select cpf
-                from vitacare_tb
-                union all
-                select cpf
-                from vitai_tb
-                union all
-                select cpf
-                from smsrio_tb
-            )
     ),
 
     -- merge priority:
