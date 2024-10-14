@@ -1,7 +1,7 @@
 {{
     config(
         alias="paciente",
-        schema="saude_dados_mestres",
+        schema="saude_historico_clinico",
         tag=["hci", "paciente"],
         materialized="table",
         partition_by={
