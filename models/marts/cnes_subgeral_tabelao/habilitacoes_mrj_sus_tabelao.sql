@@ -106,4 +106,4 @@ final as (
     left join estabelecimentos_mrj_sus as estabs on hab.ano_competencia = estabs.ano_competencia and hab.mes_competencia = estabs.mes_competencia and safe_cast(hab.id_cnes as int64) = safe_cast(estabs.id_cnes as int64)
 )
 
-select * from final where safe_cast(metadados.data_particao as string) = (select safe_cast(versao as string) from versao_atual)
+select * from final
