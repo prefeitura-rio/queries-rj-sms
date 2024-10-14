@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: leitos_mrj_sus
+  - name: mart_cnes_subgeral__mart_cnes_subgeral__leitos_mrj_sus
     description: Esta tabela contém dados sobre os leitos de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
@@ -181,13 +181,13 @@ models:
       - name: quantidade_sus
         description: "Quantidade de leitos disponíveis pelo Sistema Único de Saúde (SUS)."
     
-  - name: habilitacoes_mrj_sus
+  - name: mart_cnes_subgeral__habilitacoes_mrj_sus
+    description: Esta tabela contém dados sobre as habilitações de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
           compare_model: ref("int_habilitacao_sus_rio_historico__brutos_filtrados")
           name: mart_cnes_subgeral__habilitacoes_mrj_sus__cardinalidade
 
-    description: Esta tabela contém dados sobre as habilitações de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
 
     columns:
       # --------------------------------- ESTABELECIMENTOS
@@ -369,7 +369,7 @@ models:
       - name: tipo_habilitacao
         description: "Tipo de habilitação."
 
-  - name: equipamentos_mrj_sus
+  - name: mart_cnes_subgeral__equipamentos_mrj_sus
     description: Esta tabela contém dados sobre os equipamentos de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
@@ -548,7 +548,7 @@ models:
       - name: equipamento_especifico
         description: "Descrição específica do equipamento."
 
-  - name: profissionais_mrj_sus
+  - name: mart_cnes_subgeral__profissionais_mrj_sus
     description: Esta tabela contém dados sobre todos os profissionais de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
