@@ -103,6 +103,26 @@ with
         group by cpf
     ),
 
+    -- CONTATO TB
+    smsrio_contato_tb as (
+        select
+            cpf,
+            telefones,
+            case
+                when regexp_contains(telefones, r'@')
+                then regexp_replace(trim(lower(telefones)), r'(\.com).*', '.com')
+                else email
+            end as email,
+            updated_at
+        from
+            smsrio_tb,
+            unnest(
+                split(
+                    replace(replace(replace(telefones, '[', ''), ']', ''), '"', ''), ','
+                )
+            ) as telefones
+    ),
+
     -- CONTATO TELEPHONE
     smsrio_contato_telefone as (
         select
@@ -146,22 +166,7 @@ with
                     row_number() over (
                         partition by cpf order by updated_at desc
                     ) as rank
-                from
-                    (
-                        select cpf, telefones, updated_at
-                        from
-                            smsrio_tb,
-                            unnest(
-                                split(
-                                    replace(
-                                        replace(replace(telefones, '[', ''), ']', ''),
-                                        '"',
-                                        ''
-                                    ),
-                                    ','
-                                )
-                            ) as telefones
-                    )
+                from smsrio_contato_tb
                 group by cpf, telefones, updated_at
             )
         where not (trim(valor) in ("NONE", "NULL", "") and (rank >= 2))
@@ -185,7 +190,7 @@ with
                     row_number() over (
                         partition by cpf order by updated_at desc
                     ) as rank
-                from smsrio_tb
+                from smsrio_contato_tb
                 group by cpf, email, updated_at
             )
         where not (trim(valor) in ("NONE", "NULL", "") and (rank >= 2))
