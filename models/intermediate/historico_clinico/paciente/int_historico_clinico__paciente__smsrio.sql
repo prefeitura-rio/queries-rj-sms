@@ -296,31 +296,43 @@ with
     -- ENDEREÇO
     smsrio_endereco as (
         select
-            cpf,
-            cep,
+            sms.cpf,
+            sms.cep,
             case
-                when tipo_logradouro in ("NONE", "") then null else tipo_logradouro
+                when sms.tipo_logradouro in ("NONE", "")
+                then null
+                else sms.tipo_logradouro
             end as tipo_logradouro,
-            logradouro,
-            numero,
-            complemento,
-            bairro,
-            case when cidade in ("NONE", "") then null else cidade end as cidade,
-            estado,
-            cast(updated_at as string) as datahora_ultima_atualizacao,
+            sms.logradouro,
+            sms.numero,
+            sms.complemento,
+            sms.bairro,
+            case
+                when sms.cidade in ("NONE", "")
+                then null
+                when regexp_contains(sms.cidade, r'^\d+$')
+                then {{ remove_accents_upper("bd.nome") }}
+                else sms.cidade
+            end as cidade,
+            sms.estado,
+            cast(sms.updated_at as string) as datahora_ultima_atualizacao,
             row_number() over (partition by cpf order by updated_at desc) as rank
-        from smsrio_tb
+        from smsrio_tb sms
+        left join
+            `basedosdados.br_bd_diretorios_brasil.municipio` bd
+            on sms.cidade = bd.id_municipio_6
         group by
-            cpf,
-            cep,
-            tipo_logradouro,
-            logradouro,
-            numero,
-            complemento,
-            bairro,
-            cidade,
-            estado,
-            updated_at
+            sms.cpf,
+            sms.cep,
+            sms.tipo_logradouro,
+            sms.logradouro,
+            sms.numero,
+            sms.complemento,
+            sms.bairro,
+            sms.cidade,
+            bd.nome,
+            sms.estado,
+            sms.updated_at
     ),
 
     endereco_dedup as (
