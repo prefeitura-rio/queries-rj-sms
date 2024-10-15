@@ -1,6 +1,6 @@
 name: DBT Compile
 
-on: [pull_request, push]
+on: [pull_request]
 
 jobs:
   dbt-compile:
@@ -21,11 +21,14 @@ jobs:
     - name: Mount credentials
       env:
         DBT_CREDENTIALS_DEV: ${{ secrets.DBT_CREDENTIALS_DEV }}
-      run: echo "$DBT_CREDENTIALS_DEV" > credentials/dev.json
+      run: echo "$DBT_CREDENTIALS_DEV" > /tmp/credentials.json
 
     - name: Install dbt
       run:  pip install dbt-core dbt-bigquery setuptools
 
+    - name: Install DBT Dependencies
+      run:  dbt deps
+
     - name: Compile dbt models
-      run: dbt compile --profiles-dir . --profile default --target compile
+      run: dbt compile --profiles-dir . --profile default --target dev
 
