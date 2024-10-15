@@ -25,8 +25,8 @@ with
     ),
     episodios_com_procedimento as (
         select id_episodio
-        from {{ ref("mart_historico_clinico__episodio") }}, unnest(procedimentos_realizados) as p
-        where p.descricao is not null
+        from {{ ref("mart_historico_clinico__episodio") }}
+        where procedimentos_realizados is not null
     ),
     todos_episodios as (
         select
@@ -125,11 +125,7 @@ with
                 from unnest(exames_realizados)
                 where tipo is not null
             ) as clinical_exams,
-            array(
-                select struct(descricao as description, observacao as notes)
-                from unnest(procedimentos_realizados)
-                where tipo is not null
-            ) as procedures,
+            safe_cast(procedimentos_realizados as string) as procedures,
             array(
                 select struct(descricao as description , situacao as status) 
                 from unnest(condicoes) 

@@ -129,23 +129,24 @@ with
     ),
     procedimentos_sem_nulos as (
         select
-            *
+            fk_atendimento,
+            concat(
+                
+                    procedimento,
+                    '\n',
+                    observacao 
+                
+            ) as procedimentos_realizados
         from procedimentos
         where 
-            procedimentos.procedimento is not null and
-            procedimentos.observacao is not null
+            procedimentos.procedimento is not null or procedimentos.observacao is not null
     ),
     dim_procedimentos_realizados as (
         select
             fk_atendimento,
-            array_agg(
-                struct(
-                    procedimento as descricao,
-                    observacao 
-                )
-            ) as procedimentos_realizados
+            string_agg(procedimentos_realizados,'\n') as procedimentos_realizados
         from procedimentos_sem_nulos
-        group by fk_atendimento
+        group by 1
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Medicamento Prescrito
