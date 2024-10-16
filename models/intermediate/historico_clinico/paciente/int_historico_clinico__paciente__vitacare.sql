@@ -198,6 +198,7 @@ with
         select
             f.cpf,
             f.id_ine,
+            f.id_cnes,
             {{ proper_br("e.nome_referencia") }} as nome,
             e.telefone,
             m.medicos,
@@ -231,7 +232,7 @@ with
                 )
             ) as equipe_saude_familia
         from equipe_saude_familia_enriquecida ef
-        left join dim_clinica_familia cf on ef.cpf = cf.cpf
+        left join dim_clinica_familia cf on ef.cpf = cf.cpf and ef.id_cnes = cf.id_cnes
         group by cpf
     ),
 
