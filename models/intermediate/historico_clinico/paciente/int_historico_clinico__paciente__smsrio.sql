@@ -45,6 +45,8 @@ with
         where {{ validate_cpf("cpf") }}
     ),
 
+    all_cpfs as (select distinct cpf from smsrio_tb),
+
     -- CNS
     smsrio_cns_ranked as (
         select
@@ -272,7 +274,7 @@ with
 
     contato_dados as (
         select
-            coalesce(t.cpf, e.cpf) as cpf,
+            a.cpf as cpf,
             struct(
                 array_agg(
                     struct(
@@ -288,9 +290,10 @@ with
                     struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
                 ) as email
             ) as contato
-        from telefone_dedup t
-        full outer join email_dedup e on t.cpf = e.cpf
-        group by coalesce(t.cpf, e.cpf)
+        from all_cpfs a
+        left join telefone_dedup t on a.cpf = t.cpf
+        left join email_dedup e on a.cpf = e.cpf
+        group by a.cpf
     ),
 
     -- ENDEREÇO
