@@ -11,7 +11,7 @@
 -- The goal is to consolidate information such as registration data,
 -- contact, address and medical record into a single view.
 -- Declaration of the variable to filter by CPF (optional)
-DECLARE cpf_filter STRING DEFAULT "53194179772";
+-- DECLARE cpf_filter STRING DEFAULT "";
 -- smsrio: Patient base table
 with
     smsrio_tb as (
@@ -42,7 +42,7 @@ with
             updated_at,
             cast(null as string) as id_cnes
         from {{ ref("raw_plataforma_smsrio__paciente") }}  -- `rj-sms-dev`.`brutos_plataforma_smsrio`.`paciente`
-        where {{ validate_cpf("cpf") }} and cpf = cpf_filter
+        where {{ validate_cpf("cpf") }}
     ),
 
     all_cpfs as (select distinct cpf from smsrio_tb),
