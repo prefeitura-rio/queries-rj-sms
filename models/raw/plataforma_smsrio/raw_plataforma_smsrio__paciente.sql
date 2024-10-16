@@ -18,7 +18,7 @@
 with
     events_from_window as (
         select *
-        from {{ source("brutos_plataforma_smsrio_staging", "paciente_eventos") }}
+        from {{ source("brutos_plataforma_smsrio_staging", "paciente_cadastro_eventos") }}
         {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
     ),
     events_ranked_by_freshness as (
@@ -55,7 +55,7 @@ select
     safe_cast(NULLIF(NULLIF(data__cod_pais_nasc, ''), 'None') as string) as codigo_pais_nascimento,
 
     -- Endereço
-    safe_cast(NULLIF(NULLIF(data__end_tp_logrado_cod, ''), 'None') as string) as endereco_tipo_logradouro,
+    safe_cast(NULLIF(NULLIF(data__end_tp_logrado_nm, ''), 'None') as string) as endereco_tipo_logradouro,
     safe_cast(NULLIF(NULLIF(data__end_cep, ''), 'None') as string) as endereco_cep,
     safe_cast(NULLIF(NULLIF(data__end_logrado, ''), 'None') as string) as endereco_logradouro,
     safe_cast(NULLIF(NULLIF(data__end_numero, ''), 'None') as string) as endereco_numero,
