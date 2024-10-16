@@ -189,6 +189,13 @@ models:
               dado_publico: nao
               dado_pessoal: nao
               dado_sensivel: nao
+            rio:
+              +schema: saude_rio
+              +tags: "weekly"
+              +labels:
+                dado_publico: sim
+                dado_pessoal: sim
+                dado_sensivel: nao
           facts:
             sisreg:
               +schema: saude_sisreg
@@ -205,6 +212,14 @@ models:
                 dado_pessoal: sim
                 dado_sensivel: sim
                 dominio: estoque
+        cnes_subgeral:
+            +schema: projeto_cnes_subgeral
+            +tags: "weekly"
+            +labels:
+                dado_publico: nao
+                dado_pessoal: sim
+                dado_sensivel: sim
+                dominio: subgeral
         dengue:
             +schema: projeto_dengue
             +tags: "daily"

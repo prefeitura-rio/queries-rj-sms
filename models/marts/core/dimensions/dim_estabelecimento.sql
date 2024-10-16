@@ -64,8 +64,6 @@ final as (
       -- metadata
       data_atualizao_registro,
       usuario_atualizador_registro,
-      safe_cast(mes_particao as string) as mes_particao,
-      safe_cast(ano_particao as string) as ano_particao,
       data_particao,
       data_carga,
       data_snapshot
