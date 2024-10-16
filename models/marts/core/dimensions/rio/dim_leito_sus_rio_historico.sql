@@ -16,12 +16,6 @@ with
         select max(data_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}
     ),
 
-    estabelecimentos_mrj_sus as (
-        select *
-        from {{ ref("dim_estabelecimento_sus_rio_historico") }}
-        where safe_cast(data_particao as string) = (select versao from versao_atual)
-    ),
-
     leitos_mapping_cnesftp as (
         select *
         from
