@@ -311,17 +311,35 @@ with
         order by merge_order asc, rank asc
     ),
 
+    contato_telefone_dados as (
+        select
+            t.cpf,
+            array_agg(
+                struct(t.ddd, t.valor, lower(t.sistema) as sistema, t.rank)
+            ) as telefone,
+        from telefone_dedup t
+        group by t.cpf
+    ),
+
+    contato_email_dados as (
+        select
+            e.cpf,
+            array_agg(
+                struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
+            ) as email
+        from email_dedup e
+        group by e.cpf
+    ),
+
     contato_dados as (
         select
-            a.cpf as cpf,
+            a.cpf,
             struct(
-                array_agg(struct(t.ddd, t.valor, t.sistema, t.rank)) as telefone,
-                array_agg(struct(e.valor, e.sistema, e.rank)) as email
+                contato_telefone_dados.telefone, contato_email_dados.email
             ) as contato
         from all_cpfs a
-        left join telefone_dedup t on a.cpf = t.cpf
-        left join email_dedup e on a.cpf = e.cpf
-        group by a.cpf
+        inner join contato_email_dados using (cpf)
+        inner join contato_telefone_dados using (cpf)
     ),
 
     -- Endereco Dados: Merges address information
