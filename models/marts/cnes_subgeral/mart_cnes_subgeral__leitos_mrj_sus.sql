@@ -1,8 +1,13 @@
 {{
     config(
         enabled=true,
-        schema="cnes_subgeral",
-        alias="leitos_mrj_sus"
+        schema="projeto_cnes_subgeral",
+        alias="leitos_mrj_sus",
+        partition_by = {
+            'field': 'data_particao', 
+            'data_type': 'date',
+            'granularity': 'day'
+        }
     )
 }}
 
