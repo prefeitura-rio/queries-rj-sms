@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: mart_cnes_subgeral__mart_cnes_subgeral__leitos_mrj_sus
+  - name: mart_cnes_subgeral__leitos_mrj_sus
     description: Esta tabela contém dados sobre os leitos de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
     tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
