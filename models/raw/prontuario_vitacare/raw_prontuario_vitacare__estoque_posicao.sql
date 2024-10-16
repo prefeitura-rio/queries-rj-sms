@@ -44,7 +44,7 @@ with
     final as (
 
         select
-            -- Primary key
+            -- Primary Key
             concat(id_cnes, '.', id, '.', data_particao) as id,
             {{
                 dbt_utils.generate_surrogate_key(
@@ -58,6 +58,7 @@ with
                     ]
                 )
             }} as id_surrogate,
+            
             -- Foreign Keys
             safe_cast(area_programatica as string) as area_programatica,
             safe_cast(id_cnes as string) as id_cnes,
