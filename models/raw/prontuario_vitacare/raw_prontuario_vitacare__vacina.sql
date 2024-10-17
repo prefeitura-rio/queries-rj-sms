@@ -107,5 +107,5 @@ with
         from renamed
     )
 
-select * -- # TODO: Remover depois de vitacare corrigir a duplicidade
+select * 
 from final
