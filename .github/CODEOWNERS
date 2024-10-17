@@ -6,9 +6,9 @@
 
 # Add your code owners below:
 
-# Administradores
+# Administradores globais
 * @ThiagoTrabach
 * @TanookiVerde
 
-# Subcretarias 
+# Administradores de subsecretarias
 /models/marts/subgeral/ @miloskimatheus
