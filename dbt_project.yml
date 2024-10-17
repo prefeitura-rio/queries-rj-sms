@@ -212,7 +212,8 @@ models:
                 dado_pessoal: sim
                 dado_sensivel: sim
                 dominio: estoque
-        cnes_subgeral:
+        subgeral:
+          cnes:
             +schema: projeto_cnes_subgeral
             +tags: "weekly"
             +labels:
@@ -220,41 +221,42 @@ models:
                 dado_pessoal: sim
                 dado_sensivel: sim
                 dominio: subgeral
-        dengue:
-            +schema: projeto_dengue
-            +tags: "daily"
-        estoque:
-            +schema: projeto_estoque
-            +tags: ["daily", "estoque"]
-            +labels:
-              dado_publico: nao
-              dado_pessoal: sim
-              dado_sensivel: sim
-              dominio: estoque
-        gerenciamento:
-            +tags: "daily"
-        historico_clinico:
-            +tags: ["daily", "hci"]
-            +labels:
-              dado_publico: nao
-              dado_pessoal: sim
-              dado_sensivel: sim
-              dominio: historico_clinico
-        historico_clinico_app:
-            +tags: ["daily", "hci_app"]
-            +labels:
-              dado_publico: nao
-              dado_pessoal: sim
-              dado_sensivel: sim
-              dominio: historico_clinico
-        seguir_em_frente:
-            +schema: projeto_seguir_em_frente
-            +tags: "daily"
-            +labels:
-              dado_publico: nao
-              dado_pessoal: sim
-              dado_sensivel: sim
-              dominio: seguir_em_frente 
+        dit:
+          dengue:
+              +schema: projeto_dengue
+              +tags: "daily"
+          estoque:
+              +schema: projeto_estoque
+              +tags: ["daily", "estoque"]
+              +labels:
+                dado_publico: nao
+                dado_pessoal: sim
+                dado_sensivel: sim
+                dominio: estoque
+          gerenciamento:
+              +tags: "daily"
+          historico_clinico:
+              +tags: ["daily", "hci"]
+              +labels:
+                dado_publico: nao
+                dado_pessoal: sim
+                dado_sensivel: sim
+                dominio: historico_clinico
+          historico_clinico_app:
+              +tags: ["daily", "hci_app"]
+              +labels:
+                dado_publico: nao
+                dado_pessoal: sim
+                dado_sensivel: sim
+                dominio: historico_clinico
+          seguir_em_frente:
+              +schema: projeto_seguir_em_frente
+              +tags: "daily"
+              +labels:
+                dado_publico: nao
+                dado_pessoal: sim
+                dado_sensivel: sim
+                dominio: seguir_em_frente 
 
 tests:
   rj_sms:
