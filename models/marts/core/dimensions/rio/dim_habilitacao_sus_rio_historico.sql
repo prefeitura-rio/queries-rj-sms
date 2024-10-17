@@ -16,6 +16,10 @@ with
         select max(data_particao) as versao from {{ ref("raw_cnes_web__tipo_unidade") }}
     ),
 
+    dim_estabelecimentos_sus_rio_historico as (
+      select * from {{ref("dim_estabelecimento_sus_rio_historico")}} where safe_cast(data_particao as string) = (select versao from versao_atual)  
+    ),
+
     habilitacoes_mapping_cnesweb as (
         select id_habilitacao, habilitacao, tipo_origem, tipo_habilitacao, data_particao
         from {{ ref("raw_cnes_web__tipo_habilitacao") }}
@@ -39,6 +43,14 @@ with
     habilitacoes as (
         select
             hab.id_cnes,
+
+            estabs.nome_fantasia as estabelecimento_nome_fantasia,
+            estabs.esfera as estabelecimento_esfera,
+            estabs.tipo_gestao_descr as estabelecimento_gestao,
+            estabs.id_ap as id_estabelecimento_ap,
+            estabs.ap as estabelecimento_ap,
+            estabs.estabelecimento_sms_indicador,
+
             hab.id_habilitacao,
             habilitacao,
             habilitacao_ativa_indicador,
@@ -50,9 +62,10 @@ with
             habilitacao_mes_fim,
             ano_competencia,
             mes_competencia,
-            parse_date('%Y-%m-%d', data_particao) as data_particao,
+            parse_date('%Y-%m-%d', map.data_particao) as data_particao,
 
         from {{ ref("int_habilitacao_sus_rio_historico__brutos_filtrados") }} as hab
+        left join dim_estabelecimentos_sus_rio_historico as estabs using(ano_competencia, mes_competencia, id_cnes)
         left join
             habilitacoes_mapping_cnesweb as map
             on safe_cast(hab.id_habilitacao as int64)
