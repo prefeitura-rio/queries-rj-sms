@@ -5,4 +5,10 @@
 # /path/to/file @owner1 @owner2
 
 # Add your code owners below:
+
+# Administradores globais
 * @ThiagoTrabach
+* @TanookiVerde
+
+# Administradores de subsecretarias
+/models/marts/subgeral/ @miloskimatheus

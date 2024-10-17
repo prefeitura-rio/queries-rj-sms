@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: gerenciamento__historico_clinico__logs_staging
+    database: rj-sms
+    schema: gerenciamento__historico_clinico__logs_staging
+    tables:
+      - name: userinfo
+      - name: userhistory

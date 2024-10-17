@@ -12,8 +12,11 @@ with
             avg(material_consumo_medio) as material_consumo_medio
         from {{ ref("mart_estoque__posicao_atual") }}
         where
-            lote_validade_dentro_indicador = "sim"
+            lote_status_padronizado in ("Ativo")
             and estabelecimento_tipo_sms_agrupado in ("APS", "TPC")
+            and not (
+                sistema_origem = "vitacare" and estoque_secao_caf_indicador = "Não"
+            )  
         group by 1, 2
     ),
 
@@ -33,15 +36,18 @@ with
 
     joined as (
         select
-            p.id_material,
-            p.qtd_pos,
-            r.qtd_relatorio,
-            cmd_pos,
-            r.cmd
+            p.id_material, p.qtd_pos, r.qtd_relatorio, cmd_pos, r.cmd as cmd_relatorio
         from posicao_consolidada as p
         left join relatorio as r using (id_material)
     )
 
-select *, abs(qtd_pos - qtd_relatorio) as dif_qtd, abs(cmd_pos - cmd) as dif_cmd
+select
+    id_material,
+    qtd_pos,
+    qtd_relatorio,
+    abs(qtd_pos - qtd_relatorio) as dif_qtd,
+    cmd_pos,
+    cmd_relatorio,
+    abs(cmd_pos - cmd_relatorio) as dif_cmd
 from joined
-where abs(qtd_pos - qtd_relatorio) > 0 or abs(cmd_pos - cmd) > 0.01
+where abs(qtd_pos - qtd_relatorio) > 0 or abs(cmd_pos - cmd_relatorio) > 0.01

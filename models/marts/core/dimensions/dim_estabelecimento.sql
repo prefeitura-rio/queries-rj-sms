@@ -5,15 +5,15 @@ with source as (
 ),
 
 current_year as (
-  select max(ano) as ano_atual from source
+  select max(ano_competencia) as ano_atual from source
 ),
 
 current_period as (
   select 
     cast(current_year.ano_atual as int64) as ano_atual,
-    cast(max(mes) as int64) as competencia_atual
+    cast(max(mes_competencia) as int64) as competencia_atual
   from source
-  join current_year on source.ano = current_year.ano_atual
+  join current_year on source.ano_competencia = current_year.ano_atual
   group by current_year.ano_atual
 ),
 
@@ -64,15 +64,13 @@ final as (
       -- metadata
       data_atualizao_registro,
       usuario_atualizador_registro,
-      safe_cast(mes_particao as string) as mes_particao,
-      safe_cast(ano_particao as string) as ano_particao,
       data_particao,
       data_carga,
       data_snapshot
 
   from
       source
-      join current_period on source.ano = current_period.ano_atual and source.mes = current_period.competencia_atual
+      join current_period on source.ano_competencia = current_period.ano_atual and source.mes_competencia = current_period.competencia_atual
   where
       estabelecimento_sms_indicador = 1
 

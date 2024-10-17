@@ -2,13 +2,13 @@
     config(
         alias="estoque_movimento",
         tags="vitacare_estoque",
-        labels = {
+        labels={
             "dominio": "estoque",
             "dado_publico": "nao",
             "dado_pessoal": "sim",
             "dado_anonimizado": "nao",
-            "dado_sensivel_saude": "sim"
-        }
+            "dado_sensivel_saude": "sim",
+        },
     )
 }}
 
@@ -17,7 +17,7 @@ with
         select *
         from {{ source("brutos_prontuario_vitacare_staging", "estoque_movimento") }}
     ),
-    final as (
+    casted as (
         select
             safe_cast(ap as string) as area_programatica,
             safe_cast(cnesunidade as string) as id_cnes,
@@ -47,23 +47,44 @@ with
             safe_cast(data_particao as date) as data_particao
 
         from source
+    ),
+
+    final as (
+        select
+            -- Primary key
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "id_cnes",
+                        "id_material",
+                        "id_lote",
+                        "estoque_armazem_origem",
+                        "estoque_armazem_destino",
+                        "estoque_movimento_data_hora",
+                        "material_quantidade",
+                    ]
+                )
+            }} as id_surrogate, *
+        from casted
     )
+
 select
     -- Primary Key
     id_estoque_movimento,
+    id_surrogate,
 
     -- Foreign Key
     area_programatica,
     id_cnes,
     id_pedido_wms,
-    id_lote,
     id_material,
     id_atc,
 
--- Common Fields
+    -- Common Fields
     estabelecimento_nome,
     material_descricao,
     estoque_movimento_data_hora,
+    id_lote,
     estoque_movimento_tipo,
     estoque_movimento_correcao_tipo,
     estoque_movimento_justificativa,
@@ -75,8 +96,7 @@ select
     dispensacao_paciente_cns,
     material_quantidade,
 
-
--- Metada
+    -- Metada
     data_particao,
     data_carga,
 

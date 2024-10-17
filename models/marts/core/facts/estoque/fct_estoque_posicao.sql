@@ -80,7 +80,7 @@ with
             estoque.id_lote,
             estoque.id_material,
             "nao" as estoque_reservado_para_abastecimento,
-            "" as estoque_secao,
+            estoque.armazem as estoque_secao,
             estoque.material_descricao,
             "" as material_unidade,  -- payload da viticare não possui esta informação
             estoque.lote_data_vencimento,
@@ -102,6 +102,7 @@ with
             estabelecimento.tipo as estabelecimento_tipo,
             estabelecimento.tipo_sms as estabelecimento_tipo_sms,
             estabelecimento.area_programatica as estabelecimento_area_programatica,
+            estoque.lote_status,
         from vitacare_completa as estoque
         left join {{ ref("dim_estabelecimento") }} as estabelecimento using (id_cnes)
         left join
@@ -129,6 +130,7 @@ with
             estabelecimento.tipo as estabelecimento_tipo,
             estabelecimento.tipo_sms as estabelecimento_tipo_sms,
             estabelecimento.area_programatica as estabelecimento_area_programatica,
+            '' as lote_status,
         from vitai_completa as estoque
         left join {{ ref("dim_estabelecimento") }} as estabelecimento using (id_cnes)
     ),
@@ -141,6 +143,7 @@ with
             "ESTOQUE CENTRAL" as estabelecimento_tipo,
             "ESTOQUE CENTRAL" as estabelecimento_tipo_sms,
             "TPC" as estabelecimento_area_programatica,
+            '' as lote_status,
         from tpc_completa
     ),
 
@@ -199,8 +202,9 @@ with
             -- Common Fields
             material_descricao,
             material_unidade,
-            estoque_secao,
+            lower({{ clean_name_string("estoque_secao") }}) as estoque_secao,
             estoque_reservado_para_abastecimento,
+            if(lote_status = "", null, lower({{ clean_name_string("lote_status") }})) as lote_status,
             lote_data_vencimento,
             material_quantidade,
             material_valor_unitario,
@@ -220,5 +224,5 @@ with
         from posicao_consolidada_com_remume
     )
 
-select *
-from final
+select * from final
+
