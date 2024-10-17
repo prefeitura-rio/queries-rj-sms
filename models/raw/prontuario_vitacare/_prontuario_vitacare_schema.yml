@@ -912,8 +912,6 @@ models:
         tests:
           - unique:
               name: raw_prontuario_vitacare__vacina__id_surrogate_unique
-              config:
-                where: safe_cast(data_particao as date) = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
         quote: true
       - name: id_cnes
         description: Este é o identificador único para o estabelecimento de saúde onde
@@ -978,6 +976,12 @@ models:
         quote: true
         policy_tags:
         - '{{ var("TAG_CNS") }}'
+      - name: paciente_nome
+        description: Esta coluna representa o nome do paciente.
+        data_type: string
+        quote: true
+        policy_tags:
+        - '{{ var("TAG_NOME") }}'
       - name: paciente_sexo
         description: Esta coluna representa o sexo do paciente. 
         data_type: string
