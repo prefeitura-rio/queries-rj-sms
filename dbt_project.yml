@@ -170,15 +170,16 @@ models:
           dado_sensivel: nao
     intermediate:
         +materialized: ephemeral
-        historico_clinico:
-          +tags: ["hci", "daily"]
-          +labels:
-            dado_publico: nao
-            dado_pessoal: sim
-            dado_sensivel: sim
-            dominio: historico_clinico
-          paciente:
-            +tags: ["paciente"]
+        dit:
+          historico_clinico:
+            +tags: ["hci", "daily"]
+            +labels:
+              dado_publico: nao
+              dado_pessoal: sim
+              dado_sensivel: sim
+              dominio: historico_clinico
+            paciente:
+              +tags: ["paciente"]
     marts:
         +materialized: table
         core:
