@@ -318,6 +318,7 @@ with
                 struct(t.ddd, t.valor, lower(t.sistema) as sistema, t.rank)
             ) as telefone,
         from telefone_dedup t
+        where t.valor is not null
         group by t.cpf
     ),
 
@@ -328,6 +329,7 @@ with
                 struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
             ) as email
         from email_dedup e
+        where e.valor is not null
         group by e.cpf
     ),
 
@@ -338,8 +340,8 @@ with
                 contato_telefone_dados.telefone, contato_email_dados.email
             ) as contato
         from all_cpfs a
-        inner join contato_email_dados using (cpf)
-        inner join contato_telefone_dados using (cpf)
+        left join contato_email_dados using (cpf)
+        left join contato_telefone_dados using (cpf)
     ),
 
     -- Endereco Dados: Merges address information
