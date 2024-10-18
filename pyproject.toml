@@ -57,6 +57,8 @@ idna = "^3.7"
 pillow = "^10.3.0"
 certifi = "^2024.07.04"
 tqdm = "^4.66.3"
+sqlfluff = "^3.2.3"
+sqlfluff-templater-dbt = "^3.2.3"
 
 [tool.poetry.group.dev]
 optional = true
