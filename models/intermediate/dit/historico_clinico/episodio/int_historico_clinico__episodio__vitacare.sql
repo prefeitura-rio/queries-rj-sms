@@ -240,39 +240,10 @@ with
             (
                 select as struct
                     dim_profissional.id as id,
-                    coalesce(dim_profissional.cpf, atendimento.cpf_profissional) as cpf,
-                    coalesce(dim_profissional.cns, atendimento.cns_profissional) as cns,
-                    coalesce(
-                        {{ proper_br("dim_profissional.nome") }},
-                        {{ proper_br("atendimento.nome_profissional") }}
-                    ) as nome,
-                    safe_cast(
-                        coalesce(
-                            case
-                                when dim_profissional.cbo like '%Médic%'
-                                then 'Médico(a)'
-                                when dim_profissional.cbo like '%Enferm%'
-                                then 'Enfermeiro(a)'
-                                when dim_profissional.cbo like '%dentista%'
-                                then 'Dentista'
-                                when dim_profissional.cbo like '%social%'
-                                then 'Assistente Social'
-                                else dim_profissional.cbo
-                            end,
-                            case
-                                when cbo_descricao_profissional like '%Médic%'
-                                then 'Médico(a)'
-                                when cbo_descricao_profissional like '%Enferm%'
-                                then 'Enfermeiro(a)'
-                                when cbo_descricao_profissional like '%dentista%'
-                                then 'Dentista'
-                                when cbo_descricao_profissional like '%social%'
-                                then 'Assistente Social'
-                                else cbo_descricao_profissional
-                            end
-                        )
-                        as string
-                    ) as especialidade
+                    atendimento.cpf_profissional as cpf,
+                    atendimento.cns_profissional as cns,
+                    {{ proper_br("atendimento.nome_profissional") }} as nome,
+                    safe_cast(cbo_descricao_profissional as string) as especialidade
             ) as profissional_saude_responsavel,
 
             -- Prontuário
