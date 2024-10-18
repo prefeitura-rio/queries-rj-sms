@@ -45,6 +45,8 @@ with
         where {{ validate_cpf("cpf") }}
     ),
 
+    all_cpfs as (select distinct cpf from smsrio_tb),
+
     -- CNS
     smsrio_cns_ranked as (
         select
@@ -91,29 +93,36 @@ with
         where dedup_rank = 1
         order by merge_order asc, rank asc
     ),
-    cns_validated AS (
-        SELECT
-            cns,
-            {{validate_cns('cns')}} AS cns_valido_indicador,
-        FROM (
-            SELECT DISTINCT cns FROM cns_dedup
-        )
+    cns_validated as (
+        select cns, {{ validate_cns("cns") }} as cns_valido_indicador,
+        from (select distinct cns from cns_dedup)
     ),
 
-    cns_dados AS (
-        SELECT 
+    cns_dados as (
+        select cpf, array_agg(struct(cd.cns, cv.cns_valido_indicador, cd.rank)) as cns
+        from cns_dedup cd
+        join cns_validated cv on cd.cns = cv.cns
+        group by cpf
+    ),
+
+    -- CONTATO TB
+    smsrio_contato_tb as (
+        select
             cpf,
-            ARRAY_AGG(
-                    STRUCT(
-                        cd.cns, 
-                        cv.cns_valido_indicador,
-                        cd.rank
-                    )
-            ) AS cns
-        FROM cns_dedup cd
-        JOIN cns_validated cv
-            ON cd.cns = cv.cns
-        GROUP BY cpf
+            telefones,
+            case
+                when regexp_contains(telefones, r'@')
+                then regexp_replace(trim(lower(telefones)), r'(\.com).*', '.com')
+                else email
+            end as email,
+            updated_at
+        from
+            smsrio_tb,
+            unnest(
+                split(
+                    replace(replace(replace(telefones, '[', ''), ']', ''), '"', ''), ','
+                )
+            ) as telefones
     ),
 
     -- CONTATO TELEPHONE
@@ -159,22 +168,7 @@ with
                     row_number() over (
                         partition by cpf order by updated_at desc
                     ) as rank
-                from
-                    (
-                        select cpf, telefones, updated_at
-                        from
-                            smsrio_tb,
-                            unnest(
-                                split(
-                                    replace(
-                                        replace(replace(telefones, '[', ''), ']', ''),
-                                        '"',
-                                        ''
-                                    ),
-                                    ','
-                                )
-                            ) as telefones
-                    )
+                from smsrio_contato_tb
                 group by cpf, telefones, updated_at
             )
         where not (trim(valor) in ("NONE", "NULL", "") and (rank >= 2))
@@ -198,7 +192,7 @@ with
                     row_number() over (
                         partition by cpf order by updated_at desc
                     ) as rank
-                from smsrio_tb
+                from smsrio_contato_tb
                 group by cpf, email, updated_at
             )
         where not (trim(valor) in ("NONE", "NULL", "") and (rank >= 2))
@@ -270,7 +264,7 @@ with
                 from
                     (
                         select cpf, valor, rank, "smsrio" as sistema, 2 as merge_order
-                        from smsrio_contato_telefone
+                        from smsrio_contato_email
                     )
                 order by merge_order asc, rank asc
             )
@@ -278,57 +272,86 @@ with
         order by merge_order asc, rank asc
     ),
 
+    contato_telefone_dados as (
+        select
+            t.cpf,
+            array_agg(
+                struct(
+                    t.valor_original,
+                    t.ddd,
+                    t.valor,
+                    t.valor_tipo,
+                    lower(t.sistema) as sistema,
+                    t.rank
+                )
+            ) as telefone,
+        from telefone_dedup t
+        where t.valor is not null
+        group by t.cpf
+    ),
+
+    contato_email_dados as (
+        select
+            e.cpf,
+            array_agg(
+                struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
+            ) as email
+        from email_dedup e
+        where e.valor is not null
+        group by e.cpf
+    ),
+
     contato_dados as (
         select
-            coalesce(t.cpf, e.cpf) as cpf,
+            a.cpf,
             struct(
-                array_agg(
-                    struct(
-                        t.valor_original,
-                        t.ddd,
-                        t.valor,
-                        t.valor_tipo,
-                        lower(t.sistema) as sistema,
-                        t.rank
-                    )
-                ) as telefone,
-                array_agg(
-                    struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
-                ) as email
+                contato_telefone_dados.telefone, contato_email_dados.email
             ) as contato
-        from telefone_dedup t
-        full outer join email_dedup e on t.cpf = e.cpf
-        group by coalesce(t.cpf, e.cpf)
+        from all_cpfs a
+        left join contato_email_dados using (cpf)
+        left join contato_telefone_dados using (cpf)
     ),
 
     -- ENDEREÇO
     smsrio_endereco as (
         select
-            cpf,
-            cep,
+            sms.cpf,
+            sms.cep,
             case
-                when tipo_logradouro in ("NONE", "") then null else tipo_logradouro
+                when sms.tipo_logradouro in ("NONE", "")
+                then null
+                else sms.tipo_logradouro
             end as tipo_logradouro,
-            logradouro,
-            numero,
-            complemento,
-            bairro,
-            case when cidade in ("NONE", "") then null else cidade end as cidade,
-            estado,
-            cast(updated_at as string) as datahora_ultima_atualizacao,
+            sms.logradouro,
+            sms.numero,
+            sms.complemento,
+            sms.bairro,
+            case
+                when sms.cidade in ("NONE", "")
+                then null
+                when regexp_contains(sms.cidade, r'^\d+$')
+                then {{ remove_accents_upper("bd.nome") }}
+                else sms.cidade
+            end as cidade,
+            sms.estado,
+            cast(sms.updated_at as string) as datahora_ultima_atualizacao,
             row_number() over (partition by cpf order by updated_at desc) as rank
-        from smsrio_tb
+        from smsrio_tb sms
+        left join
+            `basedosdados.br_bd_diretorios_brasil.municipio` bd
+            on sms.cidade = bd.id_municipio_6
         group by
-            cpf,
-            cep,
-            tipo_logradouro,
-            logradouro,
-            numero,
-            complemento,
-            bairro,
-            cidade,
-            estado,
-            updated_at
+            sms.cpf,
+            sms.cep,
+            sms.tipo_logradouro,
+            sms.logradouro,
+            sms.numero,
+            sms.complemento,
+            sms.bairro,
+            sms.cidade,
+            bd.nome,
+            sms.estado,
+            sms.updated_at
     ),
 
     endereco_dedup as (
