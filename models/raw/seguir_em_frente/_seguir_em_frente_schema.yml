@@ -41,7 +41,7 @@ models:
         description: Esta coluna representa a data de nascimento do indivíduo associado
           ao registro. É armazenado como uma data no formato AAAA-MM-DD.
         policy_tags:
-          - '{{ var("TAG_DTNASCIMENTO") }}'
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
         data_type: date
         quote: true
       - name: saude_mental_estabelecimento
@@ -53,7 +53,7 @@ models:
         description: Esta coluna contém a URL da imagem do documento RG (Registro Geral)
           do bolsita. O RG é um documento de identidade brasileiro.
         policy_tags:
-          - '{{ var("TAG_RG") }}'
+          - '{{ var("TAG_IDENTIDADE") }}'
         data_type: string
         quote: true
       - name: termo_de_compromisso_url
@@ -74,13 +74,13 @@ models:
           onde o participante possui uma conta.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_DADOS_BANCARIOS") }}'
+          - '{{ var("TAG_DADO_BANCARIO") }}'
         quote: true
       - name: santander_conta_numero
         description: Este campo representa o número da conta do participante no banco
           Santander.
         policy_tags:
-          - '{{ var("TAG_DADOS_BANCARIOS") }}'
+          - '{{ var("TAG_DADO_BANCARIO") }}'
         data_type: string
         quote: true
       - name: observacoes

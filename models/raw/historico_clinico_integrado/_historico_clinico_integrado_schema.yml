@@ -14,17 +14,17 @@ models:
         description: Data de nascimento do paciente.
         data_type: date
         policy_tags:
-          - '{{ var ("TAG_DTNASCIMENTO") }}'
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
       - name: falecido
         description: Booleano que informa se o paciente é falecido.
         data_type: bool
         policy_tags:
-          - '{{ var ("TAG_OBITO") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: obito_data
         description: Data de óbito do paciente.
         data_type: date
         policy_tags:
-          - '{{ var ("TAG_DTOBITO") }}'
+          - '{{ var ("TAG_DATA_OBITO") }}'
       - name: pai_nome
         description: Nome do pai do paciente.
         data_type: string
@@ -49,8 +49,7 @@ models:
       - name: id_nacionalidade
         description: Código da nacionalidade.
         data_type: int
-        policy_tags:
-          - '{{ var ("TAG_NATURALIDADE") }}'
+
       - name: id_raca
         description: Código de raça do paciente.
         data_type: string

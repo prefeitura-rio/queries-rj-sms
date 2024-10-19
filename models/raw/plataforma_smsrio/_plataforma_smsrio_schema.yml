@@ -34,7 +34,7 @@ models:
       - name: id
         description: Identificador único do paciente.
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: cpf
         description: CPF do paciente.
         policy_tags:
@@ -59,8 +59,6 @@ models:
         description: Indicação se o paciente é falecido.
       - name: data_obito
         description: Data de óbito do paciente.
-        policy_tags:
-          - '{{ var("TAG_DTOBITO") }}'
       - name: raca_cor
         description: Raça/cor do paciente.
       - name: email
@@ -76,7 +74,7 @@ models:
       - name: data_nascimento
         description: Data de nascimento do paciente.
         policy_tags:
-          - '{{ var("TAG_DTNASCIMENTO") }}'
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: codigo_municipio_nascimento
         description: Código do município de nascimento do paciente.
       - name: uf_nascimento

@@ -25,38 +25,47 @@ clean-targets: # directories to be removed by `dbt clean`
 
 # Defining variables
 vars:
-  # internal variables
+  # Internal variables
   DBT_USER: "{{ env_var('DBT_USER', 'dev_fantasma') }}"
-  # policy tags
-  TAG_CPF: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7275937608331929015"
-  TAG_CNS: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/8199751371890630153"
-  TAG_RG: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1359518576511941019"
-  TAG_NOME: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2632983500029416584"
-  TAG_TELEFONE: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/6197099915332240403"
-  TAG_EMAIL: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/6775173897032728488"
-  TAG_ENDERECO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/5348387254077392279"
-  TAG_CRM: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/2129975481142765086"
-  TAG_MATERIAL: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/7956417154094178470"
-  TAG_DTNASCIMENTO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/674367858357103255"
-  TAG_DTOBITO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/6268958505478592114"
-  TAG_NATURALIDADE: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/2018842376178907296"
-  TAG_OBITO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/3126519816284522145"
-  TAG_DADOS_CLINICOS: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/8216812064277366977"
-  TAG_EXAME_IMAGEM: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2271001638601718755"
-  TAG_EXAME_LABORATORIO: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/7774875538975783665"
-  TAG_NOME_MAE: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2411979615060611545"
-  TAG_NOME_PAI: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/8262940514454666213"
-  TAG_COREN: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1950446664324638402"
-  TAG_MEDICAMENTO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/3872480936078888207"
-  TAG_IDENTIFICADOR: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/3220112556547044825"
-  TAG_DADOS_BANCARIOS: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7203052192415747676"
+  
+  # Policy tags
+  #  Free access:
+  TAG_PUBLICO_CPF: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/5699415336157868746'
+  TAG_PUBLICO_CNS: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/7387549036507982422'
+  TAG_PUBLICO_CONSELHO_DE_CLASSE: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/8947953670499880401'
+  TAG_PUBLICO_DATA_NASCIMENTO: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/1089827107712020997'
+  TAG_PUBLICO_IDENTIDADE: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/3743809371220572672'
+  TAG_PUBLICO_IDENTIFICADOR_SISTEMA: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/1209329132431056760'
+  TAG_PUBLICO_NOME: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/9103837752323511776'
+  TAG_PUBLICO_NOME_MAE: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/8561050879085790814'
+  TAG_PUBLICO_NOME_PAI: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/4885144376878158083'
+  TAG_PUBLICO_OUTRO_DOC: 'projects/rj-sms/locations/us/taxonomies/6081774755636705541/policyTags/4320640137660013492'
+
+  #  Restricted access:
+  #   Identifiers
+  TAG_CPF: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/1689671600024046932'
+  TAG_CNS: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/2901367901059215729'
+  TAG_CONSELHO_DE_CLASSE: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/4548538642730180995'
+  TAG_DATA_NASCIMENTO: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/8548247179869888647'
+  TAG_DATA_OBITO: ''
+  TAG_IDENTIDADE: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/8263914069321607924'
+  TAG_IDENTIFICADOR_SISTEMA: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/7573439620630018034'
+  TAG_NOME: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/5037947799828588462'
+  TAG_NOME_MAE: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/3410377021813867603'
+  TAG_NOME_PAI: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/1248058356263361805'
+  TAG_OUTRO_DOC: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/7339421740683120932'
+  #   Other information:
+  TAG_CONTATO: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/5804345045751147976'
+  TAG_EMAIL: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/1724143358615811174'
+  TAG_ENDERECO: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/3861022792882552590'
+  TAG_TELEFONE: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/6732688311195525698'
+  TAG_DADO_BANCARIO: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/4150697899389182141'
+  TAG_DADO_CLINICO: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/7155330191381842548'
+  TAG_DADO_ESTOQUE: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/9217789274924499899'
+
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
-
-# In this example config, we tell dbt to build all models in the example/ directory
-# as tables. These settings can be overridden in the individual model files
-# using the `{{ config(...) }}` macro.
 models:
   +persist_docs:
     relation: true
@@ -178,12 +187,12 @@ models:
             dominio: historico_clinico
           paciente:
             +tags: ["paciente"]
-      monitoramento:
-        +tags: "daily"
-        +labels:
-          dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
+        monitoramento:
+          +tags: "daily"
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
     marts:
       +materialized: table
       core:
@@ -253,7 +262,7 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
-            dominio: historico_clinico
+            dominio: historico_clinico_app
         seguir_em_frente:
           +schema: projeto_seguir_em_frente
           +tags: "daily"
@@ -262,12 +271,6 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: seguir_em_frente
-        monitoramento:
-          +tags: "daily"
-          +labels:
-            dado_publico: nao
-            dado_pessoal: nao
-            dado_sensivel: nao
 
 tests:
   rj_sms:
@@ -277,8 +280,6 @@ tests:
 
 seeds:
   rj_sms:
-    estoque:
-      +schema: projeto_estoque
 
 flags:
   require_explicit_package_overrides_for_builtin_materializations: False
