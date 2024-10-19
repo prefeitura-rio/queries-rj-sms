@@ -78,5 +78,4 @@ with
     )
 
 select paciente_cpf, medicamentos, metadados, cpf_particao from final
-where paciente_cpf = "02046836707"
 
