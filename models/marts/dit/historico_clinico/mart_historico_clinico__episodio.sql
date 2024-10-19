@@ -2,16 +2,19 @@
     config(
         schema="saude_historico_clinico",
         alias="episodio_assistencial",
-        materialized="table",
-        cluster_by="paciente_cpf",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         partition_by={
-            "field": "cpf_particao",
-            "data_type": "int64",
-            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
         },
     )
 }}
 
+{% set partitions_to_replace = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
+) %}
 
 with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -85,9 +88,13 @@ with
             paciente.cpf as paciente_cpf,
 
             -- Encounter Unique Identifier: for testing purposes
-            farm_fingerprint(
-                concat(prontuario.fornecedor, prontuario.id_atendimento)
-            ) as id_episodio,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "prontuario.id_atendimento",
+                    ]
+                )
+            }} as id_episodio,
 
             -- Encounter Data
             merged_data_deceased.*,
@@ -169,7 +176,7 @@ with
         deduped.profissional_saude_responsavel,
         deduped.prontuario,
         deduped.metadados,
-        deduped.cpf_particao, 
+        cast(deduped.entrada_datahora as date) as data_particao
     from deduped
     left join all_cids 
     on all_cids.id_episodio = deduped.id_episodio
@@ -177,4 +184,6 @@ with
 
 select * from final
 
-
+{% if is_incremental() %}
+    where data_particao >= {{ partitions_to_replace }}
+{% endif %}
