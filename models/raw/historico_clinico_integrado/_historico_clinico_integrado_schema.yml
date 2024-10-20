@@ -23,8 +23,6 @@ models:
       - name: obito_data
         description: Data de óbito do paciente.
         data_type: date
-        policy_tags:
-          - '{{ var ("TAG_DATA_OBITO") }}'
       - name: pai_nome
         description: Nome do pai do paciente.
         data_type: string

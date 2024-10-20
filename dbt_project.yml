@@ -47,7 +47,7 @@ vars:
   TAG_CNS: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/2901367901059215729'
   TAG_CONSELHO_DE_CLASSE: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/4548538642730180995'
   TAG_DATA_NASCIMENTO: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/8548247179869888647'
-  TAG_DATA_OBITO: ''
+  #TAG_DATA_OBITO: ''
   TAG_IDENTIDADE: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/8263914069321607924'
   TAG_IDENTIFICADOR_SISTEMA: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/7573439620630018034'
   TAG_NOME: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/5037947799828588462'
