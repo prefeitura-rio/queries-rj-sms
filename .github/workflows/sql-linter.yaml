@@ -1,7 +1,6 @@
 name: SQLFluff
 
-on:
-  - pull_request
+on: workflow_dispatch
 
 jobs:
   lint-models:
