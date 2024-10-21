@@ -95,7 +95,7 @@ models:
           CPF do Estabelecimento
           Esse campo só é preenchido no caso do campo tipo_pfpj = 1
         policy_tags:
-          - '{{ var ("TAG_CPF") }}'
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
       - name: cnpj
         description: |-
           CNPJ do Estabelecimento
@@ -127,10 +127,10 @@ models:
       - name: diretor_clinico_cpf
         description: CPF do Diretor Clínico ou  Gerente / Administrador
         policy_tags:
-          - '{{ var ("TAG_CPF") }}'
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
       - name: diretor_clinico_conselho
         policy_tags:
-          - '{{ var ("TAG_NOME") }}'
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
         description: Registro no Conselho de Classe do Diretor Clinico
       - name: adesao_hospital_filantropico
         description: Indica se o hospital fez adesão ao Programa de Reestruturação de

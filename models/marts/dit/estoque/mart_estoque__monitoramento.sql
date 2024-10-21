@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         alias="estoque_monitoramento",
         schema="projeto_estoque",
         materialized="table",

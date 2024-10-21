@@ -28,17 +28,17 @@ models:
         description: |
           Data de nascimento do paciente.
         policy_tags:
-          - '{{ var ("TAG_DTNASCIMENTO") }}'
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
       - name: tipo
         description: |
           Tipo de atendimento classificado como 'Exames', 'Consulta' ou 'Internação', baseado no tipo de atendimento informado no boletim.
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: subtipo
         description: |
           Subtipo do atendimento, obtido a partir do tipo de atendimento do boletim. 
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: exames_realizados 
         description: |
           No caso de tipo de episódio como 'Exame', detalha tipos de exames realizados e descrição
@@ -46,12 +46,12 @@ models:
         description: |
           Tipo do exame, pode ser preenchido com 'Imagem' ou 'Laboratório'
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: exames_realizados.descricao
         description: |
           Descrição do exame realizado
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: entrada_datahora
         description: |
           Data e hora de início do atendimento. Representa o momento em que o atendimento começou.
@@ -62,12 +62,12 @@ models:
         description: |
           Queixa inicial do paciente
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: desfecho_atendimento
         description: |
           Desfecho do episódio
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: condicoes
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
@@ -77,12 +77,12 @@ models:
         description: |
           Código CID ativo
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: condicoes.descricao
         description: |
           Descrição do CID associado
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: condicoes.situacao
         description: |
           Situação do CID associado ao atendimento. Na Vitai assume apenas o valor "ATIVO".
@@ -94,7 +94,7 @@ models:
           Descrições das alergias associadas ao atendimento, extraídas dos
           registros de alergias.
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: estabelecimento
         description: >
           Informações sobre o estabelecimento de saúde onde o atendimento foi
@@ -116,7 +116,7 @@ models:
         description: |
           ID do profissional responsável pelo atendimento.
         policy_tags:
-          - '{{ var ("TAG_IDENTIFICADOR") }}'
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: profissional_saude_responsavel.cns
         description: |
           CNS do profissional responsável pelo atendimento.
@@ -131,7 +131,7 @@ models:
         description: |
           Especialidade do profissional responsável pelo atendimento.
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: profissional_saude_responsavel.cpf
         description: |
           CPF do profissional responsável pelo atendimento.
@@ -196,13 +196,13 @@ models:
           Tipo de atendimento classificado como 'Exames', 'Consulta' ou
           'Internação', baseado no tipo de atendimento informado no boletim.
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: subtipo
         description: >
           Subtipo do atendimento, obtido a partir do tipo de atendimento do
           boletim. 
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: entrada_datahora
         description: >
           Data e hora de início do atendimento. Representa o momento em que o
@@ -233,17 +233,17 @@ models:
         description: |
           Data de nascimento do paciente.
         policy_tags:
-          - '{{ var ("TAG_DTNASCIMENTO") }}'
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
       - name: motivo_atendimento
         description: |
           Queixa inicial do paciente
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: desfecho_atendimento
         description: |
           Desfecho do episódio
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: procedimentos_realizados
         description: >
           Procedimentos realizados durante o episódio.
@@ -251,12 +251,12 @@ models:
         description: >
           Descrição do tipo de procedimento realizado durante o episódio.
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: procedimentos_realizados.observacao
         description: >
           Campo aberto de observações referentes ao procedimento.
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: condicoes
         description: >
           Códigos e descrições dos CID (Classificação Internacional de Doenças)
@@ -266,12 +266,12 @@ models:
         description: |
           Código CID ativo
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: condicoes.descricao
         description: |
           Descrição do CID associado
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: condicoes.situacao
         description: |
           Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
@@ -283,7 +283,7 @@ models:
           Descrições das alergias associadas ao atendimento, extraídas dos
           registros de alergias.
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: prescricoes
         description: >
           Informações sobre as prescrições médicas realizadas durante o
@@ -291,18 +291,12 @@ models:
       - name: prescricoes.id
         description: |
           ID da prescrição.
-        policy_tags:
-          - '{{ var ("TAG_MEDICAMENTO") }}'
       - name: prescricoes.nome
         description: |
           Nome do medicamento prescrito.
-        policy_tags:
-          - '{{ var ("TAG_MEDICAMENTO") }}'
       - name: prescricoes.concentracao
         description: |
           Concentração do medicamento prescrito.
-        policy_tags:
-          - '{{ var ("TAG_MEDICAMENTO") }}'
       - name: prescricoes.uso_continuo
         description: |
           Flag que indica se o medicamento é de uso contínuo.
@@ -327,7 +321,7 @@ models:
         description: |
           ID do profissional responsável pelo atendimento.
         policy_tags:
-          - '{{ var ("TAG_IDENTIFICADOR") }}'
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: profissional_saude_responsavel.cns
         description: |
           CNS do profissional responsável pelo atendimento.
@@ -342,7 +336,7 @@ models:
         description: |
           Especialidade do profissional responsável pelo atendimento.
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: profissional_saude_responsavel.cpf
         description: |
           CPF do profissional responsável pelo atendimento.

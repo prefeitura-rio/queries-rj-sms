@@ -406,7 +406,7 @@ models:
         data_type: string
         quote: true
         policy_tags:
-          - '{{ var ("TAG_IDENTIFICADOR") }}'
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: farmaceutico_vinculo
         description: Esta coluna representa o status do vínculo empregatício do farmacêutico com a
           farmácia. O valor está em letras minúsculas.
