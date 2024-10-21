@@ -12,15 +12,12 @@ models:
         data_tests:
           - unique:
               name: mart_estoque__report_gestao__id_material__unique
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
       - name: nome
         description: Fornece um identificador legível por humanos para cada material e é
           usado para fins de exibição em relatórios e interfaces de usuário.
         data_type: string
         quote: true
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+
       - name: pqrs_categoria
         description: As categorias são definidas como 'P', 'Q', 'R' e 'S'. 'P'
           representa materiais com alta demanda, 'Q' representa materiais com

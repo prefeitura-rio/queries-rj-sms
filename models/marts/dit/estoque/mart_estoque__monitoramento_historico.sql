@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         alias="estoque_monitoramento_historico",
         schema="projeto_estoque",
         materialized="incremental",

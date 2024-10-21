@@ -20,8 +20,6 @@ models:
         description: Identificador do lote do medicamento/insumo
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
-        policy_tags:
-          - '{{ var("TAG_MATERIAL") }}'
         data_tests:
           - not_null:
               name: raw_prontuario_vitai__estoque_posicao__id_material__not_null
@@ -30,8 +28,6 @@ models:
           medicamento/insumo
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var("TAG_MATERIAL") }}'
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
       - name: lote_data_vencimento
@@ -84,8 +80,6 @@ models:
               field: id_cnes
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
-        policy_tags:
-          - '{{ var("TAG_MATERIAL") }}'
         data_tests:
           - not_null:
               name: raw_prontuario_vitai__estoque_movimento__id_material__not_null
@@ -93,8 +87,7 @@ models:
                 where: "estoque_movimento_data > '2023-01-01'"
       - name: material_descricao
         description: Descrição do material (medicamento/insumo)
-        policy_tags:
-          - '{{ var("TAG_MATERIAL") }}'
+
       - name: material_unidade
         description: Unidade de estocagem do material (medicamento/insumo)
       - name: estoque_secao_origem
@@ -146,7 +139,7 @@ models:
         description: Identificador global do paciente na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
         data_tests:
           - not_null:
               name: raw_prontuario_vitai__paciente__id__not_null
@@ -160,7 +153,7 @@ models:
         description: Identificador do cidadão.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: cpf
         description: CPF do cidadão.
         data_type: string
@@ -184,7 +177,7 @@ models:
         description: Data de nascimento do cidadão.
         data_type: date
         policy_tags:
-          - '{{ var("TAG_DTNASCIMENTO") }}'
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: transex
         description: Identificação de transexualidade.
         data_type: string
@@ -232,7 +225,7 @@ models:
         description: Data de óbito do cidadão, se aplicável.
         data_type: date
         policy_tags:
-          - '{{ var("TAG_DTOBITO") }}'
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: numero
         description: Número do endereço do cidadão.
         data_type: string
@@ -264,7 +257,7 @@ models:
           - not_null:
               name: raw_prontuario_vitai__profissional__id__not_null
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_estabelecimento
         description: Identificador global do estabelecimento na base da Vitai.
         data_type: string
@@ -331,7 +324,7 @@ models:
         description: Identificador global do Paciente.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: id_setor
         description: Identificador do Setor.
         data_type: string
@@ -393,7 +386,7 @@ models:
         description: Identificador do cidadão na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: numero_be
         description: Número do boletim de atendimento.
         data_type: string
@@ -454,7 +447,7 @@ models:
           - not_null:
               name: raw_prontuario_vitai__alergia__id__not_null
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_boletim
         description: Identificador do boletim de atendimento na base da Vitai.
         data_type: string
@@ -462,7 +455,7 @@ models:
         description: Identificador global do paciente na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: severidade
         description: Severidade da alergia.
         data_type: string
@@ -529,7 +522,7 @@ models:
         description: Identificador global do paciente na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_boletim
         description: Identificador global do boletim de atendimento na base da Vitai.
         data_type: string
@@ -540,7 +533,7 @@ models:
         description: Identificador global do profissional na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: atendimento_tipo
         description: Tipo de atendimento realizado.
         data_type: string
@@ -588,7 +581,7 @@ models:
         description: Identificador global do paciente na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_boletim
         description: Identificador global do boletim de atendimento na base da Vitai.
         data_type: string
@@ -645,7 +638,7 @@ models:
         description: Identificador global do paciente na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_boletim
         description: Identificador global do boletim de atendimento na base da Vitai.
         data_type: string
@@ -656,7 +649,7 @@ models:
         description: Identificador global do profissional na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: asv_queixa_principal
         description: Queixa principal do paciente.
         data_type: string
@@ -707,7 +700,7 @@ models:
         description: Identificador global do paciente na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_estabelecimento
         description: Identificador global do estabelecimento na base da Vitai.
         data_type: string
@@ -758,7 +751,7 @@ models:
         description: Identificador global do paciente na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_boletim
         description: Identificador global do boletim de atendimento na base da Vitai.
         data_type: string
@@ -769,7 +762,7 @@ models:
         description: Identificador global do médico solicitante na base da Vitai.
         data_type: string
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: id_exame_item
         description: Identificador do item de exame na base da Vitai.
         data_type: string
@@ -851,7 +844,7 @@ models:
       - name: cnpj
         description: CNPJ do estabelecimento.
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: sigla
         description: Sigla do estabelecimento.
       - name: nome_estabelecimento
@@ -879,7 +872,7 @@ models:
       - name: paciente_gid
         description: Identificador único do paciente associado ao relato cirúrgico.
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: estabelecimento_gid
         description: Identificador único do estabelecimento de saúde onde ocorreu a cirurgia.
       - name: cir_data
@@ -939,7 +932,7 @@ models:
       - name: gid_paciente
         description: Identificador único do paciente associado ao internação.
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_estabelecimento
         description: Identificador único do estabelecimento de saúde onde ocorreu a internação.
       - name: gid_profissional
@@ -991,7 +984,7 @@ models:
       - name: gid_paciente
         description: ID do paciente associado ao evento.
         policy_tags:
-          - '{{ var("TAG_IDENTIFICADOR") }}'
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: gid_estabelecimento
         description: ID do estabelecimento onde o evento ocorreu.
       - name: id_alta_medica

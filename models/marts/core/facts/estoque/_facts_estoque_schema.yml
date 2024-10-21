@@ -9,8 +9,6 @@ models:
         data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
@@ -24,8 +22,6 @@ models:
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
@@ -101,8 +97,6 @@ models:
         data_type: string
       - name: id_material
         description: Código do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: id_pedido_wms
         description: Identificador do pedido na TPC que gerou o evento de entrada de
@@ -157,8 +151,7 @@ models:
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+
         data_type: string
       - name: material_quantidade
         description: Quantidade movimentada do medicamento/insumo

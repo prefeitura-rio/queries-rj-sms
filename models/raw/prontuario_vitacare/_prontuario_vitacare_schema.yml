@@ -48,14 +48,10 @@ models:
         data_type: string
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: id_atc
         description: Código de identificação do material cadastrado no prontuário no
           padrão ATC
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: estabelecimento_nome
         description: Nome da unidade de saúde onde o item está localizado
@@ -73,8 +69,6 @@ models:
         data_type: date
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: material_quantidade
         description: Quantidade disponível do medicamento/insumo
@@ -142,22 +136,17 @@ models:
         data_type: string
       - name: id_material
         description: Código de identificação do material cadastrado no prontuário
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: id_atc
         description: Código de identificação do material cadastrado no prontuário no
           padrão ATC
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: estabelecimento_nome
         description: Nome da unidade de saúde onde o item está localizado
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+
         data_type: string
       - name: estoque_movimento_data_hora
         description: Data e hora da movimentação do estoque
@@ -249,7 +238,7 @@ models:
       - name: data_obito
         description: Data de óbito do paciente.
         policy_tags:
-          - '{{ var("TAG_DTOBITO") }}'
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: sexo
         description: Sexo do paciente.
       - name: orientacao_sexual
@@ -271,7 +260,7 @@ models:
       - name: data_nascimento
         description: Data de nascimento do paciente.
         policy_tags:
-          - '{{ var("TAG_DTNASCIMENTO") }}'
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: pais_nascimento
         description: País de nascimento do paciente.
       - name: municipio_nascimento
@@ -365,7 +354,7 @@ models:
       - name: data_obito
         description: Data de óbito do paciente.
         policy_tags:
-          - '{{ var("TAG_DTOBITO") }}'
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: sexo
         description: Sexo do paciente.
       - name: orientacao_sexual
@@ -387,7 +376,7 @@ models:
       - name: data_nascimento
         description: Data de nascimento do paciente.
         policy_tags:
-          - '{{ var("TAG_DTNASCIMENTO") }}'
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: pais_nascimento
         description: País de nascimento do paciente.
       - name: municipio_nascimento
@@ -488,7 +477,7 @@ models:
       - name: data_obito
         description: Data de óbito do paciente.
         policy_tags:
-          - '{{ var("TAG_DTOBITO") }}'
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: sexo
         description: Sexo do paciente.
       - name: orientacao_sexual
@@ -510,7 +499,7 @@ models:
       - name: data_nascimento
         description: Data de nascimento do paciente.
         policy_tags:
-          - '{{ var("TAG_DTNASCIMENTO") }}'
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: pais_nascimento
         description: País de nascimento do paciente.
       - name: municipio_nascimento
@@ -992,7 +981,7 @@ models:
         data_type: date
         quote: true
         policy_tags:
-        - '{{ var("TAG_DTNASCIMENTO") }}'
+        - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: nome_mae
         description: Este campo contém o nome completo da mãe do paciente.
         data_type: string
@@ -1005,7 +994,7 @@ models:
         data_type: date
         quote: true
         policy_tags:
-        - '{{ var("TAG_DTNASCIMENTO") }}'
+        - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: paciente_situacao
         description: Este campo representa o status atual do paciente. Fornece
           informações sobre se o paciente está ativo, inativo ou em qualquer
@@ -1027,7 +1016,7 @@ models:
         data_type: string
         quote: true
         policy_tags:
-        - '{{ var("TAG_DADOS_CLINICOS") }}'
+        - '{{ var("TAG_DADO_CLINICO") }}'
       - name: aplicacao_data
         description: Esta coluna representa a data em que a vacina foi aplicada ao
           paciente. É um campo de data e está formatado como AAAA-MM-DD.
@@ -1045,7 +1034,7 @@ models:
         data_type: string
         quote: true
         policy_tags:
-        - '{{ var("TAG_DADOS_CLINICOS") }}'
+        - '{{ var("TAG_DADO_CLINICO") }}'
       - name: lote
         description: Este campo representa o número do lote da vacina. 
         data_type: string
