@@ -22,9 +22,19 @@
                             'o',
                             'para',
                             'por',
-                            'um'
+                            'um',
+                            'os',
+                            'as',
+                            'um',
+                            'uma',
+                            'uns',
+                            'umas'
                         )
                     then lower(word)
+                    when
+                        lower(word)
+                        in ('i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x')
+                    then upper(word)
                     else concat(upper(substr(word, 1, 1)), lower(substr(word, 2)))
                 end,
                 ' '

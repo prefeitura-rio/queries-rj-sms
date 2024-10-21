@@ -28,30 +28,28 @@ vars:
   # internal variables
   DBT_USER: "{{ env_var('DBT_USER', 'dev_fantasma') }}"
   # policy tags
-  TAG_CPF: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7275937608331929015'
-  TAG_CNS: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/8199751371890630153'
-  TAG_RG: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1359518576511941019'
-  TAG_NOME: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2632983500029416584'
-  TAG_TELEFONE: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/6197099915332240403'
-  TAG_EMAIL: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/6775173897032728488'
-  TAG_ENDERECO: 'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/5348387254077392279'
-  TAG_CRM: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/2129975481142765086'
-  TAG_MATERIAL:  'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/7956417154094178470'
-  TAG_DTNASCIMENTO: 'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/674367858357103255'  
-  TAG_DTOBITO: 'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/6268958505478592114'
-  TAG_NATURALIDADE: 'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/2018842376178907296'
-  TAG_OBITO: 'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/3126519816284522145'
-  TAG_DADOS_CLINICOS: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/8216812064277366977'
-  TAG_EXAME_IMAGEM: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2271001638601718755'
-  TAG_EXAME_LABORATORIO: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/7774875538975783665'
-  TAG_NOME_MAE: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2411979615060611545'
-  TAG_NOME_PAI: 'projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/8262940514454666213'
-  TAG_COREN: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1950446664324638402'
-  TAG_MEDICAMENTO: 'projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/3872480936078888207'
-  TAG_IDENTIFICADOR: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/3220112556547044825'
-  TAG_DADOS_BANCARIOS: 'projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7203052192415747676'
-
-
+  TAG_CPF: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7275937608331929015"
+  TAG_CNS: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/8199751371890630153"
+  TAG_RG: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1359518576511941019"
+  TAG_NOME: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2632983500029416584"
+  TAG_TELEFONE: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/6197099915332240403"
+  TAG_EMAIL: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/6775173897032728488"
+  TAG_ENDERECO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/5348387254077392279"
+  TAG_CRM: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/2129975481142765086"
+  TAG_MATERIAL: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/7956417154094178470"
+  TAG_DTNASCIMENTO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/674367858357103255"
+  TAG_DTOBITO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/6268958505478592114"
+  TAG_NATURALIDADE: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/2018842376178907296"
+  TAG_OBITO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/3126519816284522145"
+  TAG_DADOS_CLINICOS: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/8216812064277366977"
+  TAG_EXAME_IMAGEM: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2271001638601718755"
+  TAG_EXAME_LABORATORIO: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/7774875538975783665"
+  TAG_NOME_MAE: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/2411979615060611545"
+  TAG_NOME_PAI: "projects/rj-sms/locations/us/taxonomies/4827881364676585191/policyTags/8262940514454666213"
+  TAG_COREN: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/1950446664324638402"
+  TAG_MEDICAMENTO: "projects/rj-sms/locations/us/taxonomies/6217643325435375844/policyTags/3872480936078888207"
+  TAG_IDENTIFICADOR: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/3220112556547044825"
+  TAG_DADOS_BANCARIOS: "projects/rj-sms/locations/us/taxonomies/7948647440833323337/policyTags/7203052192415747676"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -68,7 +66,7 @@ models:
     +enabled: "{{ target.name in ['prod'] }}"
   rj_sms:
     # all models should have unique and not null
-    +required_tests: {"unique.*|not_null": 2}
+    +required_tests: { "unique.*|not_null": 2 }
     +required_docs: true
     raw:
       +materialized: table
@@ -169,7 +167,8 @@ models:
           dado_pessoal: nao
           dado_sensivel: nao
     intermediate:
-        +materialized: ephemeral
+      +materialized: ephemeral
+      dit:
         historico_clinico:
           +tags: ["hci", "daily"]
           +labels:
@@ -179,84 +178,96 @@ models:
             dominio: historico_clinico
           paciente:
             +tags: ["paciente"]
+      monitoramento:
+        +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_sensivel: nao
     marts:
-        +materialized: table
-        core:
-          +tags: "core"
-          dimensions:
-            +schema: saude_dados_mestres
+      +materialized: table
+      core:
+        +tags: "core"
+        dimensions:
+          +schema: saude_dados_mestres
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
+          rio:
+            +schema: saude_rio
+            +tags: "weekly"
+            +labels:
+              dado_publico: sim
+              dado_pessoal: sim
+              dado_sensivel: nao
+        facts:
+          sisreg:
+            +schema: saude_sisreg
+            +tags: "daily"
             +labels:
               dado_publico: nao
               dado_pessoal: nao
               dado_sensivel: nao
-            rio:
-              +schema: saude_rio
-              +tags: "weekly"
-              +labels:
-                dado_publico: sim
-                dado_pessoal: sim
-                dado_sensivel: nao
-          facts:
-            sisreg:
-              +schema: saude_sisreg
-              +tags: "daily"
-              +labels:
-                dado_publico: nao
-                dado_pessoal: nao
-                dado_sensivel: nao
-            estoque:
-              +schema: saude_estoque
-              +tags: "daily"
-              +labels:
-                dado_publico: nao
-                dado_pessoal: sim
-                dado_sensivel: sim
-                dominio: estoque
-        subgeral:
-          cnes:
-            +schema: projeto_cnes_subgeral
-            +tags: "weekly"
-            +labels:
-                dado_publico: nao
-                dado_pessoal: sim
-                dado_sensivel: sim
-                dominio: subgeral
-        dit:
-          dengue:
-              +schema: projeto_dengue
-              +tags: "daily"
           estoque:
-              +schema: projeto_estoque
-              +tags: ["daily", "estoque"]
-              +labels:
-                dado_publico: nao
-                dado_pessoal: sim
-                dado_sensivel: sim
-                dominio: estoque
-          gerenciamento:
-              +tags: "daily"
-          historico_clinico:
-              +tags: ["daily", "hci"]
-              +labels:
-                dado_publico: nao
-                dado_pessoal: sim
-                dado_sensivel: sim
-                dominio: historico_clinico
-          historico_clinico_app:
-              +tags: ["daily", "hci_app"]
-              +labels:
-                dado_publico: nao
-                dado_pessoal: sim
-                dado_sensivel: sim
-                dominio: historico_clinico
-          seguir_em_frente:
-              +schema: projeto_seguir_em_frente
-              +tags: "daily"
-              +labels:
-                dado_publico: nao
-                dado_pessoal: sim
-                dado_sensivel: sim
-                dominio: seguir_em_frente 
+            +schema: saude_estoque
+            +tags: "daily"
+            +labels:
+              dado_publico: nao
+              dado_pessoal: sim
+              dado_sensivel: sim
+              dominio: estoque
+      subgeral:
+        cnes:
+          +schema: projeto_cnes_subgeral
+          +tags: "weekly"
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subgeral
+      dit:
+        dengue:
+          +schema: projeto_dengue
+          +tags: "daily"
+        estoque:
+          +schema: projeto_estoque
+          +tags: ["daily", "estoque"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: estoque
+        gerenciamento:
+          +tags: "daily"
+        historico_clinico:
+          +tags: ["daily", "hci"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: historico_clinico
+        historico_clinico_app:
+          +tags: ["daily", "hci_app"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: historico_clinico
+        seguir_em_frente:
+          +schema: projeto_seguir_em_frente
+          +tags: "daily"
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: seguir_em_frente
+        monitoramento:
+          +tags: "daily"
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
 
 tests:
   rj_sms:

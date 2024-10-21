@@ -5,6 +5,8 @@
                 case
                     when
                         lower(word) in (
+                            'sms',
+                            'ap',
                             'cap',
                             'caps',
                             'cer',
