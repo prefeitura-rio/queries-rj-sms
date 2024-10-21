@@ -51,7 +51,7 @@ models:
     - name: diretor_clinico_conselho
       description: "Número de registro no conselho profissional do diretor clínico."
       policy_tags:
-        - '{{ var ("TAG_CRM") }}'
+        - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
 
     # Atributos
     - name: tipo_turno
@@ -180,7 +180,18 @@ models:
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
-
+      - name: estabelecimento_nome_fantasia
+        description: "Nome fantasia do estabelecimento."
+      - name: estabelecimento_esfera
+        description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
+      - name: estabelecimento_gestao
+        description: "Descrição do tipo de gestão do estabelecimento."
+      - name: id_estabelecimento_ap
+        description: "Código da Área Programática."
+      - name: estabelecimento_ap
+        description: "Descrição da Área Programática."
+      - name: estabelecimento_sms_indicador
+        description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
       - name: tipo_leito
         description: "Identificador do tipo de leito disponível."
       - name: tipo_leito_descr
@@ -212,6 +223,18 @@ models:
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
+      - name: estabelecimento_nome_fantasia
+        description: "Nome fantasia do estabelecimento."
+      - name: estabelecimento_esfera
+        description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
+      - name: estabelecimento_gestao
+        description: "Descrição do tipo de gestão do estabelecimento."
+      - name: id_estabelecimento_ap
+        description: "Código da Área Programática."
+      - name: estabelecimento_ap
+        description: "Descrição da Área Programática."
+      - name: estabelecimento_sms_indicador
+        description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
       - name: id_habilitacao
         description: "Identificador único da habilitação de um estabelecimento de saúde."
       - name: nivel_habilitacao
@@ -249,6 +272,18 @@ models:
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
+      - name: estabelecimento_nome_fantasia
+        description: "Nome fantasia do estabelecimento."
+      - name: estabelecimento_esfera
+        description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
+      - name: estabelecimento_gestao
+        description: "Descrição do tipo de gestão do estabelecimento."
+      - name: id_estabelecimento_ap
+        description: "Código da Área Programática."
+      - name: estabelecimento_ap
+        description: "Descrição da Área Programática."
+      - name: estabelecimento_sms_indicador
+        description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
       - name: equipamento_tipo
         description: "Tipo geral do equipamento."
       - name: equipamento_especifico_tipo
@@ -278,6 +313,18 @@ models:
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
+      - name: estabelecimento_nome_fantasia
+        description: "Nome fantasia do estabelecimento."
+      - name: estabelecimento_esfera
+        description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
+      - name: estabelecimento_gestao
+        description: "Descrição do tipo de gestão do estabelecimento."
+      - name: id_estabelecimento_ap
+        description: "Código da Área Programática."
+      - name: estabelecimento_ap
+        description: "Descrição da Área Programática."
+      - name: estabelecimento_sms_indicador
+        description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
       - name: cpf
         description: "CPF do profissional."
         policy_tags:
@@ -305,7 +352,7 @@ models:
       - name: id_registro_conselho
         description: "Identificador de registro no conselho profissional."
         policy_tags:
-          - '{{ var ("TAG_CRM") }}'
+          - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
       - name: id_tipo_conselho
         description: "Tipo de conselho do profissional."
       - name: carga_horaria_outros

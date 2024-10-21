@@ -9,7 +9,7 @@ models:
         description: |
           Identificador único do paciente. Este campo é utilizado para associar os dados de alergia com o paciente correspondente.
         policy_tags:
-          - '{{ var ("TAG_IDENTIFICADOR") }}'
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
         data_tests:
           - not_null:
               name: int_historico_clinico__alergia__id_paciente_vitai__not_null

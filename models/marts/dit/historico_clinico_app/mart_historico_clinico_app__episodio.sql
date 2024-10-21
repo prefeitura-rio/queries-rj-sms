@@ -45,8 +45,7 @@ with
 
             -- Flag de Exame sem Subtipo
             case
-                when tipo = 'Exame' and subtipo is null then true 
-                else false
+                when tipo = 'Exame' and subtipo is null then true else false
             end as flag__exame_sem_subtipo,
 
             -- Flag de Episódio de Vacinação
@@ -56,11 +55,11 @@ with
 
             -- Flag de Episódio não informativo
             case
+                when tipo like '%Exame%'
+                then false
                 when
-                    tipo like '%Exame%' then false
-                when 
-                    tipo not like '%Exame%' and 
-                    (
+                    tipo not like '%Exame%'
+                    and (
                         id_episodio in (select * from episodios_com_cid)
                         or id_episodio in (select * from episodios_com_procedimento)
                         or motivo_atendimento is not null
@@ -72,35 +71,38 @@ with
 
             -- Flag de Subtipo Proibido
             case
-                when prontuario.fornecedor = 'vitacare' and subtipo in (
-                    'Consulta de Fisioterapia',
-                    'Consulta de Assistente Social',
-                    'Atendimento de Nutrição NASF',
-                    'Ficha da Aula',
-                    'Consulta de Atendimento Farmacêutico',
-                    'Consulta de Fonoaudiologia',
-                    'Consulta de Terapia Ocupacional',
-                    'Gestão de arquivo não médico',
-                    'Gestão de Arquivo Assistente Social NASF',
-                    'Gestão de Arquivo de Professor NASF',
-                    'Gestão de Arquivo Não Médico NASF',
-                    'Gestão de Arquivo Fisioterapeuta NASF',
-                    'Atendimento de Nutrição Modelo B',
-                    'Gestão de Arquivo Não Médico',
-                    'Gestão de Arquivo Fonoaudiólogo NASF',
-                    'Atendimento de Fisioterapia Modelo B',
-                    'Atendimento de Fonoaudiologia Modelo B',
-                    'Atendimento de Assistente Social Modelo B',
-                    'Gestão de Arquivo Farmacêutico NASF',
-                    'Gestão de Arquivo de Terapeuta Ocupacional NASF',
-                    'Consulta de Acupuntura',
-                    'Ato Gestão de Arquivo não Médico',
-                    'Gestão de Arquivo não Médico',
-                    'Atendimento Nutricionismo'
-                ) then true
+                when
+                    prontuario.fornecedor = 'vitacare'
+                    and subtipo in (
+                        'Consulta de Fisioterapia',
+                        'Consulta de Assistente Social',
+                        'Atendimento de Nutrição NASF',
+                        'Ficha da Aula',
+                        'Consulta de Atendimento Farmacêutico',
+                        'Consulta de Fonoaudiologia',
+                        'Consulta de Terapia Ocupacional',
+                        'Gestão de arquivo não médico',
+                        'Gestão de Arquivo Assistente Social NASF',
+                        'Gestão de Arquivo de Professor NASF',
+                        'Gestão de Arquivo Não Médico NASF',
+                        'Gestão de Arquivo Fisioterapeuta NASF',
+                        'Atendimento de Nutrição Modelo B',
+                        'Gestão de Arquivo Não Médico',
+                        'Gestão de Arquivo Fonoaudiólogo NASF',
+                        'Atendimento de Fisioterapia Modelo B',
+                        'Atendimento de Fonoaudiologia Modelo B',
+                        'Atendimento de Assistente Social Modelo B',
+                        'Gestão de Arquivo Farmacêutico NASF',
+                        'Gestão de Arquivo de Terapeuta Ocupacional NASF',
+                        'Consulta de Acupuntura',
+                        'Ato Gestão de Arquivo não Médico',
+                        'Gestão de Arquivo não Médico',
+                        'Atendimento Nutricionismo'
+                    )
+                then true
                 else false
             end as flag__subtipo_proibido_vitacare
-        
+
         from {{ ref("mart_historico_clinico__episodio") }}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -132,7 +134,9 @@ with
                 where descricao is not null
             ) as cids,
             array(
-                select distinct resumo from unnest(condicoes) where resumo is not null and resumo != ''
+                select distinct resumo
+                from unnest(condicoes)
+                where resumo is not null and resumo != ''
             ) as cids_summarized,
             case
                 when
@@ -174,7 +178,7 @@ with
                 flag__exame_sem_subtipo as exame_sem_subtipo
             ) as exibicao,
             prontuario.fornecedor as provider,
-            cpf_particao
+            safe_cast(paciente_cpf as int64) as cpf_particao
         from todos_episodios
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--

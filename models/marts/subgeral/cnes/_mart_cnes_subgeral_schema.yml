@@ -53,7 +53,7 @@ models:
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
         policy_tags:
-          - '{{ var ("TAG_CRM") }}'
+          - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
 
       # Atributos
       - name: tipo_turno
@@ -235,7 +235,7 @@ models:
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
         policy_tags:
-          - '{{ var ("TAG_CRM") }}'
+          - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
 
       # Atributos
       - name: tipo_turno
@@ -422,7 +422,7 @@ models:
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
         policy_tags:
-          - '{{ var ("TAG_CRM") }}'
+          - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
 
       # Atributos
       - name: tipo_turno
@@ -601,7 +601,7 @@ models:
       - name: diretor_clinico_conselho
         description: "Número de registro no conselho profissional do diretor clínico."
         policy_tags:
-          - '{{ var ("TAG_CRM") }}'
+          - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
 
       # Atributos
       - name: tipo_turno
@@ -742,13 +742,13 @@ models:
       - name: id_registro_conselho
         description: "Identificador de registro no conselho profissional."
         policy_tags:
-          - '{{ var ("TAG_CRM") }}'
+          - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
       - name: id_tipo_conselho
         description: "Tipo de conselho do profissional."
       - name: profissional_dados_hci
         description: "Dados adicionais do profissional provenientes do HCI."
         policy_tags:
-          - '{{ var ("TAG_DADOS_CLINICOS") }}'
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: endereco_profissional_hci
         description: "Endereço do profissional proveniente do HCI."
         policy_tags:

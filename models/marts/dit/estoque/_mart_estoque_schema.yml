@@ -15,18 +15,13 @@ models:
       - name: id_curva_abc
         description: Identificador usado para agrupar os medicamentos/insumos em classes
           de consumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+
         data_type: string
       - name: estabelecimento_tipo_cnes
         description: Classificação do CNES de tipos de unidades.
@@ -107,8 +102,6 @@ models:
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
@@ -199,18 +192,12 @@ models:
       - name: id_curva_abc
         description: Identificador usado para agrupar os medicamentos/insumos em classes
           de consumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: id_cnes_material
         description: Identificador do medicamento/insumo na unidade de saúde
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: estabelecimento_tipo_cnes
         description: Classificação do CNES de tipos de unidades.
@@ -291,8 +278,6 @@ models:
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: material_unidade
         description: Unidade de estocagem do medicamento/insumo
@@ -377,8 +362,6 @@ models:
         data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
@@ -412,8 +395,6 @@ models:
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: material_remume_indicador
         description: Esta coluna indica se o material está listado na Lista Municipal de
@@ -450,8 +431,6 @@ models:
         data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: estabelecimento_area_programatica
         description: Área programática onde está localizada a unidade de saúde
@@ -485,8 +464,6 @@ models:
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: material_remume_indicador
         description: Esta coluna indica se o material está listado na Lista Municipal de
@@ -525,8 +502,6 @@ models:
         data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: data
         description: Data do evento
@@ -574,14 +549,10 @@ models:
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: material_id_descricao
         description: Concatenação do id do material e seu nome
         data_type: string
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
   - name: mart_estoque__consumo_serie_historica_looker_row_level_access
     description: Tabela baseada na tabela estoque_consumo_serie_historica,
       adicionado o email dos usuários que podem ler cada registro. Atenção,
@@ -592,8 +563,6 @@ models:
         data_type: string
       - name: id_material
         description: Identificador do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: data
         description: Data do evento
@@ -641,14 +610,10 @@ models:
         data_type: string
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
         data_type: string
       - name: material_id_descricao
         description: Concatenação do id do material e seu nome
         data_type: string
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
       - name: email
         description: Email do usuário do Looker que tem permissão de ver o registro
         data_type: string
@@ -662,8 +627,6 @@ models:
         description: Código Nacional do Estabelecimento de Saúde
       - name: id_material
         description: Identificador do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
       - name: localizacao_origem
         description: Subestoque de origem do medicamento/insumo
       - name: localizacao_destino
@@ -690,8 +653,7 @@ models:
           - '{{ var ("TAG_CPF") }}'
       - name: material_descricao
         description: Descrição do medicamento/insumo
-        policy_tags:
-          - '{{ var ("TAG_MATERIAL") }}'
+
       - name: material_quantidade
         description: Quantidade movimentada do medicamento/insumo
       - name: material_quantidade_com_sinal

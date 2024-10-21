@@ -82,7 +82,7 @@ with
                 facebook,
                 instagram,
                 twitter,
-                estabelecimento_sms_indicador,
+                estabs.estabelecimento_sms_indicador,
                 vinculo_sus_indicador,
                 atendimento_internacao_sus_indicador,
                 atendimento_ambulatorial_sus_indicador,

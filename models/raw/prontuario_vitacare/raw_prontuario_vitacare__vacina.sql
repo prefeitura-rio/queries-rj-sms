@@ -99,13 +99,11 @@ with
             {{ proper_br("profissional_nome") }} as profissional_nome,
 
             -- Metadata
-            ano_particao,
-            mes_particao,
             safe_cast(data_particao as date) as data_particao,
             imported_at,
 
         from renamed
     )
 
-select * 
+select distinct * 
 from final
