@@ -1,0 +1,691 @@
+version: 2
+models:
+  - name: mart_estoque__posicao_atual
+    description: Posição do início do dia dos estoques de medicamentos e insumos das
+      unidades de saúde
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          name: mart_estoque__posicao_atual__row_count_to_be_between
+          min_value: 95000
+          max_value: 200000
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: string
+      - name: id_curva_abc
+        description: Identificador usado para agrupar os medicamentos/insumos em classes
+          de consumo
+        data_type: string
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: string
+      - name: id_cnes_material
+        description: Identificador do medicamento/insumo na unidade de saúde
+
+        data_type: string
+      - name: estabelecimento_tipo_cnes
+        description: Classificação do CNES de tipos de unidades.
+        data_type: string
+      - name: estabelecimento_tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
+        data_type: string
+      - name: estabelecimento_tipo_sms_simplificado
+        description: Versão encurtada do campo 'estabelecimento_tipo_sms'
+        data_type: string
+      - name: estabelecimento_tipo_sms_agrupado
+        description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES
+        data_type: string
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: string
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: string
+      - name: estabelecimento_nome_sigla
+        description: Abreviação do nome fantasia
+        data_type: string
+      - name: estabelecimento_administracao
+        description: Nome do OSS responsável pela administração. Em caso onde não há
+          OSS, é indicado como direta (administração direta pela SMS-Rio)
+        data_type: string
+      - name: estabelecimento_responsavel_sms
+        description: Sub secretaria dentro da SMS-Rio responsável pela unidade
+        data_type: string
+      - name: material_abc_categoria
+        description: Classificação do medicamento/insumo pela curva ABC
+        data_type: string
+      - name: material_hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
+        data_type: string
+      - name: material_hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
+        data_type: string
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
+        data_type: string
+      - name: material_remume_listagem_basico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Básicos" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_uso_interno_indicador
+        description: Esta coluna indica se o material faz parte da lista "Uso interno
+          nas UAPs" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_hospitalar_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Hospitalares" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_antiseptico_indicador
+        description: Esta coluna indica se o material faz parte da lista
+          "Saneantes/Antispeticos" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_estrategico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Estratégicos" da REMUME.
+        data_type: string
+      - name: material_controlado_indicador
+        description: Esta coluna indica para os casos de medicamentos se é controlado ou
+          não.
+        data_type: string
+      - name: material_controlado_tipo
+        description: Esta coluna indica para os casos de medicamentos controlados, qual
+          o seu tipo de controle.
+        data_type: string
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: string
+      - name: material_unidade
+        description: Unidade de estocagem do medicamento/insumo
+        data_type: string
+      - name: material_cadastro_esta_correto
+        description: Indica se o cadastro do medicamento/insumo está utilizando a
+          codificação Sigma correta.
+        data_type: string
+      - name: estoque_secao
+        description: Sub-estoque onde o medicamento/insumo está armazenado
+        data_type: string
+      - name: estoque_secao_caf_indicador
+        description: Indica se o estoque está na principal localidade de armazenamento (CAF)
+        data_type: string
+      - name: id_lote
+        description: Identificador do lote do medicamento/insumo
+        data_type: string
+      - name: lote_data_vencimento
+        description: Data de vencimento do lote
+        data_type: date
+      - name: lote_status
+        description: Status do lote de acordo com o sistema de origem
+        data_type: string
+      - name: lote_status_padronizado
+        description: Status do lote padronizado para utilização nos dashboards
+        data_type: string
+      - name: lote_validade_dentro_indicador
+        description: Indica se o lote está vencido ou não
+        data_type: string
+      - name: lote_dias_para_vencer
+        description: Indica quantos dias faltam para o lote vencer
+        data_type: int64
+      - name: material_quantidade
+        description: Quantidade disponível em estoque no início do dia
+        data_type: float64
+      - name: material_valor_unitario
+        description: Valor em reais de uma unidade do medicamento/insumo
+        data_type: float64
+      - name: material_valor_total
+        description: Valor em reais somando todas as unidades disponíveis do
+          medicamento/insumo
+        data_type: float64
+      - name: material_consumo_medio
+        description: Estimativa do consumo diário baseada na média de consumo dos
+          últimos 90 dias
+        data_type: float64
+        data_tests:
+          - dbt_expectations.expect_column_mean_to_be_between:
+              name: mart_estoque__posicao_atual__material_consumo_medio__mean_between
+              min_value: 30
+              max_value: 70
+              config:
+                severity: error
+      - name: estoque_cobertura_dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no
+          consumo médio diário dos últimos 90 dias
+        data_type: float64
+      - name: abc_justificativa_ausencia
+        description: Explica o motivo do item não ter a curva ABC calculada
+        data_type: string
+      - name: cmm_justificativa_ausencia
+        description: Explica o motivo do item não ter o consumo médio diáro calculado
+        data_type: string
+      - name: busca_material_id_descricao_case_insensitive
+        description: Campo utiilizado para busca de material no BI.
+        data_type: string
+        quote: true
+      - name: sistema_origem
+        description: Sistema de origem do registro
+        data_type: string
+      - name: data_particao
+        description: Data de referencia da posição do estoque
+        data_type: date
+      - name: dias_desde_ultima_atualizacao
+        description: Indica quantos dias se passaram desde a última atualização do registro
+        data_type: int64
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
+        data_type: datetime
+  - name: mart_estoque__posicao_atual_looker_row_level_access
+    description: Tabela baseada na tabela estoque_posicao_atual, adicionado o email
+      dos usuários que podem ler cada registro. Atenção, registros de posição
+      duplicados por conta dos acessos
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: string
+      - name: id_curva_abc
+        description: Identificador usado para agrupar os medicamentos/insumos em classes
+          de consumo
+        data_type: string
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: string
+      - name: id_cnes_material
+        description: Identificador do medicamento/insumo na unidade de saúde
+        data_type: string
+      - name: estabelecimento_tipo_cnes
+        description: Classificação do CNES de tipos de unidades.
+        data_type: string
+      - name: estabelecimento_tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
+        data_type: string
+      - name: estabelecimento_tipo_sms_simplificado
+        description: Versão encurtada do campo 'estabelecimento_tipo_sms'
+        data_type: string
+      - name: estabelecimento_tipo_sms_agrupado
+        description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES
+        data_type: string
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: string
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: string
+      - name: estabelecimento_nome_sigla
+        description: Abreviação do nome fantasia
+        data_type: string
+      - name: estabelecimento_administracao
+        description: Nome do OSS responsável pela administração. Em caso onde não há
+          OSS, é indicado como direta (administração direta pela SMS-Rio)
+        data_type: string
+      - name: estabelecimento_responsavel_sms
+        description: Sub secretaria dentro da SMS-Rio responsável pela unidade
+        data_type: string
+      - name: material_abc_categoria
+        description: Classificação do medicamento/insumo pela curva ABC
+        data_type: string
+      - name: material_hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
+        data_type: string
+      - name: material_hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
+        data_type: string
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
+        data_type: string
+      - name: material_remume_listagem_basico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Básicos" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_uso_interno_indicador
+        description: Esta coluna indica se o material faz parte da lista "Uso interno
+          nas UAPs" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_hospitalar_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Hospitalares" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_antiseptico_indicador
+        description: Esta coluna indica se o material faz parte da lista
+          "Saneantes/Antispeticos" da REMUME.
+        data_type: string
+      - name: material_remume_listagem_estrategico_indicador
+        description: Esta coluna indica se o material faz parte da lista "Componentes
+          Estratégicos" da REMUME.
+        data_type: string
+      - name: material_controlado_indicador
+        description: Esta coluna indica para os casos de medicamentos se é controlado ou
+          não.
+        data_type: string
+      - name: material_controlado_tipo
+        description: Esta coluna indica para os casos de medicamentos controlados, qual
+          o seu tipo de controle.
+        data_type: string
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: string
+      - name: material_unidade
+        description: Unidade de estocagem do medicamento/insumo
+        data_type: string
+      - name: material_cadastro_esta_correto
+        description: Indica se o cadastro do medicamento/insumo está utilizando a
+          codificação Sigma correta.
+        data_type: string
+      - name: estoque_secao
+        description: Sub-estoque onde o medicamento/insumo está armazenado
+        data_type: string
+      - name: estoque_secao_caf_indicador
+        description: Indica se o estoque está na principal localidade de armazenamento (CAF)
+        data_type: string
+      - name: id_lote
+        description: Identificador do lote do medicamento/insumo
+        data_type: string
+      - name: lote_status
+        description: Status do lote de acordo com o sistema de origem
+        data_type: string
+      - name: lote_status_padronizado
+        description: Status do lote padronizado para utilização nos dashboards
+        data_type: string
+      - name: lote_data_vencimento
+        description: Data de vencimento do lote
+        data_type: date
+      - name: lote_validade_dentro_indicador
+        description: Indica se o lote está vencido ou não
+        data_type: string
+      - name: lote_dias_para_vencer
+        description: Indica quantos dias faltam para o lote vencer
+        data_type: int64
+      - name: material_quantidade
+        description: Quantidade disponível em estoque no início do dia
+        data_type: float64
+      - name: material_valor_unitario
+        description: Valor em reais de uma unidade do medicamento/insumo
+        data_type: float64
+      - name: material_valor_total
+        description: Valor em reais somando todas as unidades disponíveis do
+          medicamento/insumo
+        data_type: float64
+      - name: material_consumo_medio
+        description: Estimativa do consumo diário baseada na média de consumo dos
+          últimos 90 dias
+        data_type: float64
+      - name: estoque_cobertura_dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no
+          consumo médio diário dos últimos 90 dias
+        data_type: float64
+      - name: abc_justificativa_ausencia
+        description: Explica o motivo do item não ter a curva ABC calculada
+        data_type: string
+      - name: cmm_justificativa_ausencia
+        description: Explica o motivo do item não ter o consumo médio diáro calculado
+        data_type: string
+      - name: busca_material_id_descricao_case_insensitive
+        description: Campo utiilizado para busca de material no BI.
+        data_type: string
+        quote: true
+      - name: sistema_origem
+        description: Sistema de origem do registro
+        data_type: string
+      - name: data_particao
+        description: Data de referencia da posição do estoque
+        data_type: date
+      - name: dias_desde_ultima_atualizacao
+        description: Indica quantos dias se passaram desde a última atualização do registro
+        data_type: int64
+      - name: data_carga
+        description: Momento (GMT-3) no qual foi feito o download do dataset
+        data_type: datetime
+      - name: email
+        description: Email do usuário do Looker que tem permissão de ver o registro
+        data_type: string
+  - name: mart_estoque__posicao_atual_agregado
+    description: Tabela agregada no nível id_cnes, id_material a partir da tabela
+      estoque_posicao_atual.
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: string
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: string
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: string
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: string
+      - name: estabelecimento_tipo_sms_agrupado
+        description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES.
+        data_type: string
+      - name: material_hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
+        data_type: string
+      - name: material_hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
+        data_type: string
+      - name: material_controlado_indicador
+        description: Esta coluna indica para os casos de medicamentos se é controlado ou
+          não.
+        data_type: string
+      - name: material_controlado_tipo
+        description: Esta coluna indica para os casos de medicamentos controlados, qual
+          o seu tipo de controle.
+        data_type: string
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: string
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
+        data_type: string
+      - name: busca_material_id_descricao_case_insensitive
+        description: Campo utiilizado para busca de material no BI.
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Indica a data de referência da posição.
+        data_type: date
+        quote: true
+      - name: material_quantidade
+        description: "Quantidade disponível do medicamento/insumo no início do dia de
+          referência (campo: data_particao)"
+        data_type: float64
+      - name: material_consumo_medio
+        description: Estimativa do consumo diário baseada na média de consumo dos
+          últimos 90 dias
+        data_type: float64
+      - name: estoque_cobertura_dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no
+          consumo médio diário dos últimos 90 dias
+        data_type: float64
+  - name: mart_estoque__posicao_atual_agregado_looker_row_level_access
+    description: Tabela baseada na tabela estoque_posicao_atual_agregado, adicionado
+      o email dos usuários que podem ler cada registro. Atenção, registros de
+      posição duplicados por conta dos acessos
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: string
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: string
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: string
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: string
+      - name: estabelecimento_tipo_sms_agrupado
+        description: Agrupador das unidades de saúde alternativa ao proposto pelo CNES.
+        data_type: string
+      - name: material_hierarquia_n1_categoria
+        description: Esta coluna representa a categoria do material. Classifica o
+          material em um grupo específico com base em suas características ou
+          uso pretendido. Um material pode pertencer à categoria medicamento,
+          insumo ou imunizante.
+        data_type: string
+      - name: material_hierarquia_n2_subcategoria
+        description: Este campo representa a subcategoria do material. Fornece
+          informações mais específicas sobre o tipo de material, ajudando a
+          classificá-lo ainda mais dentro de sua categoria principal. Por
+          exemplo, um material do grupo medicamento pode pertencer às
+          subcategorias como antibióticos, analgésicos, etc.
+        data_type: string
+      - name: material_controlado_indicador
+        description: Esta coluna indica para os casos de medicamentos se é controlado ou
+          não.
+        data_type: string
+      - name: material_controlado_tipo
+        description: Esta coluna indica para os casos de medicamentos controlados, qual
+          o seu tipo de controle.
+        data_type: string
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: string
+      - name: material_remume_indicador
+        description: Esta coluna indica se o material está listado na Lista Municipal de
+          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
+          disponibilidade e regulamentação do material.
+        data_type: string
+      - name: busca_material_id_descricao_case_insensitive
+        description: Campo utiilizado para busca de material no BI.
+        data_type: string
+        quote: true
+      - name: data_particao
+        description: Indica a data de referência da posição.
+        data_type: date
+        quote: true
+      - name: material_quantidade
+        description: "Quantidade disponível do medicamento/insumo no início do dia de
+          referência (campo: data_particao)"
+        data_type: float64
+      - name: material_consumo_medio
+        description: Estimativa do consumo diário baseada na média de consumo dos
+          últimos 90 dias
+        data_type: float64
+      - name: estoque_cobertura_dias
+        description: Estimativa de quantos dias úteis devem durar o estoque baseado no
+          consumo médio diário dos últimos 90 dias
+        data_type: float64
+      - name: email
+        description: Email do usuário do Looker que tem permissão de ver o registro
+        data_type: string
+  - name: mart_estoque__consumo_serie_historica
+    description: Tabela contendo a série histórica dos últimos 90 dia de consumo e
+      posição aberta no nível cnes e item.
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: string
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: string
+      - name: data
+        description: Data do evento
+        data_type: date
+      - name: dia_semana
+        description: Dia da semana, sendo domingo = 1
+        data_type: int64
+      - name: quantidade_estocada
+        description: Quantidade disponível em estoque no início da data de referência
+        data_type: float64
+      - name: quantidade_dispensada
+        description: Quantidade consumida (dispensada) no dia
+        data_type: float64
+      - name: row_num
+        description: Indexador do registro no nível id_cnes, id_material. Sendo row = 1
+          o registro mais recente
+        data_type: int64
+      - name: q1
+        description: 1o quartil da série id_cnes, id_material
+        data_type: float64
+      - name: q3
+        description: 3o quartil da série id_cnes, id_material
+        data_type: float64
+      - name: iqr
+        description: Intervalor interquartílico da série id_cnes, id_material
+        data_type: float64
+      - name: outlier
+        description: Indica se a observação é um outlier baseado no método de 1.5 vezes
+          o intervalo interquartílico
+        data_type: string
+      - name: quantidade_dispensada_sem_outlier
+        description: Quantidade consumida (dispensada) no dia, exceto outliers
+        data_type: float64
+      - name: quantidade_dispensada_somente_outlier
+        description: Quantidade consumida (dispensada) no dia, exclusivamente outliers
+        data_type: float64
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: string
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: string
+      - name: estaabelecimento_nome_sigla
+        description: Abreviação do nome fantasia
+        data_type: string
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: string
+      - name: material_id_descricao
+        description: Concatenação do id do material e seu nome
+        data_type: string
+  - name: mart_estoque__consumo_serie_historica_looker_row_level_access
+    description: Tabela baseada na tabela estoque_consumo_serie_historica,
+      adicionado o email dos usuários que podem ler cada registro. Atenção,
+      registros de posição duplicados por conta dos acessos
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+        data_type: string
+      - name: id_material
+        description: Identificador do medicamento/insumo
+        data_type: string
+      - name: data
+        description: Data do evento
+        data_type: date
+      - name: dia_semana
+        description: Dia da semana, sendo domingo = 1
+        data_type: int64
+      - name: quantidade_estocada
+        description: Quantidade disponível em estoque no início da data de referência
+        data_type: float64
+      - name: quantidade_dispensada
+        description: Quantidade consumida (dispensada) no dia
+        data_type: float64
+      - name: row_num
+        description: Indexador do registro no nível id_cnes, id_material. Sendo row = 1
+          o registro mais recente
+        data_type: int64
+      - name: q1
+        description: 1o quartil da série id_cnes, id_material
+        data_type: float64
+      - name: q3
+        description: 3o quartil da série id_cnes, id_material
+        data_type: float64
+      - name: iqr
+        description: Intervalor interquartilico da série id_cnes, id_material
+        data_type: float64
+      - name: outlier
+        description: Indica se a observação é um outlier baseado no método de 1.5 vezes
+          o intervalo interquartilico
+        data_type: string
+      - name: quantidade_dispensada_sem_outlier
+        description: Quantidade consumida (dispensada) no dia, exceto outliers
+        data_type: float64
+      - name: quantidade_dispensada_somente_outlier
+        description: Quantidade consumida (dispensada) no dia, exclusivamente outliers
+        data_type: float64
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+        data_type: string
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+        data_type: string
+      - name: estaabelecimento_nome_sigla
+        description: Abreviação do nome fantasia
+        data_type: string
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+        data_type: string
+      - name: material_id_descricao
+        description: Concatenação do id do material e seu nome
+        data_type: string
+      - name: email
+        description: Email do usuário do Looker que tem permissão de ver o registro
+        data_type: string
+  - name: mart_estoque__movimento
+    description: Tabela contenndo os movimentos de estoque de medicamentos e insumos
+      das unidades de saúde. Para entação basica (vitacare), os dados são
+      abertos no nível cp/ unidade consumidor; Para upas e hospitais, os dados
+      são abertos no nível de subestoque e lote.
+    columns:
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: id_material
+        description: Identificador do medicamento/insumo
+      - name: localizacao_origem
+        description: Subestoque de origem do medicamento/insumo
+      - name: localizacao_destino
+        description: Subestoque ou usuário de destinodo medicamento/insumo
+      - name: movimento_tipo
+        description: Tipo de movimentação de estoque do medicamento/insumo
+      - name: movimento_tipo_grupo
+        description: Agrupador do tipo de movimentação do medicamento/insumo
+      - name: movimento_justificativa
+        description: Justificativa da movimentação do medicamento/insumo
+      - name: data_evento
+        description: Data do movimento de estoque
+      - name: consumo_preenscritor_cns
+        description: CNS do preenscritor do evento de consumo
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: consumo_paciente_cns
+        description: CNS do paciente do evento de consumo
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: consumo_paciente_cpf
+        description: CPF do paciente do evento de consumo
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: material_descricao
+        description: Descrição do medicamento/insumo
+
+      - name: material_quantidade
+        description: Quantidade movimentada do medicamento/insumo
+      - name: material_quantidade_com_sinal
+        description: Quantidade movimentada do medicamento/insumo com sinal positivo em
+          caso de entrada de estoque, negativo em caso de saída de estoque
+      - name: material_valor_total
+        description: Valor em reais da quantidade movimentada do medicamento/insumo
+      - name: material_valor_total_com_sinal
+        description: Valor em reais da quantidade movimentada do medicamento/insumo com
+          sinal positivo em caso de entrada de estoque, negativo em caso de
+          saída de estoque
+      - name: sistema_origem
+        description: Sistema de origem do registro
+      - name: data_particao
+        description: Data de referencia da posição do estoque
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
+      - name: estabelecimento_tipo
+        description: Tipo de Unidade de Saúde segundo a classificação do CNES
+      - name: estabelecimento_tipo_sms
+        description: Classificação alternativa ao CNES de tipos de unidades.
+      - name: estabelecimento_area_programatica
+        description: Área programática onde está localizada a unidade de saúde
+      - name: estabelecimento_nome_limpo
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade
+      - name: estabelecimento_nome_sigla
+        description: Abreviação do nome fantasia
+      - name: estabelecimento_administracao
+        description: Nome do OSS responsável pela administração. Em caso onde não há
+          OSS, é indicado como direta (administração direta pela SMS-Rio)
+      - name: estabelecimento_responsavel_sms
+        description: Sub secretaria dentro da SMS-Rio responsável pela unidade
+      - name: dados_confiaveis
+        description: Indica se os dados são confiáveis ou não. Caso não sejam, não devem
+          ser utilizados para análises

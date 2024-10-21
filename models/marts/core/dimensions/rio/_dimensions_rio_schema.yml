@@ -1,323 +1,197 @@
 version: 2
 models:
   - name: dim_estabelecimento_sus_rio_historico
-    description: Esta tabela contém dados sobre todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          compare_model: ref("int_estabelecimento_sus_rio_historico__brutos_filtrados")
+          name: core__dim_estabelecimento_sus_rio_historico__cardinalidade
 
     columns:
-      # Identificação
-      - name: ano_competencia
-        description: "Ano de referência dos dados."
-      - name: mes_competencia
-        description: "Mês de referência dos dados."
-      - name: id_cnes
-        description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
-      - name: id_unidade
-        description: "Identificador específico do estabelecimento de saúde"
-      - name: nome_razao_social
-        description: "Razão social do estabelecimento conforme registro oficial."
-      - name: nome_fantasia
-        description: "Nome fantasia do estabelecimento."
-      - name: nome_limpo
-        description: "Nome do estabelecimento formatado."
-      - name: nome_sigla
-        description: "Sigla do nome do estabelecimento."
-      - name: nome_complemento
-        description: "Detalhes adicionais que complementam o nome principal do estabelecimento."
-      - name: cnpj_mantenedora
-        description: "CNPJ da entidade mantenedora do estabelecimento, importante para identificação legal e financeira."
+    # Identificação
+    - name: ano_competencia
+      description: "Ano de referência dos dados."
+    - name: mes_competencia
+      description: "Mês de referência dos dados."
+    - name: id_cnes
+      description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
+    - name: id_unidade
+      description: "Identificador específico do estabelecimento de saúde"
+    - name: nome_razao_social
+      description: "Razão social do estabelecimento conforme registro oficial."
+    - name: nome_fantasia
+      description: "Nome fantasia do estabelecimento."
+    - name: nome_limpo
+      description: "Nome do estabelecimento formatado."
+    - name: nome_sigla
+      description: "Sigla do nome do estabelecimento."
+    - name: nome_complemento
+      description: "Detalhes adicionais que complementam o nome principal do estabelecimento."
+    - name: cnpj_mantenedora
+      description: "CNPJ da entidade mantenedora do estabelecimento, importante para identificação legal e financeira."
 
-      # Responsabilização
-      - name: esfera
-        description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
-      - name: id_natureza_juridica
-        description: "Código da natureza jurídica do estabelecimento."
-      - name: natureza_juridica_descr
-        description: "Descrição da natureza jurídica do estabelecimento."
-      - name: tipo_gestao
-        description: "Código indicativo do tipo de gestão (e.g., municipal, estadual)."
-      - name: tipo_gestao_descr
-        description: "Descrição do tipo de gestão do estabelecimento."
-      - name: responsavel_sms
-        description: "Setor da SMS responsável pelo estabelecimento."
-      - name: administracao
-        description: "Administração do estabelecimento."
-      - name: diretor_clinico_cpf
-        description: "CPF do diretor clínico do estabelecimento."
-        policy_tags:
-          - '{{ var ("TAG_CPF") }}'
-      - name: diretor_clinico_conselho
-        description: "Número de registro no conselho profissional do diretor clínico."
-        policy_tags:
-          - '{{ var ("TAG_CRM") }}'
+    # Responsabilização
+    - name: esfera
+      description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
+    - name: id_natureza_juridica
+      description: "Código da natureza jurídica do estabelecimento."
+    - name: natureza_juridica_descr
+      description: "Descrição da natureza jurídica do estabelecimento."
+    - name: tipo_gestao
+      description: "Código indicativo do tipo de gestão (e.g., municipal, estadual)."
+    - name: tipo_gestao_descr
+      description: "Descrição do tipo de gestão do estabelecimento."
+    - name: responsavel_sms
+      description: "Setor da SMS responsável pelo estabelecimento."
+    - name: administracao
+      description: "Administração do estabelecimento."
+    - name: diretor_clinico_cpf
+      description: "CPF do diretor clínico do estabelecimento."
+      policy_tags:
+        - '{{ var ("TAG_CPF") }}'
+    - name: diretor_clinico_conselho
+      description: "Número de registro no conselho profissional do diretor clínico."
+      policy_tags:
+        - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
 
-      # Atributos
-      - name: tipo_turno
-        description: "Código indicativo do turno de atendimento (manhã, tarde, integral)."
-      - name: turno_atendimento
-        description: "Descrição do turno de atendimento."
-      - name: aberto_sempre
-        description: "Indica se o estabelecimento opera continuamente, 24 horas por dia."
+    # Atributos
+    - name: tipo_turno
+      description: "Código indicativo do turno de atendimento (manhã, tarde, integral)."
+    - name: turno_atendimento
+      description: "Descrição do turno de atendimento."
+    - name: aberto_sempre
+      description: "Indica se o estabelecimento opera continuamente, 24 horas por dia."
 
-      # Tipagem dos Estabelecimentos (CNES)
-      - name: id_tipo_unidade
-        description: "Código do tipo de unidade de saúde."
-      - name: tipo
-        description: "Descrição do tipo de unidade de saúde."
+    # Tipagem dos Estabelecimentos (CNES)
+    - name: id_tipo_unidade
+      description: "Código do tipo de unidade de saúde."
+    - name: tipo
+      description: "Descrição do tipo de unidade de saúde."
 
-      # Tipagem dos Estabelecimentos (DIT)
-      - name: tipo_sms
-        description: "Categoria relacionada a serviços de saúde."
-      - name: tipo_sms_simplificado
-        description: "Versão simplificada da categoria de SMS, utilizada para classificação geral."
-      - name: tipo_sms_agrupado
-        description: "Variável de agrupamento relacionada a tipagem do estabelecimento."
+    # Tipagem dos Estabelecimentos (DIT)
+    - name: tipo_sms
+      description: "Categoria relacionada a serviços de saúde."
+    - name: tipo_sms_simplificado
+      description: "Versão simplificada da categoria de SMS, utilizada para classificação geral."
+    - name: tipo_sms_agrupado
+      description: "Variável de agrupamento relacionada a tipagem do estabelecimento."
 
-      # Tipagem dos Estabelecimentos (SUBGERAL)
-      - name: tipo_unidade_alternativo
-        description: "Classificação alternativa do tipo de unidade conforme categorização interna."
-      - name: tipo_unidade_agrupado
-        description: "Classificação agrupada do tipo de unidade de saúde."
+    # Tipagem dos Estabelecimentos (SUBGERAL)
+    - name: tipo_unidade_alternativo
+      description: "Classificação alternativa do tipo de unidade conforme categorização interna."
+    - name: tipo_unidade_agrupado
+      description: "Classificação agrupada do tipo de unidade de saúde."
 
-      # Localização
-      - name: id_ap
-        description: "Código da Área Programática."
-      - name: ap
-        description: "Descrição da Área Programática."
-      - name: endereco_cep
-        description: "CEP do estabelecimento."
-      - name: endereco_bairro
-        description: "Bairro onde o estabelecimento está localizado."
-      - name: endereco_logradouro
-        description: "Logradouro do endereço do estabelecimento."
-      - name: endereco_numero
-        description: "Número do endereço do estabelecimento."
-      - name: endereco_complemento
-        description: "Complemento do endereço do estabelecimento."
-      - name: endereco_latitude
-        description: "Latitude do estabelecimento para georreferenciamento."
-      - name: endereco_longitude
-        description: "Longitude do estabelecimento para georreferenciamento."
+    # Localização
+    - name: id_ap
+      description: "Código da Área Programática."
+    - name: ap
+      description: "Descrição da Área Programática."
+    - name: endereco_cep
+      description: "CEP do estabelecimento."
+    - name: endereco_bairro
+      description: "Bairro onde o estabelecimento está localizado."
+    - name: endereco_logradouro
+      description: "Logradouro do endereço do estabelecimento."
+    - name: endereco_numero
+      description: "Número do endereço do estabelecimento."
+    - name: endereco_complemento
+      description: "Complemento do endereço do estabelecimento."
+    - name: endereco_latitude
+      description: "Latitude do estabelecimento para georreferenciamento."
+    - name: endereco_longitude
+      description: "Longitude do estabelecimento para georreferenciamento."
 
-      # Status
-      - name: ativa
-        description: "Indica o status operacional do estabelecimento ('sim' para ativo, 'não' para inativo)."
+    # Status
+    - name: ativa
+      description: "Indica o status operacional do estabelecimento ('sim' para ativo, 'não' para inativo)."
 
-      # Prontuário
-      - name: prontuario_tem
-        description: "Indica se o estabelecimento mantém prontuários dos pacientes."
-      - name: prontuario_versao
-        description: "Versão do prontuário utilizado pelo estabelecimento."
-      - name: prontuario_estoque_tem_dado
-        description: "Indica se os prontuários contêm dados disponíveis."
-      - name: prontuario_estoque_motivo_sem_dado
-        description: "Motivo pelo qual os prontuários não contêm dados."
+    # Prontuário
+    - name: prontuario_tem
+      description: "Indica se o estabelecimento mantém prontuários dos pacientes."
+    - name: prontuario_versao
+      description: "Versão do prontuário utilizado pelo estabelecimento."
+    - name: prontuario_estoque_tem_dado
+      description: "Indica se os prontuários contêm dados disponíveis."
+    - name: prontuario_estoque_motivo_sem_dado
+      description: "Motivo pelo qual os prontuários não contêm dados."
 
-      # Informações de Contato
-      - name: telefone
-        description: "Número de telefone principal para contato com o estabelecimento."
-      - name: email
-        description: "Endereço de e-mail principal do estabelecimento."
-      - name: facebook
-        description: "Página do Facebook do estabelecimento."
-      - name: instagram
-        description: "Perfil do Instagram do estabelecimento."
-      - name: twitter
-        description: "Conta do Twitter do estabelecimento."
+    # Informações de Contato
+    - name: telefone
+      description: "Número de telefone principal para contato com o estabelecimento."
+    - name: email
+      description: "Endereço de e-mail principal do estabelecimento."
+    - name: facebook
+      description: "Página do Facebook do estabelecimento."
+    - name: instagram
+      description: "Perfil do Instagram do estabelecimento."
+    - name: twitter
+      description: "Conta do Twitter do estabelecimento."
 
-      # Indicadores
-      - name: estabelecimento_sms_indicador
-        description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
-      - name: vinculo_sus_indicador
-        description: "Indica se o estabelecimento possui vínculo com o SUS."
-      - name: atendimento_internacao_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de internação pelo SUS."
-      - name: atendimento_ambulatorial_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS."
-      - name: atendimento_sadt_sus_indicador
-        description: "Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia (SADT) pelo SUS."
-      - name: atendimento_urgencia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de urgência pelo SUS."
-      - name: atendimento_outros_sus_indicador
-        description: "Indica se o estabelecimento oferece outros tipos de serviços pelo SUS."
-      - name: atendimento_vigilancia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS."
-      - name: atendimento_regulacao_sus_indicador
-        description: "Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS."
+    # Indicadores
+    - name: estabelecimento_sms_indicador
+      description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
+    - name: vinculo_sus_indicador
+      description: "Indica se o estabelecimento possui vínculo com o SUS."
+    - name: atendimento_internacao_sus_indicador
+      description: "Indica se o estabelecimento oferece serviços de internação pelo SUS."
+    - name: atendimento_ambulatorial_sus_indicador
+      description: "Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS."
+    - name: atendimento_sadt_sus_indicador
+      description: "Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia (SADT) pelo SUS."
+    - name: atendimento_urgencia_sus_indicador
+      description: "Indica se o estabelecimento oferece serviços de urgência pelo SUS."
+    - name: atendimento_outros_sus_indicador
+      description: "Indica se o estabelecimento oferece outros tipos de serviços pelo SUS."
+    - name: atendimento_vigilancia_sus_indicador
+      description: "Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS."
+    - name: atendimento_regulacao_sus_indicador
+      description: "Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS."
 
-      # Metadados
-      - name: data_atualizao_registro
-        description: "Data em que o registro foi atualizado pela última vez."
-      - name: usuario_atualizador_registro
-        description: "Identificador do usuário que atualizou o registro pela última vez."
-      - name: mes_particao
-        description: "Mês utilizado para fins de particionamento dos dados."
-      - name: ano_particao
-        description: "Ano utilizado para fins de particionamento dos dados."
-      - name: data_particao
-        description: "Data específica utilizada para particionamento dos dados."
-      - name: data_carga
-        description: "Data em que os dados foram carregados no banco de dados."
-      - name: data_snapshot
-        description: "Data em que o snapshot dos dados foi capturado."
+    # Metadados
+    - name: data_atualizao_registro
+      description: "Data em que o registro foi atualizado pela última vez."
+    - name: usuario_atualizador_registro
+      description: "Identificador do usuário que atualizou o registro pela última vez."
+    - name: mes_particao
+      description: "Mês utilizado para fins de particionamento dos dados."
+    - name: ano_particao
+      description: "Ano utilizado para fins de particionamento dos dados."
+    - name: data_particao
+      description: "Data específica utilizada para particionamento dos dados."
+    - name: data_carga
+      description: "Data em que os dados foram carregados no banco de dados."
+    - name: data_snapshot
+      description: "Data em que o snapshot dos dados foi capturado."
 
   - name: dim_leito_sus_rio_historico
     description: Esta tabela contém dados sobre os leitos de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
-
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          compare_model: ref("int_leito_sus_rio_historico__brutos_filtrados")
+          name: core__dim_leito_sus_rio_historico__cardinalidade
+    
     columns:
-      # --------------------------------- ESTABELECIMENTOS
       # Identificação
+      - name: data_particao
+        description: "Data usado para o particionamento do conjunto de dados."
       - name: ano_competencia
         description: "Ano de referência dos dados."
       - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
-      - name: id_unidade
-        description: "Identificador específico do estabelecimento de saúde"
-      - name: nome_razao_social
-        description: "Razão social do estabelecimento conforme registro oficial."
-      - name: nome_fantasia
+      - name: estabelecimento_nome_fantasia
         description: "Nome fantasia do estabelecimento."
-      - name: nome_limpo
-        description: "Nome do estabelecimento formatado."
-      - name: nome_sigla
-        description: "Sigla do nome do estabelecimento."
-      - name: nome_complemento
-        description: "Detalhes adicionais que complementam o nome principal do estabelecimento."
-      - name: cnpj_mantenedora
-        description: "CNPJ da entidade mantenedora do estabelecimento, importante para identificação legal e financeira."
-
-      # Responsabilização
-      - name: esfera
+      - name: estabelecimento_esfera
         description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
-      - name: id_natureza_juridica
-        description: "Código da natureza jurídica do estabelecimento."
-      - name: natureza_juridica_descr
-        description: "Descrição da natureza jurídica do estabelecimento."
-      - name: tipo_gestao
-        description: "Código indicativo do tipo de gestão (e.g., municipal, estadual)."
-      - name: tipo_gestao_descr
+      - name: estabelecimento_gestao
         description: "Descrição do tipo de gestão do estabelecimento."
-      - name: responsavel_sms
-        description: "Setor da SMS responsável pelo estabelecimento."
-      - name: administracao
-        description: "Administração do estabelecimento."
-      - name: diretor_clinico_cpf
-        description: "CPF do diretor clínico do estabelecimento."
-      - name: diretor_clinico_conselho
-        description: "Número de registro no conselho profissional do diretor clínico."
-
-      # Atributos
-      - name: tipo_turno
-        description: "Código indicativo do turno de atendimento (manhã, tarde, integral)."
-      - name: turno_atendimento
-        description: "Descrição do turno de atendimento."
-      - name: aberto_sempre
-        description: "Indica se o estabelecimento opera continuamente, 24 horas por dia."
-
-      # Tipagem dos Estabelecimentos (CNES)
-      - name: id_tipo_unidade
-        description: "Código do tipo de unidade de saúde."
-      - name: tipo
-        description: "Descrição do tipo de unidade de saúde."
-
-      # Tipagem dos Estabelecimentos (DIT)
-      - name: tipo_sms
-        description: "Categoria relacionada a serviços de saúde."
-      - name: tipo_sms_simplificado
-        description: "Versão simplificada da categoria de SMS, utilizada para classificação geral."
-      - name: tipo_sms_agrupado
-        description: "Variável de agrupamento relacionada a tipagem do estabelecimento."
-
-      # Tipagem dos Estabelecimentos (SUBGERAL)
-      - name: tipo_unidade_alternativo
-        description: "Classificação alternativa do tipo de unidade conforme categorização interna."
-      - name: tipo_unidade_agrupado
-        description: "Classificação agrupada do tipo de unidade de saúde."
-
-      # Localização
-      - name: id_ap
+      - name: id_estabelecimento_ap
         description: "Código da Área Programática."
-      - name: ap
+      - name: estabelecimento_ap
         description: "Descrição da Área Programática."
-      - name: endereco_cep
-        description: "CEP do estabelecimento."
-      - name: endereco_bairro
-        description: "Bairro onde o estabelecimento está localizado."
-      - name: endereco_logradouro
-        description: "Logradouro do endereço do estabelecimento."
-      - name: endereco_numero
-        description: "Número do endereço do estabelecimento."
-      - name: endereco_complemento
-        description: "Complemento do endereço do estabelecimento."
-      - name: endereco_latitude
-        description: "Latitude do estabelecimento para georreferenciamento."
-      - name: endereco_longitude
-        description: "Longitude do estabelecimento para georreferenciamento."
-
-      # Status
-      - name: ativa
-        description: "Indica o status operacional do estabelecimento ('sim' para ativo, 'não' para inativo)."
-
-      # Prontuário
-      - name: prontuario_tem
-        description: "Indica se o estabelecimento mantém prontuários dos pacientes."
-      - name: prontuario_versao
-        description: "Versão do prontuário utilizado pelo estabelecimento."
-      - name: prontuario_estoque_tem_dado
-        description: "Indica se os prontuários contêm dados disponíveis."
-      - name: prontuario_estoque_motivo_sem_dado
-        description: "Motivo pelo qual os prontuários não contêm dados."
-
-      # Informações de Contato
-      - name: telefone
-        description: "Número de telefone principal para contato com o estabelecimento."
-      - name: email
-        description: "Endereço de e-mail principal do estabelecimento."
-      - name: facebook
-        description: "Página do Facebook do estabelecimento."
-      - name: instagram
-        description: "Perfil do Instagram do estabelecimento."
-      - name: twitter
-        description: "Conta do Twitter do estabelecimento."
-
-      # Indicadores
       - name: estabelecimento_sms_indicador
         description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
-      - name: vinculo_sus_indicador
-        description: "Indica se o estabelecimento possui vínculo com o SUS."
-      - name: atendimento_internacao_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de internação pelo SUS."
-      - name: atendimento_ambulatorial_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS."
-      - name: atendimento_sadt_sus_indicador
-        description: "Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia (SADT) pelo SUS."
-      - name: atendimento_urgencia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de urgência pelo SUS."
-      - name: atendimento_outros_sus_indicador
-        description: "Indica se o estabelecimento oferece outros tipos de serviços pelo SUS."
-      - name: atendimento_vigilancia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS."
-      - name: atendimento_regulacao_sus_indicador
-        description: "Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS."
-
-      # Metadados
-      - name: data_atualizao_registro
-        description: "Data em que o registro foi atualizado pela última vez."
-      - name: usuario_atualizador_registro
-        description: "Identificador do usuário que atualizou o registro pela última vez."
-      - name: mes_particao
-        description: "Mês utilizado para fins de particionamento dos dados."
-      - name: ano_particao
-        description: "Ano utilizado para fins de particionamento dos dados."
-      - name: data_particao
-        description: "Data específica utilizada para particionamento dos dados."
-      - name: data_carga
-        description: "Data em que os dados foram carregados no banco de dados."
-      - name: data_snapshot
-        description: "Data em que o snapshot dos dados foi capturado."
-
-      # --------------------------------- LEITOS
       - name: tipo_leito
         description: "Identificador do tipo de leito disponível."
       - name: tipo_leito_descr
@@ -335,162 +209,32 @@ models:
     
   - name: dim_habilitacao_sus_rio_historico
     description: Esta tabela contém dados sobre as habilitações de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
-
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          compare_model: ref("int_habilitacao_sus_rio_historico__brutos_filtrados")
+          name: core__dim_habilitacao_sus_rio_historico__cardinalidade
+    
     columns:
-      # --------------------------------- ESTABELECIMENTOS
-      # Identificação
+      - name: data_particao
+        description: "Data usado para o particionamento do conjunto de dados."
       - name: ano_competencia
         description: "Ano de referência dos dados."
       - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
-      - name: id_unidade
-        description: "Identificador específico do estabelecimento de saúde"
-      - name: nome_razao_social
-        description: "Razão social do estabelecimento conforme registro oficial."
-      - name: nome_fantasia
+      - name: estabelecimento_nome_fantasia
         description: "Nome fantasia do estabelecimento."
-      - name: nome_limpo
-        description: "Nome do estabelecimento formatado."
-      - name: nome_sigla
-        description: "Sigla do nome do estabelecimento."
-      - name: nome_complemento
-        description: "Detalhes adicionais que complementam o nome principal do estabelecimento."
-      - name: cnpj_mantenedora
-        description: "CNPJ da entidade mantenedora do estabelecimento, importante para identificação legal e financeira."
-
-      # Responsabilização
-      - name: esfera
+      - name: estabelecimento_esfera
         description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
-      - name: id_natureza_juridica
-        description: "Código da natureza jurídica do estabelecimento."
-      - name: natureza_juridica_descr
-        description: "Descrição da natureza jurídica do estabelecimento."
-      - name: tipo_gestao
-        description: "Código indicativo do tipo de gestão (e.g., municipal, estadual)."
-      - name: tipo_gestao_descr
+      - name: estabelecimento_gestao
         description: "Descrição do tipo de gestão do estabelecimento."
-      - name: responsavel_sms
-        description: "Setor da SMS responsável pelo estabelecimento."
-      - name: administracao
-        description: "Administração do estabelecimento."
-      - name: diretor_clinico_cpf
-        description: "CPF do diretor clínico do estabelecimento."
-      - name: diretor_clinico_conselho
-        description: "Número de registro no conselho profissional do diretor clínico."
-
-      # Atributos
-      - name: tipo_turno
-        description: "Código indicativo do turno de atendimento (manhã, tarde, integral)."
-      - name: turno_atendimento
-        description: "Descrição do turno de atendimento."
-      - name: aberto_sempre
-        description: "Indica se o estabelecimento opera continuamente, 24 horas por dia."
-
-      # Tipagem dos Estabelecimentos (CNES)
-      - name: id_tipo_unidade
-        description: "Código do tipo de unidade de saúde."
-      - name: tipo
-        description: "Descrição do tipo de unidade de saúde."
-
-      # Tipagem dos Estabelecimentos (DIT)
-      - name: tipo_sms
-        description: "Categoria relacionada a serviços de saúde."
-      - name: tipo_sms_simplificado
-        description: "Versão simplificada da categoria de SMS, utilizada para classificação geral."
-      - name: tipo_sms_agrupado
-        description: "Variável de agrupamento relacionada a tipagem do estabelecimento."
-
-      # Tipagem dos Estabelecimentos (SUBGERAL)
-      - name: tipo_unidade_alternativo
-        description: "Classificação alternativa do tipo de unidade conforme categorização interna."
-      - name: tipo_unidade_agrupado
-        description: "Classificação agrupada do tipo de unidade de saúde."
-
-      # Localização
-      - name: id_ap
+      - name: id_estabelecimento_ap
         description: "Código da Área Programática."
-      - name: ap
+      - name: estabelecimento_ap
         description: "Descrição da Área Programática."
-      - name: endereco_cep
-        description: "CEP do estabelecimento."
-      - name: endereco_bairro
-        description: "Bairro onde o estabelecimento está localizado."
-      - name: endereco_logradouro
-        description: "Logradouro do endereço do estabelecimento."
-      - name: endereco_numero
-        description: "Número do endereço do estabelecimento."
-      - name: endereco_complemento
-        description: "Complemento do endereço do estabelecimento."
-      - name: endereco_latitude
-        description: "Latitude do estabelecimento para georreferenciamento."
-      - name: endereco_longitude
-        description: "Longitude do estabelecimento para georreferenciamento."
-
-      # Status
-      - name: ativa
-        description: "Indica o status operacional do estabelecimento ('sim' para ativo, 'não' para inativo)."
-
-      # Prontuário
-      - name: prontuario_tem
-        description: "Indica se o estabelecimento mantém prontuários dos pacientes."
-      - name: prontuario_versao
-        description: "Versão do prontuário utilizado pelo estabelecimento."
-      - name: prontuario_estoque_tem_dado
-        description: "Indica se os prontuários contêm dados disponíveis."
-      - name: prontuario_estoque_motivo_sem_dado
-        description: "Motivo pelo qual os prontuários não contêm dados."
-
-      # Informações de Contato
-      - name: telefone
-        description: "Número de telefone principal para contato com o estabelecimento."
-      - name: email
-        description: "Endereço de e-mail principal do estabelecimento."
-      - name: facebook
-        description: "Página do Facebook do estabelecimento."
-      - name: instagram
-        description: "Perfil do Instagram do estabelecimento."
-      - name: twitter
-        description: "Conta do Twitter do estabelecimento."
-
-      # Indicadores
       - name: estabelecimento_sms_indicador
         description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
-      - name: vinculo_sus_indicador
-        description: "Indica se o estabelecimento possui vínculo com o SUS."
-      - name: atendimento_internacao_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de internação pelo SUS."
-      - name: atendimento_ambulatorial_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS."
-      - name: atendimento_sadt_sus_indicador
-        description: "Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia (SADT) pelo SUS."
-      - name: atendimento_urgencia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de urgência pelo SUS."
-      - name: atendimento_outros_sus_indicador
-        description: "Indica se o estabelecimento oferece outros tipos de serviços pelo SUS."
-      - name: atendimento_vigilancia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS."
-      - name: atendimento_regulacao_sus_indicador
-        description: "Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS."
-
-      # Metadados
-      - name: data_atualizao_registro
-        description: "Data em que o registro foi atualizado pela última vez."
-      - name: usuario_atualizador_registro
-        description: "Identificador do usuário que atualizou o registro pela última vez."
-      - name: mes_particao
-        description: "Mês utilizado para fins de particionamento dos dados."
-      - name: ano_particao
-        description: "Ano utilizado para fins de particionamento dos dados."
-      - name: data_particao
-        description: "Data específica utilizada para particionamento dos dados."
-      - name: data_carga
-        description: "Data em que os dados foram carregados no banco de dados."
-      - name: data_snapshot
-        description: "Data em que o snapshot dos dados foi capturado."
-
-      # --------------------------------- HABILITACOES
       - name: id_habilitacao
         description: "Identificador único da habilitação de um estabelecimento de saúde."
       - name: nivel_habilitacao
@@ -514,162 +258,32 @@ models:
 
   - name: dim_equipamento_sus_rio_historico
     description: Esta tabela contém dados sobre os equipamentos de todos os estabelecimentos de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
-
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          compare_model: ref("int_equipamento_sus_rio_historico__brutos_filtrados")
+          name: core__dim_equipamento_sus_rio_historico__cardinalidade
+    
     columns:
-      # --------------------------------- ESTABELECIMENTOS
-      # Identificação
+      - name: data_particao
+        description: "Data usado para o particionamento do conjunto de dados."
       - name: ano_competencia
         description: "Ano de referência dos dados."
       - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
-      - name: id_unidade
-        description: "Identificador específico do estabelecimento de saúde"
-      - name: nome_razao_social
-        description: "Razão social do estabelecimento conforme registro oficial."
-      - name: nome_fantasia
+      - name: estabelecimento_nome_fantasia
         description: "Nome fantasia do estabelecimento."
-      - name: nome_limpo
-        description: "Nome do estabelecimento formatado."
-      - name: nome_sigla
-        description: "Sigla do nome do estabelecimento."
-      - name: nome_complemento
-        description: "Detalhes adicionais que complementam o nome principal do estabelecimento."
-      - name: cnpj_mantenedora
-        description: "CNPJ da entidade mantenedora do estabelecimento, importante para identificação legal e financeira."
-
-      # Responsabilização
-      - name: esfera
+      - name: estabelecimento_esfera
         description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
-      - name: id_natureza_juridica
-        description: "Código da natureza jurídica do estabelecimento."
-      - name: natureza_juridica_descr
-        description: "Descrição da natureza jurídica do estabelecimento."
-      - name: tipo_gestao
-        description: "Código indicativo do tipo de gestão (e.g., municipal, estadual)."
-      - name: tipo_gestao_descr
+      - name: estabelecimento_gestao
         description: "Descrição do tipo de gestão do estabelecimento."
-      - name: responsavel_sms
-        description: "Setor da SMS responsável pelo estabelecimento."
-      - name: administracao
-        description: "Administração do estabelecimento."
-      - name: diretor_clinico_cpf
-        description: "CPF do diretor clínico do estabelecimento."
-      - name: diretor_clinico_conselho
-        description: "Número de registro no conselho profissional do diretor clínico."
-
-      # Atributos
-      - name: tipo_turno
-        description: "Código indicativo do turno de atendimento (manhã, tarde, integral)."
-      - name: turno_atendimento
-        description: "Descrição do turno de atendimento."
-      - name: aberto_sempre
-        description: "Indica se o estabelecimento opera continuamente, 24 horas por dia."
-
-      # Tipagem dos Estabelecimentos (CNES)
-      - name: id_tipo_unidade
-        description: "Código do tipo de unidade de saúde."
-      - name: tipo
-        description: "Descrição do tipo de unidade de saúde."
-
-      # Tipagem dos Estabelecimentos (DIT)
-      - name: tipo_sms
-        description: "Categoria relacionada a serviços de saúde."
-      - name: tipo_sms_simplificado
-        description: "Versão simplificada da categoria de SMS, utilizada para classificação geral."
-      - name: tipo_sms_agrupado
-        description: "Variável de agrupamento relacionada a tipagem do estabelecimento."
-
-      # Tipagem dos Estabelecimentos (SUBGERAL)
-      - name: tipo_unidade_alternativo
-        description: "Classificação alternativa do tipo de unidade conforme categorização interna."
-      - name: tipo_unidade_agrupado
-        description: "Classificação agrupada do tipo de unidade de saúde."
-
-      # Localização
-      - name: id_ap
+      - name: id_estabelecimento_ap
         description: "Código da Área Programática."
-      - name: ap
+      - name: estabelecimento_ap
         description: "Descrição da Área Programática."
-      - name: endereco_cep
-        description: "CEP do estabelecimento."
-      - name: endereco_bairro
-        description: "Bairro onde o estabelecimento está localizado."
-      - name: endereco_logradouro
-        description: "Logradouro do endereço do estabelecimento."
-      - name: endereco_numero
-        description: "Número do endereço do estabelecimento."
-      - name: endereco_complemento
-        description: "Complemento do endereço do estabelecimento."
-      - name: endereco_latitude
-        description: "Latitude do estabelecimento para georreferenciamento."
-      - name: endereco_longitude
-        description: "Longitude do estabelecimento para georreferenciamento."
-
-      # Status
-      - name: ativa
-        description: "Indica o status operacional do estabelecimento ('sim' para ativo, 'não' para inativo)."
-
-      # Prontuário
-      - name: prontuario_tem
-        description: "Indica se o estabelecimento mantém prontuários dos pacientes."
-      - name: prontuario_versao
-        description: "Versão do prontuário utilizado pelo estabelecimento."
-      - name: prontuario_estoque_tem_dado
-        description: "Indica se os prontuários contêm dados disponíveis."
-      - name: prontuario_estoque_motivo_sem_dado
-        description: "Motivo pelo qual os prontuários não contêm dados."
-
-      # Informações de Contato
-      - name: telefone
-        description: "Número de telefone principal para contato com o estabelecimento."
-      - name: email
-        description: "Endereço de e-mail principal do estabelecimento."
-      - name: facebook
-        description: "Página do Facebook do estabelecimento."
-      - name: instagram
-        description: "Perfil do Instagram do estabelecimento."
-      - name: twitter
-        description: "Conta do Twitter do estabelecimento."
-
-      # Indicadores
       - name: estabelecimento_sms_indicador
         description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
-      - name: vinculo_sus_indicador
-        description: "Indica se o estabelecimento possui vínculo com o SUS."
-      - name: atendimento_internacao_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de internação pelo SUS."
-      - name: atendimento_ambulatorial_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS."
-      - name: atendimento_sadt_sus_indicador
-        description: "Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia (SADT) pelo SUS."
-      - name: atendimento_urgencia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de urgência pelo SUS."
-      - name: atendimento_outros_sus_indicador
-        description: "Indica se o estabelecimento oferece outros tipos de serviços pelo SUS."
-      - name: atendimento_vigilancia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS."
-      - name: atendimento_regulacao_sus_indicador
-        description: "Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS."
-
-      # Metadados
-      - name: data_atualizao_registro
-        description: "Data em que o registro foi atualizado pela última vez."
-      - name: usuario_atualizador_registro
-        description: "Identificador do usuário que atualizou o registro pela última vez."
-      - name: mes_particao
-        description: "Mês utilizado para fins de particionamento dos dados."
-      - name: ano_particao
-        description: "Ano utilizado para fins de particionamento dos dados."
-      - name: data_particao
-        description: "Data específica utilizada para particionamento dos dados."
-      - name: data_carga
-        description: "Data em que os dados foram carregados no banco de dados."
-      - name: data_snapshot
-        description: "Data em que o snapshot dos dados foi capturado."
-
-      # --------------------------------- EQUIPAMENTOS
       - name: equipamento_tipo
         description: "Tipo geral do equipamento."
       - name: equipamento_especifico_tipo
@@ -685,170 +299,44 @@ models:
 
   - name: dim_profissional_sus_rio_historico
     description: Esta tabela contém dados sobre todos os profissionais de saúde do Município do Rio de Janeiro que possuem algum tipo de vínculo com o SUS.
-
+    tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          compare_model: ref("int_profissional_sus_rio_historico__brutos_filtrados")
+          name: core__dim_profissional_sus_rio_historico__cardinalidade
+    
     columns:
-      # --------------------------------- ESTABELECIMENTOS
-      # Identificação
+      - name: data_particao
+        description: "Data usado para o particionamento do conjunto de dados."
       - name: ano_competencia
         description: "Ano de referência dos dados."
       - name: mes_competencia
         description: "Mês de referência dos dados."
       - name: id_cnes
         description: "Código Nacional de Estabelecimento de Saúde (CNES) do estabelecimento."
-      - name: id_unidade
-        description: "Identificador específico do estabelecimento de saúde"
-      - name: nome_razao_social
-        description: "Razão social do estabelecimento conforme registro oficial."
-      - name: nome_fantasia
+      - name: estabelecimento_nome_fantasia
         description: "Nome fantasia do estabelecimento."
-      - name: nome_limpo
-        description: "Nome do estabelecimento formatado."
-      - name: nome_sigla
-        description: "Sigla do nome do estabelecimento."
-      - name: nome_complemento
-        description: "Detalhes adicionais que complementam o nome principal do estabelecimento."
-      - name: cnpj_mantenedora
-        description: "CNPJ da entidade mantenedora do estabelecimento, importante para identificação legal e financeira."
-
-      # Responsabilização
-      - name: esfera
+      - name: estabelecimento_esfera
         description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
-      - name: id_natureza_juridica
-        description: "Código da natureza jurídica do estabelecimento."
-      - name: natureza_juridica_descr
-        description: "Descrição da natureza jurídica do estabelecimento."
-      - name: tipo_gestao
-        description: "Código indicativo do tipo de gestão (e.g., municipal, estadual)."
-      - name: tipo_gestao_descr
+      - name: estabelecimento_gestao
         description: "Descrição do tipo de gestão do estabelecimento."
-      - name: responsavel_sms
-        description: "Setor da SMS responsável pelo estabelecimento."
-      - name: administracao
-        description: "Administração do estabelecimento."
-      - name: diretor_clinico_cpf
-        description: "CPF do diretor clínico do estabelecimento."
-      - name: diretor_clinico_conselho
-        description: "Número de registro no conselho profissional do diretor clínico."
-
-      # Atributos
-      - name: tipo_turno
-        description: "Código indicativo do turno de atendimento (manhã, tarde, integral)."
-      - name: turno_atendimento
-        description: "Descrição do turno de atendimento."
-      - name: aberto_sempre
-        description: "Indica se o estabelecimento opera continuamente, 24 horas por dia."
-
-      # Tipagem dos Estabelecimentos (CNES)
-      - name: id_tipo_unidade
-        description: "Código do tipo de unidade de saúde."
-      - name: tipo
-        description: "Descrição do tipo de unidade de saúde."
-
-      # Tipagem dos Estabelecimentos (DIT)
-      - name: tipo_sms
-        description: "Categoria relacionada a serviços de saúde."
-      - name: tipo_sms_simplificado
-        description: "Versão simplificada da categoria de SMS, utilizada para classificação geral."
-      - name: tipo_sms_agrupado
-        description: "Variável de agrupamento relacionada a tipagem do estabelecimento."
-
-      # Tipagem dos Estabelecimentos (SUBGERAL)
-      - name: tipo_unidade_alternativo
-        description: "Classificação alternativa do tipo de unidade conforme categorização interna."
-      - name: tipo_unidade_agrupado
-        description: "Classificação agrupada do tipo de unidade de saúde."
-
-      # Localização
-      - name: id_ap
+      - name: id_estabelecimento_ap
         description: "Código da Área Programática."
-      - name: ap
+      - name: estabelecimento_ap
         description: "Descrição da Área Programática."
-      - name: endereco_cep
-        description: "CEP do estabelecimento."
-      - name: endereco_bairro
-        description: "Bairro onde o estabelecimento está localizado."
-      - name: endereco_logradouro
-        description: "Logradouro do endereço do estabelecimento."
-      - name: endereco_numero
-        description: "Número do endereço do estabelecimento."
-      - name: endereco_complemento
-        description: "Complemento do endereço do estabelecimento."
-      - name: endereco_latitude
-        description: "Latitude do estabelecimento para georreferenciamento."
-      - name: endereco_longitude
-        description: "Longitude do estabelecimento para georreferenciamento."
-
-      # Status
-      - name: ativa
-        description: "Indica o status operacional do estabelecimento ('sim' para ativo, 'não' para inativo)."
-
-      # Prontuário
-      - name: prontuario_tem
-        description: "Indica se o estabelecimento mantém prontuários dos pacientes."
-      - name: prontuario_versao
-        description: "Versão do prontuário utilizado pelo estabelecimento."
-      - name: prontuario_estoque_tem_dado
-        description: "Indica se os prontuários contêm dados disponíveis."
-      - name: prontuario_estoque_motivo_sem_dado
-        description: "Motivo pelo qual os prontuários não contêm dados."
-
-      # Informações de Contato
-      - name: telefone
-        description: "Número de telefone principal para contato com o estabelecimento."
-      - name: email
-        description: "Endereço de e-mail principal do estabelecimento."
-      - name: facebook
-        description: "Página do Facebook do estabelecimento."
-      - name: instagram
-        description: "Perfil do Instagram do estabelecimento."
-      - name: twitter
-        description: "Conta do Twitter do estabelecimento."
-
-      # Indicadores
       - name: estabelecimento_sms_indicador
         description: "Indica se o estabelecimento faz parte da rede municipal de saúde."
-      - name: vinculo_sus_indicador
-        description: "Indica se o estabelecimento possui vínculo com o SUS."
-      - name: atendimento_internacao_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de internação pelo SUS."
-      - name: atendimento_ambulatorial_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços ambulatoriais pelo SUS."
-      - name: atendimento_sadt_sus_indicador
-        description: "Indica se o estabelecimento oferece Serviços Auxiliares de Diagnóstico e Terapia (SADT) pelo SUS."
-      - name: atendimento_urgencia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de urgência pelo SUS."
-      - name: atendimento_outros_sus_indicador
-        description: "Indica se o estabelecimento oferece outros tipos de serviços pelo SUS."
-      - name: atendimento_vigilancia_sus_indicador
-        description: "Indica se o estabelecimento oferece serviços de vigilância em saúde pelo SUS."
-      - name: atendimento_regulacao_sus_indicador
-        description: "Indica se o estabelecimento atua em atividades de regulação de serviços de saúde pelo SUS."
-
-      # Metadados
-      - name: data_atualizao_registro
-        description: "Data em que o registro foi atualizado pela última vez."
-      - name: usuario_atualizador_registro
-        description: "Identificador do usuário que atualizou o registro pela última vez."
-      - name: mes_particao
-        description: "Mês utilizado para fins de particionamento dos dados."
-      - name: ano_particao
-        description: "Ano utilizado para fins de particionamento dos dados."
-      - name: data_particao
-        description: "Data específica utilizada para particionamento dos dados."
-      - name: data_carga
-        description: "Data em que os dados foram carregados no banco de dados."
-      - name: data_snapshot
-        description: "Data em que o snapshot dos dados foi capturado."
-
-      # ---------------------------  PROFISSIONAIS
-      - name: data_registro
-        description: "Data do registro"
       - name: cpf
         description: "CPF do profissional."
-      - name: profissional_cns
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: cns
         description: "Número do CNS (Cartão Nacional de Saúde) do profissional."
-      - name: profissional_nome
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: nome
         description: "Nome completo do profissional."
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: vinculacao
         description: "Descrição da vinculação do profissional."
       - name: vinculo_tipo
@@ -863,12 +351,10 @@ models:
         description: "Descrição da família do Código Brasileiro de Ocupações (CBO) do profissional."
       - name: id_registro_conselho
         description: "Identificador de registro no conselho profissional."
+        policy_tags:
+          - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
       - name: id_tipo_conselho
         description: "Tipo de conselho do profissional."
-      - name: profissional_dados_hci
-        description: "Dados adicionais do profissional provenientes do HCI."
-      - name: endereco_profissional_hci
-        description: "Endereço do profissional proveniente do HCI."
       - name: carga_horaria_outros
         description: "Carga horária em outros tipos de serviços fora do ambiente hospitalar ou ambulatorial."
       - name: carga_horaria_hospitalar

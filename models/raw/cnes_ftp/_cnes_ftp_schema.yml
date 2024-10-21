@@ -42,7 +42,7 @@ models:
       - name: nome
         description: Nome do profissional
         policy_tags:
-          - '{{ var ("TAG_NOME") }}'
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
       - name: id_vinculo
         description: Código do vínculo empregatício com o estabelecimento
       - name: id_registro_conselho
@@ -50,11 +50,11 @@ models:
       - name: id_conselho
         description: Código do conselho de classe
         policy_tags:
-          - '{{ var ("TAG_CRM") }}'
+          - '{{ var ("TAG_PUBLICO_CONSELHO_DE_CLASSE") }}'
       - name: cartao_nacional_saude
         description: CNS - Cartão Nacional de Saúde
         policy_tags:
-          - '{{ var ("TAG_CNS") }}'
+          - '{{ var ("TAG_PUBLICO_CNS") }}'
       - name: cbo_2002
         description: Código da especialidade 
       - name: indicador_estabelecimento_terceiro
