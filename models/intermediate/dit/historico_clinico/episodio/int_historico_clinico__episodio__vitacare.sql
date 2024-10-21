@@ -129,23 +129,24 @@ with
     ),
     procedimentos_sem_nulos as (
         select
-            *
+            fk_atendimento,
+            concat(
+                
+                    procedimento,
+                    '\n',
+                    observacao
+                
+            ) as procedimentos_realizados
         from procedimentos
         where 
-            procedimentos.procedimento is not null and
-            procedimentos.observacao is not null
+            procedimentos.procedimento is not null or procedimentos.observacao is not null
     ),
     dim_procedimentos_realizados as (
         select
             fk_atendimento,
-            array_agg(
-                struct(
-                    procedimento as descricao,
-                    observacao 
-                )
-            ) as procedimentos_realizados
+            string_agg(procedimentos_realizados,'\n\n') as procedimentos_realizados
         from procedimentos_sem_nulos
-        group by fk_atendimento
+        group by 1
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Medicamento Prescrito
@@ -227,7 +228,7 @@ with
             dim_condicoes_atribuidas.condicoes,
 
             -- Procedimentos
-            dim_procedimentos_realizados.procedimentos_realizados,
+            trim(dim_procedimentos_realizados.procedimentos_realizados) as procedimentos_realizados,
 
             -- Prescricoes
             dim_prescricoes_atribuidas.prescricoes,
@@ -239,39 +240,10 @@ with
             (
                 select as struct
                     dim_profissional.id as id,
-                    coalesce(dim_profissional.cpf, atendimento.cpf_profissional) as cpf,
-                    coalesce(dim_profissional.cns, atendimento.cns_profissional) as cns,
-                    coalesce(
-                        {{ proper_br("dim_profissional.nome") }},
-                        {{ proper_br("atendimento.nome_profissional") }}
-                    ) as nome,
-                    safe_cast(
-                        coalesce(
-                            case
-                                when dim_profissional.cbo like '%Médic%'
-                                then 'Médico(a)'
-                                when dim_profissional.cbo like '%Enferm%'
-                                then 'Enfermeiro(a)'
-                                when dim_profissional.cbo like '%dentista%'
-                                then 'Dentista'
-                                when dim_profissional.cbo like '%social%'
-                                then 'Assistente Social'
-                                else dim_profissional.cbo
-                            end,
-                            case
-                                when cbo_descricao_profissional like '%Médic%'
-                                then 'Médico(a)'
-                                when cbo_descricao_profissional like '%Enferm%'
-                                then 'Enfermeiro(a)'
-                                when cbo_descricao_profissional like '%dentista%'
-                                then 'Dentista'
-                                when cbo_descricao_profissional like '%social%'
-                                then 'Assistente Social'
-                                else cbo_descricao_profissional
-                            end
-                        )
-                        as string
-                    ) as especialidade
+                    atendimento.cpf_profissional as cpf,
+                    atendimento.cns_profissional as cns,
+                    {{ proper_br("atendimento.nome_profissional") }} as nome,
+                    safe_cast(cbo_descricao_profissional as string) as especialidade
             ) as profissional_saude_responsavel,
 
             -- Prontuário
