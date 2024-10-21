@@ -134,7 +134,7 @@ with
                 
                     procedimento,
                     '\n',
-                    observacao 
+                    observacao
                 
             ) as procedimentos_realizados
         from procedimentos
@@ -144,7 +144,7 @@ with
     dim_procedimentos_realizados as (
         select
             fk_atendimento,
-            string_agg(procedimentos_realizados,'\n') as procedimentos_realizados
+            string_agg(procedimentos_realizados,'\n\n') as procedimentos_realizados
         from procedimentos_sem_nulos
         group by 1
     ),
@@ -228,7 +228,7 @@ with
             dim_condicoes_atribuidas.condicoes,
 
             -- Procedimentos
-            dim_procedimentos_realizados.procedimentos_realizados,
+            trim(dim_procedimentos_realizados.procedimentos_realizados) as procedimentos_realizados,
 
             -- Prescricoes
             dim_prescricoes_atribuidas.prescricoes,
