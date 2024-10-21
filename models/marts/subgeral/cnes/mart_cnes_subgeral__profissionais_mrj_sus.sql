@@ -34,9 +34,11 @@ with
     final as (
         select
             struct(
+                p.data_particao,
                 p.ano_competencia,
                 p.mes_competencia,
-                estabs.data_atualizao_registro,
+                data_registro,
+                estabs.data_atualizao_registro, 
                 estabs.usuario_atualizador_registro,
                 estabs.data_carga,
                 estabs.data_snapshot
@@ -100,10 +102,15 @@ with
                 estabs.atendimento_regulacao_sus_indicador
             ) as estabelecimentos,
 
-            data_registro,
             cpf,
             p.cns,
             nome,
+            dados.data_nascimento as profissional_data_nascimento, 
+            dados.mae_nome as profissional_mae_nome,
+            dados.pai_nome as profissional_pai_nome,
+            dados.genero as profissional_genero,
+            dados.raca as profissional_raca, 
+            endereco as profissional_endereco,
             vinculacao,
             vinculo_tipo,
             id_cbo,
@@ -116,10 +123,10 @@ with
             carga_horaria_hospitalar,
             carga_horaria_ambulatorial,
             carga_horaria_total,
-            dados as profissional_dados_hci,
-            endereco as endereco_profissional_hci,
-
-            p.data_particao,
+            dados.obito_indicador as profissional_obito_indicador,
+            dados.obito_data as profissional_obito_data,
+            
+            p.data_particao
 
         from profissionais_mrj as p
         left join
