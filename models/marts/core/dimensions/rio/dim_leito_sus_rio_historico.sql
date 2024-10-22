@@ -78,12 +78,6 @@ with
             leitos_mapping_cnesweb as web
             on safe_cast(lt.tipo_especialidade_leito as int64)
             = safe_cast(web.tipo_especialidade_leito as int64)
-        order by
-            ano_competencia asc,
-            mes_competencia asc,
-            id_cnes asc,
-            tipo_leito_descr asc,
-            tipo_especialidade_leito_descr asc
     )
 
 select *

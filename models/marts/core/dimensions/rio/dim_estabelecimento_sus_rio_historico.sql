@@ -332,7 +332,6 @@ with
             data_snapshot
 
         from estabelecimentos_final
-        order by ano_competencia asc, mes_competencia asc, id_cnes asc
     )
 
 select *

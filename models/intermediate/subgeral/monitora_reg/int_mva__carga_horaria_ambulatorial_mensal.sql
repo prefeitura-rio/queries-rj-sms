@@ -57,10 +57,10 @@ where
     metadados.ano_competencia >= 2020
 
     -- selecionando apenas estabelecimentos que ja programaram vagas no sisreg historicamente
-    and estabelecimentos.id_cnes in (select distinct id_cnes from {{ ref('int_mva__oferta_programada_mensal') }})
+    and estabelecimentos.id_cnes in (select id_cnes from {{ ref('int_mva__oferta_programada_mensal') }})
 
     -- selecionando apenas profissionais que ja progamaram vagas no sisreg historicamente
-    and cpf_final in (select distinct cpf from {{ ref('int_mva__oferta_programada_mensal') }})
+    and cpf_final in (select cpf from {{ ref('int_mva__oferta_programada_mensal') }})
 
     -- selecionando apenas profissionais com carga horaria ambulatorial
     and carga_horaria_ambulatorial > 0
