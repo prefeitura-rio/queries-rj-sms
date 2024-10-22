@@ -2,12 +2,36 @@
 
 {{
     config(
-        schema="monitora_reg",
+        schema="projeto_monitora_reg",
         alias="monitor_vagas_ambulatoriais"
     )
 }}
 
-with mva as (
+with
+int_carga_horaria_ambulatorial_mensal as (
+    select * from {{ ref('int_mva__carga_horaria_ambulatorial_mensal') }}
+),
+
+max_ano_mes as (
+    select
+        ano_competencia as ano_max,
+        mes_competencia as mes_max
+    from
+        int_carga_horaria_ambulatorial_mensal
+    order by
+        ano_competencia desc,
+        mes_competencia desc
+    limit 1
+),
+
+int_oferta_programada_mensal as (
+    select *
+    from {{ ref('int_mva__oferta_programada_mensal') }}
+    where (ano_competencia < (select ano_max from max_ano_mes))
+    or (ano_competencia = (select ano_max from max_ano_mes) and mes_competencia <= (select mes_max from max_ano_mes))
+),
+
+mva as (
     select
         -- identificadores
         coalesce(ofer.cpf, prof.cpf) as cpf,
@@ -20,8 +44,8 @@ with mva as (
         prof.estabelecimento,
 
         -- variaveis temporais
-        coalesce(ofer.ano, prof.ano) as ano,
-        coalesce(ofer.mes, prof.mes) as mes,
+        coalesce(ofer.ano_competencia, prof.ano_competencia) as ano_competencia,
+        coalesce(ofer.mes_competencia, prof.mes_competencia) as mes_competencia,
 
         -- procedimentos
         ofer.id_procedimento,
@@ -95,10 +119,15 @@ with mva as (
             else 1
         end as cnes_dados
 
-    from {{ ref('int_mva__oferta_programada_mensal') }} as ofer
+    from int_oferta_programada_mensal as ofer
+    full outer join int_carga_horaria_ambulatorial_mensal as prof
 
-    full outer join {{ ref('int_mva__carga_horaria_ambulatorial_mensal') }} as prof
-    using (cpf, id_cnes, ano, mes, id_cbo_2002)
+    -- má prática temporária (convertendo o tipo durante o join)
+    on safe_cast(ofer.cpf as int64) = safe_cast(prof.cpf as int64)
+    and safe_cast(ofer.id_cnes as int64) = safe_cast(prof.id_cnes as int64)
+    and safe_cast(ofer.ano_competencia as int64) = safe_cast(prof.ano_competencia as int64)
+    and safe_cast(ofer.mes_competencia as int64) = safe_cast(prof.mes_competencia as int64)
+    and safe_cast(ofer.id_cbo_2002 as int64) = safe_cast(prof.id_cbo_2002 as int64)
 )
 
 select * from mva

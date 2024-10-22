@@ -19,3 +19,10 @@ sources:
     schema: brutos_sheets
     tables:
       - name: projeto_estoque_acessos
+
+  - name: brutos_sheets-dev
+    database: rj-sms-dev
+    schema: brutos_sheets
+    tables:
+      - name: profissionais_cpf_cns_aux
+

@@ -28,10 +28,10 @@ models:
       - name: estabelecimento
         description: "Nome da unidade de saúde onde o profissional está vinculado."
 
-      - name: ano
+      - name: ano_competencia
         description: "Ano da competência."
 
-      - name: mes
+      - name: mes_competencia
         description: "Mês da competência."
 
       - name: id_procedimento

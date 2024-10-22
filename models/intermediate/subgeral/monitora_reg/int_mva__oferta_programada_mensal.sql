@@ -7,8 +7,8 @@ select
     por_proced_cbo.id_cnes,
     por_proced_cbo.id_procedimento,
     por_proced_cbo.id_cbo_2002,
-    por_proced_cbo.ano,
-    por_proced_cbo.mes,
+    por_proced_cbo.ano as ano_competencia,
+    por_proced_cbo.mes as mes_competencia,
 
     -- contagens de vagas a nivel de procedimentos
     por_proced_cbo.vagas_programadas_mensal_primeira_vez,
@@ -39,3 +39,5 @@ using (cpf, id_cnes, ano, mes)
 
 left join {{ ref("raw_sheets__assistencial_procedimento") }} as padr_proced
 using (id_procedimento)
+
+where por_proced_cbo.cpf is not null 
