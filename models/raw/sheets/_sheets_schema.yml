@@ -431,3 +431,21 @@ models:
         description: "Parte do atendimento dedicado ao atendimento por reserva ou primeira vez."
       - name: parametro_retornos
         description: "Parte do atendimento dedicado ao atendimento de retornos."
+
+  - name: raw_sheets__profissionais_cpf_cns_aux
+    description: Tabela auxiliar relacionando os CNS e os CPFs dos profissionais de
+      saúde do MRJ-SUS.
+    columns:
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do profissional.
+        data_tests:
+          - unique:
+              name: raw_sheets__profissionais_cpf_cns_aux__cns_unique
+        data_type: string
+        quote: true
+      - name: cpf
+        description: Cadastro de Pessoa Física (CPF) do profissional.
+        data_type: string
+        quote: true
+      - name: qtd_cpfs
+        description: Quantidade de CPFs associados ao CNS.

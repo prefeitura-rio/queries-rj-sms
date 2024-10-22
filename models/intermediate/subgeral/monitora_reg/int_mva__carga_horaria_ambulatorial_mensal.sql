@@ -10,9 +10,10 @@ with versao_atual as (
     )
 ),
 
-aux_cpfs as (
-    select versao_atual.*,
-        coalesce(versao_atual.cpf, aux_cpfs.cpf) as cpf_final 
+enriquecimento_cpf as (
+    select
+        versao_atual.*,
+        coalesce(versao_atual.cpf, aux_cpfs.cpf[ordinal(1)]) as cpf_final
     
     from versao_atual
 
@@ -49,7 +50,7 @@ select
     string_agg(distinct estabelecimentos.ap, ', ') as ap,
     string_agg(distinct estabelecimentos.endereco_bairro, ', ') as endereco_bairro,
 
-from aux_cpfs
+from enriquecimento_cpf
 
 where
     -- selecionando periodo de interesse
