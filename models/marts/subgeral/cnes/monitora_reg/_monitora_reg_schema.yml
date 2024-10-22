@@ -1,0 +1,235 @@
+version: 2
+models:
+  - name: monitor_vagas_ambulatoriais
+    description: "Esta tabela calcula indicadores a partir da união dos dados de oferta programada (SISREG) com os dados de vinculação dos profissionais (CNES)."
+    data_tests:
+      - dbt_utils.expression_is_true:
+          expression: "vagas_programadas_mensal_primeira_vez <= vagas_programadas_mensal_todas"
+      - dbt_utils.expression_is_true:
+          expression: "vagas_programadas_mensal_retorno <= vagas_programadas_mensal_todas"
+      - dbt_utils.expression_is_true:
+          expression: "vagas_esperadas_mensal_primeira_vez <= vagas_esperadas_mensal"
+      - dbt_utils.expression_is_true:
+          expression: "vagas_esperadas_mensal_retorno <= vagas_esperadas_mensal"
+      - dbt_utils.expression_is_true:
+          expression: "carga_horaria_procedimento_esperada_mensal <= carga_horaria_ambulatorial_mensal"
+
+      - dbt_utils.expression_is_true:
+          expression: "procedimento_proporcao_reservas + procedimento_proporcao_retornos <= 1.01"
+
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cpf
+            - id_cnes
+            - ano_competencia
+            - mes_competencia
+            - id_cbo_2002
+            - id_procedimento
+
+    columns:
+      - name: cpf
+        description: "Identificador único do profissional, resultado da união das fontes de dados de oferta e vinculação."
+        data_tests:
+          - dbt_utils.not_constant
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 11
+
+      - name: cns
+        description: "Número do Cartão Nacional de Saúde do profissional."
+        data_tests:
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 15
+          - dbt_utils.at_least_one
+
+      - name: profissional
+        description: "Nome do profissional de saúde."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: id_cbo_2002
+        description: "Código de ocupação profissional, unificado das duas fontes de dados."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 6
+
+      - name: ocupacao
+        description: "Descrição da ocupação do profissional."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: ocupacao_agg
+        description: "Agrupamento agregado da ocupação do profissional."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: id_cnes
+        description: "Identificador único da unidade de saúde, unificado das duas fontes de dados."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 7
+
+      - name: estabelecimento
+        description: "Nome da unidade de saúde onde o profissional está vinculado."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: ano_competencia
+        description: "Ano da competência."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 2020
+              max_value: 9999
+
+      - name: mes_competencia
+        description: "Mês da competência."
+        data_tests:
+          - not_null
+
+      - name: id_procedimento
+        description: "Identificador do procedimento médico."
+        data_tests:
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 7
+          - dbt_utils.at_least_one
+
+      - name: procedimento
+        description: "Descrição do procedimento médico."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: carga_horaria_ambulatorial_mensal
+        description: "Carga horária mensal do profissional para atendimento ambulatorial."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: carga_horaria_procedimento_esperada_mensal
+        description: "Carga horária mensal esperada para o procedimento (com base na distribuição de procedimentos feita pelo profissional)."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: vagas_programadas_mensal_todas
+        description: "Total de vagas programadas mensalmente para todos os tipos de consultas."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: vagas_programadas_mensal_primeira_vez
+        description: "Total de vagas programadas mensalmente para primeiras consultas (reserva e primeira vez)."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: vagas_programadas_mensal_retorno
+        description: "Total de vagas programadas mensalmente para consultas de retorno."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: vagas_esperadas_mensal
+        description: "Vagas mensais esperadas calculadas com base na carga horária e na taxa de consultas por hora do procedimento."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: vagas_esperadas_mensal_primeira_vez
+        description: "Vagas mensais esperadas para primeiras consultas, calculadas com base na proporção reservada para novos pacientes."
+        data_tests:
+          - dbt_utils.not_constant
+
+      - name: vagas_esperadas_mensal_retorno
+        description: "Vagas mensais esperadas para consultas de retorno, calculadas com base na proporção de vagas destinadas a retornos."
+        data_tests:
+          - dbt_utils.not_constant
+
+      - name: vagas_diferenca_ofertado_esperado
+        description: "Diferença entre as vagas ofertadas e as vagas esperadas, indicando possíveis discrepâncias ou necessidades de ajuste na programação."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: procedimento_distribuicao
+        description: "Fator de distribuição aplicado ao cálculo de cargas horárias para procedimentos específicos."
+        data_tests:
+          - dbt_utils.not_constant
+
+      - name: procedimento_consultas_hora
+        description: "Número de consultas por hora esperadas para o procedimento."
+        data_tests:
+          - dbt_utils.not_constant
+
+      - name: procedimento_proporcao_reservas
+        description: "Proporção de consultas reservadas para pacientes em primeira visita de acordo com a padronização."
+        data_tests:
+          - dbt_utils.not_constant
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: procedimento_proporcao_retornos
+        description: "Proporção de consultas reservadas para consultas de retorno de acordo com a padronização."
+        data_tests:
+          - dbt_utils.not_constant
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: esfera_estabelecimento
+        description: "Esfera administrativa da unidade de saúde (municipal, estadual, federal)."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: natureza_juridica_estabelecimento
+        description: "Natureza jurídica da unidade de saúde."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: tipo_gestao_estabelecimento
+        description: "Tipo de gestão sob a qual a unidade de saúde opera."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: turno_estabelecimento
+        description: "Turno de operação da unidade de saúde."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: tipo_estabelecimento
+        description: "Tipo de unidade de saúde conforme classificação estruturada na SMS."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: tipo_estabelecimento_agrupado
+        description: "Classificação agrupada do tipo de unidade de saúde."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: id_ap_estabelecimento
+        description: "Identificador da área programática à qual a unidade de saúde está vinculada."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: ap_estabelecimento
+        description: "Descrição da área programática à qual a unidade de saúde está vinculada."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: endereco_bairro_estabelecimento
+        description: "Bairro onde a unidade de saúde está localizada."
+        data_tests:
+          - dbt_utils.at_least_one
+
+      - name: procedimento_ppi
+        description: "Flag indicando se o procedimento está vinculado ao programa PPI (1 = sim, 0 = não)."
+        data_tests:
+          - dbt_utils.not_constant
+
+      - name: sisreg_dados
+        description: "Flag que indica se o registro/row possui dados do SISREG (1 = sim, 0 = não)."
+        data_tests:
+          - not_null
+          - dbt_utils.not_constant
+
+      - name: cnes_dados
+        description: "Flag que indica se o registro/row possui dados do CNES (1 = sim, 0 = não)."
+        data_tests:
+          - not_null
+          - dbt_utils.not_constant

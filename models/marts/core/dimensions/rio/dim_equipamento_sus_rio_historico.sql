@@ -64,12 +64,6 @@ with
             equip_mapping_especifico as map_espec using (
                 equipamento_tipo, equipamento_especifico_tipo
             )
-        order by
-            ano_competencia asc,
-            mes_competencia asc,
-            id_cnes,
-            equipamento_tipo,
-            equipamento_especifico_tipo
     )
 
 select *
