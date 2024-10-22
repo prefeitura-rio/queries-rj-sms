@@ -105,7 +105,7 @@ mva as (
 
         -- flags
         case
-            when lower(ofer.procedimento) like '%PPI%' then 1
+            when lower(ofer.procedimento) like '%ppi%' then 1
             else 0
         end as procedimento_ppi,
 
