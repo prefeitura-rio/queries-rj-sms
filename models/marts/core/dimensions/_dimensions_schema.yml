@@ -408,6 +408,9 @@ models:
       - name: data_referencia
         description: Data de última atualização da tabela
         data_type: date
+      - name: funcionario_ativo_indicador
+        description: Indica se funcionário está com vínculo ativo na SMS. Nulo representa ausência de informação.
+        data_type: boolean
   - name: dim_vinculo_profissional_saude_estabelecimento
     description: Tabela de profissionais de saúde alocados hoje em unidades do SUS
       na cidade do Rio de Janeiro.
