@@ -15,6 +15,8 @@ with
         select * from {{ ref('int_monitoramento__farmacia_digital__vitai') }}
             union all
         select * from {{ ref('int_monitoramento__farmacia_digital__vitacare') }}
+            union all
+        select * from {{ ref('int_monitoramento__farmacia_digital__tpc') }}
     )
 select *
 from juncao

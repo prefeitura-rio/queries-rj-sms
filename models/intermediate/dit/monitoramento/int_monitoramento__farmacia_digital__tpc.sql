@@ -1,7 +1,7 @@
 {{
     config(
         schema="gerenciamento__monitoramento",
-        alias="estatisticas_farmacia_digital_vitai",
+        alias="estatisticas_farmacia_digital_tpc",
         materialized="incremental",
         unique_key="id",
     )
@@ -14,30 +14,17 @@
 with
     unidades_esperadas as (
         select 
-            area_programatica as unidade_ap,
-            id_cnes as unidade_cnes,
-            nome_limpo as unidade_nome
-        from {{ref('dim_estabelecimento')}}
-        where prontuario_estoque_tem_dado = 'sim' and prontuario_versao = 'vitai' 
+            'CENTRAL' as unidade_ap,
+            'CENTRAL' as unidade_cnes,
+            'CENTRAL' as unidade_nome
     ),
-    vitai_estoque_posicao as (
+    tpc_estoque_posicao as (
         select
-            cnes as unidade_cnes,
-            'vitai' as fonte,
+            'CENTRAL' as unidade_cnes,
+            'tpc' as fonte,
             'posicao' as tipo,
             data_particao as data_atualizacao
-        from {{ source("brutos_prontuario_vitai_staging", "estoque_posicao") }}
-        {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
-        {% endif %}
-    ),
-    vitai_estoque_movimento as (
-        select
-            cnes as unidade_cnes,
-            'vitai' as fonte,
-            'movimento' as tipo,
-            data_particao as data_atualizacao
-        from {{ source("brutos_prontuario_vitai_staging", "estoque_movimento") }}
+        from {{ source("brutos_estoque_central_tpc_staging", "estoque_posicao") }}
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
@@ -52,20 +39,18 @@ with
         {% endif %}
     ),
     entidades as (
-        select tipo from unnest(['posicao','movimento']) tipo
+        select tipo from unnest(['posicao']) tipo
     ),
     todos_registros_possiveis as (
         select 
             cast(null as string) as unidade_cnes,
-            'vitai' as fonte, 
+            'tpc' as fonte, 
             entidades.tipo as tipo, 
             cast(datas.data_atualizacao as string) as data_atualizacao,
         from datas, entidades
     ),
-    vitai_estoque as (
-        select * from vitai_estoque_posicao
-        union all
-        select * from vitai_estoque_movimento
+    tpc_estoque as (
+        select * from tpc_estoque_posicao
         union all
         select * from todos_registros_possiveis
     ),
@@ -76,7 +61,7 @@ with
             tipo,
             array_agg(distinct unidade_cnes) as unidades_com_dado,
             count(*) as qtd_registros_recebidos
-        from vitai_estoque
+        from tpc_estoque
         group by 1, 2, 3
     ),
     contagem_com_complemento as (

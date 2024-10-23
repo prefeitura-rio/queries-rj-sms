@@ -42,10 +42,32 @@ with
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
     ),
+    datas as (
+        select data_atualizacao 
+        {% if is_incremental() %}
+        from unnest(GENERATE_DATE_ARRAY('{{seven_days_ago}}', current_date())) as data_atualizacao
+        {% endif %}
+        {% if not is_incremental() %}
+        from unnest(GENERATE_DATE_ARRAY('2015-01-01', current_date())) as data_atualizacao
+        {% endif %}
+    ),
+    entidades as (
+        select tipo from unnest(['posicao','movimento']) tipo
+    ),
+    todos_registros_possiveis as (
+        select 
+            cast(null as string) as unidade_cnes,
+            'vitacare' as fonte, 
+            entidades.tipo as tipo, 
+            cast(datas.data_atualizacao as string) as data_atualizacao,
+        from datas, entidades
+    ),
     vitacare_estoque as (
         select * from vitacare_estoque_posicao
         union all
         select * from vitacare_estoque_movimento
+        union all
+        select * from todos_registros_possiveis
     ),
     contagem as (
         select 
@@ -53,7 +75,7 @@ with
             fonte,
             tipo,
             array_agg(distinct unidade_cnes) as unidades_com_dado,
-            count(*) as qtd_registros_recebidos
+            count(unidade_cnes) as qtd_registros_recebidos
         from vitacare_estoque
         group by 1, 2, 3
     ),
@@ -70,6 +92,7 @@ with
             ) as unidades_sem_dado
         from contagem
     )
+
 select
     concat(data_atualizacao, '.', fonte, '.', tipo) as id,
     *

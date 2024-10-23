@@ -41,7 +41,27 @@ with
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
-    ),    
+    ),
+    datas as (
+        select data_atualizacao 
+        {% if is_incremental() %}
+        from unnest(GENERATE_DATE_ARRAY('{{seven_days_ago}}', current_date())) as data_atualizacao
+        {% endif %}
+        {% if not is_incremental() %}
+        from unnest(GENERATE_DATE_ARRAY('2015-01-01', current_date())) as data_atualizacao
+        {% endif %}
+    ),
+    entidades as (
+        select tipo from unnest(['paciente','episodio']) tipo
+    ),
+    todos_registros_possiveis as (
+        select 
+            cast(null as string) as unidade_cnes,
+            'vitacare' as fonte, 
+            entidades.tipo as tipo, 
+            cast(datas.data_atualizacao as string) as data_atualizacao,
+        from datas, entidades
+    ),  
     vitacare_historico_clinico as (
         select * from vitacare_paciente
         union all
