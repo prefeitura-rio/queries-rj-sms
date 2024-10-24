@@ -30,6 +30,9 @@ with
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
+        {% if not is_incremental() %}
+        where data_particao >= '{{min_date}}' 
+        {% endif %}
     ),
     datas as (
         select data_atualizacao 
@@ -37,7 +40,7 @@ with
         from unnest(GENERATE_DATE_ARRAY('{{seven_days_ago}}', current_date())) as data_atualizacao
         {% endif %}
         {% if not is_incremental() %}
-        from unnest(GENERATE_DATE_ARRAY('2024-01-01', current_date())) as data_atualizacao
+        from unnest(GENERATE_DATE_ARRAY('{{min_date}}', current_date())) as data_atualizacao
         {% endif %}
     ),
     entidades as (
