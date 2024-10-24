@@ -20,4 +20,5 @@ with
     )
 select *
 from juncao
+where data_atualizacao >= '2024-01-01'
 order by id

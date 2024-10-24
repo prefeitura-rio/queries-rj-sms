@@ -11,6 +11,8 @@
     modules.datetime.date.today() - modules.datetime.timedelta(days=7)
 ).isoformat() %}
 
+{% set min_date = '2024-01-01' %}
+
 with
     unidades_esperadas as (
         select 
@@ -30,6 +32,9 @@ with
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
+        {% if not is_incremental() %}
+        where data_particao >= '{{min_date}}' 
+        {% endif %}
     ),
     vitacare_episodio as (
         select
@@ -41,6 +46,9 @@ with
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
+        {% if not is_incremental() %}
+        where data_particao >= '{{min_date}}' 
+        {% endif %}
     ),
     datas as (
         select data_atualizacao 
@@ -48,7 +56,7 @@ with
         from unnest(GENERATE_DATE_ARRAY('{{seven_days_ago}}', current_date())) as data_atualizacao
         {% endif %}
         {% if not is_incremental() %}
-        from unnest(GENERATE_DATE_ARRAY('2015-01-01', current_date())) as data_atualizacao
+        from unnest(GENERATE_DATE_ARRAY('{{min_date}}', current_date())) as data_atualizacao
         {% endif %}
     ),
     entidades as (
@@ -66,6 +74,8 @@ with
         select * from vitacare_paciente
         union all
         select * from vitacare_episodio
+        union all
+        select * from todos_registros_possiveis
     ),
     contagem as (
         select 
@@ -73,7 +83,7 @@ with
             fonte,
             tipo,
             array_agg(distinct unidade_cnes) as unidades_com_dado,
-            count(*) as qtd_registros_recebidos
+            countif(unidade_cnes is not null) as qtd_registros_recebidos
         from vitacare_historico_clinico
         group by 1, 2, 3
     ),
