@@ -11,7 +11,7 @@
     modules.datetime.date.today() - modules.datetime.timedelta(days=7)
 ).isoformat() %}
 
-{% set min_date = '2024-01-01' %}
+{% set min_date = '2024-10-01' %}
 
 with
     unidades_esperadas as (
