@@ -82,7 +82,7 @@ with
             data_atualizacao,
             fonte,
             tipo,
-            array_agg(distinct unidade_cnes) as unidades_com_dado,
+            array_agg(distinct unidade_cnes ignore nulls) as unidades_com_dado,
             countif(unidade_cnes is not null) as qtd_registros_recebidos
         from vitacare_estoque
         group by 1, 2, 3
