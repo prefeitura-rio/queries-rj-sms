@@ -48,6 +48,8 @@ with
         where equipe_familia_indicador = true
     ),
 
+    all_cpfs as (select distinct cpf from paciente),
+
     -- CNS
     cns_ranked as (
         select
@@ -104,30 +106,17 @@ with
         order by merge_order asc, rank asc
     ),
 
-cns_validated as (
-    select
-        cns,
-        {{validate_cns('cns')}} as cns_valido_indicador,
-    from (
-        select distinct cns from cns_dedup
-    )
-),
+    cns_validated as (
+        select cns, {{ validate_cns("cns") }} as cns_valido_indicador,
+        from (select distinct cns from cns_dedup)
+    ),
 
-cns_dados as (
-    select 
-        cpf,
-        array_agg(
-                struct(
-                    cd.cns, 
-                    cv.cns_valido_indicador,
-                    cd.rank
-                )
-        ) as cns
-    from cns_dedup cd
-    join cns_validated cv
-        on cd.cns = cv.cns
-    group by cpf
-),
+    cns_dados as (
+        select cpf, array_agg(struct(cd.cns, cv.cns_valido_indicador, cd.rank)) as cns
+        from cns_dedup cd
+        join cns_validated cv on cd.cns = cv.cns
+        group by cpf
+    ),
 
     -- EQUIPE SAUDE FAMILIA vitacare: Extracts and ranks family health teams
     -- clinica da familia
@@ -209,6 +198,7 @@ cns_dados as (
         select
             f.cpf,
             f.id_ine,
+            f.id_cnes,
             {{ proper_br("e.nome_referencia") }} as nome,
             e.telefone,
             m.medicos,
@@ -242,7 +232,7 @@ cns_dados as (
                 )
             ) as equipe_saude_familia
         from equipe_saude_familia_enriquecida ef
-        left join dim_clinica_familia cf on ef.cpf = cf.cpf
+        left join dim_clinica_familia cf on ef.cpf = cf.cpf and ef.id_cnes = cf.id_cnes
         group by cpf
     ),
 
@@ -409,27 +399,44 @@ cns_dados as (
         order by merge_order asc, rank asc
     ),
 
+    contato_telefone_dados as (
+        select
+            t.cpf,
+            array_agg(
+                struct(
+                    t.valor_original,
+                    t.ddd,
+                    t.valor,
+                    t.valor_tipo,
+                    lower(t.sistema) as sistema,
+                    t.rank
+                )
+            ) as telefone,
+        from telefone_dedup t
+        where t.valor is not null
+        group by t.cpf
+    ),
+
+    contato_email_dados as (
+        select
+            e.cpf,
+            array_agg(
+                struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
+            ) as email
+        from email_dedup e
+        where e.valor is not null
+        group by e.cpf
+    ),
+
     contato_dados as (
         select
-            coalesce(t.cpf, e.cpf) as cpf,
+            a.cpf,
             struct(
-                array_agg(
-                    struct(
-                        t.valor_original,
-                        t.ddd,
-                        t.valor,
-                        t.valor_tipo,
-                        lower(t.sistema) as sistema,
-                        t.rank
-                    )
-                ) as telefone,
-                array_agg(
-                    struct(lower(e.valor) as valor, lower(e.sistema) as sistema, e.rank)
-                ) as email
+                contato_telefone_dados.telefone, contato_email_dados.email
             ) as contato
-        from telefone_dedup t
-        full outer join email_dedup e on t.cpf = e.cpf
-        group by coalesce(t.cpf, e.cpf)
+        from all_cpfs a
+        left join contato_email_dados using (cpf)
+        left join contato_telefone_dados using (cpf)
     ),
 
     -- ENDEREÇO
@@ -442,7 +449,11 @@ cns_dados as (
             numero,
             complemento,
             bairro,
-            cidade,
+            case
+                when regexp_contains(cidade, r'\d')
+                then trim(regexp_replace(cidade, r'\[.*', ''))
+                else cidade
+            end as cidade,
             estado,
             cast(
                 data_atualizacao_vinculo_equipe as string

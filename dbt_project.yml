@@ -94,6 +94,13 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
+      ergon:
+        +schema: brutos_ergon
+        +tags: ["daily", "ergon"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       datasus:
         +schema: brutos_datasus
         +tags: "weekly"

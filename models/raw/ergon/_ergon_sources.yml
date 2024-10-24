@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_ergon_staging
+    database: rj-sms
+    schema: brutos_ergon_staging
+    tables:
+      - name: funcionarios_ativos

@@ -1,0 +1,92 @@
+models:
+  - name: raw_ergon_funcionarios_ativos
+    description: Contém dados organizacionais e pessoais relacionados a funcionários, seus cargos, setores e empresas. Também inclui informações sobre o status e provimento dos funcionários, além de datas de início e término de atividades nos setores.
+    columns:
+      - name: cpf
+        description: CPF (Cadastro de Pessoas Físicas) do funcionário, utilizado como identificador único. Armazenado como string.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        quote: true
+      - name: nome
+        description: Nome completo do funcionário. Armazenado como string.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+        quote: true
+      - name: status_ativo
+        description: Status de atividade do funcionário. Indica se o funcionário está atualmente ativo (valor booleano).
+        data_type: boolean
+        quote: true
+      - name: provimento_inicio
+        description: Data de início do provimento do cargo do funcionário.
+        data_type: date
+        quote: true
+      - name: provimento_fim
+        description: Data de término do provimento do cargo do funcionário.
+        data_type: date
+        quote: true
+      - name: data_vacancia
+        description: Data de vacância do cargo, indicando quando o funcionário deixou o cargo.
+        data_type: date
+        quote: true
+      - name: id_secretaria
+        description: Identificador único da secretaria associada ao funcionário.
+        data_type: string
+        quote: true
+      - name: secretaria_sigla
+        description: Sigla da secretaria associada ao funcionário.
+        data_type: string
+        quote: true
+      - name: secretaria_nome
+        description: Nome completo da secretaria associada ao funcionário.
+        data_type: string
+        quote: true
+      - name: id_empresa
+        description: Identificador único da empresa empregadora do funcionário.
+        data_type: string
+        quote: true
+      - name: setor_nome
+        description: Nome do setor no qual o funcionário trabalha.
+        data_type: string
+        quote: true
+      - name: setor_sigla
+        description: Sigla do setor no qual o funcionário trabalha.
+        data_type: string
+        quote: true
+      - name: setor_inicio
+        description: Data de início do funcionário no setor.
+        data_type: date
+        quote: true
+      - name: setor_fim
+        description: Data de término do funcionário no setor.
+        data_type: date
+        quote: true
+      - name: cargo_nome
+        description: Nome do cargo ocupado pelo funcionário.
+        data_type: string
+        quote: true
+      - name: cargo_categoria
+        description: Categoria do cargo ocupado pelo funcionário.
+        data_type: string
+        quote: true
+      - name: cargo_subcategoria
+        description: Subcategoria do cargo ocupado pelo funcionário.
+        data_type: string
+        quote: true
+      - name: empresa_nome
+        description: Nome da empresa empregadora.
+        data_type: string
+        quote: true
+      - name: empresa_sigla
+        description: Sigla da empresa empregadora.
+        data_type: string
+        quote: true
+      - name: empresa_cnpj
+        description: CNPJ (Cadastro Nacional da Pessoa Jurídica) da empresa empregadora.
+        data_type: string
+        quote: true
+      - name: cpf_particao
+        description: Identificador numérico para partição de dados com base no CPF.
+        data_type: integer
+        quote: true
