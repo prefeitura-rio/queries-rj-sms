@@ -28,10 +28,7 @@ with
             entrada_datahora,
             saida_datahora,
             exames_realizados,
-            array(
-                select as struct
-                    cast(null as string) as descricao, cast(null as string) as observacao
-            ) as procedimentos_realizados,
+            null as procedimentos_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
