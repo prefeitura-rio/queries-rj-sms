@@ -32,7 +32,7 @@ select
 
     -- fk
     id_nome_cpf,
-    utils.clean_numeric_string(split(id_nome_cpf, '_')[1]) as cpf,
+    {{clean_numeric_string("split(id_nome_cpf, '_')[1]")}} as cpf,
 
     -- fields
     competencia,

@@ -46,7 +46,7 @@ select
 
     -- fk
     id_nome_cpf,
-    utils.clean_numeric_string(split(id_nome_cpf, '_')[1]) as cpf,
+    {{clean_numeric_string("split(id_nome_cpf, '_')[1]")}}
 
     -- fields
     upper(observacoes) as observacoes,
@@ -54,12 +54,12 @@ select
     periodo_cadastrado_tipo,
     periodo_cadastrado_dia,
     periodo_cadastrado_semana,
-    lower(utils.clean_name_string(registro_dia)) as registro_dia,
-    lower(utils.clean_name_string(registro_segunda_feira)) as registro_segunda_feira,
-    lower(utils.clean_name_string(registro_terca_feira)) as registro_terca_feira,
-    lower(utils.clean_name_string(registro_quarta_feira)) as registro_quarta_feira,
-    lower(utils.clean_name_string(registro_quinta_feira)) as registro_quinta_feira,
-    lower(utils.clean_name_string(registro_sexta_feira)) as registro_sexta_feira,
+    lower({{clean_name_string('registro_dia')}}) as registro_dia,
+    lower({{clean_name_string('registro_segunda_feira')}}) as registro_segunda_feira,
+    lower({{clean_name_string('registro_terca_feira')}}) as registro_terca_feira,
+    lower({{clean_name_string('registro_quarta_feira')}}) as registro_quarta_feira,
+    lower({{clean_name_string('registro_quinta_feira')}}) as registro_quinta_feira,
+    lower({{clean_name_string('registro_sexta_feira')}}) as registro_sexta_feira,
 
     -- metadata
     criado_por,
