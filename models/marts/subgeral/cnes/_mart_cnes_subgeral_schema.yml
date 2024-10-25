@@ -745,8 +745,32 @@ models:
           - '{{ var ("TAG_CONSELHO_DE_CLASSE") }}'
       - name: id_tipo_conselho
         description: "Tipo de conselho do profissional."
-      - name: profissional_dados_hci
-        description: "Dados adicionais do profissional provenientes do HCI."
+      - name: profissional_data_nascimento
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+        description: "Data de nascimento do profissional."
+      - name: profissional_mae_nome
+        description: "Nome da mãe do profissional"
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: profissional_pai_nome
+        description: "Nome do pai do profissional."
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: profissional_genero,
+        description: "Gênero do profissional."
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: profissional_raca,
+        description: "Raça/cor do profissional."
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: profissional_obito_indicador
+        description: "Indicador de óbito do profissional."
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: profissional_obito_data
+        description: "Data de óbito do profissional."
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: endereco_profissional_hci
