@@ -46,7 +46,7 @@ select
 
     -- fk
     id_nome_cpf,
-    {{clean_numeric_string('split(id_nome_cpf, '_')[1]')}}
+    {{clean_numeric_string("split(id_nome_cpf, '_')[1]")}}
 
     -- fields
     upper(observacoes) as observacoes,
