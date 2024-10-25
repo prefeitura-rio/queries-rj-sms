@@ -47,7 +47,7 @@ select
     id,
 
     -- fk
-    utils.clean_numeric_string(cpf) as cpf,
+    {{clean_numeric_string('cpf')}}as cpf,
     id_pcsm,
 
     -- common fields
@@ -57,7 +57,7 @@ select
     rg_url,
     termo_de_compromisso_url,
     lower(
-        utils.clean_name_string(santander_conta_indicador)
+        {{clean_name_string('santander_conta_indicador')}}
     ) as santander_conta_indicador,
     santander_agencia_numero,
     santander_conta_numero,
