@@ -17,3 +17,9 @@ sources:
     schema: brutos_sheets
     tables:
       - name: projeto_estoque_acessos
+
+  - name: brutos_sheets_staging_dev
+    database: rj-sms-dev
+    schema: brutos_sheets_staging
+    tables:
+      - name: saude_profissionais_cns_cpf_aux
