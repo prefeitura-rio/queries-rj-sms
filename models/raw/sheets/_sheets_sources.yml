@@ -24,4 +24,4 @@ sources:
     database: rj-sms-dev
     schema: brutos_sheets_staging
     tables:
-      - name: profissionais_cpf_cns_aux
+      - name: saude_profissionais_cns_cpf_aux

@@ -130,5 +130,4 @@ with
 
 select *
 from final
-where
-    data_particao = (select parse_date('%Y-%m-%d', versao) from versao_atual)
+where data_particao = (select parse_date('%Y-%m-%d', versao) from versao_atual)
