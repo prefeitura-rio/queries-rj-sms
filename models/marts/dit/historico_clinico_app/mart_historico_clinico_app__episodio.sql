@@ -105,13 +105,26 @@ with
 
         from {{ ref("mart_historico_clinico__episodio") }}
     ),
+    encounter_prescription as (
+        select 
+        distinct ep.id_episodio, 
+        concat(p.nome,' ',p.concentracao) as prescricao
+        from {{ ref("mart_historico_clinico__episodio") }} as ep, unnest(ep.prescricoes) as p
+    ),
+    encounter_prescription_agg as (
+        select 
+        id_episodio, 
+        string_agg(prescricao,'\n') as prescription
+        from encounter_prescription
+        group by 1
+    ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- FORMATAÇÃO
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     formatado as (
         select
             paciente_cpf as cpf,
-            id_episodio,
+            todos_episodios.id_episodio,
             safe_cast(entrada_datahora as string) as entry_datetime,
             safe_cast(saida_datahora as string) as exit_datetime,
             safe_cast(estabelecimento.nome as string) as location,
@@ -128,6 +141,7 @@ with
                 where tipo is not null
             ) as clinical_exams,
             safe_cast(procedimentos_realizados as string) as procedures,
+            safe_cast(prescription as string) as prescription,
             array(
                 select struct(descricao as description , situacao as status) 
                 from unnest(condicoes) 
@@ -180,6 +194,8 @@ with
             prontuario.fornecedor as provider,
             safe_cast(paciente_cpf as int64) as cpf_particao
         from todos_episodios
+        left join encounter_prescription_agg
+        on todos_episodios.id_episodio = encounter_prescription_agg.id_episodio
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- FINAL
