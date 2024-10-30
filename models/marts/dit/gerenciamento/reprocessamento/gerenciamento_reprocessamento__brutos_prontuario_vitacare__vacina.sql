@@ -12,7 +12,7 @@ with
     unidades as (
         select id_cnes, area_programatica, nome_limpo
         from {{ ref("dim_estabelecimento") }}
-        where prontuario_versao = 'vitacare' and prontuario_estoque_tem_dado = 'sim'
+        where prontuario_versao = 'vitacare' and prontuario_episodio_tem_dado = 'sim'
     ),
 
     calendario as (

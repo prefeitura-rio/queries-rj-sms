@@ -44,6 +44,7 @@ final as (
       prontuario_versao,
       prontuario_estoque_tem_dado,
       prontuario_estoque_motivo_sem_dado,
+      prontuario_episodio_tem_dado,
       endereco_bairro,
       endereco_logradouro,
       endereco_numero,
