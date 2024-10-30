@@ -1031,3 +1031,209 @@ models:
         description: Sigla do estabelecimento associado ao evento.
       - name: imported_at
         description: Data e hora da importação dos dados para o data lake.
+  - name: raw_prontuario_vitai__dtw__atendimento
+    columns:
+      - name: gid
+        description: Identificador global do atendimento.
+        data_type: string
+
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento onde o atendimento foi realizado.
+        data_type: string
+
+      - name: gid_boletim
+        description: Identificador do boletim vinculado ao atendimento.
+        data_type: string
+
+      - name: id_matd
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_cid
+        description: Identificador do CID (Classificação Internacional de Doenças) relacionado ao atendimento.
+        data_type: integer
+
+      - name: id_especialidade
+        description: Identificador da especialidade médica associada ao atendimento.
+        data_type: integer
+
+      - name: id_paciente_rede
+        description: Identificador do paciente na rede de atendimento.
+        data_type: integer
+
+      - name: id_prf
+        description: Identificador do profissional responsável pelo atendimento.
+        data_type: integer
+
+      - name: queixa_principal
+        description: Descrição da queixa principal do paciente.
+        data_type: string
+
+      - name: primeiro_atendimento
+        description: Indica se é o primeiro atendimento do paciente.
+        data_type: string
+
+      - name: ultimo_atendimento
+        description: Indica se é o último atendimento do paciente.
+        data_type: string
+
+      - name: atendimento_inicio
+        description: Data e hora de início do atendimento.
+        data_type: timestamp
+
+      - name: atendimento_fim
+        description: Data e hora de término do atendimento.
+        data_type: timestamp
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+        data_type: timestamp
+
+      - name: centralized_at
+        description: Data e hora em que o dado foi centralizado.
+        data_type: timestamp
+
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+        data_tests:
+          - not_null:
+              name: latest_events__imported_at__not_null
+  - name: raw_prontuario_vitai__dtw__boletim
+    description: Tabela que armazena informações detalhadas dos boletins de atendimento, incluindo dados de pacientes, estabelecimentos e timestamps relevantes.
+    columns:
+      - name: gid
+        description: Identificador global do boletim.
+        data_type: string
+
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento onde o atendimento foi realizado.
+        data_type: string
+
+      - name: id_fat_paciente_rede
+        description: Identificador do paciente na rede de faturamento.
+        data_type: integer
+
+      - name: id_tpa
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_tpu
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_tpe
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_especialidade
+        description: Identificador da especialidade médica vinculada ao atendimento.
+        data_type: integer
+
+      - name: id_ris
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_cbo
+        description: Identificador do Código Brasileiro de Ocupações (CBO).
+        data_type: integer
+
+      - name: paciente_interno
+        description: Indica se o paciente está em regime interno.
+        data_type: string
+
+      - name: boletim_numero
+        description: Número do boletim de atendimento.
+        data_type: string
+
+      - name: data_entrada
+        description: Data e hora da entrada do paciente.
+        data_type: timestamp
+
+      - name: data_internacao
+        description: Data e hora de internação do paciente.
+        data_type: timestamp
+
+      - name: data_alta
+        description: Data e hora da alta hospitalar do paciente.
+        data_type: timestamp
+
+      - name: data_hora_evento
+        description: Data e hora do evento registrado no boletim.
+        data_type: timestamp
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+        data_type: timestamp
+
+      - name: centralized_at
+        description: Data e hora em que o dado foi centralizado.
+        data_type: timestamp
+
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__dtw__boletim__imported_at__not_null
+  - name: raw_prontuario_vitai__dtw__internacao
+    description: Tabela que armazena dados de internações hospitalares, incluindo informações sobre boletins, procedimentos, especialidades e timestamps relevantes.
+    columns:
+      - name: gid
+        description: Identificador global da internação.
+        data_type: string
+
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento onde a internação foi realizada.
+        data_type: string
+
+      - name: gid_boletim
+        description: Identificador do boletim vinculado à internação.
+        data_type: string
+
+      - name: id_paciente_rede
+        description: Identificador do paciente na rede de atendimento.
+        data_type: integer
+
+      - name: data_entrada
+        description: Data e hora de entrada do paciente na internação.
+        data_type: timestamp
+
+      - name: data_saida
+        description: Data e hora de saída do paciente da internação.
+        data_type: timestamp
+
+      - name: id_tipo_internacao
+        description: Identificador do tipo de internação realizada.
+        data_type: integer
+
+      - name: id_cid_internacao
+        description: Identificador do CID (Classificação Internacional de Doenças) associado à internação.
+        data_type: integer
+
+      - name: id_procedimento
+        description: Identificador do procedimento realizado durante a internação.
+        data_type: integer
+
+      - name: id_especialidade
+        description: Identificador da especialidade médica associada à internação.
+        data_type: integer
+
+      - name: id_profissional
+        description: Identificador do profissional responsável pela internação.
+        data_type: integer
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+        data_type: timestamp
+
+      - name: centralized_at
+        description: Data e hora em que o dado foi centralizado.
+        data_type: timestamp
+
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__dtw__internacao__imported_at__not_null

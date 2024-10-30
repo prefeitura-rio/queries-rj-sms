@@ -114,6 +114,8 @@ models:
       description: "Indica se os prontuários contêm dados disponíveis."
     - name: prontuario_estoque_motivo_sem_dado
       description: "Motivo pelo qual os prontuários não contêm dados."
+    - name: prontuario_episodio_tem_dado
+      description: "Indica se os prontuários contêm dados de episódios."
 
     # Informações de Contato
     - name: telefone

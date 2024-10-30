@@ -267,11 +267,15 @@ models:
           prontuário físico, é indicado como papel.
         data_type: string
       - name: prontuario_estoque_tem_dado
-        description: Indica se a unidade utiliza o prontuário para controle de estoque
+        description: Indica se é esperado chegar dados de estoque (medicamentos e
+          insumos) a partir do cnes desta unidade
         data_type: string
       - name: prontuario_estoque_motivo_sem_dado
         description: Indica o motivo da unidade não utilizar o prontuário para controle
           de estoque
+        data_type: string
+      - name: prontuario_episodio_tem_dado
+        description: Indica se a unidade se é esperado chegar dados de episódios a partir do cnes desta unidade
         data_type: string
       - name: endereco_bairro
         description: Bairro

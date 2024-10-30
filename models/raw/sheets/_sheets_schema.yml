@@ -35,11 +35,10 @@ models:
       - name: prontuario_versao
         description: Para as unidades que utilizam pronturio, indica qual sistema de
           prontuario é utilizado
-      - name: prontuario_estoque_tem_dado
-        description: Indica se é esperado chegar dados de estoque (medicamentos e
-          insumos) a partir do cnes desta unidade
       - name: prontuario_estoque_motivo_sem_dado
         description: Se prontuario_estoque_tem_dado = nao, indica o motivo de não ter dado
+      - name: prontuario_episodio_tem_dado
+        description: Indica se é esperado chegar dados de atendimentos a partir do cnes desta unidade
       - name: responsavel_sms
         description: Subcretaria responsável dentro da SMS
       - name: administracao
