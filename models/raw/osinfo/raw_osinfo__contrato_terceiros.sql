@@ -5,8 +5,10 @@
 }}
 
 with
-    contrato_terceiros as (select * from {{ source("osinfo", "contrato_terceiros") }}),
-    contrato as (select * from {{ source("osinfo", "contrato") }})
+    contrato_terceiros as (
+        select * from {{ source("brutos_osinfo_staging", "contrato_terceiros") }}
+    ),
+    contrato as (select * from {{ source("brutos_osinfo_staging", "contrato") }})
 
 select
     ct.id_contrato_terceiro,

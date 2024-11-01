@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: sigma
-    database:   rj-smfp
-    schema: compras_materiais_servicos_sigma_staging
+  - name: brutos_sigma_staging
+    database:   rj-sms
+    schema: brutos_sigma_staging
     tables:
       - name: material
       - name: grupo

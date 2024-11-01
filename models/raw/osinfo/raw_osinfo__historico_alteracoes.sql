@@ -7,9 +7,9 @@
 
 with
     historico_alteracoes as (
-        select * from {{ source("osinfo", "historico_alteracoes") }}
+        select * from {{ source("brutos_osinfo_staging", "historico_alteracoes") }}
     ),
-    usuario as (select * from {{ source("osinfo", "usuario") }})
+    usuario as (select * from {{ source("brutos_osinfo_staging", "usuario") }})
 
 select
     ha.id_historico_alteracoes as id,
