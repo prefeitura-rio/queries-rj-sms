@@ -8,7 +8,7 @@
 with
     source as (
         select distinct cns, cpf
-        from {{ source("brutos_sheets_staging", "saude_profissionais_cns_cpf_aux") }}
+        from {{ source("brutos_sheets_staging", "profissionais_cns_cpf_aux") }}
         where cpf is not null and cpf != "" and cpf != "cpf"
     ),
 
