@@ -6,8 +6,10 @@
 
 
 with
-    itens_nota_fiscal as (select * from {{ source("osinfo", "itens_nota_fiscal") }}),
-    fornecedor as (select * from {{ source("osinfo", "fornecedor") }})
+    itens_nota_fiscal as (
+        select * from {{ source("brutos_osinfo_staging", "itens_nota_fiscal") }}
+    ),
+    fornecedor as (select * from {{ source("brutos_osinfo_staging", "fornecedor") }})
 
 select
     nf.id_item_nf as id,

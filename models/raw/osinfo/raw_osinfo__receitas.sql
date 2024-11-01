@@ -5,14 +5,20 @@
 }}
 
 with
-    receita_dados as (select * from {{ source("osinfo", "receita_dados") }}),
-    contrato as (select * from {{ source("osinfo", "contrato") }}),
-    receita_item as (select * from {{ source("osinfo", "receita_item") }}),
-    conta_bancaria as (select * from {{ source("osinfo", "conta_bancaria") }}),
-    conta_bancaria_tipo as (
-        select * from {{ source("osinfo", "conta_bancaria_tipo") }}
+    receita_dados as (
+        select * from {{ source("brutos_osinfo_staging", "receita_dados") }}
     ),
-    agencia as (select * from {{ source("osinfo", "agencia") }})
+    contrato as (select * from {{ source("brutos_osinfo_staging", "contrato") }}),
+    receita_item as (
+        select * from {{ source("brutos_osinfo_staging", "receita_item") }}
+    ),
+    conta_bancaria as (
+        select * from {{ source("brutos_osinfo_staging", "conta_bancaria") }}
+    ),
+    conta_bancaria_tipo as (
+        select * from {{ source("brutos_osinfo_staging", "conta_bancaria_tipo") }}
+    ),
+    agencia as (select * from {{ source("brutos_osinfo_staging", "agencia") }})
 
 select
     rd.cod_unidade as id_unidade,
@@ -34,9 +40,7 @@ select
 from receita_dados rd
 inner join contrato c on rd.id_instrumento_contratual = c.id_contrato
 inner join receita_item ri on rd.id_item = ri.id_receita_item
-inner join
-    conta_bancaria cb on rd.id_conta_bancaria = cb.id_conta_bancaria
-inner join
-    conta_bancaria_tipo cbt on cb.cod_tipo = cbt.id_conta_bancaria_tipo
+inner join conta_bancaria cb on rd.id_conta_bancaria = cb.id_conta_bancaria
+inner join conta_bancaria_tipo cbt on cb.cod_tipo = cbt.id_conta_bancaria_tipo
 inner join agencia a on cb.id_agencia = a.id_agencia
 where c.id_secretaria = '1'

@@ -7,7 +7,7 @@
 }}
 
 with source as (
-      select * from {{ source('br_ms_cnes', 'profissional') }}
+      select * from {{ source('brutos_cnes_ftp_staging', 'profissional') }}
 ),
 renamed as (
     select
