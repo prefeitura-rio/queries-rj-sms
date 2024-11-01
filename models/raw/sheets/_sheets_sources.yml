@@ -12,14 +12,10 @@ sources:
       - name: compras_registro_preco
       - name: compras_atas_processos_vigentes
       - name: aps_farmacias
+      - name: saude_profissionais_cns_cpf_aux
+      
   - name: brutos_sheets
     database: rj-sms
     schema: brutos_sheets
     tables:
       - name: projeto_estoque_acessos
-
-  - name: brutos_sheets_staging_dev
-    database: rj-sms-dev
-    schema: brutos_sheets_staging
-    tables:
-      - name: saude_profissionais_cns_cpf_aux
