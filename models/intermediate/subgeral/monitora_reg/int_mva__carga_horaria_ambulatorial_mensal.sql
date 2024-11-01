@@ -10,23 +10,11 @@ with
                 select max(metadados.data_particao)
                 from {{ ref("mart_cnes_subgeral__profissionais_mrj_sus") }}
             )
-    ),
-
-    enriquecimento_cpf as (
-        select
-            versao_atual.*,
-            coalesce(versao_atual.cpf, aux_cpfs.cpf[ordinal(1)]) as cpf_final
-
-        from versao_atual
-
-        left join
-            {{ ref("raw_sheets__profissionais_cpf_cns_aux") }} as aux_cpfs
-            on safe_cast(versao_atual.cns as int64) = safe_cast(aux_cpfs.cns as int64)
     )
 
 select
     -- identificadores
-    cpf_final as cpf,
+    cpf,
     string_agg(distinct cns, ', ') as cns,
     string_agg(distinct nome, ', ') as profissional,
     id_cbo as id_cbo_2002,
@@ -59,7 +47,7 @@ select
     string_agg(distinct estabelecimentos.ap, ', ') as ap,
     string_agg(distinct estabelecimentos.endereco_bairro, ', ') as endereco_bairro,
 
-from enriquecimento_cpf
+from versao_atual
 
 where
     -- selecionando periodo de interesse
@@ -72,7 +60,7 @@ where
 
     -- selecionando apenas profissionais que ja progamaram vagas no sisreg
     -- historicamente
-    and cpf_final in (select cpf from {{ ref("int_mva__oferta_programada_mensal") }})
+    and cpf in (select cpf from {{ ref("int_mva__oferta_programada_mensal") }})
 
     -- selecionando apenas profissionais com carga horaria ambulatorial
     and carga_horaria_ambulatorial > 0
@@ -84,4 +72,4 @@ where
     )
     and id_cbo not in ('225142', '225130', '223293', '223565', '322245')  -- exclui saude da familia
 
-group by cpf_final, id_cnes, id_cbo_2002, ano_competencia, mes_competencia
+group by cpf, id_cnes, id_cbo_2002, ano_competencia, mes_competencia
