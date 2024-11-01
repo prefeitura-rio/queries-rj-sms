@@ -6,7 +6,7 @@
 }}
 
 with source as (
-      select * from {{ source('br_ms_cnes', 'equipamento') }}
+      select * from {{ source('brutos_cnes_ftp_staging', 'equipamento') }}
 ),
 renamed as (
     select

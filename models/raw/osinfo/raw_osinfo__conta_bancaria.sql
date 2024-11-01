@@ -6,10 +6,14 @@
 
 -- source:
 with
-    banco as (select * from {{ source("osinfo", "banco") }}),
-    agencia as (select * from {{ source("osinfo", "agencia") }}),
-    conta_bancaria as (select * from {{ source("osinfo", "conta_bancaria") }}),
-    conta_bancaria_tipo as (select * from {{ source("osinfo", "conta_bancaria_tipo") }})
+    banco as (select * from {{ source("brutos_osinfo_staging", "banco") }}),
+    agencia as (select * from {{ source("brutos_osinfo_staging", "agencia") }}),
+    conta_bancaria as (
+        select * from {{ source("brutos_osinfo_staging", "conta_bancaria") }}
+    ),
+    conta_bancaria_tipo as (
+        select * from {{ source("brutos_osinfo_staging", "conta_bancaria_tipo") }}
+    )
 
 select
     cb.id_conta_bancaria as id,

@@ -4,7 +4,7 @@
     )
 }}
 
-with source as (select * from {{ source("osinfo", "contrato") }})
+with source as (select * from {{ source("brutos_osinfo_staging", "contrato") }})
 
 select
     id_contrato,

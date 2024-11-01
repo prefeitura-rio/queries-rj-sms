@@ -1,7 +1,7 @@
 {{
     config(
         schema="gerenciamento__monitoramento",
-        alias="estatisticas_historico_clinico_vitacare",
+        alias="estatisticas_farmacia_digital_tpc",
         materialized="incremental",
         unique_key="id",
     )
@@ -16,33 +16,17 @@
 with
     unidades_esperadas as (
         select 
-            area_programatica as unidade_ap,
-            id_cnes as unidade_cnes,
-            nome_limpo as unidade_nome
-        from {{ref('dim_estabelecimento')}}
-        where prontuario_versao = 'vitacare' 
+            'CENTRAL' as unidade_ap,
+            'CENTRAL' as unidade_cnes,
+            'CENTRAL' as unidade_nome
     ),
-    vitacare_paciente as (
+    tpc_estoque_posicao as (
         select
-            payload_cnes as unidade_cnes,
-            'vitacare' as fonte,
-            'paciente' as tipo,
+            'CENTRAL' as unidade_cnes,
+            'tpc' as fonte,
+            'posicao' as tipo,
             data_particao as data_atualizacao
-        from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos") }}
-        {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
-        {% endif %}
-        {% if not is_incremental() %}
-        where data_particao >= '{{min_date}}' 
-        {% endif %}
-    ),
-    vitacare_episodio as (
-        select
-            payload_cnes as unidade_cnes,
-            'vitacare' as fonte,
-            'episodio' as tipo,
-            data_particao as data_atualizacao
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }}
+        from {{ source("brutos_estoque_central_tpc_staging", "estoque_posicao") }}
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
@@ -60,20 +44,18 @@ with
         {% endif %}
     ),
     entidades as (
-        select tipo from unnest(['paciente','episodio']) tipo
+        select tipo from unnest(['posicao']) tipo
     ),
     todos_registros_possiveis as (
         select 
             cast(null as string) as unidade_cnes,
-            'vitacare' as fonte, 
+            'tpc' as fonte, 
             entidades.tipo as tipo, 
-            cast(datas.data_atualizacao as string) as data_atualizacao,
+            cast(datas.data_atualizacao as string) as data_atualizacao
         from datas, entidades
-    ),  
-    vitacare_historico_clinico as (
-        select * from vitacare_paciente
-        union all
-        select * from vitacare_episodio
+    ),
+    tpc_estoque as (
+        select * from tpc_estoque_posicao
         union all
         select * from todos_registros_possiveis
     ),
@@ -84,7 +66,7 @@ with
             tipo,
             array_agg(distinct unidade_cnes ignore nulls) as unidades_com_dado,
             countif(unidade_cnes is not null) as qtd_registros_recebidos
-        from vitacare_historico_clinico
+        from tpc_estoque
         group by 1, 2, 3
     ),
     contagem_com_complemento as (

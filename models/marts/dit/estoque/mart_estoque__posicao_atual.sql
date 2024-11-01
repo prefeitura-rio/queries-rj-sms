@@ -28,7 +28,7 @@ with
         from {{ ref("int_estoque__material_relacao_remume_por_estabelecimento") }}
     ),
 
-    sigma as (select distinct * from {{ source("sigma", "material") }}),  -- existe um bug na origem do sigma gerando duplicidade
+    sigma as (select distinct * from {{ source("brutos_sigma_staging", "material") }}),  -- existe um bug na origem do sigma gerando duplicidade
 
     historico_dispensacao as (
         select *

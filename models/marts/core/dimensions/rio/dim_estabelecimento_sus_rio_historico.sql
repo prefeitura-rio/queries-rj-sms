@@ -76,7 +76,8 @@ with
             responsavel_sms,
             administracao,
             prontuario_estoque_tem_dado,
-            prontuario_estoque_motivo_sem_dado
+            prontuario_estoque_motivo_sem_dado,
+            prontuario_episodio_tem_dado,
         from {{ ref("raw_sheets__estabelecimento_auxiliar") }}
     ),
 
@@ -185,6 +186,7 @@ with
             estabelecimentos_atributos.administracao,
             estabelecimentos_atributos.prontuario_estoque_tem_dado,
             estabelecimentos_atributos.prontuario_estoque_motivo_sem_dado,
+            estabelecimentos_atributos.prontuario_episodio_tem_dado,
             regexp_replace(
                 estabelecimentos_atributos.nome_limpo,
                 r'(CF |CSE |CMS |UPA 24h |POLICLINICA |HOSPITAL MUNICIPAL |COORD DE EMERGENCIA REGIONAL CER |MATERNIDADE )',
@@ -301,7 +303,8 @@ with
             prontuario_versao,
             prontuario_estoque_tem_dado,
             prontuario_estoque_motivo_sem_dado,
-
+            prontuario_episodio_tem_dado,
+        
             -- Informações de contato
             coalesce(telefone_aps, telefone_cnes) as telefone,
             coalesce(email_aps, email_cnes) as email,

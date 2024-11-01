@@ -10,6 +10,8 @@
 with
     estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }}),
 
+    funcionarios_status as (select cpf, status_ativo from {{ ref("raw_ergon_funcionarios_ativos")}}),
+
     alocacao as (
         select
             profissional_codigo_sus,
@@ -199,7 +201,8 @@ final as (
         profissionais_datasus.cns,
         profissionais_datasus.nome,
         cbo_agg.cbo,
-        conselho_agg.conselho
+        conselho_agg.conselho,
+        funcionarios_status.status_ativo as funcionario_ativo_indicador
     from profissionais_datasus
     left join
         cns_dados 
@@ -210,5 +213,8 @@ final as (
     left join
         conselho_agg 
         on profissionais_datasus.id_codigo_sus = conselho_agg.profissional_codigo_sus
+    left join
+        funcionarios_status 
+        on cns_dados.cpf = funcionarios_status.cpf
 ) 
 select * from final

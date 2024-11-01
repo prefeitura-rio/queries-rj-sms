@@ -5,20 +5,26 @@
 }}
 
 with
-    despesas as (select * from {{ source("osinfo", "despesas") }}),
-    contrato as (select * from {{ source("osinfo", "contrato") }}),
-    plano_contas as (select * from {{ source("osinfo", "plano_contas") }}),
-    rubrica as (select * from {{ source("osinfo", "rubrica") }}),
+    despesas as (select * from {{ source("brutos_osinfo_staging", "despesas") }}),
+    contrato as (select * from {{ source("brutos_osinfo_staging", "contrato") }}),
+    plano_contas as (
+        select * from {{ source("brutos_osinfo_staging", "plano_contas") }}
+    ),
+    rubrica as (select * from {{ source("brutos_osinfo_staging", "rubrica") }}),
     administracao_unidade as (
-        select * from {{ source("osinfo", "administracao_unidade") }}
+        select * from {{ source("brutos_osinfo_staging", "administracao_unidade") }}
     ),
-    conta_bancaria as (select * from {{ source("osinfo", "conta_bancaria") }}),
+    conta_bancaria as (
+        select * from {{ source("brutos_osinfo_staging", "conta_bancaria") }}
+    ),
     conta_bancaria_tipo as (
-        select * from {{ source("osinfo", "conta_bancaria_tipo") }}
+        select * from {{ source("brutos_osinfo_staging", "conta_bancaria_tipo") }}
     ),
-    agencia as (select * from {{ source("osinfo", "agencia") }}),
-    banco as (select * from {{ source("osinfo", "banco") }}),
-    tipo_documento as (select * from {{ source("osinfo", "tipo_documento") }})
+    agencia as (select * from {{ source("brutos_osinfo_staging", "agencia") }}),
+    banco as (select * from {{ source("brutos_osinfo_staging", "banco") }}),
+    tipo_documento as (
+        select * from {{ source("brutos_osinfo_staging", "tipo_documento") }}
+    )
 
 select
     d.id_contrato,
@@ -41,7 +47,7 @@ select
     d.cnpj as contratada_cnpj,
     d.razao as contratada_razaosocial,
     d.cpf as colaborador_cpf,
-    d.nome as colaborar_nome, -- # TODO: confirmar que o nome se refere ao colaborador
+    d.nome as colaborar_nome,  -- # TODO: confirmar que o nome se refere ao colaborador
     d.num_documento as documento_pago_numero,
     td.tipo_documento as documento_pago_tipo,
     d.serie as documento_pago_serie,
@@ -66,8 +72,7 @@ inner join plano_contas pc on d.id_despesa = pc.id_item_plano_de_contas
 inner join rubrica r on d.id_rubrica = r.id_rubrica
 inner join administracao_unidade au on d.cod_unidade = au.cod_unidade
 inner join conta_bancaria cb on d.id_conta_bancaria = cb.id_conta_bancaria
-inner join
-    conta_bancaria_tipo cbt on cb.cod_tipo = cbt.id_conta_bancaria_tipo
+inner join conta_bancaria_tipo cbt on cb.cod_tipo = cbt.id_conta_bancaria_tipo
 inner join agencia a on cb.id_agencia = a.id_agencia
 inner join banco b on a.id_banco = b.id_banco
 inner join tipo_documento td on d.id_tipo_documento = td.id_tipo_documento

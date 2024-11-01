@@ -5,9 +5,9 @@
 }}
 
 with
-    saldo_dados as (select * from {{ source("osinfo", "saldo_dados") }}),
-    saldo_item as (select * from {{ source("osinfo", "saldo_item") }}),
-    contrato as (select * from {{ source("osinfo", "contrato") }})
+    saldo_dados as (select * from {{ source("brutos_osinfo_staging", "saldo_dados") }}),
+    saldo_item as (select * from {{ source("brutos_osinfo_staging", "saldo_item") }}),
+    contrato as (select * from {{ source("brutos_osinfo_staging", "contrato") }})
 
 -- --- Saldos
 select
