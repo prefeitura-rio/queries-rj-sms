@@ -416,3 +416,21 @@ models:
           relacionadas à farmácia.
         data_type: string
         quote: true
+
+  - name: raw_sheets__saude_profissionais_cns_cpf_aux
+    description: Tabela auxiliar relacionando os CNS e os CPFs dos profissionais de
+      saúde do MRJ-SUS.
+    columns:
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do profissional.
+        data_tests:
+          - unique:
+              name: raw_sheets__saude_profissionais_cns_cpf_aux__cns_unique
+        data_type: string
+        quote: true
+      - name: cpf
+        description: Cadastro de Pessoa Física (CPF) do profissional.
+        data_type: string
+        quote: true
+      - name: qtd_cpfs
+        description: Quantidade de CPFs associados ao CNS.
