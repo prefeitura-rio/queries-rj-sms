@@ -417,7 +417,7 @@ models:
         data_type: string
         quote: true
 
-  - name: raw_sheets__saude_profissionais_cns_cpf_aux
+  - name: raw_sheets__profissionais_cns_cpf_aux
     description: Tabela auxiliar relacionando os CNS e os CPFs dos profissionais de
       saúde do MRJ-SUS.
     columns:

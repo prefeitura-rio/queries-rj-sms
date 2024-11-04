@@ -100,7 +100,7 @@ with
         from final
 
         left join
-            {{ ref("raw_sheets__saude_profissionais_cns_cpf_aux") }} as aux_cpfs
+            {{ ref("raw_sheets__profissionais_cns_cpf_aux") }} as aux_cpfs
             on safe_cast(final.cns as int64) = safe_cast(aux_cpfs.cns as int64)
     )
 
