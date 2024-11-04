@@ -16,7 +16,7 @@ with
         select
             lpad(safe_cast(cns as string), 15, "0") as cns,
             lpad(safe_cast(cpf as string), 11, "0") as cpf,
-
+        from source
     ),
 
     cns_unicos as (
