@@ -161,13 +161,6 @@ models:
           dado_publico: nao
           dado_pessoal: nao
           dado_sensivel: nao
-      seguir_em_frente:
-        +schema: brutos_seguir_em_frente
-        +tags: "daily"
-        +labels:
-          dado_publico: nao
-          dado_pessoal: sim
-          dado_sensivel: sim
       sheets:
         +schema: brutos_sheets
         +tags: "daily"
@@ -270,14 +263,6 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
-        seguir_em_frente:
-          +schema: projeto_seguir_em_frente
-          +tags: "daily"
-          +labels:
-            dado_publico: nao
-            dado_pessoal: sim
-            dado_sensivel: sim
-            dominio: seguir_em_frente
 
 tests:
   rj_sms:
