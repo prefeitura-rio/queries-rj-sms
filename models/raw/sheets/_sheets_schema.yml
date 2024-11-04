@@ -434,3 +434,17 @@ models:
         quote: true
       - name: qtd_cpfs
         description: Quantidade de CPFs associados ao CNS.
+
+  - name: raw_sheets__assistencial_procedimento
+    description: Esta tabela contem informações sobre os diferentes procedimentos assistênciais realizados pela SMSRio.
+    columns:
+      - name: id_procedimento
+        description: Codigo unico de identificacao do procedimento.
+      - name: descricao
+        description: Esta e uma descricao do procedimento. Ela fornece informacoes mais detalhadas sobre o que o procedimento envolve.
+      - name: parametro_consultas_por_hora
+        description: Indica o numero de consultas que podem ser realizadas em uma hora para o procedimento especifico.
+      - name: parametro_reservas
+        description: "Parte do atendimento dedicado ao atendimento por reserva ou primeira vez."
+      - name: parametro_retornos
+        description: "Parte do atendimento dedicado ao atendimento de retornos."
