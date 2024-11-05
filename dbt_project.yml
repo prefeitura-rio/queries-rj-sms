@@ -101,6 +101,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      conectividade:
+        +schema: brutos_conectividade
+        +tags: ["daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_sensivel: nao
       datasus:
         +schema: brutos_datasus
         +tags: "weekly"
