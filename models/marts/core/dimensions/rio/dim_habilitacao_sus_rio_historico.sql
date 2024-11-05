@@ -70,12 +70,6 @@ with
             habilitacoes_mapping_cnesweb as map
             on safe_cast(hab.id_habilitacao as int64)
             = safe_cast(map.id_habilitacao as int64)
-        order by
-            ano_competencia asc,
-            mes_competencia asc,
-            id_cnes asc,
-            habilitacao_ativa_indicador,
-            id_habilitacao
     )
 
 select *
