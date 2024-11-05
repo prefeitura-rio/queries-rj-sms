@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: osinfo
-    database:   rj-cvl
-    schema: adm_contrato_gestao
+  - name: brutos_osinfo_staging
+    database:   rj-sms
+    schema: brutos_osinfo_staging
     tables:
     - name: administracao_perfil
     - name: administracao_unidade

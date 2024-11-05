@@ -6,7 +6,7 @@
 }}
 
 with
-    source as (select * from {{ source("br_ms_cnes", "estabelecimento") }}),
+    source as (select * from {{ source("brutos_cnes_ftp_staging", "estabelecimento") }}),
     renamed as (
         select
             {{ adapter.quote("ano") }},

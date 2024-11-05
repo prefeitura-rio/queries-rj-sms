@@ -94,19 +94,19 @@ with
                         "CORREÇÃO DE LOTE - AUMENTO",
                         "NOVO LOTE",
                         "RECUPERAÇÃO DE LOTE",
-                        "ANULAÇÃO DE DISPENSAS"
+                        "ANULAÇÃO DE DISPENSAS",
+                        "DEVOLUÇÃO ISOLADA"  -- transferencia do subestoque para a farmácia central
                     )
                 then "ENTRADA"
                 when
                     estoque_movimento_tipo in (
                         "CORREÇÃO DE LOTE - DIMINUIÇÃO",
-                        "DEVOLUÇÃO ISOLADA",
                         "DISPENSA DE MEDICAMENTOS COM PRESCRIÇÃO",
                         "DISPENSA DE MEDICAMENTOS POR ADMINISTRAÇÃO",
                         "DISPENSAÇÃO DE RECEITA EXTERNA",
                         "DISPENSAÇÃO DE RECEITA EXTERNA COM DATA ANTERIOR",
-                        "REFORÇO",
-                        "REFORÇO ISOLADO",  -- #TODO: refinar o sinal do Reforço e Reforço Isolado dependendo da origem/destino da transferência
+                        "REFORÇO",  -- transferência da farmácia central para subestoque
+                        "REFORÇO ISOLADO",  -- transferência da farmácia central para subestoque
                         "REMOÇÃO DE LOTE",
                         "SUSPENSÃO DE LOTE"
                     )

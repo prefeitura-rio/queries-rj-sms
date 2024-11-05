@@ -35,11 +35,10 @@ models:
       - name: prontuario_versao
         description: Para as unidades que utilizam pronturio, indica qual sistema de
           prontuario é utilizado
-      - name: prontuario_estoque_tem_dado
-        description: Indica se é esperado chegar dados de estoque (medicamentos e
-          insumos) a partir do cnes desta unidade
       - name: prontuario_estoque_motivo_sem_dado
         description: Se prontuario_estoque_tem_dado = nao, indica o motivo de não ter dado
+      - name: prontuario_episodio_tem_dado
+        description: Indica se é esperado chegar dados de atendimentos a partir do cnes desta unidade
       - name: responsavel_sms
         description: Subcretaria responsável dentro da SMS
       - name: administracao
@@ -417,3 +416,35 @@ models:
           relacionadas à farmácia.
         data_type: string
         quote: true
+
+  - name: raw_sheets__profissionais_cns_cpf_aux
+    description: Tabela auxiliar relacionando os CNS e os CPFs dos profissionais de
+      saúde do MRJ-SUS.
+    columns:
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do profissional.
+        data_tests:
+          - unique:
+              name: raw_sheets__saude_profissionais_cns_cpf_aux__cns_unique
+        data_type: string
+        quote: true
+      - name: cpf
+        description: Cadastro de Pessoa Física (CPF) do profissional.
+        data_type: string
+        quote: true
+      - name: qtd_cpfs
+        description: Quantidade de CPFs associados ao CNS.
+
+  - name: raw_sheets__assistencial_procedimento
+    description: Esta tabela contem informações sobre os diferentes procedimentos assistênciais realizados pela SMSRio.
+    columns:
+      - name: id_procedimento
+        description: Codigo unico de identificacao do procedimento.
+      - name: descricao
+        description: Esta e uma descricao do procedimento. Ela fornece informacoes mais detalhadas sobre o que o procedimento envolve.
+      - name: parametro_consultas_por_hora
+        description: Indica o numero de consultas que podem ser realizadas em uma hora para o procedimento especifico.
+      - name: parametro_reservas
+        description: "Parte do atendimento dedicado ao atendimento por reserva ou primeira vez."
+      - name: parametro_retornos
+        description: "Parte do atendimento dedicado ao atendimento de retornos."
