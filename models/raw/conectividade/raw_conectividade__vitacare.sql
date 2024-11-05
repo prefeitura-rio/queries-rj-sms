@@ -7,9 +7,6 @@
 
 with
     -- PREPARATION
-    source as (
-        select * from {{ source("brutos_conectividade_staging", "vitacare") }}
-    ),
     events_from_window as (
         select 
             *
@@ -58,7 +55,7 @@ with
             JSON_VALUE(content, "$.server.ip") AS server_ip,
             JSON_VALUE(content, "$.result.id") AS result_id,
             JSON_VALUE(content, "$.result.url") AS result_url,
-            
+
             struct(
                 safe_cast(JSON_VALUE(content, "$.timestamp") as timestamp) AS host_executed_at,
                 safe_cast(data_as_json.host_created_at as timestamp) as host_created_at,
