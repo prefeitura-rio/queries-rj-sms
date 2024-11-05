@@ -150,8 +150,8 @@ models:
         +tags: ["daily"]
         +labels:
           dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]
