@@ -143,6 +143,13 @@ models:
         +tags: ["smsrio", "daily"]
         +labels:
           dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      plataforma_clickup:
+        +schema: brutos_plataforma_clickup
+        +tags: ["daily"]
+        +labels:
+          dado_publico: nao
           dado_pessoal: nao
           dado_sensivel: nao
       prontuario_vitacare:

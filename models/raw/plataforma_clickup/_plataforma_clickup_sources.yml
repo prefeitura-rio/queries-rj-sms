@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_plataforma_clickup_staging
+    database: rj-sms
+    schema: brutos_plataforma_clickup_staging
+    tables:
+      - name: atividades_eventos
