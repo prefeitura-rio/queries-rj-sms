@@ -5,10 +5,12 @@
         alias="brutos_prontuario_vitacare__vacina",
         schema="gerenciamento__reprocessamento",
         materialized="incremental",
+        unique_key=["id_cnes", "data"],
     )
 }}
 
 with
+    -- RELAÇÃO DE UNIDADE & DATAS
     unidades as (
         select id_cnes, area_programatica, nome_limpo
         from {{ ref("dim_estabelecimento") }}
@@ -29,7 +31,7 @@ with
 
     calendario_sem_domingo as (
         select *, extract(dayofweek from data) as dia_da_semana from calendario
-    ),
+    ),  -- atentaçõa primaria não funciona no domingo
 
     relacao_unidades_datas as (
         select id_cnes, area_programatica, nome_limpo, data
@@ -37,25 +39,45 @@ with
         cross join calendario_sem_domingo as cal
     ),
 
+    -- RELAÇÃO DE UNIDADES COM DADOS INGERIDOS
     relacao_unidades_datas_com_dados as (
-        select distinct id_cnes, data_particao
+        select distinct id_cnes, data_particao as data
         from {{ ref("raw_prontuario_vitacare__vacina") }}
+    ),
+
+    -- RELAÇÃO DE UNIDADES QUE JÁ FORAM REPROCESSADAS E NÃO RETORNARAM REGISTROS OU
+    -- QUE ESTÃO REPROCESSANDO
+    relacao_unidades_reprocessadas as (
+        select *
+        from {{ this }}
+        where
+            (retry_status = "finished" and request_row_count = 0)
+            or retry_status = "in progress"
+    ),
+
+    final as (
+
+        select
+            rel.id_cnes,
+            rel.area_programatica,
+            rel.nome_limpo,
+            rel.data,
+            "pending" as retry_status,
+            0 as retry_attempts_count,
+            safe_cast("" as int64) as request_row_count
+        from relacao_unidades_datas as rel
+        left join relacao_unidades_datas_com_dados as rel_dados using (id_cnes, data)
+        left join
+            relacao_unidades_reprocessadas as rel_reprocessadas using (id_cnes, data)
+        where
+            rel_dados.id_cnes is null  -- não possui dados
+            {% if is_incremental() %} 
+                and rel_reprocessadas.id_cnes is null  -- não está reprocessado como vazio
+            {% endif %}
+
+        order by rel.data, rel.area_programatica, rel.id_cnes
     )
 
-select
-    rel.id_cnes,
-    rel.area_programatica,
-    rel.nome_limpo,
-    rel.data,
-    "pending" as retry_status,
-    0 as retry_attempts_count,
-    safe_cast("" as int64) as request_row_count
-from relacao_unidades_datas as rel
-left join
-    relacao_unidades_datas_com_dados as rel_dados
-    on rel.id_cnes = rel_dados.id_cnes
-    and rel.data = rel_dados.data_particao
-where
-    rel_dados.id_cnes is null
-    {% if is_incremental() %} and data > (select max(data) from {{ this }}) {% endif %}
-order by rel.data, rel.area_programatica, rel.id_cnes
+select *
+from final
+
