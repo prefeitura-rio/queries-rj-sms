@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: raw_plataforma_clickup__atividade
+    description: Tabela que armazena informações de tarefas criadas e gerenciadas no sistema
+    columns:
+      - name: task_id
+        description: Identificador único da tarefa
+      - name: task_name
+        description: Nome da tarefa
+      - name: text_content
+        description: Conteúdo descritivo da tarefa
+      - name: date_created
+        description: Timestamp de criação da tarefa
+      - name: date_closed
+        description: Timestamp de fechamento da tarefa
+      - name: date_done
+        description: Timestamp de conclusão da tarefa
+      - name: creator_username
+        description: Nome de usuário do criador da tarefa
+      - name: assignees
+        description: Lista de usuários designados para a tarefa
+      - name: tags
+        description: Tags associadas à tarefa
+      - name: list_id
+        description: Identificador da lista à qual a tarefa pertence
+      - name: list_name
+        description: Nome da lista à qual a tarefa pertence
+      - name: task_url
+        description: URL para acesso à tarefa no sistema
+      - name: metadata
+        description: Estrutura que contém metadados da tarefa
+      - name: metadata.updated_at
+        description: Timestamp da última atualização da tarefa
+      - name: metadata.loaded_at
+        description: Timestamp de quando a tarefa foi carregada no Datalake

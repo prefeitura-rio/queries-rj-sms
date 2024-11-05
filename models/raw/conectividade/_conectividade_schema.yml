@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: raw_conectividade__vitacare
+    description: Tabela que armazena informações de testes de conectividade Vitacare
+    columns:
+      - name: unidade_cnes
+        description: Código CNES da unidade
+      - name: is_test_successfull
+        description: Indica se o teste de conectividade foi bem-sucedido
+      - name: error_message
+        description: Mensagem de erro retornada pelo teste, se houver
+      - name: download_bandwidth
+        description: Largura de banda de download em bits por segundo
+      - name: download_bytes
+        description: Número de bytes baixados durante o teste
+      - name: download_elapsed
+        description: Tempo decorrido do teste de download em milissegundos
+      - name: upload_bandwidth
+        description: Largura de banda de upload em bits por segundo
+      - name: upload_bytes
+        description: Número de bytes enviados durante o teste
+      - name: upload_elapsed
+        description: Tempo decorrido do teste de upload em milissegundos
+      - name: ping_jitter
+        description: Variação de latência medida durante o teste de ping
+      - name: ping_latency
+        description: Latência medida durante o teste de ping em milissegundos
+      - name: packet_loss
+        description: Porcentagem de perda de pacotes durante o teste
+      - name: isp
+        description: Provedor de serviços de internet
+      - name: internal_ip
+        description: Endereço IP interno usado durante o teste
+      - name: external_ip
+        description: Endereço IP externo usado durante o teste
+      - name: mac_address
+        description: Endereço MAC do dispositivo utilizado para o teste
+      - name: is_vpn
+        description: Indica se uma VPN estava em uso durante o teste
+      - name: server_id
+        description: Identificador do servidor de teste
+      - name: server_name
+        description: Nome do servidor de teste
+      - name: server_location
+        description: Localização do servidor de teste
+      - name: server_country
+        description: País do servidor de teste
+      - name: server_host
+        description: Host do servidor de teste
+      - name: server_port
+        description: Porta utilizada pelo servidor de teste
+      - name: server_ip
+        description: Endereço IP do servidor de teste
+      - name: result_id
+        description: Identificador único do resultado do teste
+      - name: result_url
+        description: URL com detalhes do resultado do teste
+      - name: metadata
+        description: Estrutura que armazena metadados relacionados ao teste
+      - name: metadata.host_executed_at
+        description: Timestamp de execução do teste
+      - name: metadata.host_created_at
+        description: Timestamp de criação do registro pelo host
+      - name: metadata.gcs_created_at
+        description: Timestamp de criação do registro no Google Cloud Storage
+      - name: metadata.gcs_updated_at
+        description: Timestamp de atualização do registro no Google Cloud Storage
+      - name: metadata.datalake_loaded_at
+        description: Timestamp de carregamento do registro no Datalake
