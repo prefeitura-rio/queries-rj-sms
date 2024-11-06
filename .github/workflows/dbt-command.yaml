@@ -11,15 +11,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get modified SQL files
+      - name: Get modified SQL files using GitHub API
         id: get_sql_files
-        run: |
-          # Get modified files from the last commit in the PR
-          modified_files=$(git diff --name-only HEAD^ HEAD)
-          # Filter .sql files, remove path and extension
-          sql_files=$(echo "$modified_files" | grep '\.sql$' | sed 's|.*/||; s|\.sql$||' | tr '\n' ' ')
-          # Set output
-          echo "sql_files=${sql_files}" >> $GITHUB_ENV
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            const sqlFiles = files.data
+              .filter(file => file.filename.endsWith('.sql'))
+              .map(file => file.filename.split('/').pop().replace('.sql', ''))
+              .join(' ');
+            core.setOutput("sql_files", sqlFiles);
 
       - name: Create DBT run command
         id: dbt_run_command
