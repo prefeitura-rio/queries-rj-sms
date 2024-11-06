@@ -3,16 +3,13 @@ import sys
 from pathlib import Path
 from typing import List
 
-
-message_id = 0
-
 def log(message: str):
     """
     Logs a message to the output of a GitHub Action.
     """
     message = message.replace("\n", "%0A")
-    print(f"pr-message={message} >> $GITHUB_OUTPUT")
-
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as output_file:
+        output_file.write(f"pr-message={message}\n")
 
 if __name__ == "__main__":
     # Assert arguments.
@@ -45,7 +42,7 @@ if __name__ == "__main__":
 
     # Format a message for the files that depend on the exported declarations.
     if len(changed_files) > 0:
-        message += "**Os seguintes modelos foram modificados:"
+        message += "**Os seguintes modelos foram modificados:**"
         for file_ in changed_files:
             message += f"\n\t- `{file_}`"
         message += "\n\n"
@@ -65,4 +62,4 @@ if __name__ == "__main__":
     message += f"```bash\n{command}\n```"
 
     print(message)
-    log(command)
+    log(message)

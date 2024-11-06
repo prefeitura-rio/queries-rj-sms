@@ -20,6 +20,8 @@ jobs:
         continue-on-error: true
         run: |
           python .github/workflows/scripts/create_dbt_run_command.py "${{ steps.files.outputs.all }}"
+        env:
+          GITHUB_OUTPUT: $GITHUB_ENV
 
       - name: Delete previous comments
         uses: izhangzhihao/delete-comment@master
