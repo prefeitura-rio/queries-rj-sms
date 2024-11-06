@@ -8,7 +8,6 @@ def log(message: str):
     """
     Logs a message to the output of a GitHub Action.
     """
-    message = message.replace("\n", "%0A")
     with open(os.environ['GITHUB_OUTPUT'], 'a') as output_file:
         output_file.write(f"pr-message={message}\n")
 
