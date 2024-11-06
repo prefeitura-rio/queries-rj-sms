@@ -11,7 +11,7 @@ def log(message: str):
     Logs a message to the output of a GitHub Action.
     """
     message = message.replace("\n", "%0A")
-    print(f"::set-output name=pr-message::{message}")
+    print(f"pr-message={message} >> $GITHUB_OUTPUT")
 
 
 if __name__ == "__main__":
@@ -51,7 +51,6 @@ if __name__ == "__main__":
         message += "\n\n"
 
     # Create DBT run command
-
     models = []
     for file_ in changed_files:
         file_without_extension = file_.replace(".sql", "")
@@ -59,7 +58,8 @@ if __name__ == "__main__":
         model_name = f"{model_name}+"
         models.append(model_name)
     
-    command = f"dbt run --select {' '.join(models)} --full-refresh"
+    model_sequence = ' '.join(models)
+    command = f"dbt run --select {model_sequence} --full-refresh"
 
     message += "### Comando para rodar DBT\n\n"
     message += f"```bash\n{command}\n```"
