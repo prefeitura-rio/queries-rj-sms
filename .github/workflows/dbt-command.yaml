@@ -10,47 +10,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Get all modified SQL files in PR
-        id: get_sql_files
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const prNumber = context.payload.pull_request.number;
-            const files = await github.paginate(github.rest.pulls.listFiles, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber,
-            });
-            const sqlFiles = files
-              .map(file => file.filename)
-              .filter(name => name.endsWith('.sql'))
-              .map(name => name.split('/').pop().replace('.sql', ''))
-              .join(' ');
-            core.setOutput("sql_files", sqlFiles);
-
-      - name: Create DBT run command
-        id: dbt_run_command
+      
+      - name: Get changed files
+        id: files
+        uses: Ana06/get-changed-files@v2.1.0
+      
+      - name: Create DBT Run Command
+        id: create-dbtrun-command
+        continue-on-error: true
         run: |
-          if [ -z "$sql_files" ]; then
-            echo "No SQL files modified."
-            echo "dbt_run_command=No SQL files to run." >> $GITHUB_ENV
-          else
-            dbt_command="dbt run --select ${sql_files// /+} --full-refresh"
-            echo "dbt_run_command=${dbt_command}" >> $GITHUB_ENV
-          fi
+          python .github/workflows/scripts/create_dbt_run_command.py "${{ steps.files.outputs.all }}"
 
-      - name: Add DBT command as a PR comment
-        uses: actions/github-script@v6
+      - name: Delete previous comments
+        uses: izhangzhihao/delete-comment@master
         with:
-          script: |
-            const command = process.env.dbt_run_command;
-            const prNumber = context.payload.pull_request.number;
-            if (command) {
-              await github.rest.issues.createComment({
-                issue_number: prNumber,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `### DBT Run Command\n\`\`\`bash\n${command}\n\`\`\``
-              });
-            }
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_user_name: github-actions[bot]
+          issue_number: ${{ github.event.number }}
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: "${{ steps.code-tree-analysis.outputs.pr-message }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
