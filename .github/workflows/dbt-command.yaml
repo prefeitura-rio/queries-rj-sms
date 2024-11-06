@@ -11,20 +11,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get modified SQL files using GitHub API
+      - name: Get all modified SQL files in PR
         id: get_sql_files
         uses: actions/github-script@v6
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
-            const files = await github.rest.pulls.listFiles({
+            const files = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: prNumber
+              pull_number: prNumber,
             });
-            const sqlFiles = files.data
-              .filter(file => file.filename.endsWith('.sql'))
-              .map(file => file.filename.split('/').pop().replace('.sql', ''))
+            const sqlFiles = files
+              .map(file => file.filename)
+              .filter(name => name.endsWith('.sql'))
+              .map(name => name.split('/').pop().replace('.sql', ''))
               .join(' ');
             core.setOutput("sql_files", sqlFiles);
 
