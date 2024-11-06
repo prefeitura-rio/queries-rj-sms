@@ -63,4 +63,6 @@ if __name__ == "__main__":
 
     message += "### Comando para rodar DBT\n\n"
     message += f"```bash\n{command}\n```"
+
+    print(message)
     log(command)
