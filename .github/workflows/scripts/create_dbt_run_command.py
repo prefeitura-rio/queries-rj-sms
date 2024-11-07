@@ -4,15 +4,14 @@ import os
 from pathlib import Path
 from typing import List
 
+
 def log(message: str):
     """
     Logs a message to the output of a GitHub Action.
-    Encodes special characters to ensure proper handling.
     """
-    # Encode special characters
-    message = message.replace("%", "%25").replace("\n", "%0A").replace("\r", "%0D")
     with open(os.environ['GITHUB_OUTPUT'], 'a') as output_file:
-        output_file.write(f"pr-message={message}\n")
+        output_file.write(f"pr_message<<EOF\n{message}\nEOF\n")
+
 
 if __name__ == "__main__":
     # Assert arguments.
