@@ -9,8 +9,8 @@ def log(message: str):
     """
     Logs a message to the output of a GitHub Action.
     """
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as output_file:
-        output_file.write(f"pr_message<<EOF\n{message}\nEOF\n")
+    with open("./message.txt", 'w+') as output_file:
+        output_file.write(message)
 
 
 if __name__ == "__main__":
