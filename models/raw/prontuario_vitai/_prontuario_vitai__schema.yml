@@ -1237,3 +1237,174 @@ models:
         data_tests:
           - not_null:
               name: raw_prontuario_vitai__dtw__internacao__imported_at__not_null
+  - name: raw_prontuario_vitai__basecentral__item_prescricao
+    description: "Tabela de eventos de prescrição, sincronizada com Vitai."
+    columns:
+      - name: gid
+        description: "Identificador global da prescrição na base da Vitai."
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: gid_estabelecimento
+        description: "Identificador global do estabelecimento na base da Vitai."
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: gid_boletim
+        description: "Identificador global do boletim de atendimento na base da Vitai."
+        data_type: string
+
+      - name: gid_prescricao
+        description: "Identificador global do evento de prescrição na base da Vitai."
+        data_type: string
+
+      - name: item_prescrito
+        description: "Nome do item prescrito."
+        data_type: string
+
+      - name: descricao_item
+        description: "Descrição do item prescrito."
+        data_type: string
+
+      - name: quantidade
+        description: "Quantidade do item prescrito."
+        data_type: integer
+
+      - name: unidade_medida
+        description: "Unidade de medida do item prescrito."
+        data_type: string
+
+      - name: via_administracao
+        description: "Via de administração do item prescrito."
+        data_type: string
+
+      - name: observacao
+        description: "Observações adicionais sobre a prescrição."
+        data_type: string
+
+      - name: orientacao_uso
+        description: "Orientação de uso para o item prescrito."
+        data_type: string
+
+      - name: is_antibiotico
+        description: "Indica se o item prescrito é um antibiótico."
+        data_type: boolean
+
+      - name: produto_associado
+        description: "Nome do produto associado à prescrição."
+        data_type: string
+
+      - name: gid_produto
+        description: "Identificador global do produto associado."
+        data_type: string
+
+      - name: tipo_produto
+        description: "Tipo do produto associado."
+        data_type: string
+
+      - name: sigla_estabelecimento
+        description: "Sigla do estabelecimento de atendimento."
+        data_type: string
+
+      - name: nome_estabelecimento
+        description: "Nome do estabelecimento de atendimento."
+        data_type: string
+
+      - name: url_estabelecimento
+        description: "URL base do evento de prescrição."
+        data_type: string
+
+      - name: updated_at
+        description: "Data e hora do último evento de atualização do item prescrito."
+        data_type: timestamp
+
+      - name: centralized_at
+        description: "Data e hora de centralização do evento no sistema."
+        data_type: timestamp
+
+      - name: loaded_at
+        description: "Data e hora de importação para o Data Lake."
+        data_type: timestamp
+
+      - name: data_particao
+        description: "Data de particionamento do evento."
+        data_type: date
+models:
+  - name: raw_prontuario_vitai__basecentral__prescricao
+    description: "Tabela de eventos de prescrição e atendimento, sincronizada com Vitai."
+    columns:
+      - name: gid
+        description: "Identificador global da prescrição na base da Vitai."
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: gid_paciente
+        description: "Identificador global do paciente na base da Vitai."
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: gid_boletim
+        description: "Identificador global do boletim de atendimento na base da Vitai."
+        data_type: string
+
+      - name: gid_estabelecimento
+        description: "Identificador global do estabelecimento na base da Vitai."
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: gid_profissional
+        description: "Identificador global do profissional de saúde responsável na base da Vitai."
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: data_prescricao
+        description: "Data e hora da prescrição."
+        data_type: timestamp
+
+      - name: tipo_prescricao
+        description: "Tipo de prescrição registrada."
+        data_type: string
+
+      - name: urgencia
+        description: "Indica se a prescrição é urgente."
+        data_type: string
+
+      - name: rotina_enfermagem
+        description: "Indica se a prescrição faz parte da rotina de enfermagem."
+        data_type: string
+
+      - name: sigla_estabelecimento
+        description: "Sigla do estabelecimento de atendimento."
+        data_type: string
+
+      - name: nome_estabelecimento
+        description: "Nome do estabelecimento de atendimento."
+        data_type: string
+
+      - name: url_estabelecimento
+        description: "URL base do evento de prescrição."
+        data_type: string
+
+      - name: updated_at
+        description: "Data e hora do último evento de atualização do item prescrito."
+        data_type: timestamp
+
+      - name: centralized_at
+        description: "Data e hora de centralização do evento no sistema."
+        data_type: timestamp
+
+      - name: imported_at
+        description: "Data e hora de importação para o Data Lake."
+        data_type: timestamp
+
+      - name: data_particao
+        description: "Data de particionamento do evento."
+        data_type: date

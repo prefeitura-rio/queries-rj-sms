@@ -57,6 +57,23 @@ sources:
         freshness:
           warn_after: {count: 24, period: hour}
           error_after: {count: 48, period: hour}
+        
+
+      - name: basecentral__prescricao_eventos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
+
+
+      - name: basecentral__item_prescricao_eventos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
+
 
       - name: relato_cirurgico_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
