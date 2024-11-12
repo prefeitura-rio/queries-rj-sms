@@ -22,7 +22,7 @@ git checkout "$BRANCH_NAME"
 
 echo ""
 echo ">>>>> Executando dbt e gerando artefatos para os ambientes de trabalho atuais"
-dbt build -s "@state:modified" --state target-base/
+dbt build -s "state:modified+" --defer --state target-base/
 dbt docs generate
 
 echo ""
