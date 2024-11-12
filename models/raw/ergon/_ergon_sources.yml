@@ -6,3 +6,4 @@ sources:
     schema: brutos_ergon_staging
     tables:
       - name: funcionarios_ativos
+      - name: funcionarios
