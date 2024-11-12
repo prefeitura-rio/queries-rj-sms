@@ -32,7 +32,7 @@ with
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
-            null as prescricoes,  -- VITAI source does not have prescription data
+            prescricoes,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,

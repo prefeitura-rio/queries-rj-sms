@@ -108,7 +108,7 @@ with
     encounter_prescription as (
         select 
         distinct ep.id_episodio, 
-        concat(p.nome,' ',p.concentracao) as prescricao
+        concat(p.nome,IF(p.concentracao is null, '',concat(' ',p.concentracao))) as prescricao
         from {{ ref("mart_historico_clinico__episodio") }} as ep, unnest(ep.prescricoes) as p
     ),
     encounter_prescription_agg as (
