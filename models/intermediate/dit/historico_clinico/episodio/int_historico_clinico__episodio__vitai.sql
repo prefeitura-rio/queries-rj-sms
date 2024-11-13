@@ -120,7 +120,14 @@ with
             CASE 
                 WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO') THEN upper(observacao)
                 ELSE upper(item_prescrito)
-            END as prescricoes_nome
+            END as nome,
+            quantidade,
+            unidade_medida,
+            CASE 
+                WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO') THEN null
+                ELSE coalesce(upper(observacao),upper(orientacao_uso))
+            END as uso,
+            via_administracao
         from {{ ref("raw_prontuario_vitai__basecentral__item_prescricao") }} 
         where trim(tipo_produto) = 'MEDICACAO'
     ),   
@@ -129,12 +136,13 @@ with
             gid_boletim, 
             array_agg(
                 struct(
-                    safe_cast(null as string) as id,
-                    prescricoes_nome as nome,
-                    safe_cast(null as string) as concentracao,
-                    safe_cast(null as string) as uso_continuo 
+                    nome,
+                    quantidade,
+                    unidade_medida,
+                    uso,
+                    via_administracao
                 )
-            ) as prescricoes
+            ) as medicamentos_administrados
         from prescricoes_limpo
         group by 1
     ),
@@ -492,8 +500,8 @@ with
             -- Condições
             cid_grouped.condicoes,
 
-            -- Prescrições
-            prescricoes_agg.prescricoes,
+            -- Medicamentos administrados
+            prescricoes_agg.medicamentos_administrados,
 
             -- Estabelecimento
             atendimento_struct.estabelecimento,

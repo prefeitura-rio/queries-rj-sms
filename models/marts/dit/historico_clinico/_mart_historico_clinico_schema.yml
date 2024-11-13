@@ -145,6 +145,24 @@ models:
       - name: prescricoes.uso_continuo
         description: >
           Indica se o medicamento prescrito é de uso contínuo.
+      - name: medicamentos_administrados
+        description: >
+          Informações sobre as medicações administradas durante o atendimento.
+      - name: medicamentos_administrados.nome
+        description: |
+          Nome do medicamento administrado.
+      - name: medicamentos_administrados.quantidade
+        description: |
+          Quantidade administrada do medicamento.
+      - name: medicamentos_administrados.unidade_medida
+        description: |
+          Unidade em que esta medido o campo de quantidade.
+      - name: medicamentos_administrados.uso
+        description: >
+          Indica como é feito o uso do medicamento administrado.
+      - name: medicamentos_administrados.via_administracao
+        description: >
+          Indica qual via é feita a administração do medicamento.
       - name: estabelecimento
         description: >
           Informações sobre o estabelecimento de saúde onde o atendimento foi

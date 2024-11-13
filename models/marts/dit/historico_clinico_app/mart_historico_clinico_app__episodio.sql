@@ -105,10 +105,32 @@ with
 
         from {{ ref("mart_historico_clinico__episodio") }}
     ),
+    encounter_medicines as (
+        select distinct 
+        ep.id_episodio, 
+        concat(med.nome,-- lala, , s , 
+                ', ',
+                IF(med.unidade_medida is null, '',med.unidade_medida),
+                ', ',
+                IF(med.uso is null,'',med.uso),
+                ', ',
+                IF(med.via_administracao is null,'',med.via_administracao),
+                IF(med.quantidade is null,'',concat('. QUANTIDADE: ',med.quantidade))
+            ) as medicamento_administrado
+        from {{ ref("mart_historico_clinico__episodio") }} as ep, unnest(ep.medicamentos_administrados) as med
+        where med.nome is not null
+    ),
+    encounter_medicines_agg as (
+        select 
+        id_episodio, 
+        string_agg(regexp_replace(medicamento_administrado,'(, )+',', '),'\n') as medicines_administered
+        from encounter_medicines
+        group by 1
+    ),
     encounter_prescription as (
         select 
         distinct ep.id_episodio, 
-        concat(p.nome,IF(p.concentracao is null, '',concat(' ',p.concentracao))) as prescricao
+        concat(p.nome,' ',p.concentracao) as prescricao
         from {{ ref("mart_historico_clinico__episodio") }} as ep, unnest(ep.prescricoes) as p
     ),
     encounter_prescription_agg as (
@@ -118,6 +140,7 @@ with
         from encounter_prescription
         group by 1
     ),
+
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- FORMATAÇÃO
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -142,6 +165,7 @@ with
             ) as clinical_exams,
             safe_cast(procedimentos_realizados as string) as procedures,
             safe_cast(prescription as string) as prescription,
+            safe_cast(medicines_administered as string) as medicines_administered,
             array(
                 select struct(descricao as description , situacao as status) 
                 from unnest(condicoes) 
@@ -196,6 +220,8 @@ with
         from todos_episodios
         left join encounter_prescription_agg
         on todos_episodios.id_episodio = encounter_prescription_agg.id_episodio
+        left join encounter_medicines_agg
+        on todos_episodios.id_episodio = encounter_medicines_agg.id_episodio
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- FINAL
