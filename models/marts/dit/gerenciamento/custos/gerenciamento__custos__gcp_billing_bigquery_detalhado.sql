@@ -112,7 +112,7 @@ with
                 destination_project_id as project_id,
                 regexp_replace(
                 destination_dataset_id,
-                r'(dev_fantasma__|diego__|miloskimatheus__|pedro__|thiago__|vitoria__)',
+                r'(dev_fantasma__|diego__|miloskimatheus__|pedro__|thiago__|vit__)',
                 ''
                 ) as dataset_id,
                 destination_table_id as table_id
