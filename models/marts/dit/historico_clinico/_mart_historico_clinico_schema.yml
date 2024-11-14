@@ -87,7 +87,7 @@ models:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: medidas
         description: >
-          Medidas realizadas durante o episódio.
+          Medidas aferidas durante o episódio.
       - name: medidas.altura
         description: |
           Altura do paciente em centímetros (cm).
