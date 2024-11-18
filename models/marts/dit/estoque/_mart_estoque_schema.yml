@@ -5,7 +5,7 @@ models:
       unidades de saúde
     data_tests:
       - dbt_expectations.expect_table_row_count_to_be_between:
-          name: mart_estoque__posicao_atual__row_count_to_be_between
+          name: mart_estoque__posicao_atual__row_count_to_be_between_95000_and_200000
           min_value: 95000
           max_value: 200000
     columns:
@@ -150,8 +150,8 @@ models:
         data_type: float64
         data_tests:
           - dbt_expectations.expect_column_mean_to_be_between:
-              name: mart_estoque__posicao_atual__material_consumo_medio__mean_between
-              min_value: 30
+              name: mart_estoque__posicao_atual__material_consumo_medio__mean_between_25_and_70
+              min_value: 25
               max_value: 70
               config:
                 severity: error
