@@ -85,6 +85,74 @@ models:
           Desfecho do atendimento, obtido a partir do boletim de atendimento.
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas
+        description: >
+          Medidas aferidas durante o episódio.
+      - name: medidas.altura
+        description: |
+          Altura do paciente em centímetros (cm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.circunferencia_abdominal
+        description: |
+          Circunferência abdominal do paciente em centímetros (cm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.frequencia_cardiaca
+        description: |
+          Frequência cardíaca do paciente em batimentos por minuto (bpm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.frequencia_respiratoria
+        description: |
+          Frequência respiratória do paciente em respirações por minuto (rpm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.glicemia
+        description: |
+          Glicemia em jejumdo paciente em miligramas por decilitro (mg/dl).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.hemoglobina_glicada
+        description: |
+          Hemoglobina glicada A1c (HbA1c) do paciente em percentuais (%).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.imc
+        description: |
+          Índice de Massa Corporal do paciente em quilogramas por metro quadrado (kg/m²).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.peso
+        description: |
+          Peso do paciente em quilogramas (kg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pressao_sistolica
+        description: |
+          Pressão arterial sistólica do paciente em milímetros de mercúrio (mmHg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pressao_diastolica
+        description: |
+          Pressão arterial diastólica do paciente em milímetros de mercúrio (mmHg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pulso_ritmo
+        description: |
+          Ritmo cardíaco do paciente. O valor pode ser 'filiforme', 'arritmico', 'ritmico cheio' ou 'ritmico debil'.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.saturacao_oxigenio
+        description: |
+          Saturação de oxigênio do paciente em percentuais (%).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.temperatura
+        description: |
+          Temperatura do paciente em graus Celsius (°C).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: procedimentos_realizados
         description: >
           Procedimentos realizados durante o episódio.
