@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_conectividade_staging
+    database: rj-sms
+    schema: brutos_conectividade_staging
+    tables:
+      - name: vitacare

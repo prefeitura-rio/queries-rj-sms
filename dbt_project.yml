@@ -101,6 +101,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      conectividade:
+        +schema: brutos_conectividade
+        +tags: ["daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_sensivel: nao
       datasus:
         +schema: brutos_datasus
         +tags: "weekly"
@@ -136,8 +143,15 @@ models:
         +tags: ["smsrio", "daily"]
         +labels:
           dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      plataforma_clickup:
+        +schema: brutos_plataforma_clickup
+        +tags: ["daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]
