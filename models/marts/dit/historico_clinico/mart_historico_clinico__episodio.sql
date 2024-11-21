@@ -34,6 +34,21 @@ with
             condicoes,
             null as prescricoes,
             medicamentos_administrados,
+            struct(
+                cast(null as float64) as altura,
+                cast(null as float64) as circunferencia_abdominal,
+                cast(null as float64) as frequencia_cardiaca,
+                cast(null as float64) as frequencia_respiratoria,
+                cast(null as float64) as glicemia,
+                cast(null as float64) as hemoglobina_glicada,
+                cast(null as float64) as imc,
+                cast(null as float64) as peso,
+                cast(null as float64) as pressao_sistolica,
+                cast(null as float64) as pressao_diastolica,
+                cast(null as string) as pulso_ritmo,
+                cast(null as float64) as saturacao_oxigenio,
+                cast(null as float64) as temperatura
+            ) as medidas,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
@@ -55,6 +70,7 @@ with
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
+            medidas,
             prescricoes,
             null as medicamentos_administrados,
             estabelecimento,
@@ -69,13 +85,15 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     deceased as (
         select boletim_obito
-        from {{ref('int_historico_clinico__obito__vitai')}}, unnest(gid_boletim_obito) as boletim_obito    
+        from
+            {{ ref("int_historico_clinico__obito__vitai") }},
+            unnest(gid_boletim_obito) as boletim_obito
     ),
     merged_data_deceased as (
-        select *, IF(deceased.boletim_obito is null, False, True) as obito_indicador
+        select *, if(deceased.boletim_obito is null, false, true) as obito_indicador
         from merged_data
-        left join deceased
-        on merged_data.prontuario.id_atendimento = deceased.boletim_obito
+        left join
+            deceased on merged_data.prontuario.id_atendimento = deceased.boletim_obito
 
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -99,6 +117,7 @@ with
             merged_data_deceased.*,
         from merged_data_deceased
     ),
+
     deduped as (
         select *
         from fingerprinted
@@ -109,51 +128,54 @@ with
     -- CID: Add CID summarization
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     eps_cid_subcat as (
-        select  
-            id_episodio, 
-            cid.id,
-            cid.descricao,
-            cid.situacao,
-            cid.data_diagnostico, 
-            best_agrupador as descricao_agg
-        from  deduped, unnest(condicoes) as cid 
-        LEFT JOIN {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
-        on agg_4_dig.id = regexp_replace(cid.id,r'\.','')
-        where char_length(regexp_replace(cid.id,r'\.','')) = 4
-    ),
-    eps_cid_cat as (
-        select 
-            id_episodio, 
+        select
+            id_episodio,
             cid.id,
             cid.descricao,
             cid.situacao,
             cid.data_diagnostico,
-            best_agrupador  as descricao_agg
-        from  deduped, unnest(condicoes) as cid 
-        LEFT JOIN {{ ref("int_historico_clinico__cid_categoria") }} as agg_3_dig
-        on agg_3_dig.id_categoria = regexp_replace(cid.id,r'\.','')
-        where char_length(regexp_replace(cid.id,r'\.','')) = 3
+            best_agrupador as descricao_agg
+        from deduped, unnest(condicoes) as cid
+        left join
+            {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
+            on agg_4_dig.id = regexp_replace(cid.id, r'\.', '')
+        where char_length(regexp_replace(cid.id, r'\.', '')) = 4
     ),
+    eps_cid_cat as (
+        select
+            id_episodio,
+            cid.id,
+            cid.descricao,
+            cid.situacao,
+            cid.data_diagnostico,
+            best_agrupador as descricao_agg
+        from deduped, unnest(condicoes) as cid
+        left join
+            {{ ref("int_historico_clinico__cid_categoria") }} as agg_3_dig
+            on agg_3_dig.id_categoria = regexp_replace(cid.id, r'\.', '')
+        where char_length(regexp_replace(cid.id, r'\.', '')) = 3
+    ),
+
     all_cids as (
-    select     
-        id_episodio,
-        array_agg(
-            struct(
-                id, 
-                descricao, 
-                situacao,
-                data_diagnostico, 
-                descricao_agg as resumo
+        select
+            id_episodio,
+            array_agg(
+                struct(
+                    id, descricao, situacao, data_diagnostico, descricao_agg as resumo
+                )
+                order by data_diagnostico desc, descricao
+            ) as condicoes
+        from
+            (
+                select *
+                from eps_cid_subcat
+                union all
+                select *
+                from eps_cid_cat
             )
-            order by data_diagnostico desc, descricao
-        ) as condicoes
-    from (
-        select * from eps_cid_subcat
-        union all
-        select * from eps_cid_cat
-    )
-    group by 1
+        group by 1
     ),
+
     final as (
     select 
         deduped.paciente_cpf,
@@ -166,6 +188,7 @@ with
         deduped.saida_datahora,
         deduped.exames_realizados,
         deduped.procedimentos_realizados,
+        deduped.medidas,
         deduped.motivo_atendimento,
         deduped.desfecho_atendimento,
         deduped.obito_indicador,
@@ -181,9 +204,7 @@ with
     left join all_cids 
     on all_cids.id_episodio = deduped.id_episodio
 )
+select *
+from final
 
-select * from final
-
-{% if is_incremental() %}
-    where data_particao >= {{ partitions_to_replace }}
-{% endif %}
+{% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}
