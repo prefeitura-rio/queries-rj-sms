@@ -757,11 +757,11 @@ models:
         description: "Nome do pai do profissional."
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
-      - name: profissional_genero,
+      - name: profissional_genero
         description: "Gênero do profissional."
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
-      - name: profissional_raca,
+      - name: profissional_raca
         description: "Raça/cor do profissional."
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
