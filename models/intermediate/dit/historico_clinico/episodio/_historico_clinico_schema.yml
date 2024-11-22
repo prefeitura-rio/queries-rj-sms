@@ -89,6 +89,24 @@ models:
       - name: condicoes.data_diagnostico
         description: |
           Data do diagnóstico da condição na Atenção Primária. Para a Vitai, este campo é vazio.
+      - name: medicamentos_administrados
+        description: >
+          Informações sobre as medicações administradas durante o atendimento.
+      - name: medicamentos_administrados.nome
+        description: |
+          Nome do medicamento administrado.
+      - name: medicamentos_administrados.quantidade
+        description: |
+          Quantidade administrada do medicamento.
+      - name: medicamentos_administrados.unidade_medida
+        description: |
+          Unidade em que esta medido o campo de quantidade.
+      - name: medicamentos_administrados.uso
+        description: >
+          Indica como é feito o uso do medicamento administrado.
+      - name: medicamentos_administrados.via_administracao
+        description: >
+          Indica qual via é feita a administração do medicamento.
       - name: alergias
         description: >
           Descrições das alergias associadas ao atendimento, extraídas dos

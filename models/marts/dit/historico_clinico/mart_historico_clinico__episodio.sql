@@ -32,6 +32,8 @@ with
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
+            null as prescricoes,
+            medicamentos_administrados,
             struct(
                 cast(null as float64) as altura,
                 cast(null as float64) as circunferencia_abdominal,
@@ -47,7 +49,6 @@ with
                 cast(null as float64) as saturacao_oxigenio,
                 cast(null as float64) as temperatura
             ) as medidas,
-            null as prescricoes,  -- VITAI source does not have prescription data
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
@@ -71,6 +72,7 @@ with
             condicoes,
             medidas,
             prescricoes,
+            null as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
@@ -175,32 +177,33 @@ with
     ),
 
     final as (
-        select
-            deduped.paciente_cpf,
-            deduped.id_episodio,
-            deduped.paciente,
-            deduped.tipo,
-            deduped.subtipo,
-            cast(deduped.entrada_datahora as date) as entrada_data,
-            deduped.entrada_datahora,
-            deduped.saida_datahora,
-            deduped.exames_realizados,
-            deduped.procedimentos_realizados,
-            deduped.medidas,
-            deduped.motivo_atendimento,
-            deduped.desfecho_atendimento,
-            deduped.obito_indicador,
-            all_cids.condicoes,
-            deduped.prescricoes,
-            deduped.estabelecimento,
-            deduped.profissional_saude_responsavel,
-            deduped.prontuario,
-            deduped.metadados,
-            cast(deduped.entrada_datahora as date) as data_particao
-        from deduped
-        left join all_cids on all_cids.id_episodio = deduped.id_episodio
-    )
-
+    select 
+        deduped.paciente_cpf,
+        deduped.id_episodio,
+        deduped.paciente,
+        deduped.tipo,
+        deduped.subtipo,
+        cast(deduped.entrada_datahora as date) as entrada_data,
+        deduped.entrada_datahora,
+        deduped.saida_datahora,
+        deduped.exames_realizados,
+        deduped.procedimentos_realizados,
+        deduped.medidas,
+        deduped.motivo_atendimento,
+        deduped.desfecho_atendimento,
+        deduped.obito_indicador,
+        all_cids.condicoes,
+        deduped.prescricoes,
+        deduped.medicamentos_administrados,
+        deduped.estabelecimento,
+        deduped.profissional_saude_responsavel,
+        deduped.prontuario,
+        deduped.metadados,
+        cast(deduped.entrada_datahora as date) as data_particao
+    from deduped
+    left join all_cids 
+    on all_cids.id_episodio = deduped.id_episodio
+)
 select *
 from final
 
