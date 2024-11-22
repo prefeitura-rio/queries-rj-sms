@@ -32,8 +32,6 @@ with
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
-            null as prescricoes,
-            medicamentos_administrados,
             struct(
                 cast(null as float64) as altura,
                 cast(null as float64) as circunferencia_abdominal,
@@ -49,6 +47,8 @@ with
                 cast(null as float64) as saturacao_oxigenio,
                 cast(null as float64) as temperatura
             ) as medidas,
+            array<struct<id string, nome string, concentracao string, uso_continuo string>>[] as prescricoes,
+            medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
@@ -72,7 +72,7 @@ with
             condicoes,
             medidas,
             prescricoes,
-            null as medicamentos_administrados,
+            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string>>[] as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
