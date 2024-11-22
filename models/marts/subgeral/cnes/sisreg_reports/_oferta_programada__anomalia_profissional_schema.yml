@@ -1,0 +1,49 @@
+version: 2
+models:
+  - name: oferta_programada__anomalia_profissional
+    description: O modelo 'oferta_programada__anomalia_profissional' foi desenvolvido para identificar quedas anômalas no número de vagas programadas por profissionais da SMS Rio no SISREG. Ele calcula o desvio absoluto da mediana da diferença do número de vagas ofertadas por cada profissional nos últimos seis meses e utiliza este valor para identificar desvios significativos no número de vagas programadas para o próximo mês. O modelo retorna o ID CNES do estabelecimento, o CPF do profissional, o ID interno do procedimento, os meses analisados, o número histórico de vagas ofertadas, o número de vagas programadas para o próximo mês, o déficit de vagas para o próximo mês e a data do cálculo da anomalia.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_calculo_anomalia
+            - id_cnes
+            - profissional_cpf
+            - id_procedimento
+
+    columns:
+      - name: id_cnes
+        description: Esta coluna representa o identificador único do estabelecimento de saúde onde o procedimento é realizado. É um código numérico fornecido pelo Cadastro Nacional de Estabelecimentos de Saúde (CNES).
+        data_type: string
+        quote: true
+      - name: profissional_cpf
+        description: Esta coluna representa o identificador único do profissional que realizou o procedimento. É o CPF (Cadastro de Pessoas Físicas) do profissional, que é o registro de identificação de contribuintes individuais no Brasil.
+        data_type: string
+        quote: true
+      - name: id_procedimento
+        description: Esta coluna representa o identificador único do procedimento realizado. É um código numérico fornecido pelo sistema de saúde para classificar diferentes tipos de procedimentos.
+        data_type: string
+        quote: true
+      - name: meses_analisados
+        description: Esta coluna representa os meses que foram analisados para o profissional dado. É um array de datas, cada uma representando um mês no período de análise.
+        data_type: date
+        quote: true
+      - name: historico_vagas_ofertadas
+        description: Esta coluna representa o número histórico de vagas ofertadas pelo profissional para cada mês no período de análise. É um array de inteiros, cada um representando o número de vagas ofertadas em um mês correspondente na coluna 'meses_analisados'.
+        data_type: int64
+        quote: true
+      - name: vagas_programadas_proximo_mes
+        description: Esta coluna representa o número de vagas que o profissional programou para o próximo mês. É um valor inteiro.
+        data_type: int64
+        quote: true
+      - name: deficit_vagas_proximo_mes
+        description: Esta coluna representa a diferença entre o número de vagas ofertadas no próximo mês e o número de vagas ofertadas no último mês histórico. Um valor negativo indica uma redução no número de vagas programadas.
+        data_type: int64
+        data_tests:
+          - not_null
+        quote: true
+      - name: data_calculo_anomalia
+        description: Esta coluna representa a data em que o cálculo da anomalia foi realizado. A data está no formato 'YYYY-MM-DD'.
+        data_type: date
+        quote: true
+        data_tests:
+          - not_null
