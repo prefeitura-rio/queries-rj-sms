@@ -59,7 +59,7 @@ with
 
     -- Etapa 4: Agregar vagas planejadas para o próximo mês
     -- Calculamos o total de vagas planejadas para o próximo mês
-    vagas_proximo_mes as (
+    vagas_proximo_mes_tb as (
         select
             profissional_executante_cpf,
             id_procedimento_interno,
@@ -184,17 +184,18 @@ with
     preparacao_anomalia as (
         select
             calculos_mad.*,
-            vagas_proximo_mes.vagas_proximo_mes,
-            vagas_proximo_mes.vagas_proximo_mes
+            vagas_proximo_mes_tb.vagas_proximo_mes,
+            vagas_proximo_mes_tb.vagas_proximo_mes
             - calculos_mad.vagas_ultimo_mes as diferenca_proximo_mes
         from calculos_mad
         left join
-            vagas_proximo_mes using (
+            vagas_proximo_mes_tb using (
                 profissional_executante_cpf,
                 id_procedimento_interno,
                 id_estabelecimento_executante
             )
-        where (vagas_proximo_mes.vagas_proximo_mes - calculos_mad.vagas_ultimo_mes) < 0
+        where
+            (vagas_proximo_mes_tb.vagas_proximo_mes - calculos_mad.vagas_ultimo_mes) < 0
     ),
 
     -- Etapa 12: Calcular pontuações de anomalia para desvios significativos

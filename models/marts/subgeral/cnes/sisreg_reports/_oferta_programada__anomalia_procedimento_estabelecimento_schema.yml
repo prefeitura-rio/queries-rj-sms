@@ -1,0 +1,52 @@
+models:
+  - name: oferta_programada__anomalia_procedimento_estabelecimento
+    description: O modelo 'oferta_programada__anomalia_procedimento_estabelecimento_procedimento' foi desenvolvido para identificar anomalias no agendamento de procedimentos em estabelecimentos de saúde. 
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_calculo_anomalia
+            - id_cnes
+            - profissional_cpf
+            - id_procedimento
+
+    columns:
+      - name: competencia
+        description: Esta coluna representa o mês e o ano dos dados analisados. É derivada da coluna 'procedimento_vigencia_data' na tabela 'oferta_programada_serie_historica', truncada para o mês.
+        data_type: date
+        quote: true
+      - name: id_cnes
+        description: Esta coluna representa o identificador único do estabelecimento de saúde onde o procedimento está agendado para ocorrer. É derivada da coluna 'id_estabelecimento_executante' na tabela 'oferta_programada_serie_historica'.
+        data_type: string
+        quote: true
+      - name: profissional_cpf
+        description: Esta coluna representa o identificador único (CPF) do profissional que está agendado para realizar o procedimento. É derivada da coluna 'profissional_executante_cpf' na tabela 'oferta_programada_serie_historica'.
+        data_type: string
+        quote: true
+      - name: id_procedimento
+        description: Este é o identificador único do procedimento. Ele é usado para rastrear e identificar cada procedimento no sistema.
+        data_type: string
+        quote: true
+      - name: vagas_programadas_competencia
+        description: Este campo representa o total de vagas programadas para o próximo mês. É calculado com base nos dados da tabela 'oferta_programada_serie_historica'.
+        data_type: int64
+        quote: true
+      - name: carga_horaria_ambulatorial_semanal
+        description: Este campo representa a carga horária ambulatorial semanal do profissional. É derivado da tabela 'profissional_sus_rio_historico' e é usado para calcular as vagas normalizadas.
+        data_type: int64
+        quote: true
+      - name: vagas_colegas_cnes_proced
+        description: Esta coluna representa o total de vagas disponíveis para um procedimento específico em um estabelecimento específico (identificado pelo CNES) por todos os profissionais.
+        data_type: int64
+        quote: true
+        data_tests:
+          - not_null
+      - name: ch_amb_colegas_cnes_proced
+        description: Esta coluna representa a carga horária ambulatorial total de todos os profissionais para um procedimento específico em um estabelecimento específico (identificado pelo CNES).
+        data_type: int64
+        quote: true
+      - name: data_calculo_anomalia
+        description: Esta coluna representa a data em que o cálculo da anomalia foi realizado.
+        data_type: date
+        quote: true
+        data_tests:
+          - not_null
