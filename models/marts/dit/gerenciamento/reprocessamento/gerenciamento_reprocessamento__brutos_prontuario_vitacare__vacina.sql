@@ -24,7 +24,7 @@ with
             unnest(
                 generate_date_array(
                     '2024-11-01',  -- data de quando começamos a ingestão vitacare
-                    date_sub(current_date('America/Sao_Paulo'), interval 4 day), -- 4 dias atrás (d-4), dado que o flow rotineiro roda d-3
+                    date_sub(current_date('America/Sao_Paulo'), interval 3 day), -- 4 dias atrás (d-4), dado que o flow rotineiro roda d-3
                     interval 1 day
                 )
             ) as data
