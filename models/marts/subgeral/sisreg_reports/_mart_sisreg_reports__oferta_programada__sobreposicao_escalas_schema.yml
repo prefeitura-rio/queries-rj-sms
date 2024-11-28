@@ -1,0 +1,25 @@
+models:
+  - name: mart_sisreg_reports__oferta_programada__sobreposicao_escalas
+    description: O modelo 'mart_sisreg_reports__oferta_programada__sobreposicao_escalas' foi desenvolvido para identificar sobreposições de escalas no conjunto de dados 'oferta_programada'. Ele seleciona a partição mais recente dos dados e filtra os registros onde a data inicial do procedimento está no próximo mês do ano atual. Em seguida, identifica sobreposições de escalas comparando os horários de início e término de diferentes escalas para o mesmo profissional no mesmo dia da semana. A saída final inclui o código CNES do estabelecimento e uma agregação em formato de string dos códigos de escalas sobrepostas, juntamente com a data do cálculo da anomalia. O modelo retorna apenas registros onde a data do cálculo da anomalia é posterior à data máxima na tabela 'oferta_programada__sobreposicao_escalas' do projeto 'projeto_sisreg_reports'.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_calculo_anomalia
+            - id_cnes
+            - codigos_escalas_sobrepostas_sisreg
+
+    columns:
+      - name: cnes
+        description: A coluna 'cnes' representa o identificador único do estabelecimento de saúde onde o procedimento está sendo executado.
+        data_type: string
+        quote: true
+      - name: codigos_escalas_sobrepostas_sisreg
+        description: A coluna 'codigos_escalas_sobrepostas_sisreg' contém uma agregação em formato de string dos códigos de escalas sobrepostas no sistema SISREG. Cada par de códigos sobrepostos é separado por uma vírgula, e dentro de cada par, os códigos são separados por dois pontos.
+        data_type: string
+        quote: true
+      - name: data_calculo_anomalia
+        description: A coluna 'data_calculo_anomalia' representa a data em que o cálculo da anomalia foi realizado. Esta coluna é usada para filtrar linhas em que a data de cálculo é mais antiga que a data de cálculo mais recente na tabela 'oferta_programada__sobreposicao_escalas'.
+        data_type: date
+        quote: true
+        data_tests:
+          - not_null
