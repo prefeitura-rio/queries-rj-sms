@@ -5,6 +5,7 @@
         alias="brutos_prontuario_vitacare__vacina",
         schema="gerenciamento__reprocessamento",
         materialized="incremental",
+        incremental_strategy = 'merge',
         unique_key=["id_cnes", "data"],
     )
 }}
@@ -22,21 +23,21 @@ with
         from
             unnest(
                 generate_date_array(
-                    '2024-09-01',  -- - data de quando começamos a ingestão vitacare
-                    date_sub(current_date('America/Sao_Paulo'), interval 1 day),
+                    '2024-11-01',  -- data de quando começamos a ingestão vitacare
+                    date_sub(current_date('America/Sao_Paulo'), interval 3 day), -- 4 dias atrás (d-4), dado que o flow rotineiro roda d-3
                     interval 1 day
                 )
             ) as data
     ),
 
-    calendario_sem_domingo as (
-        select *, extract(dayofweek from data) as dia_da_semana from calendario
-    ),  -- atentaçõa primaria não funciona no domingo
+    -- calendario_sem_domingo as (
+    --     select *, extract(dayofweek from data) as dia_da_semana from calendario
+    -- ),  -- atentaçõa primaria não funciona no domingo
 
     relacao_unidades_datas as (
         select id_cnes, area_programatica, nome_limpo, data
         from unidades
-        cross join calendario_sem_domingo as cal
+        cross join calendario as cal
     ),
 
     -- RELAÇÃO DE UNIDADES COM DADOS INGERIDOS

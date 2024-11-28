@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: monitor_vagas_ambulatoriais
+  - name: mart_monitora_reg__monitor_vagas_ambulatoriais
     description: "Esta tabela calcula indicadores a partir da união dos dados de oferta programada (SISREG) com os dados de vinculação dos profissionais (CNES)."
     data_tests:
       - dbt_utils.expression_is_true:
