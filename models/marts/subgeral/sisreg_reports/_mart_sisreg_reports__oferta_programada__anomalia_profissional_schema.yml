@@ -9,6 +9,7 @@ models:
             - id_cnes
             - profissional_cpf
             - id_procedimento
+          name: mart_oferta_programada__anomalia_profissional__unique_combination_of_columns
 
     columns:
       - name: id_cnes
@@ -39,11 +40,13 @@ models:
         description: Esta coluna representa a diferença entre o número de vagas ofertadas no próximo mês e o número de vagas ofertadas no último mês histórico. Um valor negativo indica uma redução no número de vagas programadas.
         data_type: int64
         data_tests:
-          - not_null
+          - not_null:
+              name: mart_oferta_programada__anomalia_profissional__deficit_vagas_proximo_mes__not_null
         quote: true
       - name: data_calculo_anomalia
         description: Esta coluna representa a data em que o cálculo da anomalia foi realizado. A data está no formato 'YYYY-MM-DD'.
         data_type: date
         quote: true
         data_tests:
-          - not_null
+          - not_null:
+              name: mart_oferta_programada__anomalia_profissional__data_calculo_anomalia__not_null

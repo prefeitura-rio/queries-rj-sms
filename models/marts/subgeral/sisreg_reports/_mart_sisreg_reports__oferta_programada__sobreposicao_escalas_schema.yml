@@ -7,6 +7,7 @@ models:
             - data_calculo_anomalia
             - id_cnes
             - codigos_escalas_sobrepostas_sisreg
+          name: mart_oferta_programada__sobreposicao_escalas__unique_combination_of_columns
 
     columns:
       - name: cnes
@@ -22,4 +23,5 @@ models:
         data_type: date
         quote: true
         data_tests:
-          - not_null
+          - not_null:
+              name: mart_oferta_programada__sobreposicao_escalas__data_calculo_anomalia__not_null

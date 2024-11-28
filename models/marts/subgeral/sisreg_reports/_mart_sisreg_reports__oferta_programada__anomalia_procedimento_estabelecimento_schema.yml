@@ -8,6 +8,7 @@ models:
             - id_cnes
             - profissional_cpf
             - id_procedimento
+          name: mart_oferta_programada__anomalia_procedimento_estabelecimento__unique_combination_of_columns
 
     columns:
       - name: competencia
@@ -39,7 +40,8 @@ models:
         data_type: int64
         quote: true
         data_tests:
-          - not_null
+          - not_null:
+              name: mart_oferta_programada__anomalia_procedimento_estabelecimento__vagas_colegas_cnes_proced__not_null
       - name: ch_amb_colegas_cnes_proced
         description: Esta coluna representa a carga horária ambulatorial total de todos os profissionais para um procedimento específico em um estabelecimento específico (identificado pelo CNES).
         data_type: int64
@@ -49,4 +51,5 @@ models:
         data_type: date
         quote: true
         data_tests:
-          - not_null
+          - not_null:
+              name: mart_oferta_programada__anomalia_procedimento_estabelecimento__data_calculo_anomalia__not_null
