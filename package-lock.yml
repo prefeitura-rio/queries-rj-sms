@@ -10,7 +10,7 @@ packages:
   - package: calogica/dbt_date
     version: 0.10.1
   - package: data-mie/dbt_profiler
-    version: 0.8.2
+    version: 0.8.3
   - package: dbt-labs/audit_helper
-    version: 0.12.0
-sha1_hash: 68d56d59897de97e07fef8011b53f4e10874bdef
+    version: 0.12.1
+sha1_hash: d44de29fe359fbacc86d50de8c158b29d1418b3b
