@@ -113,6 +113,39 @@ with
         select gid, cns, cpf, {{ proper_br("nome") }} as nome, cbo_descricao
         from profissional_int
     ),
+    -- Prescrições VITAI
+    prescricoes_limpo as (
+        select distinct
+            gid_boletim, 
+            CASE 
+                WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO') THEN upper(observacao)
+                ELSE upper(item_prescrito)
+            END as nome,
+            quantidade,
+            unidade_medida,
+            CASE 
+                WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO') THEN null
+                ELSE coalesce(upper(observacao),upper(orientacao_uso))
+            END as uso,
+            via_administracao
+        from {{ ref("raw_prontuario_vitai__basecentral__item_prescricao") }} 
+        where trim(tipo_produto) = 'MEDICACAO'
+    ),   
+    prescricoes_agg as (
+        select 
+            gid_boletim, 
+            array_agg(
+                struct(
+                    nome,
+                    quantidade,
+                    unidade_medida,
+                    uso,
+                    via_administracao
+                )
+            ) as medicamentos_administrados
+        from prescricoes_limpo
+        group by 1
+    ),
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabela de consultas
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -467,6 +500,9 @@ with
             -- Condições
             cid_grouped.condicoes,
 
+            -- Medicamentos administrados
+            prescricoes_agg.medicamentos_administrados,
+
             -- Estabelecimento
             atendimento_struct.estabelecimento,
 
@@ -486,6 +522,8 @@ with
             safe_cast(atendimento_struct.paciente.cpf as int64) as cpf_particao
         from atendimento_struct
         left join cid_grouped on atendimento_struct.id = cid_grouped.id
+        left join prescricoes_agg on atendimento_struct.id = prescricoes_agg.gid_boletim
+
     )
 
 select *
