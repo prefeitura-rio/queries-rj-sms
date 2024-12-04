@@ -1,0 +1,26 @@
+version: 2
+models:
+  - name: mart_prontuario_vitai__cid
+    description: >
+      Tabela contendo os CID dos pacientes que ainda estão em atendimento na VITAI.
+    columns:
+      - name: cpf
+        description: >
+          Cadastro de Pessoas Físicas do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: entrada_datahora
+        description: |
+          Data e hora do início do atendimento.
+      - name: condicoes
+        description: |
+          CIDs relacionados com o episódio.
+      - name: condicoes.id
+        description: |
+          Código CID relacionado com o episódio.
+      - name: condicoes.descricao
+        description: |
+          Descrição do código CID relacionado com o episódio.
+      - name: cpf_particao
+        description: |
+          Campo usado para particionamento da tabela.
