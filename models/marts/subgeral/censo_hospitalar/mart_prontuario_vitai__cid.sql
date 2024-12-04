@@ -14,6 +14,7 @@ with vitai as (
     select prontuario.id_atendimento, paciente.cpf, entrada_datahora, cid.id, cid.descricao,
     from {{ ref("int_historico_clinico__episodio__vitai") }}, unnest(condicoes) as cid
     where saida_datahora is null
+    qualify row_number() over (partition by cpf order by entrada_datahora desc) = 1
 ),
 formatting as (
     select 
