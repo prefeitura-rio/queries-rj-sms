@@ -10,8 +10,6 @@ models:
       - name: cpf
         description: >
           Cadastro de Pessoas Físicas do paciente.
-        policy_tags:
-          - '{{ var ("TAG_CPF") }}'
       - name: entrada_datahora
         description: |
           Data e hora do início do atendimento.
