@@ -1,7 +1,7 @@
 {{
     config(
         alias="vitai_cid",
-        schema="saude_censo_hospitalar",
+        schema="projeto_censo_hospitalar",
         materialized="table",
         partition_by={
             "field": "cpf_particao",
