@@ -4,6 +4,9 @@ models:
     description: >
       Tabela contendo os CID dos pacientes que ainda estão em atendimento na VITAI.
     columns:
+      - name: data_referencia
+        description:
+          Data da foto da lista de pacientes em atendimento
       - name: cpf
         description: >
           Cadastro de Pessoas Físicas do paciente.
