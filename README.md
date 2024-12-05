@@ -39,7 +39,7 @@ E o seguinte para instalar os pacotes de dependência do projeto:
 ## Usando o Recce
 - O Recce permite comparar os dados de produção com os gerados por uma nova configuração DBT
 - Para subir um servidor Recce basta chamar o script dando como entrada o nome da branch.
-  - **Linux e MacOS**: Rode `./recce.sh <NOME_BRANCH>`
-  - **Windows**: Rode `.\recce.ps1 <NOME_BRANCH>`
+  - **Linux e MacOS**: Rode `./tools/recce.sh <NOME_BRANCH>`
+  - **Windows**: Rode `./tools/recce.ps1 <NOME_BRANCH>`
 - O servidor fica disponível em `localhost:8000`
-- Exemplo: no linux eu posso rodar `./recce.sh feat/transforming-vitai-database-into-datalake`
+- Exemplo: no linux eu posso rodar `./tools/recce.sh feat/transforming-vitai-database-into-datalake`
