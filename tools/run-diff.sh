@@ -11,6 +11,7 @@ BRANCH_NAME=$1
 echo ""
 echo ">>>>> Checkout na branch 'master'"
 git checkout master
+git pull
 
 echo ""
 echo ">>>>> Gerando artefatos para o ambiente base em 'target-base'"
