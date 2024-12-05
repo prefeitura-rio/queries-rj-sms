@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: oferta_programada__anomalia_profissional
+  - name: mart_sisreg_reports__oferta_programada__anomalia_profissional
     description: O modelo 'oferta_programada__anomalia_profissional' foi desenvolvido para identificar quedas anômalas no número de vagas programadas por profissionais da SMS Rio no SISREG. Ele calcula o desvio absoluto da mediana da diferença do número de vagas ofertadas por cada profissional nos últimos seis meses e utiliza este valor para identificar desvios significativos no número de vagas programadas para o próximo mês. O modelo retorna o ID CNES do estabelecimento, o CPF do profissional, o ID interno do procedimento, os meses analisados, o número histórico de vagas ofertadas, o número de vagas programadas para o próximo mês, o déficit de vagas para o próximo mês e a data do cálculo da anomalia.
     data_tests:
       - dbt_utils.unique_combination_of_columns:

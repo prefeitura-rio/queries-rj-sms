@@ -1,5 +1,5 @@
 models:
-  - name: oferta_programada__anomalia_procedimento_estabelecimento
+  - name: mart_sisreg_reports__oferta_programada__anomalia_procedimento_estabelecimento
     description: O modelo 'oferta_programada__anomalia_procedimento_estabelecimento_procedimento' foi desenvolvido para identificar anomalias no agendamento de procedimentos em estabelecimentos de saúde. 
     data_tests:
       - dbt_utils.unique_combination_of_columns:
