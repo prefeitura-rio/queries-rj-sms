@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: mart_prontuario_vitai__cid
+  - name: mart_censo_hospitalar__vitai_cid
     description: >
       Tabela contendo os CID dos pacientes que ainda estão em atendimento na VITAI.
     columns:

@@ -1,7 +1,7 @@
 {{
     config(
         alias="vitai_cid",
-        schema="projeto_censo_hospitalar",
+        schema="app_plataforma_smsrio",
         materialized="table",
         partition_by={
             "field": "cpf_particao",
@@ -31,5 +31,5 @@ select
     cpf, 
     entrada_datahora, 
     condicoes,
-    safe_cast(cpf as int64) as cpf_particao
+    cast(cpf as int64) as cpf_particao
 from formatting
