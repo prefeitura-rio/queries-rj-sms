@@ -195,4 +195,4 @@ models:
           - not_null:
               name: mart_monitora_reg__monitor_vagas_ambulatoriais__cnes_dados__not_null
           - dbt_utils.not_constant:
-              name: mart_monitora_reg__monitor_vagas_ambulatoriais__sisreg_dados__not_constant
+              name: mart_monitora_reg__monitor_vagas_ambulatoriais__cnes_dados__not_constant
