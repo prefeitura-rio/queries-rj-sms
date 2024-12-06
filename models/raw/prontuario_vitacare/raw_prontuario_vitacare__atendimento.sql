@@ -31,7 +31,7 @@ with
     atendimentos_deduplicados as (
         select *
         from atendimentos
-        qualify row_number() over (partition by gid order by updated_at desc) = 1
+        qualify row_number() over (partition by id order by updated_at desc) = 1
     ),
 
     atendimentos_unicos as (
