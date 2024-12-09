@@ -7,7 +7,7 @@ param (
     [string]$FullRefresh
 )
 
-# Define valores padrão para parâmetros opcionais
+# Define default values for optional parameters
 if (-not $Target) {
     $Target = "dev"
 }
@@ -23,31 +23,41 @@ function Run-Command {
         [string]$Command
     )
     try {
-        & $Command
+        Write-Host "Executing: $Command"
+        Invoke-Expression $Command
+        if ($LASTEXITCODE -ne 0) {
+            throw "The command failed with exit code $LASTEXITCODE."
+        }
     } catch {
-        Write-Host "ERRO NO COMANDO: $Command."
-        Write-Host "MENSAGEM DE ERRO: $($_.Exception.Message)"
+        Write-Host "ERROR IN COMMAND: $Command. TERMINATING EXECUTION."
         exit 1
     }
 }
 
+# Configure "fail fast" mode
 $ErrorActionPreference = "Stop"
 
-Write-Host "ETAPA 1"
-Write-Host ">>>> CHECKOUT NA BRANCH 'master'"
+Write-Host ""
+Write-Host "STEP 1"
+Write-Host ">>>> CHECKING OUT 'master' BRANCH"
 Run-Command "git checkout master"
 Run-Command "git pull"
 
-Write-Host "ETAPA 2"
-Write-Host ">>>> GERANDO ESTADO '.state/' COM BASE NA BRANCH 'master'"
+Write-Host ""
+Write-Host "STEP 2"
+Write-Host ">>>> GENERATING STATE '.state/' BASED ON 'master' BRANCH"
 Run-Command "dbt docs generate --target prod --target-path .state/"
 
-Write-Host "ETAPA 3"
-Write-Host ">>>> CHECKOUT NA BRANCH '$BranchName'"
+Write-Host ""
+Write-Host "STEP 3"
+Write-Host ">>>> CHECKING OUT BRANCH '$BranchName'"
 Run-Command "git checkout $BranchName"
 
-Write-Host "ETAPA 4"
-Write-Host ">>>> EXECUTANDO MATERIALIZAÇÕES DO DBT"
+Write-Host ""
+Write-Host "STEP 4"
+Write-Host ">>>> EXECUTING DBT MATERIALIZATIONS"
 Write-Host ">>>>>>> TARGET: $Target"
 Write-Host ">>>>>>> FULL REFRESH: $FullRefreshFlag"
 Run-Command "dbt run -s 'state:modified+' --defer --state .state/ --target $Target $FullRefreshFlag"
+
+Write-Host "ENDING"
