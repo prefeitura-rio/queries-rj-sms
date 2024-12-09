@@ -277,6 +277,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+      escritoriodados:
+        identidade_unica_app:
+          +tags: ["daily", "identidade_unica_app"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: identidade_unica_app
 
 tests:
   rj_sms:
