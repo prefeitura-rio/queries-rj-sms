@@ -1,14 +1,15 @@
-$ErrorActionPreference = "Stop"
-
 param (
+    [Parameter(Mandatory = $true)]
     [string]$BranchName,
-    [string]$Target = "dev", # Define o valor padrão como 'dev'
-    [string]$FullRefresh = $null
+
+    [string]$Target,
+
+    [string]$FullRefresh
 )
 
-if (-not $BranchName) {
-    Write-Host "Uso: .\script.ps1 -BranchName <nome-da-branch> [-Target <dev|ci>] [-FullRefresh full_refresh]"
-    exit 1
+# Define valores padrão para parâmetros opcionais
+if (-not $Target) {
+    $Target = "dev"
 }
 
 if ($FullRefresh -eq "full_refresh") {
@@ -17,19 +18,36 @@ if ($FullRefresh -eq "full_refresh") {
     $FullRefreshFlag = ""
 }
 
-Write-Host ""
-Write-Host ">>>>> Checkout na branch 'master'"
-git checkout master
-git pull
+function Run-Command {
+    param (
+        [string]$Command
+    )
+    try {
+        & $Command
+    } catch {
+        Write-Host "ERRO NO COMANDO: $Command."
+        Write-Host "MENSAGEM DE ERRO: $($_.Exception.Message)"
+        exit 1
+    }
+}
 
-Write-Host ""
-Write-Host ">>>>> Gerando artefatos para o ambiente base em '.state/'"
-dbt docs generate --target prod --target-path .state/
+$ErrorActionPreference = "Stop"
 
-Write-Host ""
-Write-Host ">>>>> Checkout na branch '$BranchName'"
-git checkout $BranchName
+Write-Host "ETAPA 1"
+Write-Host ">>>> CHECKOUT NA BRANCH 'master'"
+Run-Command "git checkout master"
+Run-Command "git pull"
 
-Write-Host ""
-Write-Host ">>>>> Executando dbt com target '$Target'"
-dbt run -s "state:modified+" --defer --state .state/ --target $Target $FullRefreshFlag
+Write-Host "ETAPA 2"
+Write-Host ">>>> GERANDO ESTADO '.state/' COM BASE NA BRANCH 'master'"
+Run-Command "dbt docs generate --target prod --target-path .state/"
+
+Write-Host "ETAPA 3"
+Write-Host ">>>> CHECKOUT NA BRANCH '$BranchName'"
+Run-Command "git checkout $BranchName"
+
+Write-Host "ETAPA 4"
+Write-Host ">>>> EXECUTANDO MATERIALIZAÇÕES DO DBT"
+Write-Host ">>>>>>> TARGET: $Target"
+Write-Host ">>>>>>> FULL REFRESH: $FullRefreshFlag"
+Run-Command "dbt run -s 'state:modified+' --defer --state .state/ --target $Target $FullRefreshFlag"
