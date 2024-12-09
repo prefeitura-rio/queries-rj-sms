@@ -64,11 +64,9 @@ with
     ),
     -- Boletim (centralizador do episodio) com cpf enriquecido
     paciente_mrg as (
-        select id_paciente, cpf, cns, dados.data_nascimento
+        select gid as id_paciente, cpf, cns, data_nascimento
         from
-            {{ ref("mart_historico_clinico__paciente") }} as paciente_merged,
-            unnest(prontuario) as prontuario
-        where sistema = 'VITAI'
+            {{ ref("raw_prontuario_vitai__paciente") }}
     ),
     boletim as (
         select
