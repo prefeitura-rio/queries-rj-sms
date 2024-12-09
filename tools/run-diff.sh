@@ -23,4 +23,4 @@ git checkout "$BRANCH_NAME"
 
 echo ""
 echo ">>>>> Executando dbt"
-dbt run -s "state:modified+" --defer --state target-base/
+dbt run -s "state:modified+" --defer --state target-base/  --full-refresh
