@@ -1,4 +1,4 @@
-mart_identidade_unica_app__episodio{{
+{{
     config(
         alias="paciente",
         schema="app_identidade_unica",
