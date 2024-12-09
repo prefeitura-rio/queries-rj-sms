@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 param (
     [string]$BranchName,
     [string]$Target = "dev", # Define o valor padrão como 'dev'

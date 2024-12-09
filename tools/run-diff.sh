@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Verifica se pelo menos um argumento foi passado
 if [ -z "$1" ]; then
