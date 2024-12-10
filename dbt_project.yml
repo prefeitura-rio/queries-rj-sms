@@ -249,17 +249,21 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subgeral
-
         monitora_reg:
           +schema: projeto_monitora_reg
           +tags: ["weekly", "subgeral", "monitora_reg"]
           +labels:
+            dado_publico: naos
+            dado_pessoal: sim
+            dado_sensivel: nao
             dominio: subgeral
-          
         sisreg_reports:
           +schema: projeto_sisreg_reports
           +tags: ["weekly", "subgeral", "sisreg_reports"]
           +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
             dominio: subgeral
 
       dit:
