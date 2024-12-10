@@ -1,3 +1,5 @@
+-- dbt run -s state:modified+ --defer --state .state/ --target dev
+
 {{
     config(
         alias="episodio_assistencial",
