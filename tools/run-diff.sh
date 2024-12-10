@@ -34,24 +34,24 @@ run_command() {
 echo ""
 echo "STEP 1"
 echo ">>>> CHECKING OUT 'master' BRANCH"
-run_command "git checkout master" 
-run_command "git pull" 
+run_command "git checkout master" || exit 1
+run_command "git pull" || exit 1
 
 echo ""
 echo "STEP 2"
 echo ">>>> GENERATING STATE '.state/' BASED ON 'master' BRANCH"
-run_command "dbt docs generate --target prod --target-path .state/" 
+run_command "dbt docs generate --target prod --target-path .state/" || exit 1
 
 echo ""
 echo "STEP 3"
 echo ">>>> CHECKING OUT BRANCH '$BranchName'"
-run_command "git checkout $BranchName" 
+run_command "git checkout $BranchName" || exit 1
 
 echo ""
 echo "STEP 4"
 echo ">>>> EXECUTING DBT MATERIALIZATIONS"
 echo ">>>>>>> TARGET: $Target"
 echo ">>>>>>> FULL REFRESH: $FullRefreshFlag"
-run_command "dbt run -s 'state:modified+' --defer --state .state/ --target $Target $FullRefreshFlag"
+run_command "dbt run -s 'state:modified+' --defer --state .state/ --target $Target $FullRefreshFlag" || exit 1
 
 echo "Script completed successfully."
