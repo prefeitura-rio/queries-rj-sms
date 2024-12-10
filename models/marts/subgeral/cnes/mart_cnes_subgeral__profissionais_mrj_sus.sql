@@ -4,7 +4,7 @@
         schema="projeto_cnes_subgeral",
         alias="profissionais_mrj_sus",
         partition_by={
-            "field": "data_particao",
+            "field": "metadado__data_particao",
             "data_type": "date",
             "granularity": "day",
         },
