@@ -1,5 +1,5 @@
 -- calcula indicadores a partir da união dos dados de oferta programada com os dados
--- de vinculação dos profissionais
+-- de vinculação dos profissionais 
 {{ config(schema="projeto_monitora_reg", alias="monitor_vagas_ambulatoriais") }}
 
 with
