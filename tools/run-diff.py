@@ -52,13 +52,15 @@ def main():
     print(">>>> EXECUTING DBT MATERIALIZATIONS")
     print(f">>>>>> TARGET: {target}")
     print(f">>>>>> FULL REFRESH: {full_refresh_flag}")
-    run_command([
+    dbt_command = [
         "dbt", "run",
         "-s", "state:modified+",
         "--defer", "--state", ".state/",
-        "--target", target,
-        full_refresh_flag
-    ])
+        "--target", target
+    ]
+    if full_refresh_flag:
+        dbt_command.append(full_refresh_flag)
+    run_command(dbt_command)
 
     print("\nENDING")
 
