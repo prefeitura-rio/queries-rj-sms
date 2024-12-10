@@ -243,12 +243,25 @@ models:
       subgeral:
         cnes:
           +schema: projeto_cnes_subgeral
-          +tags: "weekly"
+          +tags: ["weekly", "subgeral", "cnes_subgeral"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subgeral
+
+        monitora_reg:
+          +schema: projeto_monitora_reg
+          +tags: ["weekly", "subgeral", "monitora_reg"]
+          +labels:
+            dominio: subgeral
+          
+        sisreg_reports:
+          +schema: projeto_sisreg_reports
+          +tags: ["weekly", "subgeral", "sisreg_reports"]
+          +labels:
+            dominio: subgeral
+
       dit:
         dengue:
           +schema: projeto_dengue
