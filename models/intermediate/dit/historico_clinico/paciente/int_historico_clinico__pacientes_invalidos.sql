@@ -52,10 +52,6 @@ from cpfs_unicos
 inner join dados 
 on dados.cpf = cpfs_unicos.cpf
 )
-select *
+select distinct cpf
 from cpfs_distancias
-where (
-     (lev_primeiro_nome > 0.5)
-    or (jaccard_nome > 0.8) 
-    or( (jaccard_nome > 0) and (lev_nascimento>2))
-)
+where (lev_primeiro_nome > 0.5) or (jaccard_nome > 0.8) or((jaccard_nome > 0) and (lev_nascimento>2))
