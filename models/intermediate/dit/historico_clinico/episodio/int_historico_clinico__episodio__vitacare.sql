@@ -73,7 +73,7 @@ with
     ),
     condicoes as (
         select distinct
-            gid as fk_atendimento,
+            id as fk_atendimento,
 
             json_extract_scalar(condicao_json, "$.cod_cid10") as id,
 
@@ -114,7 +114,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     procedimentos as (
         select
-            gid as fk_atendimento,
+            id as fk_atendimento,
             case
                 when
                     json_extract_scalar(procedimentos_json, '$.procedimento_clinico')
@@ -164,7 +164,7 @@ with
     ),
     prescricoes as (
         select
-            gid as fk_atendimento,
+            id as fk_atendimento,
             replace(
                 json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", ""
             ) as id,
@@ -220,7 +220,7 @@ with
 
     medidas_padronizadas as (
         select
-            gid as fk_atendimento,
+            id as fk_atendimento,
             case
                 when
                     nome in (
@@ -337,7 +337,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fato_atendimento as (
         select
-            gid as id,
+            atendimento.id,
 
             -- Paciente
             dim_paciente.paciente,
@@ -404,7 +404,7 @@ with
 
             -- Prontuário
             struct(
-                atendimento.gid as id_atendimento, 'vitacare' as fornecedor
+                atendimento.id as id_atendimento, 'vitacare' as fornecedor
             ) as prontuario,
 
             -- Metadados
@@ -422,14 +422,14 @@ with
         left join dim_profissional on atendimento.cns_profissional = dim_profissional.pk
         left join
             dim_condicoes_atribuidas
-            on atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
-        left join dim_medidas on atendimento.gid = dim_medidas.fk_atendimento
+            on atendimento.id = dim_condicoes_atribuidas.fk_atendimento
+        left join dim_medidas on atendimento.id = dim_medidas.fk_atendimento
         left join
             dim_procedimentos_realizados
-            on atendimento.gid = dim_procedimentos_realizados.fk_atendimento
+            on atendimento.id = dim_procedimentos_realizados.fk_atendimento
         left join
             dim_prescricoes_atribuidas
-            on atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
+            on atendimento.id = dim_prescricoes_atribuidas.fk_atendimento
     ),
 
     episodios_validos as (select * from fato_atendimento where id is not null)
