@@ -1,11 +1,3 @@
-{{
-    config(
-        alias="pacientes_invalidos",
-        materialized="table",
-        schema="intermediario_historico_clinico",
-    )
-}}
-
 with dados as (
     select cpf,
         d.nome,
