@@ -16,3 +16,6 @@ models:
     description: >
       Tabela com uma visão consolidada do comportamendo dos usuários do HCI em
       termos de utilização do sistema.
+  - name: mart_historico_clinico_app__indice
+    description: >
+      Tabela utilizada para busca por CNS e Nome no histórico clínico.

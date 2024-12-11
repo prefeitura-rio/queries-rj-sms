@@ -20,24 +20,18 @@ with
         from paciente
         qualify
             row_number() over (
-                partition by cnes_unidade, cpf, cns order by updated_at desc
+                partition by id order by source_updated_at desc
             ) = 1
     ),
 
     corrige_cadastro as (
         select
 
-            * except (cadastro_permanente, nome_social, sexo, raca_cor, nome_mae),
+            * except (cadastro_permanente, nome_social, sexo, raca_cor, nome_mae, obito),
 
             case when nome_social in ('') then null else nome_social end as nome_social,
 
-            case
-                when sexo in ("M", "MALE")
-                then initcap("MASCULINO")
-                when sexo in ("F", "FEMALE")
-                then initcap("FEMININO")
-                else null
-            end as sexo,
+            sexo,
 
             case
                 when trim(raca_cor) in ("", "NAO INFORMADO", "SEM INFORMACAO")
@@ -46,11 +40,9 @@ with
             end as raca_cor,
 
             case
-                when data_obito is null
-                then false
-                when data_obito is not null
+                when obito = '1' or obito = 'True'
                 then true
-                else null
+                else false
             end as obito_indicador,
 
             case when nome_mae in ("NONE") then null else nome_mae end as nome_mae,
@@ -72,52 +64,70 @@ with
 
     renomeado as (
         select
-            {{ remove_accents_upper("id") }} as id_paciente,
-            {{ remove_accents_upper("cnes_unidade") }} as id_cnes,
-            null as id_prontuario,  # TODO: adicionar o identificador do prontuario
+            -- PK
+            {{ remove_accents_upper("id") }} as id,
+
+
+            -- Outras Chaves
+            {{ remove_accents_upper("id_cnes") }} as id_cnes,
+            numero_prontuario,
             {{ remove_accents_upper("cpf") }} as cpf,
-            {{ validate_cpf(remove_accents_upper("cpf")) }} as cpf_valido_indicador,
             {{ remove_accents_upper("cns") }} as cns,
+
+            -- Informações Pessoais
             {{ remove_accents_upper("nome") }} as nome,
             {{ remove_accents_upper("nome_social") }} as nome_social,
-            {{ remove_accents_upper("sexo") }} as genero,
-            date(data_nascimento) as data_nascimento,
-            obito_indicador,
-            date(data_obito) as obito_data,
-            {{ remove_accents_upper("orientacao_sexual") }} as orientacao_sexual,
-            {{ remove_accents_upper("identidade_genero") }} as identidade_genero,
             {{ remove_accents_upper("nome_mae") }} as mae_nome,
             {{ remove_accents_upper("nome_pai") }} as pai_nome,
+            obito_indicador,
+            {{ remove_accents_upper("sexo") }} as sexo,
+            date(data_nascimento) as data_nascimento,
+            {{ remove_accents_upper("orientacao_sexual") }} as orientacao_sexual,
+            {{ remove_accents_upper("identidade_genero") }} as identidade_genero,
             {{ remove_accents_upper("raca_cor") }} as raca,
 
+            -- Informações Cadastrais
+            situacao,
+            cadastro_permanente_indicador,
+            {{ validate_cpf(remove_accents_upper("cpf")) }} as cpf_valido_indicador,
+            data_cadastro_inicial,
+            data_ultima_atualizacao_cadastral,
+
+            -- Contato
             {{ remove_accents_upper("telefone") }} as telefone,
             {{ remove_accents_upper("email") }} as email,
-            {{ padronize_cep(remove_accents_upper("endereco_cep")) }} as cep,
-            {{ remove_accents_upper("endereco_tipo_logradouro") }} as tipo_logradouro,
+
+            -- Endereço
+            {{ padronize_cep(remove_accents_upper("endereco_cep")) }} as endereco_cep,
+            {{ remove_accents_upper("endereco_tipo_logradouro") }} as endereco_tipo_logradouro,
             {{
                 remove_accents_upper(
                     'REGEXP_EXTRACT(endereco_logradouro, r"^(.*?)(?:\d+.*)?$")'
                 )
-            }} as logradouro,
+            }} as endereco_logradouro,
             {{
                 remove_accents_upper(
                     'REGEXP_EXTRACT(endereco_logradouro, r"\b(\d+)\b")'
                 )
-            }} as numero,
+            }} as endereco_numero,
             {{
                 remove_accents_upper(
                     'REGEXP_REPLACE(endereco_logradouro, r"^.*?\d+\s*(.*)$", r"\1")'
                 )
-            }} as complemento,
-            {{ remove_accents_upper("endereco_bairro") }} as bairro,
-            {{ remove_accents_upper("endereco_municipio") }} as cidade,
-            {{ remove_accents_upper("endereco_estado") }} as estado,
-            cadastro_permanente_indicador,
+            }} as endereco_complemento,
+            {{ remove_accents_upper("endereco_bairro") }} as endereco_bairro,
+            {{ remove_accents_upper("endereco_municipio") }} as endereco_municipio,
+            {{ remove_accents_upper("endereco_estado") }} as endereco_estado,
+
+            -- Informações da Unidade
             equipe_familia_indicador,
             {{ remove_accents_upper("codigo_ine_equipe_saude") }} as id_ine,
             data_atualizacao_vinculo_equipe,
-            data_ultima_atualizacao_cadastral,
-            updated_at,
+
+
+            -- Metadados
+            source_created_at,
+            source_updated_at,
 
         from corrige_cadastro
     ),

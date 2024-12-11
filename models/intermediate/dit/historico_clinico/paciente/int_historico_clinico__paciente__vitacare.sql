@@ -24,7 +24,9 @@
 with
     paciente as (
         select
-            *,
+            * except (id, source_updated_at),
+            id as id_paciente,
+            source_updated_at as updated_at,
             row_number() over (
                 partition by cpf
                 order by
@@ -443,18 +445,18 @@ with
     vitacare_endereco as (
         select
             cpf,
-            cep,
-            tipo_logradouro,
-            logradouro,
-            numero,
-            complemento,
-            bairro,
+            endereco_cep as cep,
+            endereco_tipo_logradouro as tipo_logradouro,
+            endereco_logradouro as logradouro,
+            endereco_numero as numero,
+            endereco_complemento as complemento,
+            endereco_bairro as bairro,
             case
-                when regexp_contains(cidade, r'\d')
-                then trim(regexp_replace(cidade, r'\[.*', ''))
-                else cidade
+                when regexp_contains(endereco_municipio, r'\d')
+                then trim(regexp_replace(endereco_municipio, r'\[.*', ''))
+                else endereco_municipio
             end as cidade,
-            estado,
+            endereco_estado as estado,
             cast(
                 data_atualizacao_vinculo_equipe as string
             ) as datahora_ultima_atualizacao,
@@ -466,17 +468,17 @@ with
                     updated_at desc
             ) as rank
         from paciente
-        where logradouro is not null
+        where endereco_logradouro is not null
         group by
             cpf,
-            cep,
-            tipo_logradouro,
-            logradouro,
-            numero,
-            complemento,
-            bairro,
-            cidade,
-            estado,
+            endereco_cep,
+            endereco_tipo_logradouro,
+            endereco_logradouro,
+            endereco_numero,
+            endereco_complemento,
+            endereco_bairro,
+            endereco_municipio,
+            endereco_estado,
             data_atualizacao_vinculo_equipe,
             cadastro_permanente_indicador,
             updated_at
@@ -648,10 +650,9 @@ with
                 count(distinct nome) as qtd_nomes,
                 count(distinct nome_social) as qtd_nomes_sociais,
                 count(distinct data_nascimento) as qtd_datas_nascimento,
-                count(distinct genero) as qtd_generos,
+                count(distinct sexo) as qtd_sexos,
                 count(distinct raca) as qtd_racas,
                 count(distinct obito_indicador) as qtd_obitos_indicadores,
-                count(distinct obito_data) as qtd_datas_obitos,
                 count(distinct mae_nome) as qtd_maes_nomes,
                 count(distinct pai_nome) as qtd_pais_nomes,
                 count(distinct cpf_valido_indicador) as qtd_cpfs_validos,
@@ -670,10 +671,10 @@ with
                     {{ proper_br("nome") }} as nome,
                     {{ proper_br("nome_social") }} as nome_social,
                     data_nascimento,
-                    lower(genero) as genero,
+                    lower(sexo) as genero,
                     lower(raca) as raca,
                     obito_indicador,
-                    obito_data,
+                    safe_cast(null as date) as obito_data,
                     {{ proper_br("mae_nome") }} as mae_nome,
                     {{ proper_br("pai_nome") }} as pai_nome,
                     rank,
@@ -682,7 +683,7 @@ with
             ) as dados
         from paciente pc
         join paciente_metadados as pm on pc.cpf = pm.cpf
-        group by cpf
+        group by pc.cpf
     ),
 
     -- -- FINAL JOIN: Joins all the data previously processed, creating the

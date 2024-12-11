@@ -18,7 +18,7 @@
 
 with
     bruto_atendimento_eventos_com_repeticao as (
-        select *, concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as gid
+        select *, concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }}
     ),
     bruto_atendimento_eventos_ranqueados as (
@@ -26,13 +26,20 @@ with
 
         from bruto_atendimento_eventos_com_repeticao
         qualify
-            row_number() over (partition by gid order by datalake_loaded_at desc) = 1
+            row_number() over (partition by id order by datalake_loaded_at desc) = 1
     ),
 
     final as (
         select
             -- PK
-            gid as gid,
+            id,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "id",
+                    ]
+                )
+            }} as id_hci,
 
             -- Chaves
             patient_cpf as cpf,
@@ -63,10 +70,14 @@ with
 
             -- Campos Livres
             {{ process_null("data__soap_subjetivo_motivo") }} as soap_subjetivo_motivo,
-            {{ process_null("data__soap_objetivo_descricao") }} as soap_objetivo_descricao,
-            {{ process_null("data__soap_avaliacao_observacoes") }} as soap_avaliacao_observacoes,
-            {{ process_null("data__soap_plano_procedimentos_clinicos") }} as soap_plano_procedimentos_clinicos,
-            {{ process_null("data__soap_plano_observacoes") }} as soap_plano_observacoes,
+            {{ process_null("data__soap_objetivo_descricao") }}
+            as soap_objetivo_descricao,
+            {{ process_null("data__soap_avaliacao_observacoes") }}
+            as soap_avaliacao_observacoes,
+            {{ process_null("data__soap_plano_procedimentos_clinicos") }}
+            as soap_plano_procedimentos_clinicos,
+            {{ process_null("data__soap_plano_observacoes") }}
+            as soap_plano_observacoes,
             {{ process_null("data__notas_observacoes") }} as soap_notas_observacoes,
 
             -- JSONs

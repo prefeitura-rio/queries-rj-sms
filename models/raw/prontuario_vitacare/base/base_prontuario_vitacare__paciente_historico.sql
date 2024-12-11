@@ -5,290 +5,458 @@
         materialized="table",
     )
 }}
--- dbt run --select raw_prontuario_vitacare__paciente_historico 
-
-WITH tb AS (
-    SELECT 
-        -- PK
-        CAST(NULL AS STRING) AS id,
-
-        -- Outras Chaves
-        {{remove_accents_upper('N_CPF')}} AS cpf,
-        {{remove_accents_upper('N_DNV')}} AS dnv,
-        {{remove_accents_upper('NIS')}} AS nis,
-        {{remove_accents_upper('N_CNS_DA_PESSOA_CADASTRADA')}} AS cns,
-        cast(null as string) as id_local,
-
-        -- Informações Pessoais
-        {{remove_accents_upper('NOME_DA_PESSOA_CADASTRADA')}} AS nome,
-        {{remove_accents_upper('NOME_SOCIAL_DA_PESSOA_CADASTRADA')}} AS nome_social,
-        {{remove_accents_upper('NOME_DA_MAE_PESSOA_CADASTRADA')}} AS nome_mae,
-        CAST(NULL AS STRING) AS nome_pai,
-        {{remove_accents_upper('OBITO')}} AS obito,
-        {{remove_accents_upper('OBITO')}} AS data_obito,
-        {{remove_accents_upper('SEXO')}} AS sexo,
-        {{remove_accents_upper('ORIENTACAO_SEXUAL')}} AS orientacao_sexual,
-        {{remove_accents_upper('IDENTIDADE_GENERO')}} AS identidade_genero,
-        {{remove_accents_upper('RACA_COR')}} AS raca_cor,
-
-        -- Contato
-        {{remove_accents_upper('EMAIL_CONTATO')}} AS email,
-        {{remove_accents_upper('TELEFONE_CONTATO')}} AS telefone,
-
-        -- Nascimento
-        {{remove_accents_upper('NACIONALIDADE')}} AS nacionalidade,
-        {{remove_accents_upper('DATA_DE_NASCIMENTO')}} AS data_nascimento,
-        {{remove_accents_upper('PAIS_DE_NASCIMENTO')}} AS pais_nascimento,
-        {{remove_accents_upper('MUNICIPIO_DE_NASCIMENTO')}} AS municipio_nascimento,
-        CAST(NULL AS STRING) AS estado_nascimento,
-
-        -- Informações da Unidade
-        {{remove_accents_upper('AP')}} AS ap,
-        {{remove_accents_upper('CODIGO_MICROAREA')}} AS microarea,
-        {{remove_accents_upper('NUMERO_CNES_UNIDADE')}} AS cnes_unidade,
-        CAST(NULL AS STRING) AS nome_unidade,
-        {{remove_accents_upper('CODIGO_DA_EQUIPE_DE_SAUDE')}} AS codigo_equipe_saude,
-        {{remove_accents_upper('CODIGO_INE_EQUIPE_DE_SAUDE')}} AS codigo_ine_equipe_saude,
-        CAST(NULL AS TIMESTAMP) AS data_atualizacao_vinculo_equipe,
-        {{remove_accents_upper('N_DO_PRONTUARIO')}} AS numero_prontuario,
-        {{remove_accents_upper('N_DA_FAMILIA')}} AS numero_familia,
-        CAST(NULL AS STRING) AS cadastro_permanente,
-        {{remove_accents_upper('SITUACAO_USUARIO')}} AS situacao_usuario,
-        {{remove_accents_upper('DATA_CADASTRO')}} AS data_cadastro_inicial,
-        {{remove_accents_upper('DATA_ULTIMA_ATUALIZACAO_DO_CADASTRO')}} AS data_ultima_atualizacao_cadastral,
-
-        -- Endereço
-        {{remove_accents_upper('TIPO_DE_DOMICILIO')}} AS endereco_tipo_domicilio,
-        {{remove_accents_upper('TIPO_DE_LOGRADOURO')}} AS endereco_tipo_logradouro,
-        {{remove_accents_upper('CEP_LOGRADOURO')}} AS endereco_cep,
-        {{remove_accents_upper('LOGRADOURO')}} AS endereco_logradouro,
-        {{remove_accents_upper('BAIRRO_DE_MORADIA')}} AS endereco_bairro,
-        CAST(NULL AS STRING) AS endereco_estado,
-        CAST(NULL AS STRING) AS endereco_municipio,
-
-        -- Metadata columns
-        CAST(NULL AS DATE) AS data_particao,
-        {{remove_accents_upper('updated_at')}} AS updated_at,
-        {{remove_accents_upper('imported_at')}} AS imported_at
-    FROM {{ source("brutos_prontuario_vitacare_staging", "paciente_historico_eventos") }}
-),
-
-padronized AS (
-  SELECT 
-    CAST(NULL AS STRING) AS id,
-
-    -- OUTRAS CHAVES
-    CASE 
-      WHEN cpf IN ("NONE") THEN NULL
-      WHEN REGEXP_CONTAINS(cpf, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$') THEN NULL
-      ELSE CAST(cpf AS STRING)
-    END AS cpf,
-    CASE 
-      WHEN dnv IN ("NONE") THEN NULL
-      WHEN REGEXP_CONTAINS(dnv, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$') THEN NULL
-      ELSE CAST(dnv AS STRING)
-    END AS dnv,
-    CASE 
-      WHEN nis IN ("NONE") THEN NULL
-      WHEN REGEXP_CONTAINS(nis, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$') THEN NULL
-      ELSE CAST(nis AS STRING)
-    END AS nis,
-    CASE 
-      WHEN cns IN ("NONE") THEN NULL
-      WHEN REGEXP_CONTAINS(cns, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$') THEN NULL
-      ELSE CAST(cns AS STRING)
-    END AS cns,
-    cast(null as string) as id_local,
-
-    -- INFORMAÇÕES PESSOAIS
-    CASE 
-      {{remove_invalid_names('nome')}}
-      ELSE CAST(nome AS STRING)
-    END AS nome,
-    CASE 
-      {{remove_invalid_names('nome_social')}}
-      ELSE CAST(nome_social AS STRING)
-    END AS nome_social,
-    CASE 
-      {{remove_invalid_names('nome_mae')}}
-      ELSE CAST(nome_mae AS STRING)
-    END AS nome_mae,
-    CASE 
-      {{remove_invalid_names('nome_pai')}}
-      ELSE CAST(nome_pai AS STRING)
-    END AS nome_pai,
-    CASE
-        WHEN obito IN ("NONE") THEN 'False'
-        ELSE 'True'
-    END AS obito,
-    CASE
-        WHEN data_obito IN ("NONE") THEN NULL
-        ELSE CAST(data_obito AS DATE FORMAT 'DD/MM/YYYY')
-    END AS data_obito,
-    CASE
-      WHEN sexo IN ("NONE") THEN NULL
-      WHEN sexo IN ("M") THEN CAST("male" AS STRING)
-      WHEN sexo IN ("F") THEN CAST("female" AS STRING)
-      ELSE NULL
-    END AS sexo,
-    CASE
-        WHEN orientacao_sexual IN ("NONE") THEN NULL
-        ELSE orientacao_sexual
-    END AS orientacao_sexual,
-    CASE
-        WHEN identidade_genero IN ("NONE") THEN NULL
-        WHEN identidade_genero IN ("HETEROSSEXUAL", "HETEROSSEXUAL", "HOMOSSEXUAL (GAY / LESBICA)", "BISSEXUAL") THEN INITCAP("CIS")
-        WHEN identidade_genero IN ("MULHER TRANSEXUAL") THEN INITCAP("MULHER TRANSEXUAL")
-        WHEN identidade_genero IN ("HOMEM TRANSEXUAL") THEN INITCAP("HOMEM TRANSEXUAL")
-        WHEN identidade_genero IN ("OUTRO") THEN INITCAP("OUTRO")
-        ELSE NULL
-    END AS identidade_genero,
-    CASE
-        {{remove_invalid_names('raca_cor')}}
-        WHEN raca_cor IN ("INDIGENA") THEN CAST(INITCAP("INDÍGENA") AS STRING)
-        ELSE CAST(INITCAP(raca_cor) AS STRING)
-    END AS raca_cor,
-
-    -- CONTATO
-    CASE
-        {{remove_invalid_email('email')}}
-        ELSE CAST(email AS STRING)
-    END AS email,
-    CASE
-        WHEN telefone IN ("NONE") THEN NULL
-        WHEN REGEXP_CONTAINS(telefone, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$') THEN NULL
-        WHEN REGEXP_CONTAINS(telefone, r'^\b21\b$') THEN NULL
-        ELSE CAST(telefone AS STRING)
-    END AS telefone,
-
-    -- NASCIMENTO
-    CASE
-        WHEN nacionalidade IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(nacionalidade) AS STRING)
-    END AS nacionalidade,
-    CASE
-        WHEN data_nascimento IN ("NONE") THEN NULL
-        ELSE CAST(data_nascimento AS DATE FORMAT 'DD/MM/YYYY')
-    END AS data_nascimento,
-    CASE
-        WHEN pais_nascimento IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(pais_nascimento) AS STRING)
-    END AS pais_nascimento,
-    CASE
-        WHEN municipio_nascimento IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(municipio_nascimento) AS STRING)
-    END AS municipio_nascimento, -- No rotineiro é o codigo IBGE, aqui esta sendo o nome
-    CASE
-        WHEN estado_nascimento IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(estado_nascimento) AS STRING)
-    END AS estado_nascimento, 
 
 
-    -- INFORMAÇÕES DA UNIDADE
-    CASE
-        WHEN ap IN ("NONE") THEN NULL
-        ELSE CAST(ap AS STRING)
-    END AS ap, 
-    CASE
-        WHEN microarea IN ("NONE") THEN NULL
-        ELSE CAST(microarea AS STRING)
-    END AS microarea,
-    CASE
-        WHEN cnes_unidade IN ("NONE") THEN NULL
-        ELSE CAST(cnes_unidade AS STRING)
-    END AS cnes_unidade,
-    CASE
-        WHEN nome_unidade IN ("NONE") THEN NULL
-        ELSE CAST(nome_unidade AS STRING)
-    END AS nome_unidade,
-    CASE
-        WHEN codigo_equipe_saude IN ("NONE") THEN NULL
-        ELSE CAST(codigo_equipe_saude AS STRING)
-    END AS codigo_equipe_saude,
-    CASE
-        WHEN codigo_ine_equipe_saude IN ("NONE") THEN NULL
-        ELSE CAST(codigo_ine_equipe_saude AS STRING)
-    END AS codigo_ine_equipe_saude,
-    data_atualizacao_vinculo_equipe,
-    CASE
-        WHEN numero_prontuario IN ("NONE") THEN NULL
-        ELSE CAST(numero_prontuario AS STRING)
-    END AS numero_prontuario,
-    CASE
-        WHEN numero_familia IN ("NONE") THEN NULL
-        ELSE CAST(numero_familia AS STRING)
-    END AS numero_familia,
-    CASE
-        WHEN cadastro_permanente IN ("NONE") THEN NULL
-        ELSE CAST(cadastro_permanente AS STRING)
-    END AS cadastro_permanente,
-    CASE
-        WHEN situacao_usuario IN ("NONE") THEN NULL
-        ELSE CAST(situacao_usuario AS STRING)
-    END AS situacao_usuario,
-    CASE
-        WHEN data_cadastro_inicial IN ("NONE") THEN NULL
-        ELSE CAST(data_cadastro_inicial AS TIMESTAMP FORMAT "DD/MM/YYYY")
-    END AS data_cadastro_inicial,
-    CASE
-        WHEN data_ultima_atualizacao_cadastral IN ("NONE") THEN NULL
-        ELSE CAST(data_ultima_atualizacao_cadastral AS TIMESTAMP FORMAT "DD/MM/YYYY")
-    END AS data_ultima_atualizacao_cadastral,
+with
+
+    source as (
+        select * except (backup_created_at),  -- TODO: change data type to string to correct load the column in bigquery
+        from {{ source("brutos_prontuario_vitacare_staging", "pacientes_historico") }}
+    ),
+
+    remove_unwanted_characters as (
+
+        select
+
+            -- PK
+            concat(
+                nullif(id_cnes, ''),
+                '.',
+                nullif({{ clean_numeric_string("ut_id") }}, '')
+            ) as id,
+
+            -- Outras Chaves
+            {{ remove_accents_upper("id_cnes") }} as id_cnes,
+            {{ clean_numeric_string("ut_id") }} as id_local,
+            {{ remove_accents_upper("npront") }} as numero_prontuario,
+            {{ remove_accents_upper("cpf") }} as cpf,
+            {{ remove_accents_upper("dnv") }} as dnv,
+            {{ remove_accents_upper("nis") }} as nis,
+            {{ remove_accents_upper("cns") }} as cns,
+
+            -- Informações Pessoais
+            {{ remove_accents_upper("nome") }} as nome,
+            {{ remove_accents_upper("nomesocial") }} as nome_social,
+            {{ remove_accents_upper("nomemae") }} as nome_mae,
+            {{ remove_accents_upper("nomepai") }} as nome_pai,
+            {{ remove_accents_upper("obito") }} as obito,
+            {{ remove_accents_upper("sexo") }} as sexo,
+            {{ remove_accents_upper("orientacaosexual") }} as orientacao_sexual,
+            {{ remove_accents_upper("identidadegenero") }} as identidade_genero,
+            {{ remove_accents_upper("racacor") }} as raca_cor,
+
+            -- Informações Cadastrais
+            {{ remove_accents_upper("situacaousuario") }} as situacao,
+            {{ remove_accents_upper("cadastropermanente") }} as cadastro_permanente,
+
+            if(
+                not regexp_contains(
+                    {{ remove_accents_upper("datacadastro") }},
+                    r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$'
+                ),
+                null,
+                {{ remove_accents_upper("datacadastro") }}
+            ) as data_cadastro_inicial,
+
+            if(
+                not regexp_contains(
+                    dataatualizacaocadastro,
+                    r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$'
+                ),
+                null,
+                dataatualizacaocadastro
+            ) as data_ultima_atualizacao_cadastral,
+
+            -- Nascimento
+            {{ remove_accents_upper("nacionalidade") }} as nacionalidade,
+
+            if(
+                not regexp_contains(
+                    {{ remove_accents_upper("dta_nasc") }}, r'^\d{4}-\d{2}-\d{2}$'
+                ),
+                null,
+                {{ remove_accents_upper("dta_nasc") }}
+            ) as data_nascimento,
+
+            {{ remove_accents_upper("paisnascimento") }} as pais_nascimento,
+            {{ remove_accents_upper("municipionascimento") }} as municipio_nascimento,
+            {{ remove_accents_upper("estadonascimento") }} as estado_nascimento,
+
+            -- Contato
+            {{ remove_accents_upper("email") }} as email,
+            {{ remove_accents_upper("telefone") }} as telefone,
+
+            -- Endereço
+            {{ remove_accents_upper("tipodomicilio") }} as endereco_tipo_domicilio,
+            {{ remove_accents_upper("tipologradouro") }} as endereco_tipo_logradouro,
+            {{ remove_accents_upper("cep") }} as endereco_cep,
+            {{ remove_accents_upper("logradouro") }} as endereco_logradouro,
+            {{ remove_accents_upper("bairro") }} as endereco_bairro,
+            {{ remove_accents_upper("estadoresidencia") }} as endereco_estado,
+            {{ remove_accents_upper("municipioresidencia") }} as endereco_municipio,
+
+            -- Informações da Unidade
+            {{ remove_accents_upper("ap") }} as ap,
+            {{ remove_accents_upper("microarea") }} as microarea,
+            cast(null as string) as nome_unidade,
+            {{ remove_accents_upper("codigoequipe") }} as codigo_equipe_saude,
+            {{ remove_accents_upper("ineequipe") }} as codigo_ine_equipe_saude,
+
+            if(
+                not regexp_contains(
+                    dataatualizacaovinculoequipe,
+                    r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$'
+                ),
+                null,
+                dataatualizacaovinculoequipe
+            ) as data_atualizacao_vinculo_equipe,
+
+            -- Metadata columns
+            {{ remove_accents_upper("datalake_imported_at") }} as datalake_imported_at
+
+        from source
+    ),
+
+    cast_to_correct_types as (
+        select
+            * except (
+                data_nascimento,
+                data_atualizacao_vinculo_equipe,
+                data_cadastro_inicial,
+                data_ultima_atualizacao_cadastral
+            ),
+
+            safe_cast(data_nascimento as date format 'YYYY-MM-DD') as data_nascimento,
+
+            parse_timestamp(
+                '%Y-%m-%d %H:%M:%E3S', data_atualizacao_vinculo_equipe
+            ) as data_atualizacao_vinculo_equipe,
+
+            parse_timestamp(
+                '%Y-%m-%d %H:%M:%E3S', data_cadastro_inicial
+            ) as data_cadastro_inicial,
+
+            parse_timestamp(
+                '%Y-%m-%d %H:%M:%E3S', data_ultima_atualizacao_cadastral
+            ) as data_ultima_atualizacao_cadastral
+
+        from remove_unwanted_characters
+    ),
+
+    standardized as (
+
+        select
+
+            -- PK
+            id,
+
+            -- OUTRAS CHAVES
+            id_cnes,
+
+            case
+                when
+                    cpf = ''
+                    or regexp_contains(cpf, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$')
+                then null
+                else cpf
+            end as cpf,
+
+            case
+                when
+                    dnv = ''
+                    or regexp_contains(dnv, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$')
+                then null
+                else dnv
+            end as dnv,
+
+            case
+                when
+                    nis = ''
+                    or regexp_contains(nis, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$')
+                then null
+                else nis
+            end as nis,
+
+            case
+                when
+                    cns = ''
+                    or regexp_contains(cns, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$')
+                then null
+                else cns
+            end as cns,
+
+            id_local,
 
 
-    -- ENDEREÇO
-    CASE
-        WHEN endereco_tipo_domicilio IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(endereco_tipo_domicilio) AS STRING)
-    END AS endereco_tipo_domicilio,
-    CASE
-        WHEN endereco_tipo_logradouro IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(endereco_tipo_logradouro) AS STRING)
-    END AS endereco_tipo_logradouro,
-    CASE
-        WHEN endereco_cep IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(endereco_cep) AS STRING)
-    END AS endereco_cep,
+            -- INFORMAÇÕES PESSOAIS
+            case {{ remove_invalid_names("nome") }} else nome end as nome,
 
-    CASE
-        WHEN endereco_logradouro IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(endereco_logradouro) AS STRING)
-    END AS endereco_logradouro,
-    CASE
-        WHEN endereco_bairro IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(endereco_bairro) AS STRING)
-    END AS endereco_bairro,
-    CASE
-        WHEN endereco_estado IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(endereco_estado) AS STRING)
-    END AS endereco_estado,
-    CASE
-        WHEN endereco_municipio IN ("NONE") THEN NULL
-        ELSE CAST(INITCAP(endereco_municipio) AS STRING)
-    END AS endereco_municipio,
+            case
+                {{ remove_invalid_names("nome_social") }} else nome_social
+            end as nome_social,
 
+            case {{ remove_invalid_names("nome_mae") }} else nome_mae end as nome_mae,
 
-    -- METADATA COLUMNS
-    data_particao,
-    CASE
-        WHEN updated_at IN ("NONE") THEN NULL
-        ELSE CAST(updated_at AS TIMESTAMP)
-    END AS updated_at,
-    CASE
-        WHEN imported_at IN ("NONE") THEN NULL
-        ELSE CAST(imported_at AS TIMESTAMP)
-    END AS imported_at
-  FROM tb
-)
+            case {{ remove_invalid_names("nome_pai") }} else nome_pai end as nome_pai,
 
--- testing AS (
---   SELECT 
---     col,
---     count(*) AS count
---   FROM padronized
---   GROUP BY col
--- )
+            case when obito = '1' then 'True' else 'False' end as obito,
 
-SELECT 
-  *
-FROM padronized
+            case when sexo = '' then null else lower(sexo) end as sexo,
+
+            case
+                when orientacao_sexual = '' then null else orientacao_sexual
+            end as orientacao_sexual,
+
+            case
+                when
+                    identidade_genero in (
+                        "CIS",
+                        "HETEROSSEXUAL",
+                        "BISSEXUAL",
+                        "HOMOSSEXUAL (GAY / LESBICA)"
+                    )
+                then lower("CIS")
+                when identidade_genero in ("MULHER TRANSEXUAL")
+                then lower("MULHER TRANSEXUAL")
+                when identidade_genero in ("HOMEM TRANSEXUAL")
+                then lower("HOMEM TRANSEXUAL")
+                when identidade_genero in ("TRAVESTI", "OUTRO")
+                then lower("OUTRO")
+                else null
+            end as identidade_genero,
+
+            case
+                when raca_cor in ("AMARELA", "BRANCA", "INDÍGENA", "PARDA", "PRETA")
+                then cast(lower(raca_cor) as string)
+                else null
+            end as raca_cor,
+
+            -- CONTATO
+            case {{ remove_invalid_email("email") }} else email end as email,
+
+            case
+                when
+                    telefone = ''
+                    or regexp_contains(telefone, r'^(0+|1+|2+|3+|4+|5+|6+|7+|8+|9+)$')
+                    or regexp_contains(telefone, r'^\b21\b$')
+                then null
+                else telefone
+            end as telefone,
+
+            -- NASCIMENTO
+            case
+                when nacionalidade = '' then null else lower(nacionalidade)
+            end as nacionalidade,
+
+            case
+                when data_nascimento > current_date() then null else data_nascimento
+            end as data_nascimento,
+
+            case
+                when pais_nascimento = '' then null else lower(pais_nascimento)
+            end as pais_nascimento,
+
+            case
+                when municipio_nascimento = ''
+                then null
+                else lower(municipio_nascimento)
+            end as municipio_nascimento,  -- No rotineiro é o codigo IBGE, aqui esta sendo o nome
+
+            case
+                when estado_nascimento = '' then null else lower(estado_nascimento)
+            end as estado_nascimento,
+
+            -- INFORMAÇÕES DA UNIDADE
+            case when ap = '' then null else ap end as ap,
+
+            case when microarea = '' then null else microarea end as microarea,
+
+            case when nome_unidade = '' then null else nome_unidade end as nome_unidade,
+
+            case
+                when codigo_equipe_saude = '' then null else codigo_equipe_saude
+            end as codigo_equipe_saude,
+
+            case
+                when codigo_ine_equipe_saude = '' then null else codigo_ine_equipe_saude
+            end as codigo_ine_equipe_saude,
+
+            case
+                when
+                    cast(data_atualizacao_vinculo_equipe as date) > current_date()
+                    or cast(data_atualizacao_vinculo_equipe as date) = '1900-01-01'
+                then null
+                else data_atualizacao_vinculo_equipe
+            end as data_atualizacao_vinculo_equipe,
+
+            case
+                when numero_prontuario = '' then null else numero_prontuario
+            end as numero_prontuario,
+
+            case
+                when cadastro_permanente = '' then null else cadastro_permanente
+            end as cadastro_permanente,
+
+            case
+                when situacao = '' then null else situacao
+            end as situacao,
+
+            case
+                when
+                    cast(data_cadastro_inicial as date) > current_date()
+                    or cast(data_cadastro_inicial as date) = '1900-01-01'
+                then null
+                else data_cadastro_inicial
+            end as data_cadastro_inicial,
+
+            case
+                when
+                    cast(data_ultima_atualizacao_cadastral as date) > current_date()
+                    or cast(data_ultima_atualizacao_cadastral as date) = '1900-01-01'
+                then null
+                else data_ultima_atualizacao_cadastral
+            end as data_ultima_atualizacao_cadastral,
+
+            -- ENDEREÇO
+            case
+                when endereco_tipo_domicilio = ''
+                then null
+                else lower(endereco_tipo_domicilio)
+            end as endereco_tipo_domicilio,
+
+            case
+                when endereco_tipo_logradouro = ''
+                then null
+                else lower(endereco_tipo_logradouro)
+            end as endereco_tipo_logradouro,
+
+            case
+                when endereco_cep = '' then null else lower(endereco_cep)
+            end as endereco_cep,
+
+            case
+                when endereco_logradouro = '' then null else lower(endereco_logradouro)
+            end as endereco_logradouro,
+
+            case
+                when endereco_bairro = '' then null else lower(endereco_bairro)
+            end as endereco_bairro,
+
+            case
+                when endereco_estado = '' then null else lower(endereco_estado)
+            end as endereco_estado,
+
+            case
+                when endereco_municipio = '' then null else lower(endereco_municipio)
+            end as endereco_municipio,
+
+            -- METADATA COLUMNS
+            safe_cast(null as date) as data_particao,
+
+            case
+                when
+                    cast(data_cadastro_inicial as date) > current_date()
+                    or cast(data_cadastro_inicial as date) = '1900-01-01'
+                then null
+                else data_cadastro_inicial
+            end as source_created_at,
+
+            case
+                when
+                    cast(data_ultima_atualizacao_cadastral as date) > current_date()
+                    or cast(data_ultima_atualizacao_cadastral as date) = '1900-01-01'
+                then null
+                else data_ultima_atualizacao_cadastral
+            end as source_updated_at,
+
+            case
+                when datalake_imported_at = ''
+                then null
+                else parse_timestamp('%Y-%m-%d %H:%M:%E3S', datalake_imported_at)
+            end as datalake_imported_at
+
+        from cast_to_correct_types
+    ),
+
+    -- Cerca de 1000 registros estão duplicados, porém não há como identificar o
+    -- registro mais recente.
+    -- Ambos os registros compartilham as mesma data de atualização, apesar de haver
+    -- diferença em pelos 1 campo
+    -- Portanto, optou-se por manter apenas 1 registro de forma aleatória utilizando a
+    -- função count(*) over (partition by gid)
+    deduplicated as (
+        select * from standardized qualify count(*) over (partition by id) = 1
+    ),
+
+    final as (
+
+        select
+
+            -- PK
+            id,
+
+            -- Outras Chaves
+            id_cnes,
+            id_local,
+            numero_prontuario,
+            cpf,
+            dnv,
+            nis,
+            cns,
+
+            -- Informações Pessoais
+            nome,
+            nome_social,
+            nome_mae,
+            nome_pai,
+            obito,
+            sexo,
+            orientacao_sexual,
+            identidade_genero,
+            raca_cor,
+
+            -- Informações Cadastrais
+            situacao,
+            cadastro_permanente,
+            data_cadastro_inicial,
+            data_ultima_atualizacao_cadastral,
+
+            -- Nascimento
+            nacionalidade,
+            data_nascimento,
+            pais_nascimento,
+            municipio_nascimento,
+            estado_nascimento,
+
+            -- Contato
+            email,
+            telefone,
+
+            -- Endereço
+            endereco_tipo_domicilio,
+            endereco_tipo_logradouro,
+            endereco_cep,
+            endereco_logradouro,
+            endereco_bairro,
+            endereco_estado,
+            endereco_municipio,
+
+            -- Informações da Unidade
+            ap,
+            microarea,
+            nome_unidade,
+            codigo_equipe_saude,
+            codigo_ine_equipe_saude,
+            data_atualizacao_vinculo_equipe,
+
+            -- Metadata columns
+            data_particao,
+            source_created_at,
+            source_updated_at,
+            datalake_imported_at,
+
+        from deduplicated
+    )
+
+select *
+from final

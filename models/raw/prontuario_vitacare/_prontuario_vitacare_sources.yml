@@ -5,26 +5,33 @@ sources:
     database: rj-sms
     schema: brutos_prontuario_vitacare_staging
     tables:
+      # APIs (Estoque & Vacinas)
       - name: estoque_posicao
       - name: estoque_movimento
       - name: vacina
+
+      # Eventos
+      - name: atendimento_eventos
       - name: paciente_eventos
         loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
         filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
-      - name: paciente_historico_eventos
-      - name: atendimento_eventos
+
+      # Histórico
+      - name: alergias_historico
       - name: atendimentos_historico
-      - name: vacinas_historico
       - name: condicoes_historico
       - name: encaminhamentos_historico
       - name: equipes_historico
-      - name: exame_historico
       - name: indicadores_historico
-      - name: profissionais_historico
+      - name: pacientes_historico
       - name: prescricoes_historico
-      - name: alergias_historico
-      - name: solicitacao_historico
-      - name: procedimentos_historico
+      - name: procedimentos_clinicos_historico
+      - name: profissionais_historico
+      - name: solicitacao_exame_historico
+      - name: unidade_historico
+      - name: vacinas_historico
+
+      - name: paciente_historico_eventos

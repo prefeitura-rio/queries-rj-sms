@@ -12,79 +12,88 @@
 ).isoformat() %}
 
 with
+
     events_from_window as (
-        select 
-            *,
-            concat(nullif(payload_cnes, ''), '.', nullif(data__id, '')) as gid
+        select *, concat(nullif(payload_cnes, ''), '.', nullif(data__id, '')) as id
         from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos") }}
         {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
     ),
+
     events_ranked_by_freshness as (
-        select *, row_number() over (partition by gid order by source_updated_at desc) as rank
+        select
+            *,
+            row_number() over (partition by id order by source_updated_at desc) as rank
         from events_from_window
     ),
+
     latest_events as (select * from events_ranked_by_freshness where rank = 1)
+
 select
     -- PK
-    safe_cast(gid as string) as id,
+    safe_cast(id as string) as id,
 
     -- Outras Chaves
-    safe_cast(NULLIF(patient_cpf, '') as string) as cpf,
-    safe_cast(NULLIF(data__dnv, '') as string) as dnv,
-    safe_cast(NULLIF(data__nis, '') as string) as nis,
-    safe_cast(NULLIF(data__cns, '') as string) as cns,
-    safe_cast(NULLIF(data__id, '') as string) as id_local,
+    safe_cast(nullif(payload_cnes, '') as string) as id_cnes,
+    safe_cast(nullif(data__id, '') as string) as id_local,
+    safe_cast(nullif(data__npront, '') as string) as numero_prontuario,
+    safe_cast(nullif(patient_cpf, '') as string) as cpf,
+    safe_cast(nullif(data__dnv, '') as string) as dnv,
+    safe_cast(nullif(data__nis, '') as string) as nis,
+    safe_cast(nullif(data__cns, '') as string) as cns,
 
     -- Informações Pessoais
-    safe_cast(NULLIF(data__nome, '') as string) as nome,
-    safe_cast(NULLIF(data__nomeSocial, '') as string) as nome_social,
-    safe_cast(NULLIF(data__nomeMae, '') as string) as nome_mae,
-    safe_cast(NULLIF(data__nomePai, '') as string) as nome_pai,
-    safe_cast(NULLIF(data__obito, '') as string) as obito,
-    safe_cast(null as date) as data_obito,
-    safe_cast(NULLIF(data__sexo, '') as string) as sexo,
-    safe_cast(NULLIF(data__orientacaoSexual, '') as string) as orientacao_sexual,
-    safe_cast(NULLIF(data__identidadeGenero, '') as string) as identidade_genero,
-    safe_cast(NULLIF(data__racaCor, '') as string) as raca_cor,
+    safe_cast(nullif(data__nome, '') as string) as nome,
+    safe_cast(nullif(data__nomesocial, '') as string) as nome_social,
+    safe_cast(nullif(data__nomemae, '') as string) as nome_mae,
+    safe_cast(nullif(data__nomepai, '') as string) as nome_pai,
+    safe_cast(nullif(data__obito, '') as string) as obito,
+    safe_cast(nullif(lower(data__sexo), '') as string) as sexo,
+    safe_cast(nullif(lower(data__orientacaosexual), '') as string) as orientacao_sexual,
+    safe_cast(nullif(lower(data__identidadegenero), '') as string) as identidade_genero,
+    safe_cast(nullif(lower(data__racacor), '') as string) as raca_cor,
 
-    -- Contato
-    safe_cast(NULLIF(data__email, '') as string) as email,
-    safe_cast(NULLIF(data__telefone, '') as string) as telefone,
+    -- Informações Cadastrais
+    safe_cast(null as string) as situacao,  -- #TODO: Pedir para vitacare essa informação
+    safe_cast(nullif(data__cadastropermanente, '') as string) as cadastro_permanente,
+    safe_cast(nullif(data__datacadastro, '') as timestamp) as data_cadastro_inicial,
+    safe_cast(
+        nullif(data__dataatualizacaocadastro, '') as timestamp
+    ) as data_ultima_atualizacao_cadastral,
 
     -- Nascimento
-    safe_cast(NULLIF(data__nacionalidade, '') as string) as nacionalidade,
-    safe_cast(NULLIF(data__dataNascimento, '') as date) as data_nascimento,
-    safe_cast(NULLIF(data__paisNascimento, '') as string) as pais_nascimento,
-    safe_cast(NULLIF(data__municipioNascimento, '') as string) as municipio_nascimento,
-    safe_cast(NULLIF(data__estadoNascimento, '') as string) as estado_nascimento,
+    safe_cast(nullif(data__nacionalidade, '') as string) as nacionalidade,
+    safe_cast(nullif(data__datanascimento, '') as date) as data_nascimento,
+    safe_cast(nullif(data__paisnascimento, '') as string) as pais_nascimento,
+    safe_cast(nullif(data__municipionascimento, '') as string) as municipio_nascimento,
+    safe_cast(nullif(data__estadonascimento, '') as string) as estado_nascimento,
 
-    -- Informações da Unidade
-    safe_cast(NULLIF(data__ap, '') as string) as ap,
-    safe_cast(NULLIF(data__microarea, '') as string) as microarea,
-    safe_cast(NULLIF(payload_cnes, '') as string) as cnes_unidade,
-    safe_cast(NULLIF(data__unidade, '') as string) as nome_unidade,
-    safe_cast(NULLIF(data__codigoEquipe, '') as string) as codigo_equipe_saude,
-    safe_cast(NULLIF(data__ineEquipe, '') as string) as codigo_ine_equipe_saude,
-    safe_cast(NULLIF(data__dataAtualizacaoVinculoEquipe, '') as timestamp) as data_atualizacao_vinculo_equipe,
-    safe_cast(NULLIF(data__nPront, '') as string) as numero_prontuario,
-    safe_cast(null as string) as numero_familia,
-    safe_cast(NULLIF(data__cadastroPermanente, '') as string) as cadastro_permanente,
-    safe_cast(null as string) as situacao_usuario,
-    safe_cast(NULLIF(data__dataCadastro, '') as timestamp) as data_cadastro_inicial,
-    safe_cast(NULLIF(data__dataAtualizacaoCadastro, '') as timestamp) as data_ultima_atualizacao_cadastral,
+    -- Contato
+    safe_cast(nullif(data__email, '') as string) as email,
+    safe_cast(nullif(data__telefone, '') as string) as telefone,
 
     -- Endereço
     safe_cast(null as string) as endereco_tipo_domicilio,
-    safe_cast(NULLIF(data__tipoLogradouro, '') as string) as endereco_tipo_logradouro,
-    safe_cast(NULLIF(data__cep, '') as string) as endereco_cep,
-    safe_cast(NULLIF(data__logradouro, '') as string) as endereco_logradouro,
-    safe_cast(NULLIF(data__bairro, '') as string) as endereco_bairro,
-    safe_cast(NULLIF(data__estadoResidencia, '') as string) as endereco_estado,
-    safe_cast(NULLIF(data__municipioResidencia, '') as string) as endereco_municipio,
+    safe_cast(nullif(data__tipologradouro, '') as string) as endereco_tipo_logradouro,
+    safe_cast(nullif(data__cep, '') as string) as endereco_cep,
+    safe_cast(nullif(data__logradouro, '') as string) as endereco_logradouro,
+    safe_cast(nullif(data__bairro, '') as string) as endereco_bairro,
+    safe_cast(nullif(data__estadoresidencia, '') as string) as endereco_estado,
+    safe_cast(nullif(data__municipioresidencia, '') as string) as endereco_municipio,
+
+    -- Informações da Unidade
+    safe_cast(nullif(data__ap, '') as string) as ap,
+    safe_cast(nullif(data__microarea, '') as string) as microarea,
+    safe_cast(nullif(data__unidade, '') as string) as nome_unidade,
+    safe_cast(nullif(data__codigoequipe, '') as string) as codigo_equipe_saude,
+    safe_cast(nullif(data__ineequipe, '') as string) as codigo_ine_equipe_saude,
+    safe_cast(
+        nullif(data__dataatualizacaovinculoequipe, '') as timestamp
+    ) as data_atualizacao_vinculo_equipe,
 
     -- Metadata columns
-    safe_cast(NULLIF(data_particao, '') as date) as data_particao,
-    safe_cast(NULLIF(source_updated_at, '') as timestamp) as updated_at,
-    safe_cast(null as timestamp) as imported_at,
-from latest_events
+    safe_cast(nullif(data_particao, '') as date) as data_particao,
+    safe_cast(nullif(data__dataCadastro, '') as timestamp) as source_created_at,
+    safe_cast(nullif(source_updated_at, '') as timestamp) as source_updated_at,
+    safe_cast(null as timestamp) as datalake_imported_at,
 
+from latest_events

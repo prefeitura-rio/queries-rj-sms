@@ -73,7 +73,7 @@ with
     ),
     condicoes as (
         select distinct
-            gid as fk_atendimento,
+            id as fk_atendimento,
 
             json_extract_scalar(condicao_json, "$.cod_cid10") as id,
 
@@ -114,7 +114,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     procedimentos as (
         select
-            gid as fk_atendimento,
+            id as fk_atendimento,
             case
                 when
                     json_extract_scalar(procedimentos_json, '$.procedimento_clinico')
@@ -164,7 +164,7 @@ with
     ),
     prescricoes as (
         select
-            gid as fk_atendimento,
+            id as fk_atendimento,
             replace(
                 json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", ""
             ) as id,
@@ -220,7 +220,7 @@ with
 
     medidas_padronizadas as (
         select
-            gid as fk_atendimento,
+            id as fk_atendimento,
             case
                 when
                     nome in (
@@ -290,7 +290,22 @@ with
     ),
 
     medidas_unificadas as (
-        select *
+        select 
+            fk_atendimento,
+            if((altura > 20) and (altura < 230), altura, null) as altura,
+            if((circunferencia_abdominal < 300) and (circunferencia_abdominal > 20), circunferencia_abdominal, null) as circunferencia_abdominal,
+            if((frequencia_cardiaca > 30) and (frequencia_cardiaca < 220), frequencia_cardiaca, null) as frequencia_cardiaca,
+            if((frequencia_respiratoria < 60) and (frequencia_respiratoria > 5), frequencia_respiratoria, null) as frequencia_respiratoria,
+            if((glicemia < 300) and (glicemia > 40), glicemia, null) as glicemia, 
+            if((hemoglobina_glicada < 30) and (hemoglobina_glicada > 0), hemoglobina_glicada, null) as hemoglobina_glicada, 
+            if((imc < 300) and (imc > 0), imc, null) as imc, 
+            if((peso < 500) and (peso > 0), peso, null) as peso, 
+            if((pressao_sistolica < 240) and (pressao_sistolica > 7), pressao_sistolica, null) as pressao_sistolica, 
+            if((pressao_diastolica < 150) and (pressao_diastolica > 5), pressao_diastolica, null) as pressao_diastolica, 
+            pulso_ritmo, 
+            if((saturacao_oxigenio < 101) or (saturacao_oxigenio > 50), saturacao_oxigenio, null) as saturacao_oxigenio, 
+            if((temperatura < 41) or (temperatura > 33), temperatura, null) as temperatura, 
+
         from medidas_numericas_pivot
         full outer join medidas_categoricas_pivot using (fk_atendimento)
     ),
@@ -322,7 +337,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fato_atendimento as (
         select
-            gid as id,
+            atendimento.id,
 
             -- Paciente
             dim_paciente.paciente,
@@ -389,7 +404,7 @@ with
 
             -- Prontuário
             struct(
-                atendimento.gid as id_atendimento, 'vitacare' as fornecedor
+                atendimento.id as id_atendimento, 'vitacare' as fornecedor
             ) as prontuario,
 
             -- Metadados
@@ -407,14 +422,14 @@ with
         left join dim_profissional on atendimento.cns_profissional = dim_profissional.pk
         left join
             dim_condicoes_atribuidas
-            on atendimento.gid = dim_condicoes_atribuidas.fk_atendimento
-        left join dim_medidas on atendimento.gid = dim_medidas.fk_atendimento
+            on atendimento.id = dim_condicoes_atribuidas.fk_atendimento
+        left join dim_medidas on atendimento.id = dim_medidas.fk_atendimento
         left join
             dim_procedimentos_realizados
-            on atendimento.gid = dim_procedimentos_realizados.fk_atendimento
+            on atendimento.id = dim_procedimentos_realizados.fk_atendimento
         left join
             dim_prescricoes_atribuidas
-            on atendimento.gid = dim_prescricoes_atribuidas.fk_atendimento
+            on atendimento.id = dim_prescricoes_atribuidas.fk_atendimento
     ),
 
     episodios_validos as (select * from fato_atendimento where id is not null)

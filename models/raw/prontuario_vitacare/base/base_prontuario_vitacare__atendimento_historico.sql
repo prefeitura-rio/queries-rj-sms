@@ -20,7 +20,13 @@ with
     fato_atendimento as (
         select
             -- PK
-            concat(nullif(atendimentos.id_cnes, ''), '.', nullif(atendimentos.acto_id, '')) as gid,
+            concat(
+                nullif(atendimentos.id_cnes, ''),
+                '.',
+                nullif(
+                    replace(acto_id, '.0', ''), ''
+                )
+            ) as id,
 
             -- Chaves
             patient_cpf as cpf,
@@ -53,7 +59,7 @@ with
 
             -- Metadados
             safe_cast(datahora_fim_atendimento as datetime) as updated_at,
-            safe_cast(atendimentos.imported_at as datetime) as loaded_at
+            safe_cast(atendimentos.datalake_imported_at as datetime) as loaded_at
         from
             {{ source("brutos_prontuario_vitacare_staging", "atendimentos_historico") }}
             as atendimentos
@@ -62,13 +68,13 @@ with
     ),
     dim_alergias as (
         select
-            gid,
+            id,
             to_json_string(
                 array_agg(struct(alergias_anamnese_descricao as descricao))
             ) as alergias
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as gid
+                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
                 from
                     {{
                         source(
@@ -76,17 +82,17 @@ with
                         )
                     }}
             )
-        group by gid
+        group by id
     ),
     dim_condicoes as (
         select
-            gid,
+            id,
             to_json_string(
                 array_agg(struct(cod_cid10, "" as cod_ciap2, estado, data_diagnostico))
             ) as condicoes
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as gid
+                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
                 from
                     {{
                         source(
@@ -95,17 +101,17 @@ with
                         )
                     }}
             )
-        group by gid
+        group by id
     ),
     dim_encaminhamentos as (
         select
-            gid,
+            id,
             to_json_string(
                 array_agg(struct(encaminhamento_especialidade as descricao))
             ) as encaminhamentos
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as gid
+                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
                 from
                     {{
                         source(
@@ -114,17 +120,17 @@ with
                         )
                     }}
             )
-        group by gid
+        group by id
     ),
     dim_indicadores as (
         select
-            gid,
+            id,
             to_json_string(
                 array_agg(struct(indicadores_nome as nome, valor))
             ) as indicadores
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as gid
+                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
                 from
                     {{
                         source(
@@ -133,11 +139,11 @@ with
                         )
                     }}
             )
-        group by gid
+        group by id
     ),
     dim_exames as (
         select
-            gid,
+            id,
             to_json_string(
                 array_agg(
                     struct(
@@ -147,19 +153,19 @@ with
             ) as exames_solicitados
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as gid
+                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
                 from
                     {{
                         source(
-                            "brutos_prontuario_vitacare_staging", "exame_historico"
+                            "brutos_prontuario_vitacare_staging", "solicitacao_exame_historico"
                         )
                     }}
             )
-        group by gid
+        group by id
     ),
     dim_vacinas as (
         select
-            gid,
+            id,
             to_json_string(
                 array_agg(
                     struct(
@@ -179,7 +185,7 @@ with
             ) as vacinas
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as gid
+                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
                 from
                     {{
                         source(
@@ -187,11 +193,11 @@ with
                         )
                     }}
             )
-        group by gid
+        group by id
     ),
     dim_prescricoes as (
         select
-            gid,
+            id,
             to_json_string(
                 array_agg(
                     struct(
@@ -205,7 +211,7 @@ with
             ) as prescricoes
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as gid,
+                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id,
                 from
                     {{
                         source(
@@ -214,7 +220,7 @@ with
                         )
                     }}
             )
-        group by gid
+        group by id
     ),
 
     atendimentos_eventos_historicos as (
@@ -234,15 +240,28 @@ with
             safe_cast(atendimentos.datahora_fim as date) as data_particao,
 
         from fato_atendimento as atendimentos
-        left join dim_alergias using (gid)
-        left join dim_condicoes using (gid)
-        left join dim_encaminhamentos using (gid)
-        left join dim_indicadores using (gid)
-        left join dim_exames using (gid)
-        left join dim_vacinas using (gid)
-        left join dim_prescricoes using (gid)
+        left join dim_alergias using (id)
+        left join dim_condicoes using (id)
+        left join dim_encaminhamentos using (id)
+        left join dim_indicadores using (id)
+        left join dim_exames using (id)
+        left join dim_vacinas using (id)
+        left join dim_prescricoes using (id)
     -- left join dim_procedimentos using (acto_id)
+    ),
+
+    final as (
+        select id,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "id",
+                    ]
+                )
+            }} as id_hci,
+            * except (id),
+        from atendimentos_eventos_historicos
     )
 
-select * from atendimentos_eventos_historicos
+select * from final
 
