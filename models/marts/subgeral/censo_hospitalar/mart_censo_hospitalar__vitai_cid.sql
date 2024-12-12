@@ -31,5 +31,5 @@ select
     cpf, 
     entrada_datahora, 
     condicoes,
-    cast(cpf as int64) as cpf_particao
+    safe_cast(cpf as int64) as cpf_particao
 from formatting
