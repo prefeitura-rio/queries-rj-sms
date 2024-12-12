@@ -18,7 +18,7 @@
 with
     events_from_window as (
         select *
-        from {{ source("brutos_plataforma_smsrio_staging", "paciente_cadastro_eventos") }}
+        from {{ source("brutos_plataforma_smsrio_staging", "_paciente_cadastro_eventos") }}
         {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
     ),
     events_ranked_by_freshness as (
@@ -66,9 +66,8 @@ select
     safe_cast(NULLIF(NULLIF(data__uf_res, ''), 'None') as string) as endereco_uf,
 
     -- Metadata columns
-    safe_cast(NULLIF(ano_particao, '') as string) as ano_particao,
-    safe_cast(NULLIF(mes_particao, '') as string) as mes_particao,
-    safe_cast(NULLIF(data_particao, '') as date) as data_particao,
-    safe_cast(NULLIF(source_updated_at, '') as timestamp) as updated_at
+    safe_cast(datalake_loaded_at as date) as data_particao,
+    safe_cast(NULLIF(source_updated_at, '') as timestamp) as updated_at,
+    datalake_loaded_at as loaded_at
 from latest_events
 

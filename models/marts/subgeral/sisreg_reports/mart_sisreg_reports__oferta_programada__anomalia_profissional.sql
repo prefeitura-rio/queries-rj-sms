@@ -10,6 +10,7 @@
 
 {% set data_atual = run_started_at.strftime("%Y-%m-%d") %}
 
+-- To do: considerar alterações nas cargas horárias (CNES)
 with
 
     -- Etapa 1: Identificar a data de partição mais recente
@@ -200,10 +201,12 @@ with
 
     -- Etapa 12: Calcular pontuações de anomalia para desvios significativos
     -- Pontuamos as anomalias com base no desvio em relação à mediana e ao MAD
+    -- ajustado para normalidade
     pontuacoes_anomalia as (
         select
             *,
-            abs(diferenca_proximo_mes - mediana_diferenca) / mad as pontuacao_anomalia
+            abs(diferenca_proximo_mes - mediana_diferenca)
+            / (mad * 1.4826) as pontuacao_anomalia
         from preparacao_anomalia
         where mad is not null and mad != 0
     ),
