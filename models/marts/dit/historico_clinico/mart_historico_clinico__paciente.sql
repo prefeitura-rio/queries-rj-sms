@@ -636,12 +636,20 @@ with
         left join smsrio_tb sm on cpfs.cpf = sm.cpf
         left join base_obitos_vitai on cpfs.cpf = base_obitos_vitai.cpf
     ),
+    -- Registros conflitantes: Add registration conflict flag
+    registros_conflitantes as (
+        select * from {{ref('int_historico_clinico__pacientes_invalidos')}}
+    ),
 
     -- -- FINAL JOIN: Joins all the data previously processed, creating the
     -- -- integrated table of the patients.
     paciente_integrado as (
         select
             pd.cpf,
+            case 
+                when pd.cpf in (select cpf from registros_conflitantes) then true
+                else false
+            end as cadastros_conflitantes_indicador,
             cns.cns,
             pd.dados,
             esf.equipe_saude_familia,
