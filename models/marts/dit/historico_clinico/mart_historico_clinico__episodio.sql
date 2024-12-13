@@ -22,7 +22,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     merged_data as (
         select
-            paciente,
+            paciente.cpf as paciente_cpf,
             tipo,
             subtipo,
             entrada_datahora,
@@ -57,7 +57,7 @@ with
         from {{ ref("int_historico_clinico__episodio__vitai") }}
         union all
         select
-            paciente,
+            paciente.cpf as paciente_cpf,
             tipo,
             subtipo,
             entrada_datahora,
@@ -81,6 +81,25 @@ with
         from {{ ref("int_historico_clinico__episodio__vitacare") }}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- PATIENT DATA: Patient Enrichment 
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    merged_patient as (
+        select cpf, cns, dados.data_nascimento
+        from {{ref('mart_historico_clinico__paciente')}}
+    ),
+    merged_data_patient as (
+        select merged_data.*,
+            struct(
+                merged_patient.cpf,
+                merged_patient.cns,
+                merged_patient.data_nascimento
+            ) as paciente,
+        from merged_data
+        left join merged_patient
+        on merged_patient.cpf = merged_data.paciente_cpf
+    ),
+
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DECEASED: Adding deceased flag
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     deceased as (
@@ -91,9 +110,9 @@ with
     ),
     merged_data_deceased as (
         select *, if(deceased.boletim_obito is null, false, true) as obito_indicador
-        from merged_data
+        from merged_data_patient
         left join
-            deceased on merged_data.prontuario.id_atendimento = deceased.boletim_obito
+            deceased on merged_data_patient.prontuario.id_atendimento = deceased.boletim_obito
 
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -108,9 +127,6 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fingerprinted as (
         select
-            -- Patient Unique Identifier: for clustering purposes
-            paciente.cpf as paciente_cpf,
-
             -- Encounter Unique Identifier: for testing purposes
             {{
                 dbt_utils.generate_surrogate_key(
