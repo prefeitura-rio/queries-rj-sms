@@ -167,6 +167,21 @@ with
                 where tipo is not null
             ) as clinical_exams,
             safe_cast(procedimentos_realizados as string) as procedures,
+            struct(
+                medidas.altura as height,
+                medidas.circunferencia_abdominal as abdominal_circumference,
+                medidas.frequencia_cardiaca as heart_rate,
+                medidas.frequencia_respiratoria as respiratory_rate,
+                medidas.glicemia as blood_glucose,
+                medidas.hemoglobina_glicada as glycated_hemoglobin,
+                medidas.imc as bmi,
+                medidas.peso as weight,
+                medidas.pressao_sistolica as systolic_pressure,
+                medidas.pressao_diastolica as diastolic_pressure,
+                medidas.pulso_ritmo as pulse_rate,
+                medidas.saturacao_oxigenio as oxygen_saturation,
+                medidas.temperatura as temperature
+            ) as measures,
             safe_cast(prescription as string) as prescription,
             safe_cast(medicines_administered as string) as medicines_administered,
             array(
