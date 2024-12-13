@@ -4,14 +4,192 @@ models:
     description: >
       Tabela com uma visão consolidada dos atendimentos realizados em
       estabelecimentos de saúde.
+    columns:
+      - name: cpf
+        description: >
+          Cadastro de Pessoas Físicas do paciente.
+      - name: id_episodio
+        description: |
+          Fingerprint determinístico para o atendimento.
+      - name: entry_datetime
+        description: >
+          Data e hora de início do atendimento. Representa o momento em que o
+          atendimento começou.
+      - name: exit_datetime
+        description: >
+          Data e hora de término do atendimento. Representa o momento em que o
+          atendimento terminou.
+      - name: location
+        description: |
+          Nome do estabelecimento onde ocorreu o atendimento
+      - name: type
+        description: |
+          Tipo de atendimento
+      - name: subtype
+        description: |
+          Subtipo do atendimento, obtido a partir do tipo de atendimento.
+      - name: exhibition_type
+        description: |
+          Tipo de exibicao do episodio.
+      - name: clinical_exams
+        description: |
+          Exames clinicos realizados durante o episodio.
+      - name: clinical_exams.type
+        description: |
+          Tipo do exame realizado.
+      - name: clinical_exams.description
+        description: |
+          Descrição do exame realizado.
+      - name: procedures
+        description: |
+          Procedimentos realizados durante o episodio.
+      - name: prescription
+        description: |
+          Precrição realizada durante o episodio.
+      - name: medicines_administered
+        description: |
+          Medicamentos administrados.
+      - name: cids
+        description: |
+          Cids associados ao atendimento.
+      - name: cids.description
+        description: |
+          Descrição do cid associados ao atendimento.
+      - name: cids.status
+        description: |
+          Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
+      - name: cids_summarized
+        description: |
+          Resumo dos cids associados ao atendimento.
+      - name: responsible
+        description: |
+          Lista dos profissionais de saúde responsáveis pelo atendimento.
+      - name: responsible.name
+        description: |
+          Nome do proficional de saude responsavel pelo atendimento.
+      - name: responsible.role
+        description: |
+          Especialidade do proficional de saude responsavel pelo atendimento.
+      - name: clinical_motivation
+        description: |
+          Motivo do atendimento.
+      - name: clinical_outcome
+        description: |
+          Desfecho do atendimento.
+      - name: deceased
+        description: |
+          Indicador de obito.
+      - name: filter_tags
+        description: |
+          Lista de tipos de estabelecimentos.
+      - name: exibicao
+        description: |
+          Flags de exibição
+      - name: exibicao.indicador
+        description: |
+          Indicador de exibição
+      - name: exibicao.episodio_sem_informacao
+        description: |
+          Indicador episodio sem informação
+      - name: exibicao.paciente_restrito
+        description: |
+          Indicador paciente restrito
+      - name: exibicao.paciente_sem_cpf
+        description: |
+          Indicador Paciente sem CPF
+      - name: exibicao.subtipo_proibido_vitacare
+        description: |
+          Indicador subtipo proibido para vitacare
+      - name: exibicao.episodio_vacinacao
+        description: |
+          Indicador episodio de vacinação
+      - name: exibicao.exame_sem_subtipo
+        description: |
+          Indicador exame sem subtipo
+      - name: provider
+        description: |
+          Fornecedor do prontuário.
+      - name: cpf_particao
+        description: |
+          Coluna de particionamento de CPF
   - name: mart_historico_clinico_app__paciente
     description: >
       Tabela com uma visão consolidada dos pacientes atendidos em
       estabelecimentos de saúde.
+    columns:
+      - name: registration_name
+        description: Nome de registro.
+      - name: social_name
+        description: Nome social.
+      - name: cpf
+        description: CPF do paciente.
+      - name: cns
+        description: CNS do paciente.
+      - name: birth_date
+        description: Data de nascimento.
+      - name: gender
+        description: "Gênero do paciente. Os valores possíveis são 'Masculino', 'Feminino' e nulo (não informado)."
+      - name: race
+        description: "Raça do paciente. Os valores possíveis são 'Amarela','Branca', 'Indigena', 'Parda', 'Preta' e nulo (não informado)."
+      - name: deceased
+        description: Indica se o paciente foi a óbito no atendimento.
+      - name: phone
+        description: Telefone do paciente.
+      - name: family_clinic
+        description: Informaçõe sobre a clínica da família.
+      - name: family_clinic.cnes
+        description: CNES da clínica da família.
+      - name: family_clinic.name
+        description: Nome da clínica da família.
+      - name: family_clinic.phone
+        description: Telefone para contato com a clínica da família.
+      - name: family_health_team
+        description: Informações sobre a equipee de saúde da família.
+      - name: family_health_team.ine_code
+        description: Identificador da equipe de saúde da família.
+      - name: family_health_team.name
+        description: Nome da equipe de saúde da família.
+      - name: family_health_team.phone
+        description: Telefone para contato com a equipe de saúde da família.
+      - name: medical_responsible
+        description: Relação de médicos da equipe de saúde da família.
+      - name: medical_responsible.registry
+        description: Identificador do profissional de saúde no CNES.
+      - name: medical_responsible.name
+        description: Nome do profissional de saúde.
+      - name: nursing_responsible
+        description: Relação de enfermeiros da equipe de saúde da família.
+      - name: nursing_responsible.registry
+        description: Identificador do profissional de saúde no CNES.
+      - name: nursing_responsible.name
+        description: Nome do profissional de saúde.
+      - name: validated
+        description: Indica se a identidade do paciente foi validada em alguma base federal.
+      - name: cpf_particao
+        description: Coluna de particionamento de CPF
+      - name: exibicao
+        description: Flags de exibicao.
+      - name: exibicao.indicador
+        description: Indicador de exibição.
+      - name: exibicao.motivos
+        description: Motivos de exibição.
+      - name: exibicao.ap_cadastro
+        description: AP cadastro.
+      - name: exibicao.unidades_cadastro
+        description: Unidades cadastro.
   - name: mart_historico_clinico_app__sumario
     description: >
       Tabela com uma visão consolidada dos sumários de atendimentos realizados
       em estabelecimentos de saúde.
+    columns:
+      - name: cpf
+        description: CPF do paciente.
+      - name: allergies
+        description: Lista de alergias do paciente.
+      - name: continuous_use_medications
+        description: Lista de medicamentos de uso continuo.
+      - name: cpf_particao
+        description: CNS do paciente.
   - name: mart_historico_clinico_app__sistema
     description: >
       Tabela com uma visão consolidada do comportamendo dos usuários do HCI em
