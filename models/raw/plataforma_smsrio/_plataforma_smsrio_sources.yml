@@ -9,7 +9,7 @@ sources:
       - name: materiais_almoxarifado_dengue
       - name: equipe_contato
       - name: estabelecimento_contato
-      - name: paciente_cadastro_eventos
+      - name: _paciente_cadastro_eventos
         loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
         filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:

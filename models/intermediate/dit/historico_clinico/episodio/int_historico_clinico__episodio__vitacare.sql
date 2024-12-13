@@ -33,11 +33,11 @@ with
         select
             cpf as pk,
             struct(
-                paciente_merged.cpf,
-                paciente_merged.cns,
-                paciente_merged.dados.data_nascimento
+                cpf,
+                cns,
+                data_nascimento
             ) as paciente
-        from {{ ref("mart_historico_clinico__paciente") }} as paciente_merged
+        from {{ref('raw_prontuario_vitacare__paciente')}}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Profissional
