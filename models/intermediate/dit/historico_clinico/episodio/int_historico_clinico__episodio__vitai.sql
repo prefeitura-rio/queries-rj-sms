@@ -73,6 +73,7 @@ with
             b.gid,
             b.gid_paciente,
             b.gid_estabelecimento,
+            estabelecimento_nome,
             b.atendimento_tipo,
             b.especialidade_nome,
             case
@@ -345,6 +346,7 @@ with
             gid,
             gid_paciente,
             gid_estabelecimento,
+            estabelecimento_nome,
             atendimento_tipo,
             especialidade_nome,
             internacao_data,
@@ -432,7 +434,8 @@ with
             profissional_saude_responsavel,
             struct(
                 estabelecimentos.cnes as id_cnes,
-                {{ proper_estabelecimento("nome_estabelecimento") }} as nome,
+                coalesce({{ proper_estabelecimento("estabelecimentos.nome_estabelecimento") }},
+                {{ proper_estabelecimento("episodios_distinct.estabelecimento_nome") }}) as nome,
                 estabelecimentos.tipo_sms_simplificado as estabelecimento_tipo
             ) as estabelecimento,
             struct(
@@ -453,6 +456,7 @@ with
                 select distinct
                     gid,
                     gid_estabelecimento,
+                    estabelecimento_nome,
                     tipo,
                     subtipo,
                     profissional_saude_responsavel,
