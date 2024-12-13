@@ -10,6 +10,9 @@ models:
           Cadastro de Pessoas Físicas do paciente.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+      - name: cadastros_conflitantes_indicador
+        description:
+          Flag que informa se o CPF possui cadastros conflitantes, ou seja, um CPF que possui informações de mais de uma pessoa
       - name: id_episodio
         description: |
           Fingerprint determinístico para o atendimento.
@@ -369,6 +372,10 @@ models:
         quote: true
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
+      - name: cadastros_conflitantes_indicador
+        description:
+          Flag que informa se o CPF possui cadastros conflitantes, ou seja, um CPF que possui informações de mais de uma pessoa
+        data_type: bool
       - name: dados
         description: STRUCT contendo uma variedade de
           subcampos relacionados às informações pessoais e demográficas do paciente.

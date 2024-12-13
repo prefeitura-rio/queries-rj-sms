@@ -116,6 +116,13 @@ with
 
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    -- CONFLICT: Adding registration conflict flag
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
+    registration_conflict as (
+        select * from {{ref('int_historico_clinico__pacientes_invalidos')}}
+    ),
+
+    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- FINGERPRINT: Adding Unique Hashed Field
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fingerprinted as (
@@ -195,6 +202,10 @@ with
     final as (
     select 
         deduped.paciente_cpf,
+        case 
+            when deduped.paciente_cpf in (select cpf from registration_conflict) then true
+            else false
+        end as cadastros_conflitantes_indicador,
         deduped.id_episodio,
         deduped.paciente,
         deduped.tipo,

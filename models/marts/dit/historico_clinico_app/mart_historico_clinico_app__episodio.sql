@@ -38,6 +38,9 @@ with
                 else false
             end as flag__paciente_tem_restricao,
 
+            -- Flag de Paciente com Cadastros Conflitantes
+            cadastros_conflitantes_indicador as flag__paciente_tem_cadastros_conflitantes,
+
             -- Flag de Paciente sem CPF
             case
                 when paciente_cpf is null then true else false
@@ -202,6 +205,7 @@ with
             struct(
                 not (
                     flag__episodio_sem_informacao
+                    or flag__paciente_tem_cadastros_conflitantes
                     or flag__paciente_tem_restricao
                     or flag__paciente_sem_cpf
                     or flag__subtipo_proibido_vitacare
@@ -209,6 +213,7 @@ with
                     or flag__exame_sem_subtipo
                 ) as indicador,
                 flag__episodio_sem_informacao as episodio_sem_informacao,
+                flag__paciente_tem_cadastros_conflitantes as paciente_com_cadastros_conflitantes,
                 flag__paciente_tem_restricao as paciente_restrito,
                 flag__paciente_sem_cpf as paciente_sem_cpf,
                 flag__subtipo_proibido_vitacare as subtipo_proibido_vitacare,
