@@ -54,13 +54,25 @@ with
         where dia_semana_verdadeiro = procedimento_dia_semana_sigla
     ),
 
+    nomes_procedimentos as (
+        select id_procedimento, descricao as procedimento
+        from {{ ref("raw_sheets__assistencial_procedimento") }}
+    ),
+
+    nomes_estabelecimentos as (
+        select id_cnes, nome_fantasia as estabelecimento
+        from {{ ref("raw_sheets__estabelecimento_auxiliar") }}
+    ),
+
     final as (
         select
             id_escala_ambulatorial,
             id_central_executante,
             id_estabelecimento_executante,
+            estabelecimento,
             id_procedimento_interno,
             id_procedimento_unificado,
+            procedimento,
             id_cbo2002,
             profissional_executante_cpf,
             procedimento_vigencia_inicial_data,
@@ -76,8 +88,15 @@ with
             sum(
                 vagas_primeira_vez_qtd + vagas_reserva_qtd + vagas_retorno_qtd
             ) as vagas_todas_qtd,
-        from sisreg_explodido_filtrado
-        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+        from sisreg_explodido_filtrado as sef
+        left join
+            nomes_procedimentos as np
+            on sef.id_procedimento_interno = np.id_procedimento
+        left join
+            nomes_estabelecimentos as ne
+            on sef.id_estabelecimento_executante = ne.id_cnes
+
+        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
     )
 
 select
@@ -93,6 +112,8 @@ select
     profissional_executante_cpf,
 
     -- common fields
+    estabelecimento,
+    procedimento,
     procedimento_vigencia_inicial_data,
     procedimento_vigencia_final_data,
     procedimento_vigencia_data,
