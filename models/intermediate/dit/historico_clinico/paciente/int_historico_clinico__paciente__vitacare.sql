@@ -671,7 +671,11 @@ with
                     {{ proper_br("nome") }} as nome,
                     {{ proper_br("nome_social") }} as nome_social,
                     data_nascimento,
-                    lower(sexo) as genero,
+                    CASE 
+                        WHEN lower(sexo) = 'female' THEN 'feminino'
+                        WHEN lower(sexo) = 'male' THEN 'masculino'
+                        ELSE null
+                    END  as genero,
                     lower(raca) as raca,
                     obito_indicador,
                     safe_cast(null as date) as obito_data,
