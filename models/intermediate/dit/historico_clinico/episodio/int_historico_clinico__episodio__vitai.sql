@@ -476,7 +476,7 @@ with
     final as (
         select
             -- Paciente
-            atendimento_struct.paciente,
+            atendimento_struct.paciente.cpf as cpf,
 
             -- Tipo e Subtipo
             safe_cast(atendimento_struct.tipo as string) as tipo,

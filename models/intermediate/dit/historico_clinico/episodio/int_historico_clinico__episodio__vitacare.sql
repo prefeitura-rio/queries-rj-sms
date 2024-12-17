@@ -27,19 +27,6 @@ with
     -- where data_particao = "2024-08-01"
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- DIM: Paciente
-    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    dim_paciente as (
-        select
-            cpf as pk,
-            struct(
-                cpf,
-                cns,
-                data_nascimento
-            ) as paciente
-        from {{ref('raw_prontuario_vitacare__paciente')}}
-    ),
-    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- DIM: Profissional
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     dim_profissional as (
@@ -325,7 +312,7 @@ with
             atendimento.id,
 
             -- Paciente
-            dim_paciente.paciente,
+            atendimento.cpf,
 
             -- Tipo e Subtipo
             safe_cast(
@@ -398,10 +385,9 @@ with
             ) as metadados,
 
             atendimento.data_particao,
-            safe_cast(dim_paciente.paciente.cpf as int64) as cpf_particao,
+            safe_cast(atendimento.cpf as int64) as cpf_particao,
 
         from bruto_atendimento as atendimento
-        left join dim_paciente on atendimento.cpf = dim_paciente.pk
         left join
             dim_estabelecimento on atendimento.cnes_unidade = dim_estabelecimento.pk
         left join dim_profissional on atendimento.cns_profissional = dim_profissional.pk

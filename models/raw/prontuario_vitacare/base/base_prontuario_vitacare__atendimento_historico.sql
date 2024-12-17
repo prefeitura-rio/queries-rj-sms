@@ -29,7 +29,7 @@ with
             ) as id,
 
             -- Chaves
-            patient_cpf as cpf,
+            nullif(patient_cpf, 'NAO TEM') as cpf,
             unidade_cnes as cnes_unidade,
 
             -- Profissional
