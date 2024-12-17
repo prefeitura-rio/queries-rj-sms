@@ -19,7 +19,7 @@ with
     events_from_window as (
         select *
         from {{ source("brutos_plataforma_smsrio_staging", "_paciente_cadastro_eventos") }}
-        {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
+        {% if is_incremental() %} where datalake_loaded_at > '{{seven_days_ago}}' {% endif %}
     ),
     events_ranked_by_freshness as (
         select *, row_number() over (partition by source_id order by source_updated_at desc) as rank
