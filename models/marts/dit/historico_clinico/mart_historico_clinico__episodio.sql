@@ -22,7 +22,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     merged_data as (
         select
-            paciente.cpf as paciente_cpf,
+            cpf as paciente_cpf,
             tipo,
             subtipo,
             entrada_datahora,
@@ -57,7 +57,7 @@ with
         from {{ ref("int_historico_clinico__episodio__vitai") }}
         union all
         select
-            paciente.cpf as paciente_cpf,
+            cpf as paciente_cpf,
             tipo,
             subtipo,
             entrada_datahora,
