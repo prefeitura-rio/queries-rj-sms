@@ -2,6 +2,11 @@
     config(
         alias="paciente",
         materialized="table",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
@@ -9,10 +14,10 @@
 with
     paciente as (
         select *, 'rotineiro' as tipo,
-        from {{ ref("base_prontuario_vitacare__paciente_rotineiro") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "_paciente_rotineiro") }}
         union all
         select *, 'historico' as tipo,
-        from {{ ref("base_prontuario_vitacare__paciente_historico") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "_paciente_historico") }}
     ),
 
     paciente_deduplicado as (
@@ -128,6 +133,9 @@ with
             -- Metadados
             source_created_at,
             source_updated_at,
+
+            -- Particionamento
+            data_particao
 
         from corrige_cadastro
     ),

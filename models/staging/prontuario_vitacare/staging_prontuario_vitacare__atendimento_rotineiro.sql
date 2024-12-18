@@ -1,7 +1,6 @@
 {{
     config(
-        schema="brutos_prontuario_vitacare_staging",
-        alias="_base_atendimento_rotineiro",
+        alias="_atendimento_rotineiro",
         materialized="incremental",
         incremental_strategy="insert_overwrite",
         partition_by={
@@ -13,13 +12,16 @@
 }}
 
 {% set partitions_to_replace = (
-    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
+    "date_sub(current_date('America/Sao_Paulo'), interval 31 day)"
 ) %}
 
 with
     bruto_atendimento_eventos_com_repeticao as (
-        select *, concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
+        select 
+            *, 
+            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }}
+        {% if is_incremental() %} where data_particao > '{{partitions_to_replace}}' {% endif %}
     ),
     bruto_atendimento_eventos_ranqueados as (
         select *,
@@ -93,7 +95,7 @@ with
             safe_cast(source_updated_at as datetime) as updated_at,
             safe_cast(datalake_loaded_at as datetime) as loaded_at,
             safe_cast(
-                safe_cast(data__datahora_fim_atendimento as datetime) as date
+                safe_cast(datalake_loaded_at as datetime) as date
             ) as data_particao,
 
         from bruto_atendimento_eventos_ranqueados
@@ -101,4 +103,3 @@ with
 
 select *
 from final
-{% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}

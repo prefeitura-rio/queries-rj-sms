@@ -1,22 +1,26 @@
 {{
     config(
-        schema="brutos_prontuario_vitacare_staging",
-        alias="_base_paciente_rotineiro",
+        alias="_paciente_rotineiro",
         materialized="incremental",
-        unique_key="id",
+        incremental_strategy="insert_overwrite",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
-{% set seven_days_ago = (
-    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
-).isoformat() %}
+{% set partitions_to_replace = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 31 day)"
+) %}
 
 with
 
     events_from_window as (
         select *, concat(nullif(payload_cnes, ''), '.', nullif(data__id, '')) as id
         from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos") }}
-        {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
+        {% if is_incremental() %} where data_particao > '{{partitions_to_replace}}' {% endif %}
     ),
 
     events_ranked_by_freshness as (
@@ -91,9 +95,11 @@ select
     ) as data_atualizacao_vinculo_equipe,
 
     -- Metadata columns
-    safe_cast(nullif(data_particao, '') as date) as data_particao,
-    safe_cast(nullif(data__dataCadastro, '') as timestamp) as source_created_at,
-    safe_cast(nullif(source_updated_at, '') as timestamp) as source_updated_at,
-    safe_cast(null as timestamp) as datalake_imported_at,
+    safe_cast(nullif(data__dataCadastro, '') as timestamp) as created_at,
+    safe_cast(nullif(source_updated_at, '') as timestamp) as updated_at,
+    safe_cast(datalake_loaded_at as timestamp) as loaded_at,
+
+    -- Particionamento
+    safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_particao,
 
 from latest_events

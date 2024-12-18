@@ -294,7 +294,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
-
+    staging:
+      +materialized: table
+      +tags: ["staging"]
+      prontuario_vitacare:
+        +schema: brutos_prontuario_vitacare_staging
+      prontuario_vitai:
+        +schema: brutos_prontuario_vitai_staging
 tests:
   rj_sms:
     +severity: error

@@ -11,27 +11,7 @@ sources:
       - name: vacina
 
       # Eventos
-      - name: atendimento_eventos
-      - name: paciente_eventos
-        loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
-        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-        freshness:
-          warn_after: {count: 4, period: hour}
-          error_after: {count: 24, period: hour}
-
-      # Histórico
-      - name: alergias_historico
-      - name: atendimentos_historico
-      - name: condicoes_historico
-      - name: encaminhamentos_historico
-      - name: equipes_historico
-      - name: indicadores_historico
-      - name: pacientes_historico
-      - name: prescricoes_historico
-      - name: procedimentos_clinicos_historico
-      - name: profissionais_historico
-      - name: solicitacao_exame_historico
-      - name: unidade_historico
-      - name: vacinas_historico
-
-      - name: paciente_historico_eventos
+      - name: _paciente_rotineiro
+      - name: _paciente_historico
+      - name: _atendimento_rotineiro
+      - name: _atendimento_historico

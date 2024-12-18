@@ -1,8 +1,12 @@
 {{
     config(
-        schema="brutos_prontuario_vitacare_staging",
-        alias="_base_paciente_historico",
+        alias="_paciente_historico",
         materialized="table",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
@@ -450,10 +454,12 @@ with
             data_atualizacao_vinculo_equipe,
 
             -- Metadata columns
-            data_particao,
-            source_created_at,
-            source_updated_at,
-            datalake_imported_at,
+            source_created_at as created_at,
+            source_updated_at as updated_at,
+            datalake_imported_at as loaded_at,
+
+            -- Particionamento
+            safe_cast(safe_cast(datalake_imported_at as timestamp) as date) as data_particao,
 
         from deduplicated
     )

@@ -1,7 +1,6 @@
 {{
     config(
-        schema="brutos_prontuario_vitacare_staging",
-        alias="_base_atendimento_historico",
+        alias="_atendimento_historico",
         materialized="table",
         partition_by={
             "field": "data_particao",
@@ -237,7 +236,9 @@ with
             -- dim_procedimentos.procedimentos,
             atendimentos.updated_at,
             atendimentos.loaded_at,
-            safe_cast(atendimentos.datahora_fim as date) as data_particao,
+
+            -- Particionamento
+            safe_cast(safe_cast(atendimentos.loaded_at as timestamp) as date) as data_particao,
 
         from fato_atendimento as atendimentos
         left join dim_alergias using (id)
