@@ -240,32 +240,15 @@ models:
               dado_pessoal: sim
               dado_sensivel: sim
               dominio: estoque
-      subgeral:
-        cnes:
-          +schema: projeto_cnes_subgeral
-          +tags: ["weekly", "subgeral", "cnes_subgeral"]
+      cie:
+        alerta_doencas:
+          +schema: projeto_alerta_doencas
+          +tags: ["every_30_minutes", "cie", "alerta_doencas"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
-            dominio: subgeral
-        monitora_reg:
-          +schema: projeto_monitora_reg
-          +tags: ["weekly", "subgeral", "monitora_reg"]
-          +labels:
-            dado_publico: naos
-            dado_pessoal: sim
-            dado_sensivel: nao
-            dominio: subgeral
-        sisreg_reports:
-          +schema: projeto_sisreg_reports
-          +tags: ["weekly", "subgeral", "sisreg_reports"]
-          +labels:
-            dado_publico: nao
-            dado_pessoal: sim
-            dado_sensivel: nao
-            dominio: subgeral
-
+            dominio: cie
       dit:
         dengue:
           +schema: projeto_dengue
@@ -294,6 +277,32 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+      subgeral:
+        cnes:
+          +schema: projeto_cnes_subgeral
+          +tags: ["weekly", "subgeral", "cnes_subgeral"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subgeral
+        monitora_reg:
+          +schema: projeto_monitora_reg
+          +tags: ["weekly", "subgeral", "monitora_reg"]
+          +labels:
+            dado_publico: naos
+            dado_pessoal: sim
+            dado_sensivel: nao
+            dominio: subgeral
+        sisreg_reports:
+          +schema: projeto_sisreg_reports
+          +tags: ["weekly", "subgeral", "sisreg_reports"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
+            dominio: subgeral
+
 
 tests:
   rj_sms:
