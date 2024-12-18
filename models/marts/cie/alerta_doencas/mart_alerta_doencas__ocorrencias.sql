@@ -1,6 +1,6 @@
 {{
     config(
-        schema="projeto_alertas_doencas",
+        schema="projeto_alerta_doencas",
         alias="ocorrencias",
         materialized="incremental",
         incremental_strategy="insert_overwrite",
