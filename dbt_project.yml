@@ -301,6 +301,10 @@ models:
         +schema: brutos_prontuario_vitacare_staging
       prontuario_vitai:
         +schema: brutos_prontuario_vitai_staging
+      plataforma_smsrio:
+        +schema: brutos_plataforma_smsrio_staging
+      estoque_central_tpc:
+        +schema: brutos_estoque_central_tpc_staging
 tests:
   rj_sms:
     +severity: error

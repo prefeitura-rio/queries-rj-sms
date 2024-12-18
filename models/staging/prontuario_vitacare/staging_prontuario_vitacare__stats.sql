@@ -21,7 +21,7 @@ with
     -- Para incluir linhas em que nenhum registro foi ingerido
     -----------------------------------------
     entidades as (
-        select tipo from unnest(['patient', 'encounter', 'stock-position', 'stock-movement']) tipo
+        select tipo from unnest(['patient', 'encounter', 'stock-position', 'stock-movement', 'vacines']) tipo
     ),
     datas as (
         select data_atualizacao 
@@ -104,6 +104,19 @@ with
             where data_particao >= '{{min_date}}' 
         {% endif %}
     ),
+    vacinas as (
+        select 
+            nCnesUnidade as estabelecimento_cnes,
+            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao,
+            'vacines' as tipo
+        from {{ source("brutos_prontuario_vitacare_staging", "vacinas_eventos") }}
+        {% if is_incremental() %} 
+            where data_particao >= '{{seven_days_ago}}' 
+        {% endif %}
+        {% if not is_incremental() %} 
+            where data_particao >= '{{min_date}}' 
+        {% endif %}
+    ),
 
     -----------------------------------------
     -- JUNÇÃO DE DADOS
@@ -116,6 +129,8 @@ with
         select *, 1 as quantidade from pacientes
         union all
         select *, 1 as quantidade from atendimentos
+        union all
+        select *, 1 as quantidade from vacinas
         union all
         select *, 1 as quantidade from estoque_posicao
         union all
