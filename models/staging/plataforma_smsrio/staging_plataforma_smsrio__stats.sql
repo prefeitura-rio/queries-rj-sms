@@ -21,7 +21,7 @@ with
     -- Para incluir linhas em que nenhum registro foi ingerido
     -----------------------------------------
     entidades as (
-        select tipo from unnest(['patient', 'encounter', 'stock-position', 'stock-movement', 'vacines']) tipo
+        select tipo from unnest(['patient']) tipo
     ),
     datas as (
         select data_atualizacao 
@@ -33,10 +33,7 @@ with
         {% endif %}
     ),
     unidades as (
-        select 
-            id_cnes as cnes,
-        from {{ref('dim_estabelecimento')}}
-        where prontuario_estoque_tem_dado = 'sim' and prontuario_versao = 'vitacare' 
+        select '7106513' as estabelecimento_cnes
     ),
     todos_registros_possiveis as (
         select 
@@ -45,71 +42,18 @@ with
             entidades.tipo as tipo
         from datas, entidades, unidades
     ),
-
     -----------------------------------------
     -- REGISTROS DE ENTIDADES RECEBIDOS
     -----------------------------------------
     -- Para identificar quais registros foram ingeridos, por entidade.
     -- Formato das tabelas: (estabelecimento_cnes, data_ingestao, tipo)
     -----------------------------------------
-    estoque_posicao as (
-        select 
-            cnesUnidade as estabelecimento_cnes,
-            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao, 
-            'stock-position' as tipo
-        from {{ source("brutos_prontuario_vitacare_staging", "estoque_posicao") }}
-        {% if is_incremental() %} 
-            where data_particao >= '{{seven_days_ago}}' 
-        {% endif %}
-        {% if not is_incremental() %} 
-            where data_particao >= '{{min_date}}' 
-        {% endif %}
-    ),
-    estoque_movimento as (
-        select 
-            cnesUnidade as estabelecimento_cnes,
-            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao, 
-            'stock-movement' as tipo
-        from {{ source("brutos_prontuario_vitacare_staging", "estoque_movimento") }}
-        {% if is_incremental() %} 
-            where data_particao >= '{{seven_days_ago}}' 
-        {% endif %}
-        {% if not is_incremental() %} 
-            where data_particao >= '{{min_date}}' 
-        {% endif %}
-    ),
-    atendimentos as (
-        select 
-            payload_cnes as estabelecimento_cnes,
-            safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_ingestao, 
-            'encounter' as tipo
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }}
-        {% if is_incremental() %} 
-            where data_particao >= '{{seven_days_ago}}' 
-        {% endif %}
-        {% if not is_incremental() %} 
-            where data_particao >= '{{min_date}}' 
-        {% endif %}
-    ),
     pacientes as (
         select 
-            payload_cnes as estabelecimento_cnes,
+            '7106513' as estabelecimento_cnes,
             safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_ingestao,
             'patient' as tipo
-        from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos") }}
-        {% if is_incremental() %} 
-            where data_particao >= '{{seven_days_ago}}' 
-        {% endif %}
-        {% if not is_incremental() %} 
-            where data_particao >= '{{min_date}}' 
-        {% endif %}
-    ),
-    vacinas as (
-        select 
-            nCnesUnidade as estabelecimento_cnes,
-            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao,
-            'vacines' as tipo
-        from {{ source("brutos_prontuario_vitacare_staging", "vacina") }}
+        from {{ source("brutos_plataforma_smsrio_staging", "_paciente_cadastro_eventos") }}
         {% if is_incremental() %} 
             where data_particao >= '{{seven_days_ago}}' 
         {% endif %}
@@ -127,14 +71,6 @@ with
         select *, 0 as quantidade from todos_registros_possiveis
         union all
         select *, 1 as quantidade from pacientes
-        union all
-        select *, 1 as quantidade from atendimentos
-        union all
-        select *, 1 as quantidade from vacinas
-        union all
-        select *, 1 as quantidade from estoque_posicao
-        union all
-        select *, 1 as quantidade from estoque_movimento
     ),
     sinalizacao_transmissao as (
         select 
