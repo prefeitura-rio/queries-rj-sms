@@ -11,7 +11,7 @@
     modules.datetime.date.today() - modules.datetime.timedelta(days=7)
 ).isoformat() %}
 
-{% set min_date = '2024-10-01' %}
+{% set min_date = '2024-12-01' %}
 
 with
     unidades_esperadas as (
@@ -20,14 +20,17 @@ with
             id_cnes as unidade_cnes,
             nome_limpo as unidade_nome
         from {{ref('dim_estabelecimento')}}
-        where prontuario_estoque_tem_dado = 'sim' and prontuario_versao = 'vitai' 
+        where 
+            prontuario_tem = "sim" and 
+            prontuario_estoque_tem_dado = 'sim' and 
+            prontuario_versao = 'vitai' 
     ),
     vitai_estoque_posicao as (
         select
             cnes as unidade_cnes,
             'vitai' as fonte,
             'posicao' as tipo,
-            data_particao as data_atualizacao
+            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao
         from {{ source("brutos_prontuario_vitai_staging", "estoque_posicao") }}
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
@@ -41,7 +44,7 @@ with
             cnes as unidade_cnes,
             'vitai' as fonte,
             'movimento' as tipo,
-            data_particao as data_atualizacao
+            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao
         from {{ source("brutos_prontuario_vitai_staging", "estoque_movimento") }}
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
@@ -51,12 +54,12 @@ with
         {% endif %}
     ),
     datas as (
-        select data_atualizacao 
+        select data_ingestao 
         {% if is_incremental() %}
-        from unnest(GENERATE_DATE_ARRAY('{{seven_days_ago}}', current_date())) as data_atualizacao
+        from unnest(GENERATE_DATE_ARRAY('{{seven_days_ago}}', current_date())) as data_ingestao
         {% endif %}
         {% if not is_incremental() %}
-        from unnest(GENERATE_DATE_ARRAY('{{min_date}}', current_date())) as data_atualizacao
+        from unnest(GENERATE_DATE_ARRAY('{{min_date}}', current_date())) as data_ingestao
         {% endif %}
     ),
     entidades as (
@@ -67,7 +70,7 @@ with
             cast(null as string) as unidade_cnes,
             'vitai' as fonte, 
             entidades.tipo as tipo, 
-            cast(datas.data_atualizacao as string) as data_atualizacao,
+            cast(datas.data_ingestao as date) as data_ingestao,
         from datas, entidades
     ),
     vitai_estoque as (
@@ -79,7 +82,7 @@ with
     ),
     contagem as (
         select 
-            data_atualizacao,
+            data_ingestao,
             fonte,
             tipo,
             array_agg(distinct unidade_cnes ignore nulls) as unidades_com_dado,
@@ -101,7 +104,7 @@ with
         from contagem
     )
 select
-    concat(data_atualizacao, '.', fonte, '.', tipo) as id,
+    concat(data_ingestao, '.', fonte, '.', tipo) as id,
     *
 from contagem_com_complemento
 order by id

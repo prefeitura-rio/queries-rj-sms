@@ -24,6 +24,9 @@ with
             cpf,
             source.dados.nome,
             valor_cns,
+            source.dados.data_nascimento,
+            source.dados.genero,
+            source.dados.mae_nome
         from source, unnest(cns) as valor_cns
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--

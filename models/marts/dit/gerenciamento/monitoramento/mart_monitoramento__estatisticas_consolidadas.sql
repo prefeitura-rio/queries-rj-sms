@@ -20,5 +20,5 @@ with
     )
 select *
 from juncao
-where data_atualizacao >= '2024-01-01'
+where data_ingestao >= '2024-12-01'
 order by id
