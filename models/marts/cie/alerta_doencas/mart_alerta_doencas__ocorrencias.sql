@@ -12,21 +12,33 @@
     )
 }}
 
+{% set partitions_to_replace = [
+    'cast(current_date("America/Sao_Paulo") as string)',
+    'cast(date_sub(current_date("America/Sao_Paulo"), interval 1 day) as string)',
+    'cast(date_sub(current_date("America/Sao_Paulo"), interval 2 day) as string)',
+] %}
+
 
 with
     -- Ocorrencias (episódios)
     ocorrencias as (
-        select *, concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio
+        select
+            *,
+            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }}
         {% if is_incremental() %}
-            where data_particao = cast(current_date('America/Sao_Paulo') as string)
+            where data_particao in ({{ partitions_to_replace | join(",") }})
         {% endif %}
     ),
 
     ocorrencias_deduplicadas as (
         select *
         from ocorrencias
-        qualify row_number() over (partition by id_episodio order by datalake_loaded_at desc) = 1
+        qualify
+            row_number() over (
+                partition by id_episodio order by datalake_loaded_at desc
+            )
+            = 1
     ),
 
     -- Dimensão de estabelecimentos
@@ -95,7 +107,7 @@ with
         select 'B06', 'rubeola'
     ),
 
-    --- Tabela final
+    -- - Tabela final
     final as (
         select
             id_episodio,
@@ -151,7 +163,8 @@ with
             on ocorrencias_deduplicadas.data__unidade_cnes = estabelecimentos.id_cnes
         left join
             equipes
-            on ocorrencias_deduplicadas.data__profissional__equipe__cod_ine = equipes.id_ine
+            on ocorrencias_deduplicadas.data__profissional__equipe__cod_ine
+            = equipes.id_ine
         left join
             pacientes
             on ocorrencias_deduplicadas.patient_cpf = pacientes.cpf
@@ -164,5 +177,5 @@ with
 select *
 from final
 {% if is_incremental() %}
-    where data_particao = current_date('America/Sao_Paulo')
+    where data_particao >= date_sub(current_date('America/Sao_Paulo'), interval 2 day)
 {% endif %}
