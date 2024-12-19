@@ -12,16 +12,33 @@
     )
 }}
 
--- Tabela auxiliar dos CIDs de atenção
+
 with
-    source as (
-        select *
+    -- Ocorrencias (episódios)
+    ocorrencias as (
+        select *, concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }}
         {% if is_incremental() %}
             where data_particao = cast(current_date('America/Sao_Paulo') as string)
         {% endif %}
     ),
 
+    ocorrencias_deduplicadas as (
+        select *
+        from ocorrencias
+        qualify row_number() over (partition by id_episodio order by datalake_loaded_at desc) = 1
+    ),
+
+    -- Dimensão de estabelecimentos
+    estabelecimentos as (select * from {{ ref("dim_estabelecimento") }}),
+
+    -- Dimensão de profissionais
+    equipes as (select * from {{ ref("dim_equipe") }}),
+
+    -- Dimensão de pacientes
+    pacientes as (select * from {{ ref("raw_prontuario_vitacare__paciente") }}),
+
+    -- Tabela auxiliar dos CIDs de atenção
     cid10_atencao as (
         select 'A33' as cod, 'tetano_recem_nascido_neonatal' as agravo
         union all
@@ -78,38 +95,67 @@ with
         select 'B06', 'rubeola'
     ),
 
-    -- Consulta a tabela
-    -- rj-sms.brutos_prontuario_vitacare_staging._atendimento_eventos e
-    -- join com a tabela auxiliar
+    --- Tabela final
     final as (
         select
+            id_episodio,
+
+            -- Paciente
             patient_cpf as paciente_cpf,
-            patient_code,
-            source_id,
+            pacientes.nome as paciente_nome,
+            pacientes.data_nascimento as paciente_data_nascimento,
+            pacientes.sexo as paciente_sexo,
+            pacientes.telefone as paciente_telefone,
+
+            -- Estabelecimento
             data__unidade_cnes as unidade_cnes,
+            estabelecimentos.nome_limpo as unidade_nome,
             data__unidade_ap as unidade_ap,
+            estabelecimentos.telefone as unidade_telefone,
+
+            -- Equipe
             data__profissional__equipe__nome as equipe_nome,
             data__profissional__equipe__cod_ine as equipe_cod_ine,
             data__profissional__equipe__cod_equipe as equipe_cod,
+            equipes.telefone as equipe_whatsapp,
+
+            -- Atendimento
             safe_cast(data__datahora_inicio_atendimento as timestamp) as data_inicio,
             data__tipo_consulta as tipo_consulta,
             data__soap_subjetivo_motivo as soap_subjetivo_motivo,
+
+            -- Condição
             json_value(condicoes, '$.cod_cid10') as cid,
             json_value(condicoes, '$.estado') as estado_cid,
             safe_cast(
                 json_value(condicoes, '$.data_diagnostico') as timestamp
             ) as data_diagnostico,
             aps_cid_atencao.agravo,
+
+            -- Metadados
+            datalake_loaded_at,
             safe_cast(
                 safe_cast(data__datahora_fim_atendimento as datetime) as date
             ) as data_particao
 
-        from source, unnest(json_query_array(data__condicoes)) as condicoes
+        from
+            ocorrencias_deduplicadas,
+            unnest(json_query_array(data__condicoes)) as condicoes
         left join
             cid10_atencao aps_cid_atencao
             on regexp_contains(
                 json_value(condicoes, '$.cod_cid10'), aps_cid_atencao.cod
             )
+        left join
+            estabelecimentos
+            on ocorrencias_deduplicadas.data__unidade_cnes = estabelecimentos.id_cnes
+        left join
+            equipes
+            on ocorrencias_deduplicadas.data__profissional__equipe__cod_ine = equipes.id_ine
+        left join
+            pacientes
+            on ocorrencias_deduplicadas.patient_cpf = pacientes.cpf
+            and ocorrencias_deduplicadas.data__unidade_cnes = pacientes.id_cnes
         where
             json_value(condicoes, '$.estado') in ('ATIVO', 'N.E')
             and aps_cid_atencao.cod is not null
