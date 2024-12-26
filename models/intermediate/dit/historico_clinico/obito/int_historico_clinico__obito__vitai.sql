@@ -16,13 +16,25 @@ alta_internacao as (
     select * from 
     {{ref('raw_prontuario_vitai__resumo_alta')}}
 ),
+boletim_r as (
+    select 
+        b.gid, 
+        b.alta_data, 
+        paciente.cpf,
+        paciente.cns,
+        b.internacao_data
+    from {{ ref("raw_prontuario_vitai__boletim") }} as b
+    left join 
+        {{ ref("raw_prontuario_vitai__paciente") }} as paciente
+        on b.gid_paciente = paciente.gid  
+),
 boletins_consulta as (
     select
         boletim_r.gid,
         boletim_r.cpf,
         boletim_r.cns,
         boletim_r.alta_data
-    from {{ ref("raw_prontuario_vitai__boletim") }} as boletim_r
+    from boletim_r
     left join
         {{ ref("raw_prontuario_vitai__atendimento") }} as atendimento
         on boletim_r.gid = atendimento.gid_boletim
@@ -34,7 +46,7 @@ boletins_internacao as (
         boletim_r.cpf,
         boletim_r.cns,
         boletim_r.alta_data
-    from {{ ref("raw_prontuario_vitai__boletim") }} as boletim_r
+    from boletim_r
     left join {{ ref("raw_prontuario_vitai__internacao") }}  internacao
         on boletim_r.gid = internacao.gid_boletim
     where
@@ -47,7 +59,7 @@ boletins_exames as (
         boletim_r.cpf,
         boletim_r.cns,
         boletim_r.alta_data
-    from {{ ref("raw_prontuario_vitai__boletim") }} as boletim_r
+    from boletim_r
     left join {{ ref("raw_prontuario_vitai__exame") }} as exame_table
         on boletim_r.gid = exame_table.gid_boletim
     left join{{ ref("raw_prontuario_vitai__atendimento") }} as atendimento
