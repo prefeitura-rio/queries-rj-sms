@@ -64,7 +64,9 @@ with
         select
             profissional_executante_cpf,
             id_procedimento_interno,
+            string_agg(distinct procedimento) as procedimento,
             id_estabelecimento_executante,
+            string_agg(distinct estabelecimento) as estabelecimento,
             date_trunc(procedimento_vigencia_data, month) as data_mes,
             sum(vagas_todas_qtd) as vagas_proximo_mes
         from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
@@ -185,6 +187,8 @@ with
     preparacao_anomalia as (
         select
             calculos_mad.*,
+            estabelecimento,
+            procedimento,
             vagas_proximo_mes_tb.vagas_proximo_mes,
             vagas_proximo_mes_tb.vagas_proximo_mes
             - calculos_mad.vagas_ultimo_mes as diferenca_proximo_mes
@@ -218,8 +222,10 @@ with
     final as (
         select
             id_estabelecimento_executante as id_cnes,
+            estabelecimento,
             profissional_executante_cpf as profissional_cpf,
             id_procedimento_interno as id_procedimento,
+            procedimento,
             meses as meses_analisados,
             vagas_por_mes as historico_vagas_ofertadas,
             vagas_proximo_mes as vagas_programadas_proximo_mes,

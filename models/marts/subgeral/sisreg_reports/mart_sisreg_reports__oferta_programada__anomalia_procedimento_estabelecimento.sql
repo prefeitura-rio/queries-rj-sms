@@ -60,7 +60,9 @@ with
         select
             profissional_executante_cpf as profissional_cpf,
             id_procedimento_interno as procedimento_id,
+            string_agg(distinct procedimento) as procedimento,
             id_estabelecimento_executante as estabelecimento_id,
+            string_agg(distinct estabelecimento) as estabelecimento,
             date_trunc(procedimento_vigencia_data, month) as competencia,
             sum(vagas_todas_qtd) as total_vacancies_next_month
         from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
@@ -185,8 +187,10 @@ with
         select
             iqr.competencia,
             iqr.estabelecimento_id as id_cnes,
+            iqr.estabelecimento as estabelecimento,
             iqr.profissional_cpf,
             iqr.procedimento_id as id_procedimento,
+            iqr.procedimento as procedimento,
             iqr.total_vacancies_next_month as vagas_programadas_competencia,
             iqr.carga_horaria_ambulatorial as carga_horaria_ambulatorial_semanal,
             pev.total_vacancies as vagas_colegas_cnes_proced,
