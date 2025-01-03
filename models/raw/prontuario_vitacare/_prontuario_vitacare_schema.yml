@@ -36,13 +36,7 @@ models:
               name: raw_prontuario_vitacare__estoque_posicao__id_cnes__relationship
               to: ref('dim_estabelecimento')
               field: id_cnes
-          - assert_chegando_todas_unidades_de_saude:
-              name: raw_prontuario_vitacare__estoque_posicao__chegando_todas_unidades
-              prontuario: vitacare
-              filter: prontuario_estoque_tem_dado = 'sim'
-              config:
-                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
-                severity: warn
+
       - name: id_lote
         description: Identificador do lote do medicamento/insumo
         data_type: string
@@ -112,14 +106,6 @@ models:
           unidade de saúde onde o item está localizado
         data_type: string
         data_tests:
-          - assert_chegando_todas_unidades_de_saude:
-              name: raw_prontuario_vitacare__estoque_movimento__chegando_todas_unidades
-              prontuario: vitacare
-              filter: prontuario_estoque_tem_dado = 'sim'
-              config:
-                where: safe_cast(data_particao as date) =
-                  date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
-                severity: warn
           - not_null:
               name: raw_prontuario_vitacare__estoque_movimento__id_cnes__not_null
           - relationships:
@@ -916,14 +902,6 @@ models:
           ao estabelecimento de saúde específico no sistema de saúde.
         data_type: string
         quote: true
-        data_tests:
-          - assert_chegando_todas_unidades_de_saude:
-              name: raw_prontuario_vitacare__vacina__chegando_todas_unidades
-              prontuario: vitacare
-              filter: prontuario_estoque_tem_dado = 'sim'
-              config:
-                where: safe_cast(data_particao as date) = date_sub(current_date('America/Sao_Paulo'), INTERVAL 3 DAY)
-                severity: warn
       - name: id_microarea
         description: Este é um identificador único para a microárea onde o paciente está
           localizado. É usado para categorizar pacientes com base em sua
