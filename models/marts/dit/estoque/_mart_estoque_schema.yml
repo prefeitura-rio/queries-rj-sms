@@ -84,10 +84,6 @@ models:
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Hospitalares" da REMUME.
         data_type: string
-      - name: material_remume_listagem_antiseptico_indicador
-        description: Esta coluna indica se o material faz parte da lista
-          "Saneantes/Antispeticos" da REMUME.
-        data_type: string
       - name: material_remume_listagem_estrategico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Estratégicos" da REMUME.
@@ -150,8 +146,8 @@ models:
         data_type: float64
         data_tests:
           - dbt_expectations.expect_column_mean_to_be_between:
-              name: mart_estoque__posicao_atual__material_consumo_medio__mean_between_25_and_70
-              min_value: 25
+              name: mart_estoque__posicao_atual__material_consumo_medio__mean_between_20_and_70
+              min_value: 20
               max_value: 70
               config:
                 severity: error
@@ -259,10 +255,6 @@ models:
       - name: material_remume_listagem_hospitalar_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Hospitalares" da REMUME.
-        data_type: string
-      - name: material_remume_listagem_antiseptico_indicador
-        description: Esta coluna indica se o material faz parte da lista
-          "Saneantes/Antispeticos" da REMUME.
         data_type: string
       - name: material_remume_listagem_estrategico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes

@@ -148,7 +148,6 @@ with
             material_remume_listagem_basico_indicador,
             material_remume_listagem_uso_interno_indicador,
             material_remume_listagem_hospitalar_indicador,
-            material_remume_listagem_antiseptico_indicador,
             material_remume_listagem_estrategico_indicador,
             material_controlado_indicador,
             material_controlado_tipo,

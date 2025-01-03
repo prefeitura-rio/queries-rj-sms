@@ -8,11 +8,11 @@ models:
         data_tests:
           - unique:
               name: raw_sheets__estabelecimento_auxiliar__id_cnes__unique
-# comentando momentaneamente até finalizarmos a tabela auxiliar
-#          - relationships:
-#              name: raw_sheets__estabelecimento_auxiliar__id_cnes__relationship
-#              to: ref('dim_estabelecimento_sus_rio_historico')
-#              field: id_cnes
+      # comentando momentaneamente até finalizarmos a tabela auxiliar
+      #          - relationships:
+      #              name: raw_sheets__estabelecimento_auxiliar__id_cnes__relationship
+      #              to: ref('dim_estabelecimento_sus_rio_historico')
+      #              field: id_cnes
       - name: indicador_estabelecimento_sms
         description: Indica se o estabelecimento é pertencente a rede assistencial da Secretaria Municipal de Saúde do Rio de Janeiro (1=SIM, 0=NAO)
       - name: tipo_sms
@@ -24,8 +24,7 @@ models:
       - name: nome_fantasia
         description: Nome fantasia de unidade de saúde
       - name: nome_limpo
-        description: Nome fantasia removido o prefixo SMS e o sufixo contendo a área
-          programática
+        description: Nome fantasia removido o prefixo SMS e o sufixo contendo a área programática
       - name: nome_sigla
         description: Sigla da unidade de saúde
       - name: area_programatica
@@ -33,8 +32,7 @@ models:
       - name: prontuario_tem
         description: Indica se unidade utiliza prontuario
       - name: prontuario_versao
-        description: Para as unidades que utilizam pronturio, indica qual sistema de
-          prontuario é utilizado
+        description: Para as unidades que utilizam pronturio, indica qual sistema de prontuario é utilizado
       - name: prontuario_estoque_motivo_sem_dado
         description: Se prontuario_estoque_tem_dado = nao, indica o motivo de não ter dado
       - name: prontuario_episodio_tem_dado
@@ -48,74 +46,64 @@ models:
       - name: tipo_unidade_agrupado_subgeral
         description: Classificação alternativa ao CNES
       - name: esfera_subgeral
-        description: Classificação alternativa de esfera 
+        description: Classificação alternativa de esfera
       - name: area_programatica_descr
         description: Descrição da Área Programática
-      
+
   - name: raw_sheets__material_mestre
     description: Tabela cadastral de materiais da SMS-Rio
     columns:
       - name: id_material
-        description: Este é o identificador único para cada material. É usado para
-          rastrear e gerenciar materiais no sistema.
+        description: Este é o identificador único para cada material. É usado para rastrear e gerenciar materiais no sistema.
         data_type: string
         data_tests:
           - unique:
               name: raw_sheets__material_mestre__id_material__unique
       - name: descricao
-        description: Esta é uma descrição do material. Fornece informações detalhadas
-          sobre o material, incluindo seu nome e quaisquer outros detalhes
-          relevantes.
+        description: Esta é uma descrição do material. Fornece informações detalhadas sobre o material, incluindo seu nome e quaisquer outros detalhes relevantes.
         data_type: string
       - name: concentracao
-        description: Isso se refere à concentração do ingrediente ativo no material. É
-          um fator importante para determinar a potência e eficácia do material.
+        description: Isso se refere à concentração do ingrediente ativo no material. É um fator importante para determinar a potência e eficácia do material.
         data_type: string
       - name: forma_farmaceutica
-        description: Esta coluna representa a forma farmacêutica do material. Descreve a
-          forma física em que o material é produzido ou administrado. Exemplos
-          incluem comprimidos, cápsulas, soluções, etc.
+        description: Esta coluna representa a forma farmacêutica do material. Descreve a forma física em que o material é produzido ou administrado. Exemplos incluem comprimidos, cápsulas, soluções, etc.
         data_type: string
       - name: apresentacao
-        description: Esta coluna representa a apresentação do material. Descreve como o
-          material é apresentado ou embalado. Por exemplo, um material pode ser
-          apresentado em uma garrafa, uma cartela, um tubo, etc.
+        description: Esta coluna representa a apresentação do material. Descreve como o material é apresentado ou embalado. Por exemplo, um material pode ser apresentado em uma garrafa, uma cartela, um tubo, etc.
+        data_type: string
+      - name: descricao_alternativa
+        description: Descrição alternativa do material
         data_type: string
       - name: nome
         data_type: string
         quote: true
       - name: hierarquia_n1_categoria
-        description: Esta coluna representa a categoria do material. Classifica o
-          material em um grupo específico com base em suas características ou
-          uso pretendido. Um material pode pertencer à categoria medicamento,
-          insumo ou imunizante.
+        description: Esta coluna representa a categoria do material. Classifica o material em um grupo específico com base em suas características ou uso pretendido. Um material pode pertencer à categoria medicamento, insumo ou imunizante.
         data_type: string
       - name: hierarquia_n2_subcategoria
-        description: Este campo representa a subcategoria do material. Fornece
-          informações mais específicas sobre o tipo de material, ajudando a
-          classificá-lo ainda mais dentro de sua categoria principal. Por
-          exemplo, um material do grupo medicamento pode pertencer às
-          subcategorias como antibióticos, analgésicos, etc.
+        description: Este campo representa a subcategoria do material. Fornece informações mais específicas sobre o tipo de material, ajudando a classificá-lo ainda mais dentro de sua categoria principal. Por exemplo, um material do grupo medicamento pode pertencer às subcategorias como antibióticos, analgésicos, etc.
         data_type: string
       - name: ativo_indicador
         description: Este campo indica se item está ativo.
         data_type: string
         quote: true
       - name: controlado_indicador
-        description: Este campo indica se o material é controlado ou não. Um material
-          controlado é aquele que está sujeito a regulamentações ou restrições
-          adicionais. O valor neste campo será 'sim' se o material for
-          controlado e 'não' se não for.
+        description: Este campo indica se o material é controlado ou não. Um material controlado é aquele que está sujeito a regulamentações ou restrições adicionais. O valor neste campo será 'sim' se o material for controlado e 'não' se não for.
         data_type: string
       - name: controlado_tipo
-        description: Este campo fornece informações sobre o tipo de controle aplicado ao
-          material. Dá detalhes mais específicos sobre as regulamentações ou
-          restrições às quais o material está sujeito, se for um material
-          controlado.
+        description: Este campo fornece informações sobre o tipo de controle aplicado ao material. Dá detalhes mais específicos sobre as regulamentações ou restrições às quais o material está sujeito, se for um material controlado.
         data_type: string
       - name: consumo_minimo
         description: Quantidade mínima do medicamento dispensada para um paciente
         data_type: int64
+        quote: true
+      - name: programa_estrategico
+        description: Nome do programa estratégico do qual o material pertence (quando houver)
+        data_type: string
+        quote: true
+      - name: observacao
+        description: Campo genérico para observações sobre o material
+        data_type: string
         quote: true
       - name: abastecimento_responsavel
         description: Responsável pelo abastecimento do item.
@@ -124,145 +112,84 @@ models:
       - name: abastecimento_frequencia
         data_type: string
         quote: true
-        description: Esta coluna representa a frequência de abastecimento do material
-          específico. Fornece informações sobre com que frequência o material é
-          abastecido ou reabastecido.
+        description: Esta coluna representa a frequência de abastecimento do material específico. Fornece informações sobre com que frequência o material é abastecido ou reabastecido.
       - name: classificacao_xyz
         description: >
           Classificação da criticidade do medicamento, onde: 
 
-          X (Críticos): São itens cruciais para o tratamento imediato e eficaz
-          dos pacientes. Sua ausência pode levar a consequências graves para a
-          saúde ou interrupções operacionais;
+          X (Críticos): São itens cruciais para o tratamento imediato e eficaz dos pacientes. Sua ausência pode levar a consequências graves para a saúde ou interrupções operacionais;
 
-          Y (Moderadamente Críticos): Esses itens são importantes, mas não
-          imediatamente ameaçadores à vida. Eles são necessários para operações
-          de rotina, mas podem ser gerenciados por curtos períodos sem impacto
-          severo;
+          Y (Moderadamente Críticos): Esses itens são importantes, mas não imediatamente ameaçadores à vida. Eles são necessários para operações de rotina, mas podem ser gerenciados por curtos períodos sem impacto severo;
 
-          Z (Menos Críticos): Esses itens têm a menor criticidade. Sua ausência,
-          embora inconveniente, não impacta severamente o atendimento ao
-          paciente ou as operações da instalação a curto prazo.
+          Z (Menos Críticos): Esses itens têm a menor criticidade. Sua ausência, embora inconveniente, não impacta severamente o atendimento ao paciente ou as operações da instalação a curto prazo.
         data_type: string
         quote: true
       - name: remume_indicador
-        description: Esta coluna indica se o material está listado na Lista Municipal de
-          Medicamentos Essenciais (REMUME). É um indicador-chave para entender a
-          disponibilidade e regulamentação do material.
+        description: Esta coluna indica se o material está listado na Lista Municipal de Medicamentos Essenciais (REMUME). É um indicador-chave para entender a disponibilidade e regulamentação do material.
         data_type: string
       - name: remume_listagem_relacao
         data_type: string
         quote: true
-        description: Esta coluna contém a relação de todas as lista da REMUME as quais o
-          item pertence.
+        description: Esta coluna contém a relação de todas as lista da REMUME as quais o item pertence.
       - name: remume_listagem_basico_indicador
-        description: Esta coluna indica se o material faz parte da lista "Componentes
-          Básicos" da REMUME. Os valores são 'sim' para sim e 'não' para não.
+        description: Esta coluna indica se o material faz parte da lista "Componentes Básicos" da REMUME. Os valores são 'sim' para sim e 'não' para não.
         data_type: string
       - name: remume_listagem_uso_interno_indicador
-        description: Esta coluna indica se o material faz parte da lista "Uso interno
-          nas UAPs" da REMUME. Os valores são 'sim' para sim e 'não' para não.
+        description: Esta coluna indica se o material faz parte da lista "Uso interno nas UAPs" da REMUME. Os valores são 'sim' para sim e 'não' para não.
         data_type: string
       - name: remume_listagem_hospitalar_indicador
-        description: Esta coluna indica se o material faz parte da lista "Componentes
-          Hospitalares" da REMUME. Os valores são 'sim' para sim e 'não' para
-          não.
-        data_type: string
-      - name: remume_listagem_antiseptico_indicador
-        description: Esta coluna indica se o material faz parte da lista
-          "Saneantes/Antispeticos" da REMUME. Os valores são 'sim' para sim e
-          'não' para não.
+        description: Esta coluna indica se o material faz parte da lista "Componentes Hospitalares" da REMUME. Os valores são 'sim' para sim e 'não' para não.
         data_type: string
       - name: remume_listagem_estrategico_indicador
-        description: Esta coluna indica se o material faz parte da lista "Componentes
-          Estratégicos" da REMUME. Os valores são 'sim' para sim e 'não' para
-          não.
+        description: Esta coluna indica se o material faz parte da lista "Componentes Estratégicos" da REMUME. Os valores são 'sim' para sim e 'não' para não.
         data_type: string
       - name: remume_disponibilidade_relacao
         data_type: string
         quote: true
-        description: Esta coluna contém a relação de todos os tipos de unidade de saúde
-          nas quais o item pertence a lista de medicamentos essenciais (REMUME).
+        description: Esta coluna contém a relação de todos os tipos de unidade de saúde nas quais o item pertence a lista de medicamentos essenciais (REMUME).
       - name: remume_disponibilidade_cms_indicador
-        description: Esta coluna indica se o material deve estar disponível nos CMS
-          (Centro Municipal de Saúde). É um indicador binário com 'sim'
-          indicando que o material deve estar disponível nos CMS e 'não'
-          indicando que deve.
+        description: Esta coluna indica se o material deve estar disponível nos CMS (Centro Municipal de Saúde). É um indicador binário com 'sim' indicando que o material deve estar disponível nos CMS e 'não' indicando que deve.
         data_type: string
-      - name: remume_disponibilidade_cf_indicador
+      - name: remume_disponibilidade_cf_cms_cse_indicador
         description: >
-          Esta coluna indica se o material deve estar disponível nos CF (Clínica
-          da Família). É um indicador binário com 'sim' indicando que o material
-          deve estar disponível nos CF e 'não' indicando que deve.
+          Esta coluna indica se o material deve estar disponível nos CF (Clínica da Família), CMS (Centro Municipal de Saúde) e CSE (Centro de Saúde Escolar). É um indicador binário com 'sim' indicando que o material deve estar disponível nos CF, CMS e CSE e 'não' indicando que deve.
         data_type: string
-      - name: remume_disponibilidade_cse_indicador
-        description: Esta coluna indica se o material deve estar disponível nos 'Centro
-          de Saúde Escolar' (CSE). É um indicador binário com 'sim' indicando
-          que o material deve estar disponível nos CSE e 'não' indicando que
-          deve.
         data_type: string
       - name: remume_disponibilidade_policlinica_indicador
-        description: Esta coluna indica se o material deve estar disponível nas
-          Policlínicas. É um indicador binário com 'sim' indicando que o
-          material deve estar disponível nas Policlínicas e 'não' indicando que
-          deve.
+        description: Esta coluna indica se o material deve estar disponível nas Policlínicas. É um indicador binário com 'sim' indicando que o material deve estar disponível nas Policlínicas e 'não' indicando que deve.
         data_type: string
       - name: remume_disponibilidade_hospital_indicador
         description: >
-          Esta coluna indica se o material deve estar disponível nos Hospitais.
-          É um indicador binário com 'sim' indicando que o material deve estar
-          disponível nos Hospitais e 'não' indicando que deve.
+          Esta coluna indica se o material deve estar disponível nos Hospitais. É um indicador binário com 'sim' indicando que o material deve estar disponível nos Hospitais e 'não' indicando que deve.
         data_type: string
       - name: remume_disponibilidade_maternidade_indicador
-        description: Esta coluna indica se o material deve estar disponível nas
-          Maternidades. É um indicador binário com 'sim' indicando que o
-          material deve estar disponível nas Maternidades e 'não' indicando que
-          deve.
+        description: Esta coluna indica se o material deve estar disponível nas Maternidades. É um indicador binário com 'sim' indicando que o material deve estar disponível nas Maternidades e 'não' indicando que deve.
         data_type: string
       - name: remume_disponibilidade_caps_indicador
-        description: Esta coluna indica se o material deve estar disponível nos CAPS
-          (Centro de Atenção Psicossocial). É um indicador binário com 'sim'
-          indicando que o material deve estar disponível nos CAPS e 'não'
-          indicando que deve.
+        description: Esta coluna indica se o material deve estar disponível nos CAPS (Centro de Atenção Psicossocial). É um indicador binário com 'sim' indicando que o material deve estar disponível nos CAPS e 'não' indicando que deve.
         data_type: string
-      - name: remume_disponibilidade_upa_indicador
+      - name: remume_disponibilidade_upa_cer_indicador
         description: >
-          Esta coluna indica se o material deve estar disponível nas UPAs
-          (Unidades de Pronto Atendimento). É um indicador binário com 'sim'
-          indicando que o material deve estar disponível nas UPAs e 'não'
-          indicando que deve.
-        data_type: string
-      - name: remume_disponibilidade_cer_indicador
-        description: >
-          Esta coluna indica se o material deve estar disponível nos CER
-          (Centros de Especialidades Regionais). É um indicador binário com
-          'sim' indicando que o material deve estar disponível nos CER e 'não'
-          indicando que deve.
+          Esta coluna indica se o material deve estar disponível nas UPAs (Unidades de Pronto Atendimento) e CER (Centros de Especialidades Regionais). É um indicador binário com 'sim' indicando que o material deve estar disponível nas UPAs e CER e 'não' indicando que deve.
         data_type: string
       - name: remume_disponibilidade_unidades_especificas_lista
-        description: Esta coluna contém uma lista de unidades específicas onde o
-          material está disponível. A lista é representada pelo CNES de cada
-          unidade separada por vírgula.
+        description: Esta coluna contém uma lista de unidades específicas onde o material está disponível. A lista é representada pelo CNES de cada unidade separada por vírgula.
         data_type: string
       - name: farmacia_popular_disponibilidade_indicador
-        description: Esta coluna indica se o material pode ser obtido através da
-          farmácia popular.
+        description: Esta coluna indica se o material pode ser obtido através da farmácia popular.
         data_type: string
         quote: true
       - name: cadastrado_sistema_vitacare_indicador
-        description: Esta coluna indica se o material está registrado no Prontuário da
-          Vitacare. É um valor de string que pode ser 'sim' se o material
-          estiver registrado, ou 'não' se não estiver. Essas informações são
-          cruciais para rastrear os materiais que fazem parte do sistema
-          Vitacare.
+        description: Esta coluna indica se o material está registrado no Prontuário da Vitacare. É um valor de string que pode ser 'sim' se o material estiver registrado, ou 'não' se não estiver.
+        data_type: string
+      - name: cadastrado_sistema_vitai_indicador
+        description: Esta coluna indica se o material está registrado no Prontuário da Vitai (TIMED). É um valor de string que pode ser 'sim' se o material estiver registrado, ou 'não' se não estiver.
         data_type: string
   - name: raw_sheets__gerenciamento_acesso_looker_farmacia
-    description: Tabela contendo informações sobre o gerenciamento de acesso do BI
-      Farmácia Digital no Looker.
+    description: Tabela contendo informações sobre o gerenciamento de acesso do BI Farmácia Digital no Looker.
     columns:
       - name: cpf
-        description: Esta coluna contém o identificador único de cada indivíduo,
-          conhecido como CPF (Cadastro de Pessoas Físicas).
+        description: Esta coluna contém o identificador único de cada indivíduo, conhecido como CPF (Cadastro de Pessoas Físicas).
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
         data_type: STRING
@@ -287,139 +214,104 @@ models:
         policy_tags:
           - '{{ var ("TAG_TELEFONE") }}'
       - name: sub_secretaria__oss
-        description: Este campo representa a subsecretaria ou a OSS (Organização Social
-          de Saúde) com a qual o indivíduo está associado.
+        description: Este campo representa a subsecretaria ou a OSS (Organização Social de Saúde) com a qual o indivíduo está associado.
         data_type: STRING
       - name: area
-        description: Este campo representa a área específica ou departamento dentro da
-          organização do qual o usuário faz parte.
+        description: Este campo representa a área específica ou departamento dentro da organização do qual o usuário faz parte.
         data_type: STRING
       - name: cargo
         description: "Esta coluna representa o cargo do indivíduo na organização. "
         data_type: STRING
       - name: status_do_acesso
-        description: Esta coluna indica o status atual do acesso do indivíduo à
-          plataforma Looker.
+        description: Esta coluna indica o status atual do acesso do indivíduo à plataforma Looker.
         data_type: STRING
       - name: responsavel_pela_renovacao_do_acesso
-        description: Esta coluna identifica a pessoa responsável por renovar o acesso do
-          indivíduo à plataforma Looker.
+        description: Esta coluna identifica a pessoa responsável por renovar o acesso do indivíduo à plataforma Looker.
         data_type: STRING
       - name: ultima_renovacao_do_acesso
         description: Esta coluna representa a data da última renovação de acesso.
         data_type: DATE
       - name: escopo_bi
-        description: Esta coluna indica o escopo de acesso do usuário às ferramentas de
-          Business Intelligence (BI).
+        description: Esta coluna indica o escopo de acesso do usuário às ferramentas de Business Intelligence (BI).
         data_type: STRING
       - name: escopo_ap
-        description: Esta coluna representa o escopo geográfico (por área programátic)
-          de acesso do usuário.
+        description: Esta coluna representa o escopo geográfico (por área programátic) de acesso do usuário.
         data_type: STRING
       - name: acesso_tpc
         description: Esta coluna indica se o usuário tem acesso aos dados TPC.
         data_type: STRING
       - name: acesso_aps
-        description: "Esta coluna indica se o usuário tem acesso aos dados APS (Atenção
-          Primária à Saúde). "
+        description: "Esta coluna indica se o usuário tem acesso aos dados APS (Atenção Primária à Saúde). "
         data_type: STRING
       - name: acesso_upas
-        description: Esta coluna indica se o usuário tem acesso aos dados UPAs (Unidades
-          de Pronto Atendimento).
+        description: Esta coluna indica se o usuário tem acesso aos dados UPAs (Unidades de Pronto Atendimento).
         data_type: STRING
       - name: acesso_hospitais
         description: "Este campo indica se o usuário tem acesso aos dados hospitalares. "
         data_type: STRING
       - name: acesso_unidade_especifica
-        description: Este campo indica se o usuário tem acesso a dados de unidades
-          específicas. O valor será o CNES da unidade específica à qual o
-          usuário tem acesso.
+        description: Este campo indica se o usuário tem acesso a dados de unidades específicas. O valor será o CNES da unidade específica à qual o usuário tem acesso.
         data_type: STRING
       - name: acesso_relacao_aps
         description: Relação de APs que o usuário tem acesso
         data_type: STRING
       - name: acesso_relacao_estabelecimentos
-        description: Relação de estabelecimentos que o usuário tem acesso. Este campo
-          aceita os tipo de estabelecimentos utilizados no agrupador SMS ou o
-          CNES da unidade.
+        description: Relação de estabelecimentos que o usuário tem acesso. Este campo aceita os tipo de estabelecimentos utilizados no agrupador SMS ou o CNES da unidade.
         data_type: STRING
   - name: raw_sheets__aps_farmacias
-    description: O modelo aps_farmacias fornece informações abrangentes sobre
-      farmácias da atenção primária à saúde, incluindo seus
-      identificadores únicos, nomes, endereços, horários de funcionamento,
-      status operacional e detalhes sobre o farmacêutico associado.
+    description: O modelo aps_farmacias fornece informações abrangentes sobre farmácias da atenção primária à saúde, incluindo seus identificadores únicos, nomes, endereços, horários de funcionamento, status operacional e detalhes sobre o farmacêutico associado.
     columns:
       - name: area_programatica
-        description: Esta coluna representa a área programática da farmácia. É um campo
-          do tipo string que fornece informações sobre a área específica onde a
-          farmácia está localizada.
+        description: Esta coluna representa a área programática da farmácia. É um campo do tipo string que fornece informações sobre a área específica onde a farmácia está localizada.
         data_type: string
         quote: true
       - name: id_cnes
-        description: Esta coluna representa o ID CNES da unidade de saúde. É um identificador
-          único atribuído a cada farmácia para fins de identificação e
-          rastreamento.
+        description: Esta coluna representa o ID CNES da unidade de saúde. É um identificador único atribuído a cada farmácia para fins de identificação e rastreamento.
         data_type: string
         quote: true
       - name: nome
-        description: Esta coluna representa o nome da unidade de saúde. É um campo do tipo
-          string que fornece o nome oficial da farmácia.
+        description: Esta coluna representa o nome da unidade de saúde. É um campo do tipo string que fornece o nome oficial da farmácia.
         data_type: string
         quote: true
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
       - name: endereco
-        description: Esta coluna contém o endereço da unidade de saúde. É do tipo string e pode
-          incluir nome da rua, número, bairro, cidade e estado.
+        description: Esta coluna contém o endereço da unidade de saúde. É do tipo string e pode incluir nome da rua, número, bairro, cidade e estado.
         data_type: string
         quote: true
       - name: horario_seg_a_sexta
-        description: Esta coluna contém o horário de funcionamento da farmácia de
-          segunda a sexta-feira. É do tipo string e geralmente inclui os
-          horários de abertura e fechamento.
+        description: Esta coluna contém o horário de funcionamento da farmácia de segunda a sexta-feira. É do tipo string e geralmente inclui os horários de abertura e fechamento.
         data_type: string
         quote: true
       - name: horario_sabado
-        description: Esta coluna contém o horário de funcionamento da farmácia aos
-          sábados. É do tipo string e geralmente inclui os horários de abertura
-          e fechamento.
+        description: Esta coluna contém o horário de funcionamento da farmácia aos sábados. É do tipo string e geralmente inclui os horários de abertura e fechamento.
         data_type: string
         quote: true
       - name: farmacia_indicador
-        description: Esta coluna indica se a unidade de saúde possui uma farmácia. Os valores são
-          derivados da coluna 'tem_farmacia' nos dados de origem.
+        description: Esta coluna indica se a unidade de saúde possui uma farmácia. Os valores são derivados da coluna 'tem_farmacia' nos dados de origem.
         data_type: string
         quote: true
       - name: farmaceutico_nome
-        description: Esta coluna contém o nome do farmacêutico no local. O nome é
-          formatado com letras maiúsculas adequadas, com a primeira letra de
-          cada palavra em maiúscula, exceto para certas preposições e
-          conjunções. O nome é derivado da coluna 'nome_farmaceutico_rt' nos
-          dados de origem.
+        description: Esta coluna contém o nome do farmacêutico no local. O nome é formatado com letras maiúsculas adequadas, com a primeira letra de cada palavra em maiúscula, exceto para certas preposições e conjunções. O nome é derivado da coluna 'nome_farmaceutico_rt' nos dados de origem.
         data_type: string
         quote: true
       - name: farmaceutico_crf
-        description: Esta coluna contém o número de registro no CRF (Conselho Regional
-          de Farmácia) do farmacêutico no local. Os valores são derivados da
-          coluna 'crf' nos dados de origem.
+        description: Esta coluna contém o número de registro no CRF (Conselho Regional de Farmácia) do farmacêutico no local. Os valores são derivados da coluna 'crf' nos dados de origem.
         data_type: string
         quote: true
         policy_tags:
           - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: farmaceutico_vinculo
-        description: Esta coluna representa o status do vínculo empregatício do farmacêutico com a
-          farmácia. O valor está em letras minúsculas.
+        description: Esta coluna representa o status do vínculo empregatício do farmacêutico com a farmácia. O valor está em letras minúsculas.
         data_type: string
         quote: true
       - name: obs
-        description: Esta coluna contém quaisquer observações ou notas adicionais
-          relacionadas à farmácia.
+        description: Esta coluna contém quaisquer observações ou notas adicionais relacionadas à farmácia.
         data_type: string
         quote: true
 
   - name: raw_sheets__profissionais_cns_cpf_aux
-    description: Tabela auxiliar relacionando os CNS e os CPFs dos profissionais de
-      saúde do MRJ-SUS.
+    description: Tabela auxiliar relacionando os CNS e os CPFs dos profissionais de saúde do MRJ-SUS.
     columns:
       - name: cns
         description: Cartão Nacional de Saúde (CNS) do profissional.
@@ -448,3 +340,43 @@ models:
         description: "Parte do atendimento dedicado ao atendimento por reserva ou primeira vez."
       - name: parametro_retornos
         description: "Parte do atendimento dedicado ao atendimento de retornos."
+  - name: raw_sheets__material_cobertura_programas
+    description: "A tabela fornece informações sobre a cobertura de vários programas de saúde em diferentes estabelecimentos de saúde."
+    columns:
+      - name: id_cnes
+        description: Este é o identificador único para cada estabelecimento de saúde. 
+        data_type: string
+        quote: true
+        data_tests:
+          - relationships:
+              to: ref('dim_estabelecimento')
+              field: id_cnes
+              name: raw_sheets__material_cobertura_programas__id_cnes__relationships
+      - name: estabelecimento_nome
+        description: Este é o nome do estabelecimento de saúde.
+        data_type: string
+        quote: true
+      - name: estabelecimento_ap
+        description: Esta é a área programática do estabelecimento de saúde.
+        data_type: string
+        quote: true
+      - name: tarv_indicador
+        description: Esta coluna indica se o estabelecimento fornece Terapia Antirretroviral (TARV) para pacientes com HIV/AIDS. É um valor booleano, onde 'true' significa que o serviço é fornecido e 'false' significa que não é.
+        data_type: boolean
+        quote: true
+      - name: prep_indicador
+        description: Esta coluna indica se o estabelecimento fornece Profilaxia Pré-Exposição (PrEP) para prevenção do HIV. É um valor booleano, onde 'true' significa que o serviço é fornecido e 'false' significa que não é.
+        data_type: boolean
+        quote: true
+      - name: pep_indicador
+        description: Esta coluna indica se o estabelecimento fornece Profilaxia Pós-Exposição (PEP) para prevenção do HIV após potencial exposição. É um valor booleano, onde 'true' significa que o serviço é fornecido e 'false' significa que não é.
+        data_type: boolean
+        quote: true
+      - name: talidomida_indicador
+        description: Esta coluna indica se o estabelecimento fornece tratamento com Talidomida. É um valor booleano, onde 'true' significa que o estabelecimento fornece tratamento com Talidomida, e 'false' significa que não fornece.
+        data_type: boolean
+        quote: true
+      - name: hepatite_indicador
+        description: Esta coluna indica se o estabelecimento fornece tratamento para Hepatite. É um valor booleano, onde 'true' significa que o estabelecimento fornece tratamento para Hepatite, e 'false' significa que não fornece.
+        data_type: boolean
+        quote: true
