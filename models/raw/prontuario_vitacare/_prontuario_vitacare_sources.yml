@@ -11,8 +11,8 @@ sources:
       - name: vacina
 
       # Eventos
-      - name: atendimento_eventos
-      - name: paciente_eventos
+      - name: atendimento_eventos_cloned
+      - name: paciente_eventos_cloned
         loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
         filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
         freshness:

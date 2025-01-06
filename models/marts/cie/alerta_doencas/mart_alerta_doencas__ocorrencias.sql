@@ -25,7 +25,7 @@ with
         select
             *,
             concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_cloned") }}
         {% if is_incremental() %}
             where data_particao in ({{ partitions_to_replace | join(",") }})
         {% endif %}

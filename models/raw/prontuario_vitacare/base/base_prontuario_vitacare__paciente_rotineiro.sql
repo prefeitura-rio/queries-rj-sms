@@ -15,7 +15,7 @@ with
 
     events_from_window as (
         select *, concat(nullif(payload_cnes, ''), '.', nullif(data__id, '')) as id
-        from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos_cloned") }}
         {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
     ),
 
