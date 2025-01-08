@@ -31,7 +31,7 @@ with
             'vitacare' as fonte,
             'paciente' as tipo,
             safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos_copy") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos_cloned") }}
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
@@ -45,7 +45,7 @@ with
             'vitacare' as fonte,
             'episodio' as tipo,
             safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_copy") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_cloned") }}
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}

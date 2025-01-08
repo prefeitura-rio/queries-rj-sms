@@ -19,7 +19,7 @@
 with
     bruto_atendimento_eventos_com_repeticao as (
         select *, concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_copy") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_cloned") }}
     ),
     bruto_atendimento_eventos_ranqueados as (
         select *,
