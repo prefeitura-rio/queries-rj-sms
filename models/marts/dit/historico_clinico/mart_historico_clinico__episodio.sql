@@ -72,7 +72,7 @@ with
             condicoes,
             medidas,
             prescricoes,
-            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string>>[] as medicamentos_administrados,
+            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string, prescricao_data timestamp>>[] as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
