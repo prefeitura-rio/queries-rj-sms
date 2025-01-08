@@ -234,6 +234,9 @@ models:
       - name: medicamentos_administrados.via_administracao
         description: >
           Indica qual via é feita a administração do medicamento.
+      - name: medicamentos_administrados.prescricao_data
+        description: >
+          Indica qual data foi prescrito o medicamento a ser administrado.
       - name: estabelecimento
         description: >
           Informações sobre o estabelecimento de saúde onde o atendimento foi
