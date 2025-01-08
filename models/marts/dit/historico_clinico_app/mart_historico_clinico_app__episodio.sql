@@ -119,20 +119,14 @@ with
                 ', ',
                 IF(med.via_administracao is null,'',med.via_administracao),
                 IF(med.quantidade is null,'',concat('. QUANTIDADE: ',med.quantidade))
-            ) as medicamento_administrado,
-        med.prescricao_data
+            ) as medicamento_administrado
         from {{ ref("mart_historico_clinico__episodio") }} as ep, unnest(ep.medicamentos_administrados) as med
         where med.nome is not null
     ),
     encounter_medicines_agg as (
         select 
-        id_episodio,
-        array_agg( 
-            struct(
-                regexp_replace(medicamento_administrado,'(, )+',', ') as name,
-                prescricao_data as prescription_date
-            )
-        ) as medicines_administered
+            id_episodio, 
+            string_agg(regexp_replace(medicamento_administrado,'(, )+',', '),'\n') as medicines_administered
         from encounter_medicines
         group by 1
     ),
@@ -189,7 +183,7 @@ with
                 medidas.temperatura as temperature
             ) as measures,
             safe_cast(prescription as string) as prescription,
-            medicines_administered,
+            safe_cast(medicines_administered as string) as medicines_administered,
             array(
                 select struct(descricao as description , situacao as status) 
                 from unnest(condicoes) 
