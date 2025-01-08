@@ -22,7 +22,8 @@ with
         from {{ref('dim_estabelecimento')}}
         where 
             prontuario_tem = "sim" and 
-            prontuario_versao = 'vitacare' 
+            prontuario_versao = 'vitacare' and
+            prontuario_episodio_tem_dado = "sim"
     ),
     vitacare_paciente as (
         select
