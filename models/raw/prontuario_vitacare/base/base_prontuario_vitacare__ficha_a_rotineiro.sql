@@ -2,22 +2,16 @@
     config(
         schema="brutos_prontuario_vitacare_staging",
         alias="_base_ficha_a_rotineiro",
-        materialized="incremental",
-        unique_key="id",
+        materialized="table",
     )
 }}
 
-
-{% set seven_days_ago = (
-    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
-).isoformat() %}
 
 with
 
     events_from_window as (
         select *, concat(nullif(payload_cnes, ''), '.', nullif(data__id, '')) as id
         from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos_cloned") }}
-        {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
     ),
 
     events_ranked_by_freshness as (
