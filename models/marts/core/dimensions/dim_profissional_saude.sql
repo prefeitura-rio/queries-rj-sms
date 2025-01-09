@@ -37,41 +37,19 @@ with
             )
     ),
 
-    unique_profissionais_datasus as (
+    profissionais_datasus as (
         select
             id_codigo_sus,
-            data_carga,
-            row_number() over (
-                partition by id_codigo_sus order by data_carga desc
-            ) as ordenacao
+            nome,
+            cns,
+            data_particao,
         from {{ ref("raw_cnes_web__dados_profissional_sus") }} as unique_p
         inner join
             alocacao as alocacao
             on unique_p.id_codigo_sus = alocacao.profissional_codigo_sus
-    ),
-
-    profissionais_datasus as (
-        select
-            profissionais_unico.id_codigo_sus,
-            profissionais_enriquecido.nome,
-            profissionais_enriquecido.cns,
-            profissionais_unico.data_carga
-        from
-            (
-                select * from unique_profissionais_datasus where ordenacao = 1
-            ) as profissionais_unico
-        left join
-            {{ ref("raw_cnes_web__dados_profissional_sus") }}
-            as profissionais_enriquecido
-            on concat(
-                profissionais_unico.id_codigo_sus,
-                '.',
-                profissionais_unico.data_carga
-            ) = concat(
-                profissionais_enriquecido.id_codigo_sus,
-                '.',
-                profissionais_enriquecido.data_carga
-            )
+        qualify row_number() over (
+                partition by id_codigo_sus order by data_particao desc
+            ) = 1
     ),
 
     cbo_distinct as (
