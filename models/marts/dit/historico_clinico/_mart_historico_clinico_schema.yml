@@ -283,7 +283,7 @@ models:
         description: >
           Informações adicionais sobre o atendimento, como o fornecedor e o
           identificador do atendimento.
-      - name: prontuario.id_atendimento
+      - name: prontuario.id_prontuario_global
         description: |
           ID do atendimento.
       - name: prontuario.fornecedor

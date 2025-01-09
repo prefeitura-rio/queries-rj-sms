@@ -448,7 +448,7 @@ models:
         description: >
           Informações adicionais sobre o atendimento, como o fornecedor e o
           identificador do atendimento.
-      - name: prontuario.id_atendimento
+      - name: prontuario.id_prontuario_global
         description: |
           ID do atendimento do prontuário do qual ele vem. 
           Composto pelo CNES do estabelecimento e pelo identificador do atendimento (`gid`). 
