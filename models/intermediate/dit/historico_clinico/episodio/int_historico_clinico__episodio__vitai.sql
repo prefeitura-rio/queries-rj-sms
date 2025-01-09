@@ -71,6 +71,7 @@ with
     boletim as (
         select
             b.gid,
+            b.id_hci,
             b.gid_paciente,
             b.gid_estabelecimento,
             estabelecimento_nome,
@@ -354,6 +355,7 @@ with
     exame as (
         select
             gid,
+            id_hci,
             gid_paciente,
             gid_estabelecimento,
             estabelecimento_nome,
@@ -382,7 +384,7 @@ with
                 )
             ) as exames_realizados
         from exame_dupl
-        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
+        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,19
     ),
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Montagem do episódio e enriquecimento
@@ -428,6 +430,7 @@ with
     -- Monta base do episódio para ser enriquecida
     atendimento_struct as (
         select
+            id_hci,
             episodios_distinct.gid as id,
             queixa_final.queixa as motivo_atendimento,
             episodios_distinct.tipo,
@@ -449,7 +452,7 @@ with
                 estabelecimentos.tipo_sms_simplificado as estabelecimento_tipo
             ) as estabelecimento,
             struct(
-                episodios_distinct.gid as id_atendimento, "vitai" as fornecedor
+                episodios_distinct.gid as id_prontuario_global, "vitai" as fornecedor
             ) as prontuario,
             episodios_distinct.imported_at,
             episodios_distinct.updated_at,
@@ -464,6 +467,7 @@ with
         from
             (
                 select distinct
+                    id_hci,
                     gid,
                     gid_estabelecimento,
                     estabelecimento_nome,
@@ -489,6 +493,7 @@ with
 
     final as (
         select
+            id_hci,
             -- Paciente
             atendimento_struct.paciente.cpf as cpf,
 
