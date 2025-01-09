@@ -1094,3 +1094,158 @@ models:
           no formato 'AAAA-MM-DD HH:MM:SS'.
         data_type: string
         quote: true
+  - name: raw_prontuario_vitacare__ficha_a
+    description: >
+      Tabela contendo informações processadas a partir de eventos de pacientes,
+      incluindo dados cadastrais e informações associadas.
+    columns:
+      - name: cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: id_paciente
+        description: Identificador único do paciente no sistema.
+      - name: unidade_cadastro
+        description: Unidade de saúde responsável pelo cadastro do paciente.
+      - name: ap_cadastro
+        description: Área programática associada ao cadastro do paciente.
+      - name: nome
+        description: Nome completo do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: sexo
+        description: Sexo do paciente.
+      - name: obito
+        description: Indicação se o paciente possui registro de óbito.
+      - name: bairro
+        description: Bairro de residência do paciente.
+      - name: comodos
+        description: Número de cômodos no domicílio do paciente.
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: nome_pai
+        description: Nome do pai do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_PAI") }}'
+      - name: raca_cor
+        description: Raça/cor do paciente.
+      - name: ocupacao
+        description: Ocupação do paciente.
+      - name: religiao
+        description: Religião do paciente.
+      - name: telefone
+        description: Telefone de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+      - name: ine_equipe
+        description: Código INE da equipe de saúde responsável pelo paciente.
+      - name: microarea
+        description: Código da microárea de atuação da unidade de saúde.
+      - name: logradouro
+        description: Logradouro do endereço do paciente.
+      - name: nome_social
+        description: Nome social do paciente.
+      - name: destino_lixo
+        description: Tipo de destino dado ao lixo no domicílio do paciente.
+      - name: luz_eletrica
+        description: Indicação se o domicílio possui luz elétrica.
+      - name: codigo_equipe
+        description: Código da equipe de saúde responsável pelo paciente.
+      - name: data_cadastro
+        description: Data de cadastro do paciente.
+      - name: escolaridade
+        description: Nível de escolaridade do paciente.
+      - name: tempo_moradia
+        description: Tempo de moradia no local atual do paciente.
+      - name: nacionalidade
+        description: Nacionalidade do paciente.
+      - name: renda_familiar
+        description: Renda familiar do paciente.
+      - name: tipo_domicilio
+        description: Tipo de domicílio do paciente.
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: pais_nascimento
+        description: País de nascimento do paciente.
+      - name: tipo_logradouro
+        description: Tipo de logradouro do endereço do paciente.
+      - name: tratamento_agua
+        description: Tipo de tratamento de água utilizado no domicílio.
+      - name: em_situacao_de_rua
+        description: Indicação se o paciente está em situação de rua.
+      - name: frequenta_escola
+        description: Indicação se o paciente frequenta escola.
+      - name: meios_transporte
+        description: Meios de transporte utilizados pelo paciente.
+      - name: situacao_usuario
+        description: Situação do paciente quanto ao uso de serviços de saúde.
+      - name: doencas_condicoes
+        description: Doenças ou condições de saúde registradas no paciente.
+      - name: estado_nascimento
+        description: Estado de nascimento do paciente.
+      - name: estado_residencia
+        description: Estado de residência do paciente.
+      - name: identidade_genero
+        description: Identidade de gênero do paciente.
+      - name: meios_comunicacao
+        description: Meios de comunicação utilizados pelo paciente.
+      - name: orientacao_sexual
+        description: Orientação sexual do paciente.
+      - name: possui_filtro_agua
+        description: Indicação se o domicílio possui filtro de água.
+      - name: possui_plano_saude
+        description: Indicação se o paciente possui plano de saúde.
+      - name: situacao_familiar
+        description: Situação familiar do paciente.
+      - name: territorio_social
+        description: Território social ao qual o paciente pertence.
+      - name: abastecimento_agua
+        description: Tipo de abastecimento de água do domicílio.
+      - name: animais_no_domicilio
+        description: Indicação se há animais no domicílio.
+      - name: cadastro_permanente
+        description: Indicação se o paciente possui cadastro permanente.
+      - name: familia_localizacao
+        description: Localização da família do paciente.
+      - name: em_caso_doenca_procura
+        description: Indicação sobre o que o paciente faz em caso de doença.
+      - name: municipio_nascimento
+        description: Município de nascimento do paciente.
+      - name: municipio_residencia
+        description: Município de residência do paciente.
+      - name: responsavel_familiar
+        description: Nome do responsável familiar do paciente.
+      - name: esgotamento_sanitario
+        description: Tipo de esgotamento sanitário do domicílio.
+      - name: situacao_moradia_posse
+        description: Situação de posse da moradia do paciente.
+      - name: situacao_profissional
+        description: Situação profissional do paciente.
+      - name: vulnerabilidade_social
+        description: Vulnerabilidades sociais associadas ao paciente.
+      - name: familia_beneficiaria_cfc
+        description: Indicação se a família do paciente é beneficiária do CFC.
+      - name: data_atualizacao_cadastro
+        description: Data da última atualização cadastral do paciente.
+      - name: participa_grupo_comunitario
+        description: Indicação se o paciente participa de grupos comunitários.
+      - name: relacao_responsavel_familiar
+        description: Relação com o responsável familiar.
+      - name: membro_comunidade_tradicional
+        description: Indicação se o paciente é membro de uma comunidade tradicional.
+      - name: data_atualizacao_vinculo_equipe
+        description: Data da última atualização do vínculo com a equipe de saúde.
+      - name: familia_beneficiaria_auxilio_brasil
+        description: Indicação se a família do paciente é beneficiária do Auxílio Brasil.
+      - name: crianca_matriculada_creche_pre_escola
+        description: Indicação se a criança está matriculada em creche ou pré-escola.
+      - name: updated_at
+        description: Data e hora da última atualização dos dados.
+      - name: loaded_at
+        description: Data e hora de carregamento dos dados no sistema.
+      - name: tipo
+        description: Tipo de origem da ficha A historico ou rotineiro.

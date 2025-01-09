@@ -49,6 +49,12 @@ models:
       - name: medicines_administered
         description: |
           Medicamentos administrados.
+      - name: medicines_administered.name
+        description: |
+          Nome do medicamento administrado.
+      - name: medicines_administered.prescription_date
+        description: |
+          Data de prescrição do medicamento a ser administrado.
       - name: cids
         description: |
           Cids associados ao atendimento.
