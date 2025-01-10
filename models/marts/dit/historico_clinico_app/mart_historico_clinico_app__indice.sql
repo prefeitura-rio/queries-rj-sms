@@ -62,8 +62,8 @@ with
             {{ calculate_age('cast(birth_date as date)') }} AS idade,
             gender as genero,
             nome_mae_mapeamento.mae_nome as nome_mae,
-            coalesce(quantidade_episodios, 0) as quantidade_episodios
-            exibicao,
+            coalesce(quantidade_episodios, 0) as quantidade_episodios,
+            exibicao
         from source_paciente_app
             inner join cns_mapeamento on cns_mapeamento.cpf = source_paciente_app.cpf
             inner join nome_mae_mapeamento on nome_mae_mapeamento.cpf = source_paciente_app.cpf
