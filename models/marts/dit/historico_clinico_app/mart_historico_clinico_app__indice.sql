@@ -13,26 +13,38 @@
 }}
 
 with
-    source as (
+    source_paciente_mart as (
         select
             *
         from {{ ref('mart_historico_clinico__paciente') }}
     ),
-    dados_paciente as (
+    cns_mapeamento as (
         select
-            cast(valor_cns as int64) as cns_particao,
-            cpf,
-            source.dados.nome,
-            valor_cns,
-            source.dados.data_nascimento,
-            {{ calculate_age('source.dados.data_nascimento') }} AS idade,
-            source.dados.genero,
-            source.dados.mae_nome
-        from source, unnest(cns) as valor_cns
+            valor_cns, cpf
+        from source_paciente_mart, unnest(cns) as valor_cns
+    ),
+
+
+    source_paciente_app as (
+        select
+            *
+        from {{ ref('mart_historico_clinico_app__paciente') }}
+    ),
+
+    -- -----------------------------------------
+    -- Dados do paciente
+    -- -----------------------------------------
+    dados as (
+        select
+            cast(cns_mapeamento.valor_cns as int64) as cns_particao,
+            source_paciente_app.cpf,
+            registration_name as nome,
+        from source_paciente_app
+            inner join cns_mapeamento on cns_mapeamento.cpf = source_paciente_app.cpf
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- FINAL
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select *
-from dados_paciente
+from dados
 where {{ validate_cpf("cpf") }}

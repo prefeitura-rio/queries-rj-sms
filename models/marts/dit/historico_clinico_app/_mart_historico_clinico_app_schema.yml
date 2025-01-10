@@ -203,3 +203,11 @@ models:
   - name: mart_historico_clinico_app__indice
     description: >
       Tabela utilizada para busca por CNS e Nome no histórico clínico.
+    columns:
+      - name: cns_particao
+        description: Coluna de particionamento de CNS.
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico_app__indice__cns_particao__not_null
+          - unique:
+              name: mart_historico_clinico_app__indice__cns_particao__unique
