@@ -13,26 +13,65 @@
 }}
 
 with
-    source as (
+    source_paciente_mart as (
         select
             *
         from {{ ref('mart_historico_clinico__paciente') }}
     ),
-    dados_paciente as (
+    source_paciente_app as (
         select
-            cast(valor_cns as int64) as cns_particao,
-            cpf,
-            source.dados.nome,
-            valor_cns,
-            source.dados.data_nascimento,
-            {{ calculate_age('source.dados.data_nascimento') }} AS idade,
-            source.dados.genero,
-            source.dados.mae_nome
-        from source, unnest(cns) as valor_cns
+            *
+        from {{ ref('mart_historico_clinico_app__paciente') }}
+    ),
+    source_episodio_app as (
+        select
+            *
+        from {{ ref('mart_historico_clinico_app__episodio') }}
+    ),
+
+    -- -----------------------------------------
+    -- Enriquecimento
+    -- -----------------------------------------
+    cns_mapeamento as (
+        select
+            valor_cns, cpf
+        from source_paciente_mart, unnest(cns) as valor_cns
+    ),
+    nome_mae_mapeamento as (
+        select
+            dados.mae_nome, cpf
+        from source_paciente_mart
+    ),
+    episodios_por_pessoas as (
+        select
+            source_episodio_app.cpf,
+            count(*) as quantidade_episodios
+        from source_episodio_app
+        group by 1
+    ),
+
+    -- -----------------------------------------
+    -- Dados do paciente
+    -- -----------------------------------------
+    dados as (
+        select
+            cast(cns_mapeamento.valor_cns as int64) as cns_particao,
+            source_paciente_app.cpf,
+            registration_name as nome,
+            birth_date as data_nascimento,
+            {{ calculate_age('cast(birth_date as date)') }} AS idade,
+            gender as genero,
+            nome_mae_mapeamento.mae_nome as nome_mae,
+            coalesce(quantidade_episodios, 0) as quantidade_episodios,
+            exibicao
+        from source_paciente_app
+            inner join cns_mapeamento on cns_mapeamento.cpf = source_paciente_app.cpf
+            inner join nome_mae_mapeamento on nome_mae_mapeamento.cpf = source_paciente_app.cpf
+            left join episodios_por_pessoas on episodios_por_pessoas.cpf = source_paciente_app.cpf
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- FINAL
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select *
-from dados_paciente
+from dados
 where {{ validate_cpf("cpf") }}
