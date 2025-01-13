@@ -411,7 +411,7 @@ with
                     data_atualizacao_vinculo_equipe desc,
                     cadastro_permanente_indicador desc,
                     updated_at desc
-            ) as rank
+            ) as rank_dupl
         from paciente
         where endereco_logradouro is not null
         group by
@@ -442,51 +442,15 @@ with
             estado,
             datahora_ultima_atualizacao,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    cep,
-                    tipo_logradouro,
-                    logradouro,
-                    numero,
-                    complemento,
-                    bairro,
-                    cidade,
-                    estado,
-                    datahora_ultima_atualizacao,
-                    merge_order,
-                    rank,
-                    row_number() over (
+            "vitacare" as sistema
+        from vitacare_endereco
+        qualify row_number() over (
                         partition by cpf, datahora_ultima_atualizacao
-                        order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select
-                            cpf,
-                            cep,
-                            tipo_logradouro,
-                            logradouro,
-                            numero,
-                            complemento,
-                            bairro,
-                            cidade,
-                            estado,
-                            datahora_ultima_atualizacao,
-                            rank,
-                            "vitacare" as sistema,
-                            1 as merge_order
-                        from vitacare_endereco
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+                        order by rank_dupl asc
+                    )= 1
+        order by rank asc
     ),
 
     endereco_dados as (
