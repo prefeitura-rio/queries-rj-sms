@@ -499,45 +499,13 @@ with
             data_atualizacao_vinculo_equipe,
             cadastro_permanente_indicador,
             updated_at
-    ),
-
-    prontuario_dedup as (
-        select
-            cpf,
-            sistema,
-            id_cnes,
-            id_paciente,
-            row_number() over (
-                partition by cpf order by merge_order asc, rank asc
-            ) as rank
-        from
-            (
-                select
-                    cpf,
-                    sistema,
-                    id_cnes,
-                    id_paciente,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, id_cnes, id_paciente
-                        order by merge_order, rank asc
-                    ) as dedup_rank
-                from
-                    (
-                        select
-                            vi.cpf,
-                            "vitacare" as sistema,
-                            id_cnes,
-                            id_paciente,
-                            rank,
-                            1 as merge_order
-                        from vitacare_prontuario vi
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+        qualify row_number() over (
+            partition by cpf, id_cnes, id_paciente
+            order by 
+            data_atualizacao_vinculo_equipe desc,
+            cadastro_permanente_indicador desc,
+            updated_at desc
+        ) = 1
     ),
 
     prontuario_dados as (
@@ -546,7 +514,7 @@ with
             array_agg(
                 struct(lower(sistema) as sistema, id_cnes, id_paciente, rank)
             ) as prontuario
-        from prontuario_dedup
+        from vitacare_prontuario
         group by cpf
     ),
 
