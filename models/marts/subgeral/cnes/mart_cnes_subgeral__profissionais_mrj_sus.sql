@@ -116,6 +116,7 @@ with
             cpf as profissional__cpf,
             p.cns as profissional__cns,
             nome as profissional__nome,
+            profissional_codigo_sus as profissional__id_codigo_sus,
             dados.data_nascimento as profissional__data_nascimento,
             date_diff(
                 date(p.ano_competencia, p.mes_competencia, 1),
@@ -126,7 +127,105 @@ with
             dados.pai_nome as profissional__pai_nome,
             dados.genero as profissional__genero,
             dados.raca as profissional__raca,
-            endereco as profissional__endereco,
+
+            -- extrando endereço dos profissionais da estrutura do hci
+            (
+                select endereco_element.cep
+                from
+                    unnest(
+                        array(
+                            select as struct *
+                            from unnest(endereco)
+                            order by datahora_ultima_atualizacao desc
+                        )
+                    ) as endereco_element
+                limit 1
+            ) as profissional__cep_profissional,
+            (
+                select endereco_element.tipo_logradouro
+                from
+                    unnest(
+                        array(
+                            select as struct *
+                            from unnest(endereco)
+                            order by datahora_ultima_atualizacao desc
+                        )
+                    ) as endereco_element
+                limit 1
+            ) as profissional__tipo_logradouro_profissional,
+            (
+                select endereco_element.logradouro
+                from
+                    unnest(
+                        array(
+                            select as struct *
+                            from unnest(endereco)
+                            order by datahora_ultima_atualizacao desc
+                        )
+                    ) as endereco_element
+                limit 1
+            ) as profissional__logradouro_profissional,
+            (
+                select endereco_element.numero
+                from
+                    unnest(
+                        array(
+                            select as struct *
+                            from unnest(endereco)
+                            order by datahora_ultima_atualizacao desc
+                        )
+                    ) as endereco_element
+                limit 1
+            ) as profissional__numero_profissional,
+            (
+                select endereco_element.complemento
+                from
+                    unnest(
+                        array(
+                            select as struct *
+                            from unnest(endereco)
+                            order by datahora_ultima_atualizacao desc
+                        )
+                    ) as endereco_element
+                limit 1
+            ) as profissional__complemento_profissional,
+            (
+                select endereco_element.bairro
+                from
+                    unnest(
+                        array(
+                            select as struct *
+                            from unnest(endereco)
+                            order by datahora_ultima_atualizacao desc
+                        )
+                    ) as endereco_element
+                limit 1
+            ) as profissional__bairro_profissional,
+            (
+                select endereco_element.cidade
+                from
+                    unnest(
+                        array(
+                            select as struct *
+                            from unnest(endereco)
+                            order by datahora_ultima_atualizacao desc
+                        )
+                    ) as endereco_element
+                limit 1
+            ) as profissional__cidade_profissional,
+            (
+                select endereco_element.estado
+                from
+                    unnest(
+                        array(
+                            select as struct *
+                            from unnest(endereco)
+                            order by datahora_ultima_atualizacao desc
+                        )
+                    ) as endereco_element
+                limit 1
+            ) as profissional__estado_profissional,
+
             vinculacao as profissional__vinculacao,
             vinculo_tipo as profissional__vinculacao_tipo,
             id_cbo as profissional__id_cbo,
@@ -139,6 +238,8 @@ with
             carga_horaria_ambulatorial as profissional__carga_horaria_ambulatorial,
             carga_horaria_outros as profissional__carga_horaria_outros,
             carga_horaria_total as profissional__carga_horaria_total,
+            data_entrada_profissional as profissional__data_entrada,
+            data_desligamento_profissional as profissional__data_desligamento,
             dados.obito_indicador as profissional__obito_indicador,
             dados.obito_data as profissional__obito_data,
 
