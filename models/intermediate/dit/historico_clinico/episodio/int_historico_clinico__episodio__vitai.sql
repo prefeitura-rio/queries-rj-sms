@@ -149,6 +149,7 @@ with
                     via_administracao,
                     data_prescricao as prescricao_data
                 )
+                order by data_prescricao desc
             ) as medicamentos_administrados
         from prescricoes_limpo
         left join prescricao_datahora
