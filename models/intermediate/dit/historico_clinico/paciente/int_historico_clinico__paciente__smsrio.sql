@@ -52,7 +52,7 @@ with
         select
             cpf,
             case when trim(cns) in ('NONE') then null else trim(cns) end as cns,
-            row_number() over (partition by cpf order by updated_at desc) as rank,
+            row_number() over (partition by cpf order by updated_at desc) as rank_dupl,
         from
             (
                 select cpf, cns, updated_at
@@ -75,23 +75,13 @@ with
             cpf,
             cns,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank
-        from
-            (
-                select
-                    cpf,
-                    cns,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, cns order by merge_order, rank asc
-                    ) as dedup_rank,
-                from (select cpf, cns, rank, 2 as merge_order from smsrio_cns_ranked)
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+        from smsrio_cns_ranked
+        qualify row_number() over (
+            partition by cpf, cns order by rank_dupl asc
+        ) = 1
+        order by rank_dupl asc
     ),
     cns_validated as (
         select cns, {{ validate_cns("cns") }} as cns_valido_indicador,
@@ -157,7 +147,7 @@ with
                 else null
             end as valor_tipo,
             length(valor) as len,
-            rank
+            rank_dupl
         from
             (
                 select
@@ -167,11 +157,11 @@ with
                     {{ padronize_telefone("telefones") }} as valor,
                     row_number() over (
                         partition by cpf order by updated_at desc
-                    ) as rank
+                    ) as rank_dupl
                 from smsrio_contato_tb
                 group by cpf, telefones, updated_at
             )
-        where not (trim(valor) in ("NONE", "NULL", "") and (rank >= 2))
+        where not (trim(valor) in ("NONE", "NULL", "") and (rank_dupl >= 2))
     ),
 
     -- CONTATO smsrio: Extracts and ranks email
@@ -182,7 +172,7 @@ with
             case
                 when trim(valor) in ("NONE", "NULL", "") then null else valor
             end as valor,
-            rank
+            rank_dupl
         from
             (
                 select
@@ -191,11 +181,11 @@ with
                     email as valor,
                     row_number() over (
                         partition by cpf order by updated_at desc
-                    ) as rank
+                    ) as rank_dupl
                 from smsrio_contato_tb
                 group by cpf, email, updated_at
             )
-        where not (trim(valor) in ("NONE", "NULL", "") and (rank >= 2))
+        where not (trim(valor) in ("NONE", "NULL", "") and (rank_dupl >= 2))
     ),
 
     telefone_dedup as (
@@ -206,40 +196,14 @@ with
             valor,
             valor_tipo,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    valor_original,
-                    ddd,
-                    valor,
-                    valor_tipo,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, valor order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select
-                            cpf,
-                            valor_original,
-                            ddd,
-                            valor,
-                            valor_tipo,
-                            rank,
-                            "smsrio" as sistema,
-                            2 as merge_order
-                        from smsrio_contato_telefone
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+            "smsrio" as sistema
+        from smsrio_contato_telefone
+        qualify row_number() over (
+                        partition by cpf, valor order by rank_dupl asc
+                    )  = 1
+        order by rank_dupl asc
     ),
 
     email_dedup as (
@@ -247,29 +211,14 @@ with
             cpf,
             valor,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    valor,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, valor order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select cpf, valor, rank, "smsrio" as sistema, 2 as merge_order
-                        from smsrio_contato_email
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+            "smsrio" as sistema
+        from smsrio_contato_email
+        qualify row_number() over (
+                        partition by cpf, valor order by rank_dupl asc
+                    ) = 1
+        order by rank_dupl asc
     ),
 
     contato_telefone_dados as (
@@ -335,7 +284,7 @@ with
             end as cidade,
             sms.estado,
             cast(sms.updated_at as string) as datahora_ultima_atualizacao,
-            row_number() over (partition by cpf order by updated_at desc) as rank
+            row_number() over (partition by cpf order by updated_at desc) as rank_dupl
         from smsrio_tb sms
         left join
             `basedosdados.br_bd_diretorios_brasil.municipio` bd
@@ -367,51 +316,15 @@ with
             estado,
             datahora_ultima_atualizacao,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    cep,
-                    tipo_logradouro,
-                    logradouro,
-                    numero,
-                    complemento,
-                    bairro,
-                    cidade,
-                    estado,
-                    datahora_ultima_atualizacao,
-                    merge_order,
-                    rank,
-                    row_number() over (
+            "smsrio" as sistema
+        from smsrio_endereco
+        qualify row_number() over (
                         partition by cpf, datahora_ultima_atualizacao
-                        order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select
-                            cpf,
-                            cep,
-                            tipo_logradouro,
-                            logradouro,
-                            numero,
-                            complemento,
-                            bairro,
-                            cidade,
-                            estado,
-                            datahora_ultima_atualizacao,
-                            rank,
-                            "smsrio" as sistema,
-                            2 as merge_order
-                        from smsrio_endereco
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+                        order by rank_dupl asc
+                    ) = 1
+        order by rank_dupl asc
     ),
 
     endereco_dados as (
@@ -445,7 +358,7 @@ with
             'smsrio' as sistema,
             id_cnes,
             id_paciente,
-            row_number() over (partition by cpf order by updated_at desc) as rank
+            row_number() over (partition by cpf order by updated_at desc) as rank_dupl
         from smsrio_tb
         group by cpf, id_cnes, id_paciente, updated_at
     ),
@@ -457,36 +370,14 @@ with
             id_cnes,
             id_paciente,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank
-        from
-            (
-                select
-                    cpf,
-                    sistema,
-                    id_cnes,
-                    id_paciente,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, id_cnes, id_paciente
-                        order by merge_order, rank asc
-                    ) as dedup_rank
-                from
-                    (
-                        select
-                            vi.cpf,
-                            "smsrio" as sistema,
-                            id_cnes,
-                            id_paciente,
-                            rank,
-                            2 as merge_order
-                        from smsrio_prontuario vi
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+        from smsrio_prontuario vi
+        qualify row_number() over (
+            partition by cpf, id_cnes, id_paciente
+            order by rank_dupl asc
+        ) = 1
+        order by rank_dupl asc
     ),
 
     prontuario_dados as (

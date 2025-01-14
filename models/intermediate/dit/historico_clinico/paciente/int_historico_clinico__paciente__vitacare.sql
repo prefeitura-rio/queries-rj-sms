@@ -34,7 +34,7 @@ with
                     data_atualizacao_vinculo_equipe desc,
                     data_ultima_atualizacao_cadastral desc,
                     cadastro_permanente_indicador desc
-            ) as rank
+            ) as rank --rankeria registro mais novo e confiavel do cpf
         from {{ ref("raw_prontuario_vitacare__paciente") }}
         where {{ validate_cpf("cpf") }}
 
@@ -57,8 +57,15 @@ with
         select
             cpf,
             cns,
-            row_number() over (
+            row_number() over ( -- ranking para deduplicacao de cns iguais
                 partition by cpf, cns
+                order by
+                    data_atualizacao_vinculo_equipe desc,
+                    cadastro_permanente_indicador desc,
+                    updated_at desc
+            ) as deduped_rank,
+            row_number() over ( -- rankeia dentre os mesmos cpf os registros mais novos de cns
+                partition by cpf
                 order by
                     data_atualizacao_vinculo_equipe desc,
                     cadastro_permanente_indicador desc,
@@ -82,40 +89,14 @@ with
             cadastro_permanente_indicador,
             updated_at
     ),
-
-    -- CNS Dados
-    cns_dedup as (
-        select
-            cpf,
-            cns,
-            row_number() over (
-                partition by cpf order by merge_order asc, rank asc
-            ) as rank
-        from
-            (
-                select
-                    cpf,
-                    cns,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, cns order by merge_order, rank asc
-                    ) as dedup_rank,
-                from (select cpf, cns, rank, 1 as merge_order from cns_ranked)
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
-    ),
-
     cns_validated as (
         select cns, {{ validate_cns("cns") }} as cns_valido_indicador,
-        from (select distinct cns from cns_dedup)
+        from (select distinct cns from cns_ranked where deduped_rank=1)
     ),
 
     cns_dados as (
         select cpf, array_agg(struct(cd.cns, cv.cns_valido_indicador, cd.rank)) as cns
-        from cns_dedup cd
+        from ( select * from cns_ranked where deduped_rank=1) cd
         join cns_validated cv on cd.cns = cv.cns
         group by cpf
     ),
@@ -123,6 +104,8 @@ with
     -- EQUIPE SAUDE FAMILIA vitacare: Extracts and ranks family health teams
     -- clinica da familia
     source_clinica_familia as (
+        -- funciona como deduplicação
+        -- cria tabela de cnes onde o paciente ja foi atendido
         select *
         from paciente_com_cadastro_permanente
         qualify
@@ -138,6 +121,7 @@ with
 
     dim_clinica_familia as (
         select
+            -- enriquece e adiciona ranking de clinica baseado em data de cadastro
             cf.cpf,
             cf.id_cnes,
             {{ proper_estabelecimento("e.nome_limpo") }} as nome,
@@ -183,6 +167,7 @@ with
     ),
 
     source_equipe_familia as (
+        -- ultima equipe de cada cnes que o paciente ja foi atendido
         select *
         from paciente_com_equipe
         qualify
@@ -197,6 +182,7 @@ with
     ),
 
     equipe_saude_familia_enriquecida as (
+        -- enriquece e adiciona ranking de clinica baseado em data de cadastro
         select
             f.cpf,
             f.id_ine,
@@ -246,16 +232,16 @@ with
             valor_original,
             case
                 when length(valor) in (10, 11)
-                then substr(valor, 1, 2)  -- Keep only the first 2 digits (DDD)
+                then substr(valor, 1, 2)  -- Deixa apenas os primeiros 2 digitos (DD)
                 else null
             end as ddd,
             case
                 when length(valor) in (8, 9)
-                then valor  -- For numbers with 8 or 9 digits, keep the original value
+                then valor  -- Numeros com 8 ou 9 digitos, permanece o valor original
                 when length(valor) = 10
-                then substr(valor, 3, 8)  -- Keep only the last 8 digits (discard the first 2)
+                then substr(valor, 3, 8)  -- Deixa apenas os 8 ultimos digitos (descarta os dois primeiros)
                 when length(valor) = 11
-                then substr(valor, 3, 9)  -- Keep only the last 9 digits (discard the first 2)
+                then substr(valor, 3, 9)  -- Deixa apenas os 9 ultimos digitos (descarta os dois primeiros)
                 else null
             end as valor,
             case
@@ -270,7 +256,7 @@ with
                 else null
             end as valor_tipo,
             length(valor) as len,
-            rank
+            rank_dupl
         from
             (
                 select
@@ -284,7 +270,7 @@ with
                             data_atualizacao_vinculo_equipe desc,
                             cadastro_permanente_indicador desc,
                             updated_at desc
-                    ) as rank
+                    ) as rank_dupl
                 from paciente
                 group by
                     cpf,
@@ -293,7 +279,7 @@ with
                     cadastro_permanente_indicador,
                     updated_at
             )
-        where not (trim(valor) in ("()", "") and (rank >= 2))
+        where not (trim(valor) in ("()", "") and (rank_dupl >= 2))
     ),
 
     -- CONTATO EMAIL
@@ -302,7 +288,7 @@ with
             cpf,
             tipo,
             case when trim(valor) in ("()", "") then null else valor end as valor,
-            rank
+            rank_dupl
         from
             (
                 select
@@ -315,7 +301,7 @@ with
                             data_atualizacao_vinculo_equipe desc,
                             cadastro_permanente_indicador desc,
                             updated_at desc
-                    ) as rank
+                    ) as rank_dupl
                 from paciente
                 group by
                     cpf,
@@ -324,7 +310,7 @@ with
                     cadastro_permanente_indicador,
                     updated_at
             )
-        where not (trim(valor) in ("()", "") and (rank >= 2))
+        where not (trim(valor) in ("()", "") and (rank_dupl >= 2))
     ),
 
     telefone_dedup as (
@@ -334,41 +320,15 @@ with
             ddd,
             valor,
             valor_tipo,
+            "vitacare" as sistema,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    valor_original,
-                    ddd,
-                    valor,
-                    valor_tipo,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, valor order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select
-                            cpf,
-                            valor_original,
-                            ddd,
-                            valor,
-                            valor_tipo,
-                            rank,
-                            "vitacare" as sistema,
-                            1 as merge_order
-                        from vitacare_contato_telefone
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+        from vitacare_contato_telefone
+        qualify  row_number() over (
+                partition by cpf, valor order by rank_dupl asc
+            ) =1 
+        order by rank asc
     ),
 
     email_dedup as (
@@ -376,29 +336,14 @@ with
             cpf,
             valor,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    valor,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, valor order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select cpf, valor, rank, "vitacare" as sistema, 1 as merge_order
-                        from vitacare_contato_email
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+            "vitacare" as sistema
+        from vitacare_contato_email
+        qualify row_number() over (
+                partition by cpf, valor order by rank_dupl asc
+            ) = 1
+        order by rank asc
     ),
 
     contato_telefone_dados as (
@@ -466,7 +411,7 @@ with
                     data_atualizacao_vinculo_equipe desc,
                     cadastro_permanente_indicador desc,
                     updated_at desc
-            ) as rank
+            ) as rank_dupl
         from paciente
         where endereco_logradouro is not null
         group by
@@ -497,51 +442,15 @@ with
             estado,
             datahora_ultima_atualizacao,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    cep,
-                    tipo_logradouro,
-                    logradouro,
-                    numero,
-                    complemento,
-                    bairro,
-                    cidade,
-                    estado,
-                    datahora_ultima_atualizacao,
-                    merge_order,
-                    rank,
-                    row_number() over (
+            "vitacare" as sistema
+        from vitacare_endereco
+        qualify row_number() over (
                         partition by cpf, datahora_ultima_atualizacao
-                        order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select
-                            cpf,
-                            cep,
-                            tipo_logradouro,
-                            logradouro,
-                            numero,
-                            complemento,
-                            bairro,
-                            cidade,
-                            estado,
-                            datahora_ultima_atualizacao,
-                            rank,
-                            "vitacare" as sistema,
-                            1 as merge_order
-                        from vitacare_endereco
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+                        order by rank_dupl asc
+                    )= 1
+        order by rank asc
     ),
 
     endereco_dados as (
@@ -590,45 +499,13 @@ with
             data_atualizacao_vinculo_equipe,
             cadastro_permanente_indicador,
             updated_at
-    ),
-
-    prontuario_dedup as (
-        select
-            cpf,
-            sistema,
-            id_cnes,
-            id_paciente,
-            row_number() over (
-                partition by cpf order by merge_order asc, rank asc
-            ) as rank
-        from
-            (
-                select
-                    cpf,
-                    sistema,
-                    id_cnes,
-                    id_paciente,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, id_cnes, id_paciente
-                        order by merge_order, rank asc
-                    ) as dedup_rank
-                from
-                    (
-                        select
-                            vi.cpf,
-                            "vitacare" as sistema,
-                            id_cnes,
-                            id_paciente,
-                            rank,
-                            1 as merge_order
-                        from vitacare_prontuario vi
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+        qualify row_number() over (
+            partition by cpf, id_cnes, id_paciente
+            order by 
+            data_atualizacao_vinculo_equipe desc,
+            cadastro_permanente_indicador desc,
+            updated_at desc
+        ) = 1
     ),
 
     prontuario_dados as (
@@ -637,7 +514,7 @@ with
             array_agg(
                 struct(lower(sistema) as sistema, id_cnes, id_paciente, rank)
             ) as prontuario
-        from prontuario_dedup
+        from vitacare_prontuario
         group by cpf
     ),
 
