@@ -560,7 +560,7 @@ models:
         description: Data e hora da importação dos dados para o datalake.
   - name: raw_prontuario_vitacare__atendimento
     columns:
-      - name: id
+      - name: id_hci
         data_type: string
         data_tests:
           - not_null:

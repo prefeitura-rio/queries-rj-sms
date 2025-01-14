@@ -60,7 +60,7 @@ with
     ),
     condicoes as (
         select distinct
-            id as fk_atendimento,
+            id_prontuario_global as fk_atendimento,
 
             json_extract_scalar(condicao_json, "$.cod_cid10") as id,
 
@@ -101,7 +101,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     procedimentos as (
         select
-            id as fk_atendimento,
+            id_prontuario_global as fk_atendimento,
             case
                 when
                     json_extract_scalar(procedimentos_json, '$.procedimento_clinico')
@@ -151,7 +151,7 @@ with
     ),
     prescricoes as (
         select
-            id as fk_atendimento,
+            id_prontuario_global as fk_atendimento,
             replace(
                 json_extract_scalar(prescricoes_json, "$.cod_medicamento"), "-", ""
             ) as id,
@@ -207,7 +207,7 @@ with
 
     medidas_padronizadas as (
         select
-            id as fk_atendimento,
+            id_prontuario_global as fk_atendimento,
             case
                 when
                     nome in (
@@ -324,7 +324,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     fato_atendimento as (
         select
-            atendimento.id,
+            atendimento.id_hci,
 
             -- Paciente
             atendimento.cpf,
@@ -391,7 +391,7 @@ with
 
             -- Prontuário
             struct(
-                atendimento.id as id_atendimento, 'vitacare' as fornecedor
+                atendimento.id_prontuario_global, 'vitacare' as fornecedor
             ) as prontuario,
 
             -- Metadados
@@ -408,17 +408,17 @@ with
         left join dim_profissional on atendimento.cns_profissional = dim_profissional.pk
         left join
             dim_condicoes_atribuidas
-            on atendimento.id = dim_condicoes_atribuidas.fk_atendimento
-        left join dim_medidas on atendimento.id = dim_medidas.fk_atendimento
+            on atendimento.id_prontuario_global = dim_condicoes_atribuidas.fk_atendimento
+        left join dim_medidas on atendimento.id_prontuario_global = dim_medidas.fk_atendimento
         left join
             dim_procedimentos_realizados
-            on atendimento.id = dim_procedimentos_realizados.fk_atendimento
+            on atendimento.id_prontuario_global = dim_procedimentos_realizados.fk_atendimento
         left join
             dim_prescricoes_atribuidas
-            on atendimento.id = dim_prescricoes_atribuidas.fk_atendimento
+            on atendimento.id_prontuario_global = dim_prescricoes_atribuidas.fk_atendimento
     ),
 
-    episodios_validos as (select * from fato_atendimento where id is not null)
+    episodios_validos as (select * from fato_atendimento where id_hci is not null)
 
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- Finalização

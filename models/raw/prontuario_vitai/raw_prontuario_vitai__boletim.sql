@@ -39,7 +39,14 @@ with
 select
     -- Chave Primária
     safe_cast(gid as string) as gid,
-
+    safe_cast(gid as string) as id_prontuario_global,
+    {{
+        dbt_utils.generate_surrogate_key(
+                [
+                    "gid",
+                ]
+            )
+        }} as id_hci,
     -- Chaves Estrangeiras
     safe_cast(estabelecimento_gid as string) as gid_estabelecimento,
     safe_cast(secao_gid as string) as gid_secao,

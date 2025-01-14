@@ -22,6 +22,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     merged_data as (
         select
+            id_hci,
             cpf as paciente_cpf,
             tipo,
             subtipo,
@@ -57,6 +58,7 @@ with
         from {{ ref("int_historico_clinico__episodio__vitai") }}
         union all
         select
+            id_hci,
             cpf as paciente_cpf,
             tipo,
             subtipo,
@@ -112,7 +114,7 @@ with
         select *, if(deceased.boletim_obito is null, false, true) as obito_indicador
         from merged_data_patient
         left join
-            deceased on merged_data_patient.prontuario.id_atendimento = deceased.boletim_obito
+            deceased on merged_data_patient.prontuario.id_prontuario_global = deceased.boletim_obito
 
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -122,29 +124,10 @@ with
         select * from {{ref('int_historico_clinico__pacientes_invalidos')}}
     ),
 
-    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- FINGERPRINT: Adding Unique Hashed Field
-    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    fingerprinted as (
-        select
-            -- Encounter Unique Identifier: for testing purposes
-            {{
-                dbt_utils.generate_surrogate_key(
-                    [
-                        "prontuario.id_atendimento",
-                    ]
-                )
-            }} as id_episodio,
-
-            -- Encounter Data
-            merged_data_deceased.*,
-        from merged_data_deceased
-    ),
-
     deduped as (
         select *
-        from fingerprinted
-        qualify row_number() over (partition by id_episodio) = 1
+        from merged_data_deceased
+        qualify row_number() over (partition by id_hci) = 1
     ),
 
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -152,7 +135,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     eps_cid_subcat as (
         select
-            id_episodio,
+            deduped.prontuario.id_prontuario_global,
             cid.id,
             cid.descricao,
             cid.situacao,
@@ -166,7 +149,7 @@ with
     ),
     eps_cid_cat as (
         select
-            id_episodio,
+            deduped.prontuario.id_prontuario_global,
             cid.id,
             cid.descricao,
             cid.situacao,
@@ -181,7 +164,7 @@ with
 
     all_cids as (
         select
-            id_episodio,
+            id_prontuario_global,
             array_agg(
                 struct(
                     id, descricao, situacao, data_diagnostico, descricao_agg as resumo
@@ -200,13 +183,13 @@ with
     ),
 
     final as (
-    select 
+    select
+        deduped.id_hci,
         deduped.paciente_cpf,
         case 
             when deduped.paciente_cpf in (select cpf from registration_conflict) then true
             else false
         end as cadastros_conflitantes_indicador,
-        deduped.id_episodio,
         deduped.paciente,
         deduped.tipo,
         deduped.subtipo,
@@ -229,7 +212,7 @@ with
         cast(deduped.entrada_datahora as date) as data_particao
     from deduped
     left join all_cids 
-    on all_cids.id_episodio = deduped.id_episodio
+    on all_cids.id_prontuario_global = deduped.prontuario.id_prontuario_global
 )
 select *
 from final

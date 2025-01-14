@@ -8,7 +8,7 @@ models:
       - name: cpf
         description: >
           Cadastro de Pessoas Físicas do paciente.
-      - name: id_episodio
+      - name: id_hci
         description: |
           Fingerprint determinístico para o atendimento.
       - name: entry_datetime
