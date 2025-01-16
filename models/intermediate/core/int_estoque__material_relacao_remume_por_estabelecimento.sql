@@ -2,15 +2,7 @@ with
     -- Sources 
     remume as (
         select
-            *,
-            split(
-                substr(
-                    remume_disponibilidade_relacao,
-                    1,
-                    length(remume_disponibilidade_relacao) - 1
-                ),
-                ';'
-            ) as remume_disponibilidade_relacao_array,
+            *
         from {{ ref("raw_sheets__material_mestre") }}
         where remume_indicador = "sim" and ativo_indicador = "sim"
     ),
@@ -27,14 +19,13 @@ with
             est.prontuario_versao,
             est.prontuario_estoque_tem_dado,
             remume.cadastrado_sistema_vitacare_indicador,
-            remume.remume_disponibilidade_relacao_array,
+            remume.remume_disponibilidade_relacao,
             remume.id_material,
             remume.remume_listagem_relacao,
             remume.remume_listagem_basico_indicador,
             remume.remume_listagem_hospitalar_indicador,
             remume.remume_listagem_uso_interno_indicador,
-            remume.remume_listagem_antiseptico_indicador,
-            remume.remume_listagem_estrategico_indicador
+            remume.remume_listagem_estrategico_indicador,
         from estabelecimento as est
         cross join remume
     ),
@@ -43,8 +34,8 @@ with
         select *
         from combinacao_estabelecimento_remume
         where
-            tipo_sms_simplificado in unnest(remume_disponibilidade_relacao_array)
-            or id_cnes in unnest(remume_disponibilidade_relacao_array)
+            tipo_sms_simplificado in unnest(remume_disponibilidade_relacao)
+            or id_cnes in unnest(remume_disponibilidade_relacao)
         order by id_cnes
     ),
 
@@ -64,47 +55,28 @@ with
     remume_distintos as (
         select
             id_material,
-            remume_disponibilidade_relacao_array,
             remume_listagem_relacao,
             remume_listagem_basico_indicador,
             remume_listagem_hospitalar_indicador,
             remume_listagem_uso_interno_indicador,
-            remume_listagem_antiseptico_indicador,
             remume_listagem_estrategico_indicador,
         from remume
         where
-            array_length(remume_disponibilidade_relacao_array) > 2
+            array_length(remume_disponibilidade_relacao) > 2
             or (
-                array_length(remume_disponibilidade_relacao_array) = 1
+                array_length(remume_disponibilidade_relacao) = 1
                 and not (
-                    contains_substr(
-                        array_to_string(remume_disponibilidade_relacao_array, ','),
-                        "HOSPITAL"
-                    )
-                    or (
-                        contains_substr(
-                            array_to_string(remume_disponibilidade_relacao_array, ','),
-                            "MATERNIDADE"
-                        )
-                    )
+                    'HOSPITAL' in unnest(remume_disponibilidade_relacao)
+                    or 'MATERNIDADE' in unnest(remume_disponibilidade_relacao)
                 )
             )
             or (
-                array_length(remume_disponibilidade_relacao_array) = 2
+                array_length(remume_disponibilidade_relacao) = 2
                 and not (
-                    contains_substr(
-                        array_to_string(remume_disponibilidade_relacao_array, ','),
-                        "HOSPITAL"
-                    )
-                    and (
-                        contains_substr(
-                            array_to_string(remume_disponibilidade_relacao_array, ','),
-                            "MATERNIDADE"
-                        )
-                    )
+                    'HOSPITAL' in unnest(remume_disponibilidade_relacao)
+                    and 'MATERNIDADE' in unnest(remume_disponibilidade_relacao)
                 )
             )  -- TPC só abastece APS, então só considerar itens que não são exclusivos para hospitais e maternidades
-
     ),
 
     relacao_remume_tpc as (
@@ -115,13 +87,12 @@ with
             "" as prontuario_versao,
             "" as prontuario_estoque_tem_dado,
             "" as cadastrado_sistema_vitacare_indicador,
-            array["TPC"] as remume_disponibilidade_relacao_array,
+            array["TPC"] as remume_disponibilidade_relacao,
             remume.id_material,
             remume.remume_listagem_relacao,
             remume.remume_listagem_basico_indicador,
             remume.remume_listagem_hospitalar_indicador,
             remume.remume_listagem_uso_interno_indicador,
-            remume.remume_listagem_antiseptico_indicador,
             remume.remume_listagem_estrategico_indicador
         from remume_distintos as remume
     )

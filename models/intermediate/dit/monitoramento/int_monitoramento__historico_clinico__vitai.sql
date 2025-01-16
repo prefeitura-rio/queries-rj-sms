@@ -22,7 +22,8 @@ with
         from {{ref('dim_estabelecimento')}}
         where
             prontuario_tem = "sim" and 
-            prontuario_versao = 'vitai' 
+            prontuario_versao = 'vitai' and
+            prontuario_episodio_tem_dado = "sim"
     ),
     vitai_estabelecimentos as (
         select 

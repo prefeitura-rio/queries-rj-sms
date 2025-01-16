@@ -25,6 +25,7 @@ with
             source.dados.nome,
             valor_cns,
             source.dados.data_nascimento,
+            {{ calculate_age('source.dados.data_nascimento') }} AS idade,
             source.dados.genero,
             source.dados.mae_nome
         from source, unnest(cns) as valor_cns

@@ -38,9 +38,45 @@ with
     ),
 
     vinculo as (
-        select id_vinculacao, descricao,
+        select id_vinculacao, descricao
         from {{ ref("raw_cnes_web__vinculo") }}
         where data_particao = (select versao from versao_atual)
+    ),
+
+    id_sus as (
+        select cns, id_codigo_sus
+        from
+            (
+                select
+                    cns,
+                    id_codigo_sus,
+                    data_atualizacao,
+                    row_number() over (
+                        partition by cns order by data_atualizacao desc
+                    ) as rn
+                from {{ ref("raw_cnes_web__dados_profissional_sus") }}
+            )
+        where rn = 1
+    ),
+
+    duracao_contrato as (
+        select
+            id_profissional_sus,
+            data_entrada_profissional,
+            data_desligamento_profissional
+        from
+            (
+                select
+                    id_profissional_sus,
+                    data_entrada_profissional,
+                    data_desligamento_profissional,
+                    data_atualizacao,
+                    row_number() over (
+                        partition by id_profissional_sus order by data_atualizacao desc
+                    ) as rn
+                from {{ ref("raw_cnes_web__equipe_profissionais") }}
+            )
+        where rn = 1
     ),
 
     profissional_dados_hci as (
@@ -60,6 +96,7 @@ with
 
             p.data_registro,
             hci.cpf as cpf_temp,
+            id_sus.id_codigo_sus as profissional_codigo_sus,
             p.profissional_cns as cns,
             p.profissional_nome as nome,
             vinculacao.descricao as vinculacao,
@@ -77,7 +114,7 @@ with
 
             p.ano_competencia,
             p.mes_competencia,
-            parse_date('%Y-%m-%d', tipo_vinculo.data_particao) as data_particao,
+            parse_date('%Y-%m-%d', tipo_vinculo.data_particao) as data_particao
 
         from profissionais_mrj as p
         left join
@@ -92,6 +129,7 @@ with
         left join cbo_fam as ocupf on left(p.id_cbo_familia, 4) = ocupf.id_cbo_familia
         left join tipo_vinculo on p.id_tipo_vinculo = tipo_vinculo.codigo_tipo_vinculo
         left join vinculo as vinculacao on p.id_vinculacao = vinculacao.id_vinculacao
+        left join id_sus on p.profissional_cns = id_sus.cns
     ),
 
     enriquecimento_cpf as (
@@ -102,7 +140,19 @@ with
         left join
             {{ ref("raw_sheets__profissionais_cns_cpf_aux") }} as aux_cpfs
             on safe_cast(final.cns as int64) = safe_cast(aux_cpfs.cns as int64)
+    ),
+
+    enriquecimento_duracao_contrato as (
+        select
+            ec.* except (cpf_temp),
+            dc.data_entrada_profissional,
+            dc.data_desligamento_profissional
+        from enriquecimento_cpf ec
+        left join
+            duracao_contrato as dc
+            on ec.profissional_codigo_sus = dc.id_profissional_sus
+
     )
 
-select * except (cpf_temp)
-from enriquecimento_cpf
+select *
+from enriquecimento_duracao_contrato

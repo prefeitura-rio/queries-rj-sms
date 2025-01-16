@@ -115,6 +115,7 @@ with
     -- Prescrições VITAI
     prescricoes_limpo as (
         select distinct
+            gid_prescricao,
             gid_boletim, 
             CASE 
                 WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO') THEN upper(observacao)
@@ -129,7 +130,13 @@ with
             via_administracao
         from {{ ref("raw_prontuario_vitai__basecentral__item_prescricao") }} 
         where trim(tipo_produto) = 'MEDICACAO'
-    ),   
+    ),
+    prescricao_datahora as (
+        select distinct 
+            gid, 
+            data_prescricao 
+        from {{ ref("raw_prontuario_vitai__basecentral__prescricao") }}
+    ),
     prescricoes_agg as (
         select 
             gid_boletim, 
@@ -139,10 +146,13 @@ with
                     quantidade,
                     unidade_medida,
                     uso,
-                    via_administracao
+                    via_administracao,
+                    data_prescricao as prescricao_data
                 )
             ) as medicamentos_administrados
         from prescricoes_limpo
+        left join prescricao_datahora
+            on gid = gid_prescricao
         group by 1
     ),
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

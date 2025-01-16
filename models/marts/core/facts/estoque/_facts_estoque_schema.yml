@@ -70,10 +70,6 @@ models:
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Hospitalares" da REMUME.
         data_type: string
-      - name: material_remume_listagem_antiseptico_indicador
-        description: Esta coluna indica se o material faz parte da lista
-          "Saneantes/Antispeticos" da REMUME.
-        data_type: string
       - name: material_remume_listagem_estrategico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Estratégicos" da REMUME.

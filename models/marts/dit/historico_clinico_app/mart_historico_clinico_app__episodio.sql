@@ -125,8 +125,8 @@ with
     ),
     encounter_medicines_agg as (
         select 
-        id_episodio, 
-        string_agg(regexp_replace(medicamento_administrado,'(, )+',', '),'\n') as medicines_administered
+            id_episodio, 
+            string_agg(regexp_replace(medicamento_administrado,'(, )+',', '),'\n') as medicines_administered
         from encounter_medicines
         group by 1
     ),

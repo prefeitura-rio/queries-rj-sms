@@ -27,6 +27,9 @@ select
             coalesce(apresentacao, forma_farmaceutica, " ")
         )
     ) as nome,
+    descricao_alternativa,
+    programa_estrategico,
+    observacao,
     hierarquia_n1_categoria,
     hierarquia_n2_subcategoria,
     ativo_indicador,
@@ -41,21 +44,18 @@ select
     remume_listagem_basico_indicador,
     remume_listagem_uso_interno_indicador,
     remume_listagem_hospitalar_indicador,
-    remume_listagem_antiseptico_indicador,
     remume_listagem_estrategico_indicador,
     remume_disponibilidade_relacao,
-    remume_disponibilidade_cms_indicador,
-    remume_disponibilidade_cf_indicador,
-    remume_disponibilidade_cse_indicador,
+    remume_disponibilidade_cf_cms_cse_indicador,
     remume_disponibilidade_policlinica_indicador,
     remume_disponibilidade_hospital_indicador,
     remume_disponibilidade_maternidade_indicador,
     remume_disponibilidade_caps_indicador,
-    remume_disponibilidade_upa_indicador,
-    remume_disponibilidade_cer_indicador,
+    remume_disponibilidade_upa_cer_indicador,
     remume_disponibilidade_unidades_especificas_lista,
     farmacia_popular_disponibilidade_indicador,
-    cadastrado_sistema_vitacare_indicador
+    cadastrado_sistema_vitacare_indicador,
+    cadastrado_sistema_vitai_indicador
 from material_mestre
 order by
     remume_indicador desc,
