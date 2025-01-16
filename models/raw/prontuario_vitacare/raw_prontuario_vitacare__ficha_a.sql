@@ -96,36 +96,104 @@ with
                 '4 salários mínimos','mais de 4 salários mínimos') then null
                 else renda_familiar
             end as renda_familiar,
-            safe_cast(tipo_domicilio as string) as tipo_domicilio,
+            case 
+                when lower(tipo_domicilio) not in ('alvenaria/tijolo','alvenaria/tijolo com revestimento',
+                'alvenaria/tijolo sem revestimento','outros','material aproveitado',
+                'taipa revestida','madeira','taipa não revestida') then null
+                else tipo_domicilio
+            end as tipo_domicilio,-- ver com poli preenchimentos possiveis
             safe_cast(data_nascimento as date) as data_nascimento,
-            safe_cast(pais_nascimento as string) as pais_nascimento,
-            safe_cast(tipo_logradouro as string) as tipo_logradouro,
-            safe_cast(tratamento_agua as string) as tratamento_agua,
+            safe_cast(initcap(pais_nascimento) as string) as pais_nascimento,
+            safe_cast(initcap(tipo_logradouro) as string) as tipo_logradouro,
+            case 
+                when lower(tratamento_agua) not in ('filtração','cloração','sem tratamento',
+                'mineral','fervura') then null
+                else tratamento_agua
+            end as tratamento_agua,
             safe_cast(em_situacao_de_rua as bool) as em_situacao_de_rua,
             case 
                 when frequenta_escola = '1' then true
                 when frequenta_escola = '0' then false
                 else null
             end as frequenta_escola,
-            split(regexp_replace(meios_transporte,r'[\[|\]]',''),',') as meios_transporte,
+            split(
+                regexp_replace(
+                    regexp_replace(trim(meios_transporte),r'[\[|\]|"]',''),
+                    r"[\']",
+                    ''
+                ),
+                ','
+            ) as meios_transporte,
             safe_cast(situacao_usuario as string) as situacao_usuario,
-            split(regexp_replace(doencas_condicoes,r'[\[|\]]',''),',') as doencas_condicoes,
+            split(
+                regexp_replace(
+                    regexp_replace(trim(doencas_condicoes),r'[\[|\]|"]',''),
+                    r"[\']",
+                    ''
+                ),
+                ','
+            ) as doencas_condicoes,
             nullif({{clean_name_string('estado_nascimento')}},'') as estado_nascimento, 
             nullif({{clean_name_string('estado_residencia')}},'') as estado_residencia,
-            safe_cast(identidade_genero as string) as identidade_genero,
-            split(regexp_replace(meios_comunicacao,r'[\[|\]]',''),',') as meios_comunicacao,
-            safe_cast(orientacao_sexual as string) as orientacao_sexual,
+            case 
+                when lower(identidade_genero) not in ('cis','mulher transexual',
+                'homem transexual','outro') then null
+                else identidade_genero
+            end as identidade_genero,
+            split(
+                regexp_replace(
+                    regexp_replace(trim(meios_comunicacao),r'[\[|\]|"]',''),
+                    r"[\']",
+                    ''
+                ),
+                ','
+            ) as meios_comunicacao,
+            case 
+                when lower(orientacao_sexual) not in ('heterossexual','homossexual (gay / lésbica)',
+                'outro','bissexual') then null
+                else orientacao_sexual
+            end as orientacao_sexual,
             safe_cast(possui_filtro_agua as bool) as possui_filtro_agua,
             safe_cast(possui_plano_saude as bool) as possui_plano_saude,
-            safe_cast(situacao_familiar as string) as situacao_familiar,
+            case 
+                when lower(situacao_familiar) not in ('convive com familiar(es), sem companheira(o)',
+                'vive com companheira(o) e filho(s)',
+                'vive só','Convive com companheira(o) com laços conjugais e sem filhos',
+                'convive com companheira(o) com filhos e/ou outro(s) familiar(es)',
+                'convive com outras pessoas sem laços consanguíneos e/ou conjugais',
+                'sem informações') then null
+                else situacao_familiar
+            end as situacao_familiar,
             safe_cast(territorio_social as bool) as territorio_social,
-            safe_cast(abastecimento_agua as string) as abastecimento_agua,
+            case 
+                when lower(abastecimento_agua) not in ('Rede Pública','Poço ou Nascente','Outro',
+                'Cisterna','Carro Pipa') then null
+                else abastecimento_agua
+            end as abastecimento_agua,
             safe_cast(animais_no_domicilio as bool) as animais_no_domicilio,
             safe_cast(cadastro_permanente as bool) as cadastro_permanente,
-            safe_cast(familia_localizacao as string) as familia_localizacao,
-            split(regexp_replace(em_caso_doenca_procura,r'[\[|\]]',''),',') as em_caso_doenca_procura,
-            nullif(municipio_nascimento,'-1') as municipio_nascimento,
-            regexp_extract(municipio_residencia,r'\[IBGE: ([0-9]{1,9})\]') as municipio_residencia,
+            case 
+                when lower(familia_localizacao) not in ('urbana','rural') then null
+                else familia_localizacao
+            end as familia_localizacao,
+            split(
+                regexp_replace(
+                    regexp_replace(trim(em_caso_doenca_procura),r'[\[|\]|"]',''),
+                    "[\']",
+                    ''
+                ),
+                ','
+            ) as em_caso_doenca_procura,
+            -- trazer join com municipio de nascimento para termos codigos em ambos
+            struct(
+                nullif(municipio_nascimento,'-1') as codigo,
+                nullif(municipio_nascimento,'-1') as nome
+            ) as municipio_nascimento,
+            struct(
+                regexp_extract(municipio_residencia,r'\[IBGE: ([0-9]{1,9})\]') as codigo,
+                trim(regexp_replace(municipio_residencia,'[IBGE: ([0-9]{1,9})\]','')) as nome
+                --trim(regexp_extract(municipio_residencia,r'\[([A-Za-z ])IBGE: [0-9]{1,9}\]')) as nome
+             ) as municipio_residencia,
             safe_cast(responsavel_familiar as bool) as responsavel_familiar,
             safe_cast(esgotamento_sanitario as string) as esgotamento_sanitario,
             safe_cast(situacao_moradia_posse as string) as situacao_moradia_posse,
