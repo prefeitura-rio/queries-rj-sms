@@ -132,6 +132,7 @@ with
                     regexp_replace(medicamento_administrado,'(, )+',', ') as name,
                     prescricao_data as prescription_date
                 )
+                order by prescricao_data desc
             ) as medicines_administered
         from encounter_medicines
         group by 1
