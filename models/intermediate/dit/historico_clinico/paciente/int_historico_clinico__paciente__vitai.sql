@@ -55,7 +55,7 @@ with
         select
             cpf,
             cns,
-            row_number() over (partition by cpf order by updated_at desc) as rank
+            row_number() over (partition by cpf order by updated_at desc) as rank_dupl
         from
             (
                 select
@@ -74,23 +74,13 @@ with
             cpf,
             cns,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank
-        from
-            (
-                select
-                    cpf,
-                    cns,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, cns order by merge_order, rank asc
-                    ) as dedup_rank,
-                from (select cpf, cns, rank, 3 as merge_order from vitai_cns_ranked)
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+        from vitai_cns_ranked
+        qualify  row_number() over (
+                        partition by cpf, cns order by rank_dupl asc
+                    ) = 1
+        order by rank_dupl asc
     ),
     cns_validated as (
         select cns, {{ validate_cns("cns") }} as cns_valido_indicador,
@@ -134,7 +124,7 @@ with
                 else null
             end as valor_tipo,
             length(valor) as len,
-            rank
+            rank_dupl
         from
             (
                 select
@@ -144,11 +134,11 @@ with
                     {{ padronize_telefone("telefone") }} as valor,
                     row_number() over (
                         partition by cpf order by updated_at desc
-                    ) as rank
+                    ) as rank_dupl
                 from vitai_tb
                 group by cpf, telefone, updated_at
             )
-        where not (trim(valor) in ("()", "") and (rank >= 2))
+        where not (trim(valor) in ("()", "") and (rank_dupl >= 2))
     ),
 
     -- CONTATO EMAIL
@@ -157,7 +147,7 @@ with
             cpf,
             tipo,
             case when trim(valor) in ("()", "") then null else valor end as valor,
-            rank
+            rank_dupl
         from
             (
                 select
@@ -166,11 +156,11 @@ with
                     email as valor,
                     row_number() over (
                         partition by cpf order by updated_at desc
-                    ) as rank
+                    ) as rank_dupl
                 from vitai_tb
                 group by cpf, email, updated_at
             )
-        where not (trim(valor) in ("()", "") and (rank >= 2))
+        where not (trim(valor) in ("()", "") and (rank_dupl >= 2))
     ),
 
     telefone_dedup as (
@@ -181,40 +171,14 @@ with
             valor,
             valor_tipo,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    valor_original,
-                    ddd,
-                    valor,
-                    valor_tipo,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, valor order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select
-                            cpf,
-                            valor_original,
-                            ddd,
-                            valor,
-                            valor_tipo,
-                            rank,
-                            "vitai" as sistema,
-                            3 as merge_order
-                        from vitai_contato_telefone
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+            "vitai" as sistema
+        from vitai_contato_telefone
+        qualify row_number() over (
+            partition by cpf, valor order by rank_dupl asc
+        ) = 1
+        order by rank_dupl asc
     ),
 
     email_dedup as (
@@ -222,29 +186,14 @@ with
             cpf,
             valor,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by  rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    valor,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, valor order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select cpf, valor, rank, "vitai" as sistema, 3 as merge_order
-                        from vitai_contato_email
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+            "vitai" as sistema
+        from vitai_contato_email
+        qualify row_number() over (
+                        partition by cpf, valor order by rank_dupl asc
+        ) = 1
+        order by rank_dupl asc
     ),
 
     contato_telefone_dados as (
@@ -306,7 +255,7 @@ with
             case when cidade in ("NONE") then null else cidade end as cidade,
             case when estado in ("NONE") then null else estado end as estado,
             cast(updated_at as string) as datahora_ultima_atualizacao,
-            row_number() over (partition by cpf order by updated_at desc) as rank
+            row_number() over (partition by cpf order by updated_at desc) as rank_dupl
         from vitai_tb
         where logradouro is not null
         group by
@@ -335,51 +284,15 @@ with
             estado,
             datahora_ultima_atualizacao,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank,
-            sistema
-        from
-            (
-                select
-                    cpf,
-                    cep,
-                    tipo_logradouro,
-                    logradouro,
-                    numero,
-                    complemento,
-                    bairro,
-                    cidade,
-                    estado,
-                    datahora_ultima_atualizacao,
-                    merge_order,
-                    rank,
-                    row_number() over (
-                        partition by cpf, datahora_ultima_atualizacao
-                        order by merge_order, rank asc
-                    ) as dedup_rank,
-                    sistema
-                from
-                    (
-                        select
-                            cpf,
-                            cep,
-                            tipo_logradouro,
-                            logradouro,
-                            numero,
-                            complemento,
-                            bairro,
-                            cidade,
-                            estado,
-                            datahora_ultima_atualizacao,
-                            rank,
-                            "vitai" as sistema,
-                            3 as merge_order
-                        from vitai_endereco
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+            "vitai" as sistema
+        from vitai_endereco
+        qualify row_number() over (
+            partition by cpf, datahora_ultima_atualizacao
+            order by rank_dupl asc
+        ) = 1
+        order by rank_dupl asc
     ),
 
     endereco_dados as (
@@ -413,7 +326,7 @@ with
             'vitai' as sistema,
             id_cnes,
             id_paciente,
-            row_number() over (partition by cpf order by updated_at desc) as rank
+            row_number() over (partition by cpf order by updated_at desc) as rank_dupl
         from
             (
                 select pc.updated_at, pc.cpf, pc.id_paciente, es.cnes as id_cnes,
@@ -428,40 +341,18 @@ with
     prontuario_dedup as (
         select
             cpf,
-            sistema,
+            "vitai" as sistema,
             id_cnes,
             id_paciente,
             row_number() over (
-                partition by cpf order by merge_order asc, rank asc
+                partition by cpf order by rank_dupl asc
             ) as rank
-        from
-            (
-                select
-                    cpf,
-                    sistema,
-                    id_cnes,
-                    id_paciente,
-                    rank,
-                    merge_order,
-                    row_number() over (
-                        partition by cpf, id_cnes, id_paciente
-                        order by merge_order, rank asc
-                    ) as dedup_rank
-                from
-                    (
-                        select
-                            vi.cpf,
-                            "vitai" as sistema,
-                            id_cnes,
-                            id_paciente,
-                            rank,
-                            3 as merge_order
-                        from vitai_prontuario vi
-                    )
-                order by merge_order asc, rank asc
-            )
-        where dedup_rank = 1
-        order by merge_order asc, rank asc
+        from vitai_prontuario vi
+        qualify row_number() over (
+            partition by cpf, id_cnes, id_paciente
+            order by rank_dupl asc
+        ) = 1
+        order by rank_dupl asc
     ),
 
     prontuario_dados as (
