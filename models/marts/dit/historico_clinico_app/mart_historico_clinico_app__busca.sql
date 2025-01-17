@@ -50,6 +50,7 @@ with
             source_episodio_app.cpf,
             count(*) as quantidade_episodios
         from source_episodio_app
+        where exibicao.indicador = true
         group by 1
     ),
 
