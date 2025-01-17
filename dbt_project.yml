@@ -277,6 +277,15 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+      subpav:
+        indicadores_paciente:
+          +schema: projeto_subpav
+          +tags: ["weekly", "subpav"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
       subgeral:
         cnes:
           +schema: projeto_cnes_subgeral
