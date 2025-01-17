@@ -19,12 +19,12 @@ with
         where exibicao.indicador = false
     ),
     episodios_com_cid as (
-        select id_episodio
+        select id_hci
         from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
         where cid.id is not null
     ),
     episodios_com_procedimento as (
-        select id_episodio
+        select id_hci
         from {{ ref("mart_historico_clinico__episodio") }}
         where procedimentos_realizados is not null
     ),
@@ -63,8 +63,8 @@ with
                 when
                     tipo not like '%Exame%'
                     and (
-                        id_episodio in (select * from episodios_com_cid)
-                        or id_episodio in (select * from episodios_com_procedimento)
+                        id_hci in (select * from episodios_com_cid)
+                        or id_hci in (select * from episodios_com_procedimento)
                         or motivo_atendimento is not null
                         or desfecho_atendimento is not null
                     )
@@ -110,7 +110,7 @@ with
     ),
     encounter_medicines as (
         select distinct 
-        ep.id_episodio, 
+        ep.id_hci, 
         concat(med.nome,-- lala, , s , 
                 ', ',
                 IF(med.unidade_medida is null, '',med.unidade_medida),
@@ -119,26 +119,33 @@ with
                 ', ',
                 IF(med.via_administracao is null,'',med.via_administracao),
                 IF(med.quantidade is null,'',concat('. QUANTIDADE: ',med.quantidade))
-            ) as medicamento_administrado
+            ) as medicamento_administrado,
+        med.prescricao_data
         from {{ ref("mart_historico_clinico__episodio") }} as ep, unnest(ep.medicamentos_administrados) as med
         where med.nome is not null
     ),
     encounter_medicines_agg as (
-        select 
-            id_episodio, 
-            string_agg(regexp_replace(medicamento_administrado,'(, )+',', '),'\n') as medicines_administered
+        select
+            id_hci,
+            array_agg( 
+                struct(
+                    regexp_replace(medicamento_administrado,'(, )+',', ') as name,
+                    prescricao_data as prescription_date
+                )
+                order by prescricao_data desc
+            ) as medicines_administered
         from encounter_medicines
         group by 1
     ),
     encounter_prescription as (
         select 
-        distinct ep.id_episodio, 
+        distinct ep.id_hci, 
         concat(p.nome,' ',p.concentracao) as prescricao
         from {{ ref("mart_historico_clinico__episodio") }} as ep, unnest(ep.prescricoes) as p
     ),
     encounter_prescription_agg as (
         select 
-        id_episodio, 
+        id_hci, 
         string_agg(prescricao,'\n') as prescription
         from encounter_prescription
         group by 1
@@ -149,8 +156,8 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     formatado as (
         select
+            todos_episodios.id_hci,
             paciente_cpf as cpf,
-            todos_episodios.id_episodio,
             safe_cast(entrada_datahora as string) as entry_datetime,
             safe_cast(saida_datahora as string) as exit_datetime,
             safe_cast(estabelecimento.nome as string) as location,
@@ -183,7 +190,7 @@ with
                 medidas.temperatura as temperature
             ) as measures,
             safe_cast(prescription as string) as prescription,
-            safe_cast(medicines_administered as string) as medicines_administered,
+            medicines_administered,
             array(
                 select struct(descricao as description , situacao as status) 
                 from unnest(condicoes) 
@@ -239,9 +246,9 @@ with
             safe_cast(paciente_cpf as int64) as cpf_particao
         from todos_episodios
         left join encounter_prescription_agg
-        on todos_episodios.id_episodio = encounter_prescription_agg.id_episodio
+        on todos_episodios.id_hci = encounter_prescription_agg.id_hci
         left join encounter_medicines_agg
-        on todos_episodios.id_episodio = encounter_medicines_agg.id_episodio
+        on todos_episodios.id_hci = encounter_medicines_agg.id_hci
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- FINAL

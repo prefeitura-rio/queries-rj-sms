@@ -18,7 +18,9 @@
 
 with
     bruto_atendimento_eventos_com_repeticao as (
-        select *, concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
+        select *,
+            source_id as id_prontuario_local, 
+            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_prontuario_global
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_cloned") }}
     ),
     bruto_atendimento_eventos_ranqueados as (
@@ -26,20 +28,14 @@ with
 
         from bruto_atendimento_eventos_com_repeticao
         qualify
-            row_number() over (partition by id order by datalake_loaded_at desc) = 1
+            row_number() over (partition by id_prontuario_global order by datalake_loaded_at desc) = 1
     ),
 
     final as (
         select
             -- PK
-            id,
-            {{
-                dbt_utils.generate_surrogate_key(
-                    [
-                        "id",
-                    ]
-                )
-            }} as id_hci,
+            id_prontuario_local,
+            id_prontuario_global,
 
             -- Chaves
             patient_cpf as cpf,
@@ -99,6 +95,15 @@ with
         from bruto_atendimento_eventos_ranqueados
     )
 
-select *
+select id_prontuario_local,
+            id_prontuario_global,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "id_prontuario_global",
+                    ]
+                )
+            }} as id_hci,
+            * except (id_prontuario_local,id_prontuario_global),
 from final
 {% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}
