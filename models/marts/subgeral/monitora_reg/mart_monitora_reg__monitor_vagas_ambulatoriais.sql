@@ -59,7 +59,8 @@ with
                 else
                     round(
                         prof.carga_horaria_ambulatorial_mensal
-                        * ofer.procedimento_distribuicao
+                        * ofer.procedimento_distribuicao,
+                        3
                     )
             end as carga_horaria_procedimento_esperada_mensal,
 
@@ -106,7 +107,8 @@ with
                         prof.carga_horaria_ambulatorial_mensal
                         * ofer.procedimento_distribuicao
                         * ofer.procedimento_consultas_hora
-                        * ofer.procedimento_proporcao_retornos
+                        * ofer.procedimento_proporcao_retornos,
+                        3
                     )
             end as vagas_esperadas_mensal_retorno,
 
@@ -200,7 +202,11 @@ with
             on mva.ano_competencia = iqr.ano_competencia
             and mva.mes_competencia = iqr.mes_competencia
             and mva.id_procedimento = iqr.id_procedimento
+    ),
+
+    final as (
+        select *, array_length(id_cbo_2002) as qtd_id_cbo_2002 from mva_with_status
     )
 
-select *, array_length(id_cbo_2002) as qtd_id_cbo_2002
-from mva_with_status
+select *
+from final
