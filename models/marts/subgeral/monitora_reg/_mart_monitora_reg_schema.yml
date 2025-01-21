@@ -188,7 +188,7 @@ models:
           - dbt_utils.not_constant:
               name: mart_monitora_reg__monitor_vagas_ambulatoriais__cnes_dados__not_constant
 
-      - name: oferta_status
+      - name: status_oferta
         description: "Classifica o balanço de oferta como Adequado, Alto, Baixo ou Muito Baixo utilizando o Intervalo Interquartil (IQR), com base em ano_competencia, mes_competencia e id_procedimento."
 
       - name: qtd_id_cbo_2002
