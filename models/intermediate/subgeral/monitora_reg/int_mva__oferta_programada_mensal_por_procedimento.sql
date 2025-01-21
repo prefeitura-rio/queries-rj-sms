@@ -16,7 +16,7 @@ select
     profissional_executante_cpf as cpf,
     id_estabelecimento_executante as id_cnes,
     id_procedimento_interno as id_procedimento,
-    string_agg(distinct id_cbo2002, ', ') as id_cbo_2002,
+    array_agg(distinct id_cbo2002 ignore nulls) as id_cbo_2002,
     procedimento_vigencia_ano as ano,
     procedimento_vigencia_mes as mes,
 

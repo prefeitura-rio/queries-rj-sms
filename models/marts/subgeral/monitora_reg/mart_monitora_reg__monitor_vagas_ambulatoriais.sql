@@ -202,5 +202,5 @@ with
             and mva.id_procedimento = iqr.id_procedimento
     )
 
-select *
+select *, array_length(id_cbo_2002) as qtd_id_cbo_2002
 from mva_with_status

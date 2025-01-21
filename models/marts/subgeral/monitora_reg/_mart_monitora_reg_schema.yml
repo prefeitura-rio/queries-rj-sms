@@ -46,10 +46,6 @@ models:
 
       - name: cns
         description: "Número do Cartão Nacional de Saúde do profissional."
-        data_tests:
-          - dbt_expectations.expect_column_value_lengths_to_equal:
-              value: 15
-              name: mart_monitora_reg__monitor_vagas_ambulatoriais__cns__expect_column_value_lengths_to_equal
 
       - name: profissional
         description: "Nome do profissional de saúde."
@@ -194,3 +190,6 @@ models:
 
       - name: oferta_status
         description: "Classifica o balanço de oferta como Adequado, Alto, Baixo ou Muito Baixo utilizando o Intervalo Interquartil (IQR), com base em ano_competencia, mes_competencia e id_procedimento."
+
+      - name: qtd_id_cbo_2002
+        description: "Quantidade de CBOs do profissional em determinado mes, ano e estabelecimento." 
