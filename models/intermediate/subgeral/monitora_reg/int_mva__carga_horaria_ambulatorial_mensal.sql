@@ -17,7 +17,7 @@ select
     profissional__cpf as cpf,
     string_agg(distinct profissional__cns, ', ') as cns,
     string_agg(distinct profissional__nome, ', ') as profissional,
-    profissional__id_cbo as id_cbo_2002,
+    string_agg(distinct profissional__id_cbo, ', ') as id_cbo_2002,
     string_agg(distinct profissional__cbo, ', ') as ocupacao,
     string_agg(distinct profissional__cbo_familia, ', ') as ocupacao_agg,
 
@@ -75,4 +75,4 @@ where
     )
     and profissional__id_cbo not in ('225142', '225130', '223293', '223565', '322245')  -- exclui saude da familia
 
-group by cpf, id_cnes, id_cbo_2002, ano_competencia, mes_competencia
+group by cpf, id_cnes, ano_competencia, mes_competencia
