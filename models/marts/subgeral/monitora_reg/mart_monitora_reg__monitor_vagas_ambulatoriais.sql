@@ -165,8 +165,6 @@ with
             = safe_cast(prof.ano_competencia as int64)
             and safe_cast(ofer.mes_competencia as int64)
             = safe_cast(prof.mes_competencia as int64)
-            and safe_cast(ofer.id_cbo_2002 as int64)
-            = safe_cast(prof.id_cbo_2002 as int64)
     ),
 
     iqr as (
@@ -204,5 +202,5 @@ with
             and mva.id_procedimento = iqr.id_procedimento
     )
 
-select *
+select *, array_length(id_cbo_2002) as qtd_id_cbo_2002
 from mva_with_status

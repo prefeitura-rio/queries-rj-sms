@@ -15,11 +15,11 @@ with
 select
     -- identificadores
     profissional__cpf as cpf,
-    string_agg(distinct profissional__cns, ', ') as cns,
-    string_agg(distinct profissional__nome, ', ') as profissional,
-    profissional__id_cbo as id_cbo_2002,
-    string_agg(distinct profissional__cbo, ', ') as ocupacao,
-    string_agg(distinct profissional__cbo_familia, ', ') as ocupacao_agg,
+    array_agg(distinct profissional__cns ignore nulls) as cns,
+    array_agg(distinct profissional__nome ignore nulls) as profissional,
+    array_agg(distinct profissional__id_cbo ignore nulls) as id_cbo_2002,
+    array_agg(distinct profissional__cbo ignore nulls) as ocupacao,
+    array_agg(distinct profissional__cbo_familia ignore nulls) as ocupacao_agg,
 
     -- carga horaria mensal APROXIMADA
     round(
@@ -32,22 +32,24 @@ select
 
     -- dados dos estabelecimentos
     estabelecimento__id_cnes as id_cnes,
-    string_agg(distinct estabelecimento__nome_fantasia, ', ') as estabelecimento,
-    string_agg(distinct estabelecimento__esfera, ', ') as esfera,
-    string_agg(
-        distinct estabelecimento__natureza_juridica_descr, ', '
+    array_agg(distinct estabelecimento__nome_fantasia ignore nulls) as estabelecimento,
+    array_agg(distinct estabelecimento__esfera ignore nulls) as esfera,
+    array_agg(
+        distinct estabelecimento__natureza_juridica_descr ignore nulls
     ) as natureza_juridica,
-    string_agg(distinct estabelecimento__tipo_gestao_descr, ', ') as tipo_gestao,
-    string_agg(distinct estabelecimento__turno_atendimento, ', ') as turno,
-    string_agg(
-        distinct estabelecimento__tipo_unidade_alternativo, ', '
+    array_agg(distinct estabelecimento__tipo_gestao_descr ignore nulls) as tipo_gestao,
+    array_agg(distinct estabelecimento__turno_atendimento ignore nulls) as turno,
+    array_agg(
+        distinct estabelecimento__tipo_unidade_alternativo ignore nulls
     ) as tipo_unidade_alternativo,
-    string_agg(
-        distinct estabelecimento__tipo_unidade_agrupado, ', '
+    array_agg(
+        distinct estabelecimento__tipo_unidade_agrupado ignore nulls
     ) as tipo_unidade_agrupado,
-    string_agg(distinct estabelecimento__id_ap, ', ') as id_ap,
-    string_agg(distinct estabelecimento__ap, ', ') as ap,
-    string_agg(distinct estabelecimento__endereco_bairro, ', ') as endereco_bairro,
+    array_agg(distinct estabelecimento__id_ap ignore nulls) as id_ap,
+    array_agg(distinct estabelecimento__ap ignore nulls) as ap,
+    array_agg(
+        distinct estabelecimento__endereco_bairro ignore nulls
+    ) as endereco_bairro,
 
 from versao_atual
 
@@ -75,4 +77,4 @@ where
     )
     and profissional__id_cbo not in ('225142', '225130', '223293', '223565', '322245')  -- exclui saude da familia
 
-group by cpf, id_cnes, id_cbo_2002, ano_competencia, mes_competencia
+group by cpf, id_cnes, ano_competencia, mes_competencia
