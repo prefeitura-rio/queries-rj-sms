@@ -135,4 +135,15 @@ models:
       - name: periodo_fim
         description: Fim do período do contato
         data_type: date
+  - name: raw_hci__alergia_vitai
+    columns:
+      - name: alergias_raw
+        description: Alergias formato raw
+        data_tests:
+          - unique:
+              name: raw_hci__alergia_vitai__alergia_raw__unique
+      - name: alergias_limpo
+        description: Alergia após limpeza
+      - name: alergias_padronizado
+        description: Alergias após padronização
 

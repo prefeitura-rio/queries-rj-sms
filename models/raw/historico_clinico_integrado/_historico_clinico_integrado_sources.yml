@@ -9,3 +9,8 @@ sources:
       - name: paciente_cns
       - name: paciente_endereco
       - name: paciente_contato
+  - name: intermediario_historico_clinico_staging
+    database: rj-sms-dev
+    schema: intermediario_historico_clinico_staging
+    tables:
+      - name: alergias_vitai_padronizacao

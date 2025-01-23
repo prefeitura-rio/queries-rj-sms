@@ -72,12 +72,23 @@ with
         from alergias_separadas, unnest(partes) as parte
     ),
     alergias_trimmed as (
-        select gid_paciente, initcap(trim(alergias_clean)) as descricao
+        select distinct gid_paciente, initcap(trim(alergias_clean)) as descricao
         from alergias_cleaned
     ),
+    de_para_padronizacao as (
+        select * from {{ ref('raw_hci__alergia_vitai') }}
+    ),
     alergias_agg as (
-        select gid_paciente, array_agg(distinct descricao ignore nulls) as alergias
+        select 
+            gid_paciente, 
+            array_agg(
+                struct( 
+                    descricao as descricao_raw,
+                    alergias_padronizado as descricao_padronizado
+                ) ignore nulls) as alergias
         from alergias_trimmed
+        left join de_para_padronizacao
+            on de_para_padronizacao.alergias_raw = alergias_trimmed.descricao
         where descricao is not null and descricao != ""
         group by 1
     ),
