@@ -43,14 +43,20 @@ with
             nome,
             cns,
             data_particao,
+            data_atualizacao,
+            row_number() over (
+                partition by id_codigo_sus order by data_atualizacao desc
+            ) as ord_cod_sus,
+            row_number() over (
+                partition by cns order by data_atualizacao desc
+            ) as ord_cns
         from {{ ref("raw_cnes_web__dados_profissional_sus") }} as unique_p
         inner join
             alocacao as alocacao
             on unique_p.id_codigo_sus = alocacao.profissional_codigo_sus
-        qualify row_number() over (
-                partition by id_codigo_sus order by data_particao desc
-            ) = 1
     ),
+
+
 
     cbo_distinct as (
         select distinct
@@ -181,7 +187,12 @@ final as (
         cbo_agg.cbo,
         conselho_agg.conselho,
         funcionarios_status.status_ativo as funcionario_ativo_indicador
-    from profissionais_datasus
+    from ( 
+        select * 
+        from profissionais_datasus 
+        where ord_cns=1 
+        and ord_cod_sus=1
+    ) as profissionais_datasus
     left join
         cns_dados 
         on profissionais_datasus.cns = cns_dados.cns
