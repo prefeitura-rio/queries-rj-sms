@@ -33,12 +33,33 @@ with
             safe_cast(bairro as string) as bairro,
             safe_cast(comodos as integer) as comodos,
             case 
-                when regexp_replace(lower(nome_mae),r'(sem registro)|(sem informa[c|ç|ã][a|ã|][o|(oes)|(ões)])|(m[ã|a]e desconhecida)|(n[a|ã|][|o] informado)|(n[a|ã]o declarado)|(desconhecido)|(n[a|ã]o declarado)|(n[a|ã]o consta)|(sem inf[|o])','') = ''  then null 
+                when regexp_replace(
+                        regexp_replace(
+                            regexp_replace(
+                                trim(lower(nome_mae)),
+                                r'(ausente)|(pai desconhecido)|(desconhecid[ao])|(desconhece)|(ignorad[oa])|(^x+$)|-|\?',
+                                ''),
+                            r'sem {0,1}(nome|registro|informa{0,1}[cçãa][aã]{0,1}(oes|ões|o)|info{0,1}|identifica[cç][aã]o){0,1}',
+                            ''
+                            ),
+                            r'(nada|n[aã]{0,1}o{0,1}) {0,1}(possui|informad[ao]|informou|inf|consta|declarad[ao]|tem|identificad[ao]){0,1}',
+                            ''
+                         ) = ''  then null 
                 else {{ proper_br('nome_mae') }} 
             end as nome_mae,
             case 
-                when regexp_replace(lower(nome_pai),r'(sem registro)|(sem informa[c|ç|ã][a|ã|][o|(oes)|(ões)])|(m[ã|a]e desconhecida)|(n[a|ã|][|o] informado)|(n[a|ã]o declarado)|(desconhecido)|(n[a|ã]o declarado)|(n[a|ã]o consta)|(sem inf[|o])','') = ''  then null 
-                else {{ proper_br('nome_pai') }} 
+                when regexp_replace(
+                        regexp_replace(
+                            regexp_replace(
+                                trim(lower(nome_pai)),
+                                r'(ausente)|(pai desconhecido)|(desconhecid[ao])|(desconhece)|(ignorad[oa])|(^x+$)|-|\?',
+                                ''),
+                            r'sem {0,1}(nome|registro|informa{0,1}[cçãa][aã]{0,1}(oes|ões|o)|info{0,1}|identifica[cç][aã]o){0,1}',
+                            ''
+                            ),
+                            r'(nada|n[aã]{0,1}o{0,1}) {0,1}(possui|informad[ao]|informou|inf|consta|declarad[ao]|tem|identificad[ao]){0,1}',
+                            ''
+                         ) = ''  then null else {{ proper_br('nome_pai') }} 
             end as nome_pai,
             case
                 when lower(raca_cor) = "sim" then null
@@ -58,13 +79,12 @@ with
             nullif(regexp_replace(regexp_replace(logradouro,'^0.*$',''),'null',''),'') as logradouro,
             case 
                 when lower(nome_social) in ('sem informacao','fora do territorio',
-                'fora de area','nao inf','plano empresa','') then null
+                'fora de area','nao inf','plano empresa','','nao possui','mudou se','plano individual') then null
                 else {{ proper_br('nome_social') }}
             end  as nome_social,
             case 
                 when lower(destino_lixo) not in ('coletado','céu aberto','outro',
-                'queimado/enterrado','rede pública','sistema de esgoto (rede)',
-                'filtração','sem tratamento') then null 
+                'queimado/enterrado') then null 
                 else destino_lixo
             end as destino_lixo,
             safe_cast(luz_eletrica as bool) as luz_eletrica,
@@ -118,18 +138,26 @@ with
             end as frequenta_escola,
             split(
                 regexp_replace(
-                    regexp_replace(trim(meios_transporte),r'[\[|\]|"]',''),
-                    r"[\']",
-                    ''
+                    regexp_replace(
+                        regexp_replace(trim(meios_transporte),r'[\[|\]|"]',''),
+                        r"[\']",
+                        ''
+                    ),
+                    r', ',
+                    r','
                 ),
                 ','
             ) as meios_transporte,
             safe_cast(situacao_usuario as string) as situacao_usuario,
             split(
                 regexp_replace(
-                    regexp_replace(trim(doencas_condicoes),r'[\[|\]|"]',''),
-                    r"[\']",
-                    ''
+                    regexp_replace(
+                        regexp_replace(trim(doencas_condicoes),r'[\[|\]|"]',''),
+                        r"[\']",
+                        ''
+                    ),
+                    r', ',
+                    ','
                 ),
                 ','
             ) as doencas_condicoes,
@@ -142,9 +170,13 @@ with
             end as identidade_genero,
             split(
                 regexp_replace(
-                    regexp_replace(trim(meios_comunicacao),r'[\[|\]|"]',''),
-                    r"[\']",
-                    ''
+                    regexp_replace(
+                        regexp_replace(trim(meios_comunicacao),r'[\[|\]|"]',''),
+                        r"[\']",
+                        ''
+                    ),
+                    r', ',
+                    ','
                 ),
                 ','
             ) as meios_comunicacao,
@@ -166,8 +198,8 @@ with
             end as situacao_familiar,
             safe_cast(territorio_social as bool) as territorio_social,
             case 
-                when lower(abastecimento_agua) not in ('Rede Pública','Poço ou Nascente','Outro',
-                'Cisterna','Carro Pipa') then null
+                when lower(abastecimento_agua) not in ('rede pública','poço ou nascente','outro',
+                'cisterna','carro pipa') then null
                 else abastecimento_agua
             end as abastecimento_agua,
             safe_cast(animais_no_domicilio as bool) as animais_no_domicilio,
@@ -178,31 +210,58 @@ with
             end as familia_localizacao,
             split(
                 regexp_replace(
-                    regexp_replace(trim(em_caso_doenca_procura),r'[\[|\]|"]',''),
-                    "[\']",
-                    ''
+                    regexp_replace(
+                        regexp_replace(trim(em_caso_doenca_procura),r'[\[|\]|"]',''),
+                        "[\']",
+                        ''
+                    ),
+                    r', ',
+                    r','
                 ),
                 ','
             ) as em_caso_doenca_procura,
             -- trazer join com municipio de nascimento para termos codigos em ambos
             struct(
-                nullif(municipio_nascimento,'-1') as codigo,
-                nullif(municipio_nascimento,'-1') as nome
+                case 
+                    when regexp_contains(municipio_nascimento,'[0-9]') 
+                        and municipio_nascimento != '-1' then municipio_nascimento
+                    else null
+                end as codigo,
+                case 
+                    when regexp_contains(municipio_nascimento,'[A-Za-a]') then municipio_nascimento
+                    else null
+                end as nome
             ) as municipio_nascimento,
             struct(
                 regexp_extract(municipio_residencia,r'\[IBGE: ([0-9]{1,9})\]') as codigo,
-                trim(regexp_replace(municipio_residencia,'[IBGE: ([0-9]{1,9})\]','')) as nome
-                --trim(regexp_extract(municipio_residencia,r'\[([A-Za-z ])IBGE: [0-9]{1,9}\]')) as nome
+                trim(regexp_replace(municipio_residencia,r'\[IBGE: ([0-9]{1,9})\]','')) as nome
              ) as municipio_residencia,
             safe_cast(responsavel_familiar as bool) as responsavel_familiar,
-            safe_cast(esgotamento_sanitario as string) as esgotamento_sanitario,
-            safe_cast(situacao_moradia_posse as string) as situacao_moradia_posse,
-            safe_cast(situacao_profissional as string) as situacao_profissional,
+            case 
+                when lower(esgotamento_sanitario) not in ('sistema de esgoto (rede)','fossa','ceu aberto',
+                'direto para rio/lago/mar') then null
+                else esgotamento_sanitario
+            end as esgotamento_sanitario,
+            case
+                when lower(situacao_moradia_posse) not in ('próprio','alugado','outra','cedido','financiado',
+                'ocupação','instituição de permanência','situação de rua','arrendado') then null
+                else situacao_moradia_posse
+            end as situacao_moradia_posse,
+            case 
+                when lower(situacao_profissional) not in ('emprego formal','não se aplica','desempregado',
+                'emprego informal','pensionista / aposentado','autônomo','outro','não trabalha','empregador',
+                'autônomo sem previdência social','autônomo com previdência social') then null 
+                else situacao_profissional
+            end as situacao_profissional,
             safe_cast(vulnerabilidade_social as bool) as vulnerabilidade_social,
             safe_cast(familia_beneficiaria_cfc as bool) as familia_beneficiaria_cfc,
-            safe_cast(data_atualizacao_cadastro as date) as data_atualizacao_cadastro,
+            timestamp_sub(timestamp(data_atualizacao_cadastro, "Brazil/East"),interval 2 hour) as data_atualizacao_cadastro,
             safe_cast(participa_grupo_comunitario as bool) as participa_grupo_comunitario,
-            safe_cast(relacao_responsavel_familiar as string) as relacao_responsavel_familiar,
+            case 
+                when lower(relacao_responsavel_familiar) not in ('filho(a)','cônjuge/companheiro(a)','outro parente',
+                'não parente','pai/mãe','neto(a)/bisneto(a)','irmão/irmã','genro/nora','enteado(a)','sogro(a)') then null 
+                else relacao_responsavel_familiar
+            end as relacao_responsavel_familiar,
             safe_cast(membro_comunidade_tradicional as bool) as membro_comunidade_tradicional,
             timestamp_sub(timestamp(data_atualizacao_vinculo_equipe, "Brazil/East"),interval 2 hour) as data_atualizacao_vinculo_equipe,
             safe_cast(familia_beneficiaria_auxilio_brasil as bool) as familia_beneficiaria_auxilio_brasil,
