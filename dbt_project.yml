@@ -63,6 +63,17 @@ vars:
   TAG_DADO_CLINICO: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/7155330191381842548'
   TAG_DADO_ESTOQUE: 'projects/rj-sms/locations/us/taxonomies/8150870731612680617/policyTags/9217789274924499899'
 
+  # BigQuery Monitoring
+  bq_region: 'us'
+  input_gcp_projects: ['rj-sms-dev', 'rj-sms', 'rj-sms-sandbox']
+  enable_gcp_bigquery_audit_logs: false
+  gcp_bigquery_audit_logs_storage_project: 'rj-sms'
+  gcp_bigquery_audit_logs_dataset: 'gerenciamento__custos'
+  gcp_bigquery_audit_logs_table: 'dbt_bigquery_audit_logs'
+
+query-comment:
+  comment: '{{ dbt_bigquery_monitoring.get_query_comment(node) }}'
+  job-label: True # Use query comment JSON as job labels
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -73,6 +84,8 @@ models:
   elementary:
     +schema: "gerenciamento__dbt_elementary"
     +enabled: "{{ target.name in ['prod'] }}"
+  dbt_bigquery_monitoring:
+    +schema: "gerenciamento__dbt_bigquery_monitoring"
   rj_sms:
     # all models should have unique and not null
     +required_tests: { "unique.*|not_null": 2 }
@@ -277,6 +290,15 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+      subpav:
+        indicadores_paciente:
+          +schema: projeto_subpav
+          +tags: ["weekly", "subpav"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
       subgeral:
         cnes:
           +schema: projeto_cnes_subgeral

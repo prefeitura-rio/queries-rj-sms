@@ -91,7 +91,7 @@ with
             vitai_estabelecimentos.cnes as unidade_cnes,
             vitai_historico_clinico_sem_cnes.* except(estabelecimento_gid),
         from vitai_historico_clinico_sem_cnes
-            inner join vitai_estabelecimentos 
+            left join vitai_estabelecimentos 
                 on vitai_historico_clinico_sem_cnes.estabelecimento_gid = vitai_estabelecimentos.gid
     ),
     contagem as (
