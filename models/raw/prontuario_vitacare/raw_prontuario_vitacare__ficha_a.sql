@@ -29,7 +29,11 @@ with
                 when sexo = 'female' then 'feminino'
                 else null
             end as sexo,
-            safe_cast(obito as bool) as obito,
+            case 
+                when obito in ('1','True') then true 
+                when obito in ('0','False') then false 
+                else null
+            end as obito,
             safe_cast(bairro as string) as bairro,
             safe_cast(comodos as integer) as comodos,
             case 
@@ -87,7 +91,11 @@ with
                 'queimado/enterrado') then null 
                 else destino_lixo
             end as destino_lixo,
-            safe_cast(luz_eletrica as bool) as luz_eletrica,
+            case 
+                when luz_eletrica in ('1','True') then true 
+                when luz_eletrica in ('0','False') then false 
+                else null
+            end as luz_eletrica,
             safe_cast(codigo_equipe as string) as codigo_equipe,
             timestamp_sub(timestamp(data_cadastro, "Brazil/East"),interval 2 hour) as data_cadastro,
             case 
@@ -130,7 +138,11 @@ with
                 'mineral','fervura') then null
                 else tratamento_agua
             end as tratamento_agua,
-            safe_cast(em_situacao_de_rua as bool) as em_situacao_de_rua,
+            case 
+                when em_situacao_de_rua in ('1','True') then true 
+                when em_situacao_de_rua in ('0','False') then false 
+                else null
+            end as em_situacao_de_rua,
             case 
                 when frequenta_escola = '1' then true
                 when frequenta_escola = '0' then false
@@ -185,8 +197,16 @@ with
                 'outro','bissexual') then null
                 else orientacao_sexual
             end as orientacao_sexual,
-            safe_cast(possui_filtro_agua as bool) as possui_filtro_agua,
-            safe_cast(possui_plano_saude as bool) as possui_plano_saude,
+            case 
+                when possui_filtro_agua in ('1','True') then true 
+                when possui_filtro_agua in ('0','False') then false 
+                else null
+            end as possui_filtro_agua,
+            case 
+                when possui_plano_saude in ('1','True') then true 
+                when possui_plano_saude in ('0','False') then false 
+                else null
+            end as possui_plano_saude,
             case 
                 when lower(situacao_familiar) not in ('convive com familiar(es), sem companheira(o)',
                 'vive com companheira(o) e filho(s)',
@@ -196,14 +216,26 @@ with
                 'sem informações') then null
                 else situacao_familiar
             end as situacao_familiar,
-            safe_cast(territorio_social as bool) as territorio_social,
+            case 
+                when territorio_social in ('1','True') then true 
+                when territorio_social in ('0','False') then false 
+                else null
+            end as territorio_social,
             case 
                 when lower(abastecimento_agua) not in ('rede pública','poço ou nascente','outro',
                 'cisterna','carro pipa') then null
                 else abastecimento_agua
             end as abastecimento_agua,
-            safe_cast(animais_no_domicilio as bool) as animais_no_domicilio,
-            safe_cast(cadastro_permanente as bool) as cadastro_permanente,
+            case 
+                when animais_no_domicilio in ('1','True') then true 
+                when animais_no_domicilio in ('0','False') then false 
+                else null
+            end as animais_no_domicilio,
+            case 
+                when cadastro_permanente in ('1','True') then true 
+                when cadastro_permanente in ('0','False') then false 
+                else null
+            end as cadastro_permanente,
             case 
                 when lower(familia_localizacao) not in ('urbana','rural') then null
                 else familia_localizacao
@@ -236,7 +268,11 @@ with
                 regexp_extract(municipio_residencia,r'\[IBGE: ([0-9]{1,9})\]') as codigo,
                 trim(regexp_replace(municipio_residencia,r'\[IBGE: ([0-9]{1,9})\]','')) as nome
              ) as municipio_residencia,
-            safe_cast(responsavel_familiar as bool) as responsavel_familiar,
+            case 
+                when responsavel_familiar in ('1','True') then true 
+                when responsavel_familiar in ('0','False') then false 
+                else null                
+            end as responsavel_familiar,
             case 
                 when lower(esgotamento_sanitario) not in ('sistema de esgoto (rede)','fossa','ceu aberto',
                 'direto para rio/lago/mar') then null
@@ -253,19 +289,43 @@ with
                 'autônomo sem previdência social','autônomo com previdência social') then null 
                 else situacao_profissional
             end as situacao_profissional,
-            safe_cast(vulnerabilidade_social as bool) as vulnerabilidade_social,
-            safe_cast(familia_beneficiaria_cfc as bool) as familia_beneficiaria_cfc,
+            case 
+                when vulnerabilidade_social in ('1','True') then true
+                when vulnerabilidade_social in ('0','False') then false
+                else null
+            end as vulnerabilidade_social,
+            case 
+                when familia_beneficiaria_cfc in ('1','True') then true
+                when familia_beneficiaria_cfc in ('0','False') then false 
+                else null
+            end as familia_beneficiaria_cfc,
             timestamp_sub(timestamp(data_atualizacao_cadastro, "Brazil/East"),interval 2 hour) as data_atualizacao_cadastro,
-            safe_cast(participa_grupo_comunitario as bool) as participa_grupo_comunitario,
+            case 
+                when participa_grupo_comunitario in ('1','True') then true
+                when participa_grupo_comunitario in ('0','False') then false 
+                else null
+            end as participa_grupo_comunitario,
             case 
                 when lower(relacao_responsavel_familiar) not in ('filho(a)','cônjuge/companheiro(a)','outro parente',
                 'não parente','pai/mãe','neto(a)/bisneto(a)','irmão/irmã','genro/nora','enteado(a)','sogro(a)') then null 
                 else relacao_responsavel_familiar
             end as relacao_responsavel_familiar,
-            safe_cast(membro_comunidade_tradicional as bool) as membro_comunidade_tradicional,
+            case 
+                when membro_comunidade_tradicional in ('1','True') then true
+                when membro_comunidade_tradicional in ('0','False') then false 
+                else null
+            end as membro_comunidade_tradicional,
             timestamp_sub(timestamp(data_atualizacao_vinculo_equipe, "Brazil/East"),interval 2 hour) as data_atualizacao_vinculo_equipe,
-            safe_cast(familia_beneficiaria_auxilio_brasil as bool) as familia_beneficiaria_auxilio_brasil,
-            safe_cast(crianca_matriculada_creche_pre_escola as bool) as crianca_matriculada_creche_pre_escola,
+            case 
+                when familia_beneficiaria_auxilio_brasil in ('1','True') then true
+                when familia_beneficiaria_auxilio_brasil in ('0','False') then false
+                else null
+            end as familia_beneficiaria_auxilio_brasil,
+            case 
+                when crianca_matriculada_creche_pre_escola in ('1','True') then true 
+                when crianca_matriculada_creche_pre_escola in ('0','False') then false 
+                else null
+            end as crianca_matriculada_creche_pre_escola,
             updated_at,
             loaded_at,
             tipo
