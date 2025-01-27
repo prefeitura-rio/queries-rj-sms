@@ -1,0 +1,70 @@
+models:
+  - name: mart_subpav__indicadores_recentes
+    description: O modelo 'mart_subpav__indicadores_recentes' armazena informações de pacientes relacionadas a indicadores de saúde, como índice de massa corporal (IMC), peso, altura, e condições de saúde diagnosticadas. Esse modelo é usado para análises de saúde pública e acompanhamento individualizado dos pacientes em unidades de saúde específicas. Os dados são organizados por CPF do paciente, e cada registro contém informações detalhadas sobre condições associadas, como obesidade, diabetes, doenças coronarianas, entre outras.
+
+    columns:
+      - name: cpf_paciente
+        description: Representa o CPF do paciente, usado como identificador único de cada registro.
+        data_type: string
+        quote: true
+        data_tests:
+          - not_null:
+              name: mart_subpav__indicadores_recentes__cpf_paciente__not_null
+          - unique:
+              name: mart_subpav__indicadores_recentes__cpf_paciente__unique
+
+      - name: nome_paciente
+        description: O nome completo do paciente.
+        data_type: string
+        quote: true
+
+      - name: indice_massa_corporal
+        description: O índice de massa corporal (IMC) do paciente, calculado como peso dividido pela altura ao quadrado.
+        data_type: float
+
+      - name: peso_kg
+        description: O peso do paciente em quilogramas.
+        data_type: float
+
+      - name: altura_cm
+        description: A altura do paciente em centímetros.
+        data_type: float
+
+      - name: data_ultima_medicao
+        description: Data da última medição de peso e altura registrada para o paciente.
+        data_type: date
+        quote: true
+
+      - name: unidade_de_saude
+        description: Nome da unidade de saúde onde os dados do paciente foram coletados.
+        data_type: string
+        quote: true
+
+      - name: tipo_da_unidade
+        description: Tipo de unidade de saúde (por exemplo, hospital, clínica, posto de saúde).
+        data_type: string
+        quote: true
+
+      - name: obesidade
+        description: Indicador binário (0 ou 1) para diagnóstico de obesidade no paciente.
+        data_type: integer
+
+      - name: diabetes
+        description: Indicador binário (0 ou 1) para diagnóstico de diabetes no paciente.
+        data_type: integer
+
+      - name: doenca_arterial_coronariana
+        description: Indicador binário (0 ou 1) para diagnóstico de doença arterial coronariana no paciente.
+        data_type: integer
+
+      - name: osteoartrite
+        description: Indicador binário (0 ou 1) para diagnóstico de osteoartrite no paciente.
+        data_type: integer
+
+      - name: artrite_joelhos
+        description: Indicador binário (0 ou 1) para diagnóstico de artrite nos joelhos do paciente.
+        data_type: integer
+
+      - name: apneia_obstrutiva_sono
+        description: Indicador binário (0 ou 1) para diagnóstico de apneia obstrutiva do sono no paciente.
+        data_type: integer

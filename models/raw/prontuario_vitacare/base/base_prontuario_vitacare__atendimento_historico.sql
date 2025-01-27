@@ -20,13 +20,14 @@ with
     fato_atendimento as (
         select
             -- PK
+            replace(acto_id, '.0', '') as id_prontuario_local,
             concat(
                 nullif(atendimentos.id_cnes, ''),
                 '.',
                 nullif(
                     replace(acto_id, '.0', ''), ''
                 )
-            ) as id,
+            ) as id_prontuario_global,
 
             -- Chaves
             nullif(patient_cpf, 'NAO TEM') as cpf,
@@ -68,13 +69,13 @@ with
     ),
     dim_alergias as (
         select
-            id,
+            id_prontuario_global,
             to_json_string(
                 array_agg(struct(alergias_anamnese_descricao as descricao))
             ) as alergias
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
+                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
                 from
                     {{
                         source(
@@ -82,17 +83,17 @@ with
                         )
                     }}
             )
-        group by id
+        group by id_prontuario_global
     ),
     dim_condicoes as (
         select
-            id,
+            id_prontuario_global,
             to_json_string(
                 array_agg(struct(cod_cid10, "" as cod_ciap2, estado, data_diagnostico))
             ) as condicoes
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
+                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
                 from
                     {{
                         source(
@@ -101,17 +102,17 @@ with
                         )
                     }}
             )
-        group by id
+        group by id_prontuario_global
     ),
     dim_encaminhamentos as (
         select
-            id,
+            id_prontuario_global,
             to_json_string(
                 array_agg(struct(encaminhamento_especialidade as descricao))
             ) as encaminhamentos
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
+                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
                 from
                     {{
                         source(
@@ -120,17 +121,17 @@ with
                         )
                     }}
             )
-        group by id
+        group by id_prontuario_global
     ),
     dim_indicadores as (
         select
-            id,
+            id_prontuario_global,
             to_json_string(
                 array_agg(struct(indicadores_nome as nome, valor))
             ) as indicadores
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
+                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
                 from
                     {{
                         source(
@@ -139,11 +140,11 @@ with
                         )
                     }}
             )
-        group by id
+        group by id_prontuario_global
     ),
     dim_exames as (
         select
-            id,
+            id_prontuario_global,
             to_json_string(
                 array_agg(
                     struct(
@@ -153,7 +154,7 @@ with
             ) as exames_solicitados
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
+                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
                 from
                     {{
                         source(
@@ -161,11 +162,11 @@ with
                         )
                     }}
             )
-        group by id
+        group by id_prontuario_global
     ),
     dim_vacinas as (
         select
-            id,
+            id_prontuario_global,
             to_json_string(
                 array_agg(
                     struct(
@@ -185,7 +186,7 @@ with
             ) as vacinas
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id
+                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
                 from
                     {{
                         source(
@@ -193,11 +194,11 @@ with
                         )
                     }}
             )
-        group by id
+        group by id_prontuario_global
     ),
     dim_prescricoes as (
         select
-            id,
+            id_prontuario_global,
             to_json_string(
                 array_agg(
                     struct(
@@ -211,7 +212,7 @@ with
             ) as prescricoes
         from
             (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(acto_id, '')) as id,
+                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global,
                 from
                     {{
                         source(
@@ -220,7 +221,7 @@ with
                         )
                     }}
             )
-        group by id
+        group by id_prontuario_global
     ),
 
     atendimentos_eventos_historicos as (
@@ -240,26 +241,27 @@ with
             safe_cast(atendimentos.datahora_fim as date) as data_particao,
 
         from fato_atendimento as atendimentos
-        left join dim_alergias using (id)
-        left join dim_condicoes using (id)
-        left join dim_encaminhamentos using (id)
-        left join dim_indicadores using (id)
-        left join dim_exames using (id)
-        left join dim_vacinas using (id)
-        left join dim_prescricoes using (id)
+        left join dim_alergias using (id_prontuario_global)
+        left join dim_condicoes using (id_prontuario_global)
+        left join dim_encaminhamentos using (id_prontuario_global)
+        left join dim_indicadores using (id_prontuario_global)
+        left join dim_exames using (id_prontuario_global)
+        left join dim_vacinas using (id_prontuario_global)
+        left join dim_prescricoes using (id_prontuario_global)
     -- left join dim_procedimentos using (acto_id)
     ),
 
     final as (
-        select id,
+        select id_prontuario_local,
+            id_prontuario_global,
             {{
                 dbt_utils.generate_surrogate_key(
                     [
-                        "id",
+                        "id_prontuario_global",
                     ]
                 )
             }} as id_hci,
-            * except (id),
+            * except (id_prontuario_local,id_prontuario_global),
         from atendimentos_eventos_historicos
     )
 
