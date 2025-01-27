@@ -302,7 +302,16 @@ with
             (hierarquia_n1_categoria = "Medicamento" or id_material = "65058200201")
             and ativo_indicador = "sim"
         order by cobertura_total_dias asc, status, nome asc
-    )
+    ),
+
+    hot_fix as (
+        select *
+        from final
+        qualify
+            dense_rank() over (partition by id_material order by vencimento_data desc)
+            = 1
+    )  -- todo: remover
 
 select *
-from final
+from hot_fix
+
