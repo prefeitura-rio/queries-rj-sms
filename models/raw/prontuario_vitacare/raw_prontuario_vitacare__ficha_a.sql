@@ -267,7 +267,8 @@ with
             safe_cast(familia_beneficiaria_auxilio_brasil as bool) as familia_beneficiaria_auxilio_brasil,
             safe_cast(crianca_matriculada_creche_pre_escola as bool) as crianca_matriculada_creche_pre_escola,
             updated_at,
-            loaded_at
+            loaded_at,
+            tipo
 
         from ficha_a
     )
