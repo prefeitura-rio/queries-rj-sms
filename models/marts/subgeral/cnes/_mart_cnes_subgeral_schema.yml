@@ -743,6 +743,26 @@ models:
         description: "Data de óbito do profissional."
       - name: profissional__endereco
         description: "Endereço do profissional proveniente do HCI."
+      - name: profissional__endereco_cep
+        description: "CEP do endereço do profissional."
+      - name: profissional__endereco_bairro
+        description: "Bairro do endereço do profissional."
+      - name: profissional__endereco_logradouro
+        description: "Logradouro do endereço do profissional."
+      - name: profissional__endereco_numero
+        description: "Número do endereço do profissional."
+      - name: profissional__endereco_complemento
+        description: "Complemento do endereço do profissional."
+      - name: profissional__endereco_cidade
+        description: "Cidade do endereço do profissional."
+      - name: profissional__endereco_estado
+        description: "Estado do endereço do profissional."
+      - name: profissional__id_codigo_sus
+        description: "Identificador do código SUS do profissional."
+      - name: profissional__data_entrada
+        description: "Data de entrada do profissional no estabelecimento."
+      - name: profissional__data_encerramento
+        description: "Data de encerramento do profissional no estabelecimento."
       - name: profissional__carga_horaria_outros
         description: "Carga horária em outros tipos de serviços fora do ambiente hospitalar ou ambulatorial."
       - name: profissional__carga_horaria_hospitalar

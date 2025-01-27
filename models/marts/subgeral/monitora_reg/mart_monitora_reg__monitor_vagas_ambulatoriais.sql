@@ -1,5 +1,5 @@
 -- calcula indicadores a partir da união dos dados de oferta programada com os dados
--- de vinculação dos profissionais
+-- de vinculação dos profissionais 
 {{ config(schema="projeto_monitora_reg", alias="monitor_vagas_ambulatoriais") }}
 
 with
@@ -165,9 +165,42 @@ with
             = safe_cast(prof.ano_competencia as int64)
             and safe_cast(ofer.mes_competencia as int64)
             = safe_cast(prof.mes_competencia as int64)
-            and safe_cast(ofer.id_cbo_2002 as int64)
-            = safe_cast(prof.id_cbo_2002 as int64)
+    ),
+
+    iqr as (
+        select
+            ano_competencia,
+            mes_competencia,
+            id_procedimento,
+            approx_quantiles(vagas_diferenca_ofertado_esperado, 4)[offset(1)] as q1,
+            approx_quantiles(vagas_diferenca_ofertado_esperado, 4)[offset(3)] as q3
+        from mva
+        group by ano_competencia, mes_competencia, id_procedimento
+    ),
+
+    mva_with_status as (
+        select
+            mva.*,
+
+            case
+                when mva.vagas_diferenca_ofertado_esperado is null
+                then 'N/A'
+                when mva.vagas_diferenca_ofertado_esperado < q1 - 1.5 * (q3 - q1)
+                then 'MUITO BAIXA'
+                when mva.vagas_diferenca_ofertado_esperado < q1
+                then 'BAIXA'
+                when mva.vagas_diferenca_ofertado_esperado <= q3
+                then 'ADEQUADA'
+                else 'ALTA'
+            end as status_oferta
+
+        from mva
+        left join
+            iqr
+            on mva.ano_competencia = iqr.ano_competencia
+            and mva.mes_competencia = iqr.mes_competencia
+            and mva.id_procedimento = iqr.id_procedimento
     )
 
-select *
-from mva
+select *, array_length(id_cbo_2002) as qtd_id_cbo_2002
+from mva_with_status

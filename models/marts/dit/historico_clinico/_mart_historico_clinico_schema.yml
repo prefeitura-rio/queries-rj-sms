@@ -13,7 +13,7 @@ models:
       - name: cadastros_conflitantes_indicador
         description:
           Flag que informa se o CPF possui cadastros conflitantes, ou seja, um CPF que possui informações de mais de uma pessoa
-      - name: id_episodio
+      - name: id_hci
         description: |
           Fingerprint determinístico para o atendimento.
         data_tests:
@@ -234,6 +234,9 @@ models:
       - name: medicamentos_administrados.via_administracao
         description: >
           Indica qual via é feita a administração do medicamento.
+      - name: medicamentos_administrados.prescricao_data
+        description: >
+          Indica qual data foi prescrito o medicamento a ser administrado.
       - name: estabelecimento
         description: >
           Informações sobre o estabelecimento de saúde onde o atendimento foi
@@ -280,7 +283,7 @@ models:
         description: >
           Informações adicionais sobre o atendimento, como o fornecedor e o
           identificador do atendimento.
-      - name: prontuario.id_atendimento
+      - name: prontuario.id_prontuario_global
         description: |
           ID do atendimento.
       - name: prontuario.fornecedor

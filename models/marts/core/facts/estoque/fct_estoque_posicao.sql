@@ -168,8 +168,6 @@ with
             as material_remume_listagem_uso_interno_indicador,
             remume_listagem_hospitalar_indicador
             as material_remume_listagem_hospitalar_indicador,
-            remume_listagem_antiseptico_indicador
-            as material_remume_listagem_antiseptico_indicador,
             remume_listagem_estrategico_indicador
             as material_remume_listagem_estrategico_indicador,
         from posicao_consolidada as pos
@@ -213,7 +211,6 @@ with
             material_remume_listagem_basico_indicador,
             material_remume_listagem_uso_interno_indicador,
             material_remume_listagem_hospitalar_indicador,
-            material_remume_listagem_antiseptico_indicador,
             material_remume_listagem_estrategico_indicador,
 
             -- Metadata

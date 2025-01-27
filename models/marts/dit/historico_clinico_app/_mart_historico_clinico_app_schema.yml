@@ -8,7 +8,7 @@ models:
       - name: cpf
         description: >
           Cadastro de Pessoas Físicas do paciente.
-      - name: id_episodio
+      - name: id_hci
         description: |
           Fingerprint determinístico para o atendimento.
       - name: entry_datetime
@@ -43,12 +43,86 @@ models:
       - name: procedures
         description: |
           Procedimentos realizados durante o episodio.
+      - name: measures
+        description: >
+          Medidas aferidas durante o episódio.
+      - name: measures.height
+        description: |
+          Altura do paciente em centímetros (cm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.abdominal_circumference
+        description: |
+          Circunferência abdominal do paciente em centímetros (cm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.heart_rate
+        description: |
+          Frequência cardíaca do paciente em batimentos por minuto (bpm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.respiratory_rate
+        description: |
+          Frequência respiratória do paciente em respirações por minuto (rpm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.blood_glucose
+        description: |
+          Glicemia em jejumdo paciente em miligramas por decilitro (mg/dl).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.glycated_hemoglobin
+        description: |
+          Hemoglobina glicada A1c (HbA1c) do paciente em percentuais (%).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.bmi
+        description: |
+          Índice de Massa Corporal do paciente em quilogramas por metro quadrado (kg/m²).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.weight
+        description: |
+          Peso do paciente em quilogramas (kg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.systolic_pressure
+        description: |
+          Pressão arterial sistólica do paciente em milímetros de mercúrio (mmHg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.diastolic_pressure
+        description: |
+          Pressão arterial diastólica do paciente em milímetros de mercúrio (mmHg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.pulse_rate
+        description: |
+          Ritmo cardíaco do paciente. O valor pode ser 'filiforme', 'arritmico', 'ritmico cheio' ou 'ritmico debil'.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.oxygen_saturation
+        description: |
+          Saturação de oxigênio do paciente em percentuais (%).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: measures.temperature
+        description: |
+          Temperatura do paciente em graus Celsius (°C).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: prescription
         description: |
           Precrição realizada durante o episodio.
       - name: medicines_administered
         description: |
           Medicamentos administrados.
+      - name: medicines_administered.name
+        description: |
+          Nome do medicamento administrado.
+      - name: medicines_administered.prescription_date
+        description: |
+          Data de prescrição do medicamento a ser administrado.
       - name: cids
         description: |
           Cids associados ao atendimento.
@@ -197,3 +271,11 @@ models:
   - name: mart_historico_clinico_app__indice
     description: >
       Tabela utilizada para busca por CNS e Nome no histórico clínico.
+    columns:
+      - name: cns_particao
+        description: Coluna de particionamento de CNS.
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico_app__indice__cns_particao__not_null
+          - unique:
+              name: mart_historico_clinico_app__indice__cns_particao__unique

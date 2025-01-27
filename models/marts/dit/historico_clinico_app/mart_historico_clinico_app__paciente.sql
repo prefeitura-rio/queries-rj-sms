@@ -89,6 +89,7 @@ with
                 from unnest(equipe_saude_familia[safe_offset(0)].enfermeiros)
             ) as nursing_responsible,
             dados.identidade_validada_indicador as validated,
+            todos_pacientes.cadastros_conflitantes_indicador,
             safe_cast(todos_pacientes.cpf as int64) as cpf_particao
         from todos_pacientes
     )
@@ -96,10 +97,13 @@ with
 --  JUNTANDO INFORMAÇÕES DE EXIBICAO
 ---=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select
-    formatado.*,
+    formatado.* except(cadastros_conflitantes_indicador),
     struct(
-        true as indicador,
-        array<string>[] as motivos,
+        not cadastros_conflitantes_indicador as indicador,
+        case 
+            when cadastros_conflitantes_indicador then array<string>['Cadastro Conflitante']
+            else array<string>[]
+        end as motivos,
         ap_cadastro_por_paciente.ap_cadastro,
         unidades_cadastro_por_paciente.unidades_cadastro
     ) as exibicao

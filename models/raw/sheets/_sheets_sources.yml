@@ -8,6 +8,7 @@ sources:
       - name: estabelecimento_auxiliar
       - name: gerenciamento_acesso_looker_farmacia
       - name: material_mestre
+      - name: material_cobertura_programas
       - name: material_remume
       - name: compras_registro_preco
       - name: compras_atas_processos_vigentes

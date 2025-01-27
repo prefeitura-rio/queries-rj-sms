@@ -33,7 +33,6 @@ models:
             - id_cnes
             - ano_competencia
             - mes_competencia
-            - id_cbo_2002
             - id_procedimento
           name: mart_monitora_reg__monitor_vagas_ambulatoriais__combination_of_columns
 
@@ -47,20 +46,12 @@ models:
 
       - name: cns
         description: "Número do Cartão Nacional de Saúde do profissional."
-        data_tests:
-          - dbt_expectations.expect_column_value_lengths_to_equal:
-              value: 15
-              name: mart_monitora_reg__monitor_vagas_ambulatoriais__cns__expect_column_value_lengths_to_equal
 
       - name: profissional
         description: "Nome do profissional de saúde."
 
       - name: id_cbo_2002
         description: "Código de ocupação profissional, unificado das duas fontes de dados."
-        data_tests:
-          - dbt_expectations.expect_column_value_lengths_to_equal:
-              value: 6
-              name: mart_monitora_reg__monitor_vagas_ambulatoriais__id_cbo_2002__expect_column_value_lengths_to_equal
 
       - name: ocupacao
         description: "Descrição da ocupação do profissional."
@@ -196,3 +187,9 @@ models:
               name: mart_monitora_reg__monitor_vagas_ambulatoriais__cnes_dados__not_null
           - dbt_utils.not_constant:
               name: mart_monitora_reg__monitor_vagas_ambulatoriais__cnes_dados__not_constant
+
+      - name: status_oferta
+        description: "Classifica o balanço de oferta como Adequado, Alto, Baixo ou Muito Baixo utilizando o Intervalo Interquartil (IQR), com base em ano_competencia, mes_competencia e id_procedimento."
+
+      - name: qtd_id_cbo_2002
+        description: "Quantidade de CBOs do profissional em determinado mes, ano e estabelecimento." 

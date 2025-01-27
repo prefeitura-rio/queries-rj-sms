@@ -22,7 +22,8 @@ with
         from {{ref('dim_estabelecimento')}}
         where
             prontuario_tem = "sim" and 
-            prontuario_versao = 'vitai' 
+            prontuario_versao = 'vitai' and
+            prontuario_episodio_tem_dado = "sim"
     ),
     vitai_estabelecimentos as (
         select 
@@ -90,7 +91,7 @@ with
             vitai_estabelecimentos.cnes as unidade_cnes,
             vitai_historico_clinico_sem_cnes.* except(estabelecimento_gid),
         from vitai_historico_clinico_sem_cnes
-            inner join vitai_estabelecimentos 
+            left join vitai_estabelecimentos 
                 on vitai_historico_clinico_sem_cnes.estabelecimento_gid = vitai_estabelecimentos.gid
     ),
     contagem as (

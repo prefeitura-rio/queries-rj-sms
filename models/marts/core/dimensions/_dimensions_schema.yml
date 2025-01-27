@@ -34,7 +34,15 @@ models:
           descrição do material, concentração e apresentação ou forma
           farmacêutica. Este campo é útil para identificar o material de maneira
           mais detalhada e abrangente.
-
+        data_type: string
+      - name: descricao_alternativa
+        description: Descrição alternativa do material
+        data_type: string
+      - name: programa_estrategico
+        description: Nome do programa estratégico do qual o material pertence (quando houver)
+        data_type: string
+      - name: observacao
+        description: Campo genérico para observações sobre o material
         data_type: string
       - name: hierarquia_n1_categoria
         description: Esta coluna representa a categoria do material. Classifica o
@@ -113,10 +121,6 @@ models:
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Hospitalares" da REMUME.
         data_type: string
-      - name: remume_listagem_antiseptico_indicador
-        description: Esta coluna indica se o material faz parte da lista
-          "Saneantes/Antispeticos" da REMUME.
-        data_type: string
       - name: remume_listagem_estrategico_indicador
         description: Esta coluna indica se o material faz parte da lista "Componentes
           Estratégicos" da REMUME.
@@ -127,23 +131,12 @@ models:
           lista os tipos de unidades de saúde onde o material deve estar
           disponível.
         data_type: string
-      - name: remume_disponibilidade_cms_indicador
-        description: Esta coluna indica se o material deve estar disponível nos CMS
-          (Centro Municipal de Saúde). É um indicador binário com 'sim'
-          indicando que o material deve estar disponível nos CMS e 'não'
-          indicando que deve.
-        data_type: string
-      - name: remume_disponibilidade_cf_indicador
-        description: >
-          Esta coluna indica se o material deve estar disponível nos CF (Clínica
-          da Família). É um indicador binário com 'sim' indicando que o material
-          deve estar disponível nos CF e 'não' indicando que deve.
-        data_type: string
-      - name: remume_disponibilidade_cse_indicador
-        description: Esta coluna indica se o material deve estar disponível nos 'Centro
-          de Saúde Escolar' (CSE). É um indicador binário com 'sim' indicando
-          que o material deve estar disponível nos CSE e 'não' indicando que
-          deve.
+      - name: remume_disponibilidade_cf_cms_cse_indicador
+        description: Esta coluna indica se o material deve estar disponível nos CF
+          (Clínica da Família), CMS (Centro Municipal de Saúde) e CSE
+          (Centro de Saúde Escolar). É um indicador binário com 'sim' indicando
+          que o material deve estar disponível nos CF, CMS e CSE e 'não' indicando
+          que deve.
         data_type: string
       - name: remume_disponibilidade_policlinica_indicador
         description: Esta coluna indica se o material deve estar disponível nas
@@ -169,19 +162,12 @@ models:
           indicando que o material deve estar disponível nos CAPS e 'não'
           indicando que deve.
         data_type: string
-      - name: remume_disponibilidade_upa_indicador
+      - name: remume_disponibilidade_upa_cer_indicador
         description: >
           Esta coluna indica se o material deve estar disponível nas UPAs
-          (Unidades de Pronto Atendimento). É um indicador binário com 'sim'
-          indicando que o material deve estar disponível nas UPAs e 'não'
-          indicando que deve.
-        data_type: string
-      - name: remume_disponibilidade_cer_indicador
-        description: >
-          Esta coluna indica se o material deve estar disponível nos CER
-          (Centros de Especialidades Regionais). É um indicador binário com
-          'sim' indicando que o material deve estar disponível nos CER e 'não'
-          indicando que deve.
+          (Unidades de Pronto Atendimento) e CER (Centros de Especialidades
+          Regionais). É um indicador binário com 'sim' indicando que o material
+          deve estar disponível nas UPAs e CER e 'não' indicando que deve.
         data_type: string
       - name: remume_disponibilidade_unidades_especificas_lista
         description: Esta coluna contém uma lista de unidades específicas onde o
@@ -196,9 +182,12 @@ models:
       - name: cadastrado_sistema_vitacare_indicador
         description: Esta coluna indica se o material está registrado no Prontuário da
           Vitacare. É um valor de string que pode ser 'sim' se o material
-          estiver registrado, ou 'não' se não estiver. Essas informações são
-          cruciais para rastrear os materiais que fazem parte do sistema
-          Vitacare.
+          estiver registrado, ou 'não' se não estiver.
+        data_type: string
+      - name: cadastrado_sistema_vitai_indicador
+        description: Esta coluna indica se o material está registrado no Prontuário da
+          Vitacare. É um valor de string que pode ser 'sim' se o material
+          estiver registrado, ou 'não' se não estiver. 
         data_type: string
   - name: dim_estabelecimento
     description: Tabela contendo a relação de estabelecimentos de saúde. Informações
