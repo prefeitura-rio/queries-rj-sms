@@ -1,12 +1,14 @@
 -- combina os modelos de contagens a nivel de procedimentos, com os totais a nivel de
 -- estabelecimentos, com os parametros dos procedimentos
--- view
 select
     -- identificadores
     por_proced.cpf,
     por_proced.id_cnes,
     por_proced.id_procedimento,
     por_proced.id_cbo_2002,
+    por_proced.id_cbo_2002_qtd_sisreg,
+    por_proced.id_cbo_2002_todos_sisreg,
+
     por_proced.ano as ano_competencia,
     por_proced.mes as mes_competencia,
 
