@@ -59,6 +59,7 @@ with
     next_month_vacancies as (
         select
             profissional_executante_cpf as profissional_cpf,
+            string_agg(profissional_executante_nome) as profissional_nome,
             id_procedimento_interno as procedimento_id,
             string_agg(distinct procedimento) as procedimento,
             id_estabelecimento_executante as estabelecimento_id,
@@ -189,6 +190,7 @@ with
             iqr.estabelecimento_id as id_cnes,
             iqr.estabelecimento as estabelecimento,
             iqr.profissional_cpf,
+            iqr.profissional_nome,
             iqr.procedimento_id as id_procedimento,
             iqr.procedimento as procedimento,
             iqr.total_vacancies_next_month as vagas_programadas_competencia,

@@ -53,3 +53,8 @@ models:
         data_tests:
           - not_null:
               name: mart_oferta_programada__anomalia_procedimento_estabelecimento__data_calculo_anomalia__not_null
+
+      - name: profissional_nome
+        description: Este campo representa o nome do profissional que está agendado para realizar o procedimento.
+        data_type: string
+        quote: true

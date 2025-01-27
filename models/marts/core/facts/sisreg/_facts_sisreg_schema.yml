@@ -107,6 +107,10 @@ models:
         data_type: string
         quote: true
         description: Nome do procedimento que será realizado.
+      - name: profissional_executante_nome
+        data_type: string
+        quote: true
+        description: Nome do profissional que realizará o procedimento.
       
   - name: fct_sisreg_oferta_programada
     description: Tabela contendo as escalas programadas atuais no SISREG.
@@ -207,3 +211,16 @@ models:
         description: Esta coluna representa a data da partição. É usado para organizar
           os dados de forma cronológica, facilitando a filtragem e análise de
           dados para uma data específica.
+      - name: profissional_executante_nome
+        data_type: string
+        quote: true
+        description: Nome do profissional que realizará o procedimento.
+      - name: estabelecimento
+        data_type: string
+        quote: true
+        description: Nome do estabelecimento onde o procedimento será realizado.
+      - name: procedimento
+        data_type: string
+        quote: true
+        description: Nome do procedimento que será realizado.
+      
