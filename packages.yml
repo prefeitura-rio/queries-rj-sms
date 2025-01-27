@@ -6,10 +6,12 @@ packages:
   - package: tnightengale/dbt_meta_testing
     version: 0.3.6
   - package: elementary-data/elementary
-    version: 0.16.1
+    version: 0.16.2
   - package: calogica/dbt_date
     version: 0.10.1
   - package: data-mie/dbt_profiler
-    version: 0.8.3
+    version: 0.8.4
   - package: dbt-labs/audit_helper
     version: 0.12.1
+  - package: bqbooster/dbt_bigquery_monitoring
+    version: 0.17.0
