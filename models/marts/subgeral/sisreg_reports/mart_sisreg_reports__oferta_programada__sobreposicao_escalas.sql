@@ -86,15 +86,15 @@ with
     final as (
         select
             a_cnes as id_cnes,
-            a.estabelecimento as estabelecimento,
-            a.nome_profissional,
+            estabelecimento,
+            nome_profissional,
 
             string_agg(
                 concat(a_cod, ":", b_cod), ', '
             ) as codigos_escalas_sobrepostas_sisreg,
             date('{{ data_atual }}') as data_calculo_anomalia
         from overlapping
-        group by a_cnes
+        group by a_cnes, estabelecimento, nome_profissional
         order by a_cnes
     )
 
