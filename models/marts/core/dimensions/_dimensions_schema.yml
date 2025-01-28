@@ -231,6 +231,9 @@ models:
       - name: nome_limpo
         description: Nome fantasia sem o prefixo indicando o tipo de unidade
         data_type: string
+      - name: nome_acentuado
+        description: Nome fantasia sem o prefixo indicando o tipo de unidade e com acentuações
+        data_type: string
       - name: nome_sigla
         description: Abreviação do nome fantasia
         data_type: string
