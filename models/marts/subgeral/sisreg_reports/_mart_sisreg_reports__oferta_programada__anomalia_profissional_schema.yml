@@ -55,3 +55,12 @@ models:
         description: Este campo representa o nome do profissional que está agendado para realizar o procedimento.
         data_type: string
         quote: true
+      - name: estabelecimento
+        data_type: string
+        quote: true
+        description: Nome do estabelecimento onde o procedimento será realizado.
+      - name: procedimento
+        data_type: string
+        quote: true
+        description: Nome do procedimento que será realizado.
+      
