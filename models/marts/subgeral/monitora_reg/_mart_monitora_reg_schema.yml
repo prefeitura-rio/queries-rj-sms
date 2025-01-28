@@ -191,5 +191,8 @@ models:
       - name: status_oferta
         description: "Classifica o balanço de oferta como Adequado, Alto, Baixo ou Muito Baixo utilizando o Intervalo Interquartil (IQR), com base em ano_competencia, mes_competencia e id_procedimento."
 
-      - name: qtd_id_cbo_2002
-        description: "Quantidade de CBOs do profissional em determinado mes, ano e estabelecimento." 
+      - name: id_cbo_2002_qtd_sisreg
+        description: "Quantidade de CBOs do profissional no SISREG em determinado mes, ano e estabelecimento." 
+
+      - name: id_cbo_2002_todos_sisreg
+        description: "Todos os CBOs do profissional no SISREG em determinado mes, ano e estabelecimento." 

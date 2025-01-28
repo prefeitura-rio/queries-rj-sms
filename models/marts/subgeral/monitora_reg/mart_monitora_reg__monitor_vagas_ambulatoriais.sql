@@ -31,7 +31,9 @@ with
             coalesce(ofer.cpf, prof.cpf) as cpf,
             prof.cns,
             prof.profissional,
-            coalesce(ofer.id_cbo_2002, prof.id_cbo_2002) as id_cbo_2002,
+            coalesce(prof.id_cbo_2002, ofer.id_cbo_2002) as id_cbo_2002,
+            ofer.id_cbo_2002_qtd_sisreg,
+            ofer.id_cbo_2002_todos_sisreg,
             prof.ocupacao,
             prof.ocupacao_agg,
             coalesce(ofer.id_cnes, prof.id_cnes) as id_cnes,
@@ -59,7 +61,8 @@ with
                 else
                     round(
                         prof.carga_horaria_ambulatorial_mensal
-                        * ofer.procedimento_distribuicao
+                        * ofer.procedimento_distribuicao,
+                        3
                     )
             end as carga_horaria_procedimento_esperada_mensal,
 
@@ -178,7 +181,7 @@ with
         group by ano_competencia, mes_competencia, id_procedimento
     ),
 
-    mva_with_status as (
+    final as (
         select
             mva.*,
 
@@ -202,5 +205,5 @@ with
             and mva.id_procedimento = iqr.id_procedimento
     )
 
-select *, array_length(id_cbo_2002) as qtd_id_cbo_2002
-from mva_with_status
+select *
+from final
