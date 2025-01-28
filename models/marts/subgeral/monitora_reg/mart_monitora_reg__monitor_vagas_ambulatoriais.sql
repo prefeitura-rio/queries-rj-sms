@@ -25,19 +25,31 @@ with
             )
     ),
 
+    estabelecimentos as (
+        select *
+        from {{ ref("dim_estabelecimento_sus_rio_historico") }}
+        where
+            data_particao = (
+                select max(data_particao)
+                from {{ ref("dim_estabelecimento_sus_rio_historico") }}
+            )
+    ),
+
     mva as (
         select
             -- identificadores
             coalesce(ofer.cpf, prof.cpf) as cpf,
             prof.cns,
-            prof.profissional,
+            coalesce(prof.profissional, ofer.nome) as profissional,
             coalesce(prof.id_cbo_2002, ofer.id_cbo_2002) as id_cbo_2002,
             ofer.id_cbo_2002_qtd_sisreg,
             ofer.id_cbo_2002_todos_sisreg,
-            prof.ocupacao,
-            prof.ocupacao_agg,
+            coalesce(prof.ocupacao, ofer.ocupacao) as ocupacao,
+            coalesce(prof.ocupacao_agg, ofer.ocupacao_familia) as ocupacao_agg,
             coalesce(ofer.id_cnes, prof.id_cnes) as id_cnes,
-            prof.estabelecimento,
+            coalesce(
+                prof.estabelecimento, ofer.estabelecimento_nome
+            ) as estabelecimento,
 
             -- variaveis temporais
             coalesce(ofer.ano_competencia, prof.ano_competencia) as ano_competencia,
@@ -134,15 +146,25 @@ with
             ofer.procedimento_proporcao_retornos,
 
             -- informacoes das unidades
-            prof.esfera as esfera_estabelecimento,
-            prof.natureza_juridica as natureza_juridica_estabelecimento,
-            prof.tipo_gestao as tipo_gestao_estabelecimento,
-            prof.turno as turno_estabelecimento,
-            prof.tipo_unidade_alternativo as tipo_estabelecimento,
-            prof.tipo_unidade_agrupado as tipo_estabelecimento_agrupado,
-            prof.id_ap as id_ap_estabelecimento,
-            prof.ap as ap_estabelecimento,
-            prof.endereco_bairro as endereco_bairro_estabelecimento,
+            coalesce(prof.esfera, estab.esfera) as esfera_estabelecimento,
+            coalesce(
+                prof.natureza_juridica, estab.natureza_juridica_descr
+            ) as natureza_juridica_estabelecimento,
+            coalesce(
+                prof.tipo_gestao, estab.tipo_gestao_descr
+            ) as tipo_gestao_estabelecimento,
+            coalesce(prof.turno, estab.turno_atendimento) as turno_estabelecimento,
+            coalesce(
+                prof.tipo_unidade_alternativo, estab.tipo_unidade_alternativo
+            ) as tipo_estabelecimento,
+            coalesce(
+                prof.tipo_unidade_agrupado, estab.tipo_unidade_agrupado
+            ) as tipo_estabelecimento_agrupado,
+            coalesce(prof.id_ap, estab.id_ap) as id_ap_estabelecimento,
+            coalesce(prof.ap, estab.ap) as ap_estabelecimento,
+            coalesce(
+                prof.endereco_bairro, estab.endereco_bairro
+            ) as endereco_bairro_estabelecimento,
 
             -- flags
             case
@@ -168,6 +190,12 @@ with
             = safe_cast(prof.ano_competencia as int64)
             and safe_cast(ofer.mes_competencia as int64)
             = safe_cast(prof.mes_competencia as int64)
+
+        left join
+            estabelecimentos as estab
+            on ofer.ano_competencia = estab.ano_competencia
+            and ofer.mes_competencia = estab.mes_competencia
+            and ofer.id_cnes = estab.id_cnes
     ),
 
     iqr as (

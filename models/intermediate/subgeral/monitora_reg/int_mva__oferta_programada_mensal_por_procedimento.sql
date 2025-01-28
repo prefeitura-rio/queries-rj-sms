@@ -13,7 +13,23 @@ with
 select
     -- identificadores
     profissional_executante_cpf as cpf,
+
+    -- pega nome mais atual
+    array_agg(
+        profissional_executante_nome ignore nulls
+        order by procedimento_vigencia_ano desc, procedimento_vigencia_mes desc
+        limit 1
+    )[offset(0)] as nome,
+
     id_estabelecimento_executante as id_cnes,
+
+    -- pega nome fantasia mais atual
+    array_agg(
+        estabelecimento ignore nulls
+        order by procedimento_vigencia_ano desc, procedimento_vigencia_mes desc
+        limit 1
+    )[offset(0)] as estabelecimento_nome,
+
     id_procedimento_interno as id_procedimento,
 
     -- pega cbo mais atual
@@ -22,6 +38,20 @@ select
         order by procedimento_vigencia_ano desc, procedimento_vigencia_mes desc
         limit 1
     )[offset(0)] as id_cbo_2002,
+
+    -- pega ocupacao mais atual
+    array_agg(
+        ocupacao ignore nulls
+        order by procedimento_vigencia_ano desc, procedimento_vigencia_mes desc
+        limit 1
+    )[offset(0)] as ocupacao,
+
+    -- pega ocupacao_familia mais atual
+    array_agg(
+        ocupacao_familia ignore nulls
+        order by procedimento_vigencia_ano desc, procedimento_vigencia_mes desc
+        limit 1
+    )[offset(0)] as ocupacao_familia,
 
     -- contagem de cbos pelos quais o profissional está oferecendo vagas
     array_length(

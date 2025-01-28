@@ -3,9 +3,13 @@
 select
     -- identificadores
     por_proced.cpf,
+    por_proced.nome,
     por_proced.id_cnes,
+    por_proced.estabelecimento_nome,
     por_proced.id_procedimento,
     por_proced.id_cbo_2002,
+    por_proced.ocupacao,
+    por_proced.ocupacao_familia,
     por_proced.id_cbo_2002_qtd_sisreg,
     por_proced.id_cbo_2002_todos_sisreg,
 
