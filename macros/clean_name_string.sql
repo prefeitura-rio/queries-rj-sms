@@ -3,7 +3,7 @@
     upper(
         trim(
             regexp_replace(
-                regexp_replace(normalize({{ text}}, nfd), r"\pM", ''), r'[^ A-Z-a-z]', ' '
+                regexp_replace(normalize({{ text}}, nfd), r"\pM", ''), r'[^ A-Za-z]', ' '
             )
         )
     )

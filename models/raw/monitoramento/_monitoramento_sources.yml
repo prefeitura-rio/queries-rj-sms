@@ -7,3 +7,8 @@ sources:
     tables:
       - name: userinfo
       - name: userhistory
+  - name: brutos_monitoramento_staging
+    database: rj-sms
+    schema: brutos_monitoramento_staging
+    tables:
+      - name: healthchecks

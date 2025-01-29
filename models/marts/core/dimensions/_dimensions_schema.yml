@@ -354,17 +354,23 @@ models:
         data_type: string
         data_tests:
           - unique:
-              name: core__dim_profissional_saude__id_ine__unique
+              name: core__dim_profissional_saude__id_sus__unique
       - name: cpf
         description: CPF do profissional
         data_type: string
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: core__dim_profissional_saude__cpf__unique
       - name: cns
         description: Cartão nacional de saúde do profissional
         data_type: string
         policy_tags:
           - '{{ var ("TAG_CNS") }}'
+        data_tests:
+          - unique:
+              name: core__dim_profissional_saude__cns__unique
       - name: nome
         description: Nome do profissional de saúde.
         data_type: string
