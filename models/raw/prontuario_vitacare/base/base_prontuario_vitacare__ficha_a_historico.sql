@@ -20,13 +20,13 @@ with
         from {{ source("brutos_prontuario_vitacare_staging", "pacientes_historico") }}
     ),
 
-    ficha_a as (
+    dados_ficha_a as (
         select
             safe_cast(nullif(cpf, '') as string) as cpf,
             ut_id as id_paciente,
 
             cnes as unidade_cadastro,
-            ap as ap_cadastro,
+            nullif(ap,'') as ap_cadastro,
 
             {{ process_null('nome') }} as nome,
             {{ process_null('sexo') }} as sexo,
@@ -96,4 +96,5 @@ with
         from source
     )
 
-select * from ficha_a
+select *
+from dados_ficha_a
