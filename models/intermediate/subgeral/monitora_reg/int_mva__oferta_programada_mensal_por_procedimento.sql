@@ -54,13 +54,7 @@ select
     )[offset(0)] as ocupacao_familia,
 
     -- contagem de cbos pelos quais o profissional está oferecendo vagas
-    array_length(
-        array_agg(
-            id_cbo2002 ignore nulls
-            order by procedimento_vigencia_ano desc, procedimento_vigencia_mes desc
-            limit 1
-        )
-    ) as id_cbo_2002_qtd_sisreg,
+    array_length(array_agg(distinct id_cbo2002 ignore nulls)) as id_cbo_2002_qtd_sisreg,
 
     -- cbos pelos quais o profissional está oferecendo vagas
     string_agg(distinct id_cbo2002, ',') as id_cbo_2002_todos_sisreg,

@@ -47,9 +47,7 @@ with
             coalesce(prof.ocupacao, ofer.ocupacao) as ocupacao,
             coalesce(prof.ocupacao_agg, ofer.ocupacao_familia) as ocupacao_agg,
             coalesce(ofer.id_cnes, prof.id_cnes) as id_cnes,
-            coalesce(
-                prof.estabelecimento, ofer.estabelecimento_nome
-            ) as estabelecimento,
+            coalesce(estab.nome_fantasia, ofer.estabelecimento_nome) as estabelecimento,
 
             -- variaveis temporais
             coalesce(ofer.ano_competencia, prof.ano_competencia) as ano_competencia,
@@ -231,6 +229,8 @@ with
             on mva.ano_competencia = iqr.ano_competencia
             and mva.mes_competencia = iqr.mes_competencia
             and mva.id_procedimento = iqr.id_procedimento
+        where mva.estabelecimento is not null  -- removendo registros do CNES de estabelecimentos sem vinculo com o SUS
+
     )
 
 select *
