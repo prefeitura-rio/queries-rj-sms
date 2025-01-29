@@ -3,21 +3,15 @@
 ) %}
 
 with parent as (
-
     select
         {{ field }} as id
-
     from {{ to }}
-
 ),
 
 child as (
-
     select
         {{ column_name }} as id
-
     from {{ model }}
-
 )
 
 select distinct id
