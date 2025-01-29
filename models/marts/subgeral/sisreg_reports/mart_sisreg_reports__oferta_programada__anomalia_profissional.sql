@@ -10,7 +10,7 @@
 
 {% set data_atual = run_started_at.strftime("%Y-%m-%d") %}
 
--- To do: considerar alterações nas cargas horárias (CNES)
+-- To do: considerar alterações nas cargas horárias (CNES) e AFASTAMENTOS
 with
 
     -- Etapa 1: Identificar a data de partição mais recente

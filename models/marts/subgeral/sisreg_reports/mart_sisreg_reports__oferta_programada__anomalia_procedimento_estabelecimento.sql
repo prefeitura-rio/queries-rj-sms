@@ -59,7 +59,7 @@ with
     next_month_vacancies as (
         select
             profissional_executante_cpf as profissional_cpf,
-            string_agg(profissional_executante_nome) as profissional_nome,
+            string_agg(distinct profissional_executante_nome) as profissional_nome,
             id_procedimento_interno as procedimento_id,
             string_agg(distinct procedimento) as procedimento,
             id_estabelecimento_executante as estabelecimento_id,
