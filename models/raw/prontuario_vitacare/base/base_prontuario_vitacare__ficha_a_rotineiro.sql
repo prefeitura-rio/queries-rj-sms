@@ -32,7 +32,7 @@ with
             id as id_paciente,
 
             payload_cnes as unidade_cadastro,
-            data__ap as ap_cadastro,
+            nullif(data__ap,'') as ap_cadastro,
 
             {{ process_null('data__nome') }} as nome,
             {{ process_null('data__sexo') }} as sexo,
