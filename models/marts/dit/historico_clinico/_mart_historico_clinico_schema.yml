@@ -11,10 +11,14 @@ models:
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
         tests:
-          - relationships:
+          - assert_relacionamento_tabelas:
               name: mart_historico_clinico__episodio__cpf__relacionamento_tabela_pacientes
               to: ref('mart_historico_clinico__paciente')
               field: cpf
+              config:
+                severity: error
+                error_if: "= 2"
+                warn_if: "= 1"
       - name: cadastros_conflitantes_indicador
         description:
           Flag que informa se o CPF possui cadastros conflitantes, ou seja, um CPF que possui informações de mais de uma pessoa
