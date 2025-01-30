@@ -223,4 +223,12 @@ models:
         data_type: string
         quote: true
         description: Nome do procedimento que será realizado.
-      
+      - name: ocupacao
+        data_type: string
+        quote: true
+        description: Ocupação do profissional que realizará o procedimento, segundo CBO.
+      - name: ocupacao_familia
+        data_type: string
+        quote: true
+        description: Família da ocupação do profissional que realizará o procedimento,
+          segundo CBO.
