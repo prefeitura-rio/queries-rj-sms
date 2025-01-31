@@ -234,10 +234,16 @@ with
             on mva.ano_competencia = iqr.ano_competencia
             and mva.mes_competencia = iqr.mes_competencia
             and mva.id_procedimento = iqr.id_procedimento
-        where
-            safe_cast(mva.id_cnes as int)
-            in (select safe_cast(id_cnes as int) from estabelecimentos)  -- removendo registros do CNES de estabelecimentos sem vinculo com o SUS
 
+        left join
+            estabelecimentos as estab
+            on safe_cast(mva.ano_competencia as int)
+            = safe_cast(estab.ano_competencia as int)
+            and safe_cast(mva.mes_competencia as int)
+            = safe_cast(estab.mes_competencia as int)
+            and safe_cast(mva.id_cnes as int) = safe_cast(estab.id_cnes as int)
+
+        where estab.vinculo_sus_indicador = 1
     )
 
 select *
