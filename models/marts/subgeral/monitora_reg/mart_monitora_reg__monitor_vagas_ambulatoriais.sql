@@ -47,7 +47,9 @@ with
             coalesce(prof.ocupacao, ofer.ocupacao) as ocupacao,
             coalesce(prof.ocupacao_agg, ofer.ocupacao_familia) as ocupacao_agg,
             coalesce(ofer.id_cnes, prof.id_cnes) as id_cnes,
-            coalesce(estab.nome_fantasia, ofer.estabelecimento_nome) as estabelecimento,
+            coalesce(
+                estab.nome_fantasia, ofer.estabelecimento_nome, prof.estabelecimento
+            ) as estabelecimento,
 
             -- variaveis temporais
             coalesce(ofer.ano_competencia, prof.ano_competencia) as ano_competencia,
