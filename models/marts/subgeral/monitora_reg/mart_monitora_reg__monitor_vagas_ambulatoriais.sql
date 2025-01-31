@@ -191,9 +191,12 @@ with
 
         left join
             estabelecimentos as estab
-            on ofer.ano_competencia = estab.ano_competencia
-            and ofer.mes_competencia = estab.mes_competencia
-            and ofer.id_cnes = estab.id_cnes
+            -- ma prática temporária (convertendo o tipo durante o join)
+            on safe_cast(ofer.ano_competencia as int)
+            = safe_cast(estab.ano_competencia as int)
+            and safe_cast(ofer.mes_competencia as int)
+            = safe_cast(estab.mes_competencia as int)
+            and safe_cast(ofer.id_cnes as int) = safe_cast(estab.id_cnes as int)
     ),
 
     iqr as (
@@ -229,7 +232,9 @@ with
             on mva.ano_competencia = iqr.ano_competencia
             and mva.mes_competencia = iqr.mes_competencia
             and mva.id_procedimento = iqr.id_procedimento
-        where mva.estabelecimento is not null  -- removendo registros do CNES de estabelecimentos sem vinculo com o SUS
+        where
+            safe_cast(mva.id_cnes as int)
+            in (select safe_cast(id_cnes as int) from estabelecimentos)  -- removendo registros do CNES de estabelecimentos sem vinculo com o SUS
 
     )
 
