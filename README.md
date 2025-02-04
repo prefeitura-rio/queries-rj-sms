@@ -2,6 +2,7 @@
 - Administrador: ([Thiago Trabach](https://github.com/ThiagoTrabach))
 
 ## Setup do Projeto
+
 ### Etapa 1 - Instalação das dependências 
 Na raiz do projeto, execute os comandos abaixo para instalar o dbt:
  1. `poetry shell`
