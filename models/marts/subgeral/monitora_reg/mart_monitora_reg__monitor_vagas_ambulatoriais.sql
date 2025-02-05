@@ -194,11 +194,12 @@ with
         left join
             estabelecimentos as estab
             -- ma prática temporária (convertendo o tipo durante o join)
-            on safe_cast(ofer.ano_competencia as int)
+            on safe_cast(coalesce(ofer.ano_competencia, prof.ano_competencia) as int)
             = safe_cast(estab.ano_competencia as int)
-            and safe_cast(ofer.mes_competencia as int)
+            and safe_cast(coalesce(ofer.mes_competencia, prof.mes_competencia) as int)
             = safe_cast(estab.mes_competencia as int)
-            and safe_cast(ofer.id_cnes as int) = safe_cast(estab.id_cnes as int)
+            and safe_cast(coalesce(ofer.id_cnes, prof.id_cnes) as int)
+            = safe_cast(estab.id_cnes as int)
     ),
 
     iqr as (
