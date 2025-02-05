@@ -43,7 +43,7 @@ with
             id_cnes as pk,
             struct(
                 id_cnes,
-                {{ proper_estabelecimento("nome_limpo") }} as nome,
+                {{ proper_estabelecimento("nome_acentuado") }} as nome,
                 tipo_sms as estabelecimento_tipo
             ) as estabelecimento
         from {{ ref("dim_estabelecimento") }}

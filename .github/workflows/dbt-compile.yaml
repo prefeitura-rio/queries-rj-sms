@@ -23,6 +23,11 @@ jobs:
         DBT_CREDENTIALS_DEV: ${{ secrets.DBT_CREDENTIALS_DEV }}
       run: echo "$DBT_CREDENTIALS_DEV" > /tmp/credentials.json
 
+    - name: Ler campo do JSON
+      run: |
+        JSON_VALUE=$(jq -r '.client_email' /tmp/credentials.json)
+        echo "A conta de serviço é: $JSON_VALUE"
+
     - name: Install dbt
       run:  pip install dbt-core dbt-bigquery setuptools
 

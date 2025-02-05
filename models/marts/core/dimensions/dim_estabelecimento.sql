@@ -35,6 +35,7 @@ final as (
       tipo_sms,
       tipo_sms_simplificado,
       nome_limpo,
+      {{add_accents_estabelecimento('nome_limpo')}} as nome_acentuado,
       nome_sigla,
       nome_complemento,
       nome_fantasia,

@@ -8,9 +8,19 @@ models:
       - name: cpf
         description: >
           Cadastro de Pessoas Físicas do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico__episodio_app__cpf__not_null
       - name: id_hci
         description: |
           Fingerprint determinístico para o atendimento.
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico__episodio_app__id_hci__not_null
+          - unique:
+              name: mart_historico_clinico__episodio_app__id_hci__unique
       - name: entry_datetime
         description: >
           Data e hora de início do atendimento. Representa o momento em que o
@@ -37,9 +47,13 @@ models:
       - name: clinical_exams.type
         description: |
           Tipo do exame realizado.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: clinical_exams.description
         description: |
           Descrição do exame realizado.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: procedures
         description: |
           Procedimentos realizados durante o episodio.
@@ -129,12 +143,16 @@ models:
       - name: cids.description
         description: |
           Descrição do cid associados ao atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: cids.status
         description: |
           Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
       - name: cids_summarized
         description: |
           Resumo dos cids associados ao atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: responsible
         description: |
           Lista dos profissionais de saúde responsáveis pelo atendimento.
@@ -147,9 +165,13 @@ models:
       - name: clinical_motivation
         description: |
           Motivo do atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: clinical_outcome
         description: |
           Desfecho do atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: deceased
         description: |
           Indicador de obito.
