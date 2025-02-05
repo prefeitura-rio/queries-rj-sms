@@ -338,27 +338,4 @@ with
     )
 
 select *
-from
-    final
-
-    -- adicionar tags no dbt_project pra esse modelo
-    /*
-select distinct
-    f.id_cnes,
-    f.nome_fantasia,
-    f.natureza_juridica_descr,
-    f.tipo_gestao_descr,
-    f.tipo,
-    aux.esfera_subgeral
-from final as f
-left join
-    estabelecimentos_atributos as aux
-    on safe_cast(f.id_cnes as int) = safe_cast(aux.id_cnes as int)
-where f.esfera is null
-order by
-    id_cnes
-    -- essas unidades nao estao na tabela de estabelecimentos_auxiliar
-    -- nem na tabela cnes_web
-    -- nem no site do cnes  
-*/
-    
+from final
