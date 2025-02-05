@@ -304,7 +304,7 @@ with
             prontuario_estoque_tem_dado,
             prontuario_estoque_motivo_sem_dado,
             prontuario_episodio_tem_dado,
-        
+
             -- Informações de contato
             coalesce(telefone_aps, telefone_cnes) as telefone,
             coalesce(email_aps, email_cnes) as email,
@@ -328,8 +328,8 @@ with
             usuario_atualizador_registro,
             cast(ano as int64) as ano_competencia,
             cast(mes as int64) as mes_competencia,
-            --safe_cast(mes_particao as int64) as mes_particao,
-            --safe_cast(ano_particao as int64) as ano_particao,
+            -- safe_cast(mes_particao as int64) as mes_particao,
+            -- safe_cast(ano_particao as int64) as ano_particao,
             parse_date('%Y-%m-%d', data_particao) as data_particao,
             data_carga,
             data_snapshot
