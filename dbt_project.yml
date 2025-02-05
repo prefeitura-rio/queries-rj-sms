@@ -232,7 +232,7 @@ models:
             dado_sensivel: nao
           rio:
             +schema: saude_rio
-            +tags: "weekly"
+            +tags: ["weekly", "saude_rio", "subgeral"]
             +labels:
               dado_publico: sim
               dado_pessoal: sim
