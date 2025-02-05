@@ -24,7 +24,8 @@ with
         select
             safe_cast(nullif(cpf, '') as string) as cpf,
             ut_id as id_paciente,
-
+            npront as numero_prontuario,
+            
             cnes as unidade_cadastro,
             nullif(ap,'') as ap_cadastro,
 

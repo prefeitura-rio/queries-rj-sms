@@ -1,5 +1,4 @@
 -- vagas programadas pelos profissionais por unidade
--- view
 select
     -- identificadores
     cpf,

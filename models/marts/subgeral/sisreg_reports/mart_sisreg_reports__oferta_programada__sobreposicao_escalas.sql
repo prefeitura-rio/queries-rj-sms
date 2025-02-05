@@ -20,8 +20,10 @@ with
         select
             id_escala_ambulatorial,
             profissional_executante_cpf,
+            profissional_executante_nome,
             id_cbo2002,
             id_estabelecimento_executante,
+            estabelecimento_executante_nome,
             procedimento_dia_semana_sigla,
             procedimento_vigencia_inicial_data as inicio_datetime,
             procedimento_vigencia_final_data as fim_datetime,
@@ -45,6 +47,7 @@ with
             b.id_escala_ambulatorial as b_cod,
 
             a.profissional_executante_cpf as cpf,
+            a.profissional_executante_nome as nome_profissional,
             a.procedimento_dia_semana_sigla as dia_semana,
 
             a.id_cbo2002 as a_cbo,
@@ -52,6 +55,7 @@ with
 
             a.id_estabelecimento_executante as a_cnes,
             b.id_estabelecimento_executante as b_cnes,
+            a.estabelecimento_executante_nome as estabelecimento,
 
             a.inicio_datetime as a_inicio,
             a.inicio_time as a_inicio_time,
@@ -61,7 +65,7 @@ with
             a.fim_datetime as a_fim,
             a.fim_time as a_fim_time,
             b.fim_datetime as b_fim,
-            b.fim_time as b_fim_time
+            b.fim_time as b_fim_time,
 
         from escalas a
 
@@ -82,12 +86,15 @@ with
     final as (
         select
             a_cnes as id_cnes,
+            estabelecimento,
+            nome_profissional,
+
             string_agg(
                 concat(a_cod, ":", b_cod), ', '
             ) as codigos_escalas_sobrepostas_sisreg,
             date('{{ data_atual }}') as data_calculo_anomalia
         from overlapping
-        group by a_cnes
+        group by a_cnes, estabelecimento, nome_profissional
         order by a_cnes
     )
 
