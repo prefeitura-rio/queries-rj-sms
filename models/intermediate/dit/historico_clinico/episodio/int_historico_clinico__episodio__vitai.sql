@@ -53,7 +53,7 @@ with
         select
             gid,
             cnes,
-            estabelecimento_dim.nome_limpo as nome_estabelecimento,
+            estabelecimento_dim.nome_acentuado as nome_estabelecimento,
             estabelecimento_dim.tipo_sms_simplificado
         from
             {{ ref("raw_prontuario_vitai__m_estabelecimento") }}
@@ -74,7 +74,7 @@ with
             b.id_hci,
             b.gid_paciente,
             b.gid_estabelecimento,
-            estabelecimento_nome,
+            {{add_accents_estabelecimento('estabelecimento_nome')}} as estabelecimento_nome,
             b.atendimento_tipo,
             b.especialidade_nome,
             case
@@ -449,7 +449,7 @@ with
             struct(
                 estabelecimentos.cnes as id_cnes,
                 coalesce({{ proper_estabelecimento("estabelecimentos.nome_estabelecimento") }},
-                {{ proper_estabelecimento("episodios_distinct.estabelecimento_nome") }}) as nome,
+                {{ proper_estabelecimento( "episodios_distinct.estabelecimento_nome") }} ) as nome,
                 estabelecimentos.tipo_sms_simplificado as estabelecimento_tipo
             ) as estabelecimento,
             struct(
