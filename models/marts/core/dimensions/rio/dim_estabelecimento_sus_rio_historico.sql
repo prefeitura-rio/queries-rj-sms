@@ -337,6 +337,12 @@ with
         from estabelecimentos_final
     )
 
+select *
+from
+    final
+
+    -- adicionar tags no dbt_project pra esse modelo
+    /*
 select distinct
     f.id_cnes,
     f.nome_fantasia,
@@ -353,5 +359,6 @@ order by
     id_cnes
     -- essas unidades nao estao na tabela de estabelecimentos_auxiliar
     -- nem na tabela cnes_web
-    -- nem no site do cnes
+    -- nem no site do cnes  
+*/
     
