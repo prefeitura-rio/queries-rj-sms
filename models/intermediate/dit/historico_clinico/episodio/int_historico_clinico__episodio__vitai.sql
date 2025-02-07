@@ -31,6 +31,8 @@ with
         select
             resumo_alta.gid_boletim,
             resumo_alta.resumo_alta_datahora,
+            {{process_null('resumo_alta.cid_codigo_alta')}} as cid_codigo,
+            {{process_null('resumo_alta.cid_descricao_alta')}} as cid_nome,
             concat(
                 IF(
                     {{ process_null("resumo_alta.desfecho_internacao") }} is null,
@@ -226,8 +228,14 @@ with
                 {{ proper_br("profissional_distinct.profissional_nome") }} as nome,
                 profissional_distinct.cbo_descricao as especialidade
             ) as profissional_saude_responsavel,
-            {{ process_null("atendimento.cid_codigo") }} as cid_codigo,
-            {{ process_null("atendimento.cid_nome") }} as cid_nome,
+            coalesce(
+                alta_internacao.cid_codigo,
+                regexp_replace({{ process_null("atendimento.cid_codigo") }},r'\.','')
+            ) as cid_codigo,
+            coalesce(
+                alta_internacao.cid_nome,
+                {{ process_null("atendimento.cid_nome") }}
+            ) as cid_nome,
             coalesce(alta_adm.desfecho_atendimento, alta_internacao.desfecho_atendimento) as desfecho_atendimento,
             case
                 when trim(lower(boletim.atendimento_tipo)) = 'emergencia'
@@ -256,20 +264,27 @@ with
     -- duplicadas na tabela. Vale o ultimo registros nesse caso
     internacao_all as (
         select
-            gid_boletim,
+            i.gid_boletim,
             internacao_tipo,
-            {{ process_null("i.id_diagnostico") }} as cid_codigo,
-            {{ process_null("i.diagnostico_descricao") }} as cid_nome,
+            coalesce(
+                regexp_replace({{ process_null("alta_internacao.cid_codigo") }},r'\.',''),
+                regexp_replace({{ process_null("i.id_diagnostico") }},r'\.','')
+             ) as cid_codigo,
+             coalesce(
+                regexp_replace({{ process_null("alta_internacao.cid_nome") }},r'\.',''),
+                regexp_replace({{ process_null("i.diagnostico_descricao") }},r'\.','')
+             ) as cid_nome,
             {{ process_null("i.gid_profissional") }} as gid_profissional,
             initcap({{ process_null("i.profissional_nome") }}) as profissional_nome,
             profissional_int.cns as profissional_cns,
             profissional_int.cpf as profissional_cpf,
             profissional_int.cbo_descricao as profissional_cbo,
             row_number() over (
-                partition by gid_boletim order by internacao_data desc
+                partition by i.gid_boletim order by internacao_data desc
             ) as ordenacao
         from {{ ref("raw_prontuario_vitai__internacao") }} as i
         left join profissional_int on profissional_int.gid = i.gid_profissional
+        left join alta_internacao on alta_internacao.gid_boletim = i.gid_boletim
     ),
     internacao as (
         select
