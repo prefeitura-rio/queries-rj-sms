@@ -208,7 +208,23 @@ with
                 then
                     struct(
                         profissional_saude_responsavel.nome as name,
-                        profissional_saude_responsavel.especialidade as role
+                        {{
+                            capitalize_first_letter("
+                                regexp_replace(
+                                    regexp_replace(
+                                        regexp_replace(
+                                        lower(profissional_saude_responsavel.especialidade),
+                                        ' da estrat[eé]gia( de){0,1} sa[uú]de da fam[ií]lia',
+                                        ''
+                                        ),
+                                        r'\(.*\)',
+                                        ''
+                                    ),
+                                    r'(modelo b)|( \-.*)|( para pacientes com necessidades especiais)|( nasf)',
+                                    ''
+                                    )
+                            ")
+                        }} as role
                     )
                 else null
             end as responsible,
