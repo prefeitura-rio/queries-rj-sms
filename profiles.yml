@@ -1,4 +1,5 @@
 default:
++ sms:
   target: dev
   outputs:
     dev:
