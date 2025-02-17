@@ -107,6 +107,13 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
+      area_programatica:
+        +schema: brutos_area_programatica
+        +tags: "daily"
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       ergon:
         +schema: brutos_ergon
         +tags: ["daily", "ergon"]
