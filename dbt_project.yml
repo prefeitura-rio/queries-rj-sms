@@ -6,7 +6,7 @@ version: "1.0.0"
 config-version: 2
 
 # This setting configures which "profile" dbt uses for this project.
-profile: "default"
+profile: "sms"
 
 # These configurations specify where dbt should look for different types of files.
 # The `source-paths` config, for example, states that models in this project can be
@@ -106,6 +106,13 @@ models:
         +labels:
           dado_publico: sim
           dado_pessoal: sim
+          dado_sensivel: nao
+      area_programatica:
+        +schema: brutos_area_programatica
+        +tags: "daily"
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
           dado_sensivel: nao
       ergon:
         +schema: brutos_ergon
