@@ -114,6 +114,13 @@ models:
           dado_publico: sim
           dado_pessoal: nao
           dado_sensivel: nao
+      minhasaude_mongodb:
+        +schema: brutos_minhasaude_mongodb
+        +tags: ["daily", "minhasaude"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       ergon:
         +schema: brutos_ergon
         +tags: ["daily", "ergon"]
