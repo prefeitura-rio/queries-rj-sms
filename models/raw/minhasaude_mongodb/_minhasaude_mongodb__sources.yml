@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_minhasaude_mongodb_staging
+    database: rj-sms
+    schema: brutos_minhasaude_mongodb_staging
+    tables:
+      - name: modulos_perfil_acessos
+      - name: perfil_acessos
