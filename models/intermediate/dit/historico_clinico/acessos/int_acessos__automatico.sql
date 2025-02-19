@@ -19,6 +19,12 @@ with
             cns,
             nome
         from {{ ref("dim_profissional_saude") }}
+        union all 
+        select
+            cpf,
+            cns,
+            dados.nome as nome
+        from {{ ref("mart_historico_clinico__paciente") }}
     ),
     unidades_de_saude as (
         select
@@ -27,14 +33,36 @@ with
             nome_limpo as unidade_nome
         from {{ ref("dim_estabelecimento") }}
     ),
+    cbo_datasus as (
+        select * from {{ ref("raw_datasus__cbo") }}
+    ),
     vinculos_profissionais_cnes as (
         select
-            profissional_cns as cns,
-            id_cnes as cnes,
-            cbo_nome,
-            cbo_agrupador,
-            data_ultima_atualizacao
-        from {{ ref("dim_vinculo_profissional_saude_estabelecimento") }}
+            cartao_nacional_saude as cns,
+            id_estabelecimento_cnes as cnes,
+            cbo_datasus.descricao as cbo_nome,
+            case 
+                when regexp_contains(lower(cbo_datasus.descricao),'^medic')
+                    then 'MÉDICOS'
+                when regexp_contains(lower(cbo_datasus.descricao),'^cirurgiao[ |-|]dentista')
+                    then 'DENTISTAS'
+                when regexp_contains(lower(cbo_datasus.descricao),'psic')
+                    then 'PSICÓLOGOS'  
+                when regexp_contains(lower(cbo_datasus.descricao),'fisioterap')
+                    then 'FISIOTERAPEUTAS'
+                when regexp_contains(lower(cbo_datasus.descricao),'nutri[ç|c]')
+                    then 'NUTRICIONISTAS'
+                when regexp_contains(lower(cbo_datasus.descricao),'fono')
+                    then 'FONOAUDIÓLOGOS'   
+                when regexp_contains(lower(cbo_datasus.descricao),'farm')
+                    then 'FARMACÊUTICOS'  
+                when ((regexp_contains(lower(cbo_datasus.descricao),'enferm')) and (lower(cbo_datasus.descricao) !='socorrista (exceto medicos e enfermeiros)'))
+                    then 'ENFERMEIROS'  
+                else
+                    'OUTROS PROFISSIONAIS'
+            end as cbo_agrupador,
+        from {{ ref("raw_cnes_ftp__profissional") }} as ftp_profissional
+        left join cbo_datasus on ftp_profissional.cbo_2002=cbo_datasus.id_cbo
     ),
 
     -- -----------------------------------------
