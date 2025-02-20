@@ -38,7 +38,32 @@ select
     safe_cast(no_logradouro as string) as endereco_logradouro,
     safe_cast(nu_endereco as string) as endereco_numero,
     safe_cast(no_complemento as string) as endereco_complemento,
-    safe_cast(no_bairro as string) as endereco_bairro,
+
+    -- Handling typos and a few other errors
+    CASE
+        WHEN safe_cast(no_bairro as string) = 'SAO FRANCISCO XAVEIR' THEN 'SAO FRANCISCO XAVIER'
+        WHEN safe_cast(no_bairro as string) = 'BRAS DE PINA' THEN 'BRAZ DE PINA'
+        WHEN safe_cast(no_bairro as string) = 'CAMPO GRNADE' THEN 'CAMPO GRANDE'
+        WHEN safe_cast(no_bairro as string) = 'TAQUARA JACAREPAGU' THEN 'TAQUARA'
+        WHEN safe_cast(no_bairro as string) = 'CENTRO RJ' THEN 'CENTRO'
+        WHEN safe_cast(no_bairro as string) = 'QUINTINO' THEN 'QUINTINO BOCAIUVA'
+        WHEN safe_cast(no_bairro as string) = 'COCOTA ILHA DO GOVER' THEN 'COCOTA'
+        WHEN safe_cast(no_bairro as string) = 'SANTA TEREZA' THEN 'SANTA TERESA'
+        WHEN safe_cast(no_bairro as string) = 'MAL HERMES' THEN 'MARECHAL HERMES'
+        WHEN safe_cast(no_bairro as string) = 'TANQUE JACAREPAGUA' THEN 'TANQUE'
+        WHEN safe_cast(no_bairro as string) = 'ILHA DO FUNDAO' THEN 'CIDADE UNIVERSITARIA'
+        WHEN safe_cast(no_bairro as string) = 'SENADOR VASCONCELLOS' THEN 'SENADOR VASCONCELOS'
+        WHEN safe_cast(no_bairro as string) = 'RICARDO DE ALBUQUERQ' THEN 'RICARDO DE ALBUQUERQUE'
+        WHEN safe_cast(no_bairro as string) = 'RECREIO DOS BANDEIRA' THEN 'RECREIO DOS BANDEIRANTES'
+        WHEN safe_cast(no_bairro as string) = 'FUNDAO' THEN 'CIDADE UNIVERSITARIA'
+        WHEN safe_cast(no_bairro as string) = 'CASTELO' THEN 'CENTRO'
+        WHEN safe_cast(no_bairro as string) = 'TANGUE' THEN 'TANQUE'
+        WHEN safe_cast(no_bairro as string) = 'VILA MANGUINHOS' THEN 'MANGUINHOS'
+        WHEN safe_cast(no_bairro as string) = 'CAIS DO PORTO' THEN 'CENTRO'
+        WHEN safe_cast(co_cnes as string) = "2269767" THEN 'MEIER'
+        ELSE safe_cast(no_bairro as string)
+    END AS endereco_bairro,
+
     safe_cast(co_cep as string) as endereco_cep,
     safe_cast(nu_latitude as float64) as endereco_latitude,
     safe_cast(nu_longitude as float64) as endereco_longitude,
