@@ -2,11 +2,6 @@
     config(
         schema="brutos_sheets",
         alias="usuarios_permitidos_hci",
-        partition_by={
-            "field": "cpf_particao",
-            "data_type": "int64",
-            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
-        },
     )
 }}
 
@@ -18,10 +13,9 @@ with
 
     tratados as (
         select
-            safe_cast(cpf as int64) as cpf_particao,
+            * except(cpf, nome_unidade),
             lpad(safe_cast(cpf as string), 11, "0") as cpf,
-            cnes,
-            nivel_de_acesso as nivel_acesso
+            trim(nome_unidade) as unidade_nome
         from source
     ),
 
@@ -30,6 +24,7 @@ with
         from tratados
     )
 
-select *
+select
+    *
 from distintos
 where {{ validate_cpf('cpf') }}
