@@ -13,18 +13,25 @@ with
         from {{ ref("raw_ergon_funcionarios") }}, unnest(dados) as funcionario_dado
         where status_ativo = true
     ),
-    profissionais_cnes as (
+    profissionais_cnes_unnest as (
         select
             cpf,
-            cns,
-            nome
+            nome,
+            cns
         from {{ ref("dim_profissional_saude") }}
         union all 
         select
             cpf,
-            cns,
-            dados.nome as nome
-        from {{ ref("mart_historico_clinico__paciente") }}
+            dados.nome as nome,
+            c as cns
+        from {{ ref("mart_historico_clinico__paciente") }}, unnest(cns) as c
+    ),
+    profissionais_cnes as (
+        select distinct 
+            cpf,
+            nome,
+            cns
+        from profissionais_cnes_unnest
     ),
     unidades_de_saude as (
         select
@@ -40,6 +47,8 @@ with
         select
             cartao_nacional_saude as cns,
             id_estabelecimento_cnes as cnes,
+            unidades_de_saude.tipo_sms_simplificado,
+            unidades_de_saude.unidade_nome,
             cbo_datasus.descricao as cbo_nome,
             case 
                 when regexp_contains(lower(cbo_datasus.descricao),'^medic')
@@ -61,15 +70,17 @@ with
                 else
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
+            concat(ano, '-', lpad(cast(mes as string), 2, '0')) data_ultima_atualizacao,
         from {{ ref("raw_cnes_ftp__profissional") }} as ftp_profissional
         left join cbo_datasus on ftp_profissional.cbo_2002=cbo_datasus.id_cbo
+        inner join unidades_de_saude on ftp_profissional.id_estabelecimento_cnes = unidades_de_saude.cnes
     ),
 
     -- -----------------------------------------
     -- Enriquecimento de Dados dos Funcionários
     -- -----------------------------------------
     funcionarios_ativos_enriquecido as (
-        select
+        select distinct
             cpf,
             nome as nome_completo,
             unidade_nome,
@@ -81,7 +92,6 @@ with
         from funcionarios_ativos_ergon
             left join profissionais_cnes using (cpf)
             left join vinculos_profissionais_cnes using (cns)
-            left join unidades_de_saude using (cnes)
     ),
     -- -----------------------------------------
     -- Pegando Vinculo mais recente
