@@ -229,4 +229,4 @@ with
 
 select *
 from final
--- where sistema_origem <> "vitai"  -- retirado por falta de dados 
+where sistema_origem <> "vitai"  -- retirado por falta de dados 
