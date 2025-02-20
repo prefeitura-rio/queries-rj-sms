@@ -121,6 +121,7 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+          dominio: subgeral
       ergon:
         +schema: brutos_ergon
         +tags: ["daily", "ergon"]
