@@ -6,5 +6,3 @@ sources:
     schema: brutos_area_programatica_staging
     tables:
     - name: bairros_aps
-
-

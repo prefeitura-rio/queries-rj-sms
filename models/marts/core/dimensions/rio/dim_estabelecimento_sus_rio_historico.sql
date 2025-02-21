@@ -87,6 +87,23 @@ with
         from {{ ref("raw_area_programatica__bairros_aps") }}
     ),
 
+    -- Obtendo latitudes e longitudes dos estabelecimentos de saúde
+    coordenadas as (
+        select id_cnes, latitude_api, longitude_api
+        from
+            (
+                select
+                    id_cnes,
+                    latitude_api,
+                    longitude_api,
+                    row_number() over (
+                        partition by id_cnes order by data_extracao desc
+                    ) as rn
+                from {{ ref("raw_geo_pgeo3__estabelecimentos_coordenadas") }}
+            )
+        where rn = 1
+    ),
+
     -- Obtendo atributos de contato para os estabelecimentos
     contatos_aps as (
         select id_cnes, telefone, email, facebook, instagram, twitter
@@ -155,8 +172,12 @@ with
             cnes_web.endereco_logradouro,
             cnes_web.endereco_numero,
             cnes_web.endereco_complemento,
-            cnes_web.endereco_latitude,
-            cnes_web.endereco_longitude,
+            coalesce(
+                cnes_web.endereco_latitude, coordenadas.latitude_api
+            ) as endereco_latitude,
+            coalesce(
+                cnes_web.endereco_longitude, coordenadas.longitude_api
+            ) as endereco_longitude,
             cnes_web.id_motivo_desativacao,
             cnes_web.id_unidade,
             cnes_web.aberto_sempre,
@@ -248,6 +269,10 @@ with
             on cast(brutos.id_estabelecimento_cnes as int64)
             = cast(contatos_aps.id_cnes as int64)
         left join aps_tb on cnes_web.endereco_bairro = aps_tb.bairro
+        left join
+            coordenadas
+            on cast(brutos.id_estabelecimento_cnes as int64)
+            = cast(coordenadas.id_cnes as int64)
     ),
 
     -- Seleção final
