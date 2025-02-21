@@ -344,7 +344,7 @@ models:
     description: "A tabela fornece informações sobre a cobertura de vários programas de saúde em diferentes estabelecimentos de saúde."
     columns:
       - name: id_cnes
-        description: Este é o identificador único para cada estabelecimento de saúde. 
+        description: Este é o identificador único para cada estabelecimento de saúde.
         data_type: string
         quote: true
         data_tests:
@@ -379,4 +379,56 @@ models:
       - name: hepatite_indicador
         description: Esta coluna indica se o estabelecimento fornece tratamento para Hepatite. É um valor booleano, onde 'true' significa que o estabelecimento fornece tratamento para Hepatite, e 'false' significa que não fornece.
         data_type: boolean
+        quote: true
+  - name: raw_sheets__compras_atas_processos_vigentes
+    columns:
+      - name: id_material
+        data_type: string
+        data_tests:
+          - unique:
+              name: raw_sheets__compras_atas_processos_vigentes__id_material__unique
+              config:
+                severity: warn
+        quote: true
+      - name: id_br
+        data_type: string
+        quote: true
+      - name: nome_padronizado
+        data_type: string
+        quote: true
+      - name: licitacao_realizada_para
+        data_type: string
+        quote: true
+      - name: apresentacao
+        data_type: string
+        quote: true
+      - name: id_processo_licitatorio
+        data_type: string
+        quote: true
+      - name: id_registro_preco
+        data_type: string
+        quote: true
+      - name: id_ata
+        data_type: string
+        quote: true
+      - name: vencimento_data
+        data_type: date
+        quote: true
+      - name: empresa_vencedora
+        data_type: string
+        quote: true
+      - name: fabricante
+        data_type: string
+        quote: true
+      - name: pregao___rp
+        data_type: string
+        quote: true
+      - name: ata
+        data_type: string
+        quote: true
+      - name: rp_vigente_indicador
+        data_type: string
+        quote: true
+      - name: status
+        data_type: string
         quote: true

@@ -10,7 +10,7 @@
 
 {% set data_atual = run_started_at.strftime("%Y-%m-%d") %}
 
--- To do: considerar alterações nas cargas horárias (CNES)
+-- To do: considerar alterações nas cargas horárias (CNES) e AFASTAMENTOS
 with
 
     -- Etapa 1: Identificar a data de partição mais recente
@@ -67,6 +67,7 @@ with
             string_agg(distinct procedimento) as procedimento,
             id_estabelecimento_executante,
             string_agg(distinct estabelecimento) as estabelecimento,
+            string_agg(distinct profissional_executante_nome) as profissional_nome,
             date_trunc(procedimento_vigencia_data, month) as data_mes,
             sum(vagas_todas_qtd) as vagas_proximo_mes
         from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
@@ -188,6 +189,7 @@ with
         select
             calculos_mad.*,
             estabelecimento,
+            profissional_nome,
             procedimento,
             vagas_proximo_mes_tb.vagas_proximo_mes,
             vagas_proximo_mes_tb.vagas_proximo_mes
@@ -224,6 +226,7 @@ with
             id_estabelecimento_executante as id_cnes,
             estabelecimento,
             profissional_executante_cpf as profissional_cpf,
+            profissional_nome,
             id_procedimento_interno as id_procedimento,
             procedimento,
             meses as meses_analisados,

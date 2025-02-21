@@ -10,3 +10,5 @@ target-base/
 *.DS_Store
 /dbt_packages
 .state/
+.cursorignore
+.cursor/

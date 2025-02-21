@@ -8,9 +8,19 @@ models:
       - name: cpf
         description: >
           Cadastro de Pessoas Físicas do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico__episodio_app__cpf__not_null
       - name: id_hci
         description: |
           Fingerprint determinístico para o atendimento.
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico__episodio_app__id_hci__not_null
+          - unique:
+              name: mart_historico_clinico__episodio_app__id_hci__unique
       - name: entry_datetime
         description: >
           Data e hora de início do atendimento. Representa o momento em que o
@@ -37,12 +47,18 @@ models:
       - name: clinical_exams.type
         description: |
           Tipo do exame realizado.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: clinical_exams.description
         description: |
           Descrição do exame realizado.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: procedures
         description: |
           Procedimentos realizados durante o episodio.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: measures
         description: >
           Medidas aferidas durante o episódio.
@@ -129,30 +145,42 @@ models:
       - name: cids.description
         description: |
           Descrição do cid associados ao atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: cids.status
         description: |
           Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
       - name: cids_summarized
         description: |
           Resumo dos cids associados ao atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: responsible
         description: |
           Lista dos profissionais de saúde responsáveis pelo atendimento.
       - name: responsible.name
         description: |
           Nome do proficional de saude responsavel pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: responsible.role
         description: |
           Especialidade do proficional de saude responsavel pelo atendimento.
       - name: clinical_motivation
         description: |
           Motivo do atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: clinical_outcome
         description: |
           Desfecho do atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: deceased
         description: |
           Indicador de obito.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: filter_tags
         description: |
           Lista de tipos de estabelecimentos.
@@ -186,6 +214,8 @@ models:
       - name: cpf_particao
         description: |
           Coluna de particionamento de CPF
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
   - name: mart_historico_clinico_app__paciente
     description: >
       Tabela com uma visão consolidada dos pacientes atendidos em
@@ -193,22 +223,36 @@ models:
     columns:
       - name: registration_name
         description: Nome de registro.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: social_name
         description: Nome social.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: cpf
         description: CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: cns
         description: CNS do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: birth_date
         description: Data de nascimento.
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
       - name: gender
         description: "Gênero do paciente. Os valores possíveis são 'Masculino', 'Feminino' e nulo (não informado)."
       - name: race
         description: "Raça do paciente. Os valores possíveis são 'Amarela','Branca', 'Indigena', 'Parda', 'Preta' e nulo (não informado)."
       - name: deceased
-        description: Indica se o paciente foi a óbito no atendimento.
+        description: Indica se o paciente foi a óbito no atendimento.        
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: phone
         description: Telefone do paciente.
+        policy_tags:
+          - '{{ var ("TAG_TELEFONE") }}'
       - name: family_clinic
         description: Informaçõe sobre a clínica da família.
       - name: family_clinic.cnes
@@ -229,18 +273,28 @@ models:
         description: Relação de médicos da equipe de saúde da família.
       - name: medical_responsible.registry
         description: Identificador do profissional de saúde no CNES.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: medical_responsible.name
         description: Nome do profissional de saúde.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: nursing_responsible
         description: Relação de enfermeiros da equipe de saúde da família.
       - name: nursing_responsible.registry
         description: Identificador do profissional de saúde no CNES.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: nursing_responsible.name
         description: Nome do profissional de saúde.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: validated
         description: Indica se a identidade do paciente foi validada em alguma base federal.
       - name: cpf_particao
         description: Coluna de particionamento de CPF
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: exibicao
         description: Flags de exibicao.
       - name: exibicao.indicador
@@ -257,17 +311,50 @@ models:
       em estabelecimentos de saúde.
     columns:
       - name: cpf
-        description: CPF do paciente.
+        description: CPF do paciente.        
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
       - name: allergies
         description: Lista de alergias do paciente.
       - name: continuous_use_medications
         description: Lista de medicamentos de uso continuo.
       - name: cpf_particao
-        description: CNS do paciente.
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
   - name: mart_historico_clinico_app__sistema
     description: >
       Tabela com uma visão consolidada do comportamendo dos usuários do HCI em
       termos de utilização do sistema.
+    columns:
+        - name: usuario_nome
+          description: Nome do usuário da consulta.
+          policy_tags:
+            - '{{ var ("TAG_NOME") }}'
+        - name: usuario_cpf
+          description: CPF do usuário da consulta.
+          policy_tags:
+            - '{{ var ("TAG_CPF") }}'
+        - name: iniciou_2fa
+          description: Indica se o usuário iniciou o processo de dupla verificação.
+        - name: ativou_2fa
+          description: Indica se o usuário ativou o login com processo de dupla verificação.
+        - name: bloqueado_no_2fa
+          description: Indica se o usuário foi bloqueado no processo de dupla verificação.
+        - name: usuario_cnes
+          description: Descreve o cnes associado ao usuário
+        - name: created_at
+          description: Data de criação do registro.
+        - name: updated_at
+          description: Data de ultima atualização.
+        - name: consultas
+          description: Agrupa as consultas feitas pelo usuário a pacientes dentro do HCI.
+        - name: consultas.cpf_alvo
+          description: CPF acessado pelo usuário.
+          policy_tags:
+            - '{{ var ("TAG_CPF") }}'
+        - name: consultas.momento_consulta
+          description: Data e hora do acesso.
   - name: mart_historico_clinico_app__indice
     description: >
       Tabela utilizada para busca por CNS e Nome no histórico clínico.
@@ -279,3 +366,57 @@ models:
               name: mart_historico_clinico_app__indice__cns_particao__not_null
           - unique:
               name: mart_historico_clinico_app__indice__cns_particao__unique
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: nome
+        description: Nome do paciente 
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: cpf 
+        description: CPF do paciente
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+  - name: mart_historico_clinico_app__busca
+    description: >
+      Tabela utilizada para dar informações prévias na pagina de busca
+    columns:
+      - name: cpf_particao
+        description: CPF utilizado para particionamento da tabela.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: cpf
+        description: CPF do paciente encontrado pela busca.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: cns_lista
+        description: Lista de CNS relacionados ao paciente.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: nome
+        description: Nome do paciente.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: data_nascimento
+        description: Data de nascimento.
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+      - name: idade
+        description: Idade do paciente, calculada a partir da data de nascimento.
+      - name: genero
+        description: Genero do paciente. Preenchido como "masculino", "feminino" ou "outro".
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var ("TAG_NOME_MAE") }}'
+      - name: quantidade_episodios
+        description: Quantidade de episódios que o paciente possui.
+      - name: exibicao
+        description: Reune informações de exibição do paciente.
+      - name: exibicao.indicador
+        description: Indica se o paciente pode ser exibido para o usuário que esta o buscando.
+      - name: exibicao.motivos
+        description: Descreve o motivo pelo qual o usuário não pode ter acesso ao paciente em questão.
+      - name: exibicao.ap_cadastro
+        description: Descreve a área programatica do paciente em questão.
+      - name: exibicao.unidades_cadastro
+        description: Descreve quais unidades o paciente em questão tem cadastro.

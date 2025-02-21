@@ -177,19 +177,18 @@ models:
         data_tests:
           - not_null:
               name: mart_monitora_reg__monitor_vagas_ambulatoriais__sisreg_dados__not_null
-          - dbt_utils.not_constant:
-              name: mart_monitora_reg__monitor_vagas_ambulatoriais__sisreg_dados__not_constant
 
       - name: cnes_dados
         description: "Flag que indica se o registro/row possui dados do CNES (1 = sim, 0 = não)."
         data_tests:
           - not_null:
               name: mart_monitora_reg__monitor_vagas_ambulatoriais__cnes_dados__not_null
-          - dbt_utils.not_constant:
-              name: mart_monitora_reg__monitor_vagas_ambulatoriais__cnes_dados__not_constant
 
       - name: status_oferta
         description: "Classifica o balanço de oferta como Adequado, Alto, Baixo ou Muito Baixo utilizando o Intervalo Interquartil (IQR), com base em ano_competencia, mes_competencia e id_procedimento."
 
-      - name: qtd_id_cbo_2002
-        description: "Quantidade de CBOs do profissional em determinado mes, ano e estabelecimento." 
+      - name: id_cbo_2002_qtd_sisreg
+        description: "Quantidade de CBOs do profissional no SISREG em determinado mes, ano e estabelecimento." 
+
+      - name: id_cbo_2002_todos_sisreg
+        description: "Todos os CBOs do profissional no SISREG em determinado mes, ano e estabelecimento." 

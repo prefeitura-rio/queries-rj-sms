@@ -64,6 +64,16 @@ with
         from {{ ref("raw_sheets__estabelecimento_auxiliar") }}
     ),
 
+    ocupacoes as (
+        select distinct id_cbo, upper(descricao) as ocupacao
+        from {{ ref("raw_datasus__cbo") }}
+    ),
+
+    ocupacoes_familia as (
+        select distinct id_cbo_familia, upper(descricao) as ocupacao_familia
+        from {{ ref("raw_datasus__cbo_fam") }}
+    ),
+
     final as (
         select
             id_escala_ambulatorial,
@@ -74,7 +84,10 @@ with
             id_procedimento_unificado,
             procedimento,
             id_cbo2002,
+            ocup.ocupacao,
+            ocupf.ocupacao_familia,
             profissional_executante_cpf,
+            profissional_executante_nome,
             procedimento_vigencia_inicial_data,
             procedimento_vigencia_final_data,
             data as procedimento_vigencia_data,
@@ -95,8 +108,11 @@ with
         left join
             nomes_estabelecimentos as ne
             on sef.id_estabelecimento_executante = ne.id_cnes
+        left join ocupacoes as ocup on sef.id_cbo2002 = ocup.id_cbo
+        left join
+            ocupacoes_familia as ocupf on left(sef.id_cbo2002, 4) = ocupf.id_cbo_familia
 
-        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
     )
 
 select
@@ -120,6 +136,9 @@ select
     procedimento_vigencia_ano,
     procedimento_vigencia_mes,
     procedimento_dia_semana_sigla as procedimento_vigencia_dia_semana,
+    ocupacao_familia,
+    ocupacao,
+    profissional_executante_nome,
     vagas_primeira_vez_qtd,
     vagas_reserva_qtd,
     vagas_retorno_qtd,
@@ -127,7 +146,9 @@ select
 
     -- metadados
     data_particao
+
 from final
+
 {% if is_incremental() %}
 
     where data_particao > (select max(data_particao) from {{ this }})
