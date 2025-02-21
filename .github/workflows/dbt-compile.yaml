@@ -35,5 +35,5 @@ jobs:
       run:  dbt deps
 
     - name: Compile dbt models
-      run: dbt compile --profiles-dir . --profile default --target dev
+      run: dbt compile --profiles-dir . --profile sms --target dev
 
