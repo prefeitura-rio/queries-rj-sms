@@ -116,7 +116,7 @@ models:
           dado_sensivel: nao
       minhasaude_mongodb:
         +schema: brutos_minhasaude_mongodb
-        +tags: ["daily", "minhasaude"]
+        +tags: ["daily", "minhasaude", "subgeral"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
