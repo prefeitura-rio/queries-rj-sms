@@ -47,7 +47,9 @@ with
             coalesce(prof.ocupacao, ofer.ocupacao) as ocupacao,
             coalesce(prof.ocupacao_agg, ofer.ocupacao_familia) as ocupacao_agg,
             coalesce(ofer.id_cnes, prof.id_cnes) as id_cnes,
-            coalesce(estab.nome_fantasia, ofer.estabelecimento_nome) as estabelecimento,
+            coalesce(
+                estab.nome_fantasia, ofer.estabelecimento_nome, prof.estabelecimento
+            ) as estabelecimento,
 
             -- variaveis temporais
             coalesce(ofer.ano_competencia, prof.ano_competencia) as ano_competencia,
@@ -192,11 +194,12 @@ with
         left join
             estabelecimentos as estab
             -- ma prática temporária (convertendo o tipo durante o join)
-            on safe_cast(ofer.ano_competencia as int)
+            on safe_cast(coalesce(ofer.ano_competencia, prof.ano_competencia) as int)
             = safe_cast(estab.ano_competencia as int)
-            and safe_cast(ofer.mes_competencia as int)
+            and safe_cast(coalesce(ofer.mes_competencia, prof.mes_competencia) as int)
             = safe_cast(estab.mes_competencia as int)
-            and safe_cast(ofer.id_cnes as int) = safe_cast(estab.id_cnes as int)
+            and safe_cast(coalesce(ofer.id_cnes, prof.id_cnes) as int)
+            = safe_cast(estab.id_cnes as int)
     ),
 
     iqr as (
@@ -210,7 +213,7 @@ with
         group by ano_competencia, mes_competencia, id_procedimento
     ),
 
-    final as (
+    iqr_label as (
         select
             mva.*,
 
@@ -232,10 +235,67 @@ with
             on mva.ano_competencia = iqr.ano_competencia
             and mva.mes_competencia = iqr.mes_competencia
             and mva.id_procedimento = iqr.id_procedimento
-        where
-            safe_cast(mva.id_cnes as int)
-            in (select safe_cast(id_cnes as int) from estabelecimentos)  -- removendo registros do CNES de estabelecimentos sem vinculo com o SUS
 
+        left join
+            estabelecimentos as estab
+            on safe_cast(mva.ano_competencia as int)
+            = safe_cast(estab.ano_competencia as int)
+            and safe_cast(mva.mes_competencia as int)
+            = safe_cast(estab.mes_competencia as int)
+            and safe_cast(mva.id_cnes as int) = safe_cast(estab.id_cnes as int)
+
+        where estab.vinculo_sus_indicador = 1
+    ),
+
+    final as (
+        select
+            cpf,
+            cns,
+            {{ remove_accents_upper("profissional") }} as profissional,
+            id_cbo_2002,
+            {{ remove_accents_upper("ocupacao") }} as ocupacao,
+            {{ remove_accents_upper("ocupacao_agg") }} as ocupacao_agg,
+            id_cbo_2002_qtd_sisreg,
+            id_cbo_2002_todos_sisreg,
+            id_cnes,
+            {{ remove_accents_upper("estabelecimento") }} as estabelecimento,
+            ano_competencia,
+            mes_competencia,
+            id_procedimento,
+            {{ remove_accents_upper("procedimento") }} as procedimento,
+            carga_horaria_ambulatorial_mensal,
+            carga_horaria_procedimento_esperada_mensal,
+            vagas_programadas_mensal_todas,
+            vagas_programadas_mensal_primeira_vez,
+            vagas_programadas_mensal_retorno,
+            vagas_esperadas_mensal,
+            vagas_esperadas_mensal_primeira_vez,
+            vagas_esperadas_mensal_retorno,
+            vagas_diferenca_ofertado_esperado,
+            procedimento_distribuicao,
+            procedimento_consultas_hora,
+            procedimento_proporcao_reservas,
+            procedimento_proporcao_retornos,
+            {{ remove_accents_upper("tipo_estabelecimento") }} as tipo_estabelecimento,
+            {{ remove_accents_upper("tipo_estabelecimento_agrupado") }}
+            as tipo_estabelecimento_agrupado,
+            {{ remove_accents_upper("turno_estabelecimento") }}
+            as turno_estabelecimento,
+            {{ remove_accents_upper("tipo_gestao_estabelecimento") }}
+            as tipo_gestao_estabelecimento,
+            {{ remove_accents_upper("esfera_estabelecimento") }}
+            as esfera_estabelecimento,
+            {{ remove_accents_upper("natureza_juridica_estabelecimento") }}
+            as natureza_juridica_estabelecimento,
+            id_ap_estabelecimento,
+            {{ remove_accents_upper("ap_estabelecimento") }} as ap_estabelecimento,
+            {{ remove_accents_upper("endereco_bairro_estabelecimento") }}
+            as endereco_bairro_estabelecimento,
+            procedimento_ppi,
+            sisreg_dados,
+            cnes_dados,
+            {{ remove_accents_upper("status_oferta") }} as status_oferta
+        from iqr_label
     )
 
 select *

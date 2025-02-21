@@ -10,9 +10,17 @@ models:
           Cadastro de Pessoas Físicas do paciente.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico__episodio_app__cpf__not_null
       - name: id_hci
         description: |
           Fingerprint determinístico para o atendimento.
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico__episodio_app__id_hci__not_null
+          - unique:
+              name: mart_historico_clinico__episodio_app__id_hci__unique
       - name: entry_datetime
         description: >
           Data e hora de início do atendimento. Representa o momento em que o

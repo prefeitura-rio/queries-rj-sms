@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: brutos_area_programatica_staging
+    database: rj-sms
+    schema: brutos_area_programatica_staging
+    tables:
+    - name: bairros_aps
+
+

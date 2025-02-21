@@ -15,6 +15,7 @@ sources:
       - name: aps_farmacias
       - name: profissionais_cns_cpf_aux
       - name: assistencial_procedimento
+      - name: usuarios_permitidos_hci
       
   - name: brutos_sheets
     database: rj-sms

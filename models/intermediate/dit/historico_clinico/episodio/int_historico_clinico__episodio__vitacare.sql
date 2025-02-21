@@ -43,7 +43,7 @@ with
             id_cnes as pk,
             struct(
                 id_cnes,
-                {{ proper_estabelecimento("nome_limpo") }} as nome,
+                {{ proper_estabelecimento("nome_acentuado") }} as nome,
                 tipo_sms as estabelecimento_tipo
             ) as estabelecimento
         from {{ ref("dim_estabelecimento") }}
@@ -52,17 +52,21 @@ with
     -- DIM: Condições
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     cid_descricao as (
-        select distinct id, descricao
+        select distinct regexp_replace(id,r'\.','') as id, descricao
         from {{ ref("dim_condicao_cid10") }}
         union all
-        select distinct categoria.id as id, categoria.descricao as descricao
+        select distinct regexp_replace(categoria.id,r'\.','') as id, categoria.descricao as descricao
         from {{ ref("dim_condicao_cid10") }}
     ),
     condicoes as (
         select distinct
             id_prontuario_global as fk_atendimento,
 
-            json_extract_scalar(condicao_json, "$.cod_cid10") as id,
+            regexp_replace(
+                json_extract_scalar(condicao_json, "$.cod_cid10"),
+                r'\.',
+                ''
+             ) as id,
 
             case
                 when json_extract_scalar(condicao_json, "$.estado") = "N.E"

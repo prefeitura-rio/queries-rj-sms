@@ -1103,8 +1103,14 @@ models:
         description: CPF do paciente.
         policy_tags:
           - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - not_null:
+              name: mart_prontuario_vitacare__ficha_a__cpf__not_null
       - name: id_paciente
         description: Identificador único do paciente no sistema.
+        data_tests:
+          - not_null:
+              name: mart_prontuario_vitacare__ficha_a__id_paciente__not_null
       - name: unidade_cadastro
         description: Unidade de saúde responsável pelo cadastro do paciente.
       - name: ap_cadastro
