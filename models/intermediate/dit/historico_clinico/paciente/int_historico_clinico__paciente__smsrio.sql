@@ -415,7 +415,7 @@ with
                 then false
                 when obito_indicador = "1"
                 then true
-                else null
+                else false
             end as obito_indicador,
             obito_data,
             case when mae_nome in ("NONE") then null else mae_nome end as mae_nome,

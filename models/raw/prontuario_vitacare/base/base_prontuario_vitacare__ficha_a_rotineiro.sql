@@ -30,7 +30,8 @@ with
         select
             safe_cast(nullif(patient_cpf, '') as string) as cpf,
             id as id_paciente,
-
+            data__nPront as numero_prontuario,
+            
             payload_cnes as unidade_cadastro,
             nullif(data__ap,'') as ap_cadastro,
 

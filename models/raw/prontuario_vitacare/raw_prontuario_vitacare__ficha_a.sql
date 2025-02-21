@@ -20,7 +20,8 @@ with
     ficha_a_padronizada as (
         select 
             safe_cast(cpf as string) as cpf,
-            safe_cast(id_paciente as string) as id_paciente,
+            REGEXP_REPLACE(CAST(id_paciente AS STRING), '\x00', '') AS id_paciente,
+            numero_prontuario,
             safe_cast(unidade_cadastro as string) as unidade_cadastro,
             regexp_replace(ap_cadastro,r'\.0','') as ap_cadastro,
             {{ proper_br('nome') }} as nome,

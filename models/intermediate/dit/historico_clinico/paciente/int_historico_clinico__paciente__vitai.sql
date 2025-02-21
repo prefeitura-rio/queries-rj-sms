@@ -387,7 +387,7 @@ with
                 then initcap("PRETA")
                 else initcap(raca)
             end as raca,
-            case when obito_data is not null then true else null end as obito_indicador,
+            case when obito_data is not null then true else false end as obito_indicador,
             obito_data,
             case when mae_nome in ("NONE") then null else mae_nome end as mae_nome,
             pai_nome,
