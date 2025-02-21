@@ -1,0 +1,64 @@
+models:
+  - name: raw_geo_pgeo3__estabelecimentos_coordenadas
+    description: O modelo raw_geo_pgeo3__estabelecimentos_coordenadas contém dados geográficos relacionados a estabelecimentos de saúde. Estes dados são municipais, provenientes da API do IPP.
+    columns:
+      - name: id_cnes
+        description: Esta coluna representa o identificador único do estabelecimento de saúde. É um número de sete dígitos, preenchido com zeros à esquerda caso o número original tenha menos de sete dígitos.
+        data_type: string
+        quote: true
+      - name: endereco_cep
+        description: Esta coluna representa o Código de Endereçamento Postal (CEP) do endereço do estabelecimento de saúde. É um número de oito dígitos, preenchido com zeros à esquerda caso o número original tenha menos de oito dígitos.
+        data_type: string
+        quote: true
+      - name: endereco_bairro
+        description: Esta coluna representa o bairro do endereço do estabelecimento de saúde.
+        data_type: string
+        quote: true
+      - name: endereco_logradouro
+        description: Esta coluna contém o nome da rua do estabelecimento.
+        data_type: string
+        quote: true
+      - name: endereco_numero
+        description: Esta coluna contém o número do endereço do estabelecimento.
+        data_type: string
+        quote: true
+      - name: latitude_cep
+        description: Esta coluna contém a latitude do estabelecimento com base no CEP.
+        data_type: float64
+        quote: true
+      - name: longitude_cep
+        description: Esta coluna representa a longitude do CEP do estabelecimento. 
+        data_type: float64
+        quote: true
+      - name: latitude_addr
+        description: Esta coluna representa a latitude do endereço do estabelecimento.
+        data_type: float64
+        quote: true
+      - name: longitude_addr
+        description: Esta coluna representa a longitude do endereço do estabelecimento. 
+        data_type: float64
+        quote: true
+      - name: latitude_api
+        description: Latitude final à ser considerada (Tenta preencher com addr, e caso não consiga, tenta preencher com cep).
+        data_type: float64
+        quote: true
+      - name: longitude_api
+        description: Longitude final à ser considerada (Tenta preencher com addr, e caso não consiga, tenta preencher com cep).
+        data_type: float64
+        quote: true
+      - name: data_extracao
+        description: A data e hora em que os dados foram extraídos.
+        data_type: datetime
+        quote: true
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. 
+        data_type: int64
+        quote: true
+      - name: mes_particao
+        description: Esta coluna representa o mês da partição.
+        data_type: int64
+        quote: true
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É baseada na data_extração, e é utilizada para fins de organização dos dados e consultas mais rápidas.
+        data_type: date
+        quote: true

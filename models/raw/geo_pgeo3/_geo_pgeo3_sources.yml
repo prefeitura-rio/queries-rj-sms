@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_geo_pgeo3_staging
+    database: rj-sms
+    schema: brutos_geo_pgeo3_staging
+    tables:
+      - name: estabelecimentos_coordenadas

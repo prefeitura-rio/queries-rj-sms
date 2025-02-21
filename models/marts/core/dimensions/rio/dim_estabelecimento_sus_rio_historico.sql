@@ -81,6 +81,29 @@ with
         from {{ ref("raw_sheets__estabelecimento_auxiliar") }}
     ),
 
+    -- Obtendo informações sobre as áreas programáticas
+    aps_tb as (
+        select bairro, ap, ap_titulo
+        from {{ ref("raw_area_programatica__bairros_aps") }}
+    ),
+
+    -- Obtendo latitudes e longitudes dos estabelecimentos de saúde
+    coordenadas as (
+        select id_cnes, latitude_api, longitude_api
+        from
+            (
+                select
+                    id_cnes,
+                    latitude_api,
+                    longitude_api,
+                    row_number() over (
+                        partition by id_cnes order by data_extracao desc
+                    ) as rn
+                from {{ ref("raw_geo_pgeo3__estabelecimentos_coordenadas") }}
+            )
+        where rn = 1
+    ),
+
     -- Obtendo atributos de contato para os estabelecimentos
     contatos_aps as (
         select id_cnes, telefone, email, facebook, instagram, twitter
@@ -149,8 +172,12 @@ with
             cnes_web.endereco_logradouro,
             cnes_web.endereco_numero,
             cnes_web.endereco_complemento,
-            cnes_web.endereco_latitude,
-            cnes_web.endereco_longitude,
+            coalesce(
+                cnes_web.endereco_latitude, coordenadas.latitude_api
+            ) as endereco_latitude,
+            coalesce(
+                cnes_web.endereco_longitude, coordenadas.longitude_api
+            ) as endereco_longitude,
             cnes_web.id_motivo_desativacao,
             cnes_web.id_unidade,
             cnes_web.aberto_sempre,
@@ -173,8 +200,13 @@ with
             estabelecimentos_atributos.tipo_unidade_agrupado_subgeral
             as tipo_unidade_agrupado,
             estabelecimentos_atributos.esfera_subgeral as esfera,
-            estabelecimentos_atributos.area_programatica as id_ap,
-            estabelecimentos_atributos.area_programatica_descr as ap,
+            coalesce(
+                estabelecimentos_atributos.area_programatica,
+                safe_cast(aps_tb.ap as string)
+            ) as id_ap,
+            coalesce(
+                estabelecimentos_atributos.area_programatica_descr, aps_tb.ap_titulo
+            ) as ap,
             estabelecimentos_atributos.agrupador_sms,
             estabelecimentos_atributos.tipo_sms,
             estabelecimentos_atributos.tipo_sms_simplificado,
@@ -236,6 +268,11 @@ with
             contatos_aps
             on cast(brutos.id_estabelecimento_cnes as int64)
             = cast(contatos_aps.id_cnes as int64)
+        left join aps_tb on cnes_web.endereco_bairro = aps_tb.bairro
+        left join
+            coordenadas
+            on cast(brutos.id_estabelecimento_cnes as int64)
+            = cast(coordenadas.id_cnes as int64)
     ),
 
     -- Seleção final

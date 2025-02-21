@@ -109,7 +109,14 @@ models:
           dado_sensivel: nao
       area_programatica:
         +schema: brutos_area_programatica
-        +tags: "daily"
+        +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
+      geo_pgeo3:
+        +schema: brutos_geo_pgeo3
+        +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
         +labels:
           dado_publico: sim
           dado_pessoal: nao
@@ -247,7 +254,7 @@ models:
             dado_sensivel: nao
           rio:
             +schema: saude_rio
-            +tags: ["weekly", "saude_rio", "subgeral"]
+            +tags: ["weekly", "saude_rio", "subgeral", "cnes_subgeral"]
             +labels:
               dado_publico: sim
               dado_pessoal: sim
@@ -255,7 +262,7 @@ models:
         facts:
           sisreg:
             +schema: saude_sisreg
-            +tags: "daily"
+            +tags: ["daily", "cnes", "sisreg"]
             +labels:
               dado_publico: nao
               dado_pessoal: nao
@@ -333,7 +340,7 @@ models:
             dominio: subgeral
         sisreg_reports:
           +schema: projeto_sisreg_reports
-          +tags: ["weekly", "subgeral", "sisreg_reports"]
+          +tags: ["weekly", "subgeral", "sisreg", "sisreg_reports"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
