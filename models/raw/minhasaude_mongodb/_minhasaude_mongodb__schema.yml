@@ -1,0 +1,112 @@
+models:
+  - name: raw_minhasaude_mongodb__perfil_acessos
+    description: Representa a coleção 'perfil_acessos' do MongoDB, responsável por armazenar o perfil dos usuários do Minha Saúde Rio. Esta tabela exibe apenas os registros mais recentes, definidos com base na data de extração.
+    columns:
+      - name: _id
+        description: Identificador único de cada registro na tabela.
+        data_type: string
+        quote: true
+      - name: idmodulo
+        description: Identificador do módulo associado ao perfil de acesso do usuário.
+        data_type: string
+        quote: true
+      - name: idusuario
+        description: Identificador único do usuário associado ao perfil de acesso.
+        data_type: string
+        quote: true
+      - name: nome
+        description: Representa o nome do usuário. 
+        data_type: string
+        quote: true
+      - name: cpf
+        description: O campo 'cpf' representa o CPF (Cadastro de Pessoas Físicas) do usuário. 
+        data_type: string
+        quote: true
+      - name: cns
+        description: O campo 'cns' representa o Cartão Nacional de Saúde (CNS) do usuário.
+        data_type: string
+        quote: true
+      - name: logingovbr
+        description: Indica se o usuário efetuou login utilizando o portal oficial do governo (gov.br). 
+        data_type: boolean
+        quote: true
+      - name: origem
+        description: Indica a fonte de onde o usuário acessou o serviço. Pode ser, por exemplo, 'web', 'android', 'ios'.
+        data_type: string
+        quote: true
+      - name: createdat
+        description:  Indica a data e hora em que o registro de acesso do usuário foi criado.
+        data_type: datetime
+        quote: true
+      - name: updatedat
+        description: Indica a data e hora em que o registro foi atualizado pela última vez.
+        data_type: datetime
+        quote: true
+      - name: __v
+        description: Campo de versão do documento no MongoDB, usado internamente para evitar conflitos em operações simultâneas.
+        data_type: string
+        quote: true
+      - name: data_extracao
+        description: A data e hora em que os dados foram extraídos.
+        data_type: datetime
+        quote: true
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. 
+        data_type: int64
+        quote: true
+      - name: mes_particao
+        description: Esta coluna representa o mês da partição.
+        data_type: int64
+        quote: true
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É baseada na data_extração, e é utilizada para fins de organização dos dados e consultas mais rápidas.
+        data_type: date
+        quote: true
+
+  - name: raw_minhasaude_mongodb__modulos_perfil_acessos
+    description: Representa a coleção 'modulos_perfil_acessos' do MongoDB, responsável por armazenar os acessos dos usuários do Minha Saúde Rio. Esta tabela exibe apenas os registros mais recentes, definidos com base na data de extração.
+    columns:
+      - name: _id
+        description: Identificador único de cada registro na tabela.
+        data_type: string
+        quote: true
+      - name: rota
+        description: Indica a rota associada ao módulo.
+        data_type: string
+        quote: true
+      - name: nome
+        description: Representa o nome do módulo.
+        data_type: string
+        quote: true
+      - name: descricao
+        description: Descrição do módulo de perfil de acesso.
+        data_type: string
+        quote: true
+      - name: createdat
+        description: Indica a data e hora em que o registro do módulo foi criado.
+        data_type: datetime
+        quote: true
+      - name: updatedat
+        description: Indica a data e hora em que o registro foi atualizado pela última vez.
+        data_type: datetime
+        quote: true
+      - name: __v
+        description: Campo de versão do documento no MongoDB, usado internamente para evitar conflitos em operações simultâneas.
+        data_type: string
+        quote: true
+      - name: data_extracao
+        description: A data e hora em que os dados foram extraídos.
+        data_type: datetime
+        quote: true
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição.
+        data_type: int64
+        quote: true
+      - name: mes_particao
+        description: Esta coluna representa o mês da partição.
+        data_type: int64
+        quote: true
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É baseada em 'data_extracao' e utilizada para organização dos dados e consultas mais rápidas.
+        data_type: date
+        quote: true
