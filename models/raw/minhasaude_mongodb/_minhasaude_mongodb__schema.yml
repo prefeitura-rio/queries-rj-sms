@@ -1,45 +1,45 @@
 models:
   - name: raw_minhasaude_mongodb__perfil_acessos
-    description: Representa a coleção 'perfil_acessos' do MongoDB, responsável por armazenar o perfil dos usuários do Minha Saúde Rio. Esta tabela exibe apenas os registros mais recentes, definidos com base na data de extração.
+    description: Representa a coleção 'perfil_acessos' do MongoDB, responsável por registrar os logs de acessos ao MinhaSaude.rio. Esta tabela exibe a versão mais atual dos dados extraídos.
     columns:
       - name: _id
-        description: Identificador único de cada registro na tabela.
+        description: Identificador único do documento, gerado automaticamente pelo MongoDB.
         data_type: string
         quote: true
       - name: idmodulo
-        description: Identificador do módulo associado ao perfil de acesso do usuário.
+        description: Chave estrangeira referente a algum módulo da tabela 'modulos_perfil_acessos'
         data_type: string
         quote: true
       - name: idusuario
-        description: Identificador único do usuário associado ao perfil de acesso.
+        description: ID do usuário referente à tabela de usuários (users) da subpav_principal, obtido através do JWT do usuário logado ao MinhaSaude.rio.
         data_type: string
         quote: true
       - name: nome
-        description: Representa o nome do usuário. 
+        description: Nome do usuário, obtido através do JWT do usuário logado ao MinhaSaude.rio.
         data_type: string
         quote: true
       - name: cpf
-        description: O campo 'cpf' representa o CPF (Cadastro de Pessoas Físicas) do usuário. 
+        description: CPF do usuário, obtido através do JWT do usuário logado ao MinhaSaude.rio.
         data_type: string
         quote: true
       - name: cns
-        description: O campo 'cns' representa o Cartão Nacional de Saúde (CNS) do usuário.
+        description: CNS do usuário, obtido através do JWT do usuário logado ao MinhaSaude.rio.
         data_type: string
         quote: true
       - name: logingovbr
-        description: Indica se o usuário efetuou login utilizando o portal oficial do governo (gov.br). 
+        description: Valor obtido através do JWT do usuário logado ao MinhaSaude.rio, sendo 1 para usuário logado através do login integrado GOV.BR, 0 para usuário logado através de autenticação da plataforma.
         data_type: boolean
         quote: true
       - name: origem
-        description: Indica a fonte de onde o usuário acessou o serviço. Pode ser, por exemplo, 'web', 'android', 'ios'.
+        description: Origem do registro de log, podendo ser 'web', 'android', 'ios'.
         data_type: string
         quote: true
       - name: createdat
-        description:  Indica a data e hora em que o registro de acesso do usuário foi criado.
+        description: Timestamp gerado automaticamente pelo MongoDB ao criar o documento.
         data_type: datetime
         quote: true
       - name: updatedat
-        description: Indica a data e hora em que o registro foi atualizado pela última vez.
+        description: Timestamp gerado automaticamente pelo MongoDB ao executar algum update no documento.
         data_type: datetime
         quote: true
       - name: __v
@@ -64,30 +64,30 @@ models:
         quote: true
 
   - name: raw_minhasaude_mongodb__modulos_perfil_acessos
-    description: Representa a coleção 'modulos_perfil_acessos' do MongoDB, responsável por armazenar os acessos dos usuários do Minha Saúde Rio. Esta tabela exibe apenas os registros mais recentes, definidos com base na data de extração.
+    description: Representa a coleção 'modulos_perfil_acessos' do MongoDB, responsável por listar os módulos disponíveis no MinhaSaude.rio. Esta tabela exibe a versão mais atual dos dados extraídos.
     columns:
       - name: _id
-        description: Identificador único de cada registro na tabela.
+        description: Identificador único de cada registro na tabela, gerado automaticamente pelo MongoDB.
         data_type: string
         quote: true
       - name: rota
-        description: Indica a rota associada ao módulo.
+        description: Endereço da rota da página na web.
         data_type: string
         quote: true
       - name: nome
-        description: Representa o nome do módulo.
+        description: Titulo dado à rota.
         data_type: string
         quote: true
       - name: descricao
-        description: Descrição do módulo de perfil de acesso.
+        description: Descrição da funcionalidade da rota.
         data_type: string
         quote: true
       - name: createdat
-        description: Indica a data e hora em que o registro do módulo foi criado.
+        description: Timestamp gerado automaticamente pelo MongoDB ao criar o documento.
         data_type: datetime
         quote: true
       - name: updatedat
-        description: Indica a data e hora em que o registro foi atualizado pela última vez.
+        description: Timestamp gerado automaticamente pelo MongoDB ao executar algum update no documento.
         data_type: datetime
         quote: true
       - name: __v
