@@ -1,0 +1,581 @@
+models:
+  - name: raw_ser_metabase__fato_ambulatorio
+    description: >
+      Tabela de fatos ambulatoriais do SER.
+      
+    columns:
+      - name: solicitacao_id
+        description: >
+          Identificador único para cada solicitação. Este campo é uma chave primária.
+        data_type: string
+        quote: true
+
+      - name: dt_solicitacao
+        description: >
+          Data e hora em que a solicitação foi feita. Armazenada como um objeto datetime.
+        data_type: datetime
+        quote: true
+
+      - name: prioridade
+        description: >
+          Nível de prioridade da solicitação. Armazenado como um inteiro, em que números mais
+          altos indicam maior prioridade.
+        data_type: int64
+        quote: true
+
+      - name: rank
+        description: >
+          Representa o rank (ordem) da solicitação do paciente. É um valor inteiro que auxilia
+          na priorização dos pedidos.
+        data_type: int64
+        quote: true
+
+      - name: estado_solicitacao
+        description: >
+          Indica o status da solicitação. É uma string que pode assumir valores como 'PENDING',
+          'APPROVED', 'REJECTED', etc.
+        data_type: string
+        quote: true
+
+      - name: apto_ao_tratamento
+        description: >
+          Indica se o paciente está apto ou não para o tratamento. É um valor booleano, onde
+          'True' significa apto e 'False' significa não apto.
+        data_type: boolean
+        quote: true
+
+      - name: classificacao_risco
+        description: >
+          Classificação de risco do paciente. Campo do tipo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: classificacao_risco_alterada
+        description: >
+          Indica se a classificação de risco do paciente foi alterada. É um campo booleano, 
+          onde 'True' significa que houve alteração e 'False' significa que não houve.
+        data_type: boolean
+        quote: true
+
+      - name: data
+        description: >
+          Data associada ao registro. Campo do tipo datetime.
+        data_type: datetime
+        quote: true
+
+      - name: hora
+        description: >
+          Hora do evento ou ação. Armazenada no formato TIME.
+        data_type: time
+        quote: true
+
+      - name: nome
+        description: >
+          Nome da entidade envolvida no evento ou ação. Armazenado como string, normalizado
+          e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: nome_paciente
+        description: >
+          Nome do paciente envolvido no evento ou ação. Armazenado como string, normalizado
+          e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: municipio_paciente
+        description: >
+          Município do paciente. É um valor string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: cns
+        description: >
+          Identificador único do paciente no sistema de saúde, conhecido como Cartão Nacional 
+          de Saúde (CNS). É uma string preenchida com zeros à esquerda para garantir comprimento 
+          de 15 caracteres.
+        data_type: string
+        quote: true
+
+      - name: data_nascimento
+        description: >
+          Data de nascimento do paciente. É um valor datetime, convertido de forma segura 
+          a partir da fonte original.
+        data_type: datetime
+        quote: true
+
+      - name: datanascimento
+        description: >
+          Representa a data de nascimento do paciente. Armazenada como DATETIME.
+        data_type: datetime
+        quote: true
+
+      - name: sexo_paciente
+        description: >
+          Gênero do paciente. Armazenado como string e normalizado para conter apenas caracteres alfabéticos.
+        data_type: string
+        quote: true
+
+      - name: unidade_origem_id
+        description: >
+          Identificador único da unidade de origem. Armazenado como inteiro em formato de string.
+        data_type: string
+        quote: true
+
+      - name: unidade_origem_cnes
+        description: >
+          Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade de origem. 
+          Identificador único de cada estabelecimento de saúde no Brasil.
+        data_type: string
+        quote: true
+
+      - name: unidade_origem
+        description: >
+          Nome da unidade de origem. Refere-se ao estabelecimento de saúde onde o tratamento 
+          do paciente foi iniciado.
+        data_type: string
+        quote: true
+
+      - name: municipio_unidade_origem
+        description: >
+          Município da unidade de origem. Indica a cidade ou localidade onde está localizado 
+          o estabelecimento de saúde de origem.
+        data_type: string
+        quote: true
+
+      - name: codigo_ibge_unidade_origem
+        description: >
+          Código IBGE da unidade de origem. É um identificador único atribuído a cada município 
+          pelo Instituto Brasileiro de Geografia e Estatística (IBGE).
+        data_type: string
+        quote: true
+
+      - name: hospital_origem_nao_identificado
+        description: >
+          Nome do hospital de origem quando este não é identificado. Normalizado e sem 
+          caracteres especiais, em letras maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: unidadeidentificada
+        description: >
+          Campo booleano que indica se a unidade foi identificada ou não. Retorna 'true' se 
+          a unidade foi identificada e 'false' em caso contrário.
+        data_type: boolean
+        quote: true
+
+      - name: unidade_executante_id
+        description: >
+          Identificador único da unidade executante. É um valor numérico armazenado como string.
+        data_type: string
+        quote: true
+
+      - name: unidadeexecutante
+        description: >
+          Nome da unidade executante. Campo do tipo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: municipio_unidade_executante
+        description: >
+          Município da unidade executante. Campo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: unidade_executante_cnes
+        description: >
+          Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade executante. 
+          Identificador único de estabelecimentos de saúde no Brasil. É preenchido com zeros 
+          à esquerda para garantir 7 caracteres.
+        data_type: string
+        quote: true
+
+      - name: centralregulacao_id
+        description: >
+          Identificador único da central de regulação. A central de regulação é responsável 
+          pela gestão de alocação de recursos e serviços de saúde.
+        data_type: string
+        quote: true
+
+      - name: central_regulacao
+        description: >
+          Nome da central de regulação, responsável pela gestão de alocação de recursos 
+          e serviços de saúde.
+        data_type: string
+        quote: true
+
+      - name: codigo_cid
+        description: >
+          Código único da Classificação Internacional de Doenças (CID), utilizado para 
+          identificar condições de saúde específicas.
+        data_type: string
+        quote: true
+
+      - name: descricao_cid
+        description: >
+          Descrição da condição de saúde associada ao código CID, de acordo com a 
+          Classificação Internacional de Doenças.
+        data_type: string
+        quote: true
+
+      - name: recurso_solicitado
+        description: >
+          Recurso ou serviço específico solicitado pelo paciente ou profissional de saúde. 
+          Pode incluir diversos tipos de tratamentos, procedimentos ou equipamentos.
+        data_type: string
+        quote: true
+
+      - name: tipo_recurso_solicitado
+        description: >
+          Tipo do recurso solicitado. Campo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: cod_recurso_solicitado
+        description: >
+          Código do recurso solicitado. Campo string que identifica de forma única o tipo 
+          de recurso requerido.
+        data_type: string
+        quote: true
+
+      - name: recurso_regulado
+        description: >
+          Recurso que foi regulado. Campo string, normalizado e sem caracteres especiais. 
+          Indica o recurso que passou por regulação ou controle.
+        data_type: string
+        quote: true
+
+      - name: tipo_recurso_regulado
+        description: >
+          Tipo do recurso regulado. Campo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: cod_recurso_regulado
+        description: >
+          Código do recurso regulado. Campo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: recurso_solicitado_sisreg
+        description: >
+          Recurso solicitado no sistema SISREG. Campo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: recurso_regulado_sisreg
+        description: >
+          Recurso regulado no sistema SISREG. Campo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: especialidade_solicitante
+        description: >
+          Especialidade do profissional ou unidade que fez a solicitação. Campo string, 
+          normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: especialidade_regulado
+        description: >
+          Especialidade que foi regulada. Campo string, normalizado e sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: dt_agendamento
+        description: >
+          Data e hora em que o agendamento foi marcado. Armazenada como DATETIME.
+        data_type: datetime
+        quote: true
+
+      - name: dt_execucao
+        description: >
+          Data e hora em que o procedimento ou consulta foi efetivamente realizado. Armazenada como DATETIME.
+        data_type: datetime
+        quote: true
+
+      - name: data_prevista_tratamento
+        description: >
+          Data prevista ou estimada para início do tratamento. Armazenada como DATETIME.
+        data_type: datetime
+        quote: true
+
+      - name: dt_inicio_efetiva_tratamento
+        description: >
+          Data e hora em que o tratamento foi, de fato, iniciado. Armazenada como DATETIME.
+        data_type: datetime
+        quote: true
+
+      - name: motivo_cancelamento_solicitacao
+        description: >
+          Motivo do cancelamento da solicitação. Armazenado como string, normalizado e 
+          convertido em maiúsculas, sem caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: mandado_judicial
+        description: >
+          Indica se há um mandado judicial relacionado à solicitação. Armazenado como string, 
+          normalizado e em maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: nacaojudicial
+        description: >
+          Nacionalidade da entidade judicial envolvida no caso. Os dados são normalizados 
+          e livres de caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: juiz
+        description: >
+          Nome do juiz responsável pelo caso. Os dados são normalizados e livres de caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: decisaojuiz
+        description: >
+          Decisão tomada pelo juiz no caso. Os dados são normalizados e livres de caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: pena
+        description: >
+          Pena associada ao mandado judicial. Normalizada, sem caracteres especiais 
+          e em letras maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: reu
+        description: >
+          Réu no mandado judicial. Normalizado, sem caracteres especiais e em maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: prazo
+        description: >
+          Prazo ou limite de tempo associado ao mandado judicial ou ao tratamento. 
+          Armazenado como string, geralmente representando data ou período.
+        data_type: string
+        quote: true
+
+      - name: data_extracao
+        description: >
+          Data em que os dados foram extraídos do sistema de origem. Armazenada como DATETIME.
+        data_type: datetime
+        quote: true
+
+      - name: ano_particao
+        description: >
+          Ano da partição. Armazenado como INT64.
+        data_type: int64
+        quote: true
+
+      - name: mes_particao
+        description: >
+          Mês da partição. Armazenado como INT64.
+        data_type: int64
+        quote: true
+
+      - name: data_particao
+        description: >
+          Data da partição. Tipo DATE.
+        data_type: date
+        quote: true
+
+
+  - name: raw_ser_metabase__tb_solicitacoes
+    description: >
+      Tabela de solicitações do SER.
+
+    columns:
+      - name: data_solicitacao
+        description: >
+          Data em que a solicitação foi feita. Armazenada como um tipo de dado date.
+        data_type: date
+        quote: true
+
+      - name: solicitacao_id
+        description: >
+          Identificador único para cada solicitação. Armazenado como string.
+        data_type: string
+        quote: true
+
+      - name: dt_reserva
+        description: >
+          Data da reserva associada à solicitação. Armazenada como date.
+        data_type: date
+        quote: true
+
+      - name: estadosolicitacao
+        description: >
+          Representa o estado da solicitação. É normalizado e limpo para remover caracteres 
+          especiais, sendo convertido para maiúsculas por consistência.
+        data_type: string
+        quote: true
+
+      - name: data_evento_desistencia
+        description: >
+          Data do evento de desistência. Convertida para o formato date para facilitar 
+          manipulação e análise.
+        data_type: date
+        quote: true
+
+      - name: nacaojudicial
+        description: >
+          Representa a nação judicial. É um campo bruto, sem transformações adicionais neste modelo.
+        data_type: string
+        quote: true
+
+      - name: paciente_nome
+        description: >
+          Nome do paciente. Normalizado e limpo de caracteres especiais, sendo apresentado em maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: cns
+        description: >
+          Identificador único do paciente no sistema de saúde, composto por 15 dígitos. 
+          Preenchido com zeros à esquerda, se necessário.
+        data_type: string
+        quote: true
+
+      - name: paciente_datanacimento
+        description: >
+          Data de nascimento do paciente. Convertida para o formato date por consistência.
+        data_type: date
+        quote: true
+
+      - name: municipio_paciente
+        description: >
+          Município do paciente. Os dados são normalizados, limpos de caracteres especiais e 
+          convertidos para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: infarto_agudo
+        description: >
+          Indica se o paciente sofreu um infarto agudo. Os dados são normalizados e convertidos 
+          para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: tipo_de_leito
+        description: >
+          Tipo de leito atribuído ao paciente. Os dados são normalizados e convertidos para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: carater_internacao
+        description: >
+          Caráter da internação. Campo de texto normalizado e limpo de caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: tipointernacao
+        description: >
+          Tipo de internação. Campo de texto normalizado e limpo de caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: procedimento
+        description: >
+          Procedimento realizado ou a ser realizado. Campo de texto normalizado e limpo de 
+          caracteres especiais.
+        data_type: string
+        quote: true
+
+      - name: especialidade
+        description: >
+          Especialidade do profissional médico responsável pelo caso do paciente. 
+          Normalizado e convertido para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: numero_cid
+        description: >
+          Código da Classificação Internacional de Doenças (CID) associado ao diagnóstico 
+          do paciente. Normalizado e convertido para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: unidade_origem
+        description: >
+          Unidade ou setor de origem onde o caso do paciente foi inicialmente registrado. 
+          Normalizado e convertido para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: cnes_unidade_origem
+        description: >
+          Identificador único para a unidade de origem do paciente. É um código de sete dígitos, 
+          preenchido com zeros à esquerda.
+        data_type: string
+        quote: true
+
+      - name: municipio_unidade_origem
+        description: >
+          Município da unidade de origem. Normalizado para remover caracteres especiais 
+          e convertido para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: unidade_executante
+        description: >
+          Unidade executante. Campo de texto normalizado para remover caracteres especiais 
+          e convertido para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: cnes_unidade_executante
+        description: >
+          Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade executante. 
+          É um identificador único de sete dígitos, preenchido com zeros à esquerda.
+        data_type: string
+        quote: true
+
+      - name: municipio_unidade_executante
+        description: >
+          Município da unidade executante. Nome normalizado para remover caracteres especiais 
+          e convertido para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: motivo_cancelamento_solicitacao
+        description: >
+          Motivo do cancelamento da solicitação. Normalizado para remover caracteres especiais 
+          e convertido para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: central_regulacao
+        description: >
+          Representa a entidade de central de regulação. Normalizado para remover caracteres 
+          especiais e convertido para maiúsculas.
+        data_type: string
+        quote: true
+
+      - name: data_extracao
+        description: >
+          Data e hora em que os dados foram extraídos. Convertida para o formato datetime.
+        data_type: datetime
+        quote: true
+
+      - name: ano_particao
+        description: >
+          Ano da partição. Convertido para o formato inteiro (INT64).
+        data_type: int64
+        quote: true
+
+      - name: mes_particao
+        description: >
+          Mês da partição. É um valor inteiro de 1 a 12, onde 1 representa janeiro 
+          e 12 representa dezembro.
+        data_type: int64
+        quote: true
+
+      - name: data_particao
+        description: >
+          Data da partição, no formato YYYY-MM-DD. Armazenada como tipo date.
+        data_type: date
+        quote: true
