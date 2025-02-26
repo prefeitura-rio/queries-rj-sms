@@ -129,6 +129,13 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: subgeral
+      ser_metabase:
+        +schema: brutos_ser_metabase
+        +tags: ["daily", "ser", subgeral]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       ergon:
         +schema: brutos_ergon
         +tags: ["daily", "ergon"]

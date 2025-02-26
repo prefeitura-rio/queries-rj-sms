@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_ser_metabase_staging
+    database: rj-sms
+    schema: brutos_ser_metabase_staging
+    tables:
+      - name: FATO_AMBULATORIO
+      - name: TB_SOLICITACOES
