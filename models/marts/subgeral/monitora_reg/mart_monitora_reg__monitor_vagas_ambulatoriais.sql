@@ -57,7 +57,7 @@ with
 
             -- procedimentos
             ofer.id_procedimento,
-            ofer.procedimento,
+            {{ remove_accents_upper("ofer.procedimento") }} as procedimento,
 
             -- cargas horarias e vagas
             prof.carga_horaria_ambulatorial_mensal,
@@ -165,6 +165,12 @@ with
             coalesce(
                 prof.endereco_bairro, estab.endereco_bairro
             ) as endereco_bairro_estabelecimento,
+            coalesce(
+                prof.endereco_latitude, estab.endereco_latitude
+            ) as endereco_latitude,
+            coalesce(
+                prof.endereco_longitude, estab.endereco_longitude
+            ) as endereco_longitude,
 
             -- flags
             case
@@ -247,6 +253,31 @@ with
         where estab.vinculo_sus_indicador = 1
     ),
 
+    classifica_proceds as (
+        select
+            *,
+            case
+                when
+                    procedimento like "%INFAN%"
+                    or procedimento like "%PEDI%"
+                    or procedimento like "%CRIAN%"
+                    or procedimento like "%TESTE DA ORELHINHA%"
+                    or procedimento
+                    = "CONSULTA EM OFTALMOLOGIA - REFLEXO VERMELHO ALTERADO"
+                    or procedimento = "CONSULTA ENDOCRINOLOGIA - CRESCIMENTO"
+                    or procedimento = "CONSULTA ENDOCRINOLOGIA - CRESCIMENTO - PPI"
+                    or procedimento = "POTENCIAL EVOCADO AUDITIVO BERA"
+                    or procedimento = "GRUPO - INFECCOES CONGENITAS"
+                then "CRIANCA"
+
+                when procedimento like "%ADOLE%"
+                then "ADOLESCENTE"
+
+                else "ADULTO"
+            end as procedimento_faixa_etaria
+        from iqr_label
+    ),
+
     final as (
         select
             cpf,
@@ -262,7 +293,8 @@ with
             ano_competencia,
             mes_competencia,
             id_procedimento,
-            {{ remove_accents_upper("procedimento") }} as procedimento,
+            procedimento,
+            procedimento_faixa_etaria,
             carga_horaria_ambulatorial_mensal,
             carga_horaria_procedimento_esperada_mensal,
             vagas_programadas_mensal_todas,
@@ -291,11 +323,13 @@ with
             {{ remove_accents_upper("ap_estabelecimento") }} as ap_estabelecimento,
             {{ remove_accents_upper("endereco_bairro_estabelecimento") }}
             as endereco_bairro_estabelecimento,
+            endereco_latitude,
+            endereco_longitude,
             procedimento_ppi,
             sisreg_dados,
             cnes_dados,
             {{ remove_accents_upper("status_oferta") }} as status_oferta
-        from iqr_label
+        from classifica_proceds
     )
 
 select *

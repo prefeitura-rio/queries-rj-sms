@@ -192,3 +192,12 @@ models:
 
       - name: id_cbo_2002_todos_sisreg
         description: "Todos os CBOs do profissional no SISREG em determinado mes, ano e estabelecimento." 
+
+      - name: endereco_latitude
+        description: "Latitude do endereço do estabelecimento."
+
+      - name: endereco_longitude
+        description: "Longitude do endereço do estabelecimento."
+
+      - name: procedimento_faixa_etaria
+        description: "Faixa etária contemplada pelo procedimento."

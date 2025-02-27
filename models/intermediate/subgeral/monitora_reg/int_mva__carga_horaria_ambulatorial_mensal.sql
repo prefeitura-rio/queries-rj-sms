@@ -44,7 +44,9 @@ with
             estabelecimento__tipo_unidade_agrupado as tipo_unidade_agrupado,
             estabelecimento__id_ap as id_ap,
             estabelecimento__ap as ap,
-            estabelecimento__endereco_bairro as endereco_bairro
+            estabelecimento__endereco_bairro as endereco_bairro,
+            estabelecimento__endereco_latitude as endereco_latitude,
+            estabelecimento__endereco_longitude as endereco_longitude,
 
         from versao_atual
         where
@@ -102,7 +104,9 @@ with
             tipo_unidade_agrupado,
             id_ap,
             ap,
-            endereco_bairro
+            endereco_bairro,
+            endereco_latitude,
+            endereco_longitude,
 
         from profissionais_mais_recentes
         group by
@@ -119,7 +123,9 @@ with
             tipo_unidade_agrupado,
             id_ap,
             ap,
-            endereco_bairro
+            endereco_bairro,
+            endereco_latitude,
+            endereco_longitude
     )
 
 select *
