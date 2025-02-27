@@ -114,6 +114,8 @@ models:
           dado_publico: sim
           dado_pessoal: nao
           dado_sensivel: nao
+          dominio: subgeral
+
       geo_pgeo3:
         +schema: brutos_geo_pgeo3
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
@@ -121,6 +123,7 @@ models:
           dado_publico: sim
           dado_pessoal: nao
           dado_sensivel: nao
+          dominio: subgeral
       minhasaude_mongodb:
         +schema: brutos_minhasaude_mongodb
         +tags: ["daily", "minhasaude", "subgeral"]
@@ -136,6 +139,7 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+          dominio: subgeral
       ergon:
         +schema: brutos_ergon
         +tags: ["daily", "ergon"]
@@ -152,11 +156,12 @@ models:
           dado_sensivel: nao
       datasus:
         +schema: brutos_datasus
-        +tags: "weekly"
+        +tags: ["weekly", "subgeral"]
         +labels:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
+          dominio: subgeral
       monitoramento:
         +schema: gerenciamento__historico_clinico__logs
         +tags: "daily"
@@ -219,11 +224,12 @@ models:
           dado_sensivel: nao
       sheets:
         +schema: brutos_sheets
-        +tags: "daily"
+        +tags: ["daily", "subgeral", "cnes_subgeral", "monitora_reg"]
         +labels:
           dado_publico: nao
           dado_pessoal: nao
           dado_sensivel: nao
+          dominio: subgeral
       sih:
         +schema: brutos_sih
         +tags: "daily"
@@ -261,19 +267,21 @@ models:
             dado_sensivel: nao
           rio:
             +schema: saude_rio
-            +tags: ["weekly", "saude_rio", "subgeral", "cnes_subgeral"]
+            +tags: ["weekly", "saude_rio", "subgeral", "cnes_subgeral", "monitora_reg"]
             +labels:
               dado_publico: sim
               dado_pessoal: sim
               dado_sensivel: nao
+              dominio: subgeral
         facts:
           sisreg:
             +schema: saude_sisreg
-            +tags: ["daily", "cnes", "sisreg"]
+            +tags: ["daily", "cnes", "sisreg", "subgeral", "monitora_reg"]
             +labels:
               dado_publico: nao
               dado_pessoal: nao
               dado_sensivel: nao
+              dominio: subgeral
           estoque:
             +schema: saude_estoque
             +tags: "daily"
