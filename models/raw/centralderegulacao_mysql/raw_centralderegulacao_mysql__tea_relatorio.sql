@@ -1,14 +1,4 @@
-{{
-    config(
-        schema="brutos_centralderegulacao_mysql",
-        alias="tea_relatorio",
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "month",
-        },
-    )
-}}
+{{ config(schema="brutos_centralderegulacao_mysql", alias="tea_relatorio") }}
 
 with
     source as (

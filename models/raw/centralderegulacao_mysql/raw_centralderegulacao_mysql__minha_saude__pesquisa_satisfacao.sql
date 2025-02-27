@@ -2,11 +2,6 @@
     config(
         schema="brutos_centralderegulacao_mysql",
         alias="minha_saude__pesquisa_satisfacao",
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "month",
-        },
     )
 }}
 
