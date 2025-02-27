@@ -115,7 +115,6 @@ models:
           dado_pessoal: nao
           dado_sensivel: nao
           dominio: subgeral
-
       geo_pgeo3:
         +schema: brutos_geo_pgeo3
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
@@ -225,6 +224,14 @@ models:
       sheets:
         +schema: brutos_sheets
         +tags: ["daily", "subgeral", "cnes_subgeral", "monitora_reg"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_sensivel: nao
+          dominio: subgeral
+      centralderegulacao_mysql:
+        +schema: brutos_centralderegulacao_mysql
+        +tags: ["daily", "subgeral", "minha_saude"]
         +labels:
           dado_publico: nao
           dado_pessoal: nao
