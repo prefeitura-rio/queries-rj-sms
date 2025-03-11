@@ -36,7 +36,7 @@ with
     ),
     total as (
         select *
-        from (select * from vitai where alergia is not null)
+        from  vitai 
         union all
         select *
         from vitacare
