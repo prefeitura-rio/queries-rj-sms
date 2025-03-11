@@ -84,7 +84,8 @@ with
             array_agg(
                 struct( 
                     descricao as descricao_raw,
-                    alergias_padronizado as descricao_padronizado
+                    initcap(alergias_padronizado) as descricao_padronizado,
+                    if(de_para_padronizacao.alergias_raw is null, 0, 1) as padronizado
                 ) ignore nulls) as alergias
         from alergias_trimmed
         left join de_para_padronizacao

@@ -13,7 +13,12 @@
 
 with
     vitai as (
-        select id_paciente, cns, cpf, alergia, safe_cast(cpf as int64) as cpf_particao
+        select 
+            id_paciente, 
+            cns, 
+            cpf, 
+            alergia.descricao_raw as alergia, 
+            safe_cast(cpf as int64) as cpf_particao
         from
             {{ ref("int_historico_clinico__alergia__vitai") }},
             unnest(alergias) as alergia
@@ -31,7 +36,7 @@ with
     ),
     total as (
         select *
-        from vitai
+        from (select * from vitai where alergia is not null)
         union all
         select *
         from vitacare
