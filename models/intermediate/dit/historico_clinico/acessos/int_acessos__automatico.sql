@@ -116,5 +116,6 @@ select
     unidade_tipo,
     unidade_cnes,
     funcao_detalhada,
-    funcao_grupo
+    funcao_grupo,
+    safe_cast(null as string) as nivel_de_acesso
 from funcionarios_ativos_enriquecido_mais_recente

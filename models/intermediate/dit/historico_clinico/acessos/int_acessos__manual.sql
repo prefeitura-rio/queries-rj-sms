@@ -17,7 +17,7 @@ with
         select 
             *,
             CASE
-                WHEN unidade_nome = 'SUBHUE' THEN '0932280' -- Esse caso não devia existir, mas temporariamente botei UPA
+                WHEN unidade_nome IN ('DIT', 'SUBHUE','SUBPAV','SUBGERAL', 'SUBGESTÃO','SMS') THEN '0932280'
                 WHEN unidade_nome = 'UPA Cidade de Deus' THEN '6575900'
                 WHEN unidade_nome = 'UPA Del Castilho' THEN '0932280'
                 WHEN unidade_nome = 'UPA Paciência' THEN '6938124'
@@ -29,7 +29,7 @@ with
                 ELSE null
             END as unidade_cnes,
             CASE
-                WHEN unidade_nome = 'SUBHUE' THEN 'UPA' -- Esse caso não devia existir, mas temporariamente botei UPA
+                WHEN unidade_nome IN ('DIT', 'SUBHUE','SUBPAV','SUBGERAL', 'SUBGESTÃO','SMS') THEN 'UPA' -- TMP
                 WHEN unidade_nome like 'UPA%' THEN 'UPA'
                 WHEN unidade_nome like 'CER%' THEN 'CER'
                 ELSE null
@@ -37,10 +37,12 @@ with
             funcao as funcao_detalhada,            
             CASE
                 WHEN {{ remove_accents_upper('funcao') }} like '%ENFERM%' THEN 'ENFERMEIROS'
-                WHEN {{ remove_accents_upper('funcao') }} like '%COORDENA%' THEN 'MEDICOS'
                 WHEN {{ remove_accents_upper('funcao') }} like '%MEDICO%' THEN 'MEDICOS'
                 WHEN {{ remove_accents_upper('funcao') }} like '%CONVENIO%' THEN 'MEDICOS'
-                ELSE null
+                WHEN {{ remove_accents_upper('funcao') }} like '%CIENTI%' THEN 'DESENVOLVEDOR'
+                WHEN {{ remove_accents_upper('funcao') }} like '%DESENV%' THEN 'DESENVOLVEDOR'
+                WHEN {{ remove_accents_upper('funcao') }} like '%ANALISTA DE VIGIL%' THEN 'ANALISTA DE VIGILANCIA'
+                ELSE 'OUTROS'
             END as funcao_grupo,
         from usuarios_permitidos_sheets
     )
@@ -52,6 +54,7 @@ select
     unidade_tipo,
     unidade_cnes,
     funcao_detalhada,
-    funcao_grupo
+    funcao_grupo,
+    nivel_de_acesso
 from categorizados
 where {{ validate_cpf('cpf') }}

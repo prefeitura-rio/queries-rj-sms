@@ -40,8 +40,10 @@ with
   -- -----------------------------------------
   calculando_permissoes as (
     SELECT
-      *,
+      * except(nivel_de_acesso),
       CASE
+        WHEN nivel_de_acesso is not null THEN nivel_de_acesso
+
         WHEN (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
         THEN 'full_permission'
 
