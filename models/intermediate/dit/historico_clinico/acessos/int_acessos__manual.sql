@@ -15,7 +15,7 @@ with
 
     categorizados as (
         select 
-            *,
+            * except(unidade_nome),
             CASE
                 WHEN unidade_nome IN ('DIT', 'SUBHUE','SUBPAV','SUBGERAL', 'SUBGESTÃO','SMS') THEN '0932280'
                 WHEN unidade_nome = 'UPA Cidade de Deus' THEN '6575900'
@@ -28,12 +28,6 @@ with
                 WHEN unidade_nome = 'CER Leblon' THEN '6716849'
                 ELSE null
             END as unidade_cnes,
-            CASE
-                WHEN unidade_nome IN ('DIT', 'SUBHUE','SUBPAV','SUBGERAL', 'SUBGESTÃO','SMS') THEN 'UPA' -- TMP
-                WHEN unidade_nome like 'UPA%' THEN 'UPA'
-                WHEN unidade_nome like 'CER%' THEN 'CER'
-                ELSE null
-            END as unidade_tipo,
             funcao as funcao_detalhada,            
             CASE
                 WHEN {{ remove_accents_upper('funcao') }} like '%ENFERM%' THEN 'ENFERMEIROS'
@@ -45,6 +39,34 @@ with
                 ELSE 'OUTROS'
             END as funcao_grupo,
         from usuarios_permitidos_sheets
+    ),
+
+    -- -----------------------------------------
+    -- Enriquecimento
+    -- -----------------------------------------
+    unidades_de_saude as (
+        select
+            id_cnes as cnes,
+            area_programatica,
+            tipo_sms_simplificado,
+            nome_limpo as unidade_nome
+        from {{ ref("dim_estabelecimento") }}
+    ),
+
+    categorizados_enriquecidos as (
+        select
+            cpf,
+            upper(nome_completo) as nome_completo,
+            unidade_cnes,
+            unidades_de_saude.area_programatica as unidade_ap,
+            unidades_de_saude.tipo_sms_simplificado as unidade_tipo,
+            unidades_de_saude.unidade_nome,
+            funcao_detalhada,
+            funcao_grupo,
+            nivel_de_acesso
+        from categorizados
+        left join unidades_de_saude
+            on categorizados.unidade_cnes = unidades_de_saude.cnes
     )
 
 select
@@ -53,8 +75,9 @@ select
     unidade_nome,
     unidade_tipo,
     unidade_cnes,
+    unidade_ap,
     funcao_detalhada,
     funcao_grupo,
     nivel_de_acesso
-from categorizados
+from categorizados_enriquecidos
 where {{ validate_cpf('cpf') }}

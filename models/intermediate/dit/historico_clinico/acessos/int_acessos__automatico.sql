@@ -36,6 +36,7 @@ with
     unidades_de_saude as (
         select
             id_cnes as cnes,
+            area_programatica,
             tipo_sms_simplificado,
             nome_limpo as unidade_nome
         from {{ ref("dim_estabelecimento") }}
@@ -47,6 +48,7 @@ with
         select
             cartao_nacional_saude as cns,
             id_estabelecimento_cnes as cnes,
+            unidades_de_saude.area_programatica,
             unidades_de_saude.tipo_sms_simplificado,
             unidades_de_saude.unidade_nome,
             cbo_datasus.descricao as cbo_nome,
@@ -86,6 +88,7 @@ with
             unidade_nome,
             tipo_sms_simplificado as unidade_tipo,
             cnes as unidade_cnes,
+            area_programatica as unidade_ap,
             cbo_nome as funcao_detalhada,
             {{ remove_accents_upper('cbo_agrupador') }} as funcao_grupo,
             data_ultima_atualizacao
@@ -111,10 +114,11 @@ with
 
 select
     cpf,
-    nome_completo,
+    upper(nome_completo) as nome_completo,
     unidade_nome,
     unidade_tipo,
     unidade_cnes,
+    unidade_ap,
     funcao_detalhada,
     funcao_grupo,
     safe_cast(null as string) as nivel_de_acesso
