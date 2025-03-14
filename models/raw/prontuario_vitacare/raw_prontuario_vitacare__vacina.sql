@@ -59,6 +59,7 @@ with
                     [
                         "id_cnes",
                         "id",
+                        "paciente_cns"
                     ]
                 )
             }} as id_surrogate,
@@ -103,6 +104,7 @@ with
             imported_at,
 
         from renamed
+        qualify row_number() over(partition by id_surrogate order by registro_data desc) = 1
     )
 
 select distinct * 
