@@ -335,6 +335,14 @@ models:
             dado_sensivel: sim
             dominio: historico_clinico_app
       subpav:
+        farmacia:
+          +schema: projeto_subpav
+          +tags: ["daily", "subpav"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
         indicadores_paciente:
           +schema: projeto_subpav
           +tags: ["weekly", "subpav"]
