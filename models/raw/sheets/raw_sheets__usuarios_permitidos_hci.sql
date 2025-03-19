@@ -13,9 +13,9 @@ with
 
     tratados as (
         select
-            * except(cpf, nome_unidade, nivel_de_acesso),
+            * except(cpf, unidade, nivel_de_acesso),
             lpad(safe_cast(cpf as string), 11, "0") as cpf,
-            trim(nome_unidade) as unidade_nome,
+            trim(unidade) as unidade,
             {{ process_null('nivel_de_acesso') }} as nivel_de_acesso
         from source
     ),
