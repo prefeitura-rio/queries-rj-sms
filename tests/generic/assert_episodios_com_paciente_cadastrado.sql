@@ -1,5 +1,5 @@
 {% test assert_relacionamento_tabelas(
-    model,column_name, field, to
+    description,model,column_name, field, to
 ) %}
 
 with parent as (
@@ -21,7 +21,7 @@ error_threshold as (
 test as (
     select count(*) as not_matched_rows
     from child 
-    where child.id is not null
+    where NULLIF(NULLIF(NULLIF(NULLIF(child.id, 'null'), 'None'), ''),'NaT') is not null
     and child.id not in (select id from parent)
 )
 select 
