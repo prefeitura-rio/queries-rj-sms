@@ -21,8 +21,9 @@ with
     ),
 
     distintos as (
-        select distinct *
+        select *
         from tratados
+        qualify row_number() over (partition by cpf order by nivel_de_acesso) = 1
     )
 
 select
