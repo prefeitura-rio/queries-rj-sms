@@ -108,3 +108,4 @@ WITH
 
 SELECT * 
 FROM dados_paciente
+where {{ validate_cpf("cpf_paciente") }}
