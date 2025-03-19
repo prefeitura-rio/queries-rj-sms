@@ -48,10 +48,10 @@ with
         THEN 'full_permission'
 
         WHEN (funcao_grupo = 'MEDICOS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
-        THEN 'only_from_same_unit'
+        THEN 'only_from_same_cnes'
 
         WHEN (funcao_grupo = 'ENFERMEIROS')
-        THEN 'only_from_same_unit' 
+        THEN 'only_from_same_cnes' 
 
         ELSE null
       END as nivel_acesso
