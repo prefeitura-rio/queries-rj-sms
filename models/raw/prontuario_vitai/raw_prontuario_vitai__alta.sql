@@ -54,10 +54,10 @@ select
     safe_cast(alta_administrativa as timestamp) as alta_administrativa_data,
     safe_cast(abe_obs_ as string) as abe_obs,
     safe_cast(status as string) as alta_status,
-    safe_cast(datahora as timestamp) as datahora,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as datahora,
     safe_cast(baseurl as string) as base_url,
     safe_cast(cliente as string) as cliente,
-    safe_cast(created_at as timestamp) as created_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    timestamp_add(datetime(timestamp(created_at), 'America/Sao_Paulo'),interval 3 hour) as created_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
 from latest_events

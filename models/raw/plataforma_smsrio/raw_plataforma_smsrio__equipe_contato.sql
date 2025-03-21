@@ -12,8 +12,8 @@ with source as (
     safe_cast(email as string) as email,
     safe_cast(imei as string) as imei,
     safe_cast(user_id as string) as user_id,
-    safe_cast(created_at as datetime) as created_at,
-    safe_cast(updated_at as datetime) as updated_at,
+    timestamp_add(datetime(timestamp({{process_null('created_at')}}), 'America/Sao_Paulo'),interval 3 hour) as created_at,
+    timestamp_add(datetime(timestamp({{process_null('updated_at')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
     from {{ source('brutos_plataforma_smsrio_staging','equipe_contato') }}
 )
 select * from source

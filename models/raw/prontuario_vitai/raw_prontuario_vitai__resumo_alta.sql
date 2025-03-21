@@ -45,9 +45,9 @@ select
 
     -- Campos
     
-    safe_cast(datahora as timestamp) as updated_at,
+    timestamp_add(datetime(timestamp({{process_null('datahora')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
     safe_cast(tipo_alta as string) as alta_tipo,
-    safe_cast(data_resumo_alta as timestamp) as resumo_alta_datahora,
+    timestamp_add(datetime(timestamp({{process_null('data_resumo_alta')}}), 'America/Sao_Paulo'),interval 3 hour) as resumo_alta_datahora,
     safe_cast(recomendacoes as string) as recomendacao,
     safe_cast(resumo_alta as string) as resumo_alta_descricao,
     safe_cast(conduta_alta as string) as alta_conduta,
@@ -59,7 +59,7 @@ select
     safe_cast(cid_descricao_alta as string) as cid_descricao_alta,
     safe_cast(desfechointernacao as string) as desfecho_internacao,
     safe_cast(descricao_servico as string) as servico_descricao,
-    safe_cast(data_exclusao_alta as timestamp) as exclusao_alta_datahora,
+    timestamp_add(datetime(timestamp({{process_null('data_exclusao_alta')}}), 'America/Sao_Paulo'),interval 3 hour) as exclusao_alta_datahora,
     safe_cast(motivo_exclusao as string) as exclusao_motivo,
     safe_cast(profissional_alta as string) as profissional_alta,
 
@@ -67,7 +67,7 @@ select
     safe_cast(cliente as string) as cliente,
     safe_cast(baseurl as string) as baseurl,
     safe_cast(estabelecimento_sigla as string) as estabelecimento_sigla,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
     
 from latest_events

@@ -20,8 +20,8 @@ with
             instagram,
             twitter,
             -- dt_inaugura,
-            created_at,
-            updated_at,
+            timestamp_add(datetime(timestamp({{process_null('created_at')}}), 'America/Sao_Paulo'),interval 3 hour) as created_at,
+            timestamp_add(datetime(timestamp({{process_null('updated_at')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
         from source
     )
 select *

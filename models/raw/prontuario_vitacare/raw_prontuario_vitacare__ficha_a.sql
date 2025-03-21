@@ -98,7 +98,7 @@ with
                 else null
             end as luz_eletrica,
             safe_cast(codigo_equipe as string) as codigo_equipe,
-            timestamp_sub(timestamp(data_cadastro, "Brazil/East"),interval 2 hour) as data_cadastro,
+            timestamp_add(timestamp(data_cadastro, "America/Sao_Paulo"),interval 3 hour) as data_cadastro,
             case 
                 when lower(escolaridade) not in ('médio completo','fundamental incompleto',
                 'fundamental completo','alfabetizado','médio incompleto','superior completo',
@@ -300,7 +300,7 @@ with
                 when familia_beneficiaria_cfc in ('0','False') then false 
                 else null
             end as familia_beneficiaria_cfc,
-            timestamp_sub(timestamp(data_atualizacao_cadastro, "Brazil/East"),interval 2 hour) as data_atualizacao_cadastro,
+            timestamp_add(timestamp(data_atualizacao_cadastro, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_cadastro,
             case 
                 when participa_grupo_comunitario in ('1','True') then true
                 when participa_grupo_comunitario in ('0','False') then false 
@@ -316,7 +316,7 @@ with
                 when membro_comunidade_tradicional in ('0','False') then false 
                 else null
             end as membro_comunidade_tradicional,
-            timestamp_sub(timestamp(data_atualizacao_vinculo_equipe, "Brazil/East"),interval 2 hour) as data_atualizacao_vinculo_equipe,
+            timestamp_add(timestamp(data_atualizacao_vinculo_equipe, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_vinculo_equipe,
             case 
                 when familia_beneficiaria_auxilio_brasil in ('1','True') then true
                 when familia_beneficiaria_auxilio_brasil in ('0','False') then false
@@ -327,8 +327,8 @@ with
                 when crianca_matriculada_creche_pre_escola in ('0','False') then false 
                 else null
             end as crianca_matriculada_creche_pre_escola,
-            updated_at,
-            loaded_at,
+            timestamp_add(datetime(timestamp({{process_null('updated_at')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+            datetime(timestamp({{process_null('loaded_at')}}), 'America/Sao_Paulo') as loaded_at,
             tipo
 
         from ficha_a

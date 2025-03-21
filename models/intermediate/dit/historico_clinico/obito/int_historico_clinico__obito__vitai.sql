@@ -94,7 +94,7 @@ obitos as (
             else {{clean_numeric_string('boletim.cns')}} 
         end as cns, 
         extract(
-            date from datetime({{process_null('boletim.alta_data')}})
+            date from boletim.alta_data
         ) as obito_data, 
         boletim.gid as gid_boletim_obito
     from boletim
@@ -117,7 +117,7 @@ ultimo_boletim_vitai as (
     cpf, 
     max(
         extract(
-            date from datetime({{process_null('alta_data')}})
+            date from alta_data
             )
     ) as ultima_entrada 
   from boletim

@@ -50,13 +50,13 @@ select
     -- Campos
     safe_cast(tipo as string) as tipo,
     safe_cast(codigo as string) as codigo,
-    safe_cast(data as string) as data,
+    timestamp_add(datetime(timestamp(data), 'America/Sao_Paulo'),interval 3 hour) as data,
     safe_cast(descricao as string) as descricao,
     safe_cast(situacao as string) as situacao,
     safe_cast(cliente as string) as cliente,
     safe_cast(baseurl as string) as base_url,
     safe_cast(sigla as string) as sigla,
-    safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
 from latest_events

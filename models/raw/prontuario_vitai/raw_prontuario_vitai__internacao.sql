@@ -56,13 +56,13 @@ select
     safe_cast(procedimento_nome as string) as procedimento_nome,
     safe_cast(profissional_responsavel as string) as profissional_nome,
     safe_cast(diagnostico_descricao as string) as diagnostico_descricao,
-    safe_cast(data_saida as timestamp) as saida_data,
-    safe_cast(datainternacao as timestamp) as internacao_data,
+    timestamp_add(datetime(timestamp({{process_null('data_saida')}}), 'America/Sao_Paulo'),interval 3 hour) as saida_data,
+    timestamp_add(datetime(timestamp({{process_null('datainternacao')}}), 'America/Sao_Paulo'),interval 3 hour) as internacao_data,
     safe_cast(baseurl as string) as base_url,
     safe_cast(cliente as string) as cliente,
-    safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
-    safe_cast(created_at as timestamp) as created_at,
+    timestamp_add(datetime(timestamp({{process_null('datahora')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
+    timestamp_add(datetime(timestamp({{process_null('created_at')}}), 'America/Sao_Paulo'),interval 3 hour) as created_at,
     safe_cast(data_particao as date) as data_particao
     
 from latest_events
