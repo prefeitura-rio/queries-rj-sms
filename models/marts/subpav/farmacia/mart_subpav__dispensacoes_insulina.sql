@@ -43,6 +43,7 @@ WITH
       count(*) as quant_dispensacoes,
       array_agg(
         struct(
+          id_material,
           estoque_movimento_tipo,
           dispensacao_paciente_cpf
         ) 

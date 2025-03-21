@@ -123,3 +123,19 @@ select
     funcao_grupo,
     safe_cast(null as string) as nivel_de_acesso
 from funcionarios_ativos_enriquecido_mais_recente
+where 
+    -- Critérios de Lançamento
+    unidade_cnes in (
+        '6507409',
+        '6575900',
+        '6507409',
+        '7110162',
+        '0932280',
+        '6716849',
+        '6938124',
+        '6512925',
+        '6742831',
+        '6503772',
+        '2280183'
+    ) 
+    and funcao_grupo in ('MEDICOS')

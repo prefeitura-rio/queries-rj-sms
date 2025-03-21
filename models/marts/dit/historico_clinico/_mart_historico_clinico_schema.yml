@@ -12,10 +12,11 @@ models:
           - '{{ var ("TAG_CPF") }}'
         tests:
           - assert_relacionamento_tabelas:
-              name: mart_historico_clinico__episodio__cpf__relacionamento_tabela_pacientes
+              name: mart_historico_clinico__episodio__cpf__10_pct_fora_tabela_pacientes
               to: ref('mart_historico_clinico__paciente')
               field: cpf
               config:
+                fail_calc: response
                 severity: error
                 error_if: "= 2"
                 warn_if: "= 1"
