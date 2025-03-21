@@ -87,7 +87,7 @@ with
             paciente_obito,
             lower(descricao) as descricao,
             safe_cast(aplicacao_data as date) as aplicacao_data,
-            safe_cast(registro_data as datetime) as registro_data,
+            timestamp_add(datetime(timestamp({{process_null('registro_data')}}), 'America/Sao_Paulo'),interval 3 hour) as registro_data,
             lower(dose) as dose,
             lote,
             lower(registro_tipo) as registro_tipo,
@@ -101,7 +101,7 @@ with
 
             -- Metadata
             safe_cast(data_particao as date) as data_particao,
-            imported_at,
+            timestamp_add(datetime(timestamp({{process_null('imported_at')}}), 'America/Sao_Paulo'),interval 3 hour) as imported_at,
 
         from renamed
         qualify row_number() over(partition by id_surrogate order by registro_data desc) = 1

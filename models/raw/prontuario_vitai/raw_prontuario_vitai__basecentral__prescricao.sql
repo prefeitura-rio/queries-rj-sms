@@ -58,9 +58,9 @@ select
     safe_cast({{ process_null('baseurl') }} as string) as url_estabelecimento,
 
     -- Timestamps
-    safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(created_at as timestamp) as centralized_at,
-    safe_cast(datalake_loaded_at as timestamp) as imported_at,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+    timestamp_add(datetime(timestamp(created_at), 'America/Sao_Paulo'),interval 3 hour) as centralized_at,
+    datetime(timestamp(datalake_loaded_at), 'America/Sao_Paulo') as loaded_at,
 
     safe_cast(data_particao as date) as data_particao
 

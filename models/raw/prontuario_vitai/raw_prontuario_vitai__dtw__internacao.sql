@@ -42,8 +42,8 @@ select
     SAFE_CAST(fat_paciente_rede_id AS INTEGER) AS id_paciente_rede,
 
     -- Campos de Data e Horário
-    SAFE_CAST(data_entrada AS TIMESTAMP) AS data_entrada,
-    SAFE_CAST(data_saida AS TIMESTAMP) AS data_saida,
+    timestamp_add(datetime(timestamp({{process_null('data_entrada')}}), 'America/Sao_Paulo'),interval 3 hour) as data_entrada,
+    timestamp_add(datetime(timestamp({{process_null('data_saida')}}), 'America/Sao_Paulo'),interval 3 hour) as data_saida,
 
     -- Identificadores e Relacionamentos
     SAFE_CAST(tin_id AS INTEGER) AS id_tipo_internacao,
@@ -54,6 +54,6 @@ select
 
     safe_cast(null as TIMESTAMP) as updated_at,
     safe_cast(null as TIMESTAMP) as centralized_at,
-    SAFE_CAST(datalake_loaded_at AS TIMESTAMP) AS imported_at
+    datetime(timestamp(datalake_loaded_at), 'America/Sao_Paulo') as imported_at
     
 from latest_events

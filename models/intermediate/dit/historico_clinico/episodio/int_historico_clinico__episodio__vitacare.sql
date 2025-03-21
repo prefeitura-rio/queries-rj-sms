@@ -400,7 +400,7 @@ with
 
             -- Metadados
             struct(
-                updated_at, loaded_at as imported_at, current_datetime() as processed_at
+                updated_at, loaded_at as imported_at, datetime(current_timestamp(),'America/Sao_Paulo') as processed_at
             ) as metadados,
 
             atendimento.data_particao,

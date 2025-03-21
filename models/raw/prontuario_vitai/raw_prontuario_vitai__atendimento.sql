@@ -49,14 +49,14 @@ select
     -- Campos
     safe_cast(tipo_atendimento as string) as atendimento_tipo,
     safe_cast(especialidade as string) as especialidade,
-    safe_cast(dthr_inicio as string) as inicio_datahora,
-    safe_cast(dthr_fim as string) as fim_datahora,
+    timestamp_add(datetime(timestamp({{process_null('dthr_inicio')}}), 'America/Sao_Paulo'),interval 3 hour) as inicio_datahora,
+    timestamp_add(datetime(timestamp({{process_null('dthr_fim')}}), 'America/Sao_Paulo'),interval 3 hour) as fim_datahora,
     safe_cast(cid_codigo as string) as cid_codigo,
     safe_cast(cid as string) as cid_nome,
-    safe_cast(datahora as timestamp) as updated_at,
+    timestamp_add(datetime(timestamp({{process_null('datahora')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
     safe_cast(codigo as string) as codigo,
     safe_cast(queixa as string) as queixa,
     safe_cast(cliente as string) as cliente,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
 from latest_events

@@ -79,23 +79,11 @@ with
             {{add_accents_estabelecimento('estabelecimento_nome')}} as estabelecimento_nome,
             b.atendimento_tipo,
             b.especialidade_nome,
-            case
-                when {{ process_null("b.internacao_data") }} is null
-                then null
-                else cast(b.internacao_data as datetime)
-            end as internacao_data,
+            internacao_data,
             b.imported_at,
             b.updated_at,
-            case
-                when {{ process_null("b.data_entrada") }} is null
-                then null
-                else cast(b.data_entrada as datetime)
-            end as entrada_datahora,
-            case
-                when {{ process_null("b.alta_data") }} is null
-                then null
-                else cast(b.alta_data as datetime)
-            end as saida_datahora,
+            b.data_entrada as entrada_datahora,
+            b.alta_data as saida_datahora,
             if(
                 {{ clean_numeric("b.cpf") }} is null,
                 paciente_mrg.cpf,
@@ -519,10 +507,8 @@ with
             exames_realizados,
 
             -- Entrada e Saída
-            safe_cast(
-                atendimento_struct.entrada_datahora as datetime
-            ) as entrada_datahora,
-            safe_cast(atendimento_struct.saida_datahora as datetime) as saida_datahora,
+            atendimento_struct.entrada_datahora as entrada_datahora,
+            atendimento_struct.saida_datahora as saida_datahora,
 
             -- Motivo e Desfecho
             safe_cast(
@@ -547,9 +533,9 @@ with
 
             -- Metadados
             struct(
-                safe_cast(updated_at as datetime) as updated_at,
-                safe_cast(imported_at as datetime) as imported_at,
-                safe_cast(current_datetime() as datetime) as processed_at
+                updated_at,
+                imported_at,
+                datetime(current_timestamp(),'America/Sao_Paulo') as processed_at
             ) as metadados,
             safe_cast(entrada_datahora as date) as data_particao,
             safe_cast(atendimento_struct.paciente.cpf as int64) as cpf_particao

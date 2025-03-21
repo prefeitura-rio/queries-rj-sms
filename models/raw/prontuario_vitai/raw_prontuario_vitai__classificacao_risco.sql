@@ -49,13 +49,13 @@ select
     -- Campos
     safe_cast(asv_queixa_principal as string) as asv_queixa_principal,
     safe_cast(risco as string) as risco,
-    safe_cast(dthr_inicio as string) as inicio_datahora,
-    safe_cast(dthr_fim as string) as fim_datahora,
+    timestamp_add(datetime(timestamp({{process_null('dthr_inicio')}}), 'America/Sao_Paulo'),interval 3 hour) as inicio_datahora,
+    timestamp_add(datetime(timestamp({{process_null('dthr_fim')}}), 'America/Sao_Paulo'),interval 3 hour) as fim_datahora,
     safe_cast(clr_meta as string) as clr_meta,
     safe_cast(descritor as string) as descritor,
     safe_cast(codigo as string) as codigo,
     safe_cast(cliente as string) as cliente,
-    safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
 from latest_events

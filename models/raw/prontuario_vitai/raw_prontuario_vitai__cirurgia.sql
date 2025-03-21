@@ -56,7 +56,7 @@ select
     safe_cast(especialidade as string) as especialidade,
     safe_cast(baseurl as string) as base_url,
     safe_cast(cliente as string) as cliente,
-    safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
 from latest_events

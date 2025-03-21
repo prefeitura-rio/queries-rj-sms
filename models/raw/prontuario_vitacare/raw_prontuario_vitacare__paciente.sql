@@ -90,8 +90,8 @@ with
             situacao,
             cadastro_permanente_indicador,
             {{ validate_cpf(remove_accents_upper("cpf")) }} as cpf_valido_indicador,
-            data_cadastro_inicial,
-            data_ultima_atualizacao_cadastral,
+            timestamp_add(datetime(timestamp(data_cadastro_inicial), 'America/Sao_Paulo'),interval 3 hour) as data_cadastro_inicial,
+            timestamp_add(datetime(timestamp(data_ultima_atualizacao_cadastral), 'America/Sao_Paulo'),interval 3 hour) data_ultima_atualizacao_cadastral,
 
             -- Contato
             {{ remove_accents_upper("telefone") }} as telefone,
@@ -126,8 +126,8 @@ with
 
 
             -- Metadados
-            source_created_at,
-            source_updated_at,
+            timestamp_add(datetime(timestamp(source_created_at), 'America/Sao_Paulo'),interval 3 hour) as source_created_at,
+            timestamp_add(datetime(timestamp(source_updated_at), 'America/Sao_Paulo'),interval 3 hour) as source_updated_at,
 
         from corrige_cadastro
     ),

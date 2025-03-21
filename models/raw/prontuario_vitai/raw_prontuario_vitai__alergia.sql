@@ -46,7 +46,7 @@ select
 
     -- Campos
     safe_cast(severidade as string) as severidade,
-    safe_cast(datahora as timestamp) as updated_at,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
     safe_cast(tipo as string) as tipo,
     safe_cast(descricao as string) as descricao,
     safe_cast(alg_ativo as string) as alg_ativo,
@@ -60,6 +60,6 @@ select
     safe_cast(sigla as string) as sigla,
     safe_cast(nomeestabelecimento as string) as estabelecimento_nome,
     safe_cast(baseurl as string) as base_url,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
 from latest_events

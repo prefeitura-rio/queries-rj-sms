@@ -50,9 +50,9 @@ select
 
     -- Campos
     safe_cast(statuspedido as string) as status_pedido,
-    safe_cast(dataliberacao as string) as liberacao_data,
-    safe_cast(datapedido as string) as pedido_data,
-    safe_cast(datarealizacao as string) as realizacao_data,
+    timestamp_add(datetime(timestamp({{process_null('dataliberacao')}}), 'America/Sao_Paulo'),interval 3 hour) as liberacao_data,
+    timestamp_add(datetime(timestamp({{process_null('datapedido')}}), 'America/Sao_Paulo'),interval 3 hour) as pedido_data,
+    timestamp_add(datetime(timestamp({{process_null('datarealizacao')}}), 'America/Sao_Paulo'),interval 3 hour) as realizacao_data,
     safe_cast(indicacaoclinica as string) as indicacao_clinica,
     safe_cast(mnemonico as string) as mnemonico,
     safe_cast(tipo as string) as tipo,
@@ -67,7 +67,7 @@ select
     safe_cast(nomeestabelecimento as string) as estabelecimento_nome,
     safe_cast(procedimentocodigo as string) as procedimento_codigo,
     safe_cast(procedimentonome as string) as procedimento_nome,
-    safe_cast(datahora as timestamp) as updated_at,
-    safe_cast(datalake__imported_at as timestamp) as imported_at,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
 from latest_events

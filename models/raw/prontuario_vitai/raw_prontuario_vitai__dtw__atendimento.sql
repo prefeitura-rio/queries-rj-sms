@@ -53,11 +53,11 @@ select
     SAFE_CAST(ultimo_atendimento AS STRING) AS ultimo_atendimento,
 
     -- Campos de Data e Horário
-    SAFE_CAST(data_inicio AS TIMESTAMP) AS atendimento_inicio,
-    SAFE_CAST(data_fim AS TIMESTAMP) AS atendimento_fim,
+    timestamp_add(datetime(timestamp(data_inicio), 'America/Sao_Paulo'),interval 3 hour) as atendimento_inicio,
+    timestamp_add(datetime(timestamp(data_fim), 'America/Sao_Paulo'),interval 3 hour) as atendimento_fim,
 
     safe_cast(null as TIMESTAMP) as updated_at,
     safe_cast(null as TIMESTAMP) as centralized_at,
-    SAFE_CAST(datalake_loaded_at AS TIMESTAMP) AS imported_at
+    datetime(timestamp(datalake__loaded_at), 'America/Sao_Paulo') as imported_at,
     
 from latest_events
