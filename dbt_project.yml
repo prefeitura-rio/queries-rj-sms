@@ -200,7 +200,7 @@ models:
           dado_sensivel: sim
       informes_vitacare:
         +schema: brutos_informes_vitacare
-        +tags: ["vitacare", "weekly"]
+        +tags: ["vitacare", "daily"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
