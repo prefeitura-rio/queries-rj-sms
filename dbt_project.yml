@@ -198,6 +198,14 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      informes_vitacare:
+        +schema: brutos_informes_vitacare
+        +tags: ["vitacare", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]
