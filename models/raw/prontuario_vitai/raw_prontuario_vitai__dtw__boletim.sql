@@ -50,13 +50,12 @@ select
 
     SAFE_CAST(interno AS STRING) AS paciente_interno,
     SAFE_CAST(numero_be AS STRING) AS boletim_numero,
-    SAFE_CAST(data_entrada AS TIMESTAMP) AS data_entrada,
-    SAFE_CAST(data_internacao AS TIMESTAMP) AS data_internacao,
-    SAFE_CAST(data_alta AS TIMESTAMP) AS data_alta,
-    SAFE_CAST(datahora AS TIMESTAMP) AS data_hora_evento,
-
-    safe_cast(datahora as TIMESTAMP) as updated_at,
+    timestamp_add(datetime(timestamp(data_entrada), 'America/Sao_Paulo'),interval 3 hour) as data_entrada,
+    timestamp_add(datetime(timestamp(data_internacao), 'America/Sao_Paulo'),interval 3 hour) as data_internacao,
+    timestamp_add(datetime(timestamp(data_alta), 'America/Sao_Paulo'),interval 3 hour) as data_alta,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as data_hora_evento,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
     safe_cast(null as TIMESTAMP) as centralized_at,
-    SAFE_CAST(datalake_loaded_at AS TIMESTAMP) AS imported_at
+    datetime(timestamp(datalake__loaded_at), 'America/Sao_Paulo') as imported_at
     
 from latest_events

@@ -38,7 +38,7 @@ boletins_consulta as (
     left join
         {{ ref("raw_prontuario_vitai__atendimento") }} as atendimento
         on boletim_r.gid = atendimento.gid_boletim
-    where atendimento.gid_boletim is not null and {{process_null('boletim_r.internacao_data')}} is null
+    where atendimento.gid_boletim is not null and boletim_r.internacao_data is null
 ),
 boletins_internacao as (
     select
@@ -51,7 +51,7 @@ boletins_internacao as (
         on boletim_r.gid = internacao.gid_boletim
     where
         internacao.gid_boletim is not null
-        and {{process_null('boletim_r.internacao_data')}} is not null
+        and boletim_r.internacao_data is not null
 ),
 boletins_exames as (
     select
@@ -67,7 +67,7 @@ boletins_exames as (
     where
         exame_table.gid_boletim is not null
         and atendimento.gid_boletim is null
-        and {{process_null('boletim_r.internacao_data')}} is null
+        and boletim_r.internacao_data is null
 ),
 boletim as (
     select distinct         
@@ -94,7 +94,7 @@ obitos as (
             else {{clean_numeric_string('boletim.cns')}} 
         end as cns, 
         extract(
-            date from datetime({{process_null('boletim.alta_data')}})
+            date from boletim.alta_data
         ) as obito_data, 
         boletim.gid as gid_boletim_obito
     from boletim
@@ -105,7 +105,7 @@ obitos as (
     where (
     regexp_contains(alta_adm.abe_obs, '(CAD[Á|A]VER)|([O|Ó]BITO)') 
     or (
-        {{process_null('alta_adm.obito_data')}} is not null 
+        alta_adm.obito_data  is not null 
     )
     )
     or alta_internacao.desfecho_internacao = 'ÓBITO'
@@ -117,7 +117,7 @@ ultimo_boletim_vitai as (
     cpf, 
     max(
         extract(
-            date from datetime({{process_null('alta_data')}})
+            date from alta_data
             )
     ) as ultima_entrada 
   from boletim

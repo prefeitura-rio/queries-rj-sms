@@ -578,7 +578,7 @@ with
             ct.contato,
             ed.endereco,
             pt.prontuario,
-            struct(current_timestamp() as created_at) as metadados,
+            struct(datetime(current_timestamp(),'America/Sao_Paulo') as created_at) as metadados,
             cast(pd.cpf as int64) as cpf_particao
         from paciente_dados pd
         left join cns_dados cns on pd.cpf = cns.cpf

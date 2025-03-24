@@ -49,10 +49,10 @@ select
     safe_cast(cir_data as string) as cir_data,
     safe_cast(nmespecialidade as string) as nome_especialidade,
     safe_cast(status as string) as status,
-    safe_cast(checkin_sala as string) as checkin_sala,
-    safe_cast(cirurgia_inicio as string) as cirurgia_inicio,
-    safe_cast(cirurgia_fim as string) as cirurgia_fim,
-    safe_cast(checkout_sala as string) as checkout_sala,
+    timestamp_add(datetime(timestamp({{process_null('checkin_sala')}}), 'America/Sao_Paulo'),interval 3 hour) as checkin_sala,
+    timestamp_add(datetime(timestamp({{process_null('cirurgia_inicio')}}), 'America/Sao_Paulo'),interval 3 hour) as cirurgia_inicio,
+    timestamp_add(datetime(timestamp({{process_null('cirurgia_fim')}}), 'America/Sao_Paulo'),interval 3 hour) as cirurgia_fim,
+    timestamp_add(datetime(timestamp({{process_null('checkout_sala')}}), 'America/Sao_Paulo'),interval 3 hour) as checkout_sala,
     safe_cast(tempo_sala as string) as tempo_sala,
     safe_cast(anestesia as string) as anestesia,
     safe_cast(contaminacao as string) as contaminacao,
@@ -62,15 +62,15 @@ select
     safe_cast(descricao_diagnostico as string) as descricao_diagnostico,
     safe_cast(leito_paciente as string) as leito_paciente,
     safe_cast(equipe as string) as equipe,
-    safe_cast(cir_datafinalizado as string) as cir_datafinalizado,
+    timestamp_add(datetime(timestamp({{process_null('cir_datafinalizado')}}), 'America/Sao_Paulo'),interval 3 hour) as cir_datafinalizado,
     safe_cast(cliente as string) as cliente,
     safe_cast(baseurl as string) as baseurl,
     safe_cast(estabelecimento_sigla as string) as estabelecimento_sigla,
     safe_cast(codigointerno as string) as codigo_interno,
 
     -- Metadados
-    safe_cast(datahora as string) as updated_at,
-    safe_cast(datalake__imported_at as string) as imported_at,
+    timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
     
 from latest_events
