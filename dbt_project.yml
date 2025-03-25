@@ -205,7 +205,7 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-          dominio: historico_clinico
+          dominio: subpav
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]
