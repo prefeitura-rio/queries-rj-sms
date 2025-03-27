@@ -1,0 +1,91 @@
+{{
+    config(
+        schema="brutos_prontuario_vitacare_staging",
+        alias="_base_paciente_continuo",
+        materialized="table",
+    )
+}}
+
+with
+
+    source as (
+        select * from {{ source("brutos_prontuario_vitacare_staging", "paciente_continuo") }}
+    ),
+
+    paciente_continuo as (
+        select
+            json_extract(data, "$.id") as id,
+            json_extract(data, "$.cpf") as cpf,
+            json_extract(data, "$.nome") as nome,
+            json_extract(data, "$.dataNascimento") as data_nascimento,
+            json_extract(data, "$.sexo") as sexo,
+            json_extract(data, "$.racaCor") as raca_cor,
+            json_extract(data, "$.municipioResidencia") as municipio_residencia,
+            json_extract(data, "$.estadoResidencia") as estado_residencia,
+            json_extract(data, "$.telefone") as telefone,
+            json_extract(data, "$.email") as email,
+            json_extract(data, "$.ocupacao") as ocupacao,
+            json_extract(data, "$.situacaoProfissional") as situacao_profissional,
+            json_extract(data, "$.escolaridade") as escolaridade,
+            json_extract(data, "$.religiao") as religiao,
+            json_extract(data, "$.nPront") as numero_prontuario,
+            json_extract(data, "$.tipoDomicilio") as tipo_domicilio,
+            json_extract(data, "$.destinoLixo") as destino_lixo,
+            json_extract(data, "$.abastecimentoAgua") as abastecimento_agua,
+            json_extract(data, "$.tratamentoAgua") as tratamento_agua,
+            json_extract(data, "$.esgotamentoSanitario") as esgotamento_sanitario,
+            json_extract(data, "$.rendaFamiliar") as renda_familiar,
+            json_extract(data, "$.familiaLocalizacao") as familia_localizacao,
+            json_extract(data, "$.situacaoMoradiaPosse") as situacao_moradia_posse,
+            json_extract(data, "$.tempoMoradia") as tempo_moradia,
+            json_extract(data, "$.comodos") as comodos,
+            json_extract(data, "$.situacaoFamiliar") as situacao_familiar,
+            json_extract(data, "$.relacaoResponsavelFamiliar") as relacao_responsavel_familiar,
+            json_extract(data, "$.obito") as obito,
+            json_extract(data, "$.frequentaEscola") as frequenta_escola,
+            json_extract(data, "$.cadastroPermanente") as cadastro_permanente,
+            json_extract(data, "$.possuiPlanoSaude") as possui_plano_saude,
+            json_extract(data, "$.emSituacaoDeRua") as em_situacao_de_rua,
+            json_extract(data, "$.participaGrupoComunitario") as participa_grupo_comunitario,
+            json_extract(data, "$.membroComunidadeTradicional") as membro_comunidade_tradicional,
+            json_extract(data, "$.criancaMatriculadaCrechePreEscola") as crianca_matriculada_creche_pre_escola,
+            json_extract(data, "$.responsavelFamiliar") as responsavel_familiar,
+            json_extract(data, "$.vulnerabilidadeSocial") as vulnerabilidade_social,
+            json_extract(data, "$.familiaBeneficiariaAuxilioBrasil") as familia_beneficiaria_auxilio_brasil,
+            json_extract(data, "$.familiaBeneficiariaCfc") as familia_beneficiaria_cfc,
+            json_extract(data, "$.territorioSocial") as territorio_social,
+            json_extract(data, "$.possuiFiltroAgua") as possui_filtro_agua,
+            json_extract(data, "$.animaisNoDomicilio") as animais_no_domicilio,
+            json_extract(data, "$.luzEletrica") as luz_eletrica,
+            json_extract(data, "$.emCasoDoencaProcura") as em_caso_doenca_procura,
+            json_extract(data, "$.meiosComunicacao") as meios_comunicacao,
+            json_extract(data, "$.meiosTransporte") as meios_transporte,
+            json_extract(data, "$.doencasCondicoes") as doencas_condicoes,
+            json_extract(data, "$.dataCadastro") as data_cadastro,
+            json_extract(data, "$.dataAtualizacaoCadastro") as data_atualizacao_cadastro,
+            json_extract(data, "$.situacaoUsuario") as situacao_usuario,
+            json_extract(data, "$.nomeMae") as nome_mae,
+            json_extract(data, "$.nomePai") as nome_pai,
+            json_extract(data, "$.dataAtualizacaoVinculoEquipe") as data_atualizacao_vinculo_equipe,
+            json_extract(data, "$.nacionalidade") as nacionalidade,
+            json_extract(data, "$.paisNascimento") as pais_nascimento,
+            json_extract(data, "$.municipioNascimento") as municipio_nascimento,
+            json_extract(data, "$.estadoNascimento") as estado_nascimento,
+            json_extract(data, "$.tipoLogradouro") as tipo_logradouro,
+            json_extract(data, "$.logradouro") as logradouro,
+            json_extract(data, "$.cep") as cep,
+            json_extract(data, "$.bairro") as bairro,
+            json_extract(data, "$.cnes") as cnes,
+            json_extract(data, "$.equipe") as equipe,
+            json_extract(data, "$.codigoEquipe") as codigo_equipe,
+            json_extract(data, "$.ineEquipe") as ine_equipe,
+            json_extract(data, "$.microarea") as microarea,
+            json_extract(data, "$.dnv") as dnv,
+            json_extract(data, "$.orientacaoSexual") as orientacao_sexual,
+            json_extract(data, "$.identidadeGenero") as identidade_genero,
+            source_updated_at as source_updated_at,
+            datalake_loaded_at as datalake_loaded_at
+        from source
+    )
+select * 
+from paciente_continuo
