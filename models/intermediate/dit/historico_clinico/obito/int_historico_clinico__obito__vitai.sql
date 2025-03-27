@@ -105,7 +105,7 @@ obitos as (
     where (
     regexp_contains(alta_adm.abe_obs, '(CAD[Á|A]VER)|([O|Ó]BITO)') 
     or (
-        alta_adm.obito_data  is not null 
+        {{process_null('alta_adm.obito_data')}}  is not null 
     )
     )
     or alta_internacao.desfecho_internacao = 'ÓBITO'
