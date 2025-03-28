@@ -26,6 +26,9 @@ with
         union all
         select *, 'historico' as origem
         from {{ ref("base_prontuario_vitacare__atendimento_historico") }}
+        union all
+        select *, 'continuo' as origem 
+        from {{ ref("base_prontuario_vitacare__atendimento_continuo") }}
     ),
     atendimentos_teste_duplicados as (
         select id_hci, count(*) as qtd

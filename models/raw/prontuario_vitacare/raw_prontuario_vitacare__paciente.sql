@@ -13,6 +13,9 @@ with
         union all
         select *, 'historico' as tipo,
         from {{ ref("base_prontuario_vitacare__paciente_historico") }}
+        union all 
+        select *, 'continuo' as tipo,
+        from {{ ref("base_prontuario_vitacare__paciente_continuo") }}
     ),
 
     paciente_deduplicado as (
