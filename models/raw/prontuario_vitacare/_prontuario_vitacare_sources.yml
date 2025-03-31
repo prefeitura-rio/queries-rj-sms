@@ -12,16 +12,19 @@ sources:
 
       # Continuo
       - name: atendimento_continuo
+        loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 4, period: hour}
+          error_after: {count: 24, period: hour}
       - name: paciente_continuo
+        loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 4, period: hour}
+          error_after: {count: 24, period: hour}
 
       # Eventos
       - name: atendimento_eventos_cloned
       - name: paciente_eventos_cloned
-        loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
-        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-        freshness:
-          warn_after: {count: 4, period: hour}
-          error_after: {count: 24, period: hour}
 
       # Histórico
       - name: alergias_historico

@@ -31,12 +31,12 @@ with
             'vitacare' as fonte,
             'paciente' as tipo,
             safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitacare_staging", "paciente_eventos_cloned") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "paciente_continuo") }}
         {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
+        where TIMESTAMP_TRUNC(datalake_loaded_at, DAY) > '{{seven_days_ago}}' 
         {% endif %}
         {% if not is_incremental() %}
-        where data_particao >= '{{min_date}}' 
+        where TIMESTAMP_TRUNC(datalake_loaded_at, DAY) >= '{{min_date}}' 
         {% endif %}
     ),
     vitacare_episodio as (
@@ -45,12 +45,12 @@ with
             'vitacare' as fonte,
             'episodio' as tipo,
             safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_cloned") }}
+        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
         {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
+        where TIMESTAMP_TRUNC(datalake_loaded_at, DAY) > '{{seven_days_ago}}' 
         {% endif %}
         {% if not is_incremental() %}
-        where data_particao >= '{{min_date}}' 
+        where TIMESTAMP_TRUNC(datalake_loaded_at, DAY) >= '{{min_date}}' 
         {% endif %}
     ),
     datas as (
