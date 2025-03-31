@@ -3,9 +3,11 @@
     NULLIF(
     NULLIF(
     NULLIF(
+    NULLIF(
         {{ texto }}
     , 'null')
     , 'None')
     , '')
     ,'NaT')
+    ,'nan')
 {% endmacro %}
