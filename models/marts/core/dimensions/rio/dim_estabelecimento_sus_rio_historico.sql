@@ -105,9 +105,32 @@ with
     ),
 
     -- Obtendo atributos de contato para os estabelecimentos
-    contatos_aps as (
-        select id_cnes, telefone, email, facebook, instagram, twitter
+    estabelecimentos_smsrio_contatos as (
+        select 
+            unidade_id,
+            telefone,
+            email,
+            facebook,
+            instagram,
+            twitter
         from {{ ref("raw_plataforma_smsrio__estabelecimento_contato") }}
+    ),
+    estabelecimentos_smsrio as (
+        select
+            id as unidade_id,
+            id_cnes
+        from {{ ref("raw_plataforma_smsrio__estabelecimento") }}
+    ),
+    contatos_aps as (
+        select 
+            id_cnes,
+            telefone,
+            email,
+            facebook,
+            instagram,
+            twitter
+        from estabelecimentos_smsrio_contatos
+            inner join estabelecimentos_smsrio using (unidade_id)
     ),
 
     -- Carregando tabelas utilizadas para mapear códigos em suas descrições textuais

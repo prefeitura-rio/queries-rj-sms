@@ -5,13 +5,23 @@ sources:
     database: rj-sms
     schema: brutos_plataforma_smsrio_staging
     tables:
-      - name: estoque_posicao_almoxarifado_aps_dengue
-      - name: materiais_almoxarifado_dengue
-      - name: equipe_contato
-      - name: estabelecimento_contato
-      - name: _paciente_cadastro_eventos
-        loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
-        filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
+      - name: subpav_arboviroses__estoque
+      - name: subpav_arboviroses__itens_estoque
+      - name: subpav_cnes__contatos_equipes
+      - name: subpav_cnes__contatos_unidades
+      - name: subpav_cnes__unidades
+      - name: sms_pacientes__tb_pacientes
+        loaded_at_field: "CAST(timestamp AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
+      - name: sms_pacientes__tb_pacientes_telefones
+        loaded_at_field: "CAST(timestamp AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
+      - name: sms_pacientes__tb_cns_provisorios
+        loaded_at_field: "CAST(timestamp AS TIMESTAMP)"
         freshness:
           warn_after: {count: 24, period: hour}
           error_after: {count: 48, period: hour}

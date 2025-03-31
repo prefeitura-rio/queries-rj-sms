@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: raw_plataforma_smsrio__equipe_contato
+  - name: raw_plataforma_smsrio__subpav_cnes__contatos_equipes
     description: Tabela com os meios de contato de uma equipe de profissionais de saude
     columns:
       - name: ine
@@ -109,8 +109,8 @@ models:
         description: Data de partição dos dados.
       - name: updated_at
         description: Data e hora da última atualização do registro.
-  - name: raw_plataforma_smsrio__estabelecimento_contato
-    description: "O modelo 'estabelecimento_contato' é uma tabela que contém
+  - name: raw_plataforma_smsrio__subpav_cnes__contatos_unidades
+    description: "O modelo 'subpav_cnes__contatos_unidades' é uma tabela que contém
       informações de contato de vários estabelecimentos da Atenção Primária. O
       modelo inclui as seguintes colunas: 'id_cnes', que é um identificador
       único para cada estabelecimento, 'telefone', que contém os números de
