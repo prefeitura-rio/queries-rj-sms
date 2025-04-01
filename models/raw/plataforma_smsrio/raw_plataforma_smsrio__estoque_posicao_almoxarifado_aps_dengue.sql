@@ -12,7 +12,7 @@ with
             {{
                 source(
                     "brutos_plataforma_smsrio_staging",
-                    "estoque_posicao_almoxarifado_aps_dengue",
+                    "subpav_arboviroses__estoque",
                 )
             }}
     ),

@@ -28,7 +28,7 @@ with
                 parse_date('%d/%m/%Y', vencimento__da_ata),
                 null
             ) as vencimento_data,
-            empresa_vencedora,
+            empresa as empresa_vencedora,
             fabricante,
             pregao___rp,
             ata,
