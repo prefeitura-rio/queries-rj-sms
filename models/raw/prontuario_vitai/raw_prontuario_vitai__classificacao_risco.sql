@@ -13,12 +13,26 @@
 
 with
     -- Seleciona eventos dos últimos 7 dias se for uma execução incremental
-    events_from_window as (
-        select *
+    new_events_from_window as (
+        select * except(created_at,datalake_loaded_at), created_at,  datalake_loaded_at as datalake__imported_at
+        from {{ source("brutos_prontuario_vitai_staging", "basecentral__classificacao_risco_eventos") }}
+        {% if is_incremental() %} 
+            where data_particao > '{{seven_days_ago}}' 
+        {% endif %}
+    ),
+
+    old_events_from_window as (
+        select * except(datalake__imported_at), cast(null as string) as created_at, datalake__imported_at
         from {{ source("brutos_prontuario_vitai_staging", "classificacao_risco_eventos") }}
         {% if is_incremental() %} 
             where data_particao > '{{seven_days_ago}}' 
         {% endif %}
+    ),
+
+    events_from_window as (
+        select * from new_events_from_window
+        union all 
+        select * from old_events_from_window
     ),
     
     -- Ranqueia os eventos por frescor dentro de cada grupo
