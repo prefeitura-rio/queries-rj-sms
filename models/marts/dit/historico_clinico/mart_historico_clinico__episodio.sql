@@ -186,10 +186,6 @@ with
     select
         deduped.id_hci,
         deduped.paciente_cpf,
-        case 
-            when deduped.paciente_cpf in (select cpf from registration_conflict) then true
-            else false
-        end as cadastros_conflitantes_indicador,
         deduped.paciente,
         deduped.tipo,
         deduped.subtipo,
