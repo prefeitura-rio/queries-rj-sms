@@ -13,12 +13,25 @@
 
 with
     -- Seleciona eventos dos últimos 7 dias se for uma execução incremental
-    events_from_window as (
-        select *
+    old_events_from_window as (
+        select *, cast(null as string) as created_at
         from {{ source("brutos_prontuario_vitai_staging", "profissional_eventos") }}
         {% if is_incremental() %} 
             where data_particao > '{{seven_days_ago}}' 
         {% endif %}
+    ),
+    new_events_from_window as (
+        select * except(created_at), created_at
+        from {{ source("brutos_prontuario_vitai_staging", "basecentral__profissional_eventos") }}
+        {% if is_incremental() %} 
+            where data_particao > '{{seven_days_ago}}' 
+        {% endif %}
+    ),
+
+    events_from_window as (
+        select * from old_events_from_window
+        union all
+        select * from new_events_from_window 
     ),
     
     -- Ranqueia os eventos por frescor dentro de cada grupo

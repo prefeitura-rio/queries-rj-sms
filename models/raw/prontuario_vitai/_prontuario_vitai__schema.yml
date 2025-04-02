@@ -240,6 +240,9 @@ models:
       - name: cliente
         description: Cliente associado ao evento.
         data_type: string
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
@@ -303,6 +306,9 @@ models:
         data_type: string
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
         data_type: timestamp
 
   - name: raw_prontuario_vitai__boletim
@@ -436,6 +442,9 @@ models:
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
 
   - name: raw_prontuario_vitai__alergia
     description: Tabela de eventos de alergia, sincronizada com Vitai.
@@ -508,6 +517,9 @@ models:
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
 
   - name: raw_prontuario_vitai__atendimento
     description: Tabela de eventos de atendimento, sincronizada com Vitai.
@@ -567,6 +579,9 @@ models:
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
 
   - name: raw_prontuario_vitai__cirurgia
     description: Tabela de eventos de cirurgia, sincronizada com Vitai.
@@ -624,6 +639,9 @@ models:
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
 
   - name: raw_prontuario_vitai__classificacao_risco
     description: Tabela de eventos de classificação de risco, sincronizada com Vitai.
@@ -679,6 +697,9 @@ models:
         data_type: string
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
         data_type: timestamp
 
   - name: raw_prontuario_vitai__diagnostico
@@ -736,6 +757,9 @@ models:
         data_type: string
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
         data_type: timestamp
 
   - name: raw_prontuario_vitai__exame
@@ -833,6 +857,9 @@ models:
       - name: imported_at
         description: Data e hora de importação para o Data Lake.
         data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
   - name: raw_prontuario_vitai__m_estabelecimento
     description: >
       Tabela contendo informações básicas sobre os estabelecimentos de saúde.
@@ -921,6 +948,9 @@ models:
         description: Data e hora da última atualização do relato cirúrgico.
       - name: imported_at
         description: Data e hora da importação dos dados para o data lake.
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
   - name: raw_prontuario_vitai__internacao
     description: >
       Tabela contendo informações detalhadas sobre as internações realizados nos estabelecimentos de saúde.
@@ -1031,6 +1061,9 @@ models:
         description: Sigla do estabelecimento associado ao evento.
       - name: imported_at
         description: Data e hora da importação dos dados para o data lake.
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
   - name: raw_prontuario_vitai__dtw__atendimento
     columns:
       - name: gid
