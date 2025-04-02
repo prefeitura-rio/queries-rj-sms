@@ -21,11 +21,11 @@ with
             {{ process_null('cpf_paciente') }} as paciente_cpf,
             {{ process_null('nome_paciente') }} as paciente_nome,
             {{ process_null('sexo') }} as sexo,
-            {{ process_null('dta_nasc') }} as data_nascimento,
+            cast({{ process_null('dta_nasc') }} as date format 'YYYY-MM-DD') as data_nascimento,
             {{ process_null('desig_medicamento_insumo') }} as desig_medicamento_insumo,
             {{ process_null('codigo') }} as codigo,
             {{ process_null('desig_lote') }} as desig_lote,
-            {{ process_null('data_dispensacao') }} as data_dispensacao,
+            cast({{ process_null('data_dispensacao') }} as timestamp) as data_dispensacao,
             {{ process_null('tipo_movimento') }} as tipo_movimento,
             {{ process_null('quantidade') }} as quantidade,
             struct(
