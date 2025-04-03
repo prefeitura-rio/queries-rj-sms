@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_aplicacao_hci_staging
+    database: rj-sms
+    schema: brutos_aplicacao_hci_staging
+    tables:
+      - name: public__user
+      - name: public__userhistory
