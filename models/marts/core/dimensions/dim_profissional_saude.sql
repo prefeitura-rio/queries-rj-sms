@@ -40,7 +40,7 @@ with
     profissionais_datasus as (
         select
             id_codigo_sus,
-            nome,
+            upper(nome) as nome,
             cns,
             data_particao,
             data_atualizacao,
@@ -118,31 +118,33 @@ with
             select
                 cpf,
                 c.cns,
+                upper(d.nome) as nome,
                 c.rank AS rank,
                 "VITAI" AS sistema,
                 2 AS merge_order
-            from {{ ref('int_historico_clinico__paciente__vitai') }}, unnest(cns) as c
+            from {{ ref('int_historico_clinico__paciente__vitai') }}, unnest(cns) as c, unnest(dados) as d
             union all
             select
                 cpf,
                 c.cns,
+                upper(d.nome) as nome,
                 c.rank AS rank,
                 "SMSRIO" AS sistema,
-                3 AS merge_order
-            from {{ ref('int_historico_clinico__paciente__smsrio') }}, unnest(cns) as c
+                1 AS merge_order
+            from {{ ref('int_historico_clinico__paciente__smsrio') }}, unnest(cns) as c, unnest(dados) as d
         )
     ),
     cns_dedup AS (
         SELECT
             cpf,
             cns,
-            ROW_NUMBER() OVER (PARTITION BY cpf  ORDER BY merge_order ASC, rank ASC) AS rank,
-            merge_order,
+            nome,
             sistema
         FROM(
             SELECT 
                 cpf,
                 cns,
+                nome,
                 rank,
                 merge_order,
                 ROW_NUMBER() OVER (PARTITION BY cpf, cns ORDER BY merge_order, rank ASC) AS dedup_rank,
@@ -153,9 +155,11 @@ with
         WHERE dedup_rank = 1
         ORDER BY  merge_order ASC, rank ASC 
     ),
+    --  Retira do de-para cns que possui mais de um cpf, por não ser confiavel
     cns_contagem AS (
         SELECT
             cpf,
+            nome,
             CASE
                 WHEN cc.cpf_count > 1 THEN NULL
                 ELSE cd.cns
@@ -169,19 +173,23 @@ with
             GROUP BY cns
         ) AS cc
             ON cd.cns = cc.cns
-        ORDER BY  merge_order ASC, rank ASC 
     ),
     cns_dados AS (
         SELECT 
             cpf,
-            cns
+            nome,
+            cns,
         FROM cns_contagem
         WHERE cns IS NOT NULL
     ),
 final as (
     select
+        distinct 
         profissionais_datasus.id_codigo_sus as id_profissional_sus,
-        cns_dados.cpf as cpf,
+        case 
+            when regexp_extract(profissionais_datasus.nome, '([^ ]*) ') = regexp_extract(cns_dados.nome, '([^ ]*) ') then cns_dados.cpf
+            else null 
+        end as cpf,
         profissionais_datasus.cns,
         profissionais_datasus.nome,
         cbo_agg.cbo,

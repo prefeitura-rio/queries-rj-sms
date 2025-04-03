@@ -106,6 +106,7 @@ contato_equipe as (
     and ine != "1"
 )
 select
+    distinct
     equipe.equipe_ine as id_ine,
     equipe.equipe_nome as nome_referencia,
     dim_estabelecimentos.id_cnes,
