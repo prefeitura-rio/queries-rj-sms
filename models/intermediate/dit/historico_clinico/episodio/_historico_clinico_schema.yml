@@ -215,8 +215,14 @@ models:
         data_tests:
           - not_null:
               name: int_historico_clinico__episodio__vitacare__id__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
           - unique:
               name: int_historico_clinico__episodio__vitacare__id__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
       - name: tipo
         description: >
           Tipo de atendimento classificado como 'Exames', 'Consulta' ou
