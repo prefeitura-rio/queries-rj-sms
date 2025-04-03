@@ -40,7 +40,7 @@ with
     profissionais_datasus as (
         select
             id_codigo_sus,
-            nome,
+            upper(nome) as nome,
             cns,
             data_particao,
             data_atualizacao,
@@ -118,7 +118,7 @@ with
             select
                 cpf,
                 c.cns,
-                d.nome,
+                upper(d.nome) as nome,
                 c.rank AS rank,
                 "VITAI" AS sistema,
                 2 AS merge_order
@@ -127,7 +127,7 @@ with
             select
                 cpf,
                 c.cns,
-                d.nome,
+                upper(d.nome) as nome,
                 c.rank AS rank,
                 "SMSRIO" AS sistema,
                 1 AS merge_order
@@ -187,7 +187,7 @@ final as (
         distinct 
         profissionais_datasus.id_codigo_sus as id_profissional_sus,
         case 
-            when {{calculate_lev('profissionais_datasus.nome','cns_dados.nome')}} < 0.8 then cns_dados.cpf
+            when regexp_extract(profissionais_datasus.nome, '([^ ]*) ') = regexp_extract(cns_dados.nome, '([^ ]*) ') then cns_dados.cpf
             else null 
         end as cpf,
         profissionais_datasus.cns,
