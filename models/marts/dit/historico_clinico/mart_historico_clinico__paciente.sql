@@ -516,7 +516,7 @@ with
                 order by merge_order asc, rank asc
             )
         where dedup_rank = 1
-        order by merge_order asc, rank asc
+        --order by merge_order asc, rank asc
     ),
 
     prontuario_dados as (
