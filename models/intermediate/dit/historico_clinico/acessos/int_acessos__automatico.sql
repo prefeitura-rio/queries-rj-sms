@@ -67,7 +67,11 @@ with
                     then 'FONOAUDIÓLOGOS'   
                 when regexp_contains(lower(cbo_datasus.descricao),'farm')
                     then 'FARMACÊUTICOS'  
-                when ((regexp_contains(lower(cbo_datasus.descricao),'enferm')) and (lower(cbo_datasus.descricao) !='socorrista (exceto medicos e enfermeiros)'))
+                when (
+                        (regexp_contains(lower(cbo_datasus.descricao),'enferm')) and 
+                        (lower(cbo_datasus.descricao) !='socorrista (exceto medicos e enfermeiros)') and
+                        (not regexp_contains(lower(cbo_datasus.descricao),'tecnico'))
+                    )
                     then 'ENFERMEIROS'  
                 else
                     'OUTROS PROFISSIONAIS'
@@ -125,17 +129,23 @@ select
 from funcionarios_ativos_enriquecido_mais_recente
 where 
     -- Critérios de Lançamento
-    unidade_cnes in (
-        '6507409',
-        '6575900',
-        '6507409',
-        '7110162',
-        '0932280',
-        '6716849',
-        '6938124',
-        '6512925',
-        '6742831',
-        '6503772',
-        '2280183'
-    ) 
-    and funcao_grupo in ('MEDICOS')
+    (
+        unidade_ap in ('51') or 
+        unidade_cnes in (
+            '6507409',
+            '6575900',
+            '6507409',
+            '7110162',
+            '0932280',
+            '6716849',
+            '6938124',
+            '6512925',
+            '6742831',
+            '6503772',
+            '2280183'
+        )
+    )
+    and funcao_grupo in (
+        'MEDICOS',
+        'ENFERMEIROS'
+    )
