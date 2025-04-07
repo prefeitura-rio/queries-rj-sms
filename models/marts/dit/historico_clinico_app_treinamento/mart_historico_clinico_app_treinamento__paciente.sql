@@ -22,7 +22,6 @@ select
     'parda' as race,
     false as deceased,
     '912345678' as phone,
-    10 as quantidade_episodios,
     struct(
         '6664040' as cnes,
         'CF Heitor dos Prazeres' as name,
@@ -33,14 +32,15 @@ select
         'Boa Viagem' as name,
         '991396543' as phone
     ) as family_health_team,
-    struct(
+
+    [struct(
         '9C04A670661146E2' as registry,
         'Naya Bernasconi Nunes Avenia Puertas' as name
-    ) as nursing_responsible,
-    struct(
+    )] as nursing_responsible,
+    [struct(
         '612769D381064B82' as registry,
         'Tuany de Paula Ferreira' as name
-    ) as medical_responsible,
+    )] as medical_responsible,
     struct(
         true as indicador,
         [] as motivos,
