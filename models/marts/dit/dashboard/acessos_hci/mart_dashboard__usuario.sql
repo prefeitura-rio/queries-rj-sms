@@ -15,28 +15,30 @@ dim_usuario as (
 ),
 profissional as (
     select * 
-    from {{ref('int_acessos__automatico')}}
-    union all 
-    select *
-    from {{ref('int_acessos__manual')}}
+    from {{ref('mart_historico_clinico_app__acessos')}}
+),
+estabelecimento as (
+    select * 
+    from {{ref('dim_estabelecimento')}}
 )
 
 select
-  historico_acessos.*, 
-  nome as nome_usuario, 
-  dim_usuario.cpf as cpf_usuario,
-  indicador_ativo,
-  indicador_superusuario,
-  ap as area_programatica,
-  profissional.unidade_nome,
-  cnes as cnes_lotacao,
-  data_aceite_termos_uso,
-  indicador_aceite_termos_uso,
-  nivel_acesso,
-  cargo,
-  profissional.funcao_grupo
+historico_acessos.id,
+id_usuario,
+dim_usuario.cpf as cpf_usuario,
+estabelecimento.area_programatica,
+estabelecimento.nome_limpo as unidade_nome,
+dim_usuario.cnes as cnes_lotacao,
+endereco_latitude,
+endereco_longitude,
+profissional.funcao_grupo,
+cast(historico_acessos.updated_at as date) as updated_at,
+cast(historico_acessos.loaded_at as date) as loaded_at,
+
 from historico_acessos
 left join dim_usuario
 on cast(historico_acessos.id_usuario as string) = cast(dim_usuario.id as string)
 left join profissional
 on cast(dim_usuario.cpf as string) = cast(profissional.cpf as string)
+left join estabelecimento
+on dim_usuario.cnes = estabelecimento.id_cnes
