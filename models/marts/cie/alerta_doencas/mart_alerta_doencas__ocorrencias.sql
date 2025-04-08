@@ -2,8 +2,7 @@
     config(
         schema="projeto_alerta_doencas",
         alias="ocorrencias",
-        materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        materialized="table",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -12,28 +11,56 @@
     )
 }}
 
-{% set partitions_to_replace = [
-    'cast(current_date("America/Sao_Paulo") as string)',
-    'cast(date_sub(current_date("America/Sao_Paulo"), interval 1 day) as string)',
-    'cast(date_sub(current_date("America/Sao_Paulo"), interval 2 day) as string)',
-] %}
-
 
 with
     -- Ocorrencias (episódios)
-    ocorrencias as (
+    ocorrencias_legado as (
         select
-            *,
-            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio
+            patient_cpf as cpf,
+            payload_cnes as cnes,
+            data__unidade_ap as ap,
+            safe_cast(data__datahora_inicio_atendimento as datetime) as datahora_inicio,
+            safe_cast(data__datahora_fim_atendimento as datetime) as datahora_fim,
+            data__profissional__equipe__cod_equipe as cod_equipe_profissional,
+            data__profissional__equipe__cod_ine as cod_ine_equipe_profissional,
+            data__profissional__equipe__nome as nome_equipe_profissional,
+            data__tipo_consulta as tipo,
+            data__condicoes as condicoes,
+            data__soap_subjetivo_motivo as soap_subjetivo_motivo,
+            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio,
+            safe_cast(datalake_loaded_at as timestamp) as datalake_loaded_at
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_cloned") }}
-        {% if is_incremental() %}
-            where data_particao in ({{ partitions_to_replace | join(",") }})
-        {% endif %}
+    ),
+
+    ocorrencias_continuo as (
+        select
+            patient_cpf as cpf,
+            payload_cnes as cnes,
+            json_extract_scalar(data, "$.unidade_ap") as ap,
+            safe_cast(
+                {{ process_null("json_extract_scalar(data, '$.datahora_inicio_atendimento')") }} as datetime
+            ) as datahora_inicio,
+            safe_cast(
+                {{ process_null("json_extract_scalar(data, '$.datahora_fim_atendimento')") }} as datetime
+            ) as datahora_fim,
+            json_extract_scalar(data, "$.profissional.equipe.cod_equipe") as cod_equipe_profissional,
+            json_extract_scalar(data, "$.profissional.equipe.cod_ine") as cod_ine_equipe_profissional,
+            json_extract_scalar(data, "$.profissional.equipe.nome") as nome_equipe_profissional,
+
+            json_extract_scalar(data, "$.tipo_consulta") as tipo,
+            json_extract(data, "$.condicoes") as condicoes,
+            json_extract_scalar(data, "$.soap_subjetivo_motivo") as soap_subjetivo_motivo,
+            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio,
+            safe_cast(datalake_loaded_at as timestamp) as datalake_loaded_at
+        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
     ),
 
     ocorrencias_deduplicadas as (
         select *
-        from ocorrencias
+        from ocorrencias_continuo
+        union all
+        select *
+        from ocorrencias_legado
         qualify
             row_number() over (
                 partition by id_episodio order by datalake_loaded_at desc
@@ -113,28 +140,28 @@ with
             id_episodio,
 
             -- Paciente
-            patient_cpf as paciente_cpf,
+            ocorrencias_deduplicadas.cpf as paciente_cpf,
             pacientes.nome as paciente_nome,
             pacientes.data_nascimento as paciente_data_nascimento,
             pacientes.sexo as paciente_sexo,
             pacientes.telefone as paciente_telefone,
 
             -- Estabelecimento
-            data__unidade_cnes as unidade_cnes,
+            cnes as unidade_cnes,
             estabelecimentos.nome_limpo as unidade_nome,
-            data__unidade_ap as unidade_ap,
+            ap as unidade_ap,
             estabelecimentos.telefone as unidade_telefone,
 
             -- Equipe
-            data__profissional__equipe__nome as equipe_nome,
-            data__profissional__equipe__cod_ine as equipe_cod_ine,
-            data__profissional__equipe__cod_equipe as equipe_cod,
+            nome_equipe_profissional as equipe_nome,
+            cod_ine_equipe_profissional as equipe_cod_ine,
+            cod_equipe_profissional as equipe_cod,
             equipes.telefone as equipe_whatsapp,
 
             -- Atendimento
-            safe_cast(data__datahora_inicio_atendimento as timestamp) as data_inicio,
-            data__tipo_consulta as tipo_consulta,
-            data__soap_subjetivo_motivo as soap_subjetivo_motivo,
+            ocorrencias_deduplicadas.datahora_inicio as data_inicio,
+            ocorrencias_deduplicadas.tipo as tipo_consulta,
+            ocorrencias_deduplicadas.soap_subjetivo_motivo as soap_subjetivo_motivo,
 
             -- Condição
             json_value(condicoes, '$.cod_cid10') as cid,
@@ -147,12 +174,12 @@ with
             -- Metadados
             datalake_loaded_at,
             safe_cast(
-                safe_cast(data__datahora_fim_atendimento as datetime) as date
+                safe_cast(datahora_fim as datetime) as date
             ) as data_particao
 
         from
             ocorrencias_deduplicadas,
-            unnest(json_query_array(data__condicoes)) as condicoes
+            unnest(json_query_array(condicoes)) as condicoes
         left join
             cid10_atencao aps_cid_atencao
             on regexp_contains(
@@ -160,15 +187,15 @@ with
             )
         left join
             estabelecimentos
-            on ocorrencias_deduplicadas.data__unidade_cnes = estabelecimentos.id_cnes
+            on ocorrencias_deduplicadas.cnes = estabelecimentos.id_cnes
         left join
             equipes
-            on ocorrencias_deduplicadas.data__profissional__equipe__cod_ine
+            on ocorrencias_deduplicadas.cod_ine_equipe_profissional
             = equipes.id_ine
         left join
             pacientes
-            on ocorrencias_deduplicadas.patient_cpf = pacientes.cpf
-            and ocorrencias_deduplicadas.data__unidade_cnes = pacientes.id_cnes
+            on ocorrencias_deduplicadas.cpf = pacientes.cpf
+            and ocorrencias_deduplicadas.cnes = pacientes.id_cnes
         where
             json_value(condicoes, '$.estado') in ('ATIVO', 'N.E')
             and aps_cid_atencao.cod is not null

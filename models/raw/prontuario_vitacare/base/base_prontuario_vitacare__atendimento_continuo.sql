@@ -75,13 +75,13 @@ with
             json_extract_scalar(data, "$.notas_observacoes") as notas_observacoes,
 
             -- JSONs
-            json_extract_scalar(data, "$.prescricoes") as prescricoes,
-            json_extract_scalar(data, "$.condicoes") as condicoes,
-            json_extract_scalar(data, "$.exames_solicitados") as exames_solicitados,
-            json_extract_scalar(data, "$.alergias_anamnese") as alergias_anamnese,
-            json_extract_scalar(data, "$.vacinas") as vacinas,
-            json_extract_scalar(data, "$.indicadores") as indicadores,
-            json_extract_scalar(data, "$.encaminhamentos") as encaminhamentos,
+            json_extract(data, "$.prescricoes") as prescricoes,
+            json_extract(data, "$.condicoes") as condicoes,
+            json_extract(data, "$.exames_solicitados") as exames_solicitados,
+            json_extract(data, "$.alergias_anamnese") as alergias_anamnese,
+            json_extract(data, "$.vacinas") as vacinas,
+            json_extract(data, "$.indicadores") as indicadores,
+            json_extract(data, "$.encaminhamentos") as encaminhamentos,
 
             -- Metadados
             safe_cast(source_updated_at as datetime) as updated_at,
