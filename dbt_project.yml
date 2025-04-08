@@ -349,6 +349,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+        historico_clinico_app_treinamento:
+          +tags: ["hci_app_treinamento"]
+          +schema: app_historico_clinico_treinamento
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: historico_clinico_app
       subpav:
         farmacia:
           +schema: projeto_subpav
