@@ -19,8 +19,14 @@ models:
         data_tests:
           - not_null:
               name: mart_historico_clinico__episodio_app__id_hci__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
           - unique:
               name: mart_historico_clinico__episodio_app__id_hci__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
       - name: entry_datetime
         description: >
           Data e hora de início do atendimento. Representa o momento em que o

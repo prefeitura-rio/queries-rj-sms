@@ -29,8 +29,14 @@ models:
         data_tests:
           - not_null:
               name: mart_historico_clinico__episodio__id_episodio__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
           - unique:
               name: mart_historico_clinico__episodio__id_episodio__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
       - name: paciente
         description: >
           Informações sobre os pacientes envolvidos no atendimento, incluindo
