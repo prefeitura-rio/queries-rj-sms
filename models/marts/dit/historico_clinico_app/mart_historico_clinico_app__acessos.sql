@@ -57,6 +57,12 @@ with
       END as nivel_acesso
     from uniao
   ),
+
+  removendo_treinamento as (
+    select *
+    from calculando_permissoes
+    where nivel_acesso != 'training'
+  ),
   
   -- -----------------------------------------
   -- Removendo Duplicados
@@ -65,7 +71,7 @@ with
     select
       *,
       row_number() over (partition by cpf order by prioridade desc) as rn
-    from calculando_permissoes
+    from removendo_treinamento
   ),
   deduped as (
     select * except(rn, prioridade)
