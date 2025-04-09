@@ -95,7 +95,7 @@ models:
       +tags: "raw"
       aplicacao_hci:
         +schema: brutos_aplicacao_hci
-        +tags: "aplicacao_hci"
+        +tags: ["aplicacao_hci", "daily"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
