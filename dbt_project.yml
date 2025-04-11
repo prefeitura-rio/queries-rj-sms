@@ -399,7 +399,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: nao
             dominio: subgeral
-
+        projeto_nps:
+          +schema: projeto_nps
+          +tags: ["weekly", "subgeral", "nps"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
+            dominio: subgeral
 
 tests:
   rj_sms:

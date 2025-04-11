@@ -1,0 +1,59 @@
+models:
+  - name: mart_projeto_nps__episodios
+    description: O modelo 'mart_projeto_nps__episodios' é um modelo de transformação de dados que enriquece os dados dos pacientes com informações adicionais como classificação de risco, prestador, data e hora da consulta, id da unidade, código da equipe, sexo, data de nascimento, telefone e município. O modelo filtra episódios de interesse onde o ano da data da consulta seja maior ou igual a 2025. Em seguida, junta esses dados com informações do paciente, classificação de risco e extrai o ano e o mês da data da consulta para criar as colunas 'competencia_ano' e 'competencia_mes'. A saída final do modelo inclui todos esses campos enriquecidos.
+    columns:
+      - name: competencia_ano
+        description: Ano em que a consulta foi realizada.
+        quote: true
+      - name: competencia_mes
+        description: Mês em que a consulta foi realizada.
+        data_type: int64
+        quote: true
+      - name: id_hci
+        description: Identificador único do registro no histórico clínico. 
+        data_type: string
+        quote: true
+      - name: id_prontuario_global
+        description: Identificador único do registro no prontuário.
+        data_type: string
+        quote: true
+      - name: risco
+        description: Classificação de risco do paciente.
+        data_type: string
+        quote: true
+      - name: fornecedor
+        description: Prontuário de origem (vitacare ou vitai).
+        data_type: string
+        quote: true
+      - name: data_consulta
+        description: Data em que a consulta foi realizada.
+        data_type: date
+        quote: true
+      - name: data_hora_consulta
+        description: Data e hora em que a consulta foi realizada.
+        data_type: datetime
+        quote: true
+      - name: cnes_unidade
+        description: CNES da unidade de saúde onde ocorreu a consulta.
+        data_type: string
+        quote: true
+      - name: codigo_inea_equipe
+        description: Identificador único da equipe de saúde.
+        data_type: string
+        quote: true
+      - name: sexo
+        description: Sexo do paciente.
+        data_type: string
+        quote: true
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+        quote: true
+      - name: telefone
+        description: Número de telefone do paciente.
+        data_type: string
+        quote: true
+      - name: municipio
+        description: <unicípio de residência do paciente.
+        data_type: string
+        quote: true
