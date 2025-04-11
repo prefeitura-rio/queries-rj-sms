@@ -207,6 +207,7 @@ with
         from
             bruto_atendimento,
             unnest(json_extract_array(indicadores)) as indicadores_json
+        qualify row_number() over (partition by id_hci,nome order by loaded_at asc) = 1
     ),
 
     medidas_padronizadas as (
