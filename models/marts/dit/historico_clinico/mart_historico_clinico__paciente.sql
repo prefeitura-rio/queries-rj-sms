@@ -539,6 +539,13 @@ with
         select
             cpfs.cpf,
             struct(
+                {{
+                dbt_utils.generate_surrogate_key(
+                        [
+                            "cpfs.cpf",
+                        ]
+                    )
+                }} as id_paciente,
                 case
                     when sm.cpf is not null
                     then sm.nome
@@ -640,7 +647,7 @@ with
     -- -- FINAL JOIN: Joins all the data previously processed, creating the
     -- -- integrated table of the patients.
     paciente_integrado as (
-        select
+        select  
             pd.cpf,
             cns.cns,
             pd.dados,
