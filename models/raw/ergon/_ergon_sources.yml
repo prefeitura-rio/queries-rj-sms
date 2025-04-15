@@ -6,4 +6,15 @@ sources:
     schema: brutos_ergon_staging
     tables:
       - name: funcionarios_ativos
+        loaded_at_query: cast(provimento_inicio AS TIMESTAMP)
+        freshness:
+          error_after: {count: 1, period: day}
       - name: funcionarios
+        loaded_at_query: |
+          select 
+            max(cast(d.provimento_inicio AS TIMESTAMP)) 
+            from  {{funcionarios}}, unnest(dados) as d
+            where 
+              date_diff(current_datetime(),cast(d.provimento_inicio AS DATETIME), day) >= 0
+        freshness:
+          error_after: {count: 1, period: day}
