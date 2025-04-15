@@ -1107,6 +1107,8 @@ models:
           - not_null:
               name: mart_prontuario_vitacare__ficha_a__cpf__not_null
       - name: id_paciente
+        description: Identificador único do paciente utilizado para ligar tabelas no datalake.
+      - name: id_paciente_vitacare
         description: Identificador único do paciente no sistema.
         data_tests:
           - not_null:

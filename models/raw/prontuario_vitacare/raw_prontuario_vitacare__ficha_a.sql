@@ -20,7 +20,14 @@ with
     ficha_a_padronizada as (
         select 
             safe_cast(cpf as string) as cpf,
-            REGEXP_REPLACE(CAST(id_paciente AS STRING), '\x00', '') AS id_paciente,
+            {{
+            dbt_utils.generate_surrogate_key(
+                    [
+                        "cpf",
+                    ]
+                )
+            }} as id_paciente,
+            REGEXP_REPLACE(CAST(id_paciente AS STRING), '\x00', '') AS id_paciente_vitacare,
             numero_prontuario,
             safe_cast(unidade_cadastro as string) as unidade_cadastro,
             regexp_replace(ap_cadastro,r'\.0','') as ap_cadastro,
