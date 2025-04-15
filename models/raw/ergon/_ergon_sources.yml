@@ -6,15 +6,20 @@ sources:
     schema: brutos_ergon_staging
     tables:
       - name: funcionarios_ativos
-        loaded_at_query: cast(provimento_inicio AS TIMESTAMP)
+        loaded_at_field: cast(provimento_inicio as timestamp)  # O CAST é automático
+        filter: "date_diff(current_date(), cast(provimento_inicio as date), day) <= 30"  # Filtro mais útil
         freshness:
-          error_after: {count: 1, period: day}
+          warn_after: {count: 1, period: day}  # Adicionado aviso prévio
+          error_after: {count: 2, period: day}
+          
       - name: funcionarios
         loaded_at_query: |
           select 
-            max(cast(d.provimento_inicio AS TIMESTAMP)) 
-            from  {{funcionarios}}, unnest(dados) as d
-            where 
-              date_diff(current_datetime(),cast(d.provimento_inicio AS DATETIME), day) >= 0
+            max(cast(d.provimento_inicio as timestamp)) as max_loaded_at
+          from `rj-sms`.`brutos_ergon_staging`.`funcionarios`, unnest(dados) as d
+          where 
+            d.provimento_inicio is not null
+            and date_diff(current_date(), cast(d.provimento_inicio as date), day) <= 30
         freshness:
-          error_after: {count: 1, period: day}
+          warn_after: {count: 1, period: day}
+          error_after: {count: 2, period: day}
