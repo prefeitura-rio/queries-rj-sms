@@ -12,10 +12,14 @@ with
             {{
                 source(
                     "brutos_centralderegulacao_mysql_staging",
-                    "vw_minhasauderio_pesquisa_satisfacao",
+                    "dw__vw_minhasauderio_pesquisa_satisfacao",
                 )
             }}
     ),
-    final as (select * from source)
+    deduplicated as (
+        select *
+        from source
+        qualify row_number() over (partition by cpf order by datahoraresposta desc) = 1
+    )
 select *
-from final
+from deduplicated

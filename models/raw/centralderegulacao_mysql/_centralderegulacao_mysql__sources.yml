@@ -5,8 +5,8 @@ sources:
     database: rj-sms
     schema: brutos_centralderegulacao_mysql_staging
     tables:
-      - name: vw_MS_CadastrosAtivacoesGov
-      - name: vw_fibromialgia_relatorio
-      - name: vw_minhaSaude_listaUsuario
-      - name: vw_minhasauderio_pesquisa_satisfacao
-      - name: vw_tea_relatorio
+      - name: monitoramento__vw_MS_CadastrosAtivacoesGov
+      - name: monitoramento__vw_fibromialgia_relatorio
+      - name: monitoramento__vw_minhaSaude_listaUsuario
+      - name: monitoramento__vw_tea_relatorio
+      - name: dw__vw_minhasauderio_pesquisa_satisfacao

@@ -7,10 +7,14 @@ with
             {{
                 source(
                     "brutos_centralderegulacao_mysql_staging",
-                    "vw_fibromialgia_relatorio",
+                    "monitoramento__vw_fibromialgia_relatorio",
                 )
             }}
     ),
-    final as (select * from source)
-select *
-from final
+
+    deduplicated as (
+        select *
+        from source
+        qualify row_number() over (partition by idusuario order by solicitacaodatahora desc) = 1
+    )
+select * from deduplicated

@@ -3,8 +3,12 @@
 with
     source as (
         select *
-        from {{ source("brutos_centralderegulacao_mysql_staging", "vw_tea_relatorio") }}
+        from {{ source("brutos_centralderegulacao_mysql_staging", "monitoramento__vw_tea_relatorio") }}
     ),
-    final as (select * from source)
+    deduplicated as (
+        select *
+        from source
+        qualify row_number() over (partition by idusuario order by solicitacaodatahora desc) = 1
+    )
 select *
-from final
+from deduplicated
