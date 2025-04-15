@@ -94,6 +94,13 @@ with
             struct(
                 merged_patient.cpf,
                 merged_patient.cns,
+                {{
+                dbt_utils.generate_surrogate_key(
+                        [
+                            "cpf",
+                        ]
+                    )
+                }} as id_paciente,
                 merged_patient.data_nascimento
             ) as paciente,
         from merged_data

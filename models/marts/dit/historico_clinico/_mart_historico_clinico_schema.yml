@@ -41,9 +41,9 @@ models:
         description: >
           Informações sobre os pacientes envolvidos no atendimento, incluindo
           CPF e CNS. Agrupados por identificador de prontuário.
-      - name: paciente.id_prontuario
+      - name: paciente.id_paciente
         description: |
-          Identificador do paciente no prontuário relacionado ao atendimento.
+          Identificador global do paciente usado para anonimizar o campo cpf.
       - name: paciente.cpf
         description: |
           CPF do paciente.
@@ -407,6 +407,8 @@ models:
               name: mart_historico_clinico__paciente__nome__not_null
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
+      - name: dados.id_paciente
+        description: Identificador global do paciente usado para anonimizar o campo cpf.
       - name: dados.nome_social
         description: Nome social.
         policy_tags:
