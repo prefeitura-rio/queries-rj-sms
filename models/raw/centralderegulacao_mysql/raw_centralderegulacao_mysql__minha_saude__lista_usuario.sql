@@ -11,10 +11,14 @@ with
             {{
                 source(
                     "brutos_centralderegulacao_mysql_staging",
-                    "vw_minhaSaude_listaUsuario",
+                    "monitoramento__vw_minhaSaude_listaUsuario",
                 )
             }}
     ),
-    final as (select * from source)
+    deduplicated as (
+        select *
+        from source
+        qualify row_number() over (partition by idusuario order by datahoracadastro desc) = 1
+    )
 select *
-from final
+from deduplicated

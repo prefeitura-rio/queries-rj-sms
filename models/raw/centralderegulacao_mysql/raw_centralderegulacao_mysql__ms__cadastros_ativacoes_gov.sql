@@ -11,11 +11,15 @@ with
             {{
                 source(
                     "brutos_centralderegulacao_mysql_staging",
-                    "vw_MS_CadastrosAtivacoesGov",
+                    "monitoramento__vw_MS_CadastrosAtivacoesGov",
                 )
             }}
     ),
 
-    final as (select * from source)
+    deduplicated as (
+        select *
+        from source
+        qualify row_number() over (partition by dia order by datalake_loaded_at desc) = 1
+    )
 select *
-from final
+from deduplicated
