@@ -11,14 +11,4 @@ sources:
           warn_after: {count: 1, period: day}
           error_after: {count: 2, period: day}
         loaded_at_field: cast(provimento_inicio as timestamp)
-          
       - name: funcionarios
-        freshness:
-          warn_after: {count: 1, period: day}
-          error_after: {count: 2, period: day}        
-          loaded_at_query: |
-            select 
-              max(cast(d.provimento_inicio as timestamp)) as max_loaded_at
-            from "rj-sms"."brutos_ergon_staging"."funcionarios", unnest(dados) as d
-            where 
-              cast(d.provimento_inicio as date) <= current_date()
