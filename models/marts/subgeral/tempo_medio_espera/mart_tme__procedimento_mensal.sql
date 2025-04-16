@@ -2,7 +2,7 @@
 {{
     config(
         enabled=true,
-        schema="projeto_tme",
+        schema="projeto_sisreg_tme",
         alias="procedimento_mensal",
         materialized="table",
     )
