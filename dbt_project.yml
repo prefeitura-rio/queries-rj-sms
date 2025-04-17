@@ -259,6 +259,21 @@ models:
           dado_publico: nao
           dado_pessoal: nao
           dado_sensivel: nao
+      sisreg_api:
+        +schema: brutos_sisreg_api
+        +tags: ["daily", "subgeral", "sisreg", "sisreg_reports"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      sisreg_tme:
+        +schema: projeto_sisreg_tme
+        +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
+
     intermediate:
       +materialized: ephemeral
       dit:

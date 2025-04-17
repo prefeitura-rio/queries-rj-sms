@@ -1,0 +1,720 @@
+models:
+  - name: raw_sisreg_api__marcacoes
+    description: O modelo raw_sisreg_api__marcacoes é um conjunto de dados abrangente que contém informações sobre agendamentos médicos. Inclui detalhes sobre o agendamento, como data, status e tipo de agendamento, bem como informações sobre o paciente, o profissional médico e a unidade de saúde. O modelo também inclui dados sobre a condição de saúde do paciente e os procedimentos realizados. Os dados são extraídos da API do SISREG e são usados para gerenciamento e análise de saúde.
+    columns:
+      - name: solicitacao_id
+        description: O identificador único para cada solicitação. Este é um valor do tipo string.
+        data_type: string
+        quote: true
+      - name: data_solicitacao
+        description: O timestamp de quando a solicitação foi feita. Este é um valor do tipo timestamp.
+        data_type: timestamp
+        quote: true
+      - name: data_atualizacao
+        description: O timestamp de quando a solicitação foi atualizada pela última vez. Este é um valor do tipo timestamp.
+        data_type: timestamp
+        quote: true
+      - name: data_cancelamento
+        description: Esta coluna representa o timestamp de quando a solicitação foi cancelada. É do tipo timestamp e pode ser nula se a solicitação não foi cancelada.
+        data_type: timestamp
+        quote: true
+      - name: solicitacao_status
+        description: Esta coluna representa o status da solicitação. É do tipo string e pode ter vários valores representando diferentes status da solicitação.
+        data_type: string
+        quote: true
+      - name: solicitacao_situacao
+        description: Esta coluna representa a situação da solicitação. É do tipo string e pode ter vários valores representando diferentes situações da solicitação.
+        data_type: string
+        quote: true
+      - name: solicitacao_visualizada_regulador
+        description: Esta coluna indica se a solicitação foi visualizada pelo regulador. É uma coluna do tipo string com possíveis valores 'SIM' para visualizada e 'NÃO' para não visualizada.
+        data_type: string
+        quote: true
+      - name: regulacao_tp_id
+        description: Esta coluna representa o ID do tipo de regulação. É uma coluna do tipo string e pode conter vários IDs correspondentes a diferentes tipos de regulações.
+        data_type: string
+        quote: true
+      - name: fila_tp_id
+        description: Esta coluna representa o ID do tipo de fila. É uma coluna do tipo string e pode conter vários IDs correspondentes a diferentes tipos de filas.
+        data_type: string
+        quote: true
+      - name: perfil_cancelamento_id
+        description: Esta coluna representa o ID do perfil de cancelamento. É do tipo string e pode ser nulo. O ID é extraído do campo 'codigo_perfil_cancelamento' nos dados de origem, com quaisquer valores nulos ou caracteres não numéricos removidos.
+        data_type: string
+        quote: true
+      - name: solicitacao_risco
+        description: "Esta coluna representa o nível de risco da solicitação. É do tipo string e pode ser nulo. O nível de risco é determinado com base no campo 'codigo_classificacao_risco' nos dados de origem, com os seguintes mapeamentos: '1' -> 'VERMELHO', '2' -> 'AMARELO', '3' -> 'VERDE', '4' -> 'AZUL'."
+        data_type: string
+        quote: true
+      - name: justificativa_cancelamento
+        description: Esta coluna representa a justificativa do cancelamento. É do tipo string e pode ser nulo. A justificativa é extraída do campo 'justificativa_cancelamento' nos dados de origem, com quaisquer valores nulos ou caracteres não alfabéticos removidos e o texto convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: chave_confirmacao
+        description: Esta coluna representa a chave de confirmação para a solicitação. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: procedimento_grupo_id
+        description: Esta coluna representa o ID do grupo de procedimento. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: procedimento_grupo
+        description: Esta coluna representa o nome do grupo de procedimento. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: vaga_solicitada_tp
+        description: Esta coluna representa o tipo de vaga solicitada. Pode ter valores como '1 VEZ', 'RETORNO', 'RESERVA TECNICA', 'SEM INFORMACAO', ou NULL.
+        data_type: string
+        quote: true
+      - name: cid_id
+        description: Esta coluna representa o identificador único para o código da Classificação Internacional de Doenças (CID) associado ao procedimento médico.
+        data_type: string
+        quote: true
+      - name: cid
+        description: Esta coluna representa a descrição do código da Classificação Internacional de Doenças (CID) associado ao procedimento médico.
+        data_type: string
+        quote: true
+      - name: procedimento_interno_id
+        description: O ID do procedimento interno. Este é um identificador único para cada procedimento dentro do sistema.
+        data_type: string
+        quote: true
+      - name: procedimento_interno
+        description: O nome do procedimento interno. Este é um nome descritivo para o procedimento que está sendo realizado.
+        data_type: string
+        quote: true
+      - name: procedimento_sigtap_id
+        description: O ID do procedimento SIGTAP. Este é um identificador único para cada procedimento dentro do sistema SIGTAP.
+        data_type: string
+        quote: true
+      - name: procedimento_sigtap
+        description: Esta coluna representa o código do procedimento do sistema SIGTAP (Sistema de Gerenciamento da Tabela de Procedimentos, Medicamentos e OPM do SUS). É um identificador único para cada procedimento no sistema de saúde pública brasileiro.
+        data_type: string
+        quote: true
+      - name: uf_solicitante_id
+        description: Esta coluna representa o identificador único para o estado (Unidade Federativa) do solicitante. É usada para identificar o estado de onde veio a solicitação do procedimento.
+        data_type: string
+        quote: true
+      - name: uf_solicitante
+        description: Esta coluna representa o nome do estado (Unidade Federativa) do solicitante. É usada para identificar o estado de onde veio a solicitação do procedimento.
+        data_type: string
+        quote: true
+      - name: central_solicitante_id_cnes
+        description: A coluna 'central_solicitante_id_cnes' representa o código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da central solicitante. Este é um identificador único usado no Brasil para identificar estabelecimentos de saúde.
+        data_type: string
+        quote: true
+      - name: central_solicitante_id
+        description: A coluna 'central_solicitante_id' representa o identificador único da central solicitante. Este ID é usado para identificar unicamente cada central solicitante no banco de dados.
+        data_type: string
+        quote: true
+      - name: central_solicitante_cnes
+        description: A coluna 'central_solicitante_cnes' representa o nome da central solicitante conforme registrado no CNES (Cadastro Nacional de Estabelecimentos de Saúde). Isso fornece um nome legível por humanos para cada central solicitante.
+        data_type: string
+        quote: true
+      - name: central_solicitante
+        description: A coluna 'central_solicitante' representa o nome da unidade central que fez a solicitação. É do tipo string e é derivada do campo 'nome_central_solicitante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_id
+        description: A coluna 'unidade_solicitante_id' representa o identificador único da unidade que fez a solicitação. É do tipo string e é derivada do campo 'codigo_unidade_solicitante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante
+        description: A coluna 'unidade_solicitante' representa o nome da unidade que fez a solicitação. É do tipo string e é derivada do campo 'nome_unidade_solicitante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: profissional_solicitante_cpf
+        description: O CPF (Cadastro de Pessoas Físicas) do profissional que fez a solicitação. É um identificador único para indivíduos no cadastro fiscal do país, usado no Brasil.
+        data_type: string
+        quote: true
+      - name: medico_solicitante
+        description: O nome do médico que fez a solicitação. Este é um campo string que contém o nome completo do médico.
+        data_type: string
+        quote: true
+      - name: crm_solicitante
+        description: O CRM (Conselho Regional de Medicina) do médico que fez a solicitação. É um identificador único para médicos no Brasil.
+        data_type: string
+        quote: true
+      - name: operador_solicitante_nome
+        description: O nome do operador que fez a solicitação. Este é um campo string e pode conter quaisquer caracteres válidos.
+        data_type: string
+        quote: true
+      - name: operador_cancelamento_nome
+        description: O nome do operador que cancelou a solicitação. Este é um campo string e pode conter quaisquer caracteres válidos.
+        data_type: string
+        quote: true
+      - name: operador_videofonista_nome
+        description: O nome do operador que atendeu a videochamada. Este é um campo string e pode conter quaisquer caracteres válidos.
+        data_type: string
+        quote: true
+      - name: uf_regulador_id
+        description: O identificador único para o estado onde o regulador está localizado. Este é um campo string.
+        data_type: string
+        quote: true
+      - name: uf_regulador
+        description: O nome do estado onde o regulador está localizado. Este é um campo string.
+        data_type: string
+        quote: true
+      - name: central_reguladora_id
+        description: O identificador único para o centro regulador. Este é um campo string.
+        data_type: string
+        quote: true
+      - name: central_reguladora
+        description: A coluna 'central_reguladora' representa o nome do centro regulador envolvido no agendamento médico. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: perfil_cancelamento
+        description: A coluna 'perfil_cancelamento' representa o perfil ou motivo do cancelamento do agendamento médico. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: data_desejada
+        description: A coluna 'data_desejada' representa a data desejada para o agendamento médico. É um campo do tipo timestamp.
+        data_type: timestamp
+        quote: true
+      - name: unidade_desejada_id
+        description: O ID da unidade desejada onde o paciente deseja receber tratamento. Este é um campo string que é preenchido com zeros à esquerda até 7 caracteres.
+        data_type: string
+        quote: true
+      - name: unidade_desejada
+        description: O nome da unidade desejada onde o paciente deseja receber tratamento. Este é um campo string que é normalizado para remover quaisquer caracteres especiais e convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: paciente_cpf
+        description: O CPF (Cadastro de Pessoas Físicas) do paciente. Este é um identificador único para indivíduos no Brasil. Este é um campo string que é preenchido com zeros à esquerda até 11 caracteres.
+        data_type: string
+        quote: true
+      - name: paciente_cns
+        description: A coluna 'paciente_cns' representa o identificador único do paciente na forma de um número CNS (Cartão Nacional de Saúde). Este é um campo string e é preenchido com zeros à esquerda para atingir um comprimento total de 15 caracteres.
+        data_type: string
+        quote: true
+      - name: paciente_nome
+        description: A coluna 'paciente_nome' representa o nome completo do paciente. Este é um campo string e é normalizado para remover quaisquer caracteres especiais e convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: paciente_dt_nasc
+        description: A coluna 'paciente_dt_nasc' representa a data de nascimento do paciente. Este é um campo timestamp e está formatado como 'YYYY-MM-DD HH:MM:SS'.
+        data_type: timestamp
+        quote: true
+      - name: paciente_sexo
+        description: Esta coluna representa o sexo do paciente. Os dados são normalizados e limpos para remover quaisquer caracteres especiais e são armazenados em maiúsculas. O tipo de dados desta coluna é string.
+        data_type: string
+        quote: true
+      - name: paciente_nome_mae
+        description: Esta coluna representa o nome da mãe do paciente. Os dados são normalizados e limpos para remover quaisquer caracteres especiais e são armazenados em maiúsculas. O tipo de dados desta coluna é string.
+        data_type: string
+        quote: true
+      - name: paciente_telefone
+        description: Esta coluna representa o número de telefone do paciente. Os dados são limpos para remover quaisquer valores nulos e são armazenados como string.
+        data_type: string
+        quote: true
+      - name: paciente_mun_nasc
+        description: A coluna 'paciente_mun_nasc' representa o nome do município onde o paciente nasceu. Os dados são normalizados e todos os caracteres estão em maiúsculas. Caracteres especiais são removidos e substituídos por espaços.
+        data_type: string
+        quote: true
+      - name: paciente_uf_nasc
+        description: A coluna 'paciente_uf_nasc' representa a sigla do estado onde o paciente nasceu. Os dados são normalizados e todos os caracteres estão em maiúsculas.
+        data_type: string
+        quote: true
+      - name: paciente_uf_res
+        description: A coluna 'paciente_uf_res' representa a sigla do estado onde o paciente reside atualmente. Os dados são normalizados e todos os caracteres estão em maiúsculas.
+        data_type: string
+        quote: true
+      - name: paciente_mun_res
+        description: A coluna 'paciente_mun_res' representa o município de residência do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_bairro_res
+        description: A coluna 'paciente_bairro_res' representa o bairro de residência do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_cep_res
+        description: A coluna 'paciente_cep_res' representa o código postal (CEP) da residência do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_endereco_res
+        description: Esta coluna representa o endereço residencial do paciente. É do tipo string e é normalizado para remover quaisquer caracteres especiais e convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: paciente_complemento_res
+        description: Esta coluna representa qualquer informação adicional relacionada ao endereço residencial do paciente. É do tipo string e é normalizado para remover quaisquer caracteres especiais e convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: paciente_numero_res
+        description: Esta coluna representa o número residencial do endereço do paciente. É do tipo string e é normalizado para remover quaisquer caracteres especiais.
+        data_type: string
+        quote: true
+      - name: paciente_tp_logradouro_res
+        description: Esta coluna representa o tipo de logradouro onde o paciente reside. É um campo do tipo string e pode conter valores como 'Rua', 'Avenida', 'Alameda', etc.
+        data_type: string
+        quote: true
+      - name: laudo_operador_cnes_id
+        description: Esta coluna representa o identificador único do operador que gerou o laudo. É um campo do tipo string e é extraído do campo 'laudo_json'.
+        data_type: string
+        quote: true
+      - name: laudo_descricao_tp
+        description: Esta coluna representa o tipo de descrição fornecida no laudo. É um campo do tipo string e é extraído do campo 'laudo_json'. Pode conter valores como 'Inicial', 'Final', 'Atualizado', etc.
+        data_type: string
+        quote: true
+      - name: laudo_situacao
+        description: Esta coluna representa o status do laudo. É extraído do campo 'laudo_json' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: laudo_observacao
+        description: Esta coluna contém quaisquer observações ou notas feitas no laudo. Também é extraído do campo 'laudo_json' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: laudo_data_observacao
+        description: Esta coluna representa o timestamp de quando a observação foi feita. É um campo timestamp extraído do campo 'laudo_json' nos dados de origem.
+        data_type: timestamp
+        quote: true
+      - name: operador_autorizador_nome
+        description: O nome do operador autorizador. Este é um campo string que é normalizado e limpo de quaisquer caracteres especiais.
+        data_type: string
+        quote: true
+      - name: operador_autorizador_perfil_id
+        description: O ID do perfil do operador autorizador. Este é um campo string que representa o identificador único do perfil do operador.
+        data_type: string
+        quote: true
+      - name: operador_autorizador_perfil
+        description: O perfil do operador autorizador. Este é um campo string que representa o cargo ou posição do operador dentro da organização.
+        data_type: string
+        quote: true
+      - name: central_executante_id_cnes
+        description: A coluna 'central_executante_id_cnes' representa o identificador único da unidade central de saúde executante no sistema CNES (Cadastro Nacional de Estabelecimentos de Saúde). É um campo do tipo string e é preenchido com zeros à esquerda para atingir um comprimento total de 7 caracteres.
+        data_type: string
+        quote: true
+      - name: central_executante_cnes
+        description: A coluna 'central_executante_cnes' representa o nome da unidade central de saúde executante conforme registrado no sistema CNES (Cadastro Nacional de Estabelecimentos de Saúde). É um campo do tipo string e contém o nome em letras maiúsculas.
+        data_type: string
+        quote: true
+      - name: unidade_executante_nome
+        description: A coluna 'unidade_executante_nome' representa o nome da unidade executante. É um campo do tipo string e contém o nome em letras maiúsculas.
+        data_type: string
+        quote: true
+      - name: unidade_executante_id
+        description: O identificador único da unidade executante. Este é um campo string que é preenchido com zeros à esquerda para atingir um comprimento de 7 caracteres.
+        data_type: string
+        quote: true
+      - name: unidade_executante_logradouro
+        description: O nome da rua da unidade executante. Este é um campo string que foi normalizado para remover diacríticos e caracteres especiais, e convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: unidade_executante_complemento
+        description: Informações adicionais sobre a localização da unidade executante. Este é um campo string que pode conter informações como número do apartamento, nome do prédio, etc.
+        data_type: string
+        quote: true
+      - name: unidade_executante_numero
+        description: A coluna 'unidade_executante_numero' representa o número da unidade executante. É um campo do tipo string derivado do campo 'numero_unidade_executante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: unidade_executante_bairro
+        description: A coluna 'unidade_executante_bairro' representa o bairro da unidade executante. É um campo do tipo string derivado do campo 'bairro_unidade_executante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: unidade_executante_municipio
+        description: A coluna 'unidade_executante_municipio' representa o município da unidade executante. É um campo do tipo string derivado do campo 'municipio_unidade_executante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: unidade_executante_cep
+        description: O código postal (CEP) da unidade executante. Este é um campo string que é preenchido com zeros à esquerda até 8 caracteres, se necessário.
+        data_type: string
+        quote: true
+      - name: unidade_executante_telefone
+        description: O número de telefone da unidade executante. Este é um campo string que pode conter números, espaços e caracteres especiais como parênteses e hífens.
+        data_type: string
+        quote: true
+      - name: profissional_executante_cpf
+        description: O CPF (Cadastro de Pessoas Físicas) do profissional executante. Este é um identificador único para indivíduos no Brasil. Este é um campo string que é preenchido com zeros à esquerda até 11 caracteres, se necessário.
+        data_type: string
+        quote: true
+      - name: profissional_executante_nome
+        description: O nome do profissional que executou o procedimento. Este é um campo string e é normalizado para remover quaisquer caracteres especiais e convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: marcacao_id
+        description: O identificador único para o agendamento. Este é um campo string e é limpo para remover quaisquer valores nulos ou inválidos.
+        data_type: string
+        quote: true
+      - name: data_marcacao
+        description: A data e hora em que o agendamento foi feito. Este é um campo timestamp e é limpo para remover quaisquer valores nulos ou inválidos.
+        data_type: timestamp
+        quote: true
+      - name: data_aprovacao
+        description: O timestamp de quando o agendamento foi aprovado.
+        data_type: timestamp
+        quote: true
+      - name: data_confirmacao
+        description: O timestamp de quando o agendamento foi confirmado.
+        data_type: timestamp
+        quote: true
+      - name: marcacao_executada
+        description: Indica se o agendamento foi executado ou não.
+        data_type: string
+        quote: true
+      - name: falta_registrada
+        description: Esta coluna indica se uma ausência registrada foi anotada para o paciente. Os valores são 'SIM' para sim, 'NÃO' para não e NULL para desconhecido.
+        data_type: string
+        quote: true
+      - name: paciente_avisado
+        description: Esta coluna indica se o paciente foi notificado. Os valores são 'SIM' para sim, 'NÃO' para não e NULL para desconhecido.
+        data_type: string
+        quote: true
+      - name: vaga_consumida_tp
+        description: Esta coluna indica o tipo de vaga consumida. Os valores são '1 VEZ' para uma vez, 'RETORNO' para retorno, 'RESERVA TECNICA' para reserva técnica, 'SEM INFORMACAO' para sem informação e NULL para desconhecido.
+        data_type: string
+        quote: true
+      - name: cid_agendado_id
+        description: O ID do código CID (Classificação Internacional de Doenças) para o procedimento agendado.
+        data_type: string
+        quote: true
+      - name: cid_agendado
+        description: A descrição do código CID (Classificação Internacional de Doenças) para o procedimento agendado.
+        data_type: string
+        quote: true
+      - name: elastic__type
+        description: O tipo do documento Elasticsearch onde os dados estão armazenados.
+        data_type: string
+        quote: true
+      - name: laudo_operador_cnes
+        description: Esta coluna contém o código CNES (Cadastro Nacional de Estabelecimentos de Saúde) do operador que emitiu o laudo. É extraído do campo 'laudo_json'.
+        data_type: string
+        quote: true
+      - name: laudo_operador
+        description: Esta coluna contém o nome do operador que emitiu o laudo. É extraído do campo 'laudo_json'.
+        data_type: string
+        quote: true
+      - name: laudo_perfil_tp
+        description: Esta coluna contém o tipo de perfil do operador que emitiu o laudo. É extraído do campo 'laudo_json'.
+        data_type: string
+        quote: true
+      - name: elastic__carga_epoch
+        description: Esta coluna representa o tempo epoch quando os dados foram carregados no Elasticsearch. É uma representação string de um inteiro longo.
+        data_type: string
+        quote: true
+      - name: elastic__timestamp
+        description: Esta coluna representa o timestamp de quando os dados foram carregados no Elasticsearch. É uma representação string de um timestamp.
+        data_type: string
+        quote: true
+      - name: elastic__version
+        description: Esta coluna representa a versão do documento Elasticsearch. É uma representação string de um inteiro.
+        data_type: string
+        quote: true
+      - name: data_extracao
+        description: Esta coluna representa o timestamp de quando os dados foram extraídos do sistema de origem. É do tipo de dados TIMESTAMP.
+        data_type: timestamp
+        quote: true
+      - name: particao_ano
+        description: Esta coluna representa o ano da partição dos dados. É do tipo de dados INT64.
+        data_type: int64
+        quote: true
+      - name: particao_mes
+        description: Esta coluna representa o mês da partição dos dados. É do tipo de dados INT64.
+        data_type: int64
+        quote: true
+      - name: particao_data
+        description: Esta coluna representa a data da partição. É do tipo de dados DATE.
+        data_type: date
+        quote: true
+
+  - name: raw_sisreg_api__solicitacoes
+    description: O modelo raw_sisreg_api__solicitacoes é um conjunto de dados abrangente que contém informações sobre solicitações médicas feitas através da API SISREG. Inclui detalhes sobre a solicitação, como ID da solicitação, status e nível de risco, bem como informações sobre o paciente, como nome, data de nascimento e informações de contato. Inclui também detalhes sobre o procedimento médico solicitado, o profissional médico que fez a solicitação e a unidade médica onde a solicitação foi feita. O modelo também contém timestamps de quando a solicitação foi feita, atualizada e cancelada, se aplicável. Os dados são particionados por ano, mês e data para consulta eficiente.
+    columns:
+      - name: solicitacao_id
+        description: O identificador único para cada solicitação. Este é um valor string.
+        data_type: string
+        quote: true
+      - name: data_solicitacao
+        description: O timestamp indicando quando a solicitação foi feita. Este é um valor timestamp.
+        data_type: timestamp
+        quote: true
+      - name: data_atualizacao
+        description: O timestamp indicando a atualização mais recente da solicitação. Este é um valor timestamp.
+        data_type: timestamp
+        quote: true
+      - name: data_cancelamento
+        description: Esta coluna representa o timestamp de quando a solicitação foi cancelada. É do tipo timestamp e pode ser nulo se a solicitação não foi cancelada.
+        data_type: timestamp
+        quote: true
+      - name: solicitacao_status
+        description: Esta coluna representa o status da solicitação. É do tipo string e pode conter vários valores de status, como 'pendente', 'aprovado', 'rejeitado', etc.
+        data_type: string
+        quote: true
+      - name: solicitacao_situacao
+        description: Esta coluna representa a situação da solicitação. É do tipo string e pode conter vários valores de situação, como 'em andamento', 'concluído', 'cancelado', etc.
+        data_type: string
+        quote: true
+      - name: solicitacao_visualizada_regulador
+        description: Esta coluna indica se a solicitação foi visualizada pelo regulador. É um campo do tipo string com possíveis valores 'SIM' para visualizada e 'NÃO' para não visualizada.
+        data_type: string
+        quote: true
+      - name: regulacao_tp_id
+        description: Esta coluna representa o ID do tipo de regulação. É um campo do tipo string que identifica unicamente o tipo de regulação.
+        data_type: string
+        quote: true
+      - name: fila_tp_id
+        description: Esta coluna representa o ID do tipo de fila. É um campo do tipo string que identifica unicamente o tipo de fila.
+        data_type: string
+        quote: true
+      - name: perfil_cancelamento_id
+        description: O identificador único para o perfil de cancelamento. Este é um valor string derivado do campo 'codigo_perfil_cancelamento' nos dados de origem. Valores nulos e várias formas de strings 'null' são tratados e substituídos por 'nat'.
+        data_type: string
+        quote: true
+      - name: solicitacao_risco
+        description: Este campo representa o nível de risco da solicitação. É derivado do campo 'codigo_classificacao_risco' nos dados de origem. O nível de risco é categorizado em 'VERMELHO', 'AMARELO', 'VERDE', 'AZUL' com base nos valores '1', '2', '3', '4' respectivamente nos dados de origem. Qualquer outro valor é substituído por NULL.
+        data_type: string
+        quote: true
+      - name: procedimento_grupo_id
+        description: O identificador único para o grupo de procedimento. Este é um valor string derivado do campo 'codigo_grupo_procedimento' nos dados de origem. O valor é preenchido à esquerda com zeros até um comprimento de 7. Valores nulos e várias formas de strings 'null' são tratados e substituídos por 'nat'.
+        data_type: string
+        quote: true
+      - name: procedimento_grupo
+        description: Esta coluna representa o grupo do procedimento que foi solicitado. É do tipo string e é normalizado para remover quaisquer caracteres especiais e convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: vaga_solicitada_tp
+        description: Esta coluna representa o tipo de vaga solicitada. É do tipo string e pode ter valores como '1 VEZ', 'RETORNO', 'RESERVA TECNICA', 'SEM INFORMACAO' ou NULL.
+        data_type: string
+        quote: true
+      - name: cid_id
+        description: Esta coluna representa o código da Classificação Internacional de Doenças (CID) para o procedimento solicitado. É do tipo string e é convertido para maiúsculas.
+        data_type: string
+        quote: true
+      - name: cid
+        description: A coluna 'cid' representa o identificador único para a doença ou condição de saúde associada ao procedimento médico. É do tipo string e é derivado do campo 'codigo_cid_solicitado' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: procedimento_id
+        description: A coluna 'procedimento_id' representa o identificador único para o procedimento médico que está sendo solicitado. É do tipo string e é derivado do campo 'codigo_interno' no objeto 'proceds_json' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: procedimento
+        description: A coluna 'procedimento' representa a descrição do procedimento médico que está sendo solicitado. É do tipo string e é derivado do campo 'descricao_interna' no objeto 'proceds_json' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: procedimento_sigtap_id
+        description: Esta coluna representa o identificador único para o procedimento no sistema SIGTAP (Sistema de Gerenciamento da Tabela de Procedimentos, Medicamentos e OPM do SUS). É extraído do campo 'proceds_json' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: procedimento_sigtap
+        description: Esta coluna representa a descrição do procedimento no sistema SIGTAP (Sistema de Gerenciamento da Tabela de Procedimentos, Medicamentos e OPM do SUS). Também é extraído do campo 'proceds_json' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: uf_solicitante_id
+        description: Esta coluna representa o identificador único para o estado (Unidade Federativa) do solicitante. É extraído do campo 'codigo_uf_solicitante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: uf_solicitante
+        description: A coluna 'uf_solicitante' representa a unidade federativa (estado) da entidade que faz a solicitação. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: central_solicitante_id_cnes
+        description: A coluna 'central_solicitante_id_cnes' representa o identificador único da central solicitante no Cadastro Nacional de Estabelecimentos de Saúde (CNES). É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: central_solicitante_id
+        description: A coluna 'central_solicitante_id' representa o identificador único da central solicitante. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: central_solicitante_cnes
+        description: O código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade central solicitante. Este é um identificador único usado no sistema de saúde brasileiro.
+        data_type: string
+        quote: true
+      - name: central_solicitante
+        description: O nome da unidade central solicitante. Este é o estabelecimento de saúde que fez a solicitação.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_id
+        description: O identificador único para a unidade solicitante. Este é o departamento ou unidade específica dentro do estabelecimento de saúde que fez a solicitação.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante
+        description: A coluna 'unidade_solicitante' representa o nome da unidade que fez a solicitação. É do tipo string e é derivada do campo 'nome_unidade_solicitante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: profissional_solicitante_cpf
+        description: A coluna 'profissional_solicitante_cpf' representa o CPF (Cadastro de Pessoas Físicas) do profissional que fez a solicitação. É do tipo string e é derivada do campo 'cpf_profissional_solicitante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: medico_solicitante
+        description: A coluna 'medico_solicitante' representa o nome do médico que fez a solicitação. É do tipo string e é derivada do campo 'nome_medico_solicitante' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: operador_solicitante_nome
+        description: O nome do operador que fez a solicitação. Este é um campo string e pode conter quaisquer caracteres válidos.
+        data_type: string
+        quote: true
+      - name: operador_cancelamento_nome
+        description: O nome do operador que cancelou a solicitação. Este é um campo string e pode conter quaisquer caracteres válidos.
+        data_type: string
+        quote: true
+      - name: operador_videofonista_nome
+        description: O nome do operador que atendeu a videochamada. Este é um campo string e pode conter quaisquer caracteres válidos.
+        data_type: string
+        quote: true
+      - name: uf_regulador_id
+        description: Esta coluna representa o identificador único para o estado onde o regulador está localizado. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: uf_regulador
+        description: Esta coluna representa o nome do estado onde o regulador está localizado. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: central_reguladora_id
+        description: Esta coluna representa o identificador único para o centro regulador. É um campo do tipo string.
+        data_type: string
+        quote: true
+      - name: central_reguladora
+        description: Esta coluna representa o nome da autoridade reguladora central. É um campo do tipo string e é derivado do campo 'nome_central_reguladora' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: perfil_cancelamento
+        description: Esta coluna representa o perfil de cancelamento. É um campo do tipo string e é derivado do campo 'nome_perfil_cancelamento' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: crm
+        description: Esta coluna representa o número do CRM (Conselho Regional de Medicina). É um campo do tipo string e é derivado do campo 'numero_crm' nos dados de origem.
+        data_type: string
+        quote: true
+      - name: data_desejada
+        description: O timestamp indicando a data desejada para o procedimento ou serviço.
+        data_type: timestamp
+        quote: true
+      - name: unidade_desejada_id
+        description: O identificador único para a unidade desejada onde o procedimento ou serviço deve ser realizado.
+        data_type: string
+        quote: true
+      - name: unidade_desejada
+        description: O nome da unidade desejada onde o procedimento ou serviço deve ser realizado.
+        data_type: string
+        quote: true
+      - name: paciente_cpf
+        description: Esta coluna contém o CPF (Cadastro de Pessoas Físicas) do paciente. O CPF é um número único que identifica um contribuinte no Brasil. A coluna é do tipo de dados string.
+        data_type: string
+        quote: true
+      - name: paciente_cns
+        description: Esta coluna contém o CNS (Cartão Nacional de Saúde) do paciente. O CNS é um número único que identifica um paciente no Sistema Único de Saúde brasileiro. A coluna é do tipo de dados string.
+        data_type: string
+        quote: true
+      - name: paciente_nome
+        description: Esta coluna contém o nome do paciente. A coluna é do tipo de dados string.
+        data_type: string
+        quote: true
+      - name: paciente_dt_nasc
+        description: O timestamp indicando a data de nascimento do paciente. É extraído do campo 'dt_nascimento_usuario' nos dados de origem.
+        data_type: timestamp
+        quote: true
+      - name: paciente_sexo
+        description: O sexo do paciente. É extraído do campo 'sexo_usuario' nos dados de origem. O valor é normalizado e apenas caracteres alfabéticos são mantidos.
+        data_type: string
+        quote: true
+      - name: paciente_nome_mae
+        description: O nome da mãe do paciente. É extraído do campo 'no_mae_usuario' nos dados de origem. O valor é normalizado e apenas caracteres alfabéticos são mantidos.
+        data_type: string
+        quote: true
+      - name: paciente_telefone
+        description: A coluna 'paciente_telefone' representa o número de telefone do paciente. É do tipo string e pode conter valores nulos.
+        data_type: string
+        quote: true
+      - name: paciente_mun_nasc
+        description: A coluna 'paciente_mun_nasc' representa o nome do município onde o paciente nasceu. É do tipo string e pode conter valores nulos.
+        data_type: string
+        quote: true
+      - name: paciente_uf_nasc
+        description: A coluna 'paciente_uf_nasc' representa a unidade federativa (estado) onde o paciente nasceu. É do tipo string e pode conter valores nulos.
+        data_type: string
+        quote: true
+      - name: paciente_uf_res
+        description: A coluna 'paciente_uf_res' representa o estado de residência do paciente. O tipo de dados desta coluna é string.
+        data_type: string
+        quote: true
+      - name: paciente_mun_res
+        description: A coluna 'paciente_mun_res' representa o município de residência do paciente. O tipo de dados desta coluna é string.
+        data_type: string
+        quote: true
+      - name: paciente_bairro_res
+        description: A coluna 'paciente_bairro_res' representa o bairro de residência do paciente. O tipo de dados desta coluna é string.
+        data_type: string
+        quote: true
+      - name: paciente_cep_res
+        description: O código postal (CEP) da residência do paciente. É uma string de 8 caracteres, preenchida com zeros se necessário.
+        data_type: string
+        quote: true
+      - name: paciente_endereco_res
+        description: O endereço residencial do paciente. É uma string que foi normalizada e limpa de quaisquer caracteres não alfabéticos.
+        data_type: string
+        quote: true
+      - name: paciente_complemento_res
+        description: Informações adicionais sobre o endereço residencial do paciente. É uma string que foi normalizada e limpa de quaisquer caracteres não alfabéticos.
+        data_type: string
+        quote: true
+      - name: paciente_numero_res
+        description: Esta coluna representa o número da residência do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_tp_logradouro_res
+        description: Esta coluna representa o tipo de logradouro onde o paciente reside.
+        data_type: string
+        quote: true
+      - name: laudo_operador_cnes_id
+        description: Esta coluna representa o ID CNES do operador que fez o laudo.
+        data_type: string
+        quote: true
+      - name: laudo_operador_cnes
+        description: Esta coluna contém o código CNES (Cadastro Nacional de Estabelecimentos de Saúde) do operador que fez o laudo. O CNES é um registro nacional de estabelecimentos de saúde no Brasil.
+        data_type: string
+        quote: true
+      - name: laudo_operador
+        description: Esta coluna contém o nome do operador que fez o laudo. O operador é o profissional que realizou o procedimento ou exame médico e escreveu o laudo.
+        data_type: string
+        quote: true
+      - name: laudo_perfil_tp
+        description: Esta coluna contém o tipo de perfil do operador que fez o laudo. Isso pode fornecer informações sobre o papel ou especialização do operador.
+        data_type: string
+        quote: true
+      - name: laudo_descricao_tp
+        description: Esta coluna representa a descrição do tipo de laudo no banco de dados. É extraído do campo 'laudo_json' nos dados de origem. O tipo de dados é string.
+        data_type: string
+        quote: true
+      - name: laudo_situacao
+        description: Esta coluna representa a situação do laudo no banco de dados. É extraído do campo 'laudo_json' nos dados de origem. O tipo de dados é string.
+        data_type: string
+        quote: true
+      - name: laudo_observacao
+        description: Esta coluna representa quaisquer observações feitas no laudo no banco de dados. É extraído do campo 'laudo_json' nos dados de origem. O tipo de dados é string.
+        data_type: string
+        quote: true
+      - name: laudo_data_observacao
+        description: Esta coluna representa o timestamp da observação feita no laudo. É extraído do campo 'laudo_json' nos dados de origem.
+        data_type: timestamp
+        quote: true
+      - name: elastic__type
+        description: Esta coluna representa o tipo do documento Elasticsearch. É uma string que descreve o tipo de dados armazenados no documento.
+        data_type: string
+        quote: true
+      - name: elastic__carga_epoch
+        description: Esta coluna representa o tempo epoch quando os dados foram carregados no Elasticsearch. É uma string que contém o número de segundos que passaram desde 1970-01-01 00:00:00 UTC.
+        data_type: string
+        quote: true
+      - name: elastic__timestamp
+        description: O timestamp de quando os dados foram carregados no Elasticsearch. É do tipo de dados string.
+        data_type: string
+        quote: true
+      - name: elastic__version
+        description: A versão do documento Elasticsearch. É do tipo de dados string.
+        data_type: string
+        quote: true
+      - name: data_extracao
+        description: O timestamp de quando os dados foram extraídos da origem. É do tipo de dados timestamp.
+        data_type: timestamp
+        quote: true
+      - name: particao_ano
+        description: A coluna 'particao_ano' representa o ano da partição. É do tipo de dados INT64.
+        data_type: int64
+        quote: true
+      - name: particao_mes
+        description: A coluna 'particao_mes' representa o mês da partição. É do tipo de dados INT64.
+        data_type: int64
+        quote: true
+      - name: particao_data
+        description: A coluna 'particao_data' representa a data da partição. É do tipo de dados DATE.
+        data_type: date
+        quote: true

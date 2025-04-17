@@ -1,0 +1,207 @@
+version: 2
+models:
+  - name: mart_tme__tempos_espera
+    description: >
+      Conjunto de dados que fornece informações sobre os tempos de espera para diferentes procedimentos no setor de saúde. Inclui detalhes sobre a solicitação, a data de marcação, as unidades solicitante e executante, além do próprio procedimento. 
+      O modelo é construído a partir de três fontes distintas: estabelecimento_sus_rio_historico, assistencial_procedimento e marcacoes. Ele foi desenvolvido para gerar insights sobre a eficiência do sistema de saúde e identificar possíveis pontos de melhoria.
+      Os filtros aplicados são os seguintes: o campo `vaga_consumida_tp` deve conter os valores "1 VEZ" ou "RESERVA TECNICA"; o campo `procedimento_interno_id` não deve conter valores que incluam a substring "%PPI%"; e o campo `solicitacao_status` não deve conter os valores "AGENDAMENTO / CANCELADO / SOLICITANTE", "AGENDAMENTO / CANCELADO / REGULADOR" ou "AGENDAMENTO / CANCELADO / COORDENADOR".
+    columns:
+      - name: solicitacao_id
+        description: Identificador da solicitação.
+        data_type: string
+        quote: true
+      - name: data_solicitacao
+        description: Timestamp que indica quando a solicitação foi realizada.
+        data_type: timestamp
+        quote: true
+      - name: data_marcacao
+        description: Timestamp que indica quando a solicitação foi marcada.
+        data_type: timestamp
+        quote: true
+      - name: solicitante_id_cnes
+        description: Identificador único da unidade de saúde que realizou a solicitação.
+        data_type: string
+        quote: true
+      - name: nome_fantasia_sol
+        description: Nome da unidade de saúde solicitante.
+        data_type: string
+        quote: true
+      - name: id_ap_sol
+        description: Identificador único da Área Programática (AP) da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: ap_sol
+        description: Área Programática (AP) da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: endereco_bairro_sol
+        description: Bairro da unidade de saúde solicitante.
+        data_type: string
+        quote: true
+      - name: esfera_sol
+        description: Esfera administrativa da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_tp_agg_sol
+        description: Tipo de unidade agrupado da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_tp_sol
+        description: Tipo da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: executante_id_cnes
+        description: Identificador único da unidade de saúde executante.
+        data_type: string
+        quote: true
+      - name: nome_fantasia_exec
+        description: Nome da unidade executante.
+        data_type: string
+        quote: true
+      - name: id_ap_exec
+        description: Identificador da Área Programática da unidade executante.
+        data_type: string
+        quote: true
+      - name: ap_exec
+        description: Área Programática da unidade executante.
+        data_type: string
+        quote: true
+      - name: endereco_bairro_exec
+        description: Bairro da unidade de saúde executante.
+        data_type: string
+        quote: true
+      - name: esfera_exec
+        description: Esfera da unidade executante.
+        data_type: string
+        quote: true
+      - name: unidade_tp_agg_exec
+        description: Tipo de unidade agrupado da unidade executante.
+        data_type: string
+        quote: true
+      - name: unidade_tp_exec
+        description: Tipo da unidade executante.
+        data_type: string
+        quote: true
+      - name: procedimento_id
+        description: Identificador interno (SISREG) do procedimento.
+        data_type: string
+        quote: true
+      - name: procedimento_descricao
+        description: Descrição do procedimento.
+        data_type: string
+        quote: true
+      - name: tempo_espera
+        description: Tempo de espera em dias entre a data da solicitação e a data da marcação.
+        data_type: int64
+        quote: true
+
+  - name: mart_tme__procedimento_mensal
+    description: >
+      Série mensal de tempo de espera para cada procedimento, com as seguintes métricas: média, mediana, p90, desvio-padrão, IC-95%. Construída a partir de um calendário completo que garante presença de todos os meses, mesmo que não hajam execuções, evitando assim, que janelas móveis encolham. Fundamental para monitorar tendências e apoiar decisões operacionais de regulação de filas.
+    columns:
+      # ----- Chaves temporais -----
+      - name: ano_marcacao
+        description: >
+          Ano (YYYY) extraído de `mes_competencia_ts`. Facilita filtros, segmentações e criação de partições/cluster no BigQuery.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 2018
+
+      - name: mes_marcacao
+        description: >
+          Mês (1-12) extraído de `mes_competencia_ts`. Útil para análises sazonais e comparações mês-a-mês.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 12
+
+      # ----- Dimensão de procedimento -----
+      - name: procedimento
+        description: >
+          Descrição padronizada do procedimento (ex.: “CONSULTA EM DERMATOLOGIA - PEDIATRIA”).  Chave para segmentar estatísticas por tipo de serviço e identificar gargalos específicos.
+
+      # ----- Métricas de volume -----
+      - name: n_execucoes
+        description: >
+          Quantidade de marcações no mês para o procedimento.  É a base para avaliar robustez estatística: valores baixos (<20) sinalizam alta incerteza.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+
+      # ----- Métricas de tempo de espera -----
+      - name: tme
+        description: >
+          Tempo médio (em dias) entre solicitação e execução, sensível a outliers mas tradicionalmente usado em KPIs de fila.  Acompanhado de IC-95 % para indicar incerteza.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 3650
+
+      - name: te_mediano
+        description: >
+          Mediana do tempo de espera. Métrica robusta, representativa quando a distribuição é assimétrica ou possui caudas longas.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 3650
+
+      - name: te_p90
+        description: >
+          Percentil 90 do tempo de espera. Indica o limite abaixo do qual ficam 90 % dos pacientes; só os 10 % mais demorados esperam mais que isso. Mostra rapidamente “quanto tempo a fila é ruim para quem mais sofre”. Se o p90 cair, quer dizer que até mesmo os casos lentos estão melhorando.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 3650
+
+      - name: desvio_padrao
+        description: >
+          Desvio-padrão populacional do tempo de espera. Mede a dispersão dos tempos; valores altos sugerem variabilidade operacional ou presença de outliers.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+
+      # ----- Intervalo de confiança -----
+      - name: ic95_inf
+        description: >
+          Limite inferior do Intervalo de Confiança de 95% da média (tme_media). Esta faixa indica a margem de erro estatística: se repetíssemos a medição muitas vezes, 95% dos resultados cairiam dentro deste intervalo. Ou seja, ajuda a diferenciar uma variação real na média de uma mudança devida apenas ao ruído da amostragem. Uso prático: ajuste o processo somente se a nova média sair fora do intervalo anterior, evitando reações a flutuações normais.
+
+      - name: ic95_sup
+        description: >
+          Limite superior do Intervalo de Confiança de 95% da média (tme_media). Junto com o ic95_inf, forma uma faixa de incerteza que mostra a margem de erro estatística. Essa informação é útil para a tomada de decisão e comunicação: ao apresentar o KPI, a barra de ± IC permite que os gestores entendam a incerteza associada à média antes de estabelecer metas e fazer ajustes operacionais.
+
+      # ───── MÉDIAS MÓVEIS ─────
+      - name: tme_movel_3m
+        description: >
+          Média móvel de 3 meses da média de tempo de espera.
+          Permite detectar oscilações recentes suavizando
+          variações mensais pontuais.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 3650
+
+      - name: tme_movel_6m
+        description: Média móvel de 6 meses (tendência semestral).
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 3650
+
+      - name: tme_movel_12m
+        description: Média móvel de 12 meses (visão anual).
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 3650
+
+
+    # ----- Teste de unicidade -----
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ano_marcacao
+            - mes_marcacao
+            - procedimento
