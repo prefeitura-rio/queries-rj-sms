@@ -201,3 +201,58 @@ models:
 
       - name: procedimento_faixa_etaria
         description: "Faixa etária contemplada pelo procedimento."
+
+  - name: mart_monitora_reg__monitor_retornos
+    description: >
+      Tabela incremental que relaciona agendamentos do tipo **RETORNO** aos
+      respectivos agendamentos de **1ªVEZ** ou **RESERVA TÉCNICA** para o
+      mesmo paciente, procedimento e unidade executante.  
+      Calcula a diferença em dias de calendário entre esses eventos,
+      sinaliza retornos realizados em até 180 dias e mantém informação sobre
+      retornos sem visita anterior correspondente.
+
+    columns:
+      - name: data_retorno
+        description: Data do agendamento classificado como “RETORNO”.
+        tests:
+          - not_null
+
+      - name: data_primeira_vez
+        description: Data do agendamento prévio de "1ª VEZ" ou “RESERVA TÉCNICA” que originou o retorno.
+
+      - name: vaga_consumida_tp
+        description: Tipo da vaga consumida do agendamento de primeira vez (“1 VEZ” ou “RESERVA TÉCNICA”).
+
+      - name: proced_sisreg_id
+        description: Identificador interno do procedimento.
+        tests:
+          - not_null
+
+      - name: paciente_cpf
+        description: CPF do paciente (pseudonimizado ou criptografado conforme LGPD).
+        tests:
+          - not_null
+
+      - name: unidade_exec_cnes
+        description: Identificador da unidade executante onde o procedimento foi ou será realizado.
+        tests:
+          - not_null
+
+      - name: dias_entre_primeira_retorno
+        description: Diferença de dias de calendário entre a primeira consulta e o retorno.  
+                     Se não houver consulta anterior, o valor será NULL.
+
+      - name: primeira_vez_180_dias
+        description: Indicador booleano que vale **TRUE** quando o retorno ocorreu em até 180 dias após a primeira consulta;
+                     **FALSE** caso contrário ou se não houver consulta anterior.
+
+      - name: encontrou_primeira_vez
+        description: Indicador booleano que vale **TRUE** se foi encontrada uma “primeira vez” correspondente ao retorno.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_retorno
+            - proced_sisreg_id
+            - paciente_cpf
+            - unidade_exec_cnes
