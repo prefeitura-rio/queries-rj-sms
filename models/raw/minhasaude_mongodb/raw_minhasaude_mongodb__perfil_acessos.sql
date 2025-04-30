@@ -21,7 +21,7 @@ with
             lpad(cpf, 11, '0') as cpf,
             lpad(cns, 15, '0') as cns,
 
-            safe_cast(logingovbr as bool) as logingovbr,
+            safe_cast(safe_cast(logingovbr as int64) as bool) as logingovbr,
             origem,
 
             safe_cast(createdat as datetime) as createdat,
