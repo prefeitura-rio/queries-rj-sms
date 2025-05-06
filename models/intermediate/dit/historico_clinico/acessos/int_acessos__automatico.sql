@@ -13,29 +13,18 @@ with
         from {{ ref("raw_ergon_funcionarios") }}, unnest(dados) as funcionario_dado
         where status_ativo = true
     ),
-    profissionais_cnes_unnest as (
-        select
-            cpf,
-            nome,
-            cns
-        from {{ ref("dim_profissional_saude") }}
-        union all 
-        select
-            cpf,
-            dados.nome as nome,
-            c as cns
-        from {{ ref("mart_historico_clinico__paciente") }}, unnest(cns) as c
-    ),
     profissionais_cnes as (
-        select distinct 
-            cpf,
+        select
+            id_profissional_sus,
             nome,
-            cns
-        from profissionais_cnes_unnest
+            cns,
+            cpf
+        from {{ ref("raw_cnes_gdb__profissional") }}
     ),
     unidades_de_saude as (
         select
-            id_cnes as cnes,
+            id_cnes,
+            id_unidade,
             area_programatica,
             tipo_sms_simplificado,
             nome_limpo as unidade_nome
@@ -46,8 +35,9 @@ with
     ),
     vinculos_profissionais_cnes as (
         select
-            cartao_nacional_saude as cns,
-            id_estabelecimento_cnes as cnes,
+            -- cartao_nacional_saude as cns,
+            id_profissional_sus,
+            id_cnes,
             unidades_de_saude.area_programatica,
             unidades_de_saude.tipo_sms_simplificado,
             unidades_de_saude.unidade_nome,
@@ -76,10 +66,10 @@ with
                 else
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
-            concat(ano, '-', lpad(cast(mes as string), 2, '0')) data_ultima_atualizacao,
-        from {{ ref("raw_cnes_ftp__profissional") }} as ftp_profissional
-        left join cbo_datasus on ftp_profissional.cbo_2002=cbo_datasus.id_cbo
-        inner join unidades_de_saude on ftp_profissional.id_estabelecimento_cnes = unidades_de_saude.cnes
+            data_ultima_atualizacao,
+        from {{ ref("raw_cnes_gdb__vinculo") }} as gdb_profissional
+        left join cbo_datasus using (id_cbo)
+        inner join unidades_de_saude using (id_unidade)
     ),
 
     -- -----------------------------------------
@@ -91,14 +81,14 @@ with
             nome as nome_completo,
             unidade_nome,
             tipo_sms_simplificado as unidade_tipo,
-            cnes as unidade_cnes,
+            id_cnes as unidade_cnes,
             area_programatica as unidade_ap,
             cbo_nome as funcao_detalhada,
             {{ remove_accents_upper('cbo_agrupador') }} as funcao_grupo,
             data_ultima_atualizacao
         from funcionarios_ativos_ergon
             left join profissionais_cnes using (cpf)
-            left join vinculos_profissionais_cnes using (cns)
+            left join vinculos_profissionais_cnes using (id_profissional_sus)
     ),
     -- -----------------------------------------
     -- Pegando Vinculo mais recente

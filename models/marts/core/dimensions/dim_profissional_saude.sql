@@ -111,6 +111,16 @@ with
     --=-=-=-=--=-=-=-=-=-=-=-==-=
     --  ENRIQUECIMENTO DE CPF  --
     --=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    -- GDB  
+    profissionais_cnes_gdb as (
+        select distinct 
+            id_profissional_sus,
+            cpf,
+            cns,
+            upper(nome) as nome,
+        from {{ ref('raw_cnes_gdb__profissional') }}
+    ),
+
     -- Cópia de mart_historico_clinico__paciente na parte de cns
     cpf_profissionais as (
         select distinct *
@@ -121,7 +131,7 @@ with
                 upper(d.nome) as nome,
                 c.rank AS rank,
                 "VITAI" AS sistema,
-                2 AS merge_order
+                3 AS merge_order
             from {{ ref('int_historico_clinico__paciente__vitai') }}, unnest(cns) as c, unnest(dados) as d
             union all
             select
@@ -130,7 +140,7 @@ with
                 upper(d.nome) as nome,
                 c.rank AS rank,
                 "SMSRIO" AS sistema,
-                1 AS merge_order
+                2 AS merge_order
             from {{ ref('int_historico_clinico__paciente__smsrio') }}, unnest(cns) as c, unnest(dados) as d
         )
     ),
@@ -186,12 +196,15 @@ final as (
     select
         distinct 
         profissionais_datasus.id_codigo_sus as id_profissional_sus,
-        case 
-            when regexp_extract(profissionais_datasus.nome, '([^ ]*) ') = regexp_extract(cns_dados.nome, '([^ ]*) ') then cns_dados.cpf
-            else null 
-        end as cpf,
-        profissionais_datasus.cns,
-        profissionais_datasus.nome,
+        coalesce(
+            profissionais_cnes_gdb.cpf,
+            case 
+                when regexp_extract(profissionais_datasus.nome, '([^ ]*) ') = regexp_extract(cns_dados.nome, '([^ ]*) ') then cns_dados.cpf
+                else null 
+            end 
+        )as cpf,
+        coalesce(profissionais_cnes_gdb.cns, profissionais_datasus.cns) as cns,
+        coalesce(profissionais_cnes_gdb.nome,profissionais_datasus.nome) as nome,
         cbo_agg.cbo,
         conselho_agg.conselho,
         funcionarios_status.status_ativo as funcionario_ativo_indicador
@@ -213,5 +226,8 @@ final as (
     left join
         funcionarios_status 
         on cns_dados.cpf = funcionarios_status.cpf
+    left join 
+        profissionais_cnes_gdb
+        on profissionais_datasus.id_codigo_sus = profissionais_cnes_gdb.id_profissional_sus
 ) 
 select * from final
