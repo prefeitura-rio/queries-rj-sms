@@ -91,51 +91,78 @@ with
             left join vinculos_profissionais_cnes using (id_profissional_sus)
     ),
     -- -----------------------------------------
-    -- Pegando Vinculo mais recente
+    -- Filtrando funcionários com acesso autorizado
     -- -----------------------------------------
-    funcionarios_ativos_enriquecido_ranked as (
+    funcionarios_ativos_enriquecido_autorizados as (    
         select
-            *,
-            row_number() over (partition by cpf order by data_ultima_atualizacao desc) as rn
+            cpf,
+            upper(nome_completo) as nome_completo,
+            unidade_nome,
+            unidade_tipo,
+            unidade_cnes,
+            unidade_ap,
+            funcao_detalhada,
+            funcao_grupo
         from funcionarios_ativos_enriquecido
+        where 
+            -- Critérios de Lançamento
+            (
+                unidade_ap in ('51') or 
+                unidade_cnes in (
+                    '6507409',
+                    '6575900',
+                    '6507409',
+                    '7110162',
+                    '0932280',
+                    '6716849',
+                    '6938124',
+                    '6512925',
+                    '6742831',
+                    '6503772',
+                    '2280183'
+                )
+            )
+            and funcao_grupo in (
+                'MEDICOS',
+                'ENFERMEIROS'
+            )
     ),
-    funcionarios_ativos_enriquecido_mais_recente as (
-        select
-            * except(rn, data_ultima_atualizacao)
-        from funcionarios_ativos_enriquecido_ranked
-        where rn = 1
+    -- -----------------------------------------
+    -- Adicionando Nível de Acesso
+    -- -----------------------------------------
+    funcionarios_nivel_acesso as (
+    select
+        cpf,
+        upper(nome_completo) as nome_completo,
+        unidade_nome,
+        unidade_tipo,
+        unidade_cnes,
+        unidade_ap,
+        funcao_detalhada,
+        funcao_grupo,
+        struct(
+            case
+                when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
+                then 'full_permission'
+                when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
+                then 'only_from_same_cnes'
+                when (funcao_grupo = 'ENFERMEIROS')
+                then 'only_from_same_cnes' 
+                ELSE null
+            end as nivel_acesso_descricao,
+            CASE
+                when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
+                then 4
+                when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
+                then 2
+                when (funcao_grupo = 'ENFERMEIROS')
+                then 2
+                else null
+            end as nivel_acesso_rank
+        ) as acesso
+    from funcionarios_ativos_enriquecido_autorizados
     )
 
-select
-    cpf,
-    upper(nome_completo) as nome_completo,
-    unidade_nome,
-    unidade_tipo,
-    unidade_cnes,
-    unidade_ap,
-    funcao_detalhada,
-    funcao_grupo,
-    safe_cast(null as string) as nivel_de_acesso
-from funcionarios_ativos_enriquecido_mais_recente
-where 
-    -- Critérios de Lançamento
-    (
-        unidade_ap in ('51') or 
-        unidade_cnes in (
-            '6507409',
-            '6575900',
-            '6507409',
-            '7110162',
-            '0932280',
-            '6716849',
-            '6938124',
-            '6512925',
-            '6742831',
-            '6503772',
-            '2280183'
-        )
-    )
-    and funcao_grupo in (
-        'MEDICOS',
-        'ENFERMEIROS'
-    )
+    select * 
+    from funcionarios_nivel_acesso 
+    qualify row_number() over (partition by cpf order by acesso.nivel_acesso_rank desc) = 1
