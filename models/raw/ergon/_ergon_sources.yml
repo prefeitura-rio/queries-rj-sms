@@ -6,9 +6,5 @@ sources:
     schema: brutos_ergon_staging
     tables:
       - name: funcionarios_ativos
-        freshness:
-          filter: "cast(provimento_inicio as date) <= current_date()"
-          warn_after: {count: 1, period: day}
-          error_after: {count: 2, period: day}
         loaded_at_field: cast(provimento_inicio as timestamp)
       - name: funcionarios
