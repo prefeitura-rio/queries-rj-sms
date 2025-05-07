@@ -137,18 +137,22 @@ with
             case
                 when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
                 then 'full_permission'
+                when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
+                then 'full_permission'
                 when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
                 then 'only_from_same_cnes'
-                when (funcao_grupo = 'ENFERMEIROS')
-                then 'only_from_same_cnes' 
+                when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
+                then 'only_from_same_cnes'
                 ELSE null
             end as nivel_acesso_descricao,
             CASE
                 when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
                 then 4
+                when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
+                then 4
                 when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
                 then 2
-                when (funcao_grupo = 'ENFERMEIROS')
+                when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
                 then 2
                 else null
             end as nivel_acesso_rank
