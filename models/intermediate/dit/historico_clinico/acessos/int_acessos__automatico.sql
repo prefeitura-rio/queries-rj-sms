@@ -7,12 +7,6 @@
 }}
 
 with
-    funcionarios_ativos_ergon as (
-        select
-            distinct cpf
-        from {{ ref("raw_ergon_funcionarios") }}, unnest(dados) as funcionario_dado
-        where status_ativo = true
-    ),
     profissionais_cnes as (
         select
             id_profissional_sus,
@@ -86,9 +80,8 @@ with
             cbo_nome as funcao_detalhada,
             {{ remove_accents_upper('cbo_agrupador') }} as funcao_grupo,
             data_ultima_atualizacao
-        from funcionarios_ativos_ergon
-            left join profissionais_cnes using (cpf)
-            left join vinculos_profissionais_cnes using (id_profissional_sus)
+        from vinculos_profissionais_cnes
+            left join profissionais_cnes using (id_profissional_sus)
     ),
     -- -----------------------------------------
     -- Filtrando funcionários com acesso autorizado
