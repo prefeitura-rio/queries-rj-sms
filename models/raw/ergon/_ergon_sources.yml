@@ -5,6 +5,4 @@ sources:
     database: rj-sms
     schema: brutos_ergon_staging
     tables:
-      - name: funcionarios_ativos
-        loaded_at_field: cast(provimento_inicio as timestamp)
       - name: funcionarios
