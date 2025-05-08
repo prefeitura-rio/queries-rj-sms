@@ -1,5 +1,5 @@
 models:
-  - name: raw_ergon_funcionarios_ativos
+  - name: raw_ergon_funcionarios
     description: Contém dados organizacionais e pessoais relacionados a funcionários, seus cargos, setores e empresas. Também inclui informações sobre o status e provimento dos funcionários, além de datas de início e término de atividades nos setores.
     columns:
       - name: cpf
