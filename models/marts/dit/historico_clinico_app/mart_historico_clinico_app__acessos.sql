@@ -75,6 +75,6 @@ with
     from deduped
   )
 
-select *
+select * except(acesso), acesso.nivel_acesso_descricao as nivel_acesso
 from particionado
 
