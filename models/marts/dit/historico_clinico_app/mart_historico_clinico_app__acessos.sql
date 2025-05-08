@@ -38,30 +38,16 @@ with
   -- -----------------------------------------
   -- Configurando Nivel de Acesso
   -- -----------------------------------------
-  calculando_permissoes as (
-    SELECT
-      * except(nivel_de_acesso),
-      CASE
-        WHEN nivel_de_acesso is not null THEN nivel_de_acesso
-
-        WHEN (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
-        THEN 'full_permission'
-
-        WHEN (funcao_grupo = 'MEDICOS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
-        THEN 'only_from_same_cnes'
-
-        WHEN (funcao_grupo = 'ENFERMEIROS')
-        THEN 'only_from_same_cnes' 
-
-        ELSE null
-      END as nivel_acesso
+  busca_maior_prioridade as (
+    select *
     from uniao
+    qualify row_number() over (partition by cpf order by prioridade desc) = 1
   ),
 
   removendo_treinamento as (
     select *
-    from calculando_permissoes
-    where nivel_acesso != 'training'
+    from busca_maior_prioridade
+    where acesso.nivel_acesso_descricao != 'training'
   ),
   
   -- -----------------------------------------
