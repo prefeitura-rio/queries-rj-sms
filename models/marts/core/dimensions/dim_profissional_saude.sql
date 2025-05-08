@@ -10,7 +10,14 @@
 with
     estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }}),
 
-    funcionarios_status as (select distinct cpf, status_ativo from {{ ref("raw_ergon_funcionarios")}}),
+    funcionarios_status as (
+        select distinct 
+        cpf, 
+        dados.status_ativo
+        from {{ ref("raw_ergon_funcionarios")}},
+        unnest(dados) AS dados
+        where dados.status_ativo = true
+    ),
 
     alocacao as (
         select
