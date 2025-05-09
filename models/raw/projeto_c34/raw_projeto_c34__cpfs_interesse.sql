@@ -111,17 +111,20 @@ with
         select
             *,
 
-            (0.45 * d_lev_nome) + (0.55 * d_lev_mae) as s_lev,
-            (0.45 * d_jac_nome) + (0.55 * d_jac_mae) as s_jac,
+            (0.5 * d_lev_nome) + (0.5 * d_lev_mae) as s_lev,
+            (0.5 * d_jac_nome) + (0.5 * d_jac_mae) as s_jac,
 
             (
-                (0.45 * d_lev_nome)
-                + (0.55 * d_lev_mae)
-                + (0.45 * d_jac_nome)
-                + (0.55 * d_jac_mae)
+                (0.25 * d_lev_nome)
+                + (0.25 * d_lev_mae)
+                + (0.25 * d_jac_nome)
+                + (0.25 * d_jac_mae)
             ) as score_final
 
         from scores_fuzzy
+        where
+            (d_lev_nome <= 0.3 and d_lev_mae <= 0.3)
+            or (d_jac_nome <= 0.3 and d_jac_mae <= 0.3)
     ),
 
     todos_scores as (
@@ -167,5 +170,4 @@ select
     cpf_fonte as cpf_candidato,
     score_final as score_incerteza
 from ranking_scores
-where rn = 1
-order by score_final asc
+order by score_final desc
