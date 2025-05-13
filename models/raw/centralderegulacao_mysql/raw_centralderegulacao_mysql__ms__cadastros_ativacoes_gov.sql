@@ -6,7 +6,19 @@
 
 with
     source as (
-        select *
+        select
+            safe_cast(dia as date) as dia,
+            safe_cast(split(cadastroativo, '.')[0] as int64) as cadastroativo,
+            safe_cast(split(cadastronaoativo, '.')[0] as int64) as cadastronaoativo,
+            safe_cast(qtdtotal as int64) as qtdtotal,
+            safe_cast(split(cadastrosgovbr, '.')[0] as int64) as cadastrosgovbr,
+            safe_cast(porcativogovbr as float64) as porcativogovbr,
+            safe_cast(porcinativo as float64) as porcinativo,
+            safe_cast(datalake_loaded_at as timestamp) as datalake_loaded_at,
+            safe_cast(ano_particao as int64) as ano_particao,
+            safe_cast(mes_particao as int64) as mes_particao,
+            safe_cast(data_particao as date) as data_particao
+
         from
             {{
                 source(
@@ -19,7 +31,8 @@ with
     deduplicated as (
         select *
         from source
-        qualify row_number() over (partition by dia order by datalake_loaded_at desc) = 1
+        qualify
+            row_number() over (partition by dia order by datalake_loaded_at desc) = 1
     )
 select *
 from deduplicated
