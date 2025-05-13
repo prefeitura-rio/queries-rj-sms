@@ -69,6 +69,8 @@ with
             sim.nome_mae_sim,
             sim.data_nasc_sim,
             fonte.cpf_fonte,
+            0.0 as score_lev,
+            0.0 as score_jac,
             0.0 as score_final
         from pacientes_sim as sim
         join
@@ -107,24 +109,22 @@ with
         from candidatos_fuzzy
     ),
 
-    scores_fuzzy_ponderados as (
+    scores_fuzzy_resumidos as (
         select
             *,
 
-            (0.5 * d_lev_nome) + (0.5 * d_lev_mae) as s_lev,
-            (0.5 * d_jac_nome) + (0.5 * d_jac_mae) as s_jac,
+            (0.5 * d_lev_nome) + (0.5 * d_lev_mae) as score_lev,
+            (0.5 * d_jac_nome) + (0.5 * d_jac_mae) as score_jac,
 
-            (
-                (0.25 * d_lev_nome)
-                + (0.25 * d_lev_mae)
-                + (0.25 * d_jac_nome)
-                + (0.25 * d_jac_mae)
-            ) as score_final
+            (0.25 * d_lev_nome)
+            + (0.25 * d_lev_mae)
+            + (0.25 * d_jac_nome)
+            + (0.25 * d_jac_mae) as score_final
 
         from scores_fuzzy
-        where
-            (d_lev_nome <= 0.3 and d_lev_mae <= 0.3)
-            or (d_jac_nome <= 0.3 and d_jac_mae <= 0.3)
+    -- where
+    -- (d_lev_nome <= 0.3 and d_lev_mae <= 0.3)
+    -- or (d_jac_nome <= 0.3 and d_jac_mae <= 0.3)
     ),
 
     todos_scores as (
@@ -135,6 +135,8 @@ with
             cpf_fonte,
             nome_sim as nome_fonte,
             nome_mae_sim as nome_mae_fonte,
+            score_lev,
+            score_jac,
             score_final
         from matches_exatos
 
@@ -147,8 +149,10 @@ with
             cpf_fonte,
             nome_fonte,
             nome_mae_fonte,
+            score_lev,
+            score_jac,
             score_final
-        from scores_fuzzy_ponderados
+        from scores_fuzzy_resumidos
     ),
 
     ranking_scores as (
@@ -168,6 +172,9 @@ select
     nome_mae_sim as nome_mae,
     nome_mae_fonte as nome_mae_candidato,
     cpf_fonte as cpf_candidato,
-    score_final as score_incerteza
+    score_lev,
+    score_jac,
+    score_final
 from ranking_scores
+where rn = 1
 order by score_final desc
