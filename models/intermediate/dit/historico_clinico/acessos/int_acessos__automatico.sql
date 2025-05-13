@@ -127,6 +127,8 @@ with
                 then 'only_from_same_cnes'
                 when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
                 then 'only_from_same_cnes'
+                when (unidade_tipo in ('CGS'))
+                then 'only_from_same_ap'
                 ELSE null
             end as nivel_acesso_descricao,
             CASE
@@ -138,6 +140,8 @@ with
                 then 2
                 when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
                 then 2
+                when (unidade_tipo in ('CGS'))
+                then 3
                 else null
             end as nivel_acesso_rank
         ) as acesso
