@@ -15,7 +15,7 @@ with
     sem_duplicatas as (
         select *
         from source
-        qualify row_number() over (partition by n_cpf, data_ultima_atualizacao_do_cadastro order by _loaded_at desc) = 1 
+        qualify row_number() over (partition by _source_file, indice order by _loaded_at desc) = 1 
     ),
 
     extrair_informacoes as (
@@ -106,9 +106,27 @@ with
             {{ process_null('n_de_procedimentos_2019') }} as n_procedimentos_2019,
             {{ process_null('n_de_consultas_2018') }} as n_consultas_2018,
             {{ process_null('n_de_procedimentos_2018') }} as n_procedimentos_2018,
-            {{ process_null('data_1a_consulta') }} as data_1a_consulta,
-            {{ process_null('data_2a_consulta')}} as data_2a_consulta,
-            {{ process_null('data_da_ultima_consulta') }} as data_ultima_consulta,
+            case 
+                when REGEXP_CONTAINS({{ process_null('data_1a_consulta') }},r'\d{4}-\d{2}-\d{2}') 
+                    then cast(data_1a_consulta as date format 'YYYY-MM-DD')
+                when REGEXP_CONTAINS({{ process_null('data_1a_consulta') }},r'\d{2}/\d{2}/\d{4}') 
+                    then cast(data_1a_consulta as date format 'DD/MM/YYYY')
+                else null
+            end as data_1a_consulta, 
+            case 
+                when REGEXP_CONTAINS({{ process_null('data_2a_consulta') }},r'\d{4}-\d{2}-\d{2}') 
+                    then cast(data_2a_consulta as date format 'YYYY-MM-DD')
+                when REGEXP_CONTAINS({{ process_null('data_2a_consulta') }},r'\d{2}/\d{2}/\d{4}') 
+                    then cast(data_2a_consulta as date format 'DD/MM/YYYY')
+                else null
+            end as data_2a_consulta, 
+            case 
+                when REGEXP_CONTAINS({{ process_null('data_da_ultima_consulta') }},r'\d{4}-\d{2}-\d{2}') 
+                    then cast(data_da_ultima_consulta as date format 'YYYY-MM-DD')
+                when REGEXP_CONTAINS({{ process_null('data_da_ultima_consulta') }},r'\d{2}/\d{2}/\d{4}') 
+                    then cast(data_da_ultima_consulta as date format 'DD/MM/YYYY')
+                else null
+            end as data_ultima_consulta, 
             {{ process_null('data_da_ultima_consulta_med_enf_propria_equipe') }} as data_ultima_consulta_med_enf_propria_equipe,
             {{ process_null('hist_cid') }} as hist_cid,
             -- CIDs e datas de registro

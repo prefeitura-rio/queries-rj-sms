@@ -1,0 +1,677 @@
+models:
+  - name: raw_informes_vitacare__acompanhamento_mensal_gestantes
+    description: "Informações relacionadas ao acompanhamento de gestantes no sistema de saúde."
+    columns:
+      - name: ap
+        description: "Ano e período de referência."
+      - name: mes_referencia
+        description: "Mês de referência dos dados."
+      - name: nome
+        description: "Nome da gestante."
+      - name: no_cartao
+        description: "Número do Cartão Nacional de Saúde (CNS)."
+      - name: codigo_entidade
+        description: "Código da entidade responsável pelo atendimento."
+      - name: entidade
+        description: "Nome da entidade responsável pelo atendimento."
+      - name: area
+        description: "Área de abrangência do atendimento."
+      - name: microarea
+        description: "Microárea correspondente ao atendimento."
+      - name: numero_prontuario
+        description: "Número do prontuário da paciente."
+      - name: data_de_nascimento
+        description: "Data de nascimento da gestante."
+      - name: nome_mae
+        description: "Nome da mãe da gestante."
+      - name: dnv
+        description: "Declaração de Nascido Vivo."
+      - name: cpf
+        description: "CPF da gestante."
+      - name: cpf_valido
+        description: "Indica se o CPF é válido."
+      - name: data_ativacao_diagnostico
+        description: "Data da ativação do diagnóstico de gestação."
+      - name: data_ultima_menstruacao
+        description: "Data da última menstruação (DUM)."
+      - name: data_primeira_consulta_pre_natal_apos_dum
+        description: "Data da primeira consulta de pré-natal após a DUM."
+      - name: dpp
+        description: "Data provável do parto (DPP)."
+      - name: dpp_corrigido_por_ecografia
+        description: "Data provável do parto corrigida por ecografia."
+      - name: semana_gestacional_na_1a_cons_de_pre_natal
+        description: "Semana gestacional na primeira consulta de pré-natal."
+      - name: num_de_consultas_de_pre_natal
+        description: "Número de consultas de pré-natal realizadas."
+      - name: data_da_ult_cons_pre_natal
+        description: "Data da última consulta de pré-natal."
+      - name: semana_gestacional_atual
+        description: "Semana gestacional atual."
+      - name: risco_gestacional
+        description: "Classificação de risco gestacional."
+      - name: num_vds_do_acs_ate_38_semanas_de_gest
+        description: "Número de visitas domiciliares do ACS até 38 semanas de gestação."
+      - name: data_da_ult_vd_do_acs
+        description: "Data da última visita domiciliar do ACS."
+      - name: semana_gestacional_ult_vd_do_acs
+        description: "Semana gestacional na última visita do ACS."
+      - name: data_resolucao_do_diagnostico
+        description: "Data de resolução do diagnóstico (parto, aborto, etc)."
+      - name: data_parto
+        description: "Data do parto registrada."
+      - name: data_parto_raw
+        description: "Data do parto conforme informada na fonte original (raw)."
+      - name: data_realizacao_teste_rapido_sifilis
+        description: "Data da realização do teste rápido para sífilis."
+      - name: resultado_teste_rapido_sifilis
+        description: "Resultado do teste rápido para sífilis."
+      - name: data_realizacao_vdrl
+        description: "Data da realização do exame VDRL."
+      - name: resultado_vdrl
+        description: "Resultado do exame VDRL."
+      - name: parceiro_tratado
+        description: "Indica se o parceiro foi tratado (sífilis)."
+      - name: data_realizacao_teste_rapido_hiv
+        description: "Data da realização do teste rápido para HIV."
+      - name: resultado_teste_rapido_hiv
+        description: "Resultado do teste rápido para HIV."
+      - name: data_coleta_hiv
+        description: "Data da coleta para exame de HIV."
+      - name: resultado_de_hiv
+        description: "Resultado do exame de HIV."
+      - name: data_realizacao_teste_rapido_gravidez
+        description: "Data da realização do teste rápido de gravidez."
+      - name: resultado_teste_rapido_gravidez
+        description: "Resultado do teste rápido de gravidez."
+      - name: data_consulta_sb
+        description: "Data da consulta odontológica (Saúde Bucal)."
+      - name: data_procedimento_coletivo_sb
+        description: "Data de procedimento coletivo de Saúde Bucal."
+      - name: periodo_extracao_inicio
+        description: "Início do período de extração dos dados."
+      - name: periodo_extracao_fim
+        description: "Fim do período de extração dos dados."
+      - name: periodo_extracao
+        description: "Período total de extração dos dados."
+      - name: metadados
+        description: "Metadados adicionais do registro."
+
+  - name: raw_informes_vitacare__acompanhamento_mulheres_idade_fertil
+    description: >
+      Tabela contendo informações clínicas e demográficas de pacientes acompanhados em unidades de saúde, 
+      com foco em métodos contraceptivos, exames, diagnósticos e acompanhamento profissional.
+    columns:
+      - name: ap
+        description: Código do prontuário eletrônico da atenção primária.
+      - name: cnes_da_unidade
+        description: Código CNES da unidade de saúde.
+      - name: nome_da_unidade
+        description: Nome da unidade de saúde.
+      - name: ine_da_equipe
+        description: Código INE da equipe de saúde.
+      - name: cns_do_paciente
+        description: Cartão Nacional de Saúde do paciente.
+      - name: cpf_do_paciente
+        description: CPF do paciente.
+      - name: n_prontuario_do_paciente
+        description: Número do prontuário do paciente.
+      - name: nome_do_paciente
+        description: Nome completo do paciente.
+      - name: data_de_nascimento_da_paciente
+        description: Data de nascimento do paciente.
+      - name: idade_da_paciente
+        description: Idade do paciente.
+      - name: raca_cor
+        description: Raça ou cor autodeclarada do paciente.
+      - name: metodo_escolha
+        description: Método contraceptivo escolhido.
+      - name: implanon___data_inicio
+        description: Data de início do uso do Implanon.
+      - name: sigtap___03_01_04_017_6
+        description: Procedimento SIGTAP referente à colocação de Implanon.
+      - name: sigtap___03_01_04_018_4
+        description: Procedimento SIGTAP relacionado.
+      - name: data_da_insercao
+        description: Data de inserção do método contraceptivo.
+      - name: diu___data_de_inicio
+        description: Data de início do uso de DIU.
+      - name: diu___data_termino
+        description: Data de término do uso de DIU.
+      - name: cid_ativo_hipertensao
+        description: CID de hipertensão ativa.
+      - name: cid_ativo_diabetes
+        description: CID de diabetes ativo.
+      - name: cid_ativo_obesidade_sobrepeso
+        description: CID de obesidade ou sobrepeso ativo.
+      - name: data_da_mamografia
+        description: Data da realização da mamografia.
+      - name: citologia___sim___nao
+        description: Indicação se houve citologia (sim/não).
+      - name: citologia____data_do_resultado
+        description: Data do resultado da citologia.
+      - name: teste_rapido___procedimento
+        description: Tipo de teste rápido realizado.
+      - name: teste_rapido___procedimento___profissional
+        description: Nome do profissional que realizou o teste rápido.
+      - name: teste_rapido___procedimento___data_de_registro
+        description: Data do registro do teste rápido.
+      - name: resultado___data_de_registro
+        description: Data do registro do resultado.
+      - name: cetonuria
+        description: Resultado do exame de cetonúria.
+      - name: media_das_glicemias_capilares
+        description: Média das glicemias capilares do paciente.
+      - name: glicemia_capilar__jejum
+        description: Valor da glicemia capilar em jejum.
+      - name: glicemia_capilar_apos_as_refeicoes
+        description: Valor da glicemia capilar após refeições.
+      - name: glicose_na_urina
+        description: Resultado do exame de glicose na urina.
+      - name: teste_de_gravidez
+        description: Resultado do teste de gravidez.
+      - name: teste_de_gravidez___observacoes
+        description: Observações sobre o teste de gravidez.
+      - name: teste_rapido_hepatite_b
+        description: Resultado do teste rápido para hepatite B.
+      - name: teste_rapido_hepatite_b___observacoes
+        description: Observações sobre o teste rápido para hepatite B.
+      - name: teste_rapido_hepatite_c
+        description: Resultado do teste rápido para hepatite C.
+      - name: teste_rapido_hepatite_c___observacoes
+        description: Observações sobre o teste rápido para hepatite C.
+      - name: teste_rapido_hiv
+        description: Resultado do teste rápido para HIV.
+      - name: teste_rapido_hiv___observacoes
+        description: Observações sobre o teste rápido para HIV.
+      - name: ppd
+        description: Resultado do teste de PPD.
+      - name: data_ppd
+        description: Data de realização do teste PPD.
+      - name: teste_rapido_sifilis
+        description: Resultado do teste rápido para sífilis.
+      - name: teste_rapido_sifilis___observacoes
+        description: Observações sobre o teste rápido para sífilis.
+      - name: teste_rapido_tuberculose
+        description: Resultado do teste rápido para tuberculose.
+      - name: cbo_do_profissional
+        description: Código CBO do profissional de saúde.
+      - name: cns_do_profissional
+        description: Cartão Nacional de Saúde do profissional.
+      - name: nome_do_profissional
+        description: Nome do profissional de saúde.
+      - name: data_de_termino_do_metodo_de_escolha
+        description: Data de término do método contraceptivo.
+      - name: sigtap___03_01_04_014_1_insercao_de_diu
+        description: Procedimento SIGTAP para inserção de DIU.
+      - name: data_de_inicio_do_metodo_de_escolha
+        description: Data de início do método contraceptivo.
+      - name: sigtap___03_01_04_015_0_retirada_de_diu
+        description: Procedimento SIGTAP para retirada de DIU.
+      - name: n_consultas_medicas
+        description: Número de consultas médicas realizadas.
+      - name: n_consultas_enfermagem
+        description: Número de consultas de enfermagem realizadas.
+      - name: _source_file
+        description: Nome do arquivo de origem.
+      - name: _extracted_at
+        description: Timestamp de extração dos dados.
+      - name: _loaded_at
+        description: Timestamp de carga dos dados.
+      - name: indice
+        description: Índice técnico ou identificador interno.
+      - name: ano_particao
+        description: Ano da partição da tabela.
+      - name: mes_particao
+        description: Mês da partição da tabela.
+      - name: data_particao
+        description: Data de partição da tabela.
+
+  - name: raw_informes_vitacare__dispensas_aparelho_pressao
+    description: >
+      Tabela que registra informações de dispensação de medicamentos ou insumos,
+      incluindo dados da unidade de saúde, paciente, itens dispensados e metadados operacionais.
+    columns:
+      - name: ap
+        description: Código da Autorização de Procedimento.
+      - name: mes_referencia
+        description: Mês de referência da dispensação.
+      - name: unidade_cnes
+        description: Código CNES da unidade de saúde.
+      - name: unidade_nome
+        description: Nome da unidade de saúde.
+      - name: paciente_cns
+        description: Cartão Nacional de Saúde do paciente.
+      - name: paciente_cpf
+        description: CPF do paciente.
+      - name: paciente_nome
+        description: Nome completo do paciente.
+      - name: sexo
+        description: Sexo do paciente.
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+      - name: desig_medicamento_insumo
+        description: Nome ou designação do medicamento ou insumo dispensado.
+      - name: codigo
+        description: Código do item dispensado.
+      - name: desig_lote
+        description: Identificação do lote do medicamento ou insumo.
+      - name: data_dispensacao
+        description: Data em que ocorreu a dispensação.
+      - name: tipo_movimento
+        description: Tipo de movimentação (entrada, saída, ajuste).
+      - name: quantidade
+        description: Quantidade dispensada do item.
+      - name: metadados
+        description: Informações adicionais ou técnicas sobre o registro.
+        
+  - name: raw_informes_vitacare_ficha_a_v2
+    description: "Modelo contendo dados de pacientes atendidos pela saúde comunitária, incluindo informações demográficas, de saúde, socioeconômicas e histórico de consultas."
+    columns:
+      - name: ap
+        description: "Área programática de saúde"
+      - name: numero_cnes_unidade
+        description: "Número CNES da unidade de saúde"
+      - name: nome_unidade_de_saude
+        description: "Nome da unidade de saúde responsável"
+      - name: nome_equipe_de_saude
+        description: "Nome da equipe de saúde responsável"
+      - name: codigo_da_equipe_de_saude
+        description: "Código único da equipe de saúde"
+      - name: codigo_ine_equipe_de_saude
+        description: "Código INE da equipe de saúde"
+      - name: codigo_microarea
+        description: "Código da microárea de atuação"
+      - name: n_dnv
+        description: "Número DNV (Declaração de Nascido Vivo)"
+      - name: n_cpf
+        description: "CPF do paciente"
+      - name: nis
+        description: "Número de Identificação Social (NIS)"
+      - name: nome_acs
+        description: "Nome do Agente Comunitário de Saúde responsável"
+      - name: n_cns_da_pessoa_cadastrada
+        description: "Número do Cartão Nacional de Saúde (CNS)"
+      - name: nome_da_pessoa_cadastrada
+        description: "Nome completo do paciente"
+      - name: nome_social_da_pessoa_cadastrada
+        description: "Nome social do paciente (quando aplicável)"
+      - name: nome_da_mae_pessoa_cadastrada
+        description: "Nome da mãe do paciente"
+      - name: n_da_familia
+        description: "Número de identificação da família"
+      - name: n_do_prontuario
+        description: "Número do prontuário do paciente"
+      - name: data_cadastro
+        description: "Data do cadastro do paciente no sistema"
+      - name: data_ultima_atualizacao_do_cadastro
+        description: "Data da última atualização do cadastro"
+      - name: situacao_usuario
+        description: "Situação atual do usuário no sistema (ativo, inativo, etc.)"
+      - name: obito
+        description: "Indicador de óbito (S/N)"
+      - name: sexo
+        description: "Sexo biológico do paciente"
+      - name: orientacao_sexual
+        description: "Orientação sexual do paciente"
+      - name: identidade_genero
+        description: "Identidade de gênero do paciente"
+      - name: raca_cor
+        description: "Raça/cor do paciente conforme classificação do IBGE"
+      - name: data_de_nascimento
+        description: "Data de nascimento do paciente"
+      - name: situacao_profissional
+        description: "Situação profissional do paciente"
+      - name: ocupacao
+        description: "Ocupação profissional do paciente"
+      - name: nacionalidade
+        description: "Nacionalidade do paciente"
+      - name: pais_de_nascimento
+        description: "País de nascimento do paciente"
+      - name: municipio_de_nascimento
+        description: "Município de nascimento do paciente"
+      - name: alcoolismo
+        description: "Indicador de alcoolismo (S/N)"
+      - name: doenca_de_chagas
+        description: "Indicador de doença de Chagas (S/N)"
+      - name: deficiencia_fisica
+        description: "Indicador de deficiência física (S/N)"
+      - name: doenca_mental
+        description: "Indicador de doença mental (S/N)"
+      - name: epilepsia
+        description: "Indicador de epilepsia (S/N)"
+      - name: diabetes
+        description: "Indicador de diabetes (S/N)"
+      - name: gestante
+        description: "Indicador de gestação (S/N)"
+      - name: hanseniase
+        description: "Indicador de hanseníase (S/N)"
+      - name: hipertensao_arterial
+        description: "Indicador de hipertensão arterial (S/N)"
+      - name: malaria
+        description: "Indicador de malária (S/N)"
+      - name: tuberculose
+        description: "Indicador de tuberculose (S/N)"
+      - name: tabagismo
+        description: "Indicador de tabagismo (S/N)"
+      - name: frequenta_escola
+        description: "Indicador se frequenta escola (S/N)"
+      - name: tipo_de_logradouro
+        description: "Tipo de logradouro (Rua, Avenida, etc.)"
+      - name: logradouro
+        description: "Nome do logradouro"
+      - name: cep_logradouro
+        description: "CEP do logradouro"
+      - name: bairro_de_moradia
+        description: "Bairro de moradia"
+      - name: comunidade_moradia
+        description: "Comunidade de moradia"
+      - name: comunidade_tradicionais
+        description: "Comunidade tradicional a que pertence"
+      - name: telefone_contato
+        description: "Telefone para contato"
+      - name: email_contato
+        description: "E-mail para contato"
+      - name: tipo_de_domicilio
+        description: "Tipo de domicílio (casa, apartamento, etc.)"
+      - name: existencia_de_energia_eletrica
+        description: "Indicador de existência de energia elétrica (S/N)"
+      - name: destino_do_lixo
+        description: "Destino do lixo (coleta pública, queimado, etc.)"
+      - name: abastecimento_de_agua
+        description: "Forma de abastecimento de água"
+      - name: tratamento_de_agua
+        description: "Tipo de tratamento de água"
+      - name: possui_filtro_agua
+        description: "Indicador se possui filtro de água (S/N)"
+      - name: esgotamento_sanitario
+        description: "Tipo de esgotamento sanitário"
+      - name: possui_plano_de_saude
+        description: "Indicador se possui plano de saúde (S/N)"
+      - name: em_caso_de_doenca_procura
+        description: "Local que procura em caso de doença"
+      - name: cultiva_plantas_medicinais
+        description: "Indicador se cultiva plantas medicinais (S/N)"
+      - name: usa_plantas_medicinais
+        description: "Indicador se usa plantas medicinais (S/N)"
+      - name: tem_animais_no_domicilio
+        description: "Indicador se tem animais no domicílio (S/N)"
+      - name: qualis
+        description: "Classificação QUALIS (quando aplicável)"
+      - name: ja_sofreu_ataque_de_morcego
+        description: "Indicador se já sofreu ataque de morcego (S/N)"
+      - name: meios_de_comunicacao_que_utiliza
+        description: "Meios de comunicação que utiliza"
+      - name: meios_de_transporte_que_utiliza
+        description: "Meios de transporte que utiliza"
+      - name: participacao_em_grupos_comunitarios
+        description: "Participação em grupos comunitários"
+      - name: renda_familiar
+        description: "Faixa de renda familiar"
+      - name: vunerabilidade_social
+        description: "Grau de vulnerabilidade social"
+      - name: familia_beneficiaria_auxilio_brasil
+        description: "Indicador se família é beneficiária do Auxílio Brasil (S/N)"
+      - name: familia_beneficiaria_cfc
+        description: "Indicador se família é beneficiária de CFC (S/N)"
+      - name: n_de_consultas_2023
+        description: "Número de consultas em 2023"
+      - name: n_de_procedimentos_2023
+        description: "Número de procedimentos em 2023"
+      - name: n_de_consultas_2022
+        description: "Número de consultas em 2022"
+      - name: n_de_procedimentos_2022
+        description: "Número de procedimentos em 2022"
+      - name: n_de_consultas_2021
+        description: "Número de consultas em 2021"
+      - name: n_de_procedimentos_2021
+        description: "Número de procedimentos em 2021"
+      - name: n_de_consultas_2020
+        description: "Número de consultas em 2020"
+      - name: n_de_procedimentos_2020
+        description: "Número de procedimentos em 2020"
+      - name: n_de_consultas_2019
+        description: "Número de consultas em 2019"
+      - name: n_de_procedimentos_2019
+        description: "Número de procedimentos em 2019"
+      - name: n_de_consultas_2018
+        description: "Número de consultas em 2018"
+      - name: n_de_procedimentos_2018
+        description: "Número de procedimentos em 2018"
+      - name: data_1a_consulta
+        description: "Data da primeira consulta"
+      - name: data_2a_consulta
+        description: "Data da segunda consulta"
+      - name: data_da_ultima_consulta
+        description: "Data da última consulta"
+      - name: data_da_ultima_consulta_med_enf_propria_equipe
+        description: "Data da última consulta com médico/enfermeiro da própria equipe"
+      - name: hist_cid
+        description: "Histórico de CID (Classificação Internacional de Doenças)"
+      - name: data_registro_cid_01
+        description: "Data de registro do primeiro CID"
+      - name: cid_01
+        description: "Primeiro CID registrado"
+      - name: data_registro_cid_02
+        description: "Data de registro do segundo CID"
+      - name: cid_02
+        description: "Segundo CID registrado"
+      - name: data_registro_cid_03
+        description: "Data de registro do terceiro CID"
+      - name: cid_03
+        description: "Terceiro CID registrado"
+      - name: data_registro_cid_04
+        description: "Data de registro do quarto CID"
+      - name: cid_04
+        description: "Quarto CID registrado"
+      - name: data_registro_cid_05
+        description: "Data de registro do quinto CID"
+      - name: cid_05
+        description: "Quinto CID registrado"
+      - name: data_registro_cid_06
+        description: "Data de registro do sexto CID"
+      - name: cid_06
+        description: "Sexto CID registrado"
+      - name: data_registro_cid_07
+        description: "Data de registro do sétimo CID"
+      - name: cid_07
+        description: "Sétimo CID registrado"
+      - name: data_registro_cid_08
+        description: "Data de registro do oitavo CID"
+      - name: cid_08
+        description: "Oitavo CID registrado"
+      - name: data_registro_cid_09
+        description: "Data de registro do nono CID"
+      - name: cid_09
+        description: "Nono CID registrado"
+      - name: data_registro_cid_10
+        description: "Data de registro do décimo CID"
+      - name: cid_10
+        description: "Décimo CID registrado"
+      - name: primeiro_cid_extra_por_campo
+        description: "Primeiro CID extra registrado por campo"
+      - name: data_registro_cid_extra_01
+        description: "Data de registro do primeiro CID extra"
+      - name: segundo_cid_extra_por_campo
+        description: "Segundo CID extra registrado por campo"
+      - name: data_registro_cid_extra_02
+        description: "Data de registro do segundo CID extra"
+      - name: peso
+        description: "Peso do paciente (kg)"
+      - name: altura
+        description: "Altura do paciente (m)"
+      - name: data_registro_peso_altura
+        description: "Data de registro do peso e altura"
+      - name: data_ultima_menstruacao
+        description: "Data da última menstruação (para pacientes do sexo feminino)"
+      - name: paciente_temporario
+        description: "Indicador se é paciente temporário (S/N)"
+      - name: paciente_situacao_rua
+        description: "Indicador se paciente está em situação de rua (S/N)"
+      - name: situacao_moradia_posse
+        description: "Situação de posse da moradia (própria, alugada, etc.)"
+      - name: nome_instituicao
+        description: "Nome da instituição de referência (quando aplicável)"
+      - name: instituicao_publica_privada
+        description: "Tipo da instituição (pública ou privada)"
+      - name: possui_prof_saude
+        description: "Indicador se possui profissional de saúde na família (S/N)"
+      - name: tipo_unidade_permanencia
+        description: "Tipo de unidade de permanência"
+      - name: familia_localizacao
+        description: "Localização da família"
+      - name: tempo_moradia
+        description: "Tempo de moradia no local (em anos)"
+      - name: comodos
+        description: "Número de cômodos do domicílio"
+      - name: situacao_familiar
+        description: "Situação familiar"
+      - name: escolaridade
+        description: "Nível de escolaridade"
+      - name: territorio_social
+        description: "Território social de pertencimento"
+      - name: religiao
+        description: "Religião"
+      - name: certidao_nascimento
+        description: "Indicador se possui certidão de nascimento (S/N)"
+      - name: crianca_mat_creche_ou_pre_escola
+        description: "Indicador se criança está matriculada em creche ou pré-escola (S/N)"
+      - name: responsavel
+        description: "Nome do responsável (quando aplicável)"
+      - name: relacao_parentesco_responsavel
+        description: "Relação de parentesco com o responsável"
+      - name: fumante
+        description: "Indicador se é fumante (S/N)"
+      - name: fumante_tempo
+        description: "Tempo como fumante (em anos)"
+      - name: fumante_quant
+        description: "Quantidade de cigarros por dia"
+      - name: qual_a_origem_da_alimentacao
+        description: "Origem principal da alimentação"
+      - name: faz_uso_de_drogas
+        description: "Indicador se faz uso de drogas (S/N)"
+      - name: situacao_rua_tempo_situacao
+        description: "Tempo em situação de rua (quando aplicável)"
+      - name: quantas_vezes_se_alimenta_por_dia
+        description: "Número de refeições por dia"
+      - name: informacoes_complementares
+        description: "Informações complementares sobre o paciente"
+      - name: apresenta_manchas_no_corpo
+        description: "Indicador se apresenta manchas no corpo (S/N)"
+      - name: faz_tratamento_em_algum_lugar
+        description: "Indicador se faz tratamento em outro local (S/N)"
+      - name: ja_foi_internado
+        description: "Indicador se já foi internado (S/N)"
+      - name: local_permanencia_periodo_noturno
+        description: "Local de permanência no período noturno"
+      - name: possui_referencia_familiar
+        description: "Indicador se possui referência familiar (S/N)"
+      - name: recebe_algum_beneficio
+        description: "Indicador se recebe algum benefício social (S/N)"
+      - name: usa_alguma_medicacao
+        description: "Indicador se usa alguma medicação (S/N)"
+      - name: visita_algum_familiar_com_frequencia
+        description: "Indicador se visita algum familiar com frequência (S/N)"
+      - name: tem_alguma_doenca
+        description: "Indicador se tem alguma doença (S/N)"
+      - name: apresenta_tosse
+        description: "Indicador se apresenta tosse (S/N)"
+      - name: local_permanencia_periodo_diurno
+        description: "Local de permanência no período diurno"
+      - name: local_realizacao_cadastramento
+        description: "Local onde foi realizado o cadastramento"
+      - name: tem_acesso_a_higiene_pessoal
+        description: "Indicador se tem acesso a higiene pessoal (S/N)"
+      - name: apresenta_feridas_no_corpo
+        description: "Indicador se apresenta feridas no corpo (S/N)"
+      - name: metadados
+        description: "Metadados associados ao registro."
+      - name: ano_particao
+        description: "Ano de partição dos dados"
+      - name: mes_particao
+        description: "Mês de partição dos dados"
+      - name: data_particao
+        description: "Data completa de partição dos dados"
+  - name: raw_informes_vitacare_listagem_vacina_v2
+    description: "Descrição da tabela contendo dados de ações de vacinação realizadas."
+    columns:
+      - name: performedvaccineactionid
+        description: "ID da ação de vacinação realizada."
+      - name: ap
+        description: "Área programática."
+      - name: n_cnes_unidade
+        description: "Número CNES da unidade de saúde."
+      - name: nome_unidade_de_saude
+        description: "Nome da unidade de saúde."
+      - name: nome_equipe_de_saude
+        description: "Nome da equipe de saúde."
+      - name: codigo_da_equipe_de_saude
+        description: "Código da equipe de saúde."
+      - name: codigo_ine_equipe_de_saude
+        description: "Código INE da equipe de saúde."
+      - name: codigo_microarea
+        description: "Código da microárea."
+      - name: n_do_prontuario
+        description: "Número do prontuário."
+      - name: n_cpf
+        description: "Número do CPF da pessoa cadastrada."
+      - name: n_cns_da_pessoa_cadastrada
+        description: "Número do CNS da pessoa cadastrada."
+      - name: nome_da_pessoa_cadastrada
+        description: "Nome da pessoa cadastrada."
+      - name: data_de_nascimento
+        description: "Data de nascimento da pessoa cadastrada."
+      - name: nome_da_mae_pessoa_cadastrada
+        description: "Nome da mãe da pessoa cadastrada."
+      - name: data_de_nasc_mae
+        description: "Data de nascimento da mãe."
+      - name: situacao_usuario
+        description: "Situação do usuário."
+      - name: obito
+        description: "Indica se houve óbito."
+      - name: data_cadastro
+        description: "Data de cadastro."
+      - name: tipo_de_logradouro
+        description: "Tipo de logradouro do endereço."
+      - name: logradouro
+        description: "Nome do logradouro."
+      - name: numero_logradouro
+        description: "Número do logradouro."
+      - name: complemento_logradouro
+        description: "Complemento do logradouro."
+      - name: cep_logradouro
+        description: "CEP do logradouro."
+      - name: bairro_logradouro
+        description: "Bairro do logradouro."
+      - name: data_da_ultima_consulta_enf
+        description: "Data da última consulta com enfermagem."
+      - name: data_da_ultima_visita_acs
+        description: "Data da última visita do ACS."
+      - name: calendario_vacinal_atualizado
+        description: "Indica se o calendário vacinal está atualizado."
+      - name: vacina
+        description: "Nome da vacina aplicada."
+      - name: data_aplicacao
+        description: "Data da aplicação da vacina."
+      - name: data_registro
+        description: "Data de registro da aplicação."
+      - name: diff
+        description: "Diferença de datas entre aplicação e registro."
+      - name: dose_vtc
+        description: "Identificação da dose VTC."
+      - name: tipo_registro
+        description: "Tipo de registro da aplicação."
+      - name: estrategia_imunizacao
+        description: "Estratégia de imunização."
+      - name: cbo
+        description: "Código do CBO do profissional."
+      - name: profissional
+        description: "Nome do profissional responsável."
+      - name: ano_particao
+        description: "Ano da partição dos dados."
+      - name: mes_particao
+        description: "Mês da partição dos dados."
+      - name: data_particao
+        description: "Data da partição dos dados."
+      - name: metadados
+        description: "Metadados associados ao registro." 
