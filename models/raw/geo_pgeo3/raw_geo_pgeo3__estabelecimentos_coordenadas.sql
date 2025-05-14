@@ -34,6 +34,11 @@ with
 
         from {{ source("brutos_geo_pgeo3_staging", "estabelecimentos_coordenadas") }}
 
+        qualify row_number() over (
+            partition by id_cnes
+            order by data_particao desc
+        ) = 1
+
     )
 
 select *
