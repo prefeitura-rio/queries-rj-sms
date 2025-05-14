@@ -17,3 +17,11 @@ sources:
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
         freshness:
           error_after: {count: 30, period: day}
+      - name: listagem_vacina_v2
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: ficha_a_v2
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
