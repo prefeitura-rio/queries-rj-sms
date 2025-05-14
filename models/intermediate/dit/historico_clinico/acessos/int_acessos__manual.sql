@@ -16,19 +16,7 @@ with
     categorizados as (
         select 
             * except(unidade),
-            CASE
-                WHEN unidade IN ('DIT','SUBHUE','SUBPAV','SUBGERAL','SUBGESTÃO','SMS') THEN '0932280'
-                WHEN unidade = 'UPA Cidade de Deus' THEN '6575900'
-                WHEN unidade = 'UPA Del Castilho' THEN '0932280'
-                WHEN unidade = 'UPA Paciência' THEN '6938124'
-                WHEN unidade = 'UPA Rocinha' THEN '6507409'
-                WHEN unidade = 'UPA Senador Camará' THEN '6742831'
-                WHEN unidade = 'UPA Rocha Miranda' THEN '7110162'
-                WHEN unidade = 'CER Barra' THEN '6716938'
-                WHEN unidade = 'CER Leblon' THEN '6716849'
-                WHEN safe_cast(unidade as int64) is not null THEN unidade
-                ELSE null
-            END as unidade_cnes,
+            unidade as unidade_cnes,
             funcao as funcao_detalhada,            
             CASE
                 WHEN {{ remove_accents_upper('funcao') }} like '%ENFERM%' THEN 'ENFERMEIROS'
