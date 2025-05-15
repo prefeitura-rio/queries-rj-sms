@@ -105,18 +105,31 @@ with
             )
     ),
     -- -----------------------------------------
+    -- Agrupando vinculos de profissionais
+    -- -----------------------------------------
+    funcionario_vinculos as (
+        select 
+            cpf, 
+            array_agg(
+                struct(
+                    unidade_nome,
+                    unidade_tipo,
+                    unidade_cnes,
+                    unidade_ap,
+                    funcao_detalhada,
+                    funcao_grupo
+                )
+            ) as vinculos 
+        from funcionarios_ativos_enriquecido_autorizados
+        group by 1
+    ),
+    -- -----------------------------------------
     -- Adicionando Nível de Acesso
     -- -----------------------------------------
     funcionarios_nivel_acesso as (
     select
         cpf,
         upper(nome_completo) as nome_completo,
-        unidade_nome,
-        unidade_tipo,
-        unidade_cnes,
-        unidade_ap,
-        funcao_detalhada,
-        funcao_grupo,
         struct(
             case
                 when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
@@ -146,8 +159,19 @@ with
             end as nivel_acesso_rank
         ) as acesso
     from funcionarios_ativos_enriquecido_autorizados
-    )
+    ),
 
+    funcionarios_ativos_maior_acesso as (
     select * 
     from funcionarios_nivel_acesso 
     qualify row_number() over (partition by cpf order by acesso.nivel_acesso_rank desc) = 1
+    )
+
+    select 
+        cpf,
+        nome_completo,
+        vinculos,
+        acesso 
+    from funcionarios_ativos_maior_acesso
+    left join funcionario_vinculos
+        using (cpf)
