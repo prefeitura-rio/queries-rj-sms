@@ -41,7 +41,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: alergia_eventos
@@ -55,7 +55,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: exame_eventos
@@ -69,7 +69,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: profissional_eventos
@@ -122,7 +122,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: classificacao_risco_eventos
@@ -136,7 +136,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: boletim_eventos
@@ -150,7 +150,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: atendimento_eventos
@@ -164,7 +164,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: diagnostico_eventos
@@ -178,7 +178,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: cirurgia_eventos
@@ -188,7 +188,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__resumo_alta_eventos
@@ -209,7 +209,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
           
       - name: alta_eventos
