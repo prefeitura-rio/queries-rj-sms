@@ -26,8 +26,15 @@ with
             on acessos_manuais.unidade = estabelecimentos.id_cnes
         where nivel_de_acesso in ('only_from_same_cnes','only_from_same_ap') 
         and estabelecimentos.area_programatica is null
+    ),
+    acessos_sem_cpf_valido as (
+        select * 
+        from acessos_manuais 
+        where {{ validate_cpf('cpf') }} is false
     )
 
 select * from acessos_cnes_obrigatorio_sem_cnes
 union all
 select * from acessos_cnes_obrigatorio_sem_cnes_valido
+union all
+select * from acessos_sem_cpf_valido
