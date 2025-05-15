@@ -389,6 +389,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subpav
+        vacinacao:
+          +schema: crp
+          +tags: ["daily"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
       subgeral:
         cnes:
           +schema: projeto_cnes_subgeral
