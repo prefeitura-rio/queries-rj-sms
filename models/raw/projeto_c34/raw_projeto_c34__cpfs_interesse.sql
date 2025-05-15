@@ -17,7 +17,8 @@ with
         select distinct
             {{ clean_name_string("upper(nome)") }} as nome_sim,
             {{ clean_name_string("upper(nome_mae)") }} as nome_mae_sim,
-            data_nasc as data_nasc_sim
+            data_nasc as data_nasc_sim,
+            declaracao_obito_num as declaracao_obito_sim
 
         from {{ source("miloskimatheus__monitora_reg", "projeto_c34__sim_2024_mrj") }}
 
@@ -68,6 +69,7 @@ with
             sim.nome_sim,
             sim.nome_mae_sim,
             sim.data_nasc_sim,
+            sim.declaracao_obito_sim,
             fonte.cpf_fonte,
             0.0 as score_lev,
             0.0 as score_jac,
@@ -97,6 +99,7 @@ with
             nome_sim,
             nome_mae_sim,
             data_nasc_sim,
+            declaracao_obito_sim,
             cpf_fonte,
             nome_fonte,
             nome_mae_fonte,
@@ -122,9 +125,6 @@ with
             + (0.25 * d_jac_mae) as score_final
 
         from scores_fuzzy
-    -- where
-    -- (d_lev_nome <= 0.3 and d_lev_mae <= 0.3)
-    -- or (d_jac_nome <= 0.3 and d_jac_mae <= 0.3)
     ),
 
     todos_scores as (
@@ -132,6 +132,7 @@ with
             nome_sim,
             nome_mae_sim,
             data_nasc_sim,
+            declaracao_obito_sim,
             cpf_fonte,
             nome_sim as nome_fonte,
             nome_mae_sim as nome_mae_fonte,
@@ -146,6 +147,7 @@ with
             nome_sim,
             nome_mae_sim,
             data_nasc_sim,
+            declaracao_obito_sim,
             cpf_fonte,
             nome_fonte,
             nome_mae_fonte,
@@ -166,6 +168,7 @@ with
     )
 
 select
+    declaracao_obito_sim,
     data_nasc_sim as data_nasc,
     nome_sim as nome,
     nome_fonte as nome_candidato,
@@ -176,5 +179,5 @@ select
     score_jac,
     score_final
 from ranking_scores
-where rn = 1
+where rn = 1 and ((score_lev <= 0.2) or (score_jac <= 0.2))
 order by score_final desc
