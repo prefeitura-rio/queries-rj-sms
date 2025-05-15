@@ -155,7 +155,7 @@ with
         select
             todos_episodios.id_hci,
             paciente_cpf as cpf,
-            safe_cast(entrada_datahora as string) as entry_datetime,
+            safe_cast(coalesce(entrada_datahora,saida_datahora) as string) as entry_datetime,
             safe_cast(saida_datahora as string) as exit_datetime,
             safe_cast(estabelecimento.nome as string) as location,
             safe_cast(tipo as string) as type,
