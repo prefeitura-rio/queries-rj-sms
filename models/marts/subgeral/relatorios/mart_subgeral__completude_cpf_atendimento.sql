@@ -21,11 +21,11 @@ with
     episodios_vitacare as (
         select 
             ate.id_prontuario_global as id_episodio,
-            safe_cast(ate.datahora_inicio as date) as data_episodio,
+            safe_cast(ate.datahora_fim as date) as data_episodio,
             ate.cpf as cpf_paciente,
             'vitacare' as fornecedor
         from {{ref("raw_prontuario_vitacare__atendimento")}} ate
-        where ate.datahora_inicio <= current_date()
+        where ate.datahora_fim <= current_date()
     ),
     consolidado as (
         select * from episodios_vitai

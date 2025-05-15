@@ -8,6 +8,7 @@
 
 with
 
+    -- Listagem de Pacientes Atendidos e o Mês do Atendimento
     pacientes_atendidos_vitai as (
         SELECT
             distinct 
@@ -16,6 +17,7 @@ with
         from {{ref("raw_prontuario_vitai__boletim")}} bol
         where bol.updated_at <= current_date()
     ),
+    -- Enriquecendo com CPF do Paciente
     pacientes_enriquecidos_vitai as (
         select
             mes_referencia,
@@ -27,15 +29,18 @@ with
                 on pac.gid = pacientes_atendidos_vitai.id_paciente
     ),
 
+    -- Listagem de Pacientes Atendidos e o Mês do Atendimento
+    -- PS.: Vitacare só temos o CPF
     pacientes_atendidos_vitacare as (
         select
             distinct 
             ate.cpf as id_paciente,
             ate.cpf as cpf_paciente,
-            date_trunc(safe_cast(ate.datahora_inicio as date), month) as mes_referencia
+            date_trunc(safe_cast(ate.datahora_fim as date), month) as mes_referencia
         from {{ref("raw_prontuario_vitacare__atendimento")}} ate
-        where ate.datahora_inicio <= current_date()
+        where ate.datahora_fim <= current_date()
     ),
+    -- Enriquecendo com CPF do Paciente
     pacientes_enriquecidos_vitacare as (
         select
             mes_referencia,
@@ -46,6 +51,8 @@ with
             left join {{ref("raw_prontuario_vitacare__paciente")}} pac 
                 on pac.cpf = pacientes_atendidos_vitacare.id_paciente
     ),
+
+    -- Consolidando Listagem
     consolidado as (
         select * from pacientes_enriquecidos_vitai
         union all
