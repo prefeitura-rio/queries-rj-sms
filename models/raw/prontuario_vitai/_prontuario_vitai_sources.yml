@@ -34,7 +34,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__paciente_eventos
@@ -48,7 +48,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__alergia_eventos
@@ -62,7 +62,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__exame_eventos
@@ -115,7 +115,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__relato_cirurgico_eventos
@@ -129,7 +129,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__classificacao_risco_eventos
@@ -143,7 +143,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__boletim_eventos
@@ -157,7 +157,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__atendimento_eventos
@@ -171,7 +171,7 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__diagnostico_eventos
@@ -195,14 +195,14 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: internacao_eventos
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
       - name: basecentral__internacao_eventos
@@ -216,6 +216,6 @@ sources:
         loaded_at_field: "CAST(datahora AS TIMESTAMP)"
         freshness:
           filter: "date_diff( CAST(data_particao AS TIMESTAMP), current_timestamp, day) < 2"
-          warn_after: {count: 8, period: hour}
+          warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
 
