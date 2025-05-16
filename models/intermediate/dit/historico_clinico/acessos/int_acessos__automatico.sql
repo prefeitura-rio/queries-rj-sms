@@ -170,7 +170,7 @@ with
     select 
         cpf,
         nome_completo,
-        vinculos,
+        {{ dedup_array_of_struct('vinculos')}} as vinculos,
         acesso 
     from funcionarios_ativos_maior_acesso
     left join funcionario_vinculos
