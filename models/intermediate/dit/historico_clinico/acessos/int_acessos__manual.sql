@@ -57,27 +57,10 @@ with
         left join unidades_de_saude
             on categorizados.unidade_cnes = unidades_de_saude.cnes
     ),
-    rankeia_acessos as ( 
-        select
-            cpf,
-            nome_completo,
-            struct(
-            nivel_de_acesso as nivel_acesso_descricao,
-            case 
-                when nivel_de_acesso = 'full_permission' then 4
-                when nivel_de_acesso = 'full_permition' then 4
-                when nivel_de_acesso = 'only_from_same_ap' then 3
-                when nivel_de_acesso = 'only_from_same_cnes' then 2
-                when nivel_de_acesso = 'only_from_same_cpf' then 1
-                else null
-            end as nivel_acesso_rank
-            ) as acesso
-        from categorizados_enriquecidos
-        where {{ validate_cpf('cpf') }}
-    ),
     agrupa_vinculos as (
         select
             cpf,
+            nome_completo,
             array_agg(
                 struct(
                         unidade_nome,
@@ -85,17 +68,15 @@ with
                         unidade_cnes,
                         unidade_ap,
                         funcao_detalhada,
-                        funcao_grupo
+                        funcao_grupo,
+                        nivel_de_acesso
                 )
             ) as vinculos
         from categorizados_enriquecidos
-        group by 1
+        group by 1,2
     )
 select 
     cpf,
     nome_completo,
-    vinculos,
-    acesso  
-from rankeia_acessos
-left join agrupa_vinculos
-using (cpf)
+    vinculos
+from agrupa_vinculos
