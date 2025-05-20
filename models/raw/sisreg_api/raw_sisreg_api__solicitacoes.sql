@@ -149,8 +149,8 @@ with
 
 
         from {{ source("brutos_sisreg_api_staging", "solicitacoes") }}
-        cross join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
-        cross join unnest(json_extract_array(replace(procedimentos, "'", '"'))) as proceds_json
+        left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
+        left join unnest(json_extract_array(replace(procedimentos, "'", '"'))) as proceds_json
         where data_particao = (select data_particao from most_complete_partition)
 
     )

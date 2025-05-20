@@ -292,7 +292,7 @@ with
             safe_cast(data_particao as date) as particao_data
 
         from {{ source("brutos_sisreg_api_staging", "marcacoes") }}
-        cross join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
+        left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
         where data_particao = (select data_particao from most_complete_partition)
 
     )

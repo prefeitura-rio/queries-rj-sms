@@ -56,7 +56,10 @@ with
                         (lower(cbo_datasus.descricao) !='socorrista (exceto medicos e enfermeiros)') and
                         (not regexp_contains(lower(cbo_datasus.descricao),'tecnico'))
                     )
-                    then 'ENFERMEIROS'  
+                    then 'ENFERMEIROS' 
+                when cbo_datasus.descricao in ('Dirigente do servico publico municipal',
+                'Diretor de servicos de saude','Gerente de servicos de saude')
+                    then 'DIRETORES DE SAUDE' 
                 else
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
@@ -101,7 +104,8 @@ with
             -- Critérios de Lançamento
             funcao_grupo in (
                 'MEDICOS',
-                'ENFERMEIROS'
+                'ENFERMEIROS',
+                'DIRETORES DE SAUDE'
             )
     ),
     -- -----------------------------------------
@@ -132,26 +136,18 @@ with
         upper(nome_completo) as nome_completo,
         struct(
             case
-                when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
+                when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')
                 then 'full_permission'
-                when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
-                then 'full_permission'
-                when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
-                then 'only_from_same_cnes'
-                when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
+                when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
                 then 'only_from_same_cnes'
                 when (unidade_tipo in ('CGS'))
                 then 'only_from_same_ap'
                 ELSE null
             end as nivel_acesso_descricao,
             CASE
-                when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
+                when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')
                 then 4
-                when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')) 
-                then 4
-                when (funcao_grupo = 'MEDICOS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
-                then 2
-                when (funcao_grupo = 'ENFERMEIROS' and unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE'))
+                when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
                 then 2
                 when (unidade_tipo in ('CGS'))
                 then 3

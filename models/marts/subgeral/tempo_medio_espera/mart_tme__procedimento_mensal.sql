@@ -3,7 +3,7 @@
     config(
         enabled=true,
         schema="projeto_sisreg_tme",
-        alias="procedimento_mensal",
+        alias="tme_procedimento",
         materialized="table",
     )
 }}  -- Implementar particionamento
