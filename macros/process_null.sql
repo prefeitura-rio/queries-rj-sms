@@ -6,19 +6,25 @@
                     nullif(
                         nullif(
                             nullif(
-                                nullif(nullif(nullif({{ texto }}, 'null'), 'None'), ''),
-                                'NaT'
+                                nullif(
+                                    nullif(
+                                        nullif(nullif(nullif({{ texto }}, 'null'), 'None'), ''),
+                                        'NaT'
+                                    ),
+                                    'nan'
+                                ),
+                                'Null'
                             ),
-                            'nan'
+                            'NULL'
                         ),
-                        'Null'
+                        'NONE'
                     ),
-                    'NULL'
+                    'none'
                 ),
-                'NONE'
+                'nat'
             ),
-            'none'
+            'NA'
         ),
-        'nat'
+        'na'
     )
 {% endmacro %}
