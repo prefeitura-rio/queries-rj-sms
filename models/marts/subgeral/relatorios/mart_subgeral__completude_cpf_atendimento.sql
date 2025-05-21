@@ -3,6 +3,7 @@
         enabled=true,
         schema="projeto_subgeral",
         alias="completude_cpf_atendimentos",
+        tags=["subgeral_relatorios"]
     )
 }}
 

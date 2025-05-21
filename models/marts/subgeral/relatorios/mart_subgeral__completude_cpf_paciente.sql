@@ -3,6 +3,7 @@
         enabled=true,
         schema="projeto_subgeral",
         alias="completude_cpf_pacientes",
+        tags=["subgeral_relatorios"]
     )
 }}
 
@@ -34,29 +35,19 @@ with
     pacientes_atendidos_vitacare as (
         select
             distinct 
+            date_trunc(safe_cast(ate.datahora_fim as date), month) as mes_referencia,
             ate.cpf as id_paciente,
             ate.cpf as cpf_paciente,
-            date_trunc(safe_cast(ate.datahora_fim as date), month) as mes_referencia
+            'vitacare' as fornecedor
         from {{ref("raw_prontuario_vitacare__atendimento")}} ate
         where ate.datahora_fim <= current_date()
-    ),
-    -- Enriquecendo com CPF do Paciente
-    pacientes_enriquecidos_vitacare as (
-        select
-            mes_referencia,
-            id_paciente,
-            cpf_paciente,
-            'vitacare' as fornecedor
-        from pacientes_atendidos_vitacare
-            left join {{ref("raw_prontuario_vitacare__paciente")}} pac 
-                on pac.cpf = pacientes_atendidos_vitacare.id_paciente
     ),
 
     -- Consolidando Listagem
     consolidado as (
         select * from pacientes_enriquecidos_vitai
         union all
-        select * from pacientes_enriquecidos_vitacare
+        select * from pacientes_atendidos_vitacare
     ),
     avaliados as (
         select
