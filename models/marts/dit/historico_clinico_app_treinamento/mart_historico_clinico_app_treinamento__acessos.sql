@@ -24,7 +24,7 @@ with
   -- -----------------------------------------
   calculando_permissoes as (
     SELECT
-      * except(nivel_de_acesso),
+      * except(acesso),
       'full_permission' as nivel_acesso
     from acessos_manual
   ),

@@ -62,7 +62,7 @@ select
     safe_cast(paisnascimento as string) as pais_nascimento,
     safe_cast(bairro as string) as bairro,
     safe_cast(dtobito as date format "YYYY-MM-DD") as data_obito,
-    safe_cast(numero_prontuario as string) as numero_prontuario,
+    REGEXP_REPLACE(numero_prontuario, r'\.0$', '') as numero_prontuario,
     safe_cast(nome as string) as nome,
     safe_cast(cliente as string) as cliente,
     timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
