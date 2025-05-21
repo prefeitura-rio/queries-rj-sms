@@ -6,3 +6,8 @@ sources:
     schema: brutos_sih_staging
     tables:
       - name: indicadores_hospitalares
+      - name: sih_2008_2011
+      - name: sih_2012 
+      - name: sih_2012_2014
+      - name: sih_2015_2023
+      - name: sih_2024

@@ -8,7 +8,7 @@
 
 with
     sih_2008_2024 as (
-        SELECT 
+        select
             *, 
             null as AH_PACIENTE_TEL_DDD,
             null as AH_PACIENTE_TEL_NUM,
@@ -48,8 +48,10 @@ with
             null as AH_STATUS_PR6,
             null as AH_STATUS_PR7,
             null as AH_PACIENTE_NUMERO_CPF,
-            null as AH_ST_DUPLICIDADE_CPF
-        from `rj-sms.brutos_sih_staging.sih_2008_2011`
+            null as AH_ST_DUPLICIDADE_CPF,
+            null as AH_ST_INTERNACAO_CONCOM,
+            null as AH_ST_INTERNACAO_CONCOM_BDNAIH,
+        from {{ source("brutos_sih_staging", "sih_2008_2011") }}
 
         union all
         -- SIH 2012
@@ -90,7 +92,42 @@ with
             null as AH_STATUS_PR7,
             null as AH_PACIENTE_NUMERO_CPF,
             null as AH_ST_DUPLICIDADE_CPF
-        from `rj-sms.brutos_sih_staging.sih_2012`
+        from {{ source("brutos_sih_staging", "sih_2012") }}
+
+        union all
+        
+        select 
+            *,
+            null as AH_DIAG_SEC_1,
+            null as AH_DIAG_SEC_1_CLASS,
+            null as AH_DIAG_SEC_2,
+            null as AH_DIAG_SEC_2_CLASS,
+            null as AH_DIAG_SEC_3,
+            null as AH_DIAG_SEC_3_CLASS,
+            null as AH_DIAG_SEC_4,
+            null as AH_DIAG_SEC_4_CLASS,
+            null as AH_DIAG_SEC_5,
+            null as AH_DIAG_SEC_5_CLASS,
+            null as AH_DIAG_SEC_6,
+            null as AH_DIAG_SEC_6_CLASS,
+            null as AH_DIAG_SEC_7,
+            null as AH_DIAG_SEC_7_CLASS,
+            null as AH_DIAG_SEC_8,
+            null as AH_DIAG_SEC_8_CLASS,
+            null as AH_DIAG_SEC_9,
+            null as AH_DIAG_SEC_9_CLASS,
+            null as AH_PACIENTE_DADOS_VALIDADOS_CNS,
+            null as AH_ST_INTERNACAO_CONCOM,
+            null as AH_ST_INTERNACAO_CONCOM_BDNAIH,
+            null as AH_STATUS_PR2,
+            null as AH_STATUS_PR3,
+            null as AH_STATUS_PR4,
+            null as AH_STATUS_PR5,
+            null as AH_STATUS_PR6,
+            null as AH_STATUS_PR7,
+            null as AH_PACIENTE_NUMERO_CPF,
+            null as AH_ST_DUPLICIDADE_CPF
+        from {{ source("brutos_sih_staging", "sih_2012_2014")}}
 
         union all
         
@@ -99,11 +136,11 @@ with
             *,
             null as AH_PACIENTE_NUMERO_CPF,
             null as AH_ST_DUPLICIDADE_CPF
-        from `rj-sms.brutos_sih_staging.sih_2015_2023`
+        from {{ source("brutos_sih_staging", "sih_2015_2023") }}
 
         union all
             -- SIH 2024
-        select * from `rj-sms.brutos_sih_staging.sih_2024`
+        select * from {{ source("brutos_sih_staging", "sih_2024") }}
     ),
 
     renomeado as (
@@ -245,7 +282,6 @@ with
         from sih_2008_2024
     )
 
--- Retirando registro com nome das colunas na tabela
 select * from renomeado
 
 
