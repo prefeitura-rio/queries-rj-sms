@@ -1099,6 +1099,10 @@ models:
       Tabela contendo informações processadas a partir de eventos de pacientes,
       incluindo dados cadastrais e informações associadas.
     columns:
+      - name: id
+        description: Identificador global criado para cada paciente a partir da junção do id_cnes e do id_paciente_vitacare.
+        policy_tags:
+          - '{{ var("TAG_IDENTIDADE") }}'
       - name: cpf
         description: CPF do paciente.
         policy_tags:
@@ -1110,6 +1114,8 @@ models:
         description: Identificador único do paciente utilizado para ligar tabelas no datalake.
       - name: id_paciente_vitacare
         description: Identificador único do paciente no sistema.
+        policy_tags:
+          - '{{ var("TAG_IDENTIDADE") }}'
         data_tests:
           - not_null:
               name: mart_prontuario_vitacare__ficha_a__id_paciente__not_null
