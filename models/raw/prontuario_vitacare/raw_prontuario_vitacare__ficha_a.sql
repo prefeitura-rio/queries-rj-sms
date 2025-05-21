@@ -13,6 +13,9 @@ with
         union all
         select *, 'historico' as tipo,
         from {{ ref("base_prontuario_vitacare__ficha_a_historico") }}
+        union all 
+        select *, 'continuo' as tipo,
+        from {{ ref("base_prontuario_vitacare__ficha_a_continuo") }}
     ),
     -- -----------------------------------------------------
     -- Padronização
@@ -28,8 +31,8 @@ with
                 )
             }} as id_paciente,
             REGEXP_REPLACE(CAST(id_paciente AS STRING), '\x00', '') AS id_paciente_vitacare,
-            numero_prontuario,
-            safe_cast(unidade_cadastro as string) as unidade_cadastro,
+            {{process_null('numero_prontuario')}} as numero_prontuario,
+            safe_cast({{ process_null('unidade_cadastro') }} as string) as unidade_cadastro,
             regexp_replace(ap_cadastro,r'\.0','') as ap_cadastro,
             {{ proper_br('nome') }} as nome,
             case 
@@ -86,8 +89,8 @@ with
                 else religiao
             end as religiao,
             {{ padronize_telefone('telefone') }} as telefone,
-            safe_cast(ine_equipe as string) as ine_equipe,
-            safe_cast(microarea as string) as microarea,
+            safe_cast({{ process_null('ine_equipe') }} as string) as ine_equipe,
+            safe_cast({{ process_null('microarea') }} as string) as microarea,
             nullif(regexp_replace(regexp_replace(logradouro,'^0.*$',''),'null',''),'') as logradouro,
             case 
                 when lower(nome_social) in ('sem informacao','fora do territorio',
@@ -104,7 +107,7 @@ with
                 when luz_eletrica in ('0','False') then false 
                 else null
             end as luz_eletrica,
-            safe_cast(codigo_equipe as string) as codigo_equipe,
+            safe_cast({{ process_null('codigo_equipe') }} as string) as codigo_equipe,
             timestamp_add(timestamp(data_cadastro, "America/Sao_Paulo"),interval 3 hour) as data_cadastro,
             case 
                 when lower(escolaridade) not in ('médio completo','fundamental incompleto',
@@ -116,7 +119,7 @@ with
             regexp_replace(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(lower(tempo_moradia),r'^\+ de','mais de '),
+                        regexp_replace(lower({{ process_null('tempo_moradia') }}),r'^\+ de','mais de '),
                         r'^\+','mais de '
                     ),
                     ' {2,}',
@@ -159,7 +162,7 @@ with
             split(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(trim(meios_transporte),r'[\[|\]|"]',''),
+                        regexp_replace(trim({{ process_null('meios_transporte') }}),r'[\[|\]|"]',''),
                         r"[\']",
                         ''
                     ),
@@ -168,11 +171,11 @@ with
                 ),
                 ','
             ) as meios_transporte,
-            safe_cast(situacao_usuario as string) as situacao_usuario,
+            safe_cast({{ process_null('situacao_usuario') }} as string) as situacao_usuario,
             split(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(trim(doencas_condicoes),r'[\[|\]|"]',''),
+                        regexp_replace(trim({{process_null('doencas_condicoes')}}),r'[\[|\]|"]',''),
                         r"[\']",
                         ''
                     ),
@@ -191,7 +194,7 @@ with
             split(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(trim(meios_comunicacao),r'[\[|\]|"]',''),
+                        regexp_replace(trim({{ process_null('meios_comunicacao') }}),r'[\[|\]|"]',''),
                         r"[\']",
                         ''
                     ),
@@ -251,7 +254,7 @@ with
             split(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(trim(em_caso_doenca_procura),r'[\[|\]|"]',''),
+                        regexp_replace(trim({{process_null('em_caso_doenca_procura')}}),r'[\[|\]|"]',''),
                         "[\']",
                         ''
                     ),
@@ -307,7 +310,12 @@ with
                 when familia_beneficiaria_cfc in ('0','False') then false 
                 else null
             end as familia_beneficiaria_cfc,
-            timestamp_add(timestamp(data_atualizacao_cadastro, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_cadastro,
+            case 
+                when data_atualizacao_cadastro = ''
+                    then null
+                else
+                    timestamp_add(timestamp(data_atualizacao_cadastro, "America/Sao_Paulo"),interval 3 hour)
+            end as data_atualizacao_cadastro,
             case 
                 when participa_grupo_comunitario in ('1','True') then true
                 when participa_grupo_comunitario in ('0','False') then false 
@@ -323,7 +331,12 @@ with
                 when membro_comunidade_tradicional in ('0','False') then false 
                 else null
             end as membro_comunidade_tradicional,
-            timestamp_add(timestamp(data_atualizacao_vinculo_equipe, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_vinculo_equipe,
+            case 
+                when data_atualizacao_vinculo_equipe = ''
+                    then null
+                else
+                    timestamp_add(timestamp(data_atualizacao_vinculo_equipe, "America/Sao_Paulo"),interval 3 hour)
+            end as data_atualizacao_vinculo_equipe,
             case 
                 when familia_beneficiaria_auxilio_brasil in ('1','True') then true
                 when familia_beneficiaria_auxilio_brasil in ('0','False') then false

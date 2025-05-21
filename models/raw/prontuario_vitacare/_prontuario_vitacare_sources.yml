@@ -21,6 +21,12 @@ sources:
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
+      - name: ficha_a_continuo
+        loaded_at_field: "CAST(source_updated_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 4, period: hour}
+          error_after: {count: 24, period: hour}
+      
 
       # Eventos
       - name: atendimento_eventos_cloned
