@@ -89,8 +89,8 @@ with
                 else religiao
             end as religiao,
             {{ padronize_telefone('telefone') }} as telefone,
-            safe_cast({{ process_null('ine_equipe') }} as string) as ine_equipe,
-            safe_cast({{ process_null('microarea') }} as string) as microarea,
+            safe_cast(ine_equipe as string) as ine_equipe,
+            safe_cast(microarea as string) as microarea,
             nullif(regexp_replace(regexp_replace(logradouro,'^0.*$',''),'null',''),'') as logradouro,
             case 
                 when lower(nome_social) in ('sem informacao','fora do territorio',
@@ -107,7 +107,7 @@ with
                 when luz_eletrica in ('0','False') then false 
                 else null
             end as luz_eletrica,
-            safe_cast({{ process_null('codigo_equipe') }} as string) as codigo_equipe,
+            safe_cast(codigo_equipe as string) as codigo_equipe,
             timestamp_add(timestamp(data_cadastro, "America/Sao_Paulo"),interval 3 hour) as data_cadastro,
             case 
                 when lower(escolaridade) not in ('médio completo','fundamental incompleto',
@@ -119,7 +119,7 @@ with
             regexp_replace(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(lower({{ process_null('tempo_moradia') }}),r'^\+ de','mais de '),
+                        regexp_replace(lower(tempo_moradia),r'^\+ de','mais de '),
                         r'^\+','mais de '
                     ),
                     ' {2,}',
@@ -162,7 +162,7 @@ with
             split(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(trim({{ process_null('meios_transporte') }}),r'[\[|\]|"]',''),
+                        regexp_replace(trim(meios_transporte),r'[\[|\]|"]',''),
                         r"[\']",
                         ''
                     ),
@@ -171,11 +171,11 @@ with
                 ),
                 ','
             ) as meios_transporte,
-            safe_cast({{ process_null('situacao_usuario') }} as string) as situacao_usuario,
+            safe_cast(situacao_usuario as string) as situacao_usuario,
             split(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(trim({{process_null('doencas_condicoes')}}),r'[\[|\]|"]',''),
+                        regexp_replace(trim(doencas_condicoes),r'[\[|\]|"]',''),
                         r"[\']",
                         ''
                     ),
@@ -194,7 +194,7 @@ with
             split(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(trim({{ process_null('meios_comunicacao') }}),r'[\[|\]|"]',''),
+                        regexp_replace(trim(meios_comunicacao),r'[\[|\]|"]',''),
                         r"[\']",
                         ''
                     ),
@@ -254,7 +254,7 @@ with
             split(
                 regexp_replace(
                     regexp_replace(
-                        regexp_replace(trim({{process_null('em_caso_doenca_procura')}}),r'[\[|\]|"]',''),
+                        regexp_replace(trim(em_caso_doenca_procura),r'[\[|\]|"]',''),
                         "[\']",
                         ''
                     ),
