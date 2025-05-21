@@ -35,7 +35,7 @@ with
             JSON_EXTRACT_SCALAR(data, '$.id') AS id_paciente,
             nullif(JSON_EXTRACT_SCALAR(data, '$.nPront'), '') AS numero_prontuario,
 
-            JSON_EXTRACT_SCALAR(data, '$.cnes') AS unidade_cadastro,
+            nullif(JSON_EXTRACT_SCALAR(data, '$.cnes'), '') AS unidade_cadastro,
             nullif(JSON_EXTRACT_SCALAR(data, '$.ap'), '') AS ap_cadastro,
 
             JSON_EXTRACT_SCALAR(data, '$.nome') AS nome,
