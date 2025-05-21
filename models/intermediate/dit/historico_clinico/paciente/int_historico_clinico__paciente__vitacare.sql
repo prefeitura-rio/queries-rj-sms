@@ -218,6 +218,7 @@ with
                     ef.datahora_ultima_atualizacao,
                     ef.rank
                 )
+                order by ef.rank asc
             ) as equipe_saude_familia
         from equipe_saude_familia_enriquecida ef
         left join dim_clinica_familia cf on ef.cpf = cf.cpf and ef.id_cnes = cf.id_cnes
