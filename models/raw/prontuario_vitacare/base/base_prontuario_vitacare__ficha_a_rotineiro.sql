@@ -28,6 +28,9 @@ with
     -- -----------------------------------------------------
     dados_ficha_a as (
         select
+            -- PK
+            cast(id as string) as id,
+            
             safe_cast(nullif(patient_cpf, '') as string) as cpf,
             id as id_paciente,
             data__nPront as numero_prontuario,

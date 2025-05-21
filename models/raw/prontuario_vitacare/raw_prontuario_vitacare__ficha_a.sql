@@ -22,6 +22,7 @@ with
     -- -----------------------------------------------------
     ficha_a_padronizada as (
         select 
+            id, 
             safe_cast(cpf as string) as cpf,
             {{
             dbt_utils.generate_surrogate_key(

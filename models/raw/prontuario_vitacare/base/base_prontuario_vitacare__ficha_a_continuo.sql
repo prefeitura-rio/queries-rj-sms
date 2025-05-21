@@ -31,6 +31,9 @@ with
 
     ficha_a_continuo as (
         select
+            -- PK
+            cast(id as string) as id,
+            
             nullif(JSON_EXTRACT_SCALAR(data, '$.cpf'), '') AS cpf,
             nullif(JSON_EXTRACT_SCALAR(data, '$.id'), '') AS id_paciente,
             nullif(JSON_EXTRACT_SCALAR(data, '$.nPront'), '') AS numero_prontuario,
