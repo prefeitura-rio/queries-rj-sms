@@ -110,7 +110,7 @@ with
                 when lower(escolaridade) not in ('médio completo','fundamental incompleto',
                 'fundamental completo','alfabetizado','médio incompleto','superior completo',
                 'superior incompleto','especialização/residência','mestrado','doutorado',
-                '4º ano/3ª série') then null
+                '4º ano/3ª série', 'não sabe ler/escrever') then null
                 else escolaridade
             end as escolaridade,
             regexp_replace(
