@@ -41,6 +41,8 @@ with
             null as AH_DIAG_SEC_9,
             null as AH_DIAG_SEC_9_CLASS,
             null as AH_PACIENTE_DADOS_VALIDADOS_CNS,
+            null as AH_ST_INTERNACAO_CONCOM,
+            null as AH_ST_INTERNACAO_CONCOM_BDNAIH,
             null as AH_STATUS_PR2,
             null as AH_STATUS_PR3,
             null as AH_STATUS_PR4,
@@ -49,8 +51,6 @@ with
             null as AH_STATUS_PR7,
             null as AH_PACIENTE_NUMERO_CPF,
             null as AH_ST_DUPLICIDADE_CPF,
-            null as AH_ST_INTERNACAO_CONCOM,
-            null as AH_ST_INTERNACAO_CONCOM_BDNAIH,
         from {{ source("brutos_sih_staging", "sih_2008_2011") }}
 
         union all
@@ -95,7 +95,7 @@ with
         from {{ source("brutos_sih_staging", "sih_2012") }}
 
         union all
-        
+        -- SIH 2012 2014
         select 
             *,
             null as AH_DIAG_SEC_1,
@@ -148,7 +148,13 @@ with
             {{ process_null('AH_CNES') }} as id_cnes,
             substr({{ process_null('AH_CMPT') }}, 1, 4) AS ano_cmpt,
             substr({{ process_null('AH_CMPT') }}, 5, 6) AS mes_cmpt,
-            {{ process_null_sih('AH_PACIENTE_NUMERO_CPF') }} as paciente_cpf,
+            case 
+                when ah_paciente_numero_cpf = "0"
+                    then null
+                when ah_paciente_numero_cpf = "00000000000"
+                    then null
+                else {{ process_null('AH_PACIENTE_NUMERO_CPF') }}
+            end as paciente_cpf,
             {{ process_null('AH_PRONTUARIO') }} as numero_prontuario,
             {{ process_null('AH_PACIENTE_NOME') }} as paciente_nome,
             case
@@ -174,7 +180,6 @@ with
             {{ process_null('AH_PACIENTE_LOGR_MUNICIPIO') }} as paciente_municipio,
             {{ process_null('AH_PACIENTE_LOGR_UF') }} as paciente_uf,
             {{ process_null('AH_PACIENTE_LOGR_CEP') }} as paciente_cep,
-
             {{ process_null('AH_PACIENTE_ETNIA') }} as paciente_etnia,
             {{ process_null('AH_PACIENTE_TEL_DDD') }} as paciente_tel_ddd,
             {{ process_null('AH_PACIENTE_TEL_NUM') }} as paciente_tel_num,
@@ -184,9 +189,9 @@ with
             {{ process_null('AH_LOTE_APRES') }} as lote_apres,
             replace({{ process_null('AH_IDENT') }}, "0", "") as aih_identificador,
             {{ process_null('AH_ESPECIALIDADE') }} as especialidade,
-            {{ process_null_sih('AH_NUM_AIH') }} as num_aih,
-            {{ process_null_sih('AH_NUM_AIH_PROX') }} as num_aih_prox,
-            {{ process_null_sih('AH_NUM_AIH_ANT') }} as num_aih_ant,
+            {{ process_null('AH_NUM_AIH') }} as num_aih,
+            {{ process_null('AH_NUM_AIH_PROX') }} as num_aih_prox,
+            {{ process_null('AH_NUM_AIH_ANT') }} as num_aih_ant,
             {{ process_null('AH_SEQ_AIH5') }} as seq_aih5,
             {{ process_null('AH_OE_AIH') }} as orgao_emissor_aih,
             {{ process_null('AH_OE_GESTOR') }} as orgao_emissor_gestor,
@@ -214,35 +219,61 @@ with
             {{ process_null('AH_MODALIDADE_INTERNACAO') }} as internacao_modalidade,
             {{ process_null('AH_MOT_SAIDA') }} as motivo_saida,
             {{ process_null('AH_MED_SOL_IDENT') }} as med_sol_ident,
-            {{ process_null_sih('AH_MED_SOL_DOC') }} as med_sol_doc,
+            if(ah_med_sol_doc = '0', null, {{ process_null('AH_MED_SOL_DOC') }} ) as med_sol_doc,
             {{ process_null('AH_MED_RESP_IDENT') }} as med_resp_ident,
-            {{ process_null_sih('AH_MED_RESP_DOC') }} as med_resp_doc,
+            if(ah_med_resp_doc = '0', null, {{ process_null('AH_MED_RESP_DOC') }} ) as med_resp_doc,
             {{ process_null('AH_DIR_CLINICO_IDENT') }} as dir_clinico_ident,
-            {{ process_null_sih('AH_DIR_CLINICO_DOC') }} as dir_clinico_doc,
+            if(ah_dir_clinico_doc = '0', null, {{ process_null('AH_DIR_CLINICO_DOC') }} ) as dir_clinico_doc,
             {{ process_null('AH_AUTORIZADOR_IDENT') }} as autorizador_ident,
-            {{ process_null_sih('AH_AUTORIZADOR_DOC') }} as autorizador_doc,
+            {{ process_null('AH_AUTORIZADOR_DOC') }} as autorizador_doc,
             {{ process_null('AH_DIAG_PRI') }} as diag_principal,
             {{ process_null('AH_DIAG_SEC') }} as diag_secundario,
             {{ process_null('AH_DIAG_COMP') }} as diagnostico_comp,
             {{ process_null('AH_DIAG_OBITO') }} as diag_obito,
-            {{ process_null_sih('AH_ENFERMARIA') }} as enfermaria,
-            {{ process_null_sih('AH_LEITO') }} as leito_numero,
+            {{ process_null('AH_ENFERMARIA') }} as enfermaria,
+            {{ process_null('AH_LEITO') }} as leito_numero,
             {{ process_null('AH_UTINEO_MOT_SAIDA') }} as utineo_motivo_saida,
             {{ process_null('AH_UTINEO_PESO') }} as utineo_peso,
             {{ process_null('AH_UTINEO_MESES_GESTACAO') }} as utineo_meses_gestacao,
-            {{ process_null_sih('AH_ACDTRAB_CNPJ_EMP') }} as cnpj_empregador,
-            {{ process_null_sih('AH_ACDTRAB_CBOR') }} as id_cbo,
-            {{ process_null_sih('AH_ACDTRAB_CNAER') }} as id_cnaer,
+            case 
+                when AH_ACDTRAB_CNPJ_EMP = '00000000000000'
+                    then null
+                when AH_ACDTRAB_CNPJ_EMP = '0'
+                    then null
+                else {{ process_null('AH_ACDTRAB_CNPJ_EMP') }}
+            end as cnpj_empregador,
+            case
+                when AH_ACDTRAB_CBOR = '000000'
+                    then null
+                when AH_ACDTRAB_CBOR = '0'
+                    then null
+                else {{ process_null('AH_ACDTRAB_CBOR') }}
+            end as id_cbo,
+            case 
+                when AH_ACDTRAB_CNAER = '000'
+                    then null
+                when AH_ACDTRAB_CNAER = '0'
+                    then null
+                else {{ process_null('AH_ACDTRAB_CNAER') }}
+            end as id_cnaer,
             {{ process_null('AH_ACDTRAB_VINC_PREV') }} as indicador_vinculo_previdencia,
             {{ process_null('AH_PARTO_QTD_NASC_VIVOS') }} as parto_nasc_vivos,
             {{ process_null('AH_PARTO_QTD_NASC_MORTOS') }} as parto_nasc_mortos,
             {{ process_null('AH_PARTO_QTD_ALTA') }} as parto_nasc_alta,
             {{ process_null('AH_PARTO_QTD_TRAN') }} as parto_transferidos,
             {{ process_null('AH_PARTO_QTD_OBITO') }} as parto_obito,
-            {{ process_null_sih('AH_PARTO_NUM_PRENATAL') }} as parto_id_prenatal,
+            case
+                when AH_PARTO_NUM_PRENATAL = '00000000000'
+                    then null
+                when REGEXP_CONTAINS(AH_PARTO_NUM_PRENATAL, r'^0{10}[,\.]*$')
+                    then null
+                when AH_PARTO_NUM_PRENATAL = '0'
+                    then null
+                else {{ process_null('AH_PARTO_NUM_PRENATAL') }}
+            end as parto_id_prenatal,
             {{ process_null('AH_LAQVAS_QTD_FILHOS') }} as laqvas_filhos,
             {{ process_null('AH_LAQVAS_GRAU_INSTRUC') }} as laqvas_grau_instruc,
-            {{ process_null_sih('AH_LAQVAS_CID_INDICACAO') }} as laqvas_cid_indicacao,
+            if(AH_LAQVAS_CID_INDICACAO = '    ', null, {{ process_null('AH_LAQVAS_CID_INDICACAO')}}) as laqvas_cid_indicacao,
             {{ process_null('AH_LAQVAS_MET_CONTRACEP1') }} as laqvas_met_contracep1,
             {{ process_null('AH_LAQVAS_MET_CONTRACEP2') }} as laqvas_met_contracep2,
             if(ah_laqvas_gestacao_risco = "0", true, false) as laqvas_gestacao_risco_indicador,
