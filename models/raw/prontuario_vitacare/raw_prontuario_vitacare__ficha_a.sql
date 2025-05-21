@@ -13,12 +13,16 @@ with
         union all
         select *, 'historico' as tipo,
         from {{ ref("base_prontuario_vitacare__ficha_a_historico") }}
+        union all 
+        select *, 'continuo' as tipo,
+        from {{ ref("base_prontuario_vitacare__ficha_a_continuo") }}
     ),
     -- -----------------------------------------------------
     -- Padronização
     -- -----------------------------------------------------
     ficha_a_padronizada as (
         select 
+            id, 
             safe_cast(cpf as string) as cpf,
             {{
             dbt_utils.generate_surrogate_key(
@@ -28,8 +32,8 @@ with
                 )
             }} as id_paciente,
             REGEXP_REPLACE(CAST(id_paciente AS STRING), '\x00', '') AS id_paciente_vitacare,
-            numero_prontuario,
-            safe_cast(unidade_cadastro as string) as unidade_cadastro,
+            {{process_null('numero_prontuario')}} as numero_prontuario,
+            safe_cast({{ process_null('unidade_cadastro') }} as string) as unidade_cadastro,
             regexp_replace(ap_cadastro,r'\.0','') as ap_cadastro,
             {{ proper_br('nome') }} as nome,
             case 
@@ -307,7 +311,12 @@ with
                 when familia_beneficiaria_cfc in ('0','False') then false 
                 else null
             end as familia_beneficiaria_cfc,
-            timestamp_add(timestamp(data_atualizacao_cadastro, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_cadastro,
+            case 
+                when data_atualizacao_cadastro = ''
+                    then null
+                else
+                    timestamp_add(timestamp(data_atualizacao_cadastro, "America/Sao_Paulo"),interval 3 hour)
+            end as data_atualizacao_cadastro,
             case 
                 when participa_grupo_comunitario in ('1','True') then true
                 when participa_grupo_comunitario in ('0','False') then false 
@@ -323,7 +332,12 @@ with
                 when membro_comunidade_tradicional in ('0','False') then false 
                 else null
             end as membro_comunidade_tradicional,
-            timestamp_add(timestamp(data_atualizacao_vinculo_equipe, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_vinculo_equipe,
+            case 
+                when data_atualizacao_vinculo_equipe = ''
+                    then null
+                else
+                    timestamp_add(timestamp(data_atualizacao_vinculo_equipe, "America/Sao_Paulo"),interval 3 hour)
+            end as data_atualizacao_vinculo_equipe,
             case 
                 when familia_beneficiaria_auxilio_brasil in ('1','True') then true
                 when familia_beneficiaria_auxilio_brasil in ('0','False') then false

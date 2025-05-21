@@ -22,6 +22,9 @@ with
 
     dados_ficha_a as (
         select
+            -- PK
+            cast(id as string) as id,
+            
             safe_cast(nullif(cpf, '') as string) as cpf,
             ut_id as id_paciente,
             npront as numero_prontuario,
