@@ -41,8 +41,6 @@ with
             null as AH_DIAG_SEC_9,
             null as AH_DIAG_SEC_9_CLASS,
             null as AH_PACIENTE_DADOS_VALIDADOS_CNS,
-            null as AH_ST_INTERNACAO_CONCOM,
-            null as AH_ST_INTERNACAO_CONCOM_BDNAIH,
             null as AH_STATUS_PR2,
             null as AH_STATUS_PR3,
             null as AH_STATUS_PR4,
@@ -188,7 +186,7 @@ with
             {{ process_null_sih('AH_AUTORIZADOR_DOC') }} as autorizador_doc,
             {{ process_null('AH_DIAG_PRI') }} as diag_principal,
             {{ process_null('AH_DIAG_SEC') }} as diag_secundario,
-            {{ process_null('AH_DIAG_COMP') }} as diag_comp,
+            {{ process_null('AH_DIAG_COMP') }} as diagnostico_comp,
             {{ process_null('AH_DIAG_OBITO') }} as diag_obito,
             {{ process_null_sih('AH_ENFERMARIA') }} as enfermaria,
             {{ process_null_sih('AH_LEITO') }} as leito_numero,
@@ -232,27 +230,15 @@ with
             {{ process_null('AH_FINANCIAMENTO') }} as financiamento,
             {{ process_null('AH_TIPO_FAEC') }} as faec,
             {{ process_null('AH_CS') }} as codigo_seguranca,
-            {{ process_null('AH_STATUS_PR') }} as status_pr,
-            {{ process_null('AH_CRC') }} as crc,
             {{ process_null('AH_AUDIT_SISAIH01_JUST') }} as audit_sisaih01_just,
-            {{ process_null('AH_STATUS_PR1') }} as status_pr1,
-            {{ process_null('AH_ST_MENTAL') }} as st_mental,
             if(ah_st_duplicidade_cns = '1', true, false) as duplicidade_cns,
             {{ process_null('AH_PACIENTE_FONETICO_NOME') }} as paciente_fonetico_nome,
             {{ process_null('AH_PACIENTE_FONETICO_NOME_MAE') }} as paciente_fonetico_nome_mae,
-            {{ process_null('AH_ST_ORTO') }} as st_orto,
-            {{ process_null('AH_ST_NEURO') }} as st_neuro,
-            {{ process_null('AH_ST_ONCO') }} as st_onco,
             {% for i in range(1, 10) %}
                 {{ process_null('AH_DIAG_SEC_' ~ i) }} as diagsec{{ i }},
                 {{ process_null('AH_DIAG_SEC_' ~ i ~ '_CLASS') }} as diagsec{{ i }}_class,
             {% endfor %}
             {{ process_null('AH_PACIENTE_DADOS_VALIDADOS_CNS') }} as paciente_dados_validados_cns,
-            {{ process_null('AH_ST_INTERNACAO_CONCOM') }} as internacao_concom,
-            {{ process_null('AH_ST_INTERNACAO_CONCOM_BDNAIH') }} as internacao_concom_bdna,
-            {% for i in range(2, 8) %}
-                {{ process_null('AH_STATUS_PR' ~ i) }} as status_pr{{ i }},
-            {% endfor %}
             if(ah_st_duplicidade_cpf = '1', true, false) as duplicidade_cpf,
             {{ process_null('ROWNUMBER') }} as rownumber
 

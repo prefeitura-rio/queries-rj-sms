@@ -595,7 +595,7 @@ models:
       - name: proc_solicitado
         description: Código do procedimento solicitado.
       - name: mudanca_proc_indicador
-        description: Indicador de mudança de procedimento, onde 1 = sim. 2 = não.
+        description: Indicador de mudança de procedimento
       - name: proc_realizado
         description: Código do procedimento principal realizado no paciente.
       - name: internacao_carater
@@ -696,12 +696,12 @@ models:
         description: Método contraceptivo.
       - name: laqvas_gestacao_risco_indicador
         description: > 
-          Indicador de que a gestação é de alto risco: 0 = sim, 1 = não.
+          Indicador de que a gestação é de alto risco
       - name: versao_sisaih01
         description: Versão do SISAIH01.
       - name: duplicidade_indicador
         description: >
-          Marca de homônimo, onde: 0 = não, 1 = sim.
+          Marca de homônimo
       - name: bloqueio
         description: Marca de bloqueio.
       - name: agravo
@@ -726,8 +726,7 @@ models:
         description: Código de solicitação de liberação
       - name: into_indicador
         description: >
-          Indicador de que a AIH é do INTO (Instituto de Traumato-Ortopedia), onde:
-          0 = não. 1 = sim.
+          Indicador de que a AIH é do INTO (Instituto de Traumato-Ortopedia)
       - name: contrato
         description: Número do contrato de gestão e metas.
       - name: valorizacao_serv_hosp
@@ -746,7 +745,7 @@ models:
         description: Diárias de unidade intermediária.
       - name: cateterismo_anest_indicador
         description: >
-          Informa utilização de anestesia, onde: 0 = não. 1 = sim.
+          Informa utilização de anestesia
       - name: complexidade
         description: Complexidade do procedimento.
       - name: financiamento
@@ -757,10 +756,6 @@ models:
         description: >
           Código de segurança preenchido pelo sistema
           (calculado) para evitar alteração no registro.
-      - name: status_pr
-        description: Uso reservado ao sistema.
-      - name: crc
-        description: Uso restrito ao sistema.
       - name: paciente_etnia
         description: Etnia do paciente.
       - name: paciente_tel_ddd
@@ -771,20 +766,12 @@ models:
         description: ""
       - name: audit_sisaih01_just
         description: ""
-      - name: st_mental
-        description: Uso reservado ao sistema.
       - name: duplicidade_cns
         description: Indicador de duplicidade do CNS
       - name: paciente_fonetico_nome
         description: Fonética do nome do paciente.
       - name: paciente_fonetico_nome_mae
         description: Fonética do nome da mãe do paciente.
-      - name: st_orto
-        description: Uso reservado ao sistema.
-      - name: st_neuro
-        description: Uso reservado ao sistema.
-      - name: st_onco
-        description: Uso reservado ao sistema.
       - name: diagsec1
         description: Código do diagnóstico secundário.
       - name: diagsec1_class
@@ -850,24 +837,6 @@ models:
           2-ADQUIRIDO
       - name: paciente_dados_validados_cns
         description: ""
-      - name: internacao_concom
-        description: ""
-      - name: internacao_concom_bdna
-        description: ""
-      - name: status_pr1
-        description: Uso restrito ao sistema.
-      - name: status_pr2
-        description: Uso restrito ao sistema.
-      - name: status_pr3
-        description: Uso restrito ao sistema.
-      - name: status_pr4
-        description: Uso restrito ao sistema.
-      - name: status_pr5
-        description: Uso restrito ao sistema.
-      - name: status_pr6
-        description: Uso restrito ao sistema.
-      - name: status_pr7
-        description: Uso restrito ao sistema.
       - name: duplicidade_cpf
         description: "Indicador de duplicidade do CPF"
       - name: rownumber
