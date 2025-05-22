@@ -109,41 +109,37 @@ with
             )
     ),
     -- -----------------------------------------
-    -- Adicionando Nível de Acesso
+    -- Agrupando vinculos de profissionais
     -- -----------------------------------------
-    funcionarios_nivel_acesso as (
-    select
-        cpf,
-        upper(nome_completo) as nome_completo,
-        unidade_nome,
-        unidade_tipo,
-        unidade_cnes,
-        unidade_ap,
-        funcao_detalhada,
-        funcao_grupo,
-        struct(
-            case
-                when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')
-                then 'full_permission'
-                when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
-                then 'only_from_same_cnes'
-                when (unidade_tipo in ('CGS'))
-                then 'only_from_same_ap'
-                ELSE null
-            end as nivel_acesso_descricao,
-            CASE
-                when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')
-                then 4
-                when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
-                then 2
-                when (unidade_tipo in ('CGS'))
-                then 3
-                else null
-            end as nivel_acesso_rank
-        ) as acesso
-    from funcionarios_ativos_enriquecido_autorizados
+    funcionario_vinculos as (
+        select 
+            cpf,
+            nome_completo,
+            array_agg(
+                struct(
+                    unidade_nome,
+                    unidade_tipo,
+                    unidade_cnes,
+                    unidade_ap,
+                    funcao_detalhada,
+                    funcao_grupo,
+                    case
+                        when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')
+                        then 'full_permission'
+                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
+                        then 'only_from_same_cnes'
+                        when (unidade_tipo in ('CGS'))
+                        then 'only_from_same_ap'
+                        ELSE null
+                    end as nivel_acesso
+                )
+            ) as vinculos 
+        from funcionarios_ativos_enriquecido_autorizados
+        group by 1,2
     )
 
-    select * 
-    from funcionarios_nivel_acesso 
-    qualify row_number() over (partition by cpf order by acesso.nivel_acesso_rank desc) = 1
+    select 
+        cpf,
+        nome_completo,
+        {{ dedup_array_of_struct('vinculos')}} as vinculos
+    from funcionario_vinculos
