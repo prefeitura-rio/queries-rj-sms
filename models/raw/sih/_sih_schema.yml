@@ -217,7 +217,8 @@ models:
         data_type: string
         quote: true
       - name: nacional
-        description: Código da nacionalidade do paciente.
+        description: > 
+          Código da nacionalidade do paciente (ver TB_C_D TABELA 29).
         data_type: string
         quote: true
       - name: num_proc
@@ -338,7 +339,8 @@ models:
         data_type: string
         quote: true
       - name: raca_cor
-        description: Raça/Cor do paciente.
+        description: >
+          Código da raça/cor do paciente. Vem do CNS.
         data_type: string
         quote: true
       - name: etnia
@@ -482,7 +484,7 @@ models:
     description: Relação de todos os atendimentos provenientes de internações
       hospitalares que foram financiados pelo SUS.
 
-  - name: raw_sih__sih_2008_2024
+  - name: raw_sih__internacoes_mrj
     columns:
       - name: id_cnes
         description: Código CNES do hospital.
@@ -493,7 +495,7 @@ models:
       - name: mes_cmpt
         description: Mês de processamento da AIH, no formato mm.
       - name: paciente_cpf
-        description: Número do CPF do paciente.
+        description: Número do CPF do paciente. (Em registros antigos pode ser encontrado em paciente_numero_doc)
       - name: numero_prontuario
         description: Número do prontuário do paciente.
       - name: paciente_nome
@@ -525,7 +527,9 @@ models:
       - name: paciente_mun_origem
         description: Código IBGE do município do paciente.
       - name: paciente_tipo_logr
-        description: Tipo de logradouro do paciente.
+        description: >
+          Tipo de logradouro do paciente: rua, praça, avenida etc.
+          (ver TB_C_D tabela 21).
       - name: paciente_logr
         description: Logradouro do paciente.
       - name: paciente_numero
@@ -571,8 +575,8 @@ models:
         description: Número da próxima AIH (para parto).
       - name: num_aih_ant
         description: >
-          Número da AIH anterior (para parto).
-          Quando a paciente é encaminhada para parto, deve ser informado o número da AIH anterior.
+          Número da AIH anterior (para parto). Quando a paciente é encaminhada para parto,
+          deve ser informado o número da AIH anterior.
       - name: seq_aih5
         description: >
           Sequencial da AIH tipo 5 (longa permanência).
@@ -599,7 +603,7 @@ models:
       - name: proc_realizado
         description: Código do procedimento principal realizado no paciente.
       - name: internacao_carater
-        description: Caráter da internação
+        description: Caráter da internação (ver TB_C_D tabela 28).
       - name: internacao_modalidade
         description: >
           Modalidade da internação, onde:
@@ -607,7 +611,7 @@ models:
           03 = hospitalar dia (quando o paciente fica apenas um dia no hospital).
           04 = internação domiciliar.
       - name: motivo_saida
-        description: Motivo da alta do paciente.
+        description: Motivo da alta do paciente (ver TB_C_D tabela 23).
       - name: med_sol_ident
         description: >
           Identificador do tipo de documento do médico solicitante: 1 = CPF, 2 = CNS.
@@ -632,13 +636,13 @@ models:
           2 = CNS.
       - name: autorizador_doc
         description: Número do documento do médico autorizador.
-      - name: diag_principal
+      - name: diagnostico_principal
         description: Código do diagnóstico principal.
-      - name: diag_secundario
+      - name: diagnostico_secundario
         description: Código do diagnóstico secundário.
       - name: diagnostico_comp
         description: ""
-      - name: diag_obito
+      - name: diagnostico_obito
         description: Código do diagnóstico do óbito.
       - name: enfermaria
         description: Número da enfermaria.
@@ -723,7 +727,7 @@ models:
         description: > 
           Número do documento do gestor.Gestor e quem é o responsável pelo processamento da AIH.
       - name: cod_sol_lib
-        description: Código de solicitação de liberação
+        description: Código de solicitação de liberação.
       - name: into_indicador
         description: >
           Indicador de que a AIH é do INTO (Instituto de Traumato-Ortopedia)
@@ -747,9 +751,10 @@ models:
         description: >
           Informa utilização de anestesia
       - name: complexidade
-        description: Complexidade do procedimento.
+        description: Complexidade da internação.
       - name: financiamento
-        description: Tipo de financiamento.
+        description: > 
+          Complexidade da internação.
       - name: faec
         description: Código do tipo de FAEC.
       - name: codigo_seguranca
@@ -757,7 +762,7 @@ models:
           Código de segurança preenchido pelo sistema
           (calculado) para evitar alteração no registro.
       - name: paciente_etnia
-        description: Etnia do paciente.
+        description: Etnia do paciente ver tb_c_d
       - name: paciente_tel_ddd
         description: Código DDD do telefone do paciente. 
       - name: paciente_tel_num
@@ -768,6 +773,8 @@ models:
         description: ""
       - name: duplicidade_cns
         description: Indicador de duplicidade do CNS
+      - name: internacao_concom
+        description: ...
       - name: paciente_fonetico_nome
         description: Fonética do nome do paciente.
       - name: paciente_fonetico_nome_mae
