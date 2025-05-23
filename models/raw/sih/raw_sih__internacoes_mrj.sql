@@ -54,7 +54,6 @@ with
         from {{ source("brutos_sih_staging", "sih_2008_2011") }}
 
         union all
-        -- SIH 2012
         select 
             *,
             null as AH_ST_DUPLICIDADE_CNS,
@@ -95,7 +94,6 @@ with
         from {{ source("brutos_sih_staging", "sih_2012") }}
 
         union all
-        -- SIH 2012 2014
         select 
             *,
             null as AH_DIAG_SEC_1,
@@ -132,14 +130,13 @@ with
         union all
         
         select 
-            -- SIH 2015 a 2023
             *,
             null as AH_PACIENTE_NUMERO_CPF,
             null as AH_ST_DUPLICIDADE_CPF
         from {{ source("brutos_sih_staging", "sih_2015_2023") }}
 
         union all
-            -- SIH 2024
+
         select * from {{ source("brutos_sih_staging", "sih_2024") }}
     ),
 
@@ -149,9 +146,7 @@ with
             substr({{ process_null('AH_CMPT') }}, 1, 4) AS ano_cmpt,
             substr({{ process_null('AH_CMPT') }}, 5, 6) AS mes_cmpt,
             case 
-                when ah_paciente_numero_cpf = "0"
-                    then null
-                when ah_paciente_numero_cpf = "00000000000"
+                when regexp_contains(AH_PACIENTE_NUMERO_CPF, r'^0+$') 
                     then null
                 else {{ process_null('AH_PACIENTE_NUMERO_CPF') }}
             end as paciente_cpf,
@@ -169,11 +164,11 @@ with
                 else null
             end as paciente_ident_doc,
             case 
-                when AH_PACIENTE_NUMERO_DOC like '00000000%' and AH_PACIENTE_IDENT_DOC = '4'
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '4'
                     then substr(AH_PACIENTE_NUMERO_DOC, length(AH_PACIENTE_NUMERO_DOC) - 10)
-                when AH_PACIENTE_NUMERO_DOC like '00000000%' and AH_PACIENTE_IDENT_DOC = '2'
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '2'
                     then substr(AH_PACIENTE_NUMERO_DOC, length(AH_PACIENTE_NUMERO_DOC) - 8)
-                when ah_paciente_numero_doc like " %" or AH_PACIENTE_IDENT_DOC = '5'
+                when ah_paciente_numero_doc like " %" or AH_PACIENTE_IDENT_DOC = '5' -- Documento ignorado
                     then null
                 else {{ process_null('AH_PACIENTE_NUMERO_DOC') }}
             end as paciente_numero_doc,
@@ -190,9 +185,7 @@ with
             {{ process_null('AH_PACIENTE_NOME_RESP') }} as paciente_nome_resp,
             {{ process_null('AH_PACIENTE_NOME_MAE') }} as paciente_nome_mae,
             case 
-                when AH_PACIENTE_NUMERO_CNS like "00000%"
-                    then null
-                when AH_PACIENTE_NUMERO_CNS = '0'
+                when regexp_contains(AH_PACIENTE_NUMERO_CNS, r'^0+$')
                     then null
                 else {{ process_null('AH_PACIENTE_NUMERO_CNS') }}
             end as paciente_cns,
@@ -200,9 +193,9 @@ with
             {{ process_null('AH_PACIENTE_MUN_ORIGEM') }} as paciente_mun_origem,
             {{ process_null('AH_PACIENTE_TIPO_LOGR') }} as paciente_tipo_logr,
             {{ process_null('AH_PACIENTE_LOGR') }} as paciente_logr,
-            {{ process_null('AH_PACIENTE_LOGR_NUMERO') }} as paciente_numero,
+            nullif(trim(AH_PACIENTE_LOGR_NUMERO), '') as paciente_numero,
             nullif(trim(AH_PACIENTE_LOGR_COMPL), '') as paciente_complemento,
-            {{ process_null('AH_PACIENTE_LOGR_BAIRRO') }} as paciente_bairro,
+            nullif(trim(AH_PACIENTE_LOGR_BAIRRO), '') as paciente_bairro,
             {{ process_null('AH_PACIENTE_LOGR_MUNICIPIO') }} as paciente_municipio,
             {{ process_null('AH_PACIENTE_LOGR_UF') }} as paciente_uf,
             {{ process_null('AH_PACIENTE_LOGR_CEP') }} as paciente_cep,
@@ -300,10 +293,21 @@ with
                 else null
             end as autorizador_ident,
             {{ process_null('AH_AUTORIZADOR_DOC') }} as autorizador_doc,
-            if(AH_DIAG_PRI in ("0000", "0"), null, {{ process_null('AH_DIAG_PRI') }}) as diagnostico_principal,
-            if(AH_DIAG_SEC in ("0000", "0"), null, {{ process_null('AH_DIAG_SEC') }}) as diagnostico_secundario,
-            if(AH_DIAG_COMP in ("0000", "0"), null, {{ process_null('AH_DIAG_COMP') }}) as diagnostico_comp,
-            if(AH_DIAG_OBITO in ("0000", "0"), null, {{ process_null('AH_DIAG_OBITO') }}) as diagnostico_obito,
+            case
+                when AH_DIAG_SEC in ("0000", "0") or AH_DIAG_SEC like "%  "
+                    then null
+                else {{process_null('AH_DIAG_SEC')}}
+            end as diagnostico_secundario,
+            case
+                when AH_DIAG_COMP in ("0000", "0") or AH_DIAG_COMP like "%  "
+                    then null
+                else {{process_null('AH_DIAG_COMP')}}
+            end as diagnostico_comp,
+            case
+                when AH_DIAG_COMP in ("0000", "0") or AH_DIAG_COMP like "%  "
+                    then null
+                else {{process_null('AH_DIAG_COMP')}}
+            end as diagnostico_obito,
             {{ process_null('AH_ENFERMARIA') }} as enfermaria,
             {{ process_null('AH_LEITO') }} as leito_numero,
             {{ process_null('AH_UTINEO_MOT_SAIDA') }} as utineo_motivo_saida,
@@ -351,7 +355,7 @@ with
             {{ process_null('AH_PARTO_QTD_TRAN') }} as parto_transferidos,
             {{ process_null('AH_PARTO_QTD_OBITO') }} as parto_obito,
             case
-                when AH_PARTO_NUM_PRENATAL in ('0', '000000000000') or REGEXP_CONTAINS(AH_PARTO_NUM_PRENATAL, r'^0{9}[,\.]*$')
+                when REGEXP_CONTAINS(AH_PARTO_NUM_PRENATAL, r'^0+$') or REGEXP_CONTAINS(AH_PARTO_NUM_PRENATAL, r'^0+$[,\.]*$')
                     then null
                 else {{ process_null('AH_PARTO_NUM_PRENATAL') }}
             end as parto_id_prenatal,
@@ -398,7 +402,7 @@ with
             {{ process_null('AH_COD_SOL_LIB') }} as cod_sol_lib,
             if(ah_st_into = "1", true, false) as into_indicador,
             case
-                when AH_CONTRATO in ("0000", "0")
+                when regexp_contains(AH_CONTRATO, r'^0+$')
                     then null
                 else {{ process_null('AH_CONTRATO') }}
             end as contrato,
@@ -432,7 +436,7 @@ with
         from sih_2008_2024
     )
 
-select * from renomeado
+select distinct * from renomeado
 
 
 
