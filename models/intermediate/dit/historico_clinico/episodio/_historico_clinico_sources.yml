@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: intermediario_historico_clinico_staging
+    database: rj-sms-dev
+    schema: intermediario_historico_clinico_staging
+    tables:
+      - name: pacientes_restritos
