@@ -65,8 +65,8 @@ with
             end as cbo_agrupador,
             data_ultima_atualizacao,
         from {{ ref("raw_cnes_gdb__vinculo") }} as gdb_profissional
-        left join cbo_datasus using (id_cbo)
-        inner join unidades_de_saude using (id_unidade)
+            left join cbo_datasus using (id_cbo)
+                inner join unidades_de_saude using (id_unidade)
     ),
 
     -- -----------------------------------------

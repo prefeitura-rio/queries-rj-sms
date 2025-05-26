@@ -13,10 +13,18 @@
 
 with
   -- -----------------------------------------
-  -- Dados de Acesso: Manual (Sheets) e Automatico (Ergon+CNES)
+  -- Dados de Acesso: Manual (Sheets)
   -- -----------------------------------------
   acessos_manual as (
     select *, 1 as prioridade from {{ ref('int_acessos__manual') }}
+  ),
+
+  -- -----------------------------------------
+  -- Dados de Vinculos
+  -- -----------------------------------------
+  vinculos_manual as (
+    select * except(vinculos)
+    from acessos_manual, unnest(vinculos) as vinculo
   ),
 
   -- -----------------------------------------
@@ -24,24 +32,31 @@ with
   -- -----------------------------------------
   calculando_permissoes as (
     SELECT
-      * except(acesso),
+      * except(nivel_de_acesso),
       'full_permission' as nivel_acesso
-    from acessos_manual
+    from vinculos_manual
   ),
   
   -- -----------------------------------------
-  -- Removendo Duplicados
+  -- Agrupando
   -- -----------------------------------------
-  ranked as (
+  agrupando as (
     select
-      *,
-      row_number() over (partition by cpf order by prioridade desc) as rn
+      cpf,
+      nome_completo,
+      array_agg(
+        struct(
+          unidade_nome,
+          unidade_tipo,
+          unidade_cnes,
+          unidade_ap,
+          funcao_detalhada,
+          funcao_grupo,
+          nivel_acesso
+        )
+      ) as vinculos
     from calculando_permissoes
-  ),
-  deduped as (
-    select * except(rn, prioridade)
-    from ranked
-    where rn = 1
+    group by 1, 2
   ),
 
   -- -----------------------------------------
@@ -51,9 +66,10 @@ with
     select 
       safe_cast(cpf as int64) as cpf_particao,
       *
-    from deduped
+    from agrupando
   )
 
 select *
 from particionado
+
 
