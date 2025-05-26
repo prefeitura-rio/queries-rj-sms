@@ -17,6 +17,7 @@ with
         select *, 'continuo' as tipo,
         from {{ ref("base_prontuario_vitacare__ficha_a_continuo") }}
     ),
+
     -- -----------------------------------------------------
     -- Padronização
     -- -----------------------------------------------------
@@ -353,7 +354,115 @@ with
             tipo
 
         from ficha_a
+    ),
+
+    -- Enriquecimento da tabela com nome da unidade e nome da equipe
+    estabelecimentos as (
+        select 
+            id_cnes,
+            nome_acentuado as unidade_nome
+        from {{ source('saude_dados_mestres', 'estabelecimento') }}
+    ),
+
+    equipe as (
+        select 
+            id_ine,
+            nome_referencia as equipe_nome
+        from {{ source('saude_dados_mestres', 'equipe_profissional_saude') }} 
+    ),
+
+    enriquecimento as (
+        select 
+            B.unidade_nome,
+            C.equipe_nome,
+            A.*
+        from ficha_a_padronizada A
+        left join estabelecimentos B 
+            on A.unidade_cadastro = B.id_cnes
+        left join equipe C
+            on  A.ine_equipe = C.id_ine
+    ),
+
+    -- Alterando a ordem das colunas
+    tabela_formatada as (
+        select 
+            id,
+            cpf,
+            id_paciente,
+            id_paciente_vitacare,
+            numero_prontuario,
+            unidade_cadastro,
+            unidade_nome,
+            ap_cadastro,
+            nome,
+            sexo,
+            obito,
+            bairro,
+            comodos,
+            nome_mae,
+            nome_pai,
+            raca_cor,
+            ocupacao,
+            religiao,
+            telefone,
+            ine_equipe,
+            equipe_nome,
+            microarea,
+            logradouro,
+            nome_social,
+            destino_lixo,
+            luz_eletrica,
+            codigo_equipe,
+            data_cadastro,
+            escolaridade,
+            tempo_moradia,
+            nacionalidade,
+            renda_familiar,
+            tipo_domicilio,
+            data_nascimento,
+            pais_nascimento,
+            tipo_logradouro,
+            tratamento_agua,
+            em_situacao_de_rua,
+            frequenta_escola,
+            meios_transporte,
+            situacao_usuario,
+            doencas_condicoes,
+            estado_nascimento,
+            estado_residencia,
+            identidade_genero,
+            meios_comunicacao,
+            orientacao_sexual,
+            possui_filtro_agua,
+            possui_plano_saude,
+            situacao_familiar,
+            territorio_social,
+            abastecimento_agua,
+            animais_no_domicilio,
+            cadastro_permanente,
+            familia_localizacao,
+            em_caso_doenca_procura,
+            municipio_nascimento,
+            municipio_residencia,
+            responsavel_familiar,
+            esgotamento_sanitario,
+            situacao_moradia_posse,
+            situacao_profissional,
+            vulnerabilidade_social,
+            familia_beneficiaria_cfc,
+            data_atualizacao_cadastro,
+            participa_grupo_comunitario,
+            relacao_responsavel_familiar,
+            membro_comunidade_tradicional,
+            data_atualizacao_vinculo_equipe,
+            familia_beneficiaria_auxilio_brasil,
+            crianca_matriculada_creche_pre_escola,
+            updated_at,
+            loaded_at,
+            tipo
+    from enriquecimento
     )
 
-select *
-from ficha_a_padronizada
+select 
+    *
+from tabela_formatada
