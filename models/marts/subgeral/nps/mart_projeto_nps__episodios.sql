@@ -2,7 +2,7 @@
     config(
         enabled=true,
         schema="projeto_nps",
-        alias="projeto_nps__episodios",
+        alias="episodios",
         partition_by={"field": "data_consulta", "data_type": "DATE"},
     )
 }}
