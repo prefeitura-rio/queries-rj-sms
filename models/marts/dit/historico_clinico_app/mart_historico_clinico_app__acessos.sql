@@ -45,9 +45,9 @@ with
   ),
 
   removendo_treinamento as (
-    select *
-    from busca_maior_prioridade
-    where acesso.nivel_acesso_descricao != 'training'
+    select busca_maior_prioridade.*
+    from busca_maior_prioridade, unnest(vinculos) as v
+    where v.nivel_de_acesso != 'training'
   ),
   
   -- -----------------------------------------
@@ -75,6 +75,6 @@ with
     from deduped
   )
 
-select * except(acesso), acesso.nivel_acesso_descricao as nivel_acesso
+select *
 from particionado
 
