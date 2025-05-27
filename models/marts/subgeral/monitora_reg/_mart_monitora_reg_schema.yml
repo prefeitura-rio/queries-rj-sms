@@ -202,6 +202,9 @@ models:
       - name: procedimento_faixa_etaria
         description: "Faixa etária contemplada pelo procedimento."
 
+      - name: data_atualizacao
+        description: "Data da última atualização dos dados."
+
   - name: mart_monitora_reg__monitor_retornos
     description: >
       Tabela incremental que relaciona agendamentos do tipo **RETORNO** aos
