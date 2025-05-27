@@ -254,11 +254,11 @@ models:
           dominio: subgeral
       sih:
         +schema: brutos_sih
-        +tags: "daily"
+        +tags: ["weekly", "sih", "subgeral"]
         +labels:
           dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       sisreg_api:
         +schema: brutos_sisreg_api
         +tags: ["daily", "subgeral", "sisreg", "sisreg_reports"]
@@ -414,7 +414,7 @@ models:
             dado_pessoal: sim
             dado_sensivel: nao
             dominio: subgeral
-        projeto_nps:
+        nps:
           +schema: projeto_nps
           +tags: ["weekly", "subgeral", "nps"]
           +labels:
@@ -422,6 +422,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: nao
             dominio: subgeral
+        prontuarios_reports:
+          +schema: projeto_prontuarios_reports
+          +tags: ["daily", "subgeral", "prontuarios_reports"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
 
 tests:
   rj_sms:
