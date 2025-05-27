@@ -11,6 +11,13 @@ with
           *
         from {{ source("brutos_informes_vitacare_staging", "dispensas_aparelho_pressao") }}
     ),
+
+    sem_duplicatas as (
+        select *
+        from source
+        qualify row_number() over (partition by _source_file, indice order by _loaded_at desc) = 1 
+    ),
+
     extrair_informacoes as (
         select
             REGEXP_EXTRACT(_source_file, r'^(AP\d+)') AS ap,
@@ -34,7 +41,7 @@ with
                 safe_cast(_extracted_at as timestamp) as extraido_em,
                 safe_cast(_loaded_at as timestamp) as carregado_em
             ) as metadados
-        from source
+        from sem_duplicatas
     )
 select 
 * 

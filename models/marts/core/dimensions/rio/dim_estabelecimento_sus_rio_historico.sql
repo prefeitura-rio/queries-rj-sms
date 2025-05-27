@@ -196,10 +196,10 @@ with
             cnes_web.endereco_numero,
             cnes_web.endereco_complemento,
             coalesce(
-                cnes_web.endereco_latitude, coordenadas.latitude_api
+                coordenadas.latitude_api,cnes_web.endereco_latitude
             ) as endereco_latitude,
             coalesce(
-                cnes_web.endereco_longitude, coordenadas.longitude_api
+                coordenadas.longitude_api,cnes_web.endereco_longitude
             ) as endereco_longitude,
             cnes_web.id_motivo_desativacao,
             cnes_web.id_unidade,

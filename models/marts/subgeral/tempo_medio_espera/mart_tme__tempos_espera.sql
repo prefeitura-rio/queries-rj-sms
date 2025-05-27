@@ -3,7 +3,7 @@
     config(
         enabled=true,
         schema="projeto_sisreg_tme",
-        alias="tempos_espera",
+        alias="tempos_espera_individuais",
         partition_by={
             "field": "data_marcacao",
             "data_type": "date",

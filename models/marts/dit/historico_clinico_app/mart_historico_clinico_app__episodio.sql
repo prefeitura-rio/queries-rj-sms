@@ -28,12 +28,22 @@ with
         from {{ ref("mart_historico_clinico__episodio") }}
         where procedimentos_realizados is not null
     ),
+    paciente_cid_estigmatizante as (
+        select distinct
+            paciente_cpf as cpf
+        from {{ ref("mart_historico_clinico__episodio") }}, unnest(condicoes) as cid
+        where upper(cid.id) in ('B200','B204','B222','B217','B20','B205','B238','Z21',
+        'B211','B213','Z830','B208','Z114','B231','B203','B201','Z206','B212','B221',
+        'B24','B209','B220','B219','B210','B230','B207','B21','B22','F024','B232',
+        'B23','B206','Z717','R75','B218','B202','B227')
+    ),
     todos_episodios as (
         select
             *,
             -- Flag de Paciente com Restrição
             case
-                when paciente_cpf in (select cpf from paciente_restritos)
+                when paciente_cpf in (select cpf from paciente_restritos) 
+                    or paciente_cpf in (select cpf from paciente_cid_estigmatizante)
                 then true
                 else false
             end as flag__paciente_tem_restricao,
@@ -155,7 +165,7 @@ with
         select
             todos_episodios.id_hci,
             paciente_cpf as cpf,
-            safe_cast(entrada_datahora as string) as entry_datetime,
+            safe_cast(coalesce(entrada_datahora,saida_datahora) as string) as entry_datetime,
             safe_cast(saida_datahora as string) as exit_datetime,
             safe_cast(estabelecimento.nome as string) as location,
             safe_cast(tipo as string) as type,

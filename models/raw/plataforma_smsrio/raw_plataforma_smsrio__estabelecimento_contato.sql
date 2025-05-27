@@ -15,11 +15,11 @@ with
     renamed as (
         select
             cast(unidade_id as int64) as unidade_id,
-            split(telefone, "|") as telefone,
-            email,
-            facebook,
-            instagram,
-            twitter,
+            split({{process_null('telefone')}}, "|") as telefone,
+            {{process_null('email')}} as email,
+            {{process_null('facebook')}} as facebook,
+            {{process_null('instagram')}} as instagram,
+            {{process_null('twitter')}} as twitter,
             timestamp_add(datetime(timestamp({{process_null('created_at')}}), 'America/Sao_Paulo'),interval 3 hour) as created_at,
             timestamp_add(datetime(timestamp({{process_null('updated_at')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
         from most_recent
