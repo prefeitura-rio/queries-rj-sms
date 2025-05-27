@@ -1,0 +1,3 @@
+-- adicionar classificações de cids e de proceds entre CA / CP / GERAL (colocar no sheets) -> sisreg
+-- refatorar sources para adequação ao fluxo -> tudo
+-- preencher APS -> sisreg

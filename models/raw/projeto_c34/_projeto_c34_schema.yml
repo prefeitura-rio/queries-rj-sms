@@ -1,0 +1,282 @@
+version: 2
+models:
+
+  - name: raw_projeto_c34__cpfs_fuzzy_match
+    description: Tabela contendo os CPFs recuperados através de técnicas de fuzzy matching (levenshtein & jaccard) contra as bases de pacientes do SISREG, SIH e HCI.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_nasc
+            - nome
+            - nome_mae
+    columns:
+      - name: declaracao_obito_sim
+        description: Número da Declaração de Óbito do Paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_OUTRO_DOC") }}'
+      - name: data_nasc
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_DATA_NASCIMENTO") }}'
+      - name: nome
+        description: Nome do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+      - name: nome_candidato
+        description: Nome no registro do paciente com maior score no fuzzy matching.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
+      - name: nome_mae_candidato
+        description: Nome da mãe no registro do paciente com maior score no fuzzy matching.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
+      - name: cpf_candidato
+        description: CPF no registro do paciente com maior score no fuzzy matching.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
+        data_tests:
+          - unique
+          - not_null
+      - name: id_paciente
+        description: Identificador anônimo do paciente.
+      - name: score_lev
+        description: Score do algoritmo Levenshtein para os nomes do paciente e da mãe.
+      - name: score_jac
+        description: Score do algoritmo Jaccard para os nomes do paciente e da mãe.
+      - name: score_final
+        description: Score final do fuzzy matching, calculado como a média dos scores Levenshtein e Jaccard, para o nome do paciente e da mãe.
+
+  - name: raw_projeto_c34__obitos_sim
+    description: Registros desidentificados de óbitos com CID C34 (Câncer de Pulmão) ocorridos no MRJ ou de munícipes do MRJ em 2024.
+    columns:
+      - name: paciente_cpf_recuperado
+        description: Indica se o CPF (Cadastro de Pessoas Físicas) do paciente foi recuperado. Contém 'SIM' se recuperado e 'NAO' se não.
+        data_type: string
+        quote: true
+      - name: paciente_id
+        description: Identificador único do paciente. Usado para vincular dados do paciente entre diferentes tabelas e bancos de dados.
+        data_type: string
+        quote: true
+      - name: paciente_mes_obito
+        description: Mês do óbito do paciente, representado como inteiro (1 = janeiro, 12 = dezembro).
+        data_type: int64
+        quote: true
+      - name: paciente_sexo
+        description: Sexo do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_raca_cor
+        description: Raça/cor do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_mun_res_obito_ibge
+        description: Código IBGE do município de residência no momento do óbito.
+        data_type: int64
+        quote: true
+      - name: paciente_bairro_res_obito
+        description: Bairro de residência no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_escolaridade_obito
+        description: Escolaridade do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_estado_civil_obito
+        description: Estado civil do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_faixa_etaria_obito
+        description: Faixa etária no momento do óbito ('0-15', '16-30', '31-45', '46-60', '61-75', '76+', 'SEM INFORMACAO').
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid
+        description: Causa básica do óbito (primeiros 3 caracteres do código CID - Classificação Internacional de Doenças).
+        data_type: string
+        quote: true
+      - name: obito_mun_ocor_ibge
+        description: Código IBGE do município onde ocorreu o óbito.
+        data_type: int64
+        quote: true
+      - name: obito_bairro_ocor
+        description: Bairro da ocorrência do óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_cnes
+        description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) do estabelecimento de ocorrência do óbito.
+        data_type: int64
+        quote: true
+  - name: raw_projeto_c34__marcacoes_sisreg
+    description: Registros de marcações no SISREG de pacientes identificados, com dados enriquecidos do SIM, CNES, SMS Rio, CIDs, DATA SUS e  IBGE.
+    columns:
+      - name: paciente_id
+        description: Identificador único do paciente.
+        data_type: string
+        quote: true
+      - name: sistema
+        description: Sistema de origem dos registros (SISREG).
+        data_type: string
+        quote: true
+      - name: procedimento
+        description: Descrição do procedimento médico realizado.
+        data_type: string
+        quote: true
+      - name: procedimento_especialidade
+        description: Especialidade associada ao procedimento.
+        data_type: string
+        quote: true
+      - name: procedimento_tipo
+        description: Tipo de procedimento.
+        data_type: string
+        quote: true
+      - name: cid_execucao_procedimento
+        description: Código CID (Classificação Internacional de Doenças) associado ao procedimento executado.
+        data_type: string
+        quote: true
+      - name: cid_execucao_procedimento_descr
+        description: Descrição completa do código CID do procedimento executado.
+        data_type: string
+        quote: true
+      - name: cid_execucao_procedimento_grupo
+        description: Grupo do código CID do procedimento executado.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_esfera
+        description: Esfera administrativa da unidade de saúde solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_ap
+        description: Área programática da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_ap_descr
+        description: Descrição da área programática da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_preenchida
+        description: Indica se o CNES da unidade solicitante está preenchido ('SIM' ou 'NAO').
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_tp
+        description: Tipo da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_executante_esfera
+        description: Esfera administrativa da unidade executante do procedimento.
+        data_type: string
+        quote: true
+      - name: unidade_executante_ap
+        description: Área programática da unidade executante do procedimento.
+        data_type: string
+        quote: true
+      - name: unidade_executante_ap_descr
+        description: Descrição da área programática da unidade executante.
+        data_type: string
+        quote: true
+      - name: unidade_executante_preenchida
+        description: Indica se o CNES da unidade executante está preenchido ('SIM' ou 'NAO').
+        data_type: string
+        quote: true
+      - name: unidade_executante_tp
+        description: Tipo da unidade executante.
+        data_type: string
+        quote: true
+      - name: data_solicitacao
+        description: Data de solicitação do procedimento.
+        data_type: date
+        quote: true
+      - name: data_execucao
+        description: Data de execução do procedimento.
+        data_type: date
+        quote: true
+      - name: intervalo_solicitacao_execucao
+        description: Número de dias entre a solicitação e a execução do procedimento.
+        data_type: int64
+        quote: true
+      - name: solicitacao_status
+        description: Status atual da solicitação do procedimento no sistema de regulação.
+        data_type: string
+        quote: true
+      - name: solicitacao_risco
+        description: Classificação de risco associada à solicitação conforme manual de regulação.
+        data_type: string
+        quote: true
+      - name: central_reguladora
+        description: Central reguladora responsável pela marcação do procedimento.
+        data_type: string
+        quote: true
+      - name: paciente_cpf_recuperado
+        description: Indica se o CPF do paciente foi recuperado ('SIM' ou 'NAO').
+        data_type: string
+        quote: true
+      - name: paciente_mes_obito
+        description: Mês do óbito do paciente em número inteiro (1 = janeiro, 12 = dezembro).
+        data_type: int64
+        quote: true
+      - name: paciente_sexo
+        description: Sexo biológico do paciente registrado no SIM.
+        data_type: string
+        quote: true
+      - name: paciente_raca_cor
+        description: Raça/cor do paciente conforme registrado no SIM.
+        data_type: string
+        quote: true
+      - name: paciente_mun_res_obito
+        description: Município de residência do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_bairro_res_obito
+        description: Bairro de residência do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_escolaridade_obito
+        description: Escolaridade registrada do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_estado_civil_obito
+        description: Estado civil do paciente registrado no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_faixa_etaria_obito
+        description: Faixa etária do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid
+        description: Código CID-10 da causa básica do óbito (3 primeiros caracteres).
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid_descr
+        description: Descrição da causa básica do óbito conforme CID-10.
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid_grupo
+        description: Grupo da causa do óbito conforme CID-10.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_esfera
+        description: Esfera administrativa do estabelecimento onde ocorreu o óbito.
+        data_type: string
+        quote: true
+      - name: obito_mun_ocor
+        description: Município de ocorrência do óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_ap
+        description: Área programática do estabelecimento de saúde onde ocorreu o óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_ap_descr
+        description: Descrição da área programática do local do óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_tp
+        description: Tipo do estabelecimento de saúde onde ocorreu o óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_preenchido
+        description: Indica se há estabelecimento de óbito registrado no SIM ('SIM' ou 'NAO').
+        data_type: string
+        quote: true

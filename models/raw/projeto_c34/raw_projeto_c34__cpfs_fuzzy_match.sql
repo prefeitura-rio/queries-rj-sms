@@ -1,15 +1,4 @@
-{{
-    config(
-        materialized="table",
-        schema="projeto_c34",
-        alias="cpfs_interesse",
-        partition_by={
-            "field": "data_nasc_sim",
-            "data_type": "date",
-            "granularity": "month",
-        },
-    )
-}}
+{{ config(materialized="table", schema="projeto_c34", alias="cpfs_fuzzy_match") }}
 
 with
     -- conjunto de pacientes para os quais queremos encontrar o cpf
@@ -62,6 +51,23 @@ with
             and dados.nome is not null
             and dados.mae_nome is not null
             and dados.data_nascimento is not null
+
+        union all
+
+        -- pacientes do sih
+        select
+            "sih" as fonte,
+            safe_cast(paciente_cpf as int64) as cpf_fonte,
+            {{ clean_name_string("upper(paciente_nome)") }} as nome_fonte,
+            {{ clean_name_string("upper(paciente_nome_mae)") }} as nome_mae_fonte,
+            date(paciente_data_nasc) as data_nasc_fonte
+        from {{ source("Herian__brutos_sih", "internacoes_mrj") }}
+        where
+            1 = 1
+            and paciente_cpf is not null
+            and paciente_nome is not null
+            and paciente_data_nasc is not null
+            and paciente_nome_mae is not null
     ),
 
     matches_exatos as (
@@ -175,9 +181,13 @@ select
     nome_mae_sim as nome_mae,
     nome_mae_fonte as nome_mae_candidato,
     cpf_fonte as cpf_candidato,
+    to_hex(sha256(cast(cpf_fonte as string))) as id_paciente,
     score_lev,
     score_jac,
     score_final
 from ranking_scores
-where rn = 1 and ((score_lev <= 0.2) or (score_jac <= 0.2))
-order by score_final desc
+where
+    1 = 1
+    and rn = 1
+    and ((score_lev <= 0.2) or (score_jac <= 0.2))
+    and score_final <= 0.4

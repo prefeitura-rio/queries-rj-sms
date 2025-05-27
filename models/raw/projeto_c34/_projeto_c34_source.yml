@@ -6,3 +6,15 @@ sources:
     schema: miloskimatheus__monitora_reg
     tables:
     - name: projeto_c34__sim_2024_mrj
+    
+  - name: Herian__brutos_sih
+    database: rj-sms-dev
+    schema: Herian__brutos_sih
+    tables:
+    - name: internacoes_mrj
+
+  - name: subgeral_padronizacoes
+    database: rj-sms-sandbox
+    schema: subgeral_padronizacoes
+    tables:
+    - name: padronizacao_municipios_ibge
