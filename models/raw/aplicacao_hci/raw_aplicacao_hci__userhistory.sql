@@ -15,6 +15,14 @@ with
     casted as (
         select
             id,
+            {{
+                dbt_utils.generate_surrogate_key(
+                        [
+                            'date_trunc(safe_cast(timestamp as timestamp), MINUTE)',
+                            'user_id'
+                        ]
+                    )
+                }} as hash_usertime,
             method as metodo,
             path,
             split(path, '/')[safe_offset(3)] as entidade_consultada,
