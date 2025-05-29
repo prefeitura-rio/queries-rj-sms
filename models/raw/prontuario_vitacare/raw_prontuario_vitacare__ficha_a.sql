@@ -361,14 +361,14 @@ with
         select 
             id_cnes,
             nome_acentuado as unidade_nome
-        from {{ source('saude_dados_mestres', 'estabelecimento') }}
+        from {{ ref('dim_estabelecimento') }}
     ),
 
     equipe as (
         select 
             id_ine,
             nome_referencia as equipe_nome
-        from {{ source('saude_dados_mestres', 'equipe_profissional_saude') }} 
+        from {{ ref('dim_equipe') }} 
     ),
 
     enriquecimento as (
