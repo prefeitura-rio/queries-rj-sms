@@ -1,6 +1,14 @@
 -- calcula indicadores a partir da união dos dados de oferta programada com os dados
 -- de vinculação dos profissionais 
-{{ config(schema="projeto_monitora_reg", alias="monitor_vagas_ambulatoriais") }}
+{{
+    config(
+        schema="projeto_monitora_reg",
+        alias="monitor_vagas_ambulatoriais",
+        materialized="table",
+        partition_by={"field": "ano_competencia", "data_type": "int64"},
+        cluster_by=["mes_competencia"],
+    )
+}}
 
 with
     int_carga_horaria_ambulatorial_mensal as (
@@ -329,6 +337,7 @@ with
             sisreg_dados,
             cnes_dados,
             {{ remove_accents_upper("status_oferta") }} as status_oferta
+            current_date() as data_atualizacao
         from classifica_proceds
     )
 
