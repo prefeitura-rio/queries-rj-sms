@@ -1,13 +1,6 @@
 version: 2
 
 sources:
-  - name: saude_dados_mestres
-    database: rj-sms
-    schema: saude_dados_mestres
-    tables:
-      - name: estabelecimento
-      - name: equipe_profissional_saude
-
   - name: brutos_prontuario_vitacare_staging
     database: rj-sms
     schema: brutos_prontuario_vitacare_staging
