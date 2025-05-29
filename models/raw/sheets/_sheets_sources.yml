@@ -16,6 +16,9 @@ sources:
       - name: profissionais_cns_cpf_aux
       - name: assistencial_procedimento
       - name: usuarios_permitidos_hci
+      - name: municipios_rio
+      - name: projeto_c34_cids
+      - name: projeto_c34_procedimentos
       
   - name: brutos_sheets
     database: rj-sms

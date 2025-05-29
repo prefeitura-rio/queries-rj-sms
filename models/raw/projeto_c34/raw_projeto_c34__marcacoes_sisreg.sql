@@ -46,10 +46,14 @@ with
 
             -- procedimento executado
             proceds.descricao as procedimento,
+            proceds_c34.indicador_cancer_pulmao as procedimento_indicador_cp,
             proceds.especialidade as procedimento_especialidade,
             proceds.tipo_procedimento as procedimento_tipo,
 
             cid_execucao_procedimento,
+            cids_c34_exec.indicador_cancer as cid_execucao_procedimento_indicador_ca,
+            cids_c34_exec.indicador_cancer_pulmao
+            as cid_execucao_procedimento_indicador_cp,
             upper(cids_exec.categoria_descricao) as cid_execucao_procedimento_descr,
             upper(cids_exec.grupo_descricao_abv) as cid_execucao_procedimento_grupo,
 
@@ -88,19 +92,21 @@ with
             paciente_mes_obito,
             paciente_sexo,
             paciente_raca_cor,
-            upper(ibge_res.mun) as paciente_mun_res_obito,
+            upper(ibge_res.nome_municipio) as paciente_mun_res_obito,
             paciente_bairro_res_obito,
             paciente_escolaridade_obito,
             paciente_estado_civil_obito,
             paciente_faixa_etaria_obito,
 
             obito_causabas_cid,
+            cids_c34_obit.indicador_cancer as obito_causabas_cid_indicador_ca,
+            cids_c34_obit.indicador_cancer_pulmao as obito_causabas_cid_indicador_cp,
             upper(cids_obit.categoria_descricao) as obito_causabas_cid_descr,
             upper(cids_obit.grupo_descricao_abv) as obito_causabas_cid_grupo,
 
             -- local ocorrencia obito
             estab_obit.esfera_subgeral as obito_estab_ocor_esfera,
-            upper(ibge_ocor.mun) as obito_mun_ocor,
+            upper(ibge_ocor.nome_municipio) as obito_mun_ocor,
             estab_obit.area_programatica as obito_estab_ocor_ap,
             estab_obit.area_programatica_descr as obito_estab_ocor_ap_descr,
             estab_obit.tipo_unidade_agrupado_subgeral as obito_estab_ocor_tp,
@@ -126,32 +132,46 @@ with
 
         -- obtendo dados de cids
         left join
-            {{ ref("raw_datasus__cid10") }} as cids_obit
-            on c.obito_causabas_cid = cids_obit.id_categoria
-
-        left join
             {{ ref("raw_datasus__cid10") }} as cids_exec
             on c.cid_execucao_procedimento = cids_exec.id_categoria
 
+        left join
+            {{ ref("raw_datasus__cid10") }} as cids_obit
+            on c.obito_causabas_cid = cids_obit.id_categoria
+
         -- obtendo nomes dos municipios
         left join
-            {{ source("subgeral_padronizacoes", "padronizacao_municipios_ibge") }}
-            as ibge_res
+            {{ ref("raw_sheets__municipios_rio") }} as ibge_res
             on safe_cast(c.paciente_mun_res_obito_ibge as int64)
-            = safe_cast(left(ibge_res.cod, 6) as int64)
+            = safe_cast(ibge_res.cod_ibge_6 as int64)
 
         left join
-            {{ source("subgeral_padronizacoes", "padronizacao_municipios_ibge") }}
-            as ibge_ocor
+            {{ ref("raw_sheets__municipios_rio") }} as ibge_ocor
             on safe_cast(c.obito_mun_ocor_ibge as int64)
-            = safe_cast(left(ibge_ocor.cod, 6) as int64)
+            = safe_cast(ibge_ocor.cod_ibge_6 as int64)
 
         -- obtendo dados de procedimentos
         left join
             {{ ref("raw_sheets__assistencial_procedimento") }} as proceds
             on safe_cast(c.procedimento_id as int64)
             = safe_cast(proceds.id_procedimento as int64)
+
+        -- classificações de cids c34
+        left join
+            {{ ref("raw_sheets__projeto_c34_cids") }} as cids_c34_exec
+            on c.cid_execucao_procedimento = cids_c34_exec.cid
+
+        left join
+            {{ ref("raw_sheets__projeto_c34_cids") }} as cids_c34_obit
+            on c.obito_causabas_cid = cids_c34_obit.cid
+
+        -- classificações de procedimentos c34
+        left join
+            {{ ref("raw_sheets__projeto_c34_procedimentos") }} as proceds_c34
+            on c.procedimento_id = proceds_c34.proced_sisreg_id
+
     )
 
 select *
 from enriquecimento
+where unidade_solicitante_ap is null
