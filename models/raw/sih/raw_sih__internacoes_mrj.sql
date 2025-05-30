@@ -407,7 +407,12 @@ with
             nullif(trim(AH_CS), '') as codigo_seguranca,
             {{ process_null('AH_AUDIT_SISAIH01_JUST') }} as audit_sisaih01_just,
             if(ah_st_duplicidade_cns = '1', true, false) as duplicidade_cns,
-                        case
+            case
+                when AH_DIAG_PRI in ("0000", "0") or AH_DIAG_PRI like "%  "
+                    then null
+                else {{process_null('AH_DIAG_PRI')}}
+            end as diagnostico_principal,
+            case
                 when AH_DIAG_SEC in ("0000", "0") or AH_DIAG_SEC like "%  "
                     then null
                 else {{process_null('AH_DIAG_SEC')}}
