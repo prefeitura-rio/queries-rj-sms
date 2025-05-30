@@ -34,13 +34,33 @@ with
     select *, 1 as prioridade
     from acessos_automatico
   ),
+  remove_vinculos_sem_acesso as (
+      select 
+        cpf, 
+        nome_completo, 
+        prioridade,
+        array_agg(
+          struct(
+            unidade_nome,
+            unidade_tipo,
+            unidade_cnes,
+            unidade_ap,
+            funcao_detalhada,
+            funcao_grupo,
+            nivel_acesso
+          )
+        ) as vinculos
+      from uniao as p, unnest(p.vinculos) as v
+      where v.nivel_acesso is not null
+      group by 1,2,3
+  ),
 
   -- -----------------------------------------
   -- Configurando Nivel de Acesso
   -- -----------------------------------------
   busca_maior_prioridade as (
     select *
-    from uniao
+    from remove_vinculos_sem_acesso
     qualify row_number() over (partition by cpf order by prioridade desc) = 1
   ),
 
