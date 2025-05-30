@@ -143,6 +143,7 @@ with
     renomeado as (
         select
             {{ process_null('AH_CNES') }} as id_cnes,
+            {{ process_null('AH_PRONTUARIO') }} as numero_prontuario,
             substr({{ process_null('AH_CMPT') }}, 1, 4) AS ano_cmpt,
             substr({{ process_null('AH_CMPT') }}, 5, 6) AS mes_cmpt,
             case 
@@ -162,28 +163,30 @@ with
                 when AH_PACIENTE_IDENT_DOC = '5'
                     then 'Ignorado'
                 else null
-            end as paciente_ident_doc,
+            end as paciente_documento_tipo,
             case 
-                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '4'
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '4' -- CPF
                     then substr(AH_PACIENTE_NUMERO_DOC, length(AH_PACIENTE_NUMERO_DOC) - 10)
-                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '2'
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '2' -- RG
                     then substr(AH_PACIENTE_NUMERO_DOC, length(AH_PACIENTE_NUMERO_DOC) - 8)
                 when ah_paciente_numero_doc like " %" or AH_PACIENTE_IDENT_DOC = '5' -- Documento ignorado
                     then null
                 else {{ process_null('AH_PACIENTE_NUMERO_DOC') }}
-            end as paciente_numero_doc,
-            {{ process_null('AH_PRONTUARIO') }} as numero_prontuario,
+            end as paciente_documento,
             {{ process_null('AH_PACIENTE_NOME') }} as paciente_nome,
+            {{ process_null('AH_PACIENTE_FONETICO_NOME') }} as paciente_fonetico_nome,
+
             case
                 when length(ah_paciente_dt_nascimento) = 8
                     then cast(ah_paciente_dt_nascimento as date format 'YYYYMMDD')
                 else null 
-            end as paciente_data_nasc,
+            end as paciente_data_nascimento,
             {{ process_null('AH_PACIENTE_IDADE') }} as paciente_idade,
             {{ process_null('AH_PACIENTE_SEXO') }} as paciente_sexo,
             {{ process_null('AH_PACIENTE_RACA_COR') }} as paciente_raca_cor,
-            {{ process_null('AH_PACIENTE_NOME_RESP') }} as paciente_nome_resp,
-            {{ process_null('AH_PACIENTE_NOME_MAE') }} as paciente_nome_mae,
+            {{ process_null('AH_PACIENTE_NOME_RESP') }} as paciente_responsavel_nome,
+            {{ process_null('AH_PACIENTE_NOME_MAE') }} as paciente_mae_nome,
+            {{ process_null('AH_PACIENTE_FONETICO_NOME_MAE') }} as paciente_mae_nome_fonetico,
             case 
                 when regexp_contains(AH_PACIENTE_NUMERO_CNS, r'^0+$')
                     then null
@@ -191,8 +194,8 @@ with
             end as paciente_cns,
             {{ process_null('AH_PACIENTE_NACIONALIDADE') }} as paciente_nacionalidade,
             {{ process_null('AH_PACIENTE_MUN_ORIGEM') }} as paciente_mun_origem,
-            {{ process_null('AH_PACIENTE_TIPO_LOGR') }} as paciente_tipo_logr,
-            {{ process_null('AH_PACIENTE_LOGR') }} as paciente_logr,
+            {{ process_null('AH_PACIENTE_TIPO_LOGR') }} as paciente_tipo_logradouro,
+            {{ process_null('AH_PACIENTE_LOGR') }} as paciente_logradouro,
             nullif(trim(AH_PACIENTE_LOGR_NUMERO), '') as paciente_numero,
             nullif(trim(AH_PACIENTE_LOGR_COMPL), '') as paciente_complemento,
             nullif(trim(AH_PACIENTE_LOGR_BAIRRO), '') as paciente_bairro,
@@ -202,16 +205,8 @@ with
             {{ process_null('AH_PACIENTE_ETNIA') }} as paciente_etnia,
             {{ process_null('AH_PACIENTE_TEL_DDD') }} as paciente_tel_ddd,
             {{ process_null('AH_PACIENTE_TEL_NUM') }} as paciente_tel_num,
-            {{ process_null('AH_SEQ') }} as aih_sequencial_lote,
-            case 
-                when AH_SITUACAO = '0'
-                    then 'Aprovada'
-                when AH_SITUACAO = '1'
-                    then 'Rejeitada'
-                else null
-            end as aih_situacao,
             {{ process_null('AH_LOTE') }} as lote,
-            {{ process_null('AH_LOTE_APRES') }} as lote_apres,
+            {{ process_null('AH_LOTE_APRES') }} as lote_apresentacao,
             case 
                 when AH_IDENT = '1' 
                     then 'Normal'
@@ -223,15 +218,22 @@ with
                     then 'Longa permanência'
                 else null
             end as aih_identificador,
-            {{ process_null('AH_ESPECIALIDADE') }} as especialidade,
-            {{ process_null('AH_NUM_AIH') }} as num_aih,
-            if(AH_NUM_AIH_PROX in ("0000000000000", "0"), null, {{ process_null('AH_NUM_AIH_PROX') }}) as num_aih_prox,
-            if(AH_NUM_AIH_ANT in ("0000000000000", "0"), null, {{ process_null('AH_NUM_AIH_ANT') }}) as num_aih_ant,
-            if(AH_SEQ_AIH5 = '0', null, {{ process_null('AH_SEQ_AIH5') }}) as seq_aih5,
+            {{ process_null('AH_NUM_AIH') }} as id_aih,
+            if(AH_NUM_AIH_PROX in ("0000000000000", "0"), null, {{ process_null('AH_NUM_AIH_PROX') }}) as id_aih_proximo,
+            if(AH_NUM_AIH_ANT in ("0000000000000", "0"), null, {{ process_null('AH_NUM_AIH_ANT') }}) as id_aih_anterior,
+            {{ process_null('AH_SEQ') }} as aih_sequencial_lote,
+            case 
+                when AH_SITUACAO = '0'
+                    then 'Aprovada'
+                when AH_SITUACAO = '1'
+                    then 'Rejeitada'
+                else null
+            end as aih_situacao,
+            if(AH_SEQ_AIH5 = '0', null, {{ process_null('AH_SEQ_AIH5') }}) as aih_sequencial_longa_permanencia,
             {{ process_null('AH_OE_AIH') }} as orgao_emissor_aih,
             {{ process_null('AH_OE_GESTOR') }} as orgao_emissor_gestor,
             {{ process_null('AH_OE_REGIONAL') }} as orgao_emissor_regional,
-            {{ process_null('AH_MUN_HOSP') }} as municipio_hospital,
+            {{ process_null('AH_MUN_HOSP') }} as hospital_municipio,
             case
                 when length(ah_dt_emissao) = 8
                     then cast(ah_dt_emissao as date format 'YYYYMMDD')
@@ -241,9 +243,9 @@ with
             end as data_emissao,
             safe_cast(ah_dt_internacao as date format 'YYYYMMDD') as data_internacao, 
             safe_cast(ah_dt_saida as date format 'YYYYMMDD') as data_saida, 
-            {{ process_null('AH_PROC_SOLICITADO') }} as proc_solicitado,
-            if(ah_st_muda_proc = '1', true, false) as mudanca_proc_indicador,
-            {{ process_null('AH_PROC_REALIZADO') }} as proc_realizado,
+            {{ process_null('AH_PROC_SOLICITADO') }} as procedimento_solicitado,
+            if(ah_st_muda_proc = '1', true, false) as procedimento_mudanca_indicador,
+            {{ process_null('AH_PROC_REALIZADO') }} as procedimento_realizado,
             case 
                 when ah_car_internacao = "01" 
                     then replace(ah_car_internacao, "01", "1")
@@ -267,49 +269,35 @@ with
                 when AH_MED_SOL_IDENT = '2'
                     then 'CNS'
                 else null
-            end as med_sol_ident,
-            if(ah_med_sol_doc = '0', null, {{ process_null('AH_MED_SOL_DOC') }} ) as med_sol_doc,
+            end as medico_solicitante_documento_tipo,
+            if(ah_med_sol_doc = '0', null, {{ process_null('AH_MED_SOL_DOC') }} ) as medico_solicitante_documento,
             case 
                 when AH_MED_RESP_IDENT = '1'
                     then 'CPF'
                 when AH_MED_RESP_IDENT = '2'
                     then 'CNS'
                 else null
-            end as med_resp_ident,
-            if(ah_med_resp_doc = '0', null, {{ process_null('AH_MED_RESP_DOC') }} ) as med_resp_doc,
+            end as medico_responsavel_documento_tipo,
+            if(ah_med_resp_doc = '0', null, {{ process_null('AH_MED_RESP_DOC') }} ) as medico_responsavel_documento,
             case 
                 when AH_DIR_CLINICO_IDENT = '1'
                     then 'CPF'
                 when AH_DIR_CLINICO_IDENT = '2'
                     then 'CNS'
                 else null
-            end as dir_clinico_ident,
-            if(ah_dir_clinico_doc = '0', null, {{ process_null('AH_DIR_CLINICO_DOC') }} ) as dir_clinico_doc,
+            end as diretor_clinico_documento_tipo,
+            if(ah_dir_clinico_doc = '0', null, {{ process_null('AH_DIR_CLINICO_DOC') }} ) as diretor_clinico_documento,
             case 
                 when AH_AUTORIZADOR_IDENT = '1'
                     then 'CPF'
                 when AH_AUTORIZADOR_IDENT = '2'
                     then 'CNS'
                 else null
-            end as autorizador_ident,
-            {{ process_null('AH_AUTORIZADOR_DOC') }} as autorizador_doc,
-            case
-                when AH_DIAG_SEC in ("0000", "0") or AH_DIAG_SEC like "%  "
-                    then null
-                else {{process_null('AH_DIAG_SEC')}}
-            end as diagnostico_secundario,
-            case
-                when AH_DIAG_COMP in ("0000", "0") or AH_DIAG_COMP like "%  "
-                    then null
-                else {{process_null('AH_DIAG_COMP')}}
-            end as diagnostico_comp,
-            case
-                when AH_DIAG_COMP in ("0000", "0") or AH_DIAG_COMP like "%  "
-                    then null
-                else {{process_null('AH_DIAG_COMP')}}
-            end as diagnostico_obito,
+            end as medico_autorizador_documento_tipo,
+            {{ process_null('AH_AUTORIZADOR_DOC') }} as medico_autorizador_documento,
             {{ process_null('AH_ENFERMARIA') }} as enfermaria,
             {{ process_null('AH_LEITO') }} as leito_numero,
+            {{ process_null('AH_ESPECIALIDADE') }} as leito_especialidade,
             {{ process_null('AH_UTINEO_MOT_SAIDA') }} as utineo_motivo_saida,
             if(AH_UTINEO_PESO in ("0000", "0"), null, {{ process_null('AH_UTINEO_PESO') }}) as utineo_peso,
             {{ process_null('AH_UTINEO_MESES_GESTACAO') }} as utineo_meses_gestacao,
@@ -348,18 +336,18 @@ with
                 when AH_ACDTRAB_VINC_PREV = '6'
                     then 'Empregador'
                 else null
-            end as indicador_vinculo_previdencia,
-            {{ process_null('AH_PARTO_QTD_NASC_VIVOS') }} as parto_nasc_vivos,
-            {{ process_null('AH_PARTO_QTD_NASC_MORTOS') }} as parto_nasc_mortos,
-            {{ process_null('AH_PARTO_QTD_ALTA') }} as parto_nasc_alta,
+            end as vinculo_previdencia,
+            {{ process_null('AH_PARTO_QTD_NASC_VIVOS') }} as parto_nascidos_vivos,
+            {{ process_null('AH_PARTO_QTD_NASC_MORTOS') }} as parto_nascidos_mortos,
+            {{ process_null('AH_PARTO_QTD_ALTA') }} as parto_nascidos_alta,
             {{ process_null('AH_PARTO_QTD_TRAN') }} as parto_transferidos,
             {{ process_null('AH_PARTO_QTD_OBITO') }} as parto_obito,
             case
-                when REGEXP_CONTAINS(AH_PARTO_NUM_PRENATAL, r'^0+$') or REGEXP_CONTAINS(AH_PARTO_NUM_PRENATAL, r'^0+$[,\.]*$')
+                when REGEXP_CONTAINS(trim(AH_PARTO_NUM_PRENATAL), r'^0+$') or REGEXP_CONTAINS(trim(AH_PARTO_NUM_PRENATAL), r'^0+$[\s,\.]*$')
                     then null
                 else {{ process_null('AH_PARTO_NUM_PRENATAL') }}
-            end as parto_id_prenatal,
-            {{ process_null('AH_LAQVAS_QTD_FILHOS') }} as laqvas_filhos,
+            end as id_parto_prenatal,
+            {{ process_null('AH_LAQVAS_QTD_FILHOS') }} as esterilizacao_filhos,
             case 
                 when AH_LAQVAS_GRAU_INSTRUC = '1'
                     then 'Analfabeto'
@@ -370,11 +358,11 @@ with
                 when AH_LAQVAS_GRAU_INSTRUC = '4'
                     then 'Terceiro grau'
                 else null
-            end as laqvas_grau_instruc,
-            if(AH_LAQVAS_CID_INDICACAO = '    ', null, {{ process_null('AH_LAQVAS_CID_INDICACAO')}}) as laqvas_cid_indicacao,
-            {{ process_null('AH_LAQVAS_MET_CONTRACEP1') }} as laqvas_met_contracep1,
-            {{ process_null('AH_LAQVAS_MET_CONTRACEP2') }} as laqvas_met_contracep2,
-            if(ah_laqvas_gestacao_risco = "0", true, false) as laqvas_gestacao_risco_indicador,
+            end as esterilizacao_grau_instrucao,
+            if(AH_LAQVAS_CID_INDICACAO = '    ', null, {{ process_null('AH_LAQVAS_CID_INDICACAO')}}) as esterilizacao_cid_indicacao,
+            {{ process_null('AH_LAQVAS_MET_CONTRACEP1') }} as esterilizacao_metodo_contraceptivo1,
+            {{ process_null('AH_LAQVAS_MET_CONTRACEP2') }} as esterilizacao_metodo_contraceptivo2,
+            if(ah_laqvas_gestacao_risco = "0", true, false) as esterilizacao_gestacao_risco_indicador,
             {{ process_null('AH_VERSAO_SISAIH01') }} as versao_sisaih01,
             if(ah_st_duplicidade = '1', true, false) as duplicidade_indicador,
             {{ process_null('AH_ST_BLOQUEIO') }} as bloqueio,
@@ -390,44 +378,57 @@ with
                 else null
             end as agravo,
             {{ process_null('AH_MOT_BLOQ') }} as motivo_bloqueio,
-            {{ process_null('AH_IN_GER_INF') }} as in_ger_inf,
+            {{ process_null('AH_IN_GER_INF') }} as in_ger_inf, -- Coluna não ficou clara no dicionário de dados
             case 
                 when AH_GESTOR_IDENT = '1'
                     then 'CPF'
                 when AH_GESTOR_IDENT = '2'
                     then 'CNS'
                 else null
-            end as gestor_ident,
+            end as gestor_documento_tipo,
             if(AH_GESTOR_DOC in ("000000000000000", "0"), null, {{ process_null('AH_GESTOR_DOC') }}) as gestor_documento,
-            {{ process_null('AH_COD_SOL_LIB') }} as cod_sol_lib,
+            {{ process_null('AH_COD_SOL_LIB') }} as id_solicitacao_liberacao,
             if(ah_st_into = "1", true, false) as into_indicador,
             case
                 when regexp_contains(AH_CONTRATO, r'^0+$')
                     then null
                 else {{ process_null('AH_CONTRATO') }}
             end as contrato,
-            {{ process_null('AH_IVD_SH') }} as valorizacao_serv_hosp,
-            {{ process_null('AH_IVD_SP') }} as valorizacao_serv_prest,
+            {{ process_null('AH_IVD_SH') }} as valorizacao_servicos_hospitalares,
+            {{ process_null('AH_IVD_SP') }} as valorizacao_servicos_prestados,
             {{ process_null('AH_DIARIAS') }} as diarias,
             {{ process_null('AH_DIARIAS_UTI') }} as diarias_uti,
             {{ process_null('AH_DIARIAS_UI') }} as diarias_ui,
-            if(ah_st_cateterismo_anest = '1', true, false) as cateterismo_anest_indicador,
-            {{ process_null('AH_COMPLEXIDADE') }} as complexidade,
+            if(ah_st_cateterismo_anest = '1', true, false) as cateterismo_anestesia_indicador,
+            {{ process_null('AH_COMPLEXIDADE') }} as procedimento_complexidade,
             {{ process_null('AH_FINANCIAMENTO') }} as financiamento,
             {{ process_null('AH_TIPO_FAEC') }} as faec,
             {{ process_null('AH_ST_INTERNACAO_CONCOM') }} as internacao_concom,
             nullif(trim(AH_CS), '') as codigo_seguranca,
             {{ process_null('AH_AUDIT_SISAIH01_JUST') }} as audit_sisaih01_just,
             if(ah_st_duplicidade_cns = '1', true, false) as duplicidade_cns,
-            {{ process_null('AH_PACIENTE_FONETICO_NOME') }} as paciente_fonetico_nome,
-            {{ process_null('AH_PACIENTE_FONETICO_NOME_MAE') }} as paciente_fonetico_nome_mae,
+                        case
+                when AH_DIAG_SEC in ("0000", "0") or AH_DIAG_SEC like "%  "
+                    then null
+                else {{process_null('AH_DIAG_SEC')}}
+            end as diagnostico_secundario,
+            case
+                when AH_DIAG_COMP in ("0000", "0") or AH_DIAG_COMP like "%  "
+                    then null
+                else {{process_null('AH_DIAG_COMP')}}
+            end as diagnostico_comp,
+            case
+                when AH_DIAG_COMP in ("0000", "0") or AH_DIAG_COMP like "%  "
+                    then null
+                else {{process_null('AH_DIAG_COMP')}}
+            end as diagnostico_obito,
             {% for i in range(1, 10) %}
                 case 
                     when AH_DIAG_SEC_{{ i }} like ' %'
                         then null
                     else {{ process_null('AH_DIAG_SEC_' ~ i) }}
-                end as diagsec{{ i }},
-                {{ process_null('AH_DIAG_SEC_' ~ i ~ '_CLASS') }} as diagsec{{ i }}_class,
+                end as diagnostico_secundario{{ i }},
+                {{ process_null('AH_DIAG_SEC_' ~ i ~ '_CLASS') }} as diagnostico_secundario{{ i }}_class,
             {% endfor %}
             {{ process_null('AH_PACIENTE_DADOS_VALIDADOS_CNS') }} as paciente_dados_validados_cns,
             if(ah_st_duplicidade_cpf = '1', true, false) as duplicidade_cpf,
