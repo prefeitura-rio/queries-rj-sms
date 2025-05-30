@@ -1121,6 +1121,8 @@ models:
               name: mart_prontuario_vitacare__ficha_a__id_paciente__not_null
       - name: unidade_cadastro
         description: Unidade de saúde responsável pelo cadastro do paciente.
+      - name: unidade_nome
+        description: Nome da unidade de saúde responsável pelo cadastro do paciente.
       - name: ap_cadastro
         description: Área programática associada ao cadastro do paciente.
       - name: nome
@@ -1155,6 +1157,8 @@ models:
           - '{{ var("TAG_TELEFONE") }}'
       - name: ine_equipe
         description: Código INE da equipe de saúde responsável pelo paciente.
+      - name: equipe_nome
+        description: Nome da equipe de saúde responsável pelo paciente.
       - name: microarea
         description: Código da microárea de atuação da unidade de saúde.
       - name: logradouro
