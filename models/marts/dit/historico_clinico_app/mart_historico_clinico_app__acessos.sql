@@ -47,7 +47,7 @@ with
   removendo_treinamento as (
     select busca_maior_prioridade.*
     from busca_maior_prioridade, unnest(vinculos) as v
-    where v.nivel_de_acesso != 'training'
+    where v.nivel_acesso != 'training'
   ),
   
   -- -----------------------------------------

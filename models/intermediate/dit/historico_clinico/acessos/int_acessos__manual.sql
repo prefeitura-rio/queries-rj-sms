@@ -52,7 +52,7 @@ with
             unidades_de_saude.unidade_nome,
             funcao_detalhada,
             funcao_grupo,
-            nivel_de_acesso
+            nivel_de_acesso as nivel_acesso
         from categorizados
         left join unidades_de_saude
             on categorizados.unidade_cnes = unidades_de_saude.cnes
@@ -69,7 +69,7 @@ with
                         unidade_ap,
                         funcao_detalhada,
                         funcao_grupo,
-                        nivel_de_acesso
+                        nivel_acesso
                 )
             ) as vinculos
         from categorizados_enriquecidos
