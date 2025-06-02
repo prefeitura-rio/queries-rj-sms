@@ -59,8 +59,8 @@ with
 
             -- local solicitacao
             estab_sol.esfera_subgeral as unidade_solicitante_esfera,
-            estab_sol.area_programatica as unidade_solicitante_ap,
-            estab_sol.area_programatica_descr as unidade_solicitante_ap_descr,
+            bairros_aps.ap as unidade_solicitante_ap,
+            bairros_aps.ap_titulo as unidade_solicitante_ap_descr,
 
             if(
                 unidade_solicitante_cnes is not null, 'SIM', 'NAO'
@@ -69,8 +69,8 @@ with
 
             -- local execucao
             estab_exec.esfera_subgeral as unidade_executante_esfera,
-            estab_exec.area_programatica as unidade_executante_ap,
-            estab_exec.area_programatica_descr as unidade_executante_ap_descr,
+            bairros_aps.ap as unidade_executante_ap,
+            bairros_aps.ap_titulo as unidade_executante_ap_descr,
 
             if(
                 unidade_executante_cnes is not null, 'SIM', 'NAO'
@@ -107,8 +107,8 @@ with
             -- local ocorrencia obito
             estab_obit.esfera_subgeral as obito_estab_ocor_esfera,
             upper(ibge_ocor.nome_municipio) as obito_mun_ocor,
-            estab_obit.area_programatica as obito_estab_ocor_ap,
-            estab_obit.area_programatica_descr as obito_estab_ocor_ap_descr,
+            bairros_aps.ap as obito_estab_ocor_ap,
+            bairros_aps.ap_titulo as obito_estab_ocor_ap_descr,
             estab_obit.tipo_unidade_agrupado_subgeral as obito_estab_ocor_tp,
             if(
                 obito_estab_ocor_cnes is not null, 'SIM', 'NAO'
@@ -129,6 +129,20 @@ with
             {{ ref("raw_sheets__estabelecimento_auxiliar") }} as estab_obit
             on safe_cast(c.obito_estab_ocor_cnes as int64)
             = safe_cast(estab_obit.id_cnes as int64)
+
+        -- obtendo dados de ap
+        left join
+            {{ ref("dim_estabelecimento_bairro_ap") }} as bairros_aps_sol
+            on safe_cast(c.unidade_solicitante_cnes as int64)
+            = safe_cast(bairros_aps_sol.id_cnes as int64)
+        left join
+            {{ ref("dim_estabelecimento_bairro_ap") }} as bairros_aps_exec
+            on safe_cast(c.unidade_executante_cnes as int64)
+            = safe_cast(bairros_aps_exec.id_cnes as int64)
+        left join
+            {{ ref("dim_estabelecimento_bairro_ap") }} as bairros_aps_obit
+            on safe_cast(c.obito_estab_ocor_cnes as int64)
+            = safe_cast(bairros_aps_obit.id_cnes as int64)
 
         -- obtendo dados de cids
         left join

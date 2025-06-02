@@ -57,11 +57,15 @@ models:
         description: Indica se o CPF (Cadastro de Pessoas Físicas) do paciente foi recuperado. Contém 'SIM' se recuperado e 'NAO' se não.
         data_type: string
         quote: true
+        data_tests:
+          - not_null
       - name: paciente_id
         description: Identificador único do paciente. Usado para vincular dados do paciente entre diferentes tabelas e bancos de dados.
         data_type: string
         quote: true
-      - name: paciente_mes_obito
+        data_tests:
+          - unique 
+        name: paciente_mes_obito
         description: Mês do óbito do paciente, representado como inteiro (1 = janeiro, 12 = dezembro).
         data_type: int64
         quote: true
@@ -109,8 +113,10 @@ models:
         description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) do estabelecimento de ocorrência do óbito.
         data_type: int64
         quote: true
+
+      
   - name: raw_projeto_c34__marcacoes_sisreg
-    description: Registros de marcações no SISREG de pacientes identificados, com dados enriquecidos do SIM, CNES, SMS Rio, CIDs, DATA SUS e  IBGE.
+    description: Registros de marcações no SISREG de pacientes identificados, com dados enriquecidos do SIM, CNES, SMS Rio, CIDs, DATA SUS e IBGE.
     columns:
       - name: paciente_id
         description: Identificador único do paciente.
