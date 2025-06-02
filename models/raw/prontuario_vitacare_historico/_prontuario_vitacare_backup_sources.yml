@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: brutos_vitacare_historic_staging
+    database: rj-sms-dev
+    schema: brutos_vitacare_historic_staging
+    tables:
+      - name: ATENDIMENTOS
+      - name: EQUIPES
+      - name: ALERGIAS
+      - name: CONDICOES
+      - name: ENCAMINHAMENTOS
+      - name: INDICADORES
+      - name: VACINAS
+      - name: PRESCRICOES
