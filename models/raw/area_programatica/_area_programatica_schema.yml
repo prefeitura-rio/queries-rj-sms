@@ -5,7 +5,9 @@ models:
       - name: bairro
         description: A coluna 'bairro' representa o nome do bairro na cidade do Rio de Janeiro.
         data_type: string
-        quote: true
+        data_tests:
+          - not_null
+          - unique
       - name: ap
         description: A coluna 'ap' representa o código da Área Programática, um identificador único para cada uma das 10 Áreas Programáticas da cidade do Rio de Janeiro.
         data_type: int64
