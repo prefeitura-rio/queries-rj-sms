@@ -68,7 +68,30 @@ with
         left join cbo_datasus using (id_cbo)
         inner join unidades_de_saude using (id_unidade)
     ),
+        -- -----------------------------------------
+    -- Lista profissionais alocados em consultórios de rua
+    -- -----------------------------------------
+    equipe_consultorio_rua as (
+        select 
+            equipe_ine, 
+            equipe_sequencial, 
+            id_equipe_tipo,
+            equipe_descricao
+        from {{ ref('raw_cnes_gdb__equipe')}}
+        left join {{ ref('raw_cnes_gdb__equipe_tipo')}}
+        using (id_equipe_tipo)
+    ),
+    profissionais_consultorio_rua as (
+        select 
+            id_profissional_sus,
+            id_equipe_tipo,
+            equipe_descricao 
+        from {{ ref('raw_cnes_gdb__equipe_profissionais') }} 
+        left join equipe_consultorio_rua
+        using (equipe_sequencial)
+        where id_equipe_tipo = '73'
 
+    ),
     -- -----------------------------------------
     -- Enriquecimento de Dados dos Funcionários
     -- -----------------------------------------
@@ -80,11 +103,16 @@ with
             tipo_sms_simplificado as unidade_tipo,
             id_cnes as unidade_cnes,
             area_programatica as unidade_ap,
+            case 
+                when id_equipe_tipo = '73' then true
+                else false
+            end as eh_equipe_consultorio_rua, 
             cbo_nome as funcao_detalhada,
             {{ remove_accents_upper('cbo_agrupador') }} as funcao_grupo,
             data_ultima_atualizacao
         from vinculos_profissionais_cnes
             left join profissionais_cnes using (id_profissional_sus)
+            left join profissionais_consultorio_rua using (id_profissional_sus)
     ),
     -- -----------------------------------------
     -- Filtrando funcionários com acesso autorizado
@@ -97,6 +125,7 @@ with
             unidade_tipo,
             unidade_cnes,
             unidade_ap,
+            eh_equipe_consultorio_rua,
             funcao_detalhada,
             funcao_grupo
         from funcionarios_ativos_enriquecido
@@ -121,10 +150,13 @@ with
                     unidade_tipo,
                     unidade_cnes,
                     unidade_ap,
+                    eh_equipe_consultorio_rua,
                     funcao_detalhada,
                     funcao_grupo,
                     case
-                        when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')
+                        when eh_equipe_consultorio_rua is true 
+                        then 'full_permission'
+                        when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO') or unidade_cnes = '5462886'
                         then 'full_permission'
                         when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
                         then 'only_from_same_cnes'
