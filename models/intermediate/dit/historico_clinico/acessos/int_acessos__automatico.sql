@@ -156,7 +156,7 @@ with
                     case
                         when eh_equipe_consultorio_rua is true 
                         then 'full_permission'
-                        when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO') or unidade_cnes = '5462886'
+                        when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO','CASS')
                         then 'full_permission'
                         when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
                         then 'only_from_same_cnes'
