@@ -13,8 +13,9 @@ sources:
     tables:
     - name: internacoes_mrj
 
-  - name: subgeral_padronizacoes
+  - name: sub_geral_prod
     database: rj-sms-sandbox
-    schema: subgeral_padronizacoes
+    schema: sub_geral_prod
     tables:
-    - name: padronizacao_municipios_ibge
+    - name: c34_ser_ambulatorial
+    - name: c34_procedimentos_ser

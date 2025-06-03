@@ -439,6 +439,8 @@ models:
         description: Código identificador do IBGE com 7 dígitos. Este código é único, e identifica um município específico do Brasil.
         data_type: string
         quote: true
+        data_tests:
+          - unique
       - name: cod_ibge_6
         description: Código identificador do IBGE com 6 dígitos. Este código é único, e identifica um município específico do Brasil.
         data_type: string
@@ -457,6 +459,8 @@ models:
         description: Código único, identificador, conforme a Classificação Internacional de Doenças.
         data_type: string
         quote: true
+        data_tests:
+          - unique
       - name: indicador_cancer
         description: Indica se a condição possui relação com Câncer ("SIM" ou "NAO").
         data_type: string
@@ -475,7 +479,29 @@ models:
         description: Código único de procedimento - indentificador no SISREG.
         data_type: string
         quote: true
+        data_tests:
+          - unique
       - name: indicador_cancer_pulmao
         description: Indica se o procedimento possui relação com Câncer de Pulmão ("SIM" ou "NAO").
+        data_type: string
+        quote: true
+  - name: raw_sheets__projeto_c34_procedimentos_ser
+    description: |-
+      Esta tabela foi construída para uma análise sobre a trajetória dos pacientes de Câncer de Pulmão na rede SUS - MRJ.
+            A tabela lista códigos identificadores de procedimentos no SER e indica se são relacionadas a Câncer e Câncer de Pulmão.
+            A classificação é feita pela equipe parceira, de pesquisadoras especialistas.
+    columns:
+      - name: procedimento
+        description: Código único de procedimento - indentificador no SISREG.
+        data_type: string
+        quote: true
+        data_tests:
+          - unique
+      - name: indicador_cancer_pulmao
+        description: Indica se o procedimento possui relação com Câncer de Pulmão ("SIM" ou "NAO").
+        data_type: string
+        quote: true
+      - name: indicador_cancer
+        description: Indica se o procedimento possui relação com Câncer ("SIM" ou "NAO").
         data_type: string
         quote: true

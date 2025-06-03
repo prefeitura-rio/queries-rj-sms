@@ -1,7 +1,7 @@
 {{
     config(
         schema="brutos_sheets",
-        alias="projeto_c34_procedimentos",
+        alias="projeto_c34_procedimentos_sisreg",
         materialized="table",
     )
 }}
