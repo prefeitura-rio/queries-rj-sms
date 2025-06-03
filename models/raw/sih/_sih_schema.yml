@@ -484,20 +484,37 @@ models:
     description: Relação de todos os atendimentos provenientes de internações
       hospitalares que foram financiados pelo SUS.
 
-  - name: raw_sih__internacoes_mrj
+  - name: raw_sih__autorizacoes_internacoes_hospitalares
     columns:
       - name: id_cnes
         description: Código CNES do hospital.
-      - name: ano_cmpt
+      - name: ano_competencia
         description: Ano de processamento da AIH, no formato aaaa.
-      - name: mes_cmpt
+      - name: mes_competencia
         description: Mês de processamento da AIH, no formato mm.
       - name: paciente_cpf
-        description: Número do CPF do paciente. (Em registros antigos pode ser encontrado em paciente_numero_documento)
+        description: Número do CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: paciente_rg
+        description: Número de Registro Geral do paciente.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIDADE") }}'
       - name: numero_prontuario
+        description: Número do Prontuário do paciente.
+      - name: paciente_pis_pasep
+        description: Número de PIS/PASEP do paciente.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIDADE") }}'
+      - name: paciente_certidao_nascimento
+        description: Número de Certidão de Nascimento do paciente. 
+        policy_tags:
+          - '{{ var ("TAG_IDENTIDADE") }}'
         description: Número do prontuário do paciente.
       - name: paciente_nome
         description: Nome do paciente.
+        policy_tags:
+        - '{{ var ("TAG_NOME") }}'
       - name: paciente_data_nascimento
         description: Data de nascimento do paciente.
       - name: paciente_sexo
@@ -506,8 +523,12 @@ models:
         description: Raça/Cor do paciente.
       - name: paciente_responsavel_nome
         description: Nome do responsável pela internação do paciente (parente, amigo etc.)
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: paciente_mae_nome
         description: Nome da mãe do paciente
+        policy_tags:
+        - '{{ var ("TAG_NOME_MAE") }}'
       - name: paciente_documento_tipo
         description: > 
           Identificador do tipo de documento do paciente.
@@ -515,6 +536,8 @@ models:
         description: Número do documento do paciente.
       - name: paciente_cns
         description: Número do Cartão Nacional de Saúde do paciente. 
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: paciente_nacionalidade
         description: Nacionalidade do paciente.
       - name: paciente_mun_origem
@@ -525,6 +548,8 @@ models:
           (ver TB_C_D tabela 21).
       - name: paciente_logradouro
         description: Logradouro do paciente.
+        policy_tags:
+        - '{{ var ("TAG_ENDERECO") }}'
       - name: paciente_numero
         description: Número do endereço do paciente.
       - name: paciente_complemento
@@ -594,11 +619,7 @@ models:
       - name: internacao_carater
         description: Caráter da internação (ver TB_C_D tabela 28).
       - name: internacao_modalidade
-        description: >
-          Modalidade da internação, onde:
-          02 = hospitalar.
-          03 = hospitalar dia (quando o paciente fica apenas um dia no hospital).
-          04 = internação domiciliar.
+        description: Modalidade da internação
       - name: motivo_saida
         description: Motivo da alta do paciente (ver TB_C_D tabela 23).
       - name: medico_solicitante_documento_tipo
@@ -606,21 +627,29 @@ models:
           Identificador do tipo de documento do médico solicitante.
       - name: medico_solicitante_documento
         description: Número do documento do médico que pediu a internação.
+        policy_tags:
+        - '{{ var ("TAG_IDENTIDADE") }}'
       - name: medico_responsavel_documento_tipo
         description: > 
           Identificador do documento do médico responsável.
       - name: medico_responsavel_documento
         description: Documento do médico responsável pelo paciente.
+        policy_tags:
+        - '{{ var ("TAG_IDENTIDADE") }}'
       - name: diretor_clinico_documento_tipo
         description: >
           Identificador do tipo de documento do diretor clínico que se responsabiliza pela internação.
       - name: diretor_clinico_documento
         description: Número do documento do diretor clínico que se responsabiliza pela internação.
+        policy_tags:
+        - '{{ var ("TAG_IDENTIDADE") }}'
       - name: medico_autorizador_documento_tipo
         description: >
           Identificador do tipo de documento do médico autorizador.
       - name: medico_autorizador_documento
         description: Número do documento do médico autorizador.
+        policy_tags:
+        - '{{ var ("TAG_IDENTIDADE") }}'
       - name: diagnostico_principal
         description: Código do diagnóstico principal.
       - name: diagnostico_secundario
@@ -665,12 +694,7 @@ models:
           Quantidade de filhos do paciente. Informado apenas quando o paciente é submetido a
           laqueadura ou vasectomia.
       - name: esterilizacao_grau_instrucao
-        description: >
-          Grau de instrução do paciente:
-          1 = analfabeto.
-          2 = primeiro grau.
-          3 = segundo grau.
-          4 = terceiro grau.
+        description: Grau de instrução do paciente.
       - name: esterilizacao_cid_indicacao
         description: CID de indicação de laqueadura ou de vasectomia.
       - name: esterilizacao_metodo_contraceptivo1
@@ -744,18 +768,20 @@ models:
         description: Código DDD do telefone do paciente. 
       - name: paciente_tel_num
         description: Número de telefone do paciente.
-      - name: audit_just
-        description: ""
-      - name: audit_sisaih01_just
-        description: ""
+        policy_tags:
+        - '{{ var ("TAG_TELEFONE") }}'
       - name: duplicidade_cns
         description: Indicador de duplicidade do CNS
       - name: internacao_concom
         description: ...
-      - name: paciente_fonetico_nome
+      - name: paciente_nome_fonetico
         description: Fonética do nome do paciente.
-      - name: paciente_fonetico_nome_mae
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: paciente_mae_nome_fonetico
         description: Fonética do nome da mãe do paciente.
+        policy_tags: 
+          - '{{ var ("TAG_NOME_MAE") }}'
       - name: diagnostico_secundario1
         description: Código do diagnóstico secundário.
       - name: diagnostico_secundario1_class

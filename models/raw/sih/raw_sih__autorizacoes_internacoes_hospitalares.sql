@@ -1,6 +1,6 @@
 {{
     config(
-        alias="internacoes_mrj",
+        alias="autorizacoes_internacoes_hospitalares",
         materialized="table",
     )
 }}
@@ -144,14 +144,45 @@ with
         select
             {{ process_null('AH_CNES') }} as id_cnes,
             {{ process_null('AH_PRONTUARIO') }} as numero_prontuario,
-            substr({{ process_null('AH_CMPT') }}, 1, 4) AS ano_cmpt,
-            substr({{ process_null('AH_CMPT') }}, 5, 6) AS mes_cmpt,
+            substr({{ process_null('AH_CMPT') }}, 1, 4) AS ano_competencia,
+            substr({{ process_null('AH_CMPT') }}, 5, 6) AS mes_competencia,
             case 
-                when regexp_contains(AH_PACIENTE_NUMERO_CPF, r'^0+$') 
+                when regexp_contains(AH_PACIENTE_NUMERO_CPF, r'^0') OR AH_PACIENTE_IDENT_DOC = '5' 
                     then null
-                else {{ process_null('AH_PACIENTE_NUMERO_CPF') }}
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '4'
+                    then substr(AH_PACIENTE_NUMERO_DOC, length(AH_PACIENTE_NUMERO_DOC) - 10)
+                when AH_PACIENTE_IDENT_DOC = '4'
+                    then trim({{ process_null('AH_PACIENTE_NUMERO_DOC') }})
+                else null
             end as paciente_cpf,
-                        case
+
+            case
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0$') or AH_PACIENTE_IDENT_DOC = '5'
+                    then null
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '2' 
+                    then substr(trim(AH_PACIENTE_NUMERO_DOC), length(trim(AH_PACIENTE_NUMERO_DOC)) - 8)
+                when AH_PACIENTE_IDENT_DOC = '2' 
+                    then trim({{ process_null('AH_PACIENTE_NUMERO_DOC') }})
+                else null
+            end as paciente_rg,
+
+            case 
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') or AH_PACIENTE_IDENT_DOC = '5'
+                    then null
+                when AH_PACIENTE_IDENT_DOC = '1'
+                    then trim({{ process_null('AH_PACIENTE_NUMERO_DOC') }})
+                else null
+            end as paciente_pis_pasep,
+            
+            case
+                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') or AH_PACIENTE_IDENT_DOC = '5'
+                    then null
+                when AH_PACIENTE_IDENT_DOC = '3'
+                    then trim({{ process_null('AH_PACIENTE_NUMERO_DOC') }}) 
+                else null
+            end as paciente_certidao_nascimento,
+
+            case
                 when AH_PACIENTE_IDENT_DOC = '1'
                     then 'PIS/PASEP'
                 when AH_PACIENTE_IDENT_DOC = '2'
@@ -164,18 +195,8 @@ with
                     then 'Ignorado'
                 else null
             end as paciente_documento_tipo,
-            case 
-                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '4' -- CPF
-                    then substr(AH_PACIENTE_NUMERO_DOC, length(AH_PACIENTE_NUMERO_DOC) - 10)
-                when regexp_contains(AH_PACIENTE_NUMERO_DOC, r'^0+$') and AH_PACIENTE_IDENT_DOC = '2' -- RG
-                    then substr(AH_PACIENTE_NUMERO_DOC, length(AH_PACIENTE_NUMERO_DOC) - 8)
-                when ah_paciente_numero_doc like " %" or AH_PACIENTE_IDENT_DOC = '5' -- Documento ignorado
-                    then null
-                else {{ process_null('AH_PACIENTE_NUMERO_DOC') }}
-            end as paciente_documento,
-            {{ process_null('AH_PACIENTE_NOME') }} as paciente_nome,
-            {{ process_null('AH_PACIENTE_FONETICO_NOME') }} as paciente_fonetico_nome,
-
+            trim({{ process_null('AH_PACIENTE_NOME') }}) as paciente_nome,
+            trim({{ process_null('AH_PACIENTE_FONETICO_NOME') }}) as paciente_nome_fonetico,
             case
                 when length(ah_paciente_dt_nascimento) = 8
                     then cast(ah_paciente_dt_nascimento as date format 'YYYYMMDD')
@@ -184,8 +205,8 @@ with
             {{ process_null('AH_PACIENTE_IDADE') }} as paciente_idade,
             {{ process_null('AH_PACIENTE_SEXO') }} as paciente_sexo,
             {{ process_null('AH_PACIENTE_RACA_COR') }} as paciente_raca_cor,
-            {{ process_null('AH_PACIENTE_NOME_RESP') }} as paciente_responsavel_nome,
-            {{ process_null('AH_PACIENTE_NOME_MAE') }} as paciente_mae_nome,
+            trim({{ process_null('AH_PACIENTE_NOME_RESP') }}) as paciente_responsavel_nome,
+            trim({{ process_null('AH_PACIENTE_NOME_MAE') }}) as paciente_mae_nome,
             {{ process_null('AH_PACIENTE_FONETICO_NOME_MAE') }} as paciente_mae_nome_fonetico,
             case 
                 when regexp_contains(AH_PACIENTE_NUMERO_CNS, r'^0+$')
@@ -195,7 +216,7 @@ with
             {{ process_null('AH_PACIENTE_NACIONALIDADE') }} as paciente_nacionalidade,
             {{ process_null('AH_PACIENTE_MUN_ORIGEM') }} as paciente_mun_origem,
             {{ process_null('AH_PACIENTE_TIPO_LOGR') }} as paciente_tipo_logradouro,
-            {{ process_null('AH_PACIENTE_LOGR') }} as paciente_logradouro,
+            trim({{ process_null('AH_PACIENTE_LOGR') }}) as paciente_logradouro,
             nullif(trim(AH_PACIENTE_LOGR_NUMERO), '') as paciente_numero,
             nullif(trim(AH_PACIENTE_LOGR_COMPL), '') as paciente_complemento,
             nullif(trim(AH_PACIENTE_LOGR_BAIRRO), '') as paciente_bairro,
@@ -363,7 +384,6 @@ with
             {{ process_null('AH_LAQVAS_MET_CONTRACEP1') }} as esterilizacao_metodo_contraceptivo1,
             {{ process_null('AH_LAQVAS_MET_CONTRACEP2') }} as esterilizacao_metodo_contraceptivo2,
             if(ah_laqvas_gestacao_risco = "0", true, false) as esterilizacao_gestacao_risco_indicador,
-            {{ process_null('AH_VERSAO_SISAIH01') }} as versao_sisaih01,
             if(ah_st_duplicidade = '1', true, false) as duplicidade_indicador,
             {{ process_null('AH_ST_BLOQUEIO') }} as bloqueio,
             case 
@@ -378,7 +398,6 @@ with
                 else null
             end as agravo,
             {{ process_null('AH_MOT_BLOQ') }} as motivo_bloqueio,
-            {{ process_null('AH_IN_GER_INF') }} as in_ger_inf, -- Coluna não ficou clara no dicionário de dados
             case 
                 when AH_GESTOR_IDENT = '1'
                     then 'CPF'
@@ -405,7 +424,6 @@ with
             {{ process_null('AH_TIPO_FAEC') }} as faec,
             {{ process_null('AH_ST_INTERNACAO_CONCOM') }} as internacao_concom,
             nullif(trim(AH_CS), '') as codigo_seguranca,
-            {{ process_null('AH_AUDIT_SISAIH01_JUST') }} as audit_sisaih01_just,
             if(ah_st_duplicidade_cns = '1', true, false) as duplicidade_cns,
             case
                 when AH_DIAG_PRI in ("0000", "0") or AH_DIAG_PRI like "%  "
@@ -440,9 +458,28 @@ with
             {{ process_null('ROWNUMBER') }} as rownumber
 
         from sih_2008_2024
+    ),
+
+    deduplicado as (
+        select * 
+        from renomeado
+        qualify
+            row_number() over (
+                partition by 
+                    ano_competencia,
+                    mes_competencia,
+                    id_cnes,
+                    numero_prontuario,
+                    paciente_cpf,
+                    data_internacao,
+                    lote_apresentacao,
+                    data_emissao,
+                    data_saida,
+                    codigo_seguranca
+                order by rownumber desc) = 1
     )
 
-select distinct * from renomeado
+select * from deduplicado
 
 
 
