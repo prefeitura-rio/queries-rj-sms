@@ -675,3 +675,53 @@ models:
         description: Esta coluna representa a data e hora em que o snapshot dos dados
           foi tirado. É útil para rastrear as alterações históricas nos dados ao
           longo do tempo. O tipo de dados dessa coluna é datetime.
+  - name: raw_cnes_web__carga_horaria_sus
+    description: Tabela de carga horária do profissional.
+    columns:
+      - name: id_unidade
+        description: Código do Estabelecimento de saúde
+      - name: id_profissional_sus
+        description: Código do profissional de saúde.
+      - name: id_cbo
+        description: Código Brasileiro de Ocupação.
+      - name: atende_sus_indicador
+        description: Indica se o profissional faz atendimento SUS.
+      - name: vinculacao
+        description: > 
+          Indica a vinculação, o tipo e o sub tipo de vínculo do
+          Profissional com o Estabelecimento de Saúde.
+      - name: conselho_tipo
+        description: Código do Orgão Emissor.
+      - name: id_registro_conselho
+        description: Número do Registro no Conselho de Classe.
+      - name: sigla_uf_crm
+        description: UF do CRM.
+      - name: preceptor_indicador
+        description: Indica se o profissional é preceptor na equipe.
+      - name: residente_indicador
+        description: Indica se o profissional é residente na equipe.
+      - name: cnpj_empregador
+        description: Número do CNPJ do Empregador.
+      - name: carga_horaria_ambulatorial
+        description: Quantidade de carga horária ambulatorial.
+      - name: carga_horaria_hospitalar
+        description: Quantidade de carga horária hospitalar.
+      - name: carga_horaria_outros
+        description: Quantidade de carga horária de Outros.
+      - name: data_atualizacao
+        description: Data da última atualização do registro.
+      - name: data_registro_banco
+        description: Data do registro no banco de dados.
+      - name: data_carga
+        description: >
+          Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro.
+      - name: ano_particao
+        description: Ano da partição de dados.
+      - name: mes_particao
+        description: Mês da partição de dados.
