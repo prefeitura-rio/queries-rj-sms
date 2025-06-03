@@ -5,8 +5,6 @@
         schema="projeto_monitora_reg",
         alias="monitor_vagas_ambulatoriais",
         materialized="table",
-        partition_by={"field": "ano_competencia", "data_type": "int64"},
-        cluster_by=["mes_competencia"],
     )
 }}
 
