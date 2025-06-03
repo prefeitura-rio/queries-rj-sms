@@ -710,8 +710,8 @@ models:
         description: Quantidade de carga horária de Outros.
       - name: data_atualizacao
         description: Data da última atualização do registro.
-      - name: data_registro_banco
-        description: Data do registro no banco de dados.
+      - name: data_atualizacao_origem
+        description: Data da primeira entrada no Banco de Produção Federal
       - name: data_carga
         description: >
           Esta coluna representa a data e hora em que os dados foram
