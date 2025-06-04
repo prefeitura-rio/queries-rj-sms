@@ -42,7 +42,8 @@ WITH
 
             {{ remove_double_quotes('cod_cid10') }} AS cod_cid10,
             {{ remove_double_quotes('estado') }} AS estado,
-            {{ remove_double_quotes('data_diagnostico') }} AS data_diagnostico,
+            SAFE_CAST({{ remove_double_quotes('data_diagnostico') }} AS DATETIME) AS data_diagnostico,
+   
    
             {{ remove_double_quotes('extracted_at') }} AS extracted_at
         FROM condicoes_deduplicados
