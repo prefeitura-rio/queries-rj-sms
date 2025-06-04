@@ -27,7 +27,7 @@ WITH
         FROM (
             SELECT
                 *,
-                ROW_NUMBER() OVER (PARTITION BY id_prontuario_global, cod_vacina, lote ORDER BY extracted_at DESC) AS rn
+                ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY extracted_at DESC) AS rn
             FROM source_atendimentos
         )
         WHERE rn = 1
