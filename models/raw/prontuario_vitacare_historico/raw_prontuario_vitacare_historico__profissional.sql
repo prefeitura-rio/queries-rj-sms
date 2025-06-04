@@ -19,7 +19,7 @@ WITH
     fato_profissionais AS (
         SELECT
             -- PKs e Chaves
-            {{ remove_double_quotes('prof_id') }} AS prof_id,
+            REPLACE({{ remove_double_quotes('prof_id') }}, '.0', '') AS prof_id,
             {{ remove_double_quotes('profissional_cns') }} AS profissional_cns,
             {{ remove_double_quotes('profissional_cpf') }} AS profissional_cpf,
             {{ remove_double_quotes('profissional_nome') }} AS profissional_nome,
