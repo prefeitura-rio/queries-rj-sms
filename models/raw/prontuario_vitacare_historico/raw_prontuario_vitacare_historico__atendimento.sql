@@ -45,7 +45,7 @@ WITH
             {{ remove_double_quotes('profissional_cns') }} AS profissional_cns,
             {{ remove_double_quotes('profissional_cpf') }} AS profissional_cpf,
             {{ remove_double_quotes('profissional_nome') }} AS profissional_nome,
-            {{ remove_double_quotes('diprofissional_cboff') }} AS profissional_cbo,
+            {{ remove_double_quotes('profissional_cbo') }} AS profissional_cbo,
             {{ remove_double_quotes('profissional_cbo_descricao') }} AS profissional_cbo_descricao,
             {{ remove_double_quotes('profissional_equipe_nome') }} AS profissional_equipe_nome,
             {{ remove_double_quotes('profissional_equipe_cod_ine') }} AS profissional_equipe_cod_ine,
