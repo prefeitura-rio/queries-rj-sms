@@ -14,7 +14,7 @@ select
     cast(CO_EQUIPE as string) as equipe_ine,
     cast(SEQ_EQUIPE as string) as equipe_sequencial,
     cast(NM_REFERENCIA as string) as equipe_nome,
-    cast(TP_EQUIPE as string) as id_tipo_equipe,
+    cast(TP_EQUIPE as string) as id_equipe_tipo,
     cast(CO_SUB_TIPO_EQUIPE as string) as id_subtipo_equipe,
     cast(UNIDADE_ID as string) as id_unidade,
     cast(COD_MUN as string) as id_municipio,
