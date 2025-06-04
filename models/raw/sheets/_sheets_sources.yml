@@ -16,6 +16,7 @@ sources:
       - name: profissionais_cns_cpf_aux
       - name: assistencial_procedimento
       - name: usuarios_permitidos_hci
+      - name: bairros_rio
       
   - name: brutos_sheets
     database: rj-sms

@@ -159,7 +159,7 @@ with
         select
             ec.* except (cpf_enriq),
             dc.data_entrada_profissional,
-            dc.data_desligamento_pro fissional
+            dc.data_desligamento_profissional
         from enriquecimento_cpf_gdb as ec
         left join
             duracao_contrato as dc
