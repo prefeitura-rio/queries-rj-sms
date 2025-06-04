@@ -13,14 +13,14 @@ select
     cast(id_profissional_sus as string) as id_profissional_sus,
     cast(PROF_ID as string) as id_profissional_cnes,
     cast(CPF_PROF as string) as cpf,
+    cast(COD_CNS as string) as cns,
     cast(NOME_PROF as string) as nome,
     cast(DATA_NASC as date) as data_nascimento,	
     case 
-        when SEXO='F' then 'female'
-        when SEXO='M' then 'male'
+        when SEXO='F' then 'Feminino'
+        when SEXO='M' then 'Masculino'
         else null
-    end as sexo,
-    cast(COD_CNS as string) as cns
+    end as sexo
     from source
 )
 select * from renamed	
