@@ -725,8 +725,3 @@ models:
         description: Ano da partição de dados.
       - name: mes_particao
         description: Mês da partição de dados.
-      - name: data_particao
-        description: Esta coluna representa a data da partição. É um valor de string que
-          combina o ano e o mês da partição em uma única data (no formato
-          'AAAA-MM-01'). Essa data é importante para entender quando os dados
-          foram particionados e pode ser usada para análise baseada em tempo.
