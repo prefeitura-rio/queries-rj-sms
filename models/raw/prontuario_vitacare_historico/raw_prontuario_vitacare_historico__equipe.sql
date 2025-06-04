@@ -10,11 +10,6 @@ WITH
 
     source_equipes AS (
         SELECT 
-            CONCAT(
-                NULLIF({{ remove_double_quotes('id_cnes') }}, ''), 
-                '.',
-                NULLIF({{ remove_double_quotes('id') }}, '')
-            ) AS id_equipe_global,
             *
         FROM {{ source('brutos_vitacare_historic_staging', 'EQUIPES') }} 
     ),
@@ -27,7 +22,7 @@ WITH
         FROM (
             SELECT
                 *,
-                ROW_NUMBER() OVER (PARTITION BY id_equipe_global ORDER BY extracted_at DESC) AS rn
+                ROW_NUMBER() OVER (PARTITION BY n_ine ORDER BY extracted_at DESC) AS rn
             FROM source_equipes
         )
         WHERE rn = 1
@@ -36,7 +31,6 @@ WITH
     fato_equipes AS (
         SELECT
             -- PKs e Chaves
-            id_equipe_global,
             {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
             
             REPLACE({{ remove_double_quotes('id') }}, '.0', '') AS id,
