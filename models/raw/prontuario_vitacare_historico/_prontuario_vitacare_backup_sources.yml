@@ -5,11 +5,22 @@ sources:
     database: rj-sms-dev
     schema: brutos_vitacare_historic_staging
     tables:
-      - name: ATENDIMENTOS
-      - name: EQUIPES
       - name: ALERGIAS
+      - name: ATENDIMENTOS
       - name: CONDICOES
       - name: ENCAMINHAMENTOS
+      - name: EQUIPES
+      - name: HIV
       - name: INDICADORES
+      - name: PACIENTES
+      - name: PRENATAL
+      - name: PROCEDIMENTOS_CLINICOS
+      - name: PROFISSIONAIS
+      - name: SAUDECRIANCA
+      - name: SAUDEMULHER
+      - name: SIFILIS
+      - name: SOLICITACAO_EXAMES
+      - name: TESTESRAPIDOS
+      - name: TUBERCULOSE
+      - name: UNIDADE
       - name: VACINAS
-      - name: PRESCRICOES
