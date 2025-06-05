@@ -114,6 +114,13 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
+      cnes_gdb:
+        +schema: brutos_cnes_gdb
+        +tags: ["weekly",'cnes_gdb']
+        +labels:
+          dado_publico: sim
+          dado_pessoal: sim
+          dado_sensivel: sim
       area_programatica:
         +schema: brutos_area_programatica
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
