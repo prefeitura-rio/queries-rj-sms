@@ -54,7 +54,7 @@ with
 
             cast(ano_particao as INT64) as ano_particao,
             cast(mes_particao as INT64) as mes_particao,
-            cast(data_particao as date) as data_particao
+            DATE(data_particao) as data_particao
         from deduplicated
     )
 select *
