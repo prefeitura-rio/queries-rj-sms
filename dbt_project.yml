@@ -176,7 +176,7 @@ models:
           dado_sensivel: nao
           dominio: subgeral
       diario_oficial:
-        +schema: brutos_diario_oficial_staging
+        +schema: brutos_diario_oficial
         +tags: "daily"
         +labels:
           dado_publico: sim
