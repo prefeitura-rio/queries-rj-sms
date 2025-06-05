@@ -3,7 +3,7 @@
 with
     source as (
         select bairro, ap, ap_titulo
-        from {{ source("brutos_area_programatica_staging", "bairros_aps") }}
+        from {{ source("brutos_sheets_staging", "bairros_rio") }}
     )
 
 select *
