@@ -175,6 +175,13 @@ models:
           dado_pessoal: sim
           dado_sensivel: nao
           dominio: subgeral
+      diario_oficial:
+        +schema: brutos_diario_oficial_staging
+        +tags: "daily"
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       monitoramento:
         +schema: gerenciamento__historico_clinico__logs
         +tags: "daily"

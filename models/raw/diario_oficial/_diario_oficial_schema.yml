@@ -1,0 +1,34 @@
+version: 2
+models:
+  - name: raw_diario_oficial__diarios_rj
+    description: >
+      Conteúdo textual de artigos do Diário Oficial do Município
+      que podem ser relevantes para a Secretaria Municipal de Saúde.
+    columns:
+      - name: id_diario
+        description: Identificador do Diário Oficial
+        data_type: int64
+      - name: data_publicacao
+        description: Data de publicação do Diário Oficial (YYYY-DD-MM)
+        data_type: date
+      - name: titulo
+        description: Título do artigo
+        data_type: string
+      - name: texto
+        description: Conteúdo textual do artigo
+        data_type: string
+      - name: html
+        description: HTML cru extraído do artigo
+        data_type: string
+      - name: data_extracao
+        description: A data e hora em que os dados foram extraídos
+        data_type: datetime
+      - name: ano_particao
+        description: Ano da partição
+        data_type: int64
+      - name: mes_particao
+        description: Mês da partição
+        data_type: int64
+      - name: data_particao
+        description: Data da partição (YYYY-MM-DD)
+        data_type: date
