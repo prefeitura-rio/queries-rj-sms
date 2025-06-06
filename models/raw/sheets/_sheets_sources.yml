@@ -19,6 +19,7 @@ sources:
       - name: municipios_rio
       - name: projeto_c34_cids
       - name: projeto_c34_procedimentos
+      - name: procedimentos_ser
       
   - name: brutos_sheets
     database: rj-sms

@@ -2,20 +2,13 @@ version: 2
 
 sources:
   - name: miloskimatheus__monitora_reg
-    database: rj-sms-dev
+    database: rj-sms
     schema: miloskimatheus__monitora_reg
     tables:
     - name: projeto_c34__sim_2024_mrj
-    
-  - name: Herian__brutos_sih
-    database: rj-sms-dev
-    schema: Herian__brutos_sih
-    tables:
-    - name: internacoes_mrj
-
+  
   - name: sub_geral_prod
     database: rj-sms-sandbox
     schema: sub_geral_prod
     tables:
     - name: c34_ser_ambulatorial
-    - name: c34_procedimentos_ser
