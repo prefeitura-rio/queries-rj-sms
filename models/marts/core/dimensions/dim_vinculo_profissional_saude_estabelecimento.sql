@@ -15,7 +15,7 @@ with
     estabelecimentos as (select distinct id_cnes from {{ ref("dim_estabelecimento") }})
 
 
-select
+select distinct 
     p.id_cnes,
     profissional_codigo_sus as id_profissional_sus,
     profissional_cns,
@@ -50,7 +50,7 @@ select
     carga_horaria_outros,
     carga_horaria_hospitalar,
     carga_horaria_ambulatorial,
-    data_registro as data_ultima_atualizacao
+    data_atualizacao
 
 from profissional_serie_historica as p
 inner join estabelecimentos as estabelecimentos 
