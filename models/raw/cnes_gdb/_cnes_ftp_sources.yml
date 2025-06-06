@@ -8,3 +8,6 @@ sources:
     - name: estabelecimento
     - name: profissional
     - name: vinculo
+    - name: equipe_vinculo
+    - name: equipe
+    - name: equipe_tipo

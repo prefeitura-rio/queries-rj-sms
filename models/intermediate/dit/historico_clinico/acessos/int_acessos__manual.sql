@@ -67,6 +67,7 @@ with
                         unidade_tipo,
                         unidade_cnes,
                         unidade_ap,
+                        false as eh_equipe_consultorio_rua,
                         funcao_detalhada,
                         funcao_grupo,
                         nivel_acesso

@@ -114,6 +114,13 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
+      cnes_gdb:
+        +schema: brutos_cnes_gdb
+        +tags: ["weekly",'cnes_gdb']
+        +labels:
+          dado_publico: sim
+          dado_pessoal: sim
+          dado_sensivel: sim
       area_programatica:
         +schema: brutos_area_programatica
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
@@ -168,6 +175,13 @@ models:
           dado_pessoal: sim
           dado_sensivel: nao
           dominio: subgeral
+      diario_oficial:
+        +schema: brutos_diario_oficial
+        +tags: "daily"
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       monitoramento:
         +schema: gerenciamento__historico_clinico__logs
         +tags: "daily"
