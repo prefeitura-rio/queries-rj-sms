@@ -42,9 +42,7 @@ with
             ocor_bairro as obito_bairro_ocor,
             ocor_estab as obito_estab_ocor_cnes
 
-        from
-            {{ source("miloskimatheus__monitora_reg", "projeto_c34__sim_2024_mrj") }}
-            as sim
+        from {{ source("sub_geral_prod", "c34_obitos_mrj") }} as sim
     ),
 
     obitos_desidentificados as (

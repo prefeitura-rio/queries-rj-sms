@@ -28,9 +28,8 @@ with
 
         from estabs_bairros as src
         left join
-            {{ ref("raw_area_programatica__bairros_aps") }} as bairros_aps using (
-                bairro
-            )
+            {{ ref("raw_sheets__area_programatica_bairros_aps") }} as bairros_aps
+            using (bairro)
     )
 
 select *

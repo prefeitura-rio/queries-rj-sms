@@ -9,7 +9,7 @@ with
             data_nasc as data_nasc_sim,
             declaracao_obito_num as declaracao_obito_sim
 
-        from {{ source("miloskimatheus__monitora_reg", "projeto_c34__sim_2024_mrj") }}
+        from {{ source("sub_geral_prod", "c34_obitos_mrj") }}
 
         where
             1 = 1
@@ -61,7 +61,7 @@ with
             {{ clean_name_string("upper(paciente_nome)") }} as nome_fonte,
             {{ clean_name_string("upper(paciente_nome_mae)") }} as nome_mae_fonte,
             date(paciente_data_nasc) as data_nasc_fonte
-        from {{ source("Herian__brutos_sih", "internacoes_mrj") }}
+        from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}
         where
             1 = 1
             and paciente_cpf is not null

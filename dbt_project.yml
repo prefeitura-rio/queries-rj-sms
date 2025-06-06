@@ -121,14 +121,6 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: sim
-      area_programatica:
-        +schema: brutos_area_programatica
-        +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
-        +labels:
-          dado_publico: sim
-          dado_pessoal: nao
-          dado_sensivel: nao
-          dominio: subgeral
       geo_pgeo3:
         +schema: brutos_geo_pgeo3
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
@@ -280,13 +272,7 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      sisreg_tme:
-        +schema: projeto_sisreg_tme
-        +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
-        +labels:
-          dado_publico: sim
-          dado_pessoal: nao
-          dado_sensivel: nao
+
 
     intermediate:
       +materialized: ephemeral
@@ -442,6 +428,13 @@ models:
           +labels:
             dado_publico: nao
             dado_pessoal: sim
+            dado_sensivel: nao
+        sisreg_tme:
+          +schema: projeto_sisreg_tme
+          +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
+          +labels:
+            dado_publico: sim
+            dado_pessoal: nao
             dado_sensivel: nao
 
 tests:
