@@ -1,0 +1,50 @@
+{{
+    config(
+        alias="alergias", 
+        materialized="table",
+        schema="brutos_prontuario_vitacare_historico",
+    )
+}}
+
+WITH
+
+    source_alergias AS (
+        SELECT 
+            CONCAT(
+                NULLIF({{ remove_double_quotes('id_cnes') }}, ''), 
+                '.',
+                NULLIF({{ remove_double_quotes('acto_id') }}, '')
+            ) AS id_prontuario_global,
+            *
+        FROM {{ source('brutos_vitacare_historic_staging', 'ALERGIAS') }} 
+    ),
+
+
+      -- Using window function to deduplicate alergias
+    alergias_deduplicados AS (
+        SELECT
+            *
+        FROM (
+            SELECT
+                *,
+                ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY extracted_at DESC) AS rn
+            FROM source_alergias
+        )
+        WHERE rn = 1
+    ),
+
+    fato_alergias AS (
+        SELECT
+            -- PKs e Chaves
+            id_prontuario_global,
+            {{ remove_double_quotes('acto_id') }} AS id_prontuario_local,
+            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
+            {{ remove_double_quotes('alergias_anamnese_descricao') }} AS alergias_anamnese_descricao,
+   
+            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+        FROM alergias_deduplicados
+    )
+
+SELECT
+    *
+FROM fato_alergias
