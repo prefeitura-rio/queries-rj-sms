@@ -592,6 +592,7 @@ models:
         description: "Mês de partição dos dados"
       - name: data_particao
         description: "Data completa de partição dos dados"
+
   - name: raw_informes_vitacare_listagem_vacina_v2
     description: "Descrição da tabela contendo dados de ações de vacinação realizadas."
     columns:
@@ -675,3 +676,573 @@ models:
         description: "Data da partição dos dados."
       - name: metadados
         description: "Metadados associados ao registro." 
+
+  - name: raw_informes_vitacare_ficha_c_v2
+    description: >
+      Modelo contendo dados de pacientes atendidos pela atenção primária, incluindo informações demográficas, de saúde, socioeconômicas do cadastro infantil.
+    columns:
+      - name: competencia
+        description: "Competencia de referencia da informação (AAAA-MM)"
+      - name: ap
+        description: "Área programática de saúde"
+      - name: cnes_unidade
+        description: "Número CNES da unidade de saúde"
+      - name: nome_unidade
+        description: "Nome da unidade de saúde responsável"
+      - name: codigo_equipe_saude
+        description: "Código único da equipe de saúde"
+      - name: codigo_ine_equipe
+        description: "Código INE da equipe de saúde"
+      - name: nome_equipe
+        description: "Nome da equipe de saúde responsável"
+      - name: codigo_microarea
+        description: "Código da microárea de atuação"
+      - name: nome_acs
+        description: "Nome do Agente Comunitário de Saúde responsável"
+      - name: cns_acs
+        description: "Número do Cartão Nacional de Saúde (CNS) do Agente Comunitário"
+      - name: nome_pessoa_cadastrada
+        description: "Nome completo do paciente"
+      - name: nome_social_pessoa_cadastrada
+        description: "Nome social do paciente (quando aplicável)"
+      - name: data_cadastro
+        description: "Data do cadastro do paciente no sistema"
+      - name: cpf
+        description: "CPF do paciente"
+      - name: cpf_valido
+        description: "Indica se o CPF é válido."
+      - name: n_dnv
+        description: "Número DNV (Declaração de Nascido Vivo)"
+      - name: cns_pessoa_cadastrada
+        description: "Número do Cartão Nacional de Saúde (CNS)"
+      - name: nome_mae_pessoa_cadastrada
+        description: "Nome da mãe do paciente"
+      - name: n_familia
+        description: "Número de identificação da família"
+      - name: n_prontuario
+        description: "Número do prontuário do paciente"
+      - name: sexo
+        description: "Sexo biológico do paciente"
+      - name: raca_cor
+        description: "Raça/cor do paciente conforme classificação do IBGE"
+      - name: data_nascimento
+        description: "Data de nascimento do paciente"
+      - name: idade
+        description: "Idade do paciente"
+      - name: situacao_usuario
+        description: "Situação atual do usuário no sistema (ativo, inativo, etc.)"
+      - name: obito
+        description: "Indicador de óbito (S/N)"
+      - name: tipo_logradouro
+        description: "Tipo de logradouro (Rua, Avenida, etc.)"
+      - name: logradouro_endereco
+        description: "Nome do logradouro"
+      - name: logradouro_numero
+        description: "Número do logradouro"
+      - name: cep_logradouro
+        description: "CEP do logradouro"
+      - name: bairro_moradia
+        description: "Bairro de moradia"
+      - name: telefone_contato
+        description: "Telefone para contato"
+      - name: escola
+        description: "Indicador de matricula na escola (S/N)"
+      - name: perfil_bpc
+        description: "Indicador de beneficio de prestação continuada (S/N)"
+      - name: crianca_matriculada_pre_escola
+        description: "Indicador de matricula na pré-escola (S/N)"
+      - name: afastada_creche_pre_escola
+        description: "Indicador de afastamento da educação infantil (S/N)"
+      - name: afastada_da_escola_por_motivo_saude
+        description: "Indicador de afastamento da educação infantil por motivo de saúde (S/N)"
+      - name: crianca_faltou
+        description: "Indicador de faltas escolares (S/N)"
+      - name: atividade_contraturno
+        description: "Indicador matricula em atividade contraturno (S/N)"
+      - name: registros_importantes
+        description: "Registros extras referente ao acompanhamento"
+      - name: onde_dorme
+        description: "Indicador do local onde a criança dorme"
+      - name: comparece_consultas
+        description: "Indicador se a criança comparece as consultas (S/N)"
+      - name: vacinas_em_dia
+        description: "Indicador de vacinas em dia (S/N)"
+      - name: primeira_cons_7_dias
+        description: "Indicador se primeira consulta foi realizada com 7 dias de nascido (S/N)"
+      - name: estado_nutricional
+        description: "Registro de estado nutricional atualizado"
+      - name: tipo_de_aleitamento
+        description: "Indicador do tipo de aleitamento infantil"
+      - name: atraso_desenvolvimento
+        description: "Indicador de atraso no desenvolvimento infantil (S/N)"
+      - name: sinais_risco
+        description: "Indicador de sinais de riscos à criança(S/N)"
+      - name: diarreia
+        description: "Indicador de sintomas de diarreia (S/N)"
+      - name: infeccao_respirat_aguda
+        description: "Indicador de sintomas de infecção respiratória aguda (S/N)"
+      - name: tipo_de_parto
+        description: "Indicador do tipo de parto"
+      - name: estatura_ao_nascer
+        description: "Registro de estatura ao nascer"
+      - name: peso_ao_nascer
+        description: "Registro de peso ao nascer"
+      - name: altura
+        description: "Altura do paciente (m)"
+      - name: peso
+        description: "Peso do paciente (kg)"
+      - name: per_cefalico
+        description: "Perímetro cefálico"
+      - name: apgar_5
+        description: "Apgar de 5 indica que o bebé está com alguma dificuldade na adaptação à vida fora do útero (S/N)"
+      - name: data_acs_visita 
+        description: "Data de realização da visita domiciliar realizada pelo agente comunitário de saúde"
+      - name: metadados
+        description: "Metadados associados ao registro."
+      - name: ano_particao
+        description: "Ano de partição dos dados"
+      - name: mes_particao
+        description: "Mês de partição dos dados"
+      - name: data_particao
+        description: "Data completa de partição dos dados"
+
+  - name: raw_informes_vitacare_estado_nutricional_sisvan
+    description: >
+      Modelo contendo dados extraídos do VitahisCare com informações nutricionais de indivíduos atendidos na atenção primária, incluindo peso, altura, IMC e classificações por faixa etária. Baseado no SISVAN (Sistema de Vigilância Alimentar e Nutricional).
+    columns:
+      - name: competencia
+        description: "Competencia de referencia da informação (AAAA-MM)"
+      - name: ap
+        description: "Área Programática de saúde"
+      - name: cnes_unidade
+        description: "CNES da unidade onde está vinculado"
+      - name: nome_unidade
+        description: "Nome da unidade onde está vinculado"
+      - name: codigo_equipe_saude
+        description: "Código da equipe de saúde"
+      - name: codigo_microarea
+        description: "Código da microárea"
+      - name: nome_pessoa_cadastrada
+        description: "Nome completo do paciente"
+      - name: data_nascimento
+        description: "Data de nascimento do paciente"
+      - name: sexo
+        description: "Sexo informado"
+      - name: nome_responsavel_pessoa_cadastrada
+        description: "Nome do responsável pelo paciente"
+      - name: bairro_moradia
+        description: "Bairro de residência"
+      - name: cep_logradouro
+        description: "CEP do logradouro"
+      - name: data_atendimento
+        description: "Data do registro clínico"
+      - name: peso
+        description: "Peso do paciente (kg)"
+      - name: altura
+        description: "Altura do paciente (cm)"
+      - name: idade_gestacional
+        description: "Idade gestacional, quando aplicável"
+      - name: estnut_crianca_estatura
+        description: "Classificação do estado nutricional da criança com base na estatura"
+      - name: estnut_crianca_peso
+        description: "Classificação do estado nutricional da criança com base no peso"
+      - name: estnut_crianca_imc
+        description: "Classificação do estado nutricional da criança com base no IMC"
+      - name: estnut_adolescentes_imc
+        description: "Classificação do estado nutricional do adolescente com base no IMC"
+      - name: estnut_adolescentes_estatura
+        description: "Classificação do estado nutricional do adolescente com base na estatura"
+      - name: estnut_adulto_imc
+        description: "Classificação do estado nutricional do adulto com base no IMC"
+      - name: estnut_idosos_imc
+        description: "Classificação do estado nutricional do idoso com base no IMC"
+      - name: estnut_gestante_imc
+        description: "Classificação do estado nutricional da gestante com base no IMC"
+      - name: metadados
+        description: "Metadados associados ao registro."
+      - name: ano_particao
+        description: "Ano de partição dos dados"
+      - name: mes_particao
+        description: "Mês de partição dos dados"
+      - name: data_particao
+        description: "Data completa de partição dos dados"
+
+  - name: raw_informes_vitacare_criancas_menores_5_anos
+    description: >
+      Modelo contendo dados sobre crianças menores de 5 anos atendidos pela atenção primária, incluindo informações cadastrais, dados de saúde, consultas médicas e de enfermagem, visitas de ACS, aleitamento materno, exames neonatais (teste do pezinho, da orelhinha, reflexo vermelho), dados de vacinação e antropometria.
+    columns:
+      - name: competencia
+        description: "Competencia de referencia da informação (AAAA-MM)"
+      - name: ap
+        description: "Área Programática de saúde"
+      - name: cnes_unidade
+        description: "Número do CNES da Unidade"
+      - name: nome_unidade
+        description: "Nome da Unidade de saúde no CNES"
+      - name: nome_equipe
+        description: "Nome da Equipe de Saúde no CNES"
+      - name: codigo_equipe_saude
+        description: "Código da Equipe de saúde no CNES"
+      - name: codigo_ine_equipe
+        description: "Código de Identificação Nacional da Equipe de Saúde no CNES"
+      - name: codigo_microarea
+        description: "Código da Microárea do Agente Comunitário de Saúde no CNES"
+      - name: n_dnv
+        description: "Número da Declaração de Nascido Vivo do Paciente"
+      - name: cpf
+        description: "Número do Cadastro de Pessoa Física do Paciente"
+      - name: cpf_valido
+        description: "Indica se o CPF é válido"
+      - name: cns_pessoa_cadastrada
+        description: "Número do Cartão Nacional de Saúde do Paciente Cadastrado na Unidade de Saúde"
+      - name: sexo
+        description: "Sexo do Paciente"
+      - name: nome_pessoa_cadastrada
+        description: "Nome do Paciente"
+      - name: raca
+        description: "Raça/cor do paciente conforme classificação do IBGE"
+      - name: nome_mae_pessoa_cadastrada
+        description: "Nome da Mãe do Paciente Cadastrado"
+      - name: data_nascimento
+        description: "Data de Nascimento do Paciente"
+      - name: n_prontuario
+        description: "Número do Prontuário do Paciente Cadastrado na Unidade de Saúde"
+      - name: data_primeira_consulta_medica_28_dias
+        description: "Data da 1º Consulta Médica até o 28º dia"
+      - name: data_primeira_consulta_medica
+        description: "Data da 1º Consulta Médica"
+      - name: data_ultima_consulta_medica
+        description: "Data da última consulta Médica"
+      - name: n_consultas_medicas
+        description: "Número total de consultas médicas registradas"
+      - name: data_primeira_consulta_enf_28_dias
+        description: "Data da 1º Consulta de Enfermagem até o 28º dia"
+      - name: data_primeira_consulta_enf
+        description: "Data da 1º Consulta de Enfermagem"
+      - name: data_ultima_consulta_enf
+        description: "Data da última consulta de Enfermagem"
+      - name: n_consultas_enfermagem
+        description: "Número total de consultas de enfermagem registradas"
+      - name: data_primeira_visita_acs
+        description: "Data da primeira visita do agente comunitário"
+      - name: data_ultima_visita_acs
+        description: "Data da última visita do agente comunitário"
+      - name: n_visitas_acs
+        description: "Número total de visitas do agente comunitário registradas"
+      - name: aleitamento
+        description: "Tipo de aleitamento ofertado à criança"
+      - name: n_avaliacao_desenvolvimento_denver
+        description: "Número total de avaliação do desenvolvimento (Denver) registradas"
+      - name: data_orientacao_equipe_esb
+        description: "Data da avaliação e orientação em saúde bucal, por qualquer profissional da equipe"
+      - name: data_coleta_teste_pezinho
+        description: "Data da coleta de sangue para rastreio neonatal (Teste do Pezinho)"
+      - name: resultado_teste_pezinho
+        description: "Resultado registrado do Teste do Pezinho"
+      - name: data_resultado_teste_pezinho
+        description: "Data do registro do resuldato do teste do pezinho no prontuário"
+      - name: data_reflexo_vermelho
+        description: "Data da realização do reflexo vermelho"
+      - name: resultado_reflexo_vermelho
+        description: "Resultado registrado do Reflexo Vermelho"
+      - name: data_encaminhamento_teste_orelhinha
+        description: "Data do encaminhamento para realização do teste de emissão otoacústica (EOA)"
+      - name: data_realizacao_teste_orelhinha
+        description: "Data da realização do teste de emissão otoacústica (EOA)"
+      - name: resultado_teste_orelhinha
+        description: "Resultado registrado do Teste de Emissão Otoacústica (EOA)"
+      - name: calendario_vacinal_atualizado
+        description: "Estado de atualização do cartão vacinal no período em análise"
+      - name: data_1d_penta
+        description: "Data de aplicação da primeira dose da vacina Pentavalente"
+      - name: data_2d_penta
+        description: "Data de aplicação da segunda dose da vacina Pentavalente"
+      - name: data_3d_penta
+        description: "Data de aplicação da terceira dose da vacina Pentavalente"
+      - name: peso
+        description: "Último registro de peso do Paciente, em quilograma"
+      - name: altura
+        description: "Última medida de altura registrada do Paciente, em centímetro"
+      - name: data_registro_antropometrico
+        description: "Data do registro do peso e altura"
+      - name: perimetro_cefalico_centimetro
+        description: "Valor mais recente registrado do perímetro cefálico, em centímetros"
+      - name: data_registro_perimetro_cefalico
+        description: "Data do registro do perímetro cefálico"
+      - name: distancia_esq
+        description: "Distância (em metros) entre a criança e o optótipo durante o teste de acuidade visual no olho esquerdo (ESQ)"
+      - name: tipo_optotipos_esq
+        description: "Tipo de optótipo utilizado no teste visual do olho esquerdo, como figuras, letras ou símbolos infantis"
+      - name: sem_correcao_esq
+        description: "Resultado da acuidade visual do olho esquerdo sem correção óptica"
+      - name: com_correcao_esq
+        description: "Resultado da acuidade visual do olho esquerdo com correção óptica"
+      - name: distancia_dir
+        description: "Distância (em metros) entre a criança e o optótipo durante o teste de acuidade visual no olho direito (DIR)"
+      - name: tipo_optotipos_dir
+        description: "Tipo de optótipo utilizado no teste visual do olho direito, como figuras, letras ou símbolos infantis"
+      - name: sem_correcao_dir
+        description: "Resultado da acuidade visual do olho direito sem correção óptica"
+      - name: com_correcao_dir
+        description: "Resultado da acuidade visual do olho direito com uso de correção óptica"
+      - name: data_consulta_snellen
+        description: "Data da realização do teste de acuidade visual utilizando a Tabela de Snellen"
+      - name: metadados
+        description: "Metadados associados ao registro"
+      - name: ano_particao
+        description: "Ano de partição dos dados"
+      - name: mes_particao
+        description: "Mês de partição dos dados"
+      - name: data_particao
+        description: "Data completa de partição dos dados"
+
+  - name: raw_informes_vitacare_indicadores_cg_variavel_1
+    description: "Modelo de Indicadores do contrato de gestão referente a Variável 1."
+    columns:
+      - name: competencia
+        description: "Competencia de referencia da informação (AAAA-MM)"
+      - name: indicador
+        description: "Código identificador do indicador"
+      - name: ap
+        description: "Código identificador da Área Programática"
+      - name: cnes
+        description: "CNES - Código identificador do estabelecimento de saúde"
+      - name: unidade
+        description: "Nome Fantasia da Unidade de saúde "
+      - name: numerador
+        description: "Definição do valor para calculo do indicador listado"
+      - name: denominador
+        description: "Definição do valor para calculo do indicador listado"
+      - name: valor
+        description: "Resultado apresentado de acordo com o definido no termo de referência"
+      - name: metadados
+        description: "Metadados associados ao registro."        
+      - name: ano_particao
+        description: "Ano de partição dos dados"
+      - name: mes_particao
+        description: "Mês de partição dos dados"
+      - name: data_particao
+        description: "Data completa de partição dos dados"
+
+  - name: raw_informes_vitacare_indicadores_cg_variavel_2
+    description: "Modelo de Indicadores do contrato de gestão referente a Variável 2."
+    columns:
+      - name: competencia
+        description: "Competencia de referencia da informação (AAAA-MM)"
+      - name: indicador
+        description: "Código identificador do indicador"
+      - name: grandeza
+        description: "Indicador de nível de abrangencia - unidade ou equipe"
+      - name: ap
+        description: "Código identificador da Área Programática"
+      - name: cnes
+        description: "CNES - Código identificador do estabelecimento de saúde"
+      - name: unidade
+        description: "Nome Fantasia da Unidade de saúde "
+      - name: ine
+        description: "Código de Identificação Nacional da Equipe de Saúde no CNES"
+      - name: equipe
+        description: "Nome da Equipe de Saúde no CNES"
+      - name: numerador
+        description: "Definição do valor para calculo do indicador listado"
+      - name: denominador
+        description: "Definição do valor para calculo do indicador listado"
+      - name: metadados
+        description: "Metadados associados ao registro."        
+      - name: ano_particao
+        description: "Ano de partição dos dados"
+      - name: mes_particao
+        description: "Mês de partição dos dados"
+      - name: data_particao
+        description: "Data completa de partição dos dados"
+
+  - name: raw_informes_vitacare_indicadores_cg_variavel_3
+    description: "Modelo de Indicadores do contrato de gestão referente a Variável 3."
+    columns:
+      - name: competencia
+        description: "Competencia de referencia da informação (AAAA-MM)"
+      - name: indicador
+        description: "Código identificador do indicador"
+      - name: ap
+        description: "Código identificador da Área Programática"
+      - name: cnes
+        description: "CNES - Código identificador do estabelecimento de saúde"
+      - name: unidade
+        description: "Nome Fantasia da Unidade de saúde "
+      - name: ine
+        description: "Código de Identificação Nacional da Equipe de Saúde no CNES"
+      - name: equipe
+        description: "Nome da Equipe de Saúde no CNES"
+      - name: a
+        description: "Condição A - resultado referente a condicao do grupo"
+      - name: b
+        description: "Condição B - resultado referente a condicao do grupo"
+      - name: c
+        description: "Condição C - resultado referente a condicao do grupo"
+      - name: d
+        description: "Condição D - resultado referente a condicao do grupo"
+      - name: e
+        description: "Condição E - resultado referente a condicao do grupo"
+      - name: f
+        description: "Condição F - resultado referente a condicao do grupo"
+      - name: g
+        description: "Condição G - resultado referente a condicao do grupo"
+      - name: h
+        description: "Condição H - resultado referente a condicao do grupo"
+      - name: i
+        description: "Condição I - resultado referente a condicao do grupo"
+      - name: total
+        description: "Resultado apresentado de acordo com o definido no termo de referência"
+      - name: metadados
+        description: "Metadados associados ao registro."
+      - name: ano_particao
+        description: "Ano de partição dos dados"
+      - name: mes_particao
+        description: "Mês de partição dos dados"
+      - name: data_particao
+        description: "Data completa de partição dos dados"
+
+  - name: raw_informes_vitacare_listagem_pacientes_tea
+    description: |
+      Modelo contendo dados detalhados dos pacientes atendidos com Transtorno do Espectro Autista (TEA), 
+      incluindo informações demográficas, diagnósticos clínicos (CID), e avaliações comportamentais realizadas pelas escalas M-CHAT-R/F e AQ-10.
+      Report-VitaHisCare: 'AP_LISTAGEM_ATENDIMENTOS_PACIENTES_TEA'
+    columns:
+      - name: competencia
+        description: "Competencia de referencia da informação (AAAA-MM)"
+      - name: acto_id
+        description: "ACTO_ID"
+      - name: ut_id
+        description: "UT_ID"
+      - name: ap
+        description: "AP"
+      - name: numero_cnes_da_unidade
+        description: "NUMERO_CNES_DA_UNIDADE"
+      - name: unidade
+        description: "UNIDADE"
+      - name: numero_cns_profissional
+        description: "NUMERO_CNS_PROFISSIONAL"
+      - name: tipo_atendimento
+        description: "TIPO_ATENDIMENTO"
+      - name: nome_profissional
+        description: "NOME_PROFISSIONAL"
+      - name: data_consulta
+        description: "DATA_CONSULTA"
+      - name: nome_paciente
+        description: "NOME_PACIENTE"
+      - name: cpf_paciente
+        description: "CPF_PACIENTE"
+      - name: cpf_paciente_valido
+        description: "Indica se o CPF é válido"
+      - name: cns_paciente
+        description: "CNS_PACIENTE"
+      - name: sexo_paciente
+        description: "SEXO_PACIENTE"
+      - name: data_nasc_paciente
+        description: "DATA_NASC_PACIENTE"
+      - name: cid_consulta_diagnostico_01
+        description: "CID_CONSULTA_DIAGNOSTICO_01"
+      - name: cid_01
+        description: "CID_01"
+      - name: estado_cid_consulta_01
+        description: "ESTADO_CID_CONSULTA_01"
+      - name: cid_consulta_diagnostico_02
+        description: "CID_CONSULTA_DIAGNOSTICO_02"
+      - name: cid_02
+        description: "CID_02"
+      - name: estado_cid_consulta_02
+        description: "ESTADO_CID_CONSULTA_02"
+      - name: cid_consulta_diagnostico_03
+        description: "CID_CONSULTA_DIAGNOSTICO_03"
+      - name: cid_03
+        description: "CID_03"
+      - name: estado_cid_consulta_03
+        description: "ESTADO_CID_CONSULTA_03"
+      - name: cid_consulta_diagnostico_04
+        description: "CID_CONSULTA_DIAGNOSTICO_04"
+      - name: cid_04
+        description: "CID_04"
+      - name: estado_cid_consulta_04
+        description: "ESTADO_CID_CONSULTA_04"
+      - name: cid_consulta_diagnostico_05
+        description: "CID_CONSULTA_DIAGNOSTICO_05"
+      - name: cid_05
+        description: "CID_05"
+      - name: estado_cid_consulta_05
+        description: "ESTADO_CID_CONSULTA_05"
+      - name: m_chat_se_voce_apontar_algum
+        description: "M-CHAT-R/F - Se você apontar para algum objeto no quarto, a criança olha para este objeto?"
+      - name: m_chat_alguma_vez_voce_se_perg
+        description: "M-CHAT-R/F - Alguma vez você se perguntou se a criança pode ser surda?"
+      - name: m_chat_crianca_brinca_faz_cont
+        description: "M-CHAT-R/F - A criança brinca de faz de contas?"
+      - name: m_chat_crianca_gosta_subir_nas
+        description: "M-CHAT-R/F - A criança gosta de subir nas coisas?"
+      - name: m_chat_crianca_faz_movimentos
+        description: "M-CHAT-R/F - A criança faz movimentos estranhos com os dedos perto dos olhos?"
+      - name: m_chat_crianca_aponta_dedo
+        description: "M-CHAT-R/F - A criança aponta com o dedo para pedir algo ou para conseguir ajuda?"
+      - name: m_chat_crianca_aponta_dedo_2
+        description: "M-CHAT-R/F - A criança aponta com o dedo para mostrar algo interessante para você?"
+      - name: m_chat_crianca_se_interessa
+        description: "M-CHAT-R/F - A criança se interessa por outras crianças?"
+      - name: m_chat_crianca_traz_coisas
+        description: "M-CHAT-R/F - A criança traz coisas para mostrar para você apenas para compartilhar?"
+      - name: m_chat_crianca_responde_voce
+        description: "M-CHAT-R/F - A criança responde quando você a chama pelo nome?"
+      - name: m_chat_voce_sorri_crianca_ela
+        description: "M-CHAT-R/F - Quando você sorri para a criança, ela sorri de volta para você?"
+      - name: m_chat_crianca_fica_muito_inco
+        description: "M-CHAT-R/F - A criança fica muito incomodada com barulhos do dia a dia?"
+      - name: m_chat_r_f_a_crianca_anda
+        description: "M-CHAT-R/F - A criança anda?"
+      - name: m_chat_crianca_olha_nos_seus
+        description: "M-CHAT-R/F - A criança olha nos seus olhos quando vc está falando ou brincando com ela, ou vestindo a roupa dela"
+      - name: m_chat_crianca_tenta_imitar
+        description: "M-CHAT-R/F - A criança tenta imitar o que você faz?"
+      - name: m_chat_voce_vira_cabeca_olhar
+        description: "M-CHAT-R/F - Quando você vira a cabeça para olhar para alguma coisa, olha ao redor para ver"
+      - name: m_chat_crianca_tenta_fazer
+        description: "M-CHAT-R/F - A criança tenta fazer você olhar para ela?"
+      - name: m_chat_crianca_compreende_voce
+        description: "M-CHAT-R/F - A criança compreende quando você pede para ela fazer alguma coisa?"
+      - name: m_chat_acontece_algo_novo_olha
+        description: "M-CHAT-R/F - Quando acontece algo novo,olha para o seu rosto para ver como você se sente sobre o que aconteceu?"
+      - name: m_chat_crianca_gosta_atividade
+        description: "M-CHAT-R/F - A sua criança gosta de atividades de movimento?"
+      - name: m_chat_r_f_score
+        description: "M-CHAT-R/F - Score"
+      - name: m_chat_r_f_classificacao
+        description: "M-CHAT-R/F - Classificacao"
+      - name: aq_10_elea_frequentemente_perc
+        description: "AQ-10 - Ele(a) frequentemente percebe pequenos ruídos que outras pessoas não notam"
+      - name: aq_10_normalmente_elea_foca
+        description: "AQ-10 - Normalmente, ele(a) foca mais no todo do que nos pequenos detalhes de uma imagem ou situação."
+      - name: aq_10_em_grupos_sociais_elea
+        description: "AQ-10 - Em grupos sociais, ele(a) consegue acompanhar conversas de várias pessoas facilmente"
+      - name: aq_10_elea_consegue_facilmente
+        description: "AQ-10 - Ele(a) consegue facilmente fazer mais do que uma coisa ao mesmo tempo."
+      - name: aq_10_elea_nao_sabe_como_mante
+        description: "AQ-10 - Ele(a) não sabe como manter uma conversa com os seus colegas."
+      - name: aq_10_socialmente_elea_convers
+        description: "AQ-10 - Socialmente, ele(a) conversa bem."
+      - name: aq_10_ao_ouvir_ler_uma_histori
+        description: "AQ-10 - Ao ouvir ou ler uma história, ele(a) tem dificuldades em perceber as intenções e as emoções dos personagens"
+      - name: aq_10_na_pre_escola_elea_gosta
+        description: "AQ-10 - Na pré-escola, ele(a) gostava de brincar de faz de conta com outras crianças."
+      - name: aq_10_elea_consegue_entender
+        description: "AQ-10 - Ele(a) consegue entender o que alguém está pensando ou sentindo só de olhar para seu rosto."
+      - name: aq_10_elea_tem_dificuldades
+        description: "AQ-10 - Ele(a) tem dificuldades para fazer novos amigos."
+      - name: aq_10_score
+        description: "AQ-10 - Score"
+      - name: aq_10_classificacao
+        description: "AQ-10 - Classificacao"
+      - name: metadados
+        description: "Metadados associados ao registro."
+      - name: ano_particao
+        description: "Ano de partição dos dados"
+      - name: mes_particao
+        description: "Mês de partição dos dados"
+      - name: data_particao
+        description: "Data completa de partição dos dados"
