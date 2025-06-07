@@ -264,19 +264,20 @@ models:
         description: Quantidade dispensada do item.
       - name: metadados
         description: Informações adicionais ou técnicas sobre o registro.
-        
+
   - name: raw_informes_vitacare_ficha_a_v2
-    description: "Modelo contendo dados de pacientes atendidos pela saúde comunitária, incluindo informações demográficas, de saúde, socioeconômicas e histórico de consultas."
+    description: >
+      Modelo contendo dados de pacientes atendidos pela saúde comunitária, incluindo informações demográficas, de saúde, socioeconômicas e histórico de consultas.
     columns:
       - name: ap
         description: "Área programática de saúde"
-      - name: numero_cnes_unidade
+      - name: cnes_unidade
         description: "Número CNES da unidade de saúde"
-      - name: nome_unidade_de_saude
+      - name: nome_unidade
         description: "Nome da unidade de saúde responsável"
-      - name: nome_equipe_de_saude
+      - name: nome_equipe
         description: "Nome da equipe de saúde responsável"
-      - name: codigo_da_equipe_de_saude
+      - name: codigo_equipe_saude
         description: "Código único da equipe de saúde"
       - name: codigo_ine_equipe_de_saude
         description: "Código INE da equipe de saúde"
@@ -592,6 +593,7 @@ models:
         description: "Mês de partição dos dados"
       - name: data_particao
         description: "Data completa de partição dos dados"
+
 
   - name: raw_informes_vitacare_listagem_vacina_v2
     description: "Descrição da tabela contendo dados de ações de vacinação realizadas."

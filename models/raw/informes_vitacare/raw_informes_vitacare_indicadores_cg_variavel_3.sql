@@ -2,7 +2,7 @@
     config(
         alias="indicadores_cg_variavel_3",
         materialized="table",
-        tags = ['subpav', 'criancas']
+        tags = ['subpav']
     )
 }}
 
