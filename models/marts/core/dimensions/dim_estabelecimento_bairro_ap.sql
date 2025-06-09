@@ -20,6 +20,9 @@ with
             end as bairro
 
         from {{ ref("raw_cnes_web__estabelecimento") }}
+        where
+            id_cnes
+            in (select id_cnes from {{ ref("raw_sheets__estabelecimento_auxiliar") }})
         qualify row_number() over (partition by id_cnes order by data_carga desc) = 1
     ),
 

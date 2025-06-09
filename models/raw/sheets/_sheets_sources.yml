@@ -21,7 +21,6 @@ sources:
       - name: projeto_c34_procedimentos
       - name: procedimentos_ser
       - name: bairros_rio
-      - name: c34_procedimentos_ser
       
   - name: brutos_sheets
     database: rj-sms

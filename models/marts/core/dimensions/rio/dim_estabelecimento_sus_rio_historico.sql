@@ -382,4 +382,4 @@ with
     )
 
 select *
-from aps_tb
+from final
