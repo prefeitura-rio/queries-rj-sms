@@ -43,17 +43,15 @@ WITH
             {{ remove_double_quotes('nome_vacina') }} AS nome_vacina,
             {{ remove_double_quotes('cod_vacina') }} AS cod_vacina,
             {{ remove_double_quotes('dose') }} AS dose,
-            {{ remove_double_quotes('lote') }} AS lote,
+            {{ process_null(remove_double_quotes('lote')) }} AS lote,
             {{ remove_double_quotes('data_aplicacao') }} AS data_aplicacao,
             {{ remove_double_quotes('data_registro') }} AS data_registro,
             {{ remove_double_quotes('diff') }} AS diff,
             {{ remove_double_quotes('calendario_vacinal_atualizado') }} AS calendario_vacinal_atualizado,
-            {{ remove_double_quotes('tipo_registro') }} AS tipo_registro,
-            {{ remove_double_quotes('estrategia_imunizacao') }} AS estrategia_imunizacao,
-            {{ remove_double_quotes('foi_aplicada') }} AS foi_aplicada,
-            {{ remove_double_quotes('justificativa') }} AS justificativa,
-
-
+            {{ process_null(remove_double_quotes('tipo_registro')) }} AS tipo_registro,
+            {{ process_null(remove_double_quotes('estrategia_imunizacao')) }} AS estrategia_imunizacao,
+            {{ process_null(remove_double_quotes('foi_aplicada')) }} AS foi_aplicada,
+            {{ process_null(remove_double_quotes('justificativa')) }} AS justificativa,
 
             {{ remove_double_quotes('extracted_at') }} AS extracted_at
             
