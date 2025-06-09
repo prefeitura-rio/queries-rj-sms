@@ -272,6 +272,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      projeto_c34:
+        +schema: projeto_c34
+        +tags: ["weekly", "subgeral", "projeto_c34"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
 
 
     intermediate:
