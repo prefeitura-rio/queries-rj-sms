@@ -59,15 +59,15 @@ with
             "sih" as fonte,
             safe_cast(paciente_cpf as int64) as cpf_fonte,
             {{ clean_name_string("upper(paciente_nome)") }} as nome_fonte,
-            {{ clean_name_string("upper(paciente_nome_mae)") }} as nome_mae_fonte,
-            date(paciente_data_nasc) as data_nasc_fonte
+            {{ clean_name_string("upper(paciente_mae_nome)") }} as nome_mae_fonte,
+            date(paciente_data_nascimento) as data_nasc_fonte
         from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}
         where
             1 = 1
             and paciente_cpf is not null
             and paciente_nome is not null
-            and paciente_data_nasc is not null
-            and paciente_nome_mae is not null
+            and paciente_data_nascimento is not null
+            and paciente_mae_nome is not null
     ),
 
     matches_exatos as (

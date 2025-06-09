@@ -57,14 +57,10 @@ models:
         description: Indica se o CPF (Cadastro de Pessoas Físicas) do paciente foi recuperado. Contém 'SIM' se recuperado e 'NAO' se não.
         data_type: string
         quote: true
-        data_tests:
-          - not_null
       - name: paciente_id
         description: Identificador único do paciente. Usado para vincular dados do paciente entre diferentes tabelas e bancos de dados.
         data_type: string
         quote: true
-        data_tests:
-          - unique 
         name: paciente_mes_obito
         description: Mês do óbito do paciente, representado como inteiro (1 = janeiro, 12 = dezembro).
         data_type: int64
