@@ -16,7 +16,7 @@ WITH
                 NULLIF({{ remove_double_quotes('acto_id') }}, '')
             ) AS id_prontuario_global,
             *
-        FROM {{ source('brutos_vitacare_historic_staging', 'HIV') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico', 'HIV') }} 
     ),
 
 
