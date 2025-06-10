@@ -16,7 +16,7 @@ WITH
                 NULLIF({{ remove_double_quotes('acto_id') }}, '')
             ) AS id_prontuario_global,
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'INDICADORES') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'INDICADORES') }} 
     ),
 
 
@@ -41,7 +41,7 @@ WITH
             {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
 
             {{ remove_double_quotes('indicadores_nome') }} AS indicadores_nome,
-            {{ remove_double_quotes('valor') }} AS valor,
+            SAFE_CAST({{ remove_double_quotes('valor') }} AS NUMERIC) AS valor,
    
             {{ remove_double_quotes('extracted_at') }} AS extracted_at
         FROM indicadores_deduplicados

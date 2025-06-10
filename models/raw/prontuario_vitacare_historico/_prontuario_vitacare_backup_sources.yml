@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: brutos_prontuario_vitacare_historico
+  - name: brutos_prontuario_vitacare_historico_staging
     database: rj-sms-dev
-    schema: brutos_prontuario_vitacare_historico
+    schema: brutos_prontuario_vitacare_historico_staging
     tables:
       - name: ALERGIAS
       - name: ATENDIMENTOS

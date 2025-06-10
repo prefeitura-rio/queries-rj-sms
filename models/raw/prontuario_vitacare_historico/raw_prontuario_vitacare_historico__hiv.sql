@@ -16,7 +16,7 @@ WITH
                 NULLIF({{ remove_double_quotes('acto_id') }}, '')
             ) AS id_prontuario_global,
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'HIV') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'HIV') }} 
     ),
 
 
@@ -59,7 +59,7 @@ WITH
             SAFE_CAST({{ process_null(remove_double_quotes('aidsdatainicioparceirovih')) }} AS DATE) AS aidsdatainicioparceirovih,
             {{ process_null(remove_double_quotes('aidsidadeinicioparceirovih')) }} AS aidsidadeinicioparceirovih,
             {{ process_null(remove_double_quotes('aidsobsepidm')) }} AS aidsobsepidm,
-            {{ process_null(remove_double_quotes('aidsdoencaatualano1teste')) }} AS aidsdoencaatualano1teste,
+            REPLACE({{ remove_double_quotes('aidsdoencaatualano1teste') }}, '.0', '') AS aidsdoencaatualano1teste,
             SAFE_CAST({{ process_null(remove_double_quotes('aidsdoencaatualdtaprovavelinfec')) }} AS DATE) AS aidsdoencaatualdtaprovavelinfec,
             {{ process_null(remove_double_quotes('aidsdoencaatualfebre')) }} AS aidsdoencaatualfebre,
             {{ process_null(remove_double_quotes('aidsdoencaatualastenia')) }} AS aidsdoencaatualastenia,

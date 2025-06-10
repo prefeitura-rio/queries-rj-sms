@@ -10,7 +10,7 @@ WITH
 
     source_unidades AS (
         SELECT  *
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'UNIDADE') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'UNIDADE') }} 
     ),
 
 

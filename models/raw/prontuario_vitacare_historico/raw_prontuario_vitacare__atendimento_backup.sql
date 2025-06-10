@@ -15,14 +15,14 @@ WITH
 
     source_atendimentos AS (
         SELECT *
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'ATENDIMENTOS') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'ATENDIMENTOS') }} 
     ),
 
     dim_equipe AS (
         SELECT
             {{ remove_double_quotes('n_ine') }} AS n_ine,
             {{ remove_double_quotes('codigo') }} AS codigo_equipe
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'EQUIPES') }}
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'EQUIPES') }}
     ),
 
     fato_atendimento AS (
@@ -81,7 +81,7 @@ WITH
             TO_JSON_STRING(
                 ARRAY_AGG(STRUCT({{ remove_double_quotes('alergias_anamnese_descricao') }} AS descricao))
             ) AS alergias
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'ALERGIAS') }}
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'ALERGIAS') }}
         GROUP BY 1
     ),
 
@@ -96,7 +96,7 @@ WITH
                 
                 ))
             ) AS condicoes
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'CONDICOES') }}
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'CONDICOES') }}
         GROUP BY 1
     ),
 
@@ -106,7 +106,7 @@ WITH
             TO_JSON_STRING(
                 ARRAY_AGG(STRUCT({{ remove_double_quotes('encaminhamento_especialidade') }} AS descricao))
             ) AS encaminhamentos
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'ENCAMINHAMENTOS') }}
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'ENCAMINHAMENTOS') }}
         GROUP BY 1
     ),
 
@@ -119,7 +119,7 @@ WITH
                     {{ remove_double_quotes('valor') }} AS valor
                 ))
             ) AS indicadores
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'INDICADORES') }}
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'INDICADORES') }}
         GROUP BY 1
     ),
 
@@ -135,7 +135,7 @@ WITH
                 
                 ))
             ) AS vacinas
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'VACINAS') }}
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'VACINAS') }}
         GROUP BY 1
     ),
 
@@ -151,7 +151,7 @@ WITH
                     {{ remove_double_quotes('uso_continuado') }} AS uso_continuado
                 ))
             ) AS prescricoes
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'PRESCRICOES') }}
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'PRESCRICOES') }}
         GROUP BY 1
     ),
 

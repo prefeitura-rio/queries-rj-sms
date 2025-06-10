@@ -11,7 +11,7 @@ WITH
     source_profissionais AS (
         SELECT 
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'PROFISSIONAIS') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'PROFISSIONAIS') }} 
     ),
 
 

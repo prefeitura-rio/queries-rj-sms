@@ -11,7 +11,7 @@ WITH
     source_pacientes AS (
         SELECT 
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico', 'PACIENTES') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'PACIENTES') }} 
     ),
 
 
@@ -45,11 +45,11 @@ WITH
             {{ remove_double_quotes('sexo') }} AS sexo,
             SAFE_CAST({{ remove_double_quotes('dta_nasc') }} AS DATE) AS dta_nasc,
             {{ remove_double_quotes('code') }} AS code,
-            {{ remove_double_quotes('cadastropermanente') }} AS cadastropermanente,
+            SAFE_CAST({{ remove_double_quotes('cadastropermanente') }} AS INT) AS cadastropermanente,
             SAFE_CAST({{ remove_double_quotes('dataatualizacaocadastro') }} AS DATETIME) AS dataatualizacaocadastro,
             SAFE_CAST({{ remove_double_quotes('dataatualizacaovinculoequipe') }} AS DATETIME) AS dataatualizacaovinculoequipe,
             SAFE_CAST({{ remove_double_quotes('datacadastro') }} AS DATETIME) AS datacadastro,
-            {{ remove_double_quotes('obito') }} AS obito,
+            SAFE_CAST({{ remove_double_quotes('obito') }} AS INT) AS obito,
             {{ process_null(remove_double_quotes('dnv')) }} AS dnv,
             {{ process_null(remove_double_quotes('email')) }} AS email,
             {{ process_null(remove_double_quotes('telefone')) }} AS telefone,
@@ -59,22 +59,22 @@ WITH
             {{ process_null(remove_double_quotes('religiao')) }} AS religiao,
             {{ process_null(remove_double_quotes('situacaoprofissional')) }} AS situacaoprofissional,
             {{ process_null(remove_double_quotes('nomesocial')) }} AS nomesocial,
-            SAFE_CAST({{ process_null(remove_double_quotes('frequentaescola')) }} AS BOOLEAN) AS frequentaescola,
+            {{ process_null(remove_double_quotes('frequentaescola')) }} AS frequentaescola,
             {{ process_null(remove_double_quotes('nomemae')) }} AS nomemae,
             {{ process_null(remove_double_quotes('nomepai')) }} AS nomepai,
-            SAFE_CAST({{ process_null(remove_double_quotes('membrocomunidadetradicional')) }} AS BOOLEAN) AS membrocomunidadetradicional,
+            {{ process_null(remove_double_quotes('membrocomunidadetradicional')) }} AS membrocomunidadetradicional,
             {{ process_null(remove_double_quotes('ocupacao')) }} AS ocupacao,
             {{ process_null(remove_double_quotes('orientacaosexual')) }} AS orientacaosexual,
             {{ process_null(remove_double_quotes('nacionalidade')) }} AS nacionalidade,
             {{ process_null(remove_double_quotes('paisnascimento')) }} AS paisnascimento,
-            SAFE_CAST({{ process_null(remove_double_quotes('participagrupocomunitario')) }} AS BOOLEAN) AS participagrupocomunitario,
-            SAFE_CAST({{ process_null(remove_double_quotes('possuiplanosaude')) }} AS BOOLEAN) AS possuiplanosaude,
+            SAFE_CAST({{ process_null(remove_double_quotes('participagrupocomunitario')) }} AS INT) AS participagrupocomunitario,
+            {{ process_null(remove_double_quotes('possuiplanosaude')) }} AS possuiplanosaude,
             {{ process_null(remove_double_quotes('relacaoresponsavelfamiliar')) }} AS relacaoresponsavelfamiliar,
-            SAFE_CAST({{ process_null(remove_double_quotes('territoriosocial')) }} AS BOOLEAN) AS territoriosocial,
+            {{ process_null(remove_double_quotes('territoriosocial')) }} AS territoriosocial,
             {{ process_null(remove_double_quotes('escolaridade')) }} AS escolaridade,
             {{ process_null(remove_double_quotes('identidadegenero')) }} AS identidadegenero,
-            SAFE_CAST({{ process_null(remove_double_quotes('criancamatriculadacrechepreescola')) }} AS BOOLEAN) AS criancamatriculadacrechepreescola,
-            SAFE_CAST({{ process_null(remove_double_quotes('emsituacaoderua')) }} AS BOOLEAN) AS emsituacaoderua,
+            {{ process_null(remove_double_quotes('criancamatriculadacrechepreescola')) }} AS criancamatriculadacrechepreescola,
+            SAFE_CAST({{ process_null(remove_double_quotes('emsituacaoderua')) }} AS INT) AS emsituacaoderua,
             {{ process_null(remove_double_quotes('doencascondicoes')) }} AS doencascondicoes,
             {{ process_null(remove_double_quotes('estadonascimento')) }} AS estadonascimento,
             {{ process_null(remove_double_quotes('estadoresidencia')) }} AS estadoresidencia,
@@ -95,7 +95,7 @@ WITH
             {{ process_null(remove_double_quotes('meiostransporte')) }} AS meiostransporte,
             {{ process_null(remove_double_quotes('possuifiltroagua')) }} AS possuifiltroagua,
             {{ process_null(remove_double_quotes('rendafamiliar')) }} AS rendafamiliar,
-            {{ process_null(remove_double_quotes('responsavelfamiliar')) }} AS responsavelfamiliar,
+            SAFE_CAST({{ process_null(remove_double_quotes('responsavelfamiliar')) }} AS INT) AS responsavelfamiliar,
             {{ process_null(remove_double_quotes('situacaomoradiaposse')) }} AS situacaomoradiaposse,
             {{ process_null(remove_double_quotes('tipodomicilio')) }} AS tipodomicilio,
             {{ process_null(remove_double_quotes('tipologradouro')) }} AS tipologradouro,
@@ -107,8 +107,8 @@ WITH
             {{ process_null(remove_double_quotes('equipe')) }} AS equipe,
             {{ process_null(remove_double_quotes('ineequipe')) }} AS ineequipe,
             {{ process_null(remove_double_quotes('microarea')) }} AS microarea,
-            {{ process_null(remove_double_quotes('vulnerabilidadesocial')) }} AS vulnerabilidadesocial,
-            {{ remove_double_quotes('updated_at') }} AS updated_at,
+            SAFE_CAST({{ process_null(remove_double_quotes('vulnerabilidadesocial')) }} AS INT) AS vulnerabilidadesocial,
+            SAFE_CAST({{ remove_double_quotes('updated_at') }} AS DATETIME)AS updated_at,
 
             {{ remove_double_quotes('extracted_at') }} AS extracted_at
 
