@@ -274,7 +274,7 @@ with
             = cast(contatos_aps.id_cnes as int64)
         left join
             aps_tb
-            on safe_cast(cnes_web.id_unidade as int64)
+            on safe_cast(cnes_web.id_cnes as int64)
             = safe_cast(aps_tb.id_cnes as int64)
         left join
             coordenadas
