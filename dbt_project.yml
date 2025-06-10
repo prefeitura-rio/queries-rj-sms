@@ -222,7 +222,7 @@ models:
           dado_sensivel: sim
           dominio: historico_clinico
       prontuario_vitacare_historico:
-        +schema: brutos_prontuario_vitacare_historico_staging
+        +schema: brutos_prontuario_vitacare_historico
         +tags: ["vitacare", "daily", "vitacare_historico"]
         +labels:
           dado_publico: nao
