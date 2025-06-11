@@ -16,7 +16,7 @@ with
         select
             {{ remove_double_quotes('codigo') }} as codigo,
             {{ remove_double_quotes('n_ine') }} as n_ine
-        from {{ source("brutos_prontuario_vitacare_historico_staging", "EQUIPES") }}
+        from {{ source("brutos_prontuario_vitacare_historico_staging", "equipes") }}
     ),
 
     fato_atendimento as (
@@ -62,9 +62,9 @@ with
 
             -- Metadados
             safe_cast({{ remove_double_quotes('datahora_fim_atendimento') }} as datetime) as updated_at,
-            extracted_at as loaded_at
+            safe_cast({{ remove_double_quotes('extracted_at') }} as datetime) as loaded_at,
         from
-            {{ source("brutos_prontuario_vitacare_historico_staging", "ATENDIMENTOS") }}
+            {{ source("brutos_prontuario_vitacare_historico_staging", "atendimentos") }}
             as atendimentos
         left join
             dim_equipe on {{ remove_double_quotes('atendimentos.profissional_equipe_cod_ine') }} = dim_equipe.n_ine
@@ -84,7 +84,7 @@ with
                 from
                     {{
                         source(
-                            "brutos_prontuario_vitacare_historico_staging", "ALERGIAS"
+                            "brutos_prontuario_vitacare_historico_staging", "alergias"
                         )
                     }}
             )
@@ -107,7 +107,7 @@ with
                     {{
                         source(
                             "brutos_prontuario_vitacare_historico_staging",
-                            "CONDICOES",
+                            "condicoes",
                         )
                     }}
             )
@@ -128,7 +128,7 @@ with
                     {{
                         source(
                             "brutos_prontuario_vitacare_historico_staging",
-                            "ENCAMINHAMENTOS",
+                            "encaminhamentos",
                         )
                     }}
             )
@@ -150,7 +150,7 @@ with
                     {{
                         source(
                             "brutos_prontuario_vitacare_historico_staging",
-                            "INDICADORES",
+                            "indicadores",
                         )
                     }}
             )
@@ -178,7 +178,7 @@ with
                 from
                     {{
                         source(
-                            "brutos_prontuario_vitacare_historico_staging", "SOLICITACAO_EXAMES"
+                            "brutos_prontuario_vitacare_historico_staging", "solicitacao_exames"
                         )
                     }}
             )
@@ -221,7 +221,7 @@ with
                 from
                     {{
                         source(
-                            "brutos_prontuario_vitacare_historico_staging", "VACINAS"
+                            "brutos_prontuario_vitacare_historico_staging", "vacinas"
                         )
                     }}
             )
@@ -254,7 +254,7 @@ with
                     {{
                         source(
                             "brutos_prontuario_vitacare_historico_staging",
-                            "PRESCRICOES",
+                            "prescricoes",
                         )
                     }}
             )
