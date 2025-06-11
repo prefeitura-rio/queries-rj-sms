@@ -96,7 +96,8 @@ SELECT
     telefone_por_cpf.telefones[offset(0)] as telefone
   ) as paciente,
 
-  procedimento_sigtap,
+  procedimento_sigtap as nome_procedimento_geral,
+  procedimento_interno as nome_procedimento_especifico,
   safe_cast(data_marcacao as date) as dia_marcacao,
 
   struct(
@@ -119,7 +120,7 @@ WHERE
       "AGENDAMENTO / CONFIRMADO / EXECUTANTE"
   ) and
   data_marcacao > current_timestamp() and
-  marcacao_executada = "0" and
+  marcacao_executada != "1" and
   unidade_executante_id in (
     SELECT id_cnes
     FROM {{ ref("dim_estabelecimento") }}
