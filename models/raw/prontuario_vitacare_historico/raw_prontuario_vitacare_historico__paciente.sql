@@ -11,7 +11,7 @@ WITH
     source_pacientes AS (
         SELECT 
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'PACIENTES') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'pacientes') }} 
     ),
 
 

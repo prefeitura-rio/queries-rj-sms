@@ -5,23 +5,23 @@ sources:
     database: rj-sms-dev
     schema: brutos_prontuario_vitacare_historico_staging
     tables:
-      - name: ALERGIAS
-      - name: ATENDIMENTOS
-      - name: CONDICOES
-      - name: ENCAMINHAMENTOS
-      - name: EQUIPES
-      - name: HIV
-      - name: INDICADORES
-      - name: PACIENTES
-      - name: PRENATAL
-      - name: PRESCRICOES
-      - name: PROCEDIMENTOS_CLINICOS
-      - name: PROFISSIONAIS
-      - name: SAUDECRIANCA
-      - name: SAUDEMULHER
-      - name: SIFILIS
-      - name: SOLICITACAO_EXAMES
-      - name: TESTESRAPIDOS
-      - name: TUBERCULOSE
-      - name: UNIDADE
-      - name: VACINAS
+      - name: alergias
+      - name: atendimentos
+      - name: condicoes
+      - name: encaminhamentos
+      - name: equipes
+      - name: hiv
+      - name: indicadores
+      - name: pacientes
+      - name: prenatal
+      - name: prescricoes
+      - name: procedimentos_clinicos
+      - name: profissionais
+      - name: saudecrianca
+      - name: saudemulher
+      - name: sifilis
+      - name: solicitacao_exames
+      - name: testesrapidos
+      - name: tuberculose
+      - name: unidade
+      - name: vacinas

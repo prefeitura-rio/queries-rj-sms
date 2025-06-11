@@ -11,7 +11,7 @@ WITH
     source_equipes AS (
         SELECT 
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'EQUIPES') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'equipes') }} 
     ),
 
 
