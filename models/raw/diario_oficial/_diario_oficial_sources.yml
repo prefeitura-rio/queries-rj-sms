@@ -2,7 +2,8 @@ version: 2
 
 sources:
   - name: brutos_diario_oficial_staging
-    database: rj-sms
+    database: rj-sms-dev
     schema: brutos_diario_oficial_staging
     tables:
       - name: diarios_municipio
+      - name: diarios_uniao
