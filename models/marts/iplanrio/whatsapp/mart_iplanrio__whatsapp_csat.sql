@@ -13,26 +13,10 @@
 
 WITH
 
-telefones as (
-  select 
-    cpf,
-    array_agg(
-      struct(
-        numero_telefone.ddd,
-        numero_telefone.valor
-      )
-    ) as telefones
-  from {{ ref('mart_historico_clinico__paciente') }},
-    unnest(contato.telefone) as numero_telefone
-  where 
-    starts_with(numero_telefone.valor, '9') and 
-    length(numero_telefone.valor) = 9
-  group by 1
-),
 unidades as (
   select 
     id_cnes,
-    nome as nome_unidade,
+    nome_limpo as nome_unidade,
     {{ padronize_telefone('telefone') }} as telefone_unidade
   from {{ ref('dim_estabelecimento') }}
 ),
@@ -56,9 +40,7 @@ atendimentos as (
 SELECT
   struct(
     paciente.cpf,
-    paciente.dados.nome,
-    telefones.telefones[offset(0)].ddd as telefone_ddd,
-    telefones.telefones[offset(0)].valor as telefone_numero
+    paciente.dados.nome
   ) as paciente,
   atendimentos.profissional,
   atendimentos.tipo_atendimento,
@@ -66,4 +48,3 @@ SELECT
   safe_cast(atendimentos.horario_atendimento as date) as dia_atendimento
 FROM atendimentos
   inner join {{ ref('mart_historico_clinico__paciente') }} paciente on paciente.cpf = atendimentos.cpf
-  inner join telefones on telefones.cpf = atendimentos.cpf
