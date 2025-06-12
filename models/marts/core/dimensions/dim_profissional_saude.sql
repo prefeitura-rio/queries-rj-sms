@@ -32,16 +32,6 @@ with
             {{ ref("int_profissional_saude__vinculo_estabelecimento_serie_historica") }}
             as v
         inner join estabelecimentos on estabelecimentos.id_cnes = v.id_cnes
-        where
-            data_registro = (
-                select max(data_registro)
-                from
-                    {{
-                        ref(
-                            "int_profissional_saude__vinculo_estabelecimento_serie_historica"
-                        )
-                    }}
-            )
     ),
 
     profissionais_datasus as (
