@@ -432,21 +432,76 @@ models:
       - name: status
         data_type: string
         quote: true
-  - name: raw_area_programatica__bairros_aps
-    description: As Áreas Programáticas de Saúde do Rio de Janeiro são 10 grandes regiões que dividem a cidade para fins de planejamento e gestão. Essa divisão facilita a organização do sistema de saúde e permite identificar e abordar problemas específicos de cada área.
+  - name: raw_sheets__municipios_rio
+    description: Tabela contendo todos os municípios do estado do Rio de Janeiro, bem como seus respectivos códigos identificadores conforme a classificação do IBGE.
     columns:
-      - name: bairro
-        description: A coluna 'bairro' representa o nome do bairro na cidade do Rio de Janeiro.
+      - name: cod_ibge_7
+        description: Código identificador do IBGE com 7 dígitos. Este código é único, e identifica um município específico do Brasil.
         data_type: string
         quote: true
         data_tests:
-          - unique 
-          - not_null
-      - name: ap
-        description: A coluna 'ap' representa o código da Área Programática, um identificador único para cada uma das 10 Áreas Programáticas da cidade do Rio de Janeiro.
-        data_type: int64
+          - unique
+      - name: cod_ibge_6
+        description: Código identificador do IBGE com 6 dígitos. Este código é único, e identifica um município específico do Brasil.
+        data_type: string
         quote: true
-      - name: ap_titulo
-        description: A coluna 'ap_titulo' representa o nome ou título da Área Programática correspondente.
+      - name: nome_municipio
+        description: Nome do município.
+        data_type: string
+        quote: true
+  - name: raw_sheets__projeto_c34_cids
+    description: |-
+      Esta tabela foi construída para uma análise sobre a trajetória dos pacientes de Câncer de Pulmão na rede SUS - MRJ.
+      A tabela lista CIDs e indica se são relacionadas a Câncer ou Câncer de Pulmão.
+      A classificação é feita pela equipe parceira, de pesquisadoras especialistas.
+    columns:
+      - name: cid
+        description: Código único, identificador, conforme a Classificação Internacional de Doenças.
+        data_type: string
+        quote: true
+        data_tests:
+          - unique
+      - name: indicador_cancer
+        description: Indica se a condição possui relação com Câncer ("SIM" ou "NAO").
+        data_type: string
+        quote: true
+      - name: indicador_cancer_pulmao
+        description: Indica se a condição possui relação com Câncer de Pulmão ("SIM" ou "NAO"). 
+        data_type: string
+        quote: true
+  - name: raw_sheets__projeto_c34_procedimentos
+    description: |-
+      Esta tabela foi construída para uma análise sobre a trajetória dos pacientes de Câncer de Pulmão na rede SUS - MRJ.
+            A tabela lista códigos identificadores de procedimentos no SISREG e indica se são relacionadas a Câncer de Pulmão.
+            A classificação é feita pela equipe parceira, de pesquisadoras especialistas.
+    columns:
+      - name: proced_sisreg_id
+        description: Código único de procedimento - indentificador no SISREG.
+        data_type: string
+        quote: true
+        data_tests:
+          - unique
+      - name: indicador_cancer_pulmao
+        description: Indica se o procedimento possui relação com Câncer de Pulmão ("SIM" ou "NAO").
+        data_type: string
+        quote: true
+  - name: raw_sheets__projeto_c34_procedimentos_ser
+    description: |-
+      Esta tabela foi construída para uma análise sobre a trajetória dos pacientes de Câncer de Pulmão na rede SUS - MRJ.
+            A tabela lista códigos identificadores de procedimentos no SER e indica se são relacionadas a Câncer e Câncer de Pulmão.
+            A classificação é feita pela equipe parceira, de pesquisadoras especialistas.
+    columns:
+      - name: procedimento
+        description: Código único de procedimento - indentificador no SISREG.
+        data_type: string
+        quote: true
+        data_tests:
+          - unique
+      - name: indicador_cancer_pulmao
+        description: Indica se o procedimento possui relação com Câncer de Pulmão ("SIM" ou "NAO").
+        data_type: string
+        quote: true
+      - name: indicador_cancer
+        description: Indica se o procedimento possui relação com Câncer ("SIM" ou "NAO").
         data_type: string
         quote: true

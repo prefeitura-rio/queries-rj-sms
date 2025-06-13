@@ -83,8 +83,8 @@ with
 
     -- Obtendo informações sobre as áreas programáticas
     aps_tb as (
-        select bairro, ap, ap_titulo
-        from {{ ref("raw_sheets__area_programatica_bairros_aps") }}
+        select id_cnes, safe_cast(ap as string) as ap, ap_titulo
+        from {{ ref("dim_estabelecimento_bairro_ap") }}
     ),
 
     -- Obtendo latitudes e longitudes dos estabelecimentos de saúde
@@ -209,13 +209,12 @@ with
             estabelecimentos_atributos.tipo_unidade_agrupado_subgeral
             as tipo_unidade_agrupado,
             estabelecimentos_atributos.esfera_subgeral as esfera,
-            coalesce(
-                estabelecimentos_atributos.area_programatica,
-                safe_cast(aps_tb.ap as string)
-            ) as id_ap,
+            coalesce(estabelecimentos_atributos.area_programatica, aps_tb.ap)
+            as id_ap,
             coalesce(
                 estabelecimentos_atributos.area_programatica_descr, aps_tb.ap_titulo
-            ) as ap,
+            )
+            as ap,
             estabelecimentos_atributos.agrupador_sms,
             estabelecimentos_atributos.tipo_sms,
             estabelecimentos_atributos.tipo_sms_simplificado,
@@ -277,7 +276,9 @@ with
             contatos_aps
             on cast(brutos.id_estabelecimento_cnes as int64)
             = cast(contatos_aps.id_cnes as int64)
-        left join aps_tb on cnes_web.endereco_bairro = aps_tb.bairro
+        left join
+            aps_tb
+            on safe_cast(cnes_web.id_cnes as int64) = safe_cast(aps_tb.id_cnes as int64)
         left join
             coordenadas
             on cast(brutos.id_estabelecimento_cnes as int64)
