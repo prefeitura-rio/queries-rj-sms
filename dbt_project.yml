@@ -387,6 +387,15 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+      iplanrio:
+        whatsapp:
+          +tags: ["daily", "iplanrio", "whatsapp"]
+          +schema: projeto_whatsapp
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: iplanrio
       subpav:
         farmacia:
           +schema: projeto_subpav
