@@ -209,11 +209,11 @@ with
             estabelecimentos_atributos.tipo_unidade_agrupado_subgeral
             as tipo_unidade_agrupado,
             estabelecimentos_atributos.esfera_subgeral as esfera,
-            coalesce(estabelecimentos_atributos.area_programatica, aps_tb.ap),
+            coalesce(estabelecimentos_atributos.area_programatica, aps_tb.ap)
             as id_ap,
             coalesce(
                 estabelecimentos_atributos.area_programatica_descr, aps_tb.ap_titulo
-            ),
+            )
             as ap,
             estabelecimentos_atributos.agrupador_sms,
             estabelecimentos_atributos.tipo_sms,
