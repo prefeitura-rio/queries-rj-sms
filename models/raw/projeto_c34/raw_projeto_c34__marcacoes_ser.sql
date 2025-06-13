@@ -12,10 +12,10 @@ with
 
             -- procedimento executado
             upper(trim({{ process_null("procedimento") }})) as procedimento,
-            {{ clean_name_string(process_null("procedimento_especialidade")) }}
-            as procedimento_especialidade,
-            {{ clean_name_string(process_null("procedimento_tipo")) }}
-            as procedimento_tipo,
+            upper(
+                trim({{ process_null("procedimento_especialidade") }})
+            ) as procedimento_especialidade,
+            upper(trim({{ process_null("procedimento_tipo") }})) as procedimento_tipo,
 
             upper(left(cid, 3)) as cid_execucao_procedimento,
 
@@ -67,7 +67,10 @@ with
     consolidado as (
         select *
         from source as src
-        left join {{ ref("raw_projeto_c34__obitos_sim") }} using (paciente_id)
+
+        -- dando inner join ao invés de left pq
+        -- aparentemente tinha uns cpfs extras (indesejados) na extração do ser
+        inner join {{ ref("raw_projeto_c34__obitos_sim") }} using (paciente_id)
     ),
 
     enriquecimento as (
@@ -176,5 +179,5 @@ with
 
     )
 
-select *
+select distinct *
 from consolidado
