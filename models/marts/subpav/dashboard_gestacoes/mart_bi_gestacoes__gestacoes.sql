@@ -21,14 +21,14 @@ WITH
             ) AS idade_gestante,
         FROM {{ ref('mart_historico_clinico__paciente') }}
     ),
+
     -- ------------------------------------------------------------
-    -- XXX
+    -- Eventos de Gestação
     -- ------------------------------------------------------------
-    -- CTE 1: eventos_brutos
     -- Seleciona eventos clínicos brutos da tabela episodio_assistencial que podem indicar o início ou fim de uma gestação.
     -- Filtra por CIDs específicos (Z32.1 - Gravidez confirmada, Z34 - Supervisão de gravidez normal, Z35 - Supervisão de gravidez de alto risco).
-    -- Converte a data_diagnostico para o formato DATE.
     -- Classifica o tipo_evento como 'gestacao' para os CIDs relevantes.
+    -- ------------------------------------------------------------
     eventos_brutos AS (
         SELECT
             paciente.id_paciente AS id_paciente,
@@ -64,93 +64,103 @@ WITH
             AND paciente.id_paciente IS NOT NULL -- Garante que há um ID de paciente associado
     ),
 
--- CTE 2: inicios_brutos
--- Filtra 'eventos_brutos' para obter apenas os eventos que marcam o início de uma gestação (tipo 'gestacao' e situação 'ATIVO').
-inicios_brutos AS (
-    SELECT *
-    FROM eventos_brutos
-    WHERE
-        tipo_evento = 'gestacao'
-        AND situacao_cid = 'ATIVO'
-),
+    -- ------------------------------------------------------------
+    -- Inícios e Finais de Gestação
+    -- ------------------------------------------------------------
+    inicios_brutos AS (
+        SELECT *
+        FROM eventos_brutos
+        WHERE
+            tipo_evento = 'gestacao'
+            AND situacao_cid = 'ATIVO'
+    ),
+    finais AS (
+        SELECT *
+        FROM eventos_brutos
+        WHERE
+            tipo_evento = 'gestacao'
+            AND situacao_cid = 'RESOLVIDO'
+    ),
 
--- CTE 3: finais
--- Filtra 'eventos_brutos' para obter apenas os eventos que marcam o fim de uma gestação (tipo 'gestacao' e situação 'RESOLVIDO').
-finais AS (
-    SELECT *
-    FROM eventos_brutos
-    WHERE
-        tipo_evento = 'gestacao'
-        AND situacao_cid = 'RESOLVIDO'
-),
-
--- CTE 4: inicios_com_grupo
--- Prepara os dados de 'inicios_brutos' para agrupar eventos de início de gestação próximos.
--- Usa a função LAG para acessar a data do evento anterior da mesma paciente.
--- Define um 'nova_ocorrencia_flag': 1 se for o primeiro evento da paciente ou se houver um intervalo de >= 30 dias desde o evento anterior.
-inicios_com_grupo AS (
-    SELECT
-        *,
-        LAG(data_evento) OVER (
-            PARTITION BY
-                id_paciente
-            ORDER BY data_evento
-        ) AS data_anterior,
-        CASE
-            WHEN LAG(data_evento) OVER (
+    -- ------------------------------------------------------------
+    -- Inícios de Gestação com Grupo
+    -- ------------------------------------------------------------
+    -- Prepara os dados de 'inicios_brutos' para agrupar eventos de início de gestação próximos.
+    -- Usa a função LAG para acessar a data do evento anterior da mesma paciente.
+    -- Define um 'nova_ocorrencia_flag': 1 se for o primeiro evento da paciente ou se houver um intervalo de >= 30 dias desde o evento anterior.
+    -- ------------------------------------------------------------
+    inicios_com_grupo AS (
+        SELECT
+            *,
+            LAG(data_evento) OVER (
                 PARTITION BY
                     id_paciente
                 ORDER BY data_evento
-            ) IS NULL THEN 1 -- Primeiro evento da paciente
-            WHEN DATE_DIFF (
-                data_evento,
-                LAG(data_evento) OVER (
+            ) AS data_anterior,
+            CASE
+                WHEN LAG(data_evento) OVER (
                     PARTITION BY
                         id_paciente
                     ORDER BY data_evento
-                ),
-                DAY
-            ) >= 30 THEN 1 -- Nova gestação se > 30 dias
-            ELSE 0 -- Continuação da mesma "janela" de início de gestação
-        END AS nova_ocorrencia_flag
-    FROM inicios_brutos
-),
+                ) IS NULL THEN 1 -- Primeiro evento da paciente
+                WHEN DATE_DIFF (
+                    data_evento,
+                    LAG(data_evento) OVER (
+                        PARTITION BY
+                            id_paciente
+                        ORDER BY data_evento
+                    ),
+                    DAY
+                ) >= 30 THEN 1 -- Nova gestação se > 30 dias
+                ELSE 0 -- Continuação da mesma "janela" de início de gestação
+            END AS nova_ocorrencia_flag
+        FROM inicios_brutos
+    ),
 
--- CTE 5: grupos_inicios
--- Cria um 'grupo_id' para cada conjunto de eventos de início de gestação que pertencem à mesma gestação.
--- Usa a soma acumulada (SUM OVER) do 'nova_ocorrencia_flag'.
-grupos_inicios AS (
-    SELECT *, SUM(nova_ocorrencia_flag) OVER (
-            PARTITION BY
-                id_paciente
-            ORDER BY data_evento
-        ) AS grupo_id
-    FROM inicios_com_grupo
-),
+    -- ------------------------------------------------------------
+    -- Grupos de Inícios de Gestação
+    -- ------------------------------------------------------------
+    -- Cria um 'grupo_id' para cada conjunto de eventos de início de gestação que pertencem à mesma gestação.
+    -- Usa a soma acumulada (SUM OVER) do 'nova_ocorrencia_flag'.
+    -- ------------------------------------------------------------
+    grupos_inicios AS (
+        SELECT *, SUM(nova_ocorrencia_flag) OVER (
+                PARTITION BY
+                    id_paciente
+                ORDER BY data_evento
+            ) AS grupo_id
+        FROM inicios_com_grupo
+    ),
 
--- CTE 6: inicios_deduplicados
--- Seleciona o evento de início mais recente dentro de cada 'grupo_id' para uma paciente.
--- Isso ajuda a consolidar múltiplos registros de início próximos no tempo para uma única data de início.
--- A ordenação por `data_evento DESC` e `rn = 1` pega o registro mais recente dentro do grupo.
--- Se a intenção fosse pegar o primeiro registro do grupo, seria `ASC`. A lógica atual pega o último sinal de "ativo" dentro do grupo.
-inicios_deduplicados AS (
-    SELECT *
-    FROM (
-            SELECT *, ROW_NUMBER() OVER (
-                    PARTITION BY
-                        id_paciente, grupo_id
-                    ORDER BY data_evento DESC
-                ) AS rn
-            FROM grupos_inicios
-        )
-    WHERE
-        rn = 1
-),
+    -- ------------------------------------------------------------
+    -- Inícios de Gestação Deduplicados
+    -- ------------------------------------------------------------
+    -- Seleciona o evento de início mais recente dentro de cada 'grupo_id' para uma paciente.
+    -- Isso ajuda a consolidar múltiplos registros de início próximos no tempo para uma única data de início.
+    -- A ordenação por `data_evento DESC` e `rn = 1` pega o registro mais recente dentro do grupo.
+    -- Se a intenção fosse pegar o primeiro registro do grupo, seria `ASC`. A lógica atual pega o último sinal de "ativo" dentro do grupo.
+    -- ------------------------------------------------------------
+    inicios_deduplicados AS (
+        SELECT *
+        FROM (
+                SELECT *, ROW_NUMBER() OVER (
+                        PARTITION BY
+                            id_paciente, grupo_id
+                        ORDER BY data_evento DESC
+                    ) AS rn
+                FROM grupos_inicios
+            )
+        WHERE
+            rn = 1
+    ),
 
-    -- CTE 7: gestacoes_unicas
+    -- ------------------------------------------------------------
+    -- Gestações Únicas
+    -- ------------------------------------------------------------
     -- Define cada gestação única com sua data de início e data de fim.
     -- A data de fim é o primeiro evento 'RESOLVIDO' (de 'finais') que ocorre após a data de início da gestação.
     -- Gera um 'numero_gestacao' e um 'id_gestacao' único para cada gestação da paciente.
+    -- ------------------------------------------------------------
     gestacoes_unicas AS (
         SELECT
             i.id_paciente,
@@ -185,9 +195,12 @@ inicios_deduplicados AS (
         FROM inicios_deduplicados i
     ),
 
-    -- CTE 8: gestacoes_com_status
+    -- ------------------------------------------------------------
+    -- Gestações com Status
+    -- ------------------------------------------------------------
     -- Calcula a 'data_fim_efetiva' (data de fim real ou estimada após 308 dias se não houver fim registrado e já passou o período).
     -- Calcula a DPP (Data Provável do Parto) como 40 semanas após a data de início.
+    -- ------------------------------------------------------------
     gestacoes_com_status AS (
         SELECT
             *,
@@ -200,7 +213,9 @@ inicios_deduplicados AS (
         FROM gestacoes_unicas
     ),
 
-    -- Determina a 'fase_atual' da gestação (Gestação, Puerpério, Encerrada).
+    -- ------------------------------------------------------------
+    -- Definição de Fase e Trimestre da Gestação
+    -- ------------------------------------------------------------
     filtrado AS (
         SELECT
             gcs.*,
@@ -281,6 +296,9 @@ inicios_deduplicados AS (
             rn = 1
     )
 
+-- ------------------------------------------------------------
+-- Finalização do Modelo
+-- ------------------------------------------------------------
 SELECT
     filtrado.id_gestacao,
     filtrado.id_paciente,
