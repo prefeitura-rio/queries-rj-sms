@@ -196,5 +196,5 @@ with
 
     )
 
-select *
+select distinct *
 from enriquecimento
