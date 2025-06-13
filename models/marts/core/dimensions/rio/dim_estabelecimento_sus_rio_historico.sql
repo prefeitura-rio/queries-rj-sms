@@ -209,8 +209,12 @@ with
             estabelecimentos_atributos.tipo_unidade_agrupado_subgeral
             as tipo_unidade_agrupado,
             estabelecimentos_atributos.esfera_subgeral as esfera,
-            aps_tb.ap as id_ap,
-            aps_tb.ap_titulo as ap,
+            coalesce(estabelecimentos_atributos.area_programatica, aps_tb.ap),
+            as id_ap,
+            coalesce(
+                estabelecimentos_atributos.area_programatica_descr, aps_tb.ap_titulo
+            ),
+            as ap,
             estabelecimentos_atributos.agrupador_sms,
             estabelecimentos_atributos.tipo_sms,
             estabelecimentos_atributos.tipo_sms_simplificado,
@@ -274,8 +278,7 @@ with
             = cast(contatos_aps.id_cnes as int64)
         left join
             aps_tb
-            on safe_cast(cnes_web.id_cnes as int64)
-            = safe_cast(aps_tb.id_cnes as int64)
+            on safe_cast(cnes_web.id_cnes as int64) = safe_cast(aps_tb.id_cnes as int64)
         left join
             coordenadas
             on cast(brutos.id_estabelecimento_cnes as int64)
