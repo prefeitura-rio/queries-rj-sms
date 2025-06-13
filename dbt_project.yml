@@ -343,6 +343,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: cie
+        dashboard:
+          +schema: projeto_cie_dashboard
+          +tags: ["cie", "dashboard"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
+            dominio: cie
       dit:
         dengue:
           +schema: projeto_dengue
