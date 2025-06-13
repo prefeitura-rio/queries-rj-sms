@@ -281,20 +281,6 @@ inicios_deduplicados AS (
             rn = 1
     )
 
--- id_paciente		STRING	
--- cpf		STRING	
--- nome		STRING	
--- idade_gestante		INTEGER	
--- data_inicio		DATE	
--- data_fim		DATE	
--- numero_gestacao		INTEGER	
--- id_gestacao		STRING	
--- data_fim_efetiva		DATE	
--- dpp		DATE	
--- fase_atual		STRING	
--- trimestre_atual_gestacao		STRING	
--- equipe_nome		STRING	
--- clinica_nome		STRING	
 SELECT
     filtrado.id_gestacao,
     filtrado.id_paciente,
