@@ -186,6 +186,10 @@ models:
         description: Tipo da unidade solicitante.
         data_type: string
         quote: true
+      - name: unidade_executante_mrj_sus
+        description: Indica se é uma unidade do Município do Rio de Janeiro, com vínculo com o SUS.
+        data_type: string
+        quote: true
       - name: unidade_executante
         description: Nome da unidade executante.
         data_type: string
@@ -290,6 +294,18 @@ models:
         description: Grupo da causa do óbito conforme CID-10.
         data_type: string
         quote: true
+      - name: obito_estab_ocor_mrj_sus
+        description: Indica se é uma unidade do Município do Rio de Janeiro, com vínculo com o SUS.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_cnes
+        description: Código CNES do estabelecimento onde ocorreu o óbito.
+        data_type: int64
+        quote: true
+      - name: obito_estab_ocor
+        description: Código CNES do estabelecimento onde ocorreu o óbito.
+        data_type: int64
+        quote: true
       - name: obito_estab_ocor_esfera
         description: Esfera administrativa do estabelecimento onde ocorreu o óbito.
         data_type: string
@@ -314,133 +330,359 @@ models:
         description: Indica se há estabelecimento de óbito registrado no SIM ('SIM' ou 'NAO').
         data_type: string
         quote: true
-
+      - name: unidade_executante_cnes
+        description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade executante.
+        data_type: int64
+        quote: true
+      - name: unidade_solicitante_cnes
+        description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade solicitante.
+        data_type: int64
+        quote: true
+        
   - name: raw_projeto_c34__marcacoes_ser
-    description: Registros de marcações no SER de pacientes identificados, com dados enriquecidos do SIM, CNES, SMS Rio, CIDs, DATA SUS e IBGE.
+    description: Registros de marcações no SISREG de pacientes identificados, com dados enriquecidos do SIM, CNES, SMS Rio, CIDs, DATA SUS e IBGE.
+
+
     columns:
+      # ---------------------------------------------------------------------
+      # Identificação do paciente e origem
+      # ---------------------------------------------------------------------
       - name: paciente_id
         description: Identificador único do paciente.
         data_type: string
         quote: true
         data_tests:
           - not_null
+
       - name: sistema
-        description: Sistema de origem dos registros (SER).
+        description: Sistema de origem dos registros (valor fixo "SER").
         data_type: string
         quote: true
+
+      # ---------------------------------------------------------------------
+      # Procedimento executado
+      # ---------------------------------------------------------------------
       - name: procedimento
-        description: Procedimento médico executado.
+        description: Procedimento médico realizado.
         data_type: string
         quote: true
+
+      - name: procedimento_indicador_ca
+        description: Indica se o procedimento tem relação com Câncer (“SIM” ou “NAO”).
+        data_type: string
+        quote: true
+
+      - name: procedimento_indicador_cp
+        description: Indica se o procedimento tem relação com Câncer de Pulmão (“SIM” ou “NAO”).
+        data_type: string
+        quote: true
+
       - name: procedimento_especialidade
-        description: Especialidade associada ao procedimento (ONCOLOGIA, CARDIOLOGIA, ...)
+        description: Especialidade associada ao procedimento (ONCOLOGIA, CARDIOLOGIA, ...).
         data_type: string
         quote: true
+
       - name: procedimento_tipo
-        description: Tipo do procedimento (CONSULTA, EXAME, ...)
+        description: Tipo ou categoria do procedimento (EXAME, CONSULTA, ...).
         data_type: string
         quote: true
+
+      # ---------------------------------------------------------------------
+      # CID do procedimento
+      # ---------------------------------------------------------------------
       - name: cid_execucao_procedimento
         description: Código CID-10 (3 caracteres) associado ao procedimento executado.
         data_type: string
         quote: true
+
+      - name: cid_execucao_procedimento_indicador_ca
+        description: Indica se o CID do procedimento tem relação com Câncer (“SIM” ou “NAO”).
+        data_type: string
+        quote: true
+
+      - name: cid_execucao_procedimento_indicador_cp
+        description: Indica se o CID do procedimento tem relação com Câncer de Pulmão (“SIM” ou “NAO”).
+        data_type: string
+        quote: true
+
+      - name: cid_execucao_procedimento_descr
+        description: Descrição completa do CID do procedimento executado.
+        data_type: string
+        quote: true
+
+      - name: cid_execucao_procedimento_grupo
+        description: Grupo do CID do procedimento executado.
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Unidade solicitante
+      # ---------------------------------------------------------------------
+      - name: unidade_solicitante_mrj_sus
+        description: Indica se a unidade solicitante pertence ao Município do Rio de Janeiro e é vinculada ao SUS (“SIM” ou “NAO”).
+        data_type: string
+        quote: true
+
+      - name: unidade_solicitante
+        description: Nome da unidade solicitante.
+        data_type: string
+        quote: true
+
       - name: unidade_solicitante_mun
         description: Município da unidade solicitante.
         data_type: string
         quote: true
+
       - name: unidade_solicitante_cnes
         description: Código CNES (7 dígitos) da unidade solicitante.
         data_type: string
         quote: true
+
       - name: unidade_solicitante_preenchida
-        description: Indica se o CNES da unidade solicitante está preenchido ("SIM" ou "NAO").
+        description: Indica se o CNES da unidade solicitante está preenchido (“SIM” ou “NAO”).
         data_type: string
         quote: true
+
+      - name: unidade_solicitante_esfera
+        description: Esfera administrativa da unidade solicitante.
+        data_type: string
+        quote: true
+
+      - name: unidade_solicitante_ap
+        description: Área programática da unidade solicitante.
+        data_type: string
+        quote: true
+
+      - name: unidade_solicitante_ap_descr
+        description: Descrição da área programática da unidade solicitante.
+        data_type: string
+        quote: true
+
+      - name: unidade_solicitante_tp
+        description: Tipo da unidade solicitante (agrupamento CNES).
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Unidade executante
+      # ---------------------------------------------------------------------
+      - name: unidade_executante_mrj_sus
+        description: Indica se a unidade solicitante pertence ao Município do Rio de Janeiro e é vinculada ao SUS (“SIM” ou “NAO”).
+        data_type: string
+        quote: true
+
+      - name: unidade_executante
+        description: Nome da unidade executante.
+        data_type: string
+        quote: true
+
       - name: unidade_executante_mun
         description: Município da unidade executante.
         data_type: string
         quote: true
+
       - name: unidade_executante_cnes
         description: Código CNES (7 dígitos) da unidade executante.
         data_type: string
         quote: true
+
       - name: unidade_executante_preenchida
-        description: Indica se o CNES da unidade executante está preenchido ("SIM" ou "NAO").
+        description: Indica se o CNES da unidade executante está preenchido (“SIM” ou “NAO”).
         data_type: string
         quote: true
+
+      - name: unidade_executante_esfera
+        description: Esfera administrativa da unidade executante.
+        data_type: string
+        quote: true
+
+      - name: unidade_executante_ap
+        description: Área programática da unidade executante.
+        data_type: string
+        quote: true
+
+      - name: unidade_executante_ap_descr
+        description: Descrição da área programática da unidade executante.
+        data_type: string
+        quote: true
+
+      - name: unidade_executante_tp
+        description: Tipo da unidade executante (agrupamento CNES).
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Datas e intervalo
+      # ---------------------------------------------------------------------
       - name: data_solicitacao
-        description: Data de solicitação do procedimento.
+        description: Data da solicitação do procedimento.
         data_type: date
         quote: true
+
       - name: data_execucao
         description: Data de execução do procedimento.
         data_type: date
         quote: true
+
       - name: intervalo_solicitacao_execucao
-        description: Número de dias entre a solicitação e a execução do procedimento.
+        description: Número de dias entre solicitação e execução.
         data_type: int64
         quote: true
+
+      # ---------------------------------------------------------------------
+      # Dados de regulação
+      # ---------------------------------------------------------------------
       - name: solicitacao_status
-        description: Status atual da solicitação no sistema de regulação.
+        description: Status da solicitação no sistema de regulação.
         data_type: string
         quote: true
+
       - name: solicitacao_risco
-        description: Classificação de risco associada à solicitação.
+        description: Classificação de risco da solicitação.
         data_type: string
         quote: true
+
       - name: central_reguladora
-        description: Central reguladora responsável pela marcação do procedimento.
+        description: Central reguladora responsável pela marcação.
         data_type: string
         quote: true
+
+      # ---------------------------------------------------------------------
+      # Dados do paciente (SIM)
+      # ---------------------------------------------------------------------
       - name: paciente_cpf_recuperado
-        description: Indica se o CPF do paciente foi recuperado ("SIM" ou "NAO").
+        description: Indica se o CPF do paciente foi recuperado (“SIM” ou “NAO”).
         data_type: string
         quote: true
+
       - name: paciente_mes_obito
-        description: Mês do óbito do paciente (1 = janeiro, … 12 = dezembro).
+        description: Mês do óbito do paciente (1 = jan … 12 = dez).
         data_type: int64
         quote: true
+
       - name: paciente_sexo
         description: Sexo biológico do paciente registrado no SIM.
         data_type: string
         quote: true
+
       - name: paciente_raca_cor
-        description: Raça/cor do paciente registrada no SIM.
+        description: Raça/cor do paciente conforme SIM.
         data_type: string
         quote: true
+
+      - name: paciente_mun_res_obito
+        description: Município de residência do paciente no momento do óbito.
+        data_type: string
+        quote: true
+
       - name: paciente_mun_res_obito_ibge
-        description: Código IBGE do município de residência do paciente no momento do óbito.
+        description: Código IBGE (6 dígitos) do município de residência no óbito.
         data_type: int64
         quote: true
+
       - name: paciente_bairro_res_obito
-        description: Bairro de residência do paciente no momento do óbito.
+        description: Bairro de residência do paciente no óbito.
         data_type: string
         quote: true
+
       - name: paciente_escolaridade_obito
-        description: Grau de escolaridade do paciente no momento do óbito.
+        description: Escolaridade do paciente no momento do óbito.
         data_type: string
         quote: true
+
       - name: paciente_estado_civil_obito
-        description: Estado civil do paciente no momento do óbito.
+        description: Estado civil do paciente no óbito.
         data_type: string
         quote: true
+
       - name: paciente_faixa_etaria_obito
-        description: Faixa etária do paciente no momento do óbito.
+        description: Faixa etária do paciente no óbito.
         data_type: string
         quote: true
+
+      # ---------------------------------------------------------------------
+      # CID da causa básica de óbito
+      # ---------------------------------------------------------------------
       - name: obito_causabas_cid
         description: Código CID-10 (3 caracteres) da causa básica do óbito.
         data_type: string
         quote: true
-      - name: obito_mun_ocor_ibge
-        description: Código IBGE do município de ocorrência do óbito.
-        data_type: int64
-        quote: true
-      - name: obito_bairro_ocor
-        description: Bairro de ocorrência do óbito.
+
+      - name: obito_causabas_cid_indicador_ca
+        description: Indica se o CID de óbito tem relação com Câncer (“SIM” ou “NAO”).
         data_type: string
         quote: true
+
+      - name: obito_causabas_cid_indicador_cp
+        description: Indica se o CID de óbito tem relação com Câncer de Pulmão (“SIM” ou “NAO”).
+        data_type: string
+        quote: true
+
+      - name: obito_causabas_cid_descr
+        description: Descrição da causa básica do óbito.
+        data_type: string
+        quote: true
+
+      - name: obito_causabas_cid_grupo
+        description: Grupo do CID da causa básica do óbito.
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Local do óbito
+      # ---------------------------------------------------------------------
+      
+      - name: obito_mun_ocor_ibge
+        description: Código IBGE do município onde ocorreu o óbito.
+        data_type: int64
+        quote: true
+
+      - name: obito_mun_ocor
+        description: Município (nome) onde ocorreu o óbito.
+        data_type: string
+        quote: true
+
+      - name: obito_bairro_ocor
+        description: Bairro onde ocorreu o óbito.
+        data_type: string
+        quote: true
+
+      - name: obito_estab_ocor_mrj_sus
+        description: Indica se é uma unidade do Município do Rio de Janeiro, com vínculo com o SUS.
+        data_type: string
+        quote: true
+
+      - name: obito_estab_ocor
+        description: Estabelecimento onde ocorreu o óbito.
+        data_type: int64
+        quote: true
+
       - name: obito_estab_ocor_cnes
         description: Código CNES do estabelecimento onde ocorreu o óbito.
         data_type: int64
+        quote: true
+
+      - name: obito_estab_ocor_esfera
+        description: Esfera administrativa do estabelecimento do óbito.
+        data_type: string
+        quote: true
+
+      - name: obito_estab_ocor_ap
+        description: Área programática do estabelecimento do óbito.
+        data_type: string
+        quote: true
+
+      - name: obito_estab_ocor_ap_descr
+        description: Descrição da área programática do óbito.
+        data_type: string
+        quote: true
+
+      - name: obito_estab_ocor_tp
+        description: Tipo do estabelecimento onde ocorreu o óbito.
+        data_type: string
+        quote: true
+
+      - name: obito_estab_ocor_preenchido
+        description: Indica se há estabelecimento de óbito registrado (“SIM” ou “NAO”).
+        data_type: string
         quote: true

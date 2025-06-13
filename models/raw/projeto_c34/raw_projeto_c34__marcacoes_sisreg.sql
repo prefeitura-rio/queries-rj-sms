@@ -46,7 +46,9 @@ with
 
             -- procedimento executado
             proceds.descricao as procedimento,
-            proceds_c34.indicador_cancer_pulmao as procedimento_indicador_cp,
+            upper(
+                trim(proceds_c34.indicador_cancer_pulmao)
+            ) as procedimento_indicador_cp,
             proceds.especialidade as procedimento_especialidade,
             proceds.tipo_procedimento as procedimento_tipo,
 
@@ -66,6 +68,7 @@ with
                 else 'SIM'
             end as unidade_solicitante_mrj_sus,
 
+            unidade_solicitante_cnes,
             estab_sol.nome_fantasia as unidade_solicitante,
             estab_sol.esfera_subgeral as unidade_solicitante_esfera,
             bairros_aps_sol.ap as unidade_solicitante_ap,
@@ -77,6 +80,15 @@ with
             estab_sol.tipo_unidade_agrupado_subgeral as unidade_solicitante_tp,
 
             -- local execucao
+            case
+                when
+                    unidade_executante_cnes is not null
+                    and estab_sol.nome_fantasia is null
+                then 'NAO'
+                else 'SIM'
+            end as unidade_executante_mrj_sus,
+
+            unidade_executante_cnes,
             estab_exec.nome_fantasia as unidade_executante,
             estab_exec.esfera_subgeral as unidade_executante_esfera,
             bairros_aps_exec.ap as unidade_executante_ap,
@@ -115,6 +127,16 @@ with
             upper(cids_obit.grupo_descricao_abv) as obito_causabas_cid_grupo,
 
             -- local ocorrencia obito
+            case
+                when
+                    obito_estab_ocor_cnes is not null
+                    and estab_obit.nome_fantasia is null
+                then 'NAO'
+                else 'SIM'
+            end as obito_estab_ocor_mrj_sus,
+
+            obito_estab_ocor_cnes,
+            estab_obit.nome_fantasia as obito_estab_ocor,
             estab_obit.esfera_subgeral as obito_estab_ocor_esfera,
             upper(ibge_ocor.nome_municipio) as obito_mun_ocor,
             bairros_aps_obit.ap as obito_estab_ocor_ap,
