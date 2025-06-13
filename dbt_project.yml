@@ -345,7 +345,7 @@ models:
             dominio: cie
         dashboard:
           +schema: projeto_cie_dashboard
-          +tags: ["cie", "dashboard"]
+          +tags: ["cie", "dashboard", "daily"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
