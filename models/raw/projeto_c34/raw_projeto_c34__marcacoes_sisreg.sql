@@ -58,6 +58,15 @@ with
             upper(cids_exec.grupo_descricao_abv) as cid_execucao_procedimento_grupo,
 
             -- local solicitacao
+            case
+                when
+                    unidade_solicitante_cnes is not null
+                    and estab_sol.nome_fantasia is null
+                then 'NAO'
+                else 'SIM'
+            end as unidade_solicitante_mrj_sus,
+
+            estab_sol.nome_fantasia as unidade_solicitante,
             estab_sol.esfera_subgeral as unidade_solicitante_esfera,
             bairros_aps_sol.ap as unidade_solicitante_ap,
             bairros_aps_sol.ap_titulo as unidade_solicitante_ap_descr,
@@ -68,6 +77,7 @@ with
             estab_sol.tipo_unidade_agrupado_subgeral as unidade_solicitante_tp,
 
             -- local execucao
+            estab_exec.nome_fantasia as unidade_executante,
             estab_exec.esfera_subgeral as unidade_executante_esfera,
             bairros_aps_exec.ap as unidade_executante_ap,
             bairros_aps_exec.ap_titulo as unidade_executante_ap_descr,
@@ -188,4 +198,3 @@ with
 
 select *
 from enriquecimento
-where unidade_solicitante_ap is null

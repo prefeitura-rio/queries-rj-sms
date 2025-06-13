@@ -58,7 +58,7 @@ models:
         data_type: string
         quote: true
       - name: paciente_id
-        description: Identificador único do paciente. Usado para vincular dados do paciente entre diferentes tabelas e bancos de dados.
+        description: Identificador único do paciente.
         data_type: string
         quote: true
         name: paciente_mes_obito
@@ -126,6 +126,9 @@ models:
         description: Descrição do procedimento médico realizado.
         data_type: string
         quote: true
+      - name: procedimento_indicador_cp
+        description: Indica se o procedimento tem relação com Câncer de Pulmão ("SIM" ou "NAO").
+        data_type: string
       - name: procedimento_especialidade
         description: Especialidade associada ao procedimento.
         data_type: string
@@ -138,12 +141,28 @@ models:
         description: Código CID (Classificação Internacional de Doenças) associado ao procedimento executado.
         data_type: string
         quote: true
+      - name: cid_execucao_procedimento_indicador_ca
+        description: Indica se o CID tem relação com Câncer ("SIM" ou "NAO").
+        data_type: string
+        quote: true
+      - name: cid_execucao_procedimento_indicador_cp
+        description: Indica se o CID tem relação com Câncer de Pulmão ("SIM" ou "NAO").
+        data_type: string
+        quote: true
       - name: cid_execucao_procedimento_descr
         description: Descrição completa do código CID do procedimento executado.
         data_type: string
         quote: true
       - name: cid_execucao_procedimento_grupo
         description: Grupo do código CID do procedimento executado.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_mrj_sus
+        description: Indica se é uma unidade do Município do Rio de Janeiro, com vínculo com o SUS. 
+        data_type: string
+        quote: true
+      - name: unidade_solicitante
+        description: Nome da unidade solicitante.
         data_type: string
         quote: true
       - name: unidade_solicitante_esfera
@@ -164,6 +183,10 @@ models:
         quote: true
       - name: unidade_solicitante_tp
         description: Tipo da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_executante
+        description: Nome da unidade executante.
         data_type: string
         quote: true
       - name: unidade_executante_esfera
@@ -248,6 +271,14 @@ models:
         quote: true
       - name: obito_causabas_cid
         description: Código CID-10 da causa básica do óbito (3 primeiros caracteres).
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid_indicador_ca
+        description: Indica se o CID de Óbito tem relação com Câncer ("SIM" ou "NAO").
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid_indicador_cp
+        description: Indica se o CID de Óbito tem relação com Câncer de Pulmão ("SIM" ou "NAO").
         data_type: string
         quote: true
       - name: obito_causabas_cid_descr
