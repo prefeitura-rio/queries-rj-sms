@@ -25,7 +25,7 @@ eventos_brutos AS (
      ELSE NULL -- Em teoria, o filtro WHERE já garante que só teremos 'gestacao', mas é bom ser explícito
    END AS tipo_evento
  FROM
-   {{ ref('mart_historico_clinico_app__episodio') }},
+   {{ ref('mart_historico_clinico__episodio') }},
    UNNEST(condicoes) c -- Expande o array de condições para processar cada uma individualmente
  WHERE
    c.data_diagnostico IS NOT NULL AND c.data_diagnostico != '' -- Garante que a data do diagnóstico existe
@@ -178,7 +178,7 @@ pacientes_info AS (
  FROM (
    SELECT *,
           ROW_NUMBER() OVER (PARTITION BY dados.id_paciente ORDER BY cpf_particao DESC) AS rn
-   FROM {{ ref('mart_historico_clinico_app__paciente') }}
+   FROM {{ ref('mart_historico_clinico__paciente') }}
  ) p_dedup
  WHERE p_dedup.rn = 1
 ),
@@ -241,4 +241,4 @@ FROM
 LEFT JOIN
  (SELECT * FROM encaminhamento_SISREG WHERE rn_solicitacao = 1) sis_sol
  ON f.id_gestacao = sis_sol.id_gestacao
-WHERE f.fase_atual = 'Gestação'; -- Filtro aplicado no final
+WHERE f.fase_atual = 'Gestação' -- Filtro aplicado no final

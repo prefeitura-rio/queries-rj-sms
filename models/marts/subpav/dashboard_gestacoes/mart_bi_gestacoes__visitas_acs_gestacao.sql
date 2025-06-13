@@ -21,7 +21,7 @@ marcadores_temporais AS (
    data_fim_efetiva,
    clinica_nome AS unidade_APS_PN,
    equipe_nome AS equipe_PN_APS
- FROM {{ ref('mart_bi_gestacoes__linha_tempo') }}
+ FROM {{ ref('mart_bi_gestacoes__gestacoes_com_fase') }}
 ),
 
 
@@ -40,7 +40,7 @@ visitas_com_join AS (
    mt.data_inicio,
    mt.data_fim,
    mt.data_fim_efetiva
- FROM {{ ref('mart_historico_clinico_app__episodio') }} ea
+ FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
    AND ea.entrada_data BETWEEN mt.data_inicio AND mt.data_fim_efetiva

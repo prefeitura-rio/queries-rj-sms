@@ -19,7 +19,7 @@ marcadores_temporais AS (
    data_fim,
    data_fim_efetiva,
    fase_atual
- FROM {{ ref('mart_bi_gestacoes__linha_tempo') }}
+ FROM {{ ref('mart_bi_gestacoes__gestacoes_com_fase') }}
 ),
 
 
@@ -31,7 +31,7 @@ peso_filtrado AS (
    ea.entrada_data,
    ea.medidas.peso,
    DATE_DIFF(ea.entrada_data, mt.data_inicio, DAY) AS dias_diferenca
- FROM {{ ref('mart_historico_clinico_app__episodio') }} ea
+ FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
  WHERE ea.medidas.peso IS NOT NULL
@@ -62,7 +62,7 @@ alturas_filtradas AS (
    ea.medidas.altura,
    DATE_DIFF(mt.data_inicio, ea.entrada_data, DAY) AS dias_antes_inicio,
    DATE_DIFF(ea.entrada_data, COALESCE(mt.data_fim_efetiva, CURRENT_DATE()), DAY) AS dias_apos_inicio
- FROM {{ ref('mart_historico_clinico_app__episodio') }} ea
+ FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
  WHERE ea.medidas.altura IS NOT NULL
@@ -146,7 +146,7 @@ atendimentos_filtrados AS (
    ea.desfecho_atendimento,
    c.id AS cid,
    -- STRING_AGG(DISTINCT c.id, '; ' ORDER BY c.id) AS cid_string
- FROM {{ ref('mart_historico_clinico_app__episodio') }} ea,
+ FROM {{ ref('mart_historico_clinico__episodio') }} ea,
       UNNEST(ea.condicoes) AS c
  WHERE ea.subtipo = 'Atendimento SOAP'
    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
@@ -195,7 +195,7 @@ prescricoes_aggregadas AS (
  SELECT
    ea.id_hci,
    STRING_AGG(p.nome, ', ') AS prescricoes
- FROM {{ ref('mart_historico_clinico_app__episodio') }} ea,
+ FROM {{ ref('mart_historico_clinico__episodio') }} ea,
       UNNEST(ea.prescricoes) AS p
  WHERE ea.subtipo = 'Atendimento SOAP'
    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
@@ -265,6 +265,6 @@ SELECT
 
 FROM consultas_enriquecidas
 ORDER BY
- data_consulta DESC;
+ data_consulta DESC
 
 
