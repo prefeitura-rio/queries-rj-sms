@@ -12,10 +12,10 @@ with
 
             -- procedimento executado
             upper(trim({{ process_null("procedimento") }})) as procedimento,
-            {{ clean_name_string(process_null("procedimento_especialidade")) }}
-            as procedimento_especialidade,
-            {{ clean_name_string(process_null("procedimento_tipo")) }}
-            as procedimento_tipo,
+            upper(
+                trim({{ process_null("procedimento_especialidade") }})
+            ) as procedimento_especialidade,
+            upper(trim({{ process_null("procedimento_tipo") }})) as procedimento_tipo,
 
             upper(left(cid, 3)) as cid_execucao_procedimento,
 
@@ -67,23 +67,53 @@ with
     consolidado as (
         select *
         from source as src
-        left join {{ ref("raw_projeto_c34__obitos_sim") }} using (paciente_id)
+
+        -- dando inner join ao invés de left pq
+        -- aparentemente tinha uns cpfs extras (indesejados) na extração do ser
+        inner join {{ ref("raw_projeto_c34__obitos_sim") }} using (paciente_id)
     ),
 
     enriquecimento as (
         select
             c.*,
 
+            case
+                when
+                    unidade_solicitante_cnes is not null
+                    and estab_sol.nome_fantasia is null
+                then 'NAO'
+                else 'SIM'
+            end as unidade_solicitante_mrj_sus,
+
+            estab_sol.nome_fantasia as unidade_solicitante,
             estab_sol.esfera_subgeral as unidade_solicitante_esfera,
             bairros_aps_sol.ap as unidade_solicitante_ap,
             bairros_aps_sol.ap_titulo as unidade_solicitante_ap_descr,
             estab_sol.tipo_unidade_agrupado_subgeral as unidade_solicitante_tp,
 
+            case
+                when
+                    unidade_executante_cnes is not null
+                    and estab_exec.nome_fantasia is null
+                then 'NAO'
+                else 'SIM'
+            end as unidade_executante_mrj_sus,
+
+            estab_exec.nome_fantasia as unidade_executante,
             estab_exec.esfera_subgeral as unidade_executante_esfera,
             bairros_aps_exec.ap as unidade_executante_ap,
             bairros_aps_exec.ap_titulo as unidade_executante_ap_descr,
             estab_exec.tipo_unidade_agrupado_subgeral as unidade_executante_tp,
 
+            case
+                when
+                    obito_estab_ocor_cnes is not null
+                    and estab_obit.nome_fantasia is null
+                then 'NAO'
+                else 'SIM'
+            end as obito_estab_ocor_mrj_sus,
+
+            estab_obit.nome_fantasia as obito_estab_ocor,
             estab_obit.esfera_subgeral as obito_estab_ocor_esfera,
             upper(ibge_ocor.nome_municipio) as obito_mun_ocor,
             bairros_aps_obit.ap as obito_estab_ocor_ap,
@@ -104,11 +134,12 @@ with
             upper(cids_obit.categoria_descricao) as obito_causabas_cid_descr,
             upper(cids_obit.grupo_descricao_abv) as obito_causabas_cid_grupo,
 
-            proced_ser.indicador_cancer_pulmao as procedimento_indicador_cp,
-            proced_ser.indicador_cancer as procedimento_indicador_ca,
+            upper(
+                trim(proced_ser.indicador_cancer_pulmao)
+            ) as procedimento_indicador_cp,
+            upper(trim(proced_ser.indicador_cancer)) as procedimento_indicador_ca,
 
-            upper(ibge_res.nome_municipio) as paciente_mun_res_obito,
-            upper(ibge_ocor.nome_municipio) as obito_mun_ocor
+            upper(ibge_res.nome_municipio) as paciente_mun_res_obito
 
         from consolidado as c
 
@@ -176,5 +207,5 @@ with
 
     )
 
-select *
-from consolidado
+select distinct *
+from enriquecimento

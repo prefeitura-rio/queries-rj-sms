@@ -59,5 +59,5 @@ with
             and sim.paciente_data_nasc = fuzzy.data_nasc
     )
 
-select *
+select distinct *
 from obitos_desidentificados

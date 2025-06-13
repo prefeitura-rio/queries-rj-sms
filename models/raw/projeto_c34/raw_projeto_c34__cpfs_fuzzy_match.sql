@@ -173,7 +173,7 @@ with
         from todos_scores
     )
 
-select
+select distinct
     declaracao_obito_sim,
     data_nasc_sim as data_nasc,
     nome_sim as nome,
