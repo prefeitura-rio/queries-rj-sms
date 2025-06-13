@@ -20,7 +20,7 @@ WITH marcadores_temporais AS (
    fase_atual,
    clinica_nome AS unidade_APS_PN,
    equipe_nome AS equipe_PN_APS
- FROM {{ ref('mart_bi_gestacoes__gestacoes_com_fase') }}
+ FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
 
 

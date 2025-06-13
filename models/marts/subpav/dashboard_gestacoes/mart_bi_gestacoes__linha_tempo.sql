@@ -13,7 +13,7 @@ WITH
 -- Esta CTE é central e será usada para juntar a maioria das outras informações.
 filtrado AS (
     SELECT *
-    FROM {{ ref('mart_bi_gestacoes__gestacoes_com_fase') }}
+    FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
 
 -- CTE 10: condicoes_gestantes_raw
@@ -27,7 +27,7 @@ condicoes_gestantes_raw AS (
             '%Y-%m-%d', SUBSTR(c.data_diagnostico, 1, 10)
         ) AS data_diagnostico, c.situacao -- Mantido para referência, embora já filtrado
     FROM
-        {{ ref('mart_historico_clinico_app__episodio') }} ea,
+        {{ ref('mart_historico_clinico__episodio') }} ea,
         UNNEST (condicoes) c
     WHERE
         c.situacao IN ('ATIVO', 'RESOLVIDO')
@@ -46,7 +46,7 @@ categorias_risco_gestacional AS (
         ) AS categorias_risco
     FROM
         filtrado f -- Usa 'filtrado' que já tem 'id_gestacao' e as datas corretas
-        JOIN {{ ref('mart_historico_clinico_app__episodio') }} ea ON f.id_paciente = ea.paciente.id_paciente
+        JOIN {{ ref('mart_historico_clinico__episodio') }} ea ON f.id_paciente = ea.paciente.id_paciente
         -- Considera episódios que ocorreram durante o período da gestação
         AND ea.entrada_data BETWEEN f.data_inicio AND COALESCE(
             f.data_fim_efetiva,
@@ -85,7 +85,7 @@ pacientes_info AS (
  FROM (
    SELECT *,
           ROW_NUMBER() OVER (PARTITION BY dados.id_paciente ORDER BY cpf_particao DESC) AS rn
-   FROM {{ ref('mart_historico_clinico_app__paciente') }}
+   FROM {{ ref('mart_historico_clinico__paciente') }}
  ) p_dedup
  WHERE p_dedup.rn = 1
 ),
@@ -97,7 +97,7 @@ pacientes_todos_cns AS (
             ORDER BY cns_individual
         ) AS cns_string
     FROM
-        {{ ref('mart_historico_clinico_app__paciente') }} p,
+        {{ ref('mart_historico_clinico__paciente') }} p,
         UNNEST (p.cns) AS cns_individual
     WHERE
         cns_individual IS NOT NULL
@@ -116,7 +116,7 @@ unnested_equipes AS (
         eq.nome AS equipe_nome,
         eq.clinica_familia.nome AS clinica_nome
     FROM
-        {{ ref('mart_historico_clinico_app__paciente') }} p,
+        {{ ref('mart_historico_clinico__paciente') }} p,
         UNNEST (p.equipe_saude_familia) AS eq
 ),
 
@@ -217,7 +217,7 @@ eventos_parto AS (
         END AS tipo_parto,
         c.id as cid_parto -- Para depuração ou análise mais fina
     FROM
-        {{ ref('mart_historico_clinico_app__episodio') }} ea,
+        {{ ref('mart_historico_clinico__episodio') }} ea,
         UNNEST (ea.condicoes) AS c
     WHERE
         ea.entrada_data >= DATE '2021-01-01' -- Filtro de data para relevância
@@ -275,19 +275,13 @@ status_prescricoes AS (
         id_gestacao,
         MAX(
             CASE
-                WHEN REGEXP_CONTAINS (
-                    LOWER(prescricoes),
-                    r 'f[oó]lico'
-                ) THEN 'sim'
+                WHEN REGEXP_CONTAINS (LOWER(prescricoes), r'f[oó]lico') THEN 'sim'
                 ELSE 'não'
             END
         ) AS prescricao_acido_folico,
         MAX(
             CASE
-                WHEN REGEXP_CONTAINS (
-                    LOWER(prescricoes),
-                    r 'c[aá]lcio'
-                ) THEN 'sim'
+                WHEN REGEXP_CONTAINS (LOWER(prescricoes),r'c[aá]lcio') THEN 'sim'
                 ELSE 'não'
             END
         ) AS prescricao_carbonato_calcio
@@ -309,26 +303,26 @@ ultima_consulta_prenatal AS (
 ),
 
 -- CTE 24: visitas_acs_por_gestacao
--- visitas_acs_por_gestacao AS (
---     SELECT
---         id_gestacao,
---         COUNT(*) AS total_visitas_acs
---     FROM
---         {{ ref('mart_bi_gestacoes__visitas_acs_gestacao') }}
---     GROUP BY
---         id_gestacao
--- ),
+visitas_acs_por_gestacao AS (
+    SELECT
+        id_gestacao,
+        COUNT(*) AS total_visitas_acs
+    FROM
+        {{ ref('mart_bi_gestacoes__visitas_acs_gestacao') }}
+    GROUP BY
+        id_gestacao
+),
 
 -- CTE 25: ultima_visita_acs
--- ultima_visita_acs AS (
---     SELECT
---         id_gestacao,
---         MAX(entrada_data) AS data_ultima_visita
---     FROM
---         {{ ref('mart_bi_gestacoes__visitas_acs_gestacao') }}
---     GROUP BY
---         id_gestacao
--- ),
+ultima_visita_acs AS (
+    SELECT
+        id_gestacao,
+        MAX(entrada_data) AS data_ultima_visita
+    FROM
+        {{ ref('mart_bi_gestacoes__visitas_acs_gestacao') }}
+    GROUP BY
+        id_gestacao
+),
 
 -- CTE 26: maior_pa_por_gestacao
 maior_pa_por_gestacao AS (
@@ -1123,7 +1117,7 @@ incluir_AP AS (
         -- paciente.`equipe_saude_familia`[SAFE_OFFSET(0)].id_ine
     FROM
         pacientes_info pinfo
-        LEFT JOIN {{ ref('mart_historico_clinico_app__paciente') }} paciente ON pinfo.id_paciente = paciente.dados.id_paciente
+        LEFT JOIN {{ ref('mart_historico_clinico__paciente') }} paciente ON pinfo.id_paciente = paciente.dados.id_paciente
         LEFT JOIN {{ ref('dim_estabelecimento') }} estab ON pinfo.id_cnes = estab.id_cnes
 ),
 
@@ -1408,8 +1402,8 @@ FROM
     LEFT JOIN consultas_prenatal cp ON f.id_gestacao = cp.id_gestacao
     LEFT JOIN status_prescricoes sp ON f.id_gestacao = sp.id_gestacao
     LEFT JOIN ultima_consulta_prenatal ucp ON f.id_gestacao = ucp.id_gestacao
-    -- LEFT JOIN visitas_acs_por_gestacao v_acs ON f.id_gestacao = v_acs.id_gestacao
-    -- LEFT JOIN ultima_visita_acs uv_acs ON f.id_gestacao = uv_acs.id_gestacao
+    LEFT JOIN visitas_acs_por_gestacao v_acs ON f.id_gestacao = v_acs.id_gestacao
+    LEFT JOIN ultima_visita_acs uv_acs ON f.id_gestacao = uv_acs.id_gestacao
     LEFT JOIN maior_pa_por_gestacao pa_max ON f.id_gestacao = pa_max.id_gestacao
     LEFT JOIN categorias_risco_gestacional crg ON f.id_gestacao = crg.id_gestacao
     LEFT JOIN condicoes_flags cf ON f.id_gestacao = cf.id_gestacao -- Nova CTE para flags de condição

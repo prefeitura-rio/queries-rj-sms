@@ -134,7 +134,7 @@ gestacoes_com_status AS (
 ),
 
 
--- CTE 9: filtrado (anteriormente chamado gestacoes_com_fase)
+-- CTE 9: filtrado (anteriormente chamado gestacoes)
 -- Determina a 'fase_atual' da gestação (Gestação, Puerpério, Encerrada).
 -- Esta CTE é central e será usada para juntar a maioria das outras informações.
 filtrado AS (

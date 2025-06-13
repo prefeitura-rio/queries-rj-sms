@@ -19,7 +19,7 @@ marcadores_temporais AS (
    data_fim,
    data_fim_efetiva,
    fase_atual
- FROM {{ ref('mart_bi_gestacoes__gestacoes_com_fase') }}
+ FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
 
 

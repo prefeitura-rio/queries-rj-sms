@@ -1,7 +1,7 @@
 {{
     config(
         enabled=true,
-        alias="gestacoes_com_fase",
+        alias="gestacoes",
     )
 }}
 
@@ -280,8 +280,34 @@ inicios_deduplicados AS (
         WHERE
             rn = 1
     )
+
+-- id_paciente		STRING	
+-- cpf		STRING	
+-- nome		STRING	
+-- idade_gestante		INTEGER	
+-- data_inicio		DATE	
+-- data_fim		DATE	
+-- numero_gestacao		INTEGER	
+-- id_gestacao		STRING	
+-- data_fim_efetiva		DATE	
+-- dpp		DATE	
+-- fase_atual		STRING	
+-- trimestre_atual_gestacao		STRING	
+-- equipe_nome		STRING	
+-- clinica_nome		STRING	
 SELECT
-    filtrado.*,
+    filtrado.id_gestacao,
+    filtrado.id_paciente,
+    filtrado.cpf,
+    filtrado.nome,
+    filtrado.idade_gestante,
+    filtrado.numero_gestacao,
+    filtrado.data_inicio,
+    filtrado.data_fim,
+    filtrado.data_fim_efetiva,
+    filtrado.dpp,
+    filtrado.fase_atual,
+    filtrado.trimestre_atual_gestacao,
     edf.equipe_nome,
     edf.clinica_nome
 FROM filtrado
