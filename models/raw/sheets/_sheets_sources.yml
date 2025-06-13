@@ -17,6 +17,7 @@ sources:
       - name: assistencial_procedimento
       - name: usuarios_permitidos_hci
       - name: bairros_rio
+      - name: cids_risco_gestacional
       
   - name: brutos_sheets
     database: rj-sms
