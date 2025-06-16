@@ -21,11 +21,8 @@
 with
 
     atendimentos as (
-        select *, 'rotineiro' as origem,
-        from {{ ref("base_prontuario_vitacare__atendimento_rotineiro") }}
-        union all
         select *, 'historico' as origem
-        from {{ ref("base_prontuario_vitacare__atendimento_historico") }}
+        from {{ ref("base_prontuario_vitacare_historico__atendimento") }}
         union all
         select *, 'continuo' as origem 
         from {{ ref("base_prontuario_vitacare__atendimento_continuo") }}
