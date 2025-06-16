@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_informes_vitacare_staging
-    database: rj-sms-dev
+    database: rj-sms
     schema: brutos_informes_vitacare_staging
     tables:
       - name: acompanhamento_mensal_gestantes
