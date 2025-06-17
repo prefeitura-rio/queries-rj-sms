@@ -7,3 +7,4 @@ sources:
     tables:
     - name: c34_obitos_mrj
     - name: c34_ser_ambulatorial
+    - name: c34_sigtap

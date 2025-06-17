@@ -1,95 +1,91 @@
-{{ config(materialized="table", schema="projeto_c34", alias="marcacoes_ser") }}
+{{ config(materialized="table", schema="projeto_c34", alias="marcacoes_sih") }}
 
 with
-    source as (
+    execucoes_sih as (
         select
-            -- id
+            safe_cast(id_cnes as int64) as unidade_executante_cnes,
+
             to_hex(
                 sha256(cast(safe_cast(paciente_cpf as int64) as string))
             ) as paciente_id,
 
-            "SER" as sistema,
+            "SIH" as sistema,
 
-            -- procedimento executado
-            upper(trim({{ process_null("procedimento") }})) as procedimento,
-            upper(
-                trim({{ process_null("procedimento_especialidade") }})
-            ) as procedimento_especialidade,
-            upper(trim({{ process_null("procedimento_tipo") }})) as procedimento_tipo,
+            date(data_internacao) as data_internacao,
+            date(data_saida) as data_saida,
+            safe_cast(procedimento_realizado as int64) as procedimento_id,
 
-            upper(left(cid, 3)) as cid_execucao_procedimento,
+            case
+                when safe_cast(internacao_carater as int64) = 1
+                then "ELETIVO"
+                when safe_cast(internacao_carater as int64) = 2
+                then "URGENCIA"
+                else null
+            end as internacao_carater,
 
-            -- local solicitacao
-            {{ clean_name_string(process_null("unidade_origem_mun")) }}
-            as unidade_solicitante_mun,
+            case
+                when safe_cast(leito_especialidade as int64) = 1
+                then "CIRURGICO"
+                when safe_cast(leito_especialidade as int64) = 2
+                then "OBSTETRICO"
+                when safe_cast(leito_especialidade as int64) = 3
+                then "CLINICO"
+                when safe_cast(leito_especialidade as int64) = 4
+                then "CRONICO"
+                when safe_cast(leito_especialidade as int64) = 9
+                then "LEITO DIA / CIRURGICO"
+                else null
+            end as leito_especialidade,
 
-            lpad(
-                safe_cast(unidade_solicitante_cnes as string), 7, '0'
-            ) as unidade_solicitante_cnes,
+            diarias,
+            diarias_uti,
+            diarias_ui,
 
-            if(
-                lpad(safe_cast(unidade_solicitante_cnes as string), 7, '0') is not null,
-                'SIM',
-                'NAO'
-            ) as unidade_solicitante_preenchida,
+            case
+                when safe_cast(procedimento_complexidade as int64) = 0
+                then "NAO SE APLICA"
+                when safe_cast(procedimento_complexidade as int64) = 1
+                then "ATENCAO BASICA"
+                when safe_cast(procedimento_complexidade as int64) = 2
+                then "MEDIA COMPLEXIDADE"
+                when safe_cast(procedimento_complexidade as int64) = 3
+                then "ALTA COMPLEXIDADE"
+                else null
+            end as procedimento_complexidade,
 
-            -- local execucao
-            {{ clean_name_string(process_null("unidade_executante_mun")) }}
-            as unidade_executante_mun,
-            lpad(
-                safe_cast(unidade_executante_cnes as string), 7, '0'
-            ) as unidade_executante_cnes,
-            if(
-                lpad(safe_cast(unidade_executante_cnes as string), 7, '0') is not null,
-                'SIM',
-                'NAO'
-            ) as unidade_executante_preenchida,
+            lpad(diagnostico_principal, 3) as cid_execucao_procedimento
 
-            -- variaveis temporais
-            date(data_solicitacao) as data_solicitacao,
-            date(data_execucao) as data_execucao,
-            date_diff(
-                date(data_execucao), date(data_solicitacao), day
-            ) as intervalo_solicitacao_execucao,
+        from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}
+        where
+            safe_cast(paciente_cpf as int64) in (
+                select cpf_candidato from {{ ref("raw_projeto_c34__cpfs_fuzzy_match") }}
+            )
+            and upper(trim(aih_situacao)) = "APROVADA"
+    ),
 
-            -- dados regulacao
-            {{ clean_name_string(process_null("solicitacao_status")) }}
-            as solicitacao_status,
-            {{ clean_name_string(process_null("solicitacao_risco")) }}
-            as solicitacao_risco,
-            {{ clean_name_string(process_null("central_reguladora")) }}
-            as central_reguladora,
+    sigtap as (
+        select distinct
+            procedimento_id,
+            upper(trim({{ process_null("procedimento") }})) as procedimento
+        from {{ source("sub_geral_prod", "c34_sigtap") }}
+    ),
 
-        from {{ source("sub_geral_prod", "c34_ser_ambulatorial") }}
-        where 1 = 1 and solicitacao_id is not null and data_execucao is not null
+    enriquece_procedimento as (
+        select distinct sih.*, sigtap.procedimento
+        from execucoes_sih as sih
+        left join sigtap using (procedimento_id)
     ),
 
     consolidado as (
         select *
-        from source as src
-
-        -- dando inner join ao invés de left pq
-        -- aparentemente tinha uns cpfs extras (indesejados) na extração do ser
-        inner join {{ ref("raw_projeto_c34__obitos_sim") }} using (paciente_id)
+        from enriquece_procedimento
+        left join {{ ref("raw_projeto_c34__obitos_sim") }} using (paciente_id)
     ),
 
     enriquecimento as (
+
         select
             c.*,
-
-            case
-                when
-                    unidade_solicitante_cnes is not null
-                    and estab_sol.nome_fantasia is null
-                then 'NAO'
-                else 'SIM'
-            end as unidade_solicitante_mrj_sus,
-
-            estab_sol.nome_fantasia as unidade_solicitante,
-            estab_sol.esfera_subgeral as unidade_solicitante_esfera,
-            bairros_aps_sol.ap as unidade_solicitante_ap,
-            bairros_aps_sol.ap_titulo as unidade_solicitante_ap_descr,
-            estab_sol.tipo_unidade_agrupado_subgeral as unidade_solicitante_tp,
 
             case
                 when
@@ -132,20 +128,11 @@ with
             cids_c34_obit.indicador_cancer_pulmao as obito_causabas_cid_indicador_cp,
             upper(cids_obit.categoria_descricao) as obito_causabas_cid_descr,
 
-            upper(
-                trim(proced_ser.indicador_cancer_pulmao)
-            ) as procedimento_indicador_cp,
-            upper(trim(proced_ser.indicador_cancer)) as procedimento_indicador_ca,
-
             upper(ibge_res.nome_municipio) as paciente_mun_res_obito
 
         from consolidado as c
 
         -- obtendo dados de estabelecimentos
-        left join
-            {{ ref("raw_sheets__estabelecimento_auxiliar") }} as estab_sol
-            on safe_cast(c.unidade_solicitante_cnes as int64)
-            = safe_cast(estab_sol.id_cnes as int64)
         left join
             {{ ref("raw_sheets__estabelecimento_auxiliar") }} as estab_exec
             on safe_cast(c.unidade_executante_cnes as int64)
@@ -156,10 +143,6 @@ with
             = safe_cast(estab_obit.id_cnes as int64)
 
         -- obtendo dados de ap
-        left join
-            {{ ref("dim_estabelecimento_bairro_ap") }} as bairros_aps_sol
-            on safe_cast(c.unidade_solicitante_cnes as int64)
-            = safe_cast(bairros_aps_sol.id_cnes as int64)
         left join
             {{ ref("dim_estabelecimento_bairro_ap") }} as bairros_aps_exec
             on safe_cast(c.unidade_executante_cnes as int64)
@@ -197,53 +180,35 @@ with
         left join
             {{ ref("raw_sheets__projeto_c34_cids") }} as cids_c34_obit
             on c.obito_causabas_cid = cids_c34_obit.cid
-
-        -- classificacao dos procedimentos
-        left join
-            {{ ref("raw_sheets__projeto_c34_procedimentos_ser") }} as proced_ser
-            on c.procedimento = proced_ser.procedimento
-
     )
 
 select distinct
+
     /* 1. Identificação geral */
     paciente_id,
     sistema,
-    central_reguladora,
 
-    /* 2. Informações temporais */
-    data_solicitacao,
-    data_execucao,
-    intervalo_solicitacao_execucao,
+    /* 2. Datas da internação */
+    data_internacao,
+    data_saida,
 
-    /* 3. Procedimento e CID executado */
+    /* 3. Características da internação */
+    internacao_carater,
+    leito_especialidade,
+    diarias,
+    diarias_uti,
+    diarias_ui,
+
+    /* 4. Procedimento / CID executado */
+    procedimento_id,
     procedimento,
-    procedimento_tipo,
-    procedimento_especialidade,
-    procedimento_indicador_ca,
-    procedimento_indicador_cp,
+    procedimento_complexidade,
     cid_execucao_procedimento,
     cid_execucao_procedimento_descr,
     cid_execucao_procedimento_indicador_ca,
     cid_execucao_procedimento_indicador_cp,
 
-    /* 4. Detalhes da solicitação */
-    solicitacao_status,
-    solicitacao_risco,
-
-    /* 5. Unidade solicitante (do mais geral ao mais específico) */
-    unidade_solicitante_mun,
-    unidade_solicitante,
-    unidade_solicitante_esfera,
-    unidade_solicitante_tp,
-    unidade_solicitante_ap,
-    unidade_solicitante_ap_descr,
-    unidade_solicitante_cnes,
-    unidade_solicitante_mrj_sus,
-    unidade_solicitante_preenchida,
-
-    /* 6. Unidade executante (do mais geral ao mais específico) */
-    unidade_executante_mun,
+    /* 5. Unidade executante (do mais geral ao específico) */
     unidade_executante,
     unidade_executante_esfera,
     unidade_executante_tp,
@@ -251,9 +216,8 @@ select distinct
     unidade_executante_ap_descr,
     unidade_executante_cnes,
     unidade_executante_mrj_sus,
-    unidade_executante_preenchida,
 
-    /* 7. Dados demográficos do paciente */
+    /* 6. Dados demográficos do paciente */
     paciente_cpf_recuperado,
     paciente_sexo,
     paciente_raca_cor,
@@ -261,24 +225,24 @@ select distinct
     paciente_mun_res_obito,
     paciente_bairro_res_obito,
 
-    /* 8. Informações de óbito (paciente) */
+    /* 7. Informações de óbito (paciente) */
     paciente_mes_obito,
     paciente_faixa_etaria_obito,
     paciente_escolaridade_obito,
     paciente_estado_civil_obito,
 
-    /* 9. Causa básica do óbito */
+    /* 8. Causa básica do óbito */
     obito_causabas_cid,
     obito_causabas_cid_descr,
     obito_causabas_cid_indicador_ca,
     obito_causabas_cid_indicador_cp,
 
-    /* 10. Local do óbito – município/bairro */
+    /* 9. Local do óbito – município/bairro */
     obito_mun_ocor_ibge,
     obito_mun_ocor,
     obito_bairro_ocor,
 
-    /* 11. Estabelecimento do óbito (do geral ao específico) */
+    /* 10. Estabelecimento do óbito (do geral ao específico) */
     obito_estab_ocor,
     obito_estab_ocor_esfera,
     obito_estab_ocor_tp,
