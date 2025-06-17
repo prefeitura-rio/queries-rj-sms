@@ -57,7 +57,6 @@ with
             cids_c34_exec.indicador_cancer_pulmao
             as cid_execucao_procedimento_indicador_cp,
             upper(cids_exec.categoria_descricao) as cid_execucao_procedimento_descr,
-            upper(cids_exec.grupo_descricao_abv) as cid_execucao_procedimento_grupo,
 
             -- local solicitacao
             case
@@ -124,7 +123,6 @@ with
             cids_c34_obit.indicador_cancer as obito_causabas_cid_indicador_ca,
             cids_c34_obit.indicador_cancer_pulmao as obito_causabas_cid_indicador_cp,
             upper(cids_obit.categoria_descricao) as obito_causabas_cid_descr,
-            upper(cids_obit.grupo_descricao_abv) as obito_causabas_cid_grupo,
 
             -- local ocorrencia obito
             case
@@ -218,5 +216,82 @@ with
 
     )
 
-select distinct *
+select distinct
+
+    /* 1. Identificação geral */
+    paciente_id,
+    sistema,
+    central_reguladora,
+
+    /* 2. Datas da solicitação/execução */
+    data_solicitacao,
+    data_execucao,
+    intervalo_solicitacao_execucao,
+
+    /* 3. Procedimento e CID executado */
+    procedimento,
+    procedimento_tipo,
+    procedimento_especialidade,
+    procedimento_indicador_cp,
+    cid_execucao_procedimento,
+    cid_execucao_procedimento_descr,
+    cid_execucao_procedimento_indicador_ca,
+    cid_execucao_procedimento_indicador_cp,
+
+    /* 4. Detalhes da solicitação */
+    solicitacao_status,
+    solicitacao_risco,
+
+    /* 5. Unidade solicitante (ordem: geral → específico) */
+    unidade_solicitante,
+    unidade_solicitante_esfera,
+    unidade_solicitante_tp,
+    unidade_solicitante_ap,
+    unidade_solicitante_ap_descr,
+    unidade_solicitante_cnes,
+    unidade_solicitante_mrj_sus,
+    unidade_solicitante_preenchida,
+
+    /* 6. Unidade executante (ordem: geral → específico) */
+    unidade_executante,
+    unidade_executante_esfera,
+    unidade_executante_tp,
+    unidade_executante_ap,
+    unidade_executante_ap_descr,
+    unidade_executante_cnes,
+    unidade_executante_mrj_sus,
+    unidade_executante_preenchida,
+
+    /* 7. Dados demográficos do paciente */
+    paciente_cpf_recuperado,
+    paciente_sexo,
+    paciente_raca_cor,
+    paciente_mun_res_obito,
+    paciente_bairro_res_obito,
+
+    /* 8. Informações de óbito do paciente */
+    paciente_mes_obito,
+    paciente_faixa_etaria_obito,
+    paciente_escolaridade_obito,
+    paciente_estado_civil_obito,
+
+    /* 9. Causa básica do óbito */
+    obito_causabas_cid,
+    obito_causabas_cid_descr,
+    obito_causabas_cid_indicador_ca,
+    obito_causabas_cid_indicador_cp,
+
+    /* 10. Local do óbito – município */
+    obito_mun_ocor,
+
+    /* 11. Estabelecimento do óbito (ordem: geral → específico) */
+    obito_estab_ocor,
+    obito_estab_ocor_esfera,
+    obito_estab_ocor_tp,
+    obito_estab_ocor_ap,
+    obito_estab_ocor_ap_descr,
+    obito_estab_ocor_cnes,
+    obito_estab_ocor_mrj_sus,
+    obito_estab_ocor_preenchido
+
 from enriquecimento
