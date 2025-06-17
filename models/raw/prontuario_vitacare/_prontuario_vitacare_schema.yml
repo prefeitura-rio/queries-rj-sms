@@ -624,10 +624,6 @@ models:
         description: Identificador único do atendimento no prontuário local.
         data_type: string
         quote: true
-      - name: id_hci
-        description: Identificador do Histórico Clínico Integrado.
-        data_type: string
-        quote: true
       - name: cpf
         description: CPF do paciente no atendimento.
         policy_tags:
