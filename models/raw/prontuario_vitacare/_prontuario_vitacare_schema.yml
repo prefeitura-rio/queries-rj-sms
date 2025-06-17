@@ -607,6 +607,7 @@ models:
   - name: raw_prontuario_vitacare__atendimento
     columns:
       - name: id_hci
+        description: Identificador do Histórico Clínico Integrado.
         data_type: string
         data_tests:
           - not_null:
