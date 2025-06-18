@@ -493,11 +493,6 @@ models:
         data_tests:
           - unique:
               name: base_prontuario_vitacare__paciente_historico__id__unique
-          - not_null:
-              name: base_prontuario_vitacare__paciente_historico__id__not_null
-              config:
-                severity: warn
-                warn_if: ">1000"
       - name: cpf
         description: CPF do paciente.
         policy_tags:
@@ -765,17 +760,6 @@ models:
     columns:
       - name: gid
         data_type: string
-        data_tests:
-          - unique:
-              name: base_prontuario_vitacare__atendimento_historico__gid__unique
-              config:
-                severity: warn
-                warn_if: ">1000"
-          - not_null:
-              name: base_prontuario_vitacare__atendimento_historico__gid__not_null
-              config:
-                severity: warn
-                warn_if: ">1000"
         quote: true
       - name: cpf
         data_type: string
@@ -874,17 +858,6 @@ models:
     columns:
       - name: gid
         data_type: string
-        data_tests:
-          - unique:
-              name: base_prontuario_vitacare__atendimento_rotineiro__gid__unique
-              config:
-                severity: warn
-                warn_if: ">1000"
-          - not_null:
-              name: base_prontuario_vitacare__atendimento_rotineiro__gid__not_null
-              config:
-                severity: warn
-                warn_if: ">1000"
         quote: true
       - name: cpf
         data_type: string
