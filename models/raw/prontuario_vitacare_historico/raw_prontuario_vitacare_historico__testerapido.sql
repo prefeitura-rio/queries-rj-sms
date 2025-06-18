@@ -57,7 +57,7 @@ WITH
             {{ process_null('sarscov2testresult') }} AS sarscov2testresult,
             {{ process_null('positivesarscov2testresult') }} AS positivesarscov2testresult
 
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at
             
         FROM testesrapidos_deduplicados
     )
