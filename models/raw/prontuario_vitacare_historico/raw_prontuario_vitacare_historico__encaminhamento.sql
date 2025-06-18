@@ -37,12 +37,12 @@ WITH
         SELECT
             -- PKs e Chaves
             id_prontuario_global,
-            {{ remove_double_quotes('acto_id') }} AS id_prontuario_local,
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
+            acto_id AS id_prontuario_local,
+            id_cnes AS cnes_unidade,
 
-            {{ remove_double_quotes('encaminhamento_especialidade') }} AS encaminhamento_especialidade,
+            encaminhamento_especialidade,
    
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at
         FROM encaminhamentos_deduplicados
     )
 

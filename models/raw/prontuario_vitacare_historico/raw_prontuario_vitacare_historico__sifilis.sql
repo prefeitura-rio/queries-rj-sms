@@ -37,21 +37,21 @@ WITH
         SELECT
             -- PKs e Chaves
             id_prontuario_global,
-            {{ remove_double_quotes('acto_id') }} AS id_prontuario_local,
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
+            acto_id AS id_prontuario_local,
+            id_cnes AS cnes_unidade, 
 
-            {{ process_null(remove_double_quotes('acquiredsyphilissinannumber')) }} AS acquiredsyphilissinannumber,
-            {{ process_null(remove_double_quotes('acquiredsyphilisclinicalclassification')) }} AS acquiredsyphilisclinicalclassification,
-            {{ process_null(remove_double_quotes('acquiredsyphilistreatmentregimen')) }} AS acquiredsyphilistreatmentregimen,
-            {{ process_null(remove_double_quotes('acquiredsyphilistreatmentstartdate')) }} AS acquiredsyphilistreatmentstartdate,
-            {{ process_null(remove_double_quotes('acquiredsyphilisfinalclassification')) }} AS acquiredsyphilisfinalclassification,
-            {{ process_null(remove_double_quotes('acquiredsyphilisfinalclassificationreason')) }} AS acquiredsyphilisfinalclassificationreason,
-            {{ process_null(remove_double_quotes('acquiredsyphilisobservations')) }} AS acquiredsyphilisobservations,
-            {{ process_null(remove_double_quotes('acquiredsyphilisclosuredate')) }} AS acquiredsyphilisclosuredate,
-            {{ process_null(remove_double_quotes('acquiredsyphilisageatclosure')) }} AS acquiredsyphilisageatclosure,
-            {{ process_null(remove_double_quotes('acquiredsyphilisclosurereason')) }} AS acquiredsyphilisclosurereason,
+            safe_cast({{ process_null('acquiredsyphilissinannumber') }} as NUMERIC(16,4)) AS acquiredsyphilissinannumber,
+            {{ process_null('acquiredsyphilisclinicalclassification') }} AS acquiredsyphilisclinicalclassification,
+            {{ process_null('acquiredsyphilistreatmentregimen') }} AS acquiredsyphilistreatmentregimen,
+            safe_cast({{ process_null('acquiredsyphilistreatmentstartdate') }} as DATE) AS acquiredsyphilistreatmentstartdate,
+            {{ process_null('acquiredsyphilisfinalclassification') }} AS acquiredsyphilisfinalclassification,
+            {{ process_null('acquiredsyphilisfinalclassificationreason') }} AS acquiredsyphilisfinalclassificationreason,
+            {{ process_null('acquiredsyphilisobservations') }} AS acquiredsyphilisobservations,
+            safe_cast({{ process_null('acquiredsyphilisclosuredate') }} as DATE) AS acquiredsyphilisclosuredate,
+            safe_cast({{ process_null('acquiredsyphilisageatclosure') }} as INT) AS acquiredsyphilisageatclosure,
+            {{ process_null('acquiredsyphilisclosurereason') }} AS acquiredsyphilisclosurereason,
 
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at AS extracted_at
             
         FROM sifilis_deduplicados
     )

@@ -1,6 +1,6 @@
 {{
     config(
-        alias="solicitacaoexames", 
+        alias="procedimentos_clinicos", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
     )
@@ -8,7 +8,7 @@
 
 WITH
 
-    source_solicitacaoexames AS (
+    source_procedimentos_clinicos AS (
         SELECT 
             CONCAT(
                 NULLIF({{ remove_double_quotes('id_cnes') }}, ''), 
@@ -16,41 +16,37 @@ WITH
                 NULLIF({{ remove_double_quotes('acto_id') }}, '')
             ) AS id_prontuario_global,
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'solicitacao_exames') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'procedimentos_clinicos') }} 
     ),
 
 
-      -- Using window function to deduplicate solicitacaoexames
-    solicitacaoexames_deduplicados AS (
+      -- Using window function to deduplicate procedimentos_clinicos
+    procedimentos_clinicos_deduplicados AS (
         SELECT
             *
         FROM (
             SELECT
                 *,
                 ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY extracted_at DESC) AS rn
-            FROM source_solicitacaoexames
+            FROM source_procedimentos_clinicos
         )
         WHERE rn = 1
     ),
 
-    fato_solicitacaoexames AS (
+    fato_procedimentos_clinicos AS (
         SELECT
             -- PKs e Chaves
             id_prontuario_global,
             acto_id AS id_prontuario_local,
             id_cnes AS cnes_unidade,
-     
-            {{ process_null('nome_exame') }} AS nome_exame,
-            cod_exame AS cod_exame,
-            safe_cast('quantidade' as NUMERIC(16,4)) AS quantidade,
-            {{ process_null('material') }} AS material,
-            safe_cast('data_solicitacao' as DATETIME) AS data_solicitacao
 
+            co_procedimento,
+            {{ process_null(no_procedimentos) }}
+   
             extracted_at
-            
-        FROM solicitacaoexames_deduplicados
+        FROM procedimentos_clinicos_deduplicados
     )
 
 SELECT
     *
-FROM fato_solicitacaoexames
+FROM fato_procedimentos_clinicos

@@ -37,15 +37,15 @@ WITH
         SELECT
             -- PKs e Chaves
             id_prontuario_global,
-            {{ remove_double_quotes('acto_id') }} AS id_prontuario_local,
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
+            acto_id AS id_prontuario_local,
+            id_cnes AS cnes_unidade,
 
-            {{ remove_double_quotes('cod_cid10') }} AS cod_cid10,
-            {{ remove_double_quotes('estado') }} AS estado,
-            SAFE_CAST({{ remove_double_quotes('data_diagnostico') }} AS DATETIME) AS data_diagnostico,
+            cod_cid10 AS cod_cid10,
+            estado AS estado,
+            SAFE_CAST((data_diagnostico) AS DATETIME) AS data_diagnostico,
    
    
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at
         FROM condicoes_deduplicados
     )
 

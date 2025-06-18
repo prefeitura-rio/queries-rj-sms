@@ -37,11 +37,12 @@ WITH
         SELECT
             -- PKs e Chaves
             id_prontuario_global,
-            {{ remove_double_quotes('acto_id') }} AS id_prontuario_local,
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
-            {{ remove_double_quotes('alergias_anamnese_descricao') }} AS alergias_anamnese_descricao,
+            acto_id AS id_prontuario_local,
+            id_cnes AS cnes_unidade,
+
+             alergias_anamnese_descricao,
    
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at
         FROM alergias_deduplicados
     )
 

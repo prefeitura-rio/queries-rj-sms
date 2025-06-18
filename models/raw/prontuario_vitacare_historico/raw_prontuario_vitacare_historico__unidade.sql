@@ -30,11 +30,11 @@ WITH
     fato_unidades AS (
         SELECT
             -- PKs e Chaves
-            {{ remove_double_quotes('id') }} AS id,
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidades,
-            {{ remove_double_quotes('unidade_nome') }} AS unidade_nome,
-            {{ remove_double_quotes('unidade_ap') }} AS unidade_ap,
-            {{ remove_double_quotes('tipo_entid') }} AS tipo_entid,
+            id,
+            id_cnes cnes_unidade,
+            unidade_nome,
+            unidade_ap,
+            {{ process_null('tipo_entid') }} AS tipo_entid,
 
             {{ remove_double_quotes('extracted_at') }} AS extracted_at
             

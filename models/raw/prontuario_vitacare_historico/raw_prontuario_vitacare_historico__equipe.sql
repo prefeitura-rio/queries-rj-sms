@@ -33,12 +33,12 @@ WITH
             -- PKs e Chaves
             {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
             
-            REPLACE({{ remove_double_quotes('id') }}, '.0', '') AS id,
-            {{ remove_double_quotes('codigo') }} AS codigo,
-            {{ remove_double_quotes('nome') }} AS nome,
-            {{ remove_double_quotes('n_ine') }} AS n_ine,
+            REPLACE(id, '.0', '') AS id,
+            codigo,
+            nome,
+            n_ine,
    
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at
         FROM equipes_deduplicados
     )
 

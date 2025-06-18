@@ -42,7 +42,7 @@ WITH
             {{ remove_double_quotes('nome_medicamento') }} AS nome_medicamento,
             {{ remove_double_quotes('cod_medicamento') }} AS cod_medicamento,
             {{ remove_double_quotes('posologia') }} AS posologia,
-            {{ remove_double_quotes('quantidade') }} AS quantidade,
+            safe_cast({{ remove_double_quotes('quantidade') }} AS NUMERIC) AS quantidade,
             {{ remove_double_quotes('uso_continuado') }} AS uso_continuado,
    
             {{ remove_double_quotes('extracted_at') }} AS extracted_at

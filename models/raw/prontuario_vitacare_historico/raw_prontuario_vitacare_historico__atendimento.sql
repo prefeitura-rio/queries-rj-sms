@@ -16,7 +16,7 @@ WITH
                 NULLIF({{ remove_double_quotes('acto_id') }}, '')
             ) AS id_prontuario_global,
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'atendimentos') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'acto_id') }} 
     ),
 
 
@@ -34,37 +34,37 @@ WITH
     ),
 
     fato_atendimentos AS (
-        SELECT
-            -- PKs e Chaves
-            id_prontuario_global,
-            {{ remove_double_quotes('acto_id') }} AS id_prontuario_local,
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
-            {{ remove_double_quotes('unidade_ap') }} AS unidade_ap,
-            {{ remove_double_quotes('patient_cpf') }} AS patient_cpf,
-            {{ remove_double_quotes('patient_code') }} AS patient_code,
-            {{ remove_double_quotes('profissional_cns') }} AS profissional_cns,
-            {{ remove_double_quotes('profissional_cpf') }} AS profissional_cpf,
-            {{ remove_double_quotes('profissional_nome') }} AS profissional_nome,
-            {{ remove_double_quotes('profissional_cbo') }} AS profissional_cbo,
-            {{ remove_double_quotes('profissional_cbo_descricao') }} AS profissional_cbo_descricao,
-            {{ process_null(remove_double_quotes('profissional_equipe_nome')) }} AS profissional_equipe_nome,
-            {{ process_null(remove_double_quotes('profissional_equipe_cod_ine')) }} AS profissional_equipe_cod_ine,
-            SAFE_CAST({{ remove_double_quotes('datahora_inicio_atendimento') }} AS DATETIME ) AS datahora_inicio_atendimento,
-            SAFE_CAST({{ remove_double_quotes('datahora_fim_atendimento') }} AS DATETIME)AS datahora_fim_atendimento,
-            SAFE_CAST({{ remove_double_quotes('datahora_marcacao_atendimento') }} AS DATETIME) AS datahora_marcacao_atendimento,
-            {{ remove_double_quotes('eh_coleta') }} AS eh_coleta,
-            {{ process_null(remove_double_quotes('subjetivo_motivo')) }} AS subjetivo_motivo,
-            {{ process_null(remove_double_quotes('plano_observacoes')) }} AS plano_observacoes,
-            {{ process_null(remove_double_quotes('avaliacao_observacoes')) }} AS avaliacao_observacoes,
-            {{ process_null(remove_double_quotes('objetivo_descricao')) }} AS objetivo_descricao,
-            {{ process_null(remove_double_quotes('notas_observacoes')) }} AS notas_observacoes,
-            {{ remove_double_quotes('ut_id') }} AS ut_id,
-            {{ remove_double_quotes('realizado') }} AS realizado,
-            {{ remove_double_quotes('tipo_atendimento') }} AS tipo_atendimento,
-            
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
-        FROM atendimentos_deduplicados
-    )
+    SELECT
+        -- PKs e Chaves
+        id_prontuario_global,
+        acto_id AS id_prontuario_local,
+        id_cnes AS cnes_unidade,
+
+        unidade_ap AS unidade_ap,
+        patient_cpf AS patient_cpf,
+        patient_code AS patient_code,
+        profissional_cns AS profissional_cns,
+        profissional_cpf AS profissional_cpf,
+        profissional_nome AS profissional_nome,
+        profissional_cbo AS profissional_cbo,
+        profissional_cbo_descricao AS profissional_cbo_descricao,
+        {{ process_null('profissional_equipe_nome') }} AS profissional_equipe_nome,
+        {{ process_null('profissional_equipe_cod_ine') }} AS profissional_equipe_cod_ine,
+        SAFE_CAST(datahora_inicio_atendimento AS DATETIME) AS datahora_inicio_atendimento,
+        SAFE_CAST(datahora_fim_atendimento AS DATETIME) AS datahora_fim_atendimento,
+        SAFE_CAST(datahora_marcacao_atendimento AS DATETIME) AS datahora_marcacao_atendimento,
+        eh_coleta AS eh_coleta,
+        {{ process_null('subjetivo_motivo') }} AS subjetivo_motivo,
+        {{ process_null('plano_observacoes') }} AS plano_observacoes,
+        {{ process_null('avaliacao_observacoes') }} AS avaliacao_observacoes,
+        {{ process_null('objetivo_descricao') }} AS objetivo_descricao,
+        {{ process_null('notas_observacoes') }} AS notas_observacoes,
+        ut_id AS ut_id,
+        realizado AS realizado,
+        tipo_atendimento AS tipo_atendimento,
+        extracted_at AS extracted_at
+    FROM atendimentos_deduplicados
+)
 
 SELECT
     *

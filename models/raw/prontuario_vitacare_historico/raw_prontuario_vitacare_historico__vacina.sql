@@ -40,18 +40,18 @@ WITH
             {{ remove_double_quotes('acto_id') }} AS id_prontuario_local,
             {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
 
-            {{ remove_double_quotes('nome_vacina') }} AS nome_vacina,
-            {{ remove_double_quotes('cod_vacina') }} AS cod_vacina,
-            {{ remove_double_quotes('dose') }} AS dose,
-            {{ process_null(remove_double_quotes('lote')) }} AS lote,
-            {{ remove_double_quotes('data_aplicacao') }} AS data_aplicacao,
-            {{ remove_double_quotes('data_registro') }} AS data_registro,
-            {{ remove_double_quotes('diff') }} AS diff,
-            {{ remove_double_quotes('calendario_vacinal_atualizado') }} AS calendario_vacinal_atualizado,
-            {{ process_null(remove_double_quotes('tipo_registro')) }} AS tipo_registro,
-            {{ process_null(remove_double_quotes('estrategia_imunizacao')) }} AS estrategia_imunizacao,
-            {{ process_null(remove_double_quotes('foi_aplicada')) }} AS foi_aplicada,
-            {{ process_null(remove_double_quotes('justificativa')) }} AS justificativa,
+           {{ process_null('nome_vacina') }} AS nome_vacina,
+            cod_vacina AS cod_vacina,
+            {{ process_null('dose') }} AS dose,
+            lote AS lote,
+            safe_cast('data_aplicacao' as DATETIME) AS data_aplicacao,
+            safe_cast('data_registro' as DATETIME) AS data_registro,
+            safe_cast({{ process_null('diff') }} as INT) AS diff,
+            calendario_vacinal_atualizado AS calendario_vacinal_atualizado,
+            tipo_registro AS tipo_registro,
+            estrategia_imunizacao AS estrategia_imunizacao,
+            foi_aplicada AS foi_aplicada,
+            justificativa AS justificativa
 
             {{ remove_double_quotes('extracted_at') }} AS extracted_at
             
