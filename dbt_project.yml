@@ -114,14 +114,13 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
-      area_programatica:
-        +schema: brutos_area_programatica
-        +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
+      cnes_gdb:
+        +schema: brutos_cnes_gdb
+        +tags: ["weekly",'cnes_gdb']
         +labels:
           dado_publico: sim
-          dado_pessoal: nao
-          dado_sensivel: nao
-          dominio: subgeral
+          dado_pessoal: sim
+          dado_sensivel: sim
       geo_pgeo3:
         +schema: brutos_geo_pgeo3
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
@@ -168,6 +167,13 @@ models:
           dado_pessoal: sim
           dado_sensivel: nao
           dominio: subgeral
+      diario_oficial:
+        +schema: brutos_diario_oficial
+        +tags: "daily"
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       monitoramento:
         +schema: gerenciamento__historico_clinico__logs
         +tags: "daily"
@@ -274,13 +280,14 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      sisreg_tme:
-        +schema: projeto_sisreg_tme
-        +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
+      projeto_c34:
+        +schema: projeto_c34
+        +tags: ["weekly", "subgeral", "projeto_c34"]
         +labels:
-          dado_publico: sim
-          dado_pessoal: nao
-          dado_sensivel: nao
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+
 
     intermediate:
       +materialized: ephemeral
@@ -344,6 +351,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: cie
+        dashboard:
+          +schema: projeto_cie_dashboard
+          +tags: ["cie", "dashboard", "daily"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
+            dominio: cie
       dit:
         dengue:
           +schema: projeto_dengue
@@ -380,6 +395,15 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+      iplanrio:
+        whatsapp:
+          +tags: ["daily", "iplanrio", "whatsapp"]
+          +schema: projeto_whatsapp
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: iplanrio
       subpav:
         farmacia:
           +schema: projeto_subpav
@@ -436,6 +460,13 @@ models:
           +labels:
             dado_publico: nao
             dado_pessoal: sim
+            dado_sensivel: nao
+        sisreg_tme:
+          +schema: projeto_sisreg_tme
+          +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
+          +labels:
+            dado_publico: sim
+            dado_pessoal: nao
             dado_sensivel: nao
 
 tests:

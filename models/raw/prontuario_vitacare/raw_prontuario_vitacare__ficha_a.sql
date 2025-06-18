@@ -9,7 +9,7 @@
 with
     ficha_a as (
         select *, 'historico' as tipo,
-        from {{ ref("base_prontuario_vitacare_historico__ficha_a") }}
+        from {{ ref("base_prontuario_vitacare__ficha_a_historico") }}
         union all 
         select *, 'continuo' as tipo,
         from {{ ref("base_prontuario_vitacare__ficha_a_continuo") }}

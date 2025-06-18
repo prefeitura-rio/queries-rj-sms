@@ -51,7 +51,7 @@ WITH
             tipo_registro AS tipo_registro,
             estrategia_imunizacao AS estrategia_imunizacao,
             foi_aplicada AS foi_aplicada,
-            justificativa AS justificativa
+            justificativa AS justificativa,
 
             {{ remove_double_quotes('extracted_at') }} AS extracted_at
             
@@ -61,3 +61,4 @@ WITH
 SELECT
     *
 FROM fato_vacinas
+

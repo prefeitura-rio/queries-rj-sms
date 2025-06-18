@@ -44,7 +44,7 @@ WITH
             cod_exame AS cod_exame,
             safe_cast('quantidade' as NUMERIC(16,4)) AS quantidade,
             {{ process_null('material') }} AS material,
-            safe_cast('data_solicitacao' as DATETIME) AS data_solicitacao
+            safe_cast('data_solicitacao' as DATETIME) AS data_solicitacao,
 
             extracted_at
             

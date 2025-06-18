@@ -99,7 +99,7 @@ fato_hiv AS (
         safe_cast({{ process_null('aidstempoemagrecimento') }} AS NUMERIC(16,4)) AS aidstempoemagrecimento,
         {{ process_null('epidemiologiaignorado') }} AS epidemiologiaignorado,
         {{ process_null('aidsobsnotas') }} AS aidsobsnotas,
-        {{ process_null('aidsemterapiaantiretroviral') }} AS aidsemterapiaantiretroviral
+        {{ process_null('aidsemterapiaantiretroviral') }} AS aidsemterapiaantiretroviral,
 
         extracted_at AS extracted_at
     FROM hiv_deduplicados

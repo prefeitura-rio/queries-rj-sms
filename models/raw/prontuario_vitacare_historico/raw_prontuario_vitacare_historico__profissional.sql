@@ -28,9 +28,9 @@ WITH
             profissional_cbo_descricao AS profissional_cbo_descricao,
             profissional_equipe_nome AS profissional_equipe_nome,
             profissional_equipe_cod_equipe AS profissional_equipe_cod_equipe,
-            profissional_equipe_cod_ine AS profissional_equipe_cod_ine
+            profissional_equipe_cod_ine AS profissional_equipe_cod_ine,
    
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at
 
         FROM source_profissionais
     )

@@ -55,7 +55,7 @@ WITH
             {{ process_null('hepatitisbtestresult') }} AS hepatitisbtestresult,
             {{ process_null('positivehepatitisbtestresult') }} AS positivehepatitisbtestresult,
             {{ process_null('sarscov2testresult') }} AS sarscov2testresult,
-            {{ process_null('positivesarscov2testresult') }} AS positivesarscov2testresult
+            {{ process_null('positivesarscov2testresult') }} AS positivesarscov2testresult,
 
             extracted_at
             

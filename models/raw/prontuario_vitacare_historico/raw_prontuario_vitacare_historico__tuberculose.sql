@@ -93,7 +93,7 @@ WITH
             safe_cast({{ process_null('dataencerramentotratamentolatente') }} as DATETIME) AS dataencerramentotratamentolatente,
             {{ process_null('resultadoraioxtoraxtratamentolatente') }} AS resultadoraioxtoraxtratamentolatente,
             {{ process_null('esquemailtb') }} AS esquemailtb,
-            {{ process_null('observacoestuber') }} AS observacoestuber
+            {{ process_null('observacoestuber') }} AS observacoestuber,
 
             {{ remove_double_quotes('extracted_at') }} AS extracted_at
             

@@ -218,9 +218,9 @@ WITH
             {{ process_null('puerperiotipoaborto') }} AS puerperiotipoaborto,
             SAFE_CAST({{ process_null('puerperioidadegestacao') }} AS NUMERIC(16,4)) AS puerperioidadegestacao,
             {{ process_null('gestantepuerperiocuretagem') }} AS gestantepuerperiocuretagem,
-            {{ process_null('puerperiooutrotermoqual') }} AS puerperiooutrotermoqual
+            {{ process_null('puerperiooutrotermoqual') }} AS puerperiooutrotermoqual,
    
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at
 
         FROM prenatal_deduplicados
     )
