@@ -41,7 +41,7 @@ WITH
             id_cnes AS cnes_unidade,
 
             co_procedimento,
-            {{ process_null(no_procedimentos) }},
+            {{ process_null('no_procedimento') }} AS no_procedimento,
    
             extracted_at
         FROM procedimentos_clinicos_deduplicados

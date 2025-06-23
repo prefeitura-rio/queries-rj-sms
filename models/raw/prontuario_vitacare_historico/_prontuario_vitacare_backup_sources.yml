@@ -6,9 +6,8 @@ sources:
     schema: brutos_prontuario_vitacare_historico_staging
     tables:
       - name: alergias
-      - name: acto_id
+      - name: acto
       - name: condicoes
-      - name: ATENDIMENTOS
       - name: encaminhamentos
       - name: equipes
       - name: hiv

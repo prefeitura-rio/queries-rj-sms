@@ -1,6 +1,6 @@
 {{
     config(
-        alias="acto_id", 
+        alias="acto", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
     )
@@ -16,7 +16,7 @@ WITH
                 NULLIF({{ remove_double_quotes('acto_id') }}, '')
             ) AS id_prontuario_global,
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'acto_id') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'acto') }} 
     ),
 
 
@@ -50,16 +50,16 @@ WITH
             profissional_cbo_descricao AS profissional_cbo_descricao,
             profissional_equipe_nome AS profissional_equipe_nome,
             profissional_equipe_cod_ine AS profissional_equipe_cod_ine,
-            {{ process_null('datahora_inicio_atendimento') }} AS datahora_inicio_atendimento,
-            {{ process_null('datahora_fim_atendimento') }} AS datahora_fim_atendimento,
-            {{ process_null('datahora_marcacao_atendimento') }} AS datahora_marcacao_atendimento,
+            safe_cast({{ process_null('datahora_inicio_atendimento') }} as datetime) AS datahora_inicio_atendimento,
+            safe_cast({{ process_null('datahora_fim_atendimento') }} as datetime) AS datahora_fim_atendimento,
+            safe_cast({{ process_null('datahora_marcacao_atendimento') }} as datetime) AS datahora_marcacao_atendimento,
             tipo_consulta AS tipo_consulta,
             eh_coleta AS eh_coleta,
-            subjetivo_motivo AS subjetivo_motivo,
-            plano_observacoes AS plano_observacoes,
-            avaliacao_observacoes AS avaliacao_observacoes,
-            objetivo_descricao AS objetivo_descricao,
-            notas_observacoes AS notas_observacoes,
+            {{ process_null('subjetivo_motivo') }} AS subjetivo_motivo,
+            {{ process_null('plano_observacoes') }} AS plano_observacoes,
+            {{ process_null('avaliacao_observacoes') }} AS avaliacao_observacoes,
+            {{ process_null('objetivo_descricao') }} AS objetivo_descricao,
+            {{ process_null('notas_observacoes') }} AS notas_observacoes,
             ut_id AS ut_id,
             realizado AS realizado,
             {{ process_null('tipo_atendimento') }} AS tipo_atendimento,
