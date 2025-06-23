@@ -3,7 +3,7 @@
     config(
         alias="ficha_a",
         materialized="table",
-        schema="brutos_prontuario_vitacare_staging",
+        schema="brutos_prontuario_vitacare_historico",
     )
 }}
 
