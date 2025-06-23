@@ -19,7 +19,7 @@ WITH
     fato_profissionais AS (
         SELECT
             -- PKs e Chaves
-            safe_cast(REPLACE(prof_id, '.0', '') as NUMERIC(18,0)) AS prof_id,
+            REPLACE(prof_id, '.0', '') AS prof_id,
             profissional_cns AS profissional_cns,
             profissional_cpf AS profissional_cpf,
             profissional_nome AS profissional_nome,

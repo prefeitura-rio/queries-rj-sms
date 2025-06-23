@@ -1,6 +1,6 @@
 {{
     config(
-        alias="pacientes",
+        alias="cadastro",
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
     )

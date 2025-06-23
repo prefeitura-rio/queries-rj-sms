@@ -8,6 +8,7 @@ sources:
       - name: alergias
       - name: acto_id
       - name: condicoes
+      - name: ATENDIMENTOS
       - name: encaminhamentos
       - name: equipes
       - name: hiv

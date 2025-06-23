@@ -40,7 +40,7 @@ WITH
             acto_id AS id_prontuario_local,
             id_cnes AS cnes_unidade, 
 
-            safe_cast({{ process_null('acquiredsyphilissinannumber') }} as NUMERIC(16,4)) AS acquiredsyphilissinannumber,
+            safe_cast({{ process_null('acquiredsyphilissinannumber') }} as NUMERIC) AS acquiredsyphilissinannumber,
             {{ process_null('acquiredsyphilisclinicalclassification') }} AS acquiredsyphilisclinicalclassification,
             {{ process_null('acquiredsyphilistreatmentregimen') }} AS acquiredsyphilistreatmentregimen,
             safe_cast({{ process_null('acquiredsyphilistreatmentstartdate') }} as DATE) AS acquiredsyphilistreatmentstartdate,

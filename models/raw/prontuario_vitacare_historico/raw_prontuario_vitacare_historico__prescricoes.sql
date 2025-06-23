@@ -42,7 +42,7 @@ WITH
             nome_medicamento,
             cod_medicamento,
             posologia,
-            safe_cast(quantidade) AS NUMERIC) AS quantidade,
+            safe_cast((quantidade) AS NUMERIC) AS quantidade,
             uso_continuado,
    
             extracted_at
