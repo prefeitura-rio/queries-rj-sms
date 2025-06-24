@@ -20,7 +20,7 @@ WITH
     ),
 
 
-      -- Using window function to deduplicate prenatal
+      -- Using window function to deduplicate prenata
     prenatal_deduplicados AS (
         SELECT
             *
