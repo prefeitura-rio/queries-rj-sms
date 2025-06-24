@@ -13,7 +13,7 @@ Administrador: **[Pedro Marques](https://github.com/TanookiVerde)**
 | **Python** | 3.10.x | Windows: Baixe o instalador https://www.python.org/downloads/release/python-3109/ |
 | **Poetry** | 1.7.1  | `pip install poetry==1.7.1` |
 | **dbt-core** + **dbt-bigquery** |  | `pip install dbt-core dbt-bigquery` |
-| **Recce** | | Ferramenta para checar a diferença entre os dados em diversos ambientes |
+| **Recce** | | Ferramenta para checar a diferença entre os dados em diversos ambientes <br> <span style="color:gray; font-size:smaller;">Obs: O uso do Recce ainda está em construção e pode sofrer alterações.</span> |
 | **Git** | | Windows: Baixe o instalador https://git-scm.com/downloads/win |
 
 > **Clone o repositório**  
@@ -57,7 +57,7 @@ dbt deps              # baixa dbt-utils e demais packages declarados em packages
 ### 3 - Configure seu ambiente de desenvolvimento
 
 1. Crie uma variável de ambiente chamada `DBT_USER`, que receba seu nome.
-    -    **ex.** `DBT_USER='seu.nome'`
+    -    **ex.** `DBT_USER='seu_nome'`
 
  8. Dê privilegio de execução para o script ./recce.sh
     - **Linux e MacOS**: chmod +x recce.sh
@@ -65,8 +65,10 @@ dbt deps              # baixa dbt-utils e demais packages declarados em packages
 
 ---
 
-## 💡 Dica
-Use a extensão ([Power User for dbt](https://marketplace.visualstudio.com/items?itemName=innoverio.vscode-dbt-power-user)) no vscode ou similares, para ter acesso a uma interface gráfica para interagir com o dbt.
+## 💡 Dicas
+1. Use a extensão ([Power User for dbt](https://marketplace.visualstudio.com/items?itemName=innoverio.vscode-dbt-power-user)) no vscode ou similares, para ter acesso a uma interface gráfica para interagir com o dbt.  
+  
+2. Cheque se seu ambiente está executando com o compilador certo (Python 3.10.x)
 
 ---
 
@@ -81,6 +83,9 @@ Use a extensão ([Power User for dbt](https://marketplace.visualstudio.com/items
 ---
 
 ## 🔍 Fluxo de trabalho com o recce
+> 🚧 **Esta seção está em construção.**  
+> Documentação detalhada será adicionada em breve.  
+
 | Sistema         | Comando para iniciar                 |
 | --------------- | ------------------------------------ |
 | **Linux/macOS** |  |
@@ -92,6 +97,8 @@ Assim você avalia o diff entre produção e a sua branch antes mesmo do merge.
 ---
 
 ## 🤝 Como contribuir com o projeto
+Não esqueça de checar se você está logado no seu ambiente com a sua conta certa do GitHub.  
+(A que você quer usar para trabalhar nesse projeto).
 ### 1 - Fork & Branch
 - Crie branches no formato `feat/<breve-descrição>` ou `fix/<issue>`
 ### 2 - Commits semânticos
@@ -101,3 +108,8 @@ Assim você avalia o diff entre produção e a sua branch antes mesmo do merge.
 ### 4 - Abra o Pull Request
  - Descreva brevemente o contexto e a solução
  - Adicione screenshot do Recce se aplicável
+
+--- 
+
+## Qualquer dúvida, erro, crítica ou sugestão:  
+### Basta entrar em contato com o [Administrador](@TanookiVerde) ❤️
