@@ -50,7 +50,7 @@ WITH
             {{ process_null('patient_code') }} AS patient_code,
             {{ process_null('profissional_cns') }} AS profissional_cns,
             {{ process_null('profissional_cpf') }} AS profissional_cpf,
-            {{ process_null('profissional_nome') }} AS profissional_nome,
+            {{ process_null(proper_br('profissional_nome')) }} AS profissional_nome,
             {{ process_null('profissional_cbo') }} AS profissional_cbo,
             {{ process_null('profissional_cbo_descricao') }} AS profissional_cbo_descricao,
             {{ process_null('profissional_equipe_nome') }} AS profissional_equipe_nome,
