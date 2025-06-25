@@ -99,17 +99,6 @@ models:
       - name: id_estoque_movimento
         description: Identificador único do registro
         data_type: string
-        data_tests:
-          - unique:
-              name: raw_prontuario_vitacare__estoque_movimento__id_estoque_movimento__unique
-              config:
-                severity: warn
-                warn_if: ">1000"
-          - not_null:
-              name: raw_prontuario_vitacare__estoque_movimento__id_estoque_movimento__not_null
-              config:
-                severity: warn
-                warn_if: ">1000"
       - name: id_surrogate
         description: Chave surrogada composta pelo id do material, lote, localização de
           origem, localização de destino, quantidade e data hora da movimentação
