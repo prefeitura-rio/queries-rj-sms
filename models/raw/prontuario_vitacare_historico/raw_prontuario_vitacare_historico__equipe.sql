@@ -3,6 +3,11 @@
         alias="equipes", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -38,7 +43,8 @@ WITH
             nome,
             n_ine,
    
-            extracted_at
+            extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM equipes_deduplicados
     )
 

@@ -3,6 +3,11 @@
         alias="indicadores", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -43,7 +48,8 @@ WITH
             indicadores_nome,
             SAFE_CAST(('valor') AS NUMERIC) AS valor,
    
-            extracted_at
+            extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM indicadores_deduplicados
     )
 

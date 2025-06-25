@@ -3,6 +3,11 @@
         alias="procedimentos_clinicos", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -43,7 +48,8 @@ WITH
             co_procedimento,
             {{ process_null('no_procedimento') }} AS no_procedimento,
    
-            extracted_at
+            extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM procedimentos_clinicos_deduplicados
     )
 

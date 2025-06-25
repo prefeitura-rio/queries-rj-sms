@@ -4,6 +4,11 @@
         alias="ficha_a",
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -93,7 +98,8 @@ WITH
             familiabeneficiariaauxiliobrasil AS familia_beneficiaria_auxilio_brasil,
             criancamatriculadacrechepreescola AS crianca_matriculada_creche_pre_escola,
             updated_at AS updated_at,
-            extracted_at AS loaded_at 
+            loaded_at,
+            DATE(SAFE_CAST(loaded_at AS DATETIME)) AS data_particao
 
         FROM source_cadastro
     )

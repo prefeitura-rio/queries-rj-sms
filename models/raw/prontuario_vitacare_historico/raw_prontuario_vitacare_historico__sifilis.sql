@@ -3,6 +3,11 @@
         alias="sifilis", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -51,7 +56,8 @@ WITH
             safe_cast({{ process_null('acquiredsyphilisageatclosure') }} as INT) AS acquiredsyphilisageatclosure,
             {{ process_null('acquiredsyphilisclosurereason') }} AS acquiredsyphilisclosurereason,
 
-            extracted_at AS extracted_at
+            extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM sifilis_deduplicados
     )

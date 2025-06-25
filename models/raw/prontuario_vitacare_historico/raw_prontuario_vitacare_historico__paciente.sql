@@ -3,7 +3,12 @@
     config(
         alias="paciente",
         materialized="table",
-        schema="brutos_prontuario_vitacare_historico", 
+        schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        } 
     )
 }}
 
@@ -79,7 +84,8 @@ WITH
             dataatualizacaovinculoequipe AS data_atualizacao_vinculo_equipe,
 
 
-            extracted_at
+            loaded_at,
+            DATE(SAFE_CAST(loaded_at AS DATETIME)) AS data_particao
 
         FROM source_cadastro
     )

@@ -3,6 +3,11 @@
         alias="hiv", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -101,7 +106,8 @@ fato_hiv AS (
         {{ process_null('aidsobsnotas') }} AS aidsobsnotas,
         {{ process_null('aidsemterapiaantiretroviral') }} AS aidsemterapiaantiretroviral,
 
-        extracted_at AS extracted_at
+        extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
     FROM hiv_deduplicados
 )
 

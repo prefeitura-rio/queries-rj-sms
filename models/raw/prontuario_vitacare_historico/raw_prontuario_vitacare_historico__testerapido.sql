@@ -3,6 +3,11 @@
         alias="testesrapidos", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -57,7 +62,8 @@ WITH
             {{ process_null('sarscov2testresult') }} AS sarscov2testresult,
             {{ process_null('positivesarscov2testresult') }} AS positivesarscov2testresult,
 
-            extracted_at
+            extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM testesrapidos_deduplicados
     )

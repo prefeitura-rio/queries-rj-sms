@@ -3,6 +3,11 @@
         alias="profissionais", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -30,7 +35,8 @@ WITH
             profissional_equipe_cod_equipe AS profissional_equipe_cod_equipe,
             profissional_equipe_cod_ine AS profissional_equipe_cod_ine,
    
-            extracted_at
+            extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
 
         FROM source_profissionais
     )

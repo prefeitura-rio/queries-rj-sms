@@ -3,6 +3,11 @@
         alias="saudemulher", 
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -123,7 +128,8 @@ WITH
             {{ process_null('planonmotivomcont') }} AS planonmotivomcont,
             {{ process_null('planoncomplicacoesmcont') }} AS planoncomplicacoesmcont,
    
-            extracted_at
+            extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM saudemulher_deduplicados
     )

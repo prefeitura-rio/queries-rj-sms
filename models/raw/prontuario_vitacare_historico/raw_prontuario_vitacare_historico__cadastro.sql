@@ -3,6 +3,11 @@
         alias="cadastro",
         materialized="table",
         schema="brutos_prontuario_vitacare_historico",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
@@ -110,7 +115,8 @@ WITH
             SAFE_CAST(vulnerabilidadesocial AS INT) AS vulnerabilidadesocial,
             SAFE_CAST(updated_at AS DATETIME) AS updated_at,
 
-            {{ remove_double_quotes('extracted_at') }} AS extracted_at
+            extracted_at AS loaded_at,
+            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM pacientes_deduplicados
     )
 
