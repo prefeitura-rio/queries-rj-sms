@@ -1,7 +1,7 @@
 {{
     config(
         alias="hiv", 
-        materialized="table",
+        materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
