@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_prontuario_vitacare_historico_staging
-    database: rj-sms-dev
+    database: rj-sms
     schema: brutos_prontuario_vitacare_historico_staging
     tables:
       - name: alergias

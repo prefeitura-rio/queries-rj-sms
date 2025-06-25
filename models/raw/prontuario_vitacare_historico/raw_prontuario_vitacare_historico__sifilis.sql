@@ -42,7 +42,7 @@ WITH
         SELECT
             -- PKs e Chaves
             id_prontuario_global,
-            acto_id AS id_prontuario_local,
+            REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             id_cnes AS cnes_unidade, 
 
             safe_cast({{ process_null('acquiredsyphilissinannumber') }} as NUMERIC) AS acquiredsyphilissinannumber,
