@@ -3,12 +3,9 @@
         when
             length(trim({{ telefone_column }})) = 0
             or trim({{ telefone_column }}) in ('NONE', 'NULL', '0', "()", "")
-            or trim({{ telefone_column }}) like '00%'
-            or trim({{ telefone_column }}) like '000%'
-            or trim({{ telefone_column }}) like '0000%'
-            or regexp_contains(trim({{ telefone_column }}), r'^([0-9])\\1*$')  -- Remove repeated digits
             or regexp_contains(trim({{ telefone_column }}), r'E\+\d+')  -- Remove scientific notation
             or regexp_contains(trim({{ telefone_column }}), r'[a-zA-Z]')  -- Remove numbers that contain letters
+            or length(safe.regexp_replace(trim( {{ telefone_column }} ), substr({{ telefone_column }}, 1, 1), '')) = 0 -- Remove repeated digits
         then null
         else
             regexp_replace(
