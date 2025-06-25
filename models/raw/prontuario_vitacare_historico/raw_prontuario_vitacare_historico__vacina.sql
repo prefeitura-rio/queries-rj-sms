@@ -45,7 +45,7 @@ WITH
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
 
-           {{ process_null('nome_vacina') }} AS nome_vacina,
+            {{ process_null('nome_vacina') }} AS nome_vacina,
             cod_vacina AS cod_vacina,
             {{ process_null('dose') }} AS dose,
             lote AS lote,
@@ -53,10 +53,10 @@ WITH
             safe_cast('data_registro' as DATETIME) AS data_registro,
             safe_cast({{ process_null('diff') }} as INT) AS diff,
             calendario_vacinal_atualizado AS calendario_vacinal_atualizado,
-            tipo_registro AS tipo_registro,
-            estrategia_imunizacao AS estrategia_imunizacao,
-            foi_aplicada AS foi_aplicada,
-            justificativa AS justificativa,
+            {{ process_null('tipo_registro') }} AS tipo_registro,
+            {{ process_null('estrategia_imunizacao') }} AS estrategia_imunizacao,
+            {{ process_null('foi_aplicada') }} AS foi_aplicada,
+            {{ process_null('justificativa') }} AS justificativa,
 
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
