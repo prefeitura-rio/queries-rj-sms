@@ -1,7 +1,7 @@
 {{
     config(
         alias="condicoes", 
-        materialized="incremental",
+        materialized="table",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -16,9 +16,9 @@ WITH
     source_condicoes AS (
         SELECT 
             CONCAT(
-                NULLIF({{ remove_double_quotes('id_cnes') }}, ''), 
+                NULLIF(id_cnes, ''), 
                 '.',
-                NULLIF({{ remove_double_quotes('acto_id') }}, '')
+                NULLIF(REPLACE(acto_id, '.0', ''), '')
             ) AS id_prontuario_global,
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'condicoes') }} 

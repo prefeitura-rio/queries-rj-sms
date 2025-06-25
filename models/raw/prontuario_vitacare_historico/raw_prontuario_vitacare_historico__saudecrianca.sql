@@ -16,9 +16,9 @@ WITH
     source_saudecrianca AS (
         SELECT 
             CONCAT(
-                NULLIF({{ remove_double_quotes('id_cnes') }}, ''), 
+                NULLIF(id_cnes, ''), 
                 '.',
-                NULLIF({{ remove_double_quotes('acto_id') }}, '')
+                NULLIF(REPLACE(acto_id, '.0', ''), '')
             ) AS id_prontuario_global,
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'saudecrianca') }} 
