@@ -1,6 +1,6 @@
 {{
     config(
-        alias="unidades", 
+        alias="unidade", 
         materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
