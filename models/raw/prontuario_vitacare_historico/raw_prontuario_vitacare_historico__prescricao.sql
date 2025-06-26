@@ -43,7 +43,7 @@ WITH
             -- PKs e Chaves
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
-            id_cnes 
+            id_cnes,
             nome_medicamento AS medicamento_nome,
             cod_medicamento AS id_medicamento,
             posologia,
