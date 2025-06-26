@@ -1,7 +1,7 @@
 {{
     config(
         alias="condicoes", 
-        materialized="table",
+        materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -53,8 +53,14 @@ WITH
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM condicoes_deduplicados
+    ),
+
+    fato_filtrado AS (
+        SELECT *
+        FROM fato_condicoes
+        WHERE PARSE_TIMESTAMP('%F %H:%M:%E6S', loaded_at) > TIMESTAMP('2025-06-24 17:15:00.000000')
     )
 
 SELECT
     *
-FROM fato_condicoes
+FROM fato_filtrado

@@ -51,8 +51,14 @@ WITH
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM indicadores_deduplicados
+    ),
+
+    fato_filtrado AS (
+        SELECT *
+        FROM fato_indicadores
+        WHERE PARSE_TIMESTAMP('%F %H:%M:%E6S', loaded_at) > TIMESTAMP('2025-06-24 17:15:00.000000')
     )
 
 SELECT
     *
-FROM fato_indicadores
+FROM fato_filtrado
