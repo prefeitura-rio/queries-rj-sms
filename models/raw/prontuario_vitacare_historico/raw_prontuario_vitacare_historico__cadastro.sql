@@ -58,7 +58,11 @@ WITH
             SAFE_CAST(dataatualizacaocadastro AS DATETIME) AS dataatualizacaocadastro,
             SAFE_CAST({{ process_null('dataatualizacaovinculoequipe') }} AS DATETIME) AS dataatualizacaovinculoequipe,
             SAFE_CAST({{ process_null('datacadastro') }} AS DATETIME) AS datacadastro,
-            obito = '1' AS obito,
+            CASE
+                WHEN obito = '1' THEN TRUE
+                WHEN obito = '0' THEN FALSE
+                ELSE NULL
+            END AS obito,
             {{ process_null('dnv') }} AS dnv,
             {{ process_null('email') }} AS email,
             {{ process_null('telefone') }} AS telefone,
@@ -68,43 +72,91 @@ WITH
             {{ process_null('religiao') }} AS religiao,
             {{ process_null('situacaoprofissional') }} AS situacaoprofissional,
             {{ process_null('nomesocial') }} AS nomesocial,
-            {{ process_null('frequentaescola') }} AS frequentaescola,
-            {{ process_null('nomemae') }} AS nomemae,
-            {{ process_null('nomepai') }} AS nomepai,
-            {{ process_null('membrocomunidadetradicional') }} AS membrocomunidadetradicional,
+            CASE
+                WHEN frequentaescola = '1' THEN TRUE
+                WHEN frequentaescola = '0' THEN FALSE
+                ELSE NULL
+            END AS frequentaescola,
+            {{ process_null(proper_br('nomemae')) }} AS nomemae,
+            {{ process_null(proper_br('nomepai')) }} AS nomepai,
+            CASE
+                WHEN membrocomunidadetradicional = '1' THEN TRUE
+                WHEN membrocomunidadetradicional = '0' THEN FALSE
+                ELSE NULL
+            END AS membrocomunidadetradicional,
             {{ process_null('ocupacao') }} AS ocupacao,
             {{ process_null('orientacaosexual') }} AS orientacaosexual,
             {{ process_null('nacionalidade') }} AS nacionalidade,
             {{ process_null('paisnascimento') }} AS paisnascimento,
             participagrupocomunitario = '1' AS participagrupocomunitario,
-            {{ process_null('possuiPlanosaude') }} AS possuiplanosaude,
+            CASE
+                WHEN possuiplanosaude = '1' THEN TRUE
+                WHEN possuiplanosaude = '0' THEN FALSE
+                ELSE NULL
+            END AS possuiplanosaude,
             {{ process_null('relacaoresponsavelfamiliar') }} AS relacaoresponsavelfamiliar,
-            {{ process_null('territoriosocial') }} AS territoriosocial,
+            CASE
+                WHEN territoriosocial = '1' THEN TRUE
+                WHEN territoriosocial = '0' THEN FALSE
+                ELSE NULL
+            END AS territoriosocial,
             {{ process_null('escolaridade') }} AS escolaridade,
             {{ process_null('identidadegenero') }} AS identidadegenero,
-            {{ process_null('criancamatriculadacrechepreescola') }} AS criancamatriculadacrechepreescola,
-            emsituacaoderua = '1' AS emsituacaoderua,
+            CASE
+                WHEN criancamatriculadacrechepreescola = '1' THEN TRUE
+                WHEN criancamatriculadacrechepreescola = '0' THEN FALSE
+                ELSE NULL
+            END AS criancamatriculadacrechepreescola,
+            CASE
+                WHEN emsituacaoderua = '1' THEN TRUE
+                WHEN emsituacaoderua = '0' THEN FALSE
+                ELSE NULL
+            END AS emsituacaoderua,
             {{ process_null('doencascondicoes') }} AS doencascondicoes,
             {{ process_null('estadonascimento') }} AS estadonascimento,
             {{ process_null('estadoresidencia') }} AS estadoresidencia,
             {{ process_null('municipionascimento') }} AS municipionascimento,
             {{ process_null('municipioresidencia') }} AS municipioresidencia,
             {{ process_null('abastecimentoagua') }} AS abastecimentoagua,
-            {{ process_null('animaisnodomicilio') }} AS animaisnodomicilio,
+            CASE
+                WHEN animaisnodomicilio = '1' THEN TRUE
+                WHEN animaisnodomicilio = '0' THEN FALSE
+                ELSE NULL
+            END AS animaisnodomicilio,
             {{ process_null('bairro') }} AS bairro,
             {{ process_null('cep') }} AS cep,
             {{ process_null('comodos') }} AS comodos,
             {{ process_null('destinolixo') }} AS destinolixo,
             {{ process_null('esgotamentosanitario') }} AS esgotamentosanitario,
-            {{ process_null('familiabeneficiariaauxiliobrasil') }} AS familiabeneficiariaauxiliobrasil,
-            {{ process_null('familiabeneficiariacfc') }} AS familiabeneficiariacfc,
+            CASE
+                WHEN familiabeneficiariaauxiliobrasil = '1' THEN TRUE
+                WHEN familiabeneficiariaauxiliobrasil = '0' THEN FALSE
+                ELSE NULL
+            END AS familiabeneficiariaauxiliobrasil,
+            CASE
+                WHEN familiabeneficiariacfc = '1' THEN TRUE
+                WHEN familiabeneficiariacfc = '0' THEN FALSE
+                ELSE NULL
+            END AS familiabeneficiariacfc,
             {{ process_null('logradouro') }} AS logradouro,
-            {{ process_null('luzeletrica') }} AS luzeletrica,
+            CASE
+                WHEN luzeletrica = '1' THEN TRUE
+                WHEN luzeletrica = '0' THEN FALSE
+                ELSE NULL
+            END AS luzeletrica,
             {{ process_null('meioscomunicacao') }} AS meioscomunicacao,
             {{ process_null('meiostransporte') }} AS meiostransporte,
-            {{ process_null('possuifiltroagua') }} AS possuifiltroagua,
+            CASE
+                WHEN possuifiltroagua = '1' THEN TRUE
+                WHEN possuifiltroagua = '0' THEN FALSE
+                ELSE NULL
+            END AS possuifiltroagua,
             {{ process_null('rendafamiliar') }} AS rendafamiliar,
-            responsavelfamiliar = '1' AS responsavelfamiliar,
+            CASE
+                WHEN responsavelfamiliar = '1' THEN TRUE
+                WHEN responsavelfamiliar = '0' THEN FALSE
+                ELSE NULL
+            END AS responsavelfamiliar,
             {{ process_null('situacaomoradiaposse') }} AS situacaomoradiaposse,
             {{ process_null('tipodomicilio') }} AS tipodomicilio,
             {{ process_null('tipologradouro') }} AS tipologradouro,
@@ -116,7 +168,11 @@ WITH
             {{ process_null('equipe') }} AS equipe,
             {{ process_null('ineequipe') }} AS ineequipe,
             {{ process_null('microarea') }} AS microarea,
-            vulnerabilidadesocial = '1' AS vulnerabilidadesocial,
+            CASE
+                WHEN vulnerabilidadesocial = '1' THEN TRUE
+                WHEN vulnerabilidadesocial = '0' THEN FALSE
+                ELSE NULL
+            END AS vulnerabilidadesocial,
             SAFE_CAST(updated_at AS DATETIME) AS updated_at,
 
             extracted_at AS loaded_at,
