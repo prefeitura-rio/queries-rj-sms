@@ -1,0 +1,23 @@
+version: 2
+
+macros:
+  - name: normalize_null
+    description: >
+      Normaliza valores que devem ser tratados como nulos (como 'null', 'NaT', 'nan', entre outros) para NULL no SQL.
+      Essa macro aplica `lower` e `trim` no valor para garantir a correta identificação de variações desses valores 
+      ('null', 'none', 'na', 'n/a', 'nan', 'nat', '', '-').
+    arguments:
+      - name: value
+        type: string
+        description: Coluna a ser tratada para normalização de valores nulos.
+
+  - name: extract_competencia_from_path
+    description: >
+      Extrai a competência no formato "YYYY-MM" de uma string contendo o caminho do arquivo,
+      considerando apenas o padrão que aparece logo após "AP" seguido de 1 ou 2 dígitos e uma barra "/".
+      Por exemplo: "AP01/2024-05/..." -> extrai "2024-05".
+      Retorna NULL se o padrão não existir ou se o valor for nulo.
+    arguments:
+      - name: path_column
+        description: Coluna contendo o caminho do arquivo (string).
+        type: string

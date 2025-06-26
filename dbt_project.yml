@@ -405,6 +405,14 @@ models:
             dado_sensivel: sim
             dominio: iplanrio
       subpav:
+        dashboard_gestacoes:
+          +schema: projeto_gestacoes
+          +tags: ["daily", "subpav", "gestacoes"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: gestacoes
         farmacia:
           +schema: projeto_subpav
           +tags: ["daily", "subpav"]

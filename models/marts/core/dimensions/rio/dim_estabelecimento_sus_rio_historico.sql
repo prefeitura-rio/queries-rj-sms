@@ -83,8 +83,8 @@ with
 
     -- Obtendo informações sobre as áreas programáticas
     aps_tb as (
-        select bairro, ap, ap_titulo
-        from {{ ref("raw_area_programatica__bairros_aps") }}
+        select id_cnes, safe_cast(ap as string) as ap, ap_titulo
+        from {{ ref("dim_estabelecimento_bairro_ap") }}
     ),
 
     -- Obtendo latitudes e longitudes dos estabelecimentos de saúde
@@ -106,31 +106,17 @@ with
 
     -- Obtendo atributos de contato para os estabelecimentos
     estabelecimentos_smsrio_contatos as (
-        select 
-            unidade_id,
-            telefone,
-            email,
-            facebook,
-            instagram,
-            twitter
+        select unidade_id, telefone, email, facebook, instagram, twitter
         from {{ ref("raw_plataforma_smsrio__estabelecimento_contato") }}
     ),
     estabelecimentos_smsrio as (
-        select
-            id as unidade_id,
-            id_cnes
+        select id as unidade_id, id_cnes
         from {{ ref("raw_plataforma_smsrio__estabelecimento") }}
     ),
     contatos_aps as (
-        select 
-            id_cnes,
-            telefone,
-            email,
-            facebook,
-            instagram,
-            twitter
+        select id_cnes, telefone, email, facebook, instagram, twitter
         from estabelecimentos_smsrio_contatos
-            inner join estabelecimentos_smsrio using (unidade_id)
+        inner join estabelecimentos_smsrio using (unidade_id)
     ),
 
     -- Carregando tabelas utilizadas para mapear códigos em suas descrições textuais
@@ -196,10 +182,10 @@ with
             cnes_web.endereco_numero,
             cnes_web.endereco_complemento,
             coalesce(
-                coordenadas.latitude_api,cnes_web.endereco_latitude
+                coordenadas.latitude_api, cnes_web.endereco_latitude
             ) as endereco_latitude,
             coalesce(
-                coordenadas.longitude_api,cnes_web.endereco_longitude
+                coordenadas.longitude_api, cnes_web.endereco_longitude
             ) as endereco_longitude,
             cnes_web.id_motivo_desativacao,
             cnes_web.id_unidade,
@@ -223,13 +209,12 @@ with
             estabelecimentos_atributos.tipo_unidade_agrupado_subgeral
             as tipo_unidade_agrupado,
             estabelecimentos_atributos.esfera_subgeral as esfera,
-            coalesce(
-                estabelecimentos_atributos.area_programatica,
-                safe_cast(aps_tb.ap as string)
-            ) as id_ap,
+            coalesce(estabelecimentos_atributos.area_programatica, aps_tb.ap)
+            as id_ap,
             coalesce(
                 estabelecimentos_atributos.area_programatica_descr, aps_tb.ap_titulo
-            ) as ap,
+            )
+            as ap,
             estabelecimentos_atributos.agrupador_sms,
             estabelecimentos_atributos.tipo_sms,
             estabelecimentos_atributos.tipo_sms_simplificado,
@@ -291,7 +276,9 @@ with
             contatos_aps
             on cast(brutos.id_estabelecimento_cnes as int64)
             = cast(contatos_aps.id_cnes as int64)
-        left join aps_tb on cnes_web.endereco_bairro = aps_tb.bairro
+        left join
+            aps_tb
+            on safe_cast(cnes_web.id_cnes as int64) = safe_cast(aps_tb.id_cnes as int64)
         left join
             coordenadas
             on cast(brutos.id_estabelecimento_cnes as int64)
