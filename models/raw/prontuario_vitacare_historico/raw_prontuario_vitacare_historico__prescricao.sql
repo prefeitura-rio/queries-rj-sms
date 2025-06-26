@@ -56,6 +56,7 @@ WITH
         FROM prescricoes_deduplicados
     ),
 
+    -- Filtro temporário para remover registros anteriores à carga oficial (24/06/2025 17:15)
     fato_filtrado AS (
         SELECT *
         FROM fato_prescricoes
