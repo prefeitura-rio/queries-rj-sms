@@ -24,16 +24,16 @@ WITH
     fato_profissionais AS (
         SELECT
             -- PKs e Chaves
-            REPLACE(prof_id, '.0', '') AS prof_id,
-            profissional_cns AS profissional_cns,
-            profissional_cpf AS profissional_cpf,
-            profissional_nome AS profissional_nome,
-            n_registro AS n_registro,
-            profissional_cbo AS profissional_cbo,
-            profissional_cbo_descricao AS profissional_cbo_descricao,
-            profissional_equipe_nome AS profissional_equipe_nome,
-            profissional_equipe_cod_equipe AS profissional_equipe_cod_equipe,
-            profissional_equipe_cod_ine AS profissional_equipe_cod_ine,
+            REPLACE(prof_id, '.0', '') AS id_prof,
+            {{ process_null('profissional_cns') }} AS profissional_cns,
+            {{ process_null('profissional_cpf') }} AS profissional_cpf,
+            {{ process_null(proper_br('profissional_nome')) }} AS profissional_nome,
+            {{ process_null('n_registro') }} AS n_registro,
+            {{ process_null('profissional_cbo') }} AS profissional_cbo,
+            {{ process_null('profissional_cbo_descricao') }} AS profissional_cbo_descricao,
+            {{ process_null('profissional_equipe_nome') }} AS profissional_equipe_nome,
+            {{ process_null('profissional_equipe_cod_equipe') }} AS profissional_equipe_cod_equipe,
+            {{ process_null('profissional_equipe_cod_ine') }} AS profissional_equipe_cod_ine,
    
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
