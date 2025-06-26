@@ -1,6 +1,6 @@
 {{
     config(
-        alias="alergias", 
+        alias="alergia", 
         materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
