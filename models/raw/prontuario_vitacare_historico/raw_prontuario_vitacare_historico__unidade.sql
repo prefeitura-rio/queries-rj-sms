@@ -36,7 +36,6 @@ WITH
         SELECT
             -- PKs e Chaves
             id AS id_cnes,
-            id_cnes AS cnes_unidade,
             unidade_nome,
             unidade_ap,
             {{ process_null('tipo_entid') }} AS tipo_entid,

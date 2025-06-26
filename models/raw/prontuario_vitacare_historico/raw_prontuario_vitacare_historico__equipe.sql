@@ -36,7 +36,7 @@ WITH
     fato_equipes AS (
         SELECT
             -- PKs e Chaves
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
+            id_cnes,
             
             REPLACE(id, '.0', '') AS id,
             codigo,

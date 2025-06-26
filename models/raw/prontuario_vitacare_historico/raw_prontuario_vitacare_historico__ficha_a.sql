@@ -24,7 +24,7 @@ WITH
         SELECT
             -- PK
             CONCAT(
-                NULLIF(cnes_unidade, ''), 
+                NULLIF(id_cnes, ''), 
                 '.',
                 NULLIF(ut_id, '')
             ) AS id,

@@ -43,7 +43,7 @@ fato_hiv AS (
         -- PKs e Chaves
         id_prontuario_global,
         REPLACE(acto_id, '.0', '') AS id_prontuario_local,
-        id_cnes AS cnes_unidade,
+        id_cnes,
 
          {{ process_null('aidstransfusao') }} AS aidstransfusao,
         safe_cast({{ process_null('aidsdatatransfusao') }} AS DATE) AS aidsdatatransfusao,

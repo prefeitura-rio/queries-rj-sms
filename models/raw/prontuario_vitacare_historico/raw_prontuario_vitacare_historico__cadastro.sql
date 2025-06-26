@@ -37,7 +37,7 @@ WITH
         SELECT
             -- PKs e Chaves
 
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
+            id_cnes, 
 
             {{ process_null('ap') }} AS ap,
             {{ process_null('unidade') }} AS unidade,

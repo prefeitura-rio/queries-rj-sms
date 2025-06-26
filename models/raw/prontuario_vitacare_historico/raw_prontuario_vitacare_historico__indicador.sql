@@ -43,7 +43,7 @@ WITH
             -- PKs e Chaves
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
-            id_cnes AS cnes_unidade,
+            id_cnes,
 
             indicadores_nome,
             SAFE_CAST(('valor') AS NUMERIC) AS valor,

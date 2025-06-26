@@ -43,7 +43,7 @@ WITH
             -- PKs e Chaves
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
+            id_cnes, 
 
             {{ process_null('pregnancytestresult') }} AS pregnancytestresult,
             {{ process_null('positivepregnancytestresult') }} AS positivepregnancytestresult,

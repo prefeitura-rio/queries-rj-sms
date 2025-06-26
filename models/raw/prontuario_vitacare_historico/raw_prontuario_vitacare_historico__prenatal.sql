@@ -43,7 +43,7 @@ WITH
             -- PKs e Chaves
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
-            {{ remove_double_quotes('id_cnes') }} AS cnes_unidade,
+            id_cnes, 
 
             SAFE_CAST({{ process_null('param_peso') }} AS NUMERIC) AS param_peso,
             SAFE_CAST({{ process_null('param_tamin') }} AS NUMERIC) AS param_tamin,

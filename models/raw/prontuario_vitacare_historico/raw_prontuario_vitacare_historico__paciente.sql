@@ -24,13 +24,13 @@ WITH
         SELECT
             -- PK
             CONCAT(
-                NULLIF(cnes_unidade, ''), 
+                NULLIF(id_cnes, ''), 
                 '.',
                 NULLIF(ut_id, '')
             ) AS id,
 
             -- Outras Chaves
-            cnes_unidade AS id_cnes,
+            id_cnes,
             ut_id AS id_local,
             npront AS numero_prontuario,
             cpf AS cpf,
