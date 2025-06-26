@@ -44,8 +44,8 @@ WITH
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             id_cnes 
-            nome_medicamento,
-            cod_medicamento,
+            nome_medicamento AS medicamento_nome,
+            cod_medicamento AS id_medicamento,
             posologia,
             safe_cast((quantidade) AS NUMERIC) AS quantidade,
             uso_continuado,
