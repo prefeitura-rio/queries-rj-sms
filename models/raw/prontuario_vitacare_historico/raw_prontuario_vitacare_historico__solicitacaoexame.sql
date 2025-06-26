@@ -1,6 +1,6 @@
 {{
     config(
-        alias="solicitacaoexames", 
+        alias="solicitacaoexame", 
         materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={

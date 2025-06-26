@@ -1,6 +1,6 @@
 {{
     config(
-        alias="procedimentos_clinicos", 
+        alias="procedimento_clinico", 
         materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={

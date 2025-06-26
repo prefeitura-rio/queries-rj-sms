@@ -1,6 +1,6 @@
 {{
     config(
-        alias="equipes", 
+        alias="equipe", 
         materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={

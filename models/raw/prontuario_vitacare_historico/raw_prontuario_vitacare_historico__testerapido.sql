@@ -1,6 +1,6 @@
 {{
     config(
-        alias="testesrapidos", 
+        alias="teste_rapido", 
         materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
