@@ -46,7 +46,7 @@ WITH
             id_cnes,
 
             indicadores_nome,
-            SAFE_CAST(('valor') AS NUMERIC) AS valor,
+            valor, -- Deixar como STR?
    
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
