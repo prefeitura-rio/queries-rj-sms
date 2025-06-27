@@ -1105,6 +1105,12 @@ models:
           como AAAA-MM-DD HH:MM:SS.
         data_type: datetime
         quote: true
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitacare__vacina__data_registro__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
       - name: dose
         description: Este campo representa a dose da vacina que foi administrada ao
           paciente. 
