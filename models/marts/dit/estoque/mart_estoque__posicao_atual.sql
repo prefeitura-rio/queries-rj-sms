@@ -170,10 +170,16 @@ with
             lote_data_vencimento,
             lote_status,
             case
-                when current_date('America/Sao_Paulo') > lote_data_vencimento
-                then "Vencido"
+                -- Ocasionalmente recebemos lotes já vencidos com status de removido em
+                -- quantias >0; isso faz com que, p.ex., o BI mostre o lote como 'vencido'
+                -- mesmo que o lote não exista na vida real (pois já foi removido)
+                -- Portanto, precisamos conferir primeiro o status de removido, e só depois
+                -- a data de validade
                 when lote_status = "removed"
                 then "Removido"
+                when current_date('America/Sao_Paulo') > lote_data_vencimento
+                then "Vencido"
+                -- "Suspenso" aqui é somente outra forma de estoque, não significa indisponível
                 when lote_status = "suspended"
                 then "Suspenso"
                 when lote_status = "active" or lote_status = "recovered"
