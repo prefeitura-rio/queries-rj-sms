@@ -1,6 +1,6 @@
 {{
     config(
-        alias="saudecrianca", 
+        alias="saude_crianca", 
         materialized="incremental",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
