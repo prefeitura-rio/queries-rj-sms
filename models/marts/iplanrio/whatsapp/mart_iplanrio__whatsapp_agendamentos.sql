@@ -4,7 +4,7 @@
         alias="agendamentos_sisreg",
         materialized="table",
         partition_by={
-            "field": "dia_marcacao",
+            "field": "data_particao",
             "data_type": "date",
             "granularity": "day",
         },
@@ -19,7 +19,7 @@ SELECT
 
   procedimento_sigtap as nome_procedimento_geral,
   procedimento_interno as nome_procedimento_especifico,
-  safe_cast(data_marcacao as date) as dia_marcacao,
+  safe_cast(data_marcacao as datetime) as datahora_marcacao,
 
   struct(
     unidade_executante_nome as nome,
@@ -30,7 +30,8 @@ SELECT
     unidade_executante_bairro as bairro,
     unidade_executante_municipio as municipio,
     {{ padronize_telefone('unidade_executante_telefone') }} as telefone
-  ) as unidade
+  ) as unidade,
+  safe_cast(data_marcacao as date) as data_particao
 FROM {{ ref("raw_sisreg_api__marcacoes") }} marcacoes
 WHERE 
   solicitacao_status in (
