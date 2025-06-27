@@ -13,25 +13,21 @@
 
 with
     dim_equipe as (
-        select *
-        from {{ source("brutos_prontuario_vitacare_staging", "equipes_historico") }}
+        select
+            codigo,
+            n_ine
+        from {{ ref("raw_prontuario_vitacare_historico__equipe") }}
     ),
 
     fato_atendimento as (
         select
             -- PK
-            replace(acto_id, '.0', '') as id_prontuario_local,
-            concat(
-                nullif(atendimentos.id_cnes, ''),
-                '.',
-                nullif(
-                    replace(acto_id, '.0', ''), ''
-                )
-            ) as id_prontuario_global,
+            id_prontuario_local,
+            id_prontuario_global,
 
             -- Chaves
             nullif(patient_cpf, 'NAO TEM') as cpf,
-            unidade_cnes as cnes_unidade,
+            id_cnes as cnes_unidade,
 
             -- Profissional
             profissional_cns as cns_profissional,
@@ -46,26 +42,27 @@ with
             -- Dados da Consulta
             tipo_consulta as tipo,
             eh_coleta,
-            safe_cast(datahora_marcacao_atendimento as datetime) as datahora_marcacao,
-            safe_cast(datahora_inicio_atendimento as datetime) as datahora_inicio,
-            safe_cast(datahora_fim_atendimento as datetime) as datahora_fim,
+            datahora_marcacao_atendimento as datahora_marcacao,
+            datahora_inicio_atendimento as datahora_inicio,
+            datahora_fim_atendimento as datahora_fim,
 
             -- Campos Livres
-            safe_cast({{ process_null('subjetivo_motivo') }} as string) as soap_subjetivo_motivo,
-            safe_cast({{ process_null('objetivo_descricao') }}  as string) as soap_objetivo_descricao,
-            safe_cast({{ process_null('avaliacao_observacoes') }} as string) as soap_avaliacao_observacoes,
+            subjetivo_motivo as soap_subjetivo_motivo,
+            objetivo_descricao as soap_objetivo_descricao,
+            avaliacao_observacoes as soap_avaliacao_observacoes,
             safe_cast(null as string) as soap_plano_procedimentos_clinicos,
-            safe_cast({{ process_null('plano_observacoes') }}  as string) as soap_plano_observacoes,
-            safe_cast({{ process_null('notas_observacoes') }}  as string) as soap_notas_observacoes,
+            plano_observacoes as soap_plano_observacoes,
+            notas_observacoes as soap_notas_observacoes,
 
             -- Metadados
             safe_cast(datahora_fim_atendimento as datetime) as updated_at,
-            safe_cast(atendimentos.datalake_imported_at as datetime) as loaded_at
+            safe_cast(loaded_at as datetime) as loaded_at,
         from
-            {{ source("brutos_prontuario_vitacare_staging", "atendimentos_historico") }}
+            {{ ref("raw_prontuario_vitacare_historico__acto") }}
             as atendimentos
         left join
             dim_equipe on atendimentos.profissional_equipe_cod_ine = dim_equipe.n_ine
+            
     ),
     dim_alergias as (
         select
@@ -73,16 +70,7 @@ with
             to_json_string(
                 array_agg(struct(alergias_anamnese_descricao as descricao))
             ) as alergias
-        from
-            (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
-                from
-                    {{
-                        source(
-                            "brutos_prontuario_vitacare_staging", "alergias_historico"
-                        )
-                    }}
-            )
+        from {{ref("raw_prontuario_vitacare_historico__alergia") }}
         group by id_prontuario_global
     ),
     dim_condicoes as (
@@ -91,17 +79,7 @@ with
             to_json_string(
                 array_agg(struct(cod_cid10, "" as cod_ciap2, estado, data_diagnostico))
             ) as condicoes
-        from
-            (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
-                from
-                    {{
-                        source(
-                            "brutos_prontuario_vitacare_staging",
-                            "condicoes_historico",
-                        )
-                    }}
-            )
+        from {{ ref("raw_prontuario_vitacare_historico__condicao") }}
         group by id_prontuario_global
     ),
     dim_encaminhamentos as (
@@ -110,17 +88,7 @@ with
             to_json_string(
                 array_agg(struct(encaminhamento_especialidade as descricao))
             ) as encaminhamentos
-        from
-            (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
-                from
-                    {{
-                        source(
-                            "brutos_prontuario_vitacare_staging",
-                            "encaminhamentos_historico",
-                        )
-                    }}
-            )
+        from{{ ref("raw_prontuario_vitacare_historico__encaminhamento")}}
         group by id_prontuario_global
     ),
     dim_indicadores as (
@@ -129,17 +97,7 @@ with
             to_json_string(
                 array_agg(struct(indicadores_nome as nome, valor))
             ) as indicadores
-        from
-            (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
-                from
-                    {{
-                        source(
-                            "brutos_prontuario_vitacare_staging",
-                            "indicadores_historico",
-                        )
-                    }}
-            )
+        from {{ ref("raw_prontuario_vitacare_historico__indicador")}}
         group by id_prontuario_global
     ),
     dim_exames as (
@@ -152,16 +110,7 @@ with
                     )
                 )
             ) as exames_solicitados
-        from
-            (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
-                from
-                    {{
-                        source(
-                            "brutos_prontuario_vitacare_staging", "solicitacao_exame_historico"
-                        )
-                    }}
-            )
+        from {{ ref("raw_prontuario_vitacare_historico__solicitacaoexame") }}
         group by id_prontuario_global
     ),
     dim_vacinas as (
@@ -184,16 +133,7 @@ with
                     )
                 )
             ) as vacinas
-        from
-            (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global
-                from
-                    {{
-                        source(
-                            "brutos_prontuario_vitacare_staging", "vacinas_historico"
-                        )
-                    }}
-            )
+        from {{ ref("raw_prontuario_vitacare_historico__vacina") }}
         group by id_prontuario_global
     ),
     dim_prescricoes as (
@@ -202,25 +142,15 @@ with
             to_json_string(
                 array_agg(
                     struct(
-                        nome_medicamento,
-                        cod_medicamento,
+                        id_medicamento,
+                        medicamento_nome,
                         posologia,
                         quantidade,
                         uso_continuado
                     )
                 )
             ) as prescricoes
-        from
-            (
-                select *, concat(nullif(id_cnes, ''), '.', nullif(replace(acto_id, '.0', ''), '')) as id_prontuario_global,
-                from
-                    {{
-                        source(
-                            "brutos_prontuario_vitacare_staging",
-                            "prescricoes_historico",
-                        )
-                    }}
-            )
+        from {{ ref("raw_prontuario_vitacare_historico__prescricao") }}
         group by id_prontuario_global
     ),
 
@@ -235,10 +165,9 @@ with
             dim_vacinas.vacinas,
             dim_indicadores.indicadores,
             dim_encaminhamentos.encaminhamentos,
-            -- dim_procedimentos.procedimentos,
             atendimentos.updated_at,
             atendimentos.loaded_at,
-            safe_cast(atendimentos.datahora_fim as date) as data_particao,
+            safe_cast(atendimentos.datahora_fim as date) as data_particao
 
         from fato_atendimento as atendimentos
         left join dim_alergias using (id_prontuario_global)
@@ -248,11 +177,11 @@ with
         left join dim_exames using (id_prontuario_global)
         left join dim_vacinas using (id_prontuario_global)
         left join dim_prescricoes using (id_prontuario_global)
-    -- left join dim_procedimentos using (acto_id)
     ),
 
     final as (
-        select id_prontuario_local,
+        select
+            id_prontuario_local,
             id_prontuario_global,
             {{
                 dbt_utils.generate_surrogate_key(
@@ -261,9 +190,8 @@ with
                     ]
                 )
             }} as id_hci,
-            * except (id_prontuario_local,id_prontuario_global),
+            * except (id_prontuario_local, id_prontuario_global)
         from atendimentos_eventos_historicos
     )
 
 select * from final
-

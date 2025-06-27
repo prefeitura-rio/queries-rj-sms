@@ -39,18 +39,14 @@ with
                 else initcap(raca_cor)
             end as raca_cor,
 
-            case
-                when obito = '1' or obito = 'True'
-                then true
-                else false
-            end as obito_indicador,
+            obito as obito_indicador,
 
             case when nome_mae in ("NONE") then null else nome_mae end as nome_mae,
 
             case
-                when cadastro_permanente = "True" or codigo_ine_equipe_saude is not null
+                when cadastro_permanente is true or codigo_ine_equipe_saude is not null
                 then true
-                when cadastro_permanente = "False"
+                when cadastro_permanente is false
                 then false
                 else false
             end as cadastro_permanente_indicador,
