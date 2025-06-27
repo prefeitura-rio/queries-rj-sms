@@ -8,9 +8,6 @@
 -- dbt run --select raw_prontuario_vitacare__paciente
 with
     paciente as (
-        select *, 'rotineiro' as tipo,
-        from {{ ref("base_prontuario_vitacare__paciente_rotineiro") }}
-        union all
         select *, 'historico' as tipo,
         from {{ ref("base_prontuario_vitacare__paciente_historico") }}
         union all 
