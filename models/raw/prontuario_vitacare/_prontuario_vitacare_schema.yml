@@ -1110,7 +1110,7 @@ models:
               name: raw_prontuario_vitacare__vacina__data_registro__not_null
               config:
                 severity: warn
-                warn_if: ">1000"
+                warn_if: ">1"
       - name: dose
         description: Este campo representa a dose da vacina que foi administrada ao
           paciente. 
