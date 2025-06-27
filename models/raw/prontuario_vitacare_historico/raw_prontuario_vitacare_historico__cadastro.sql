@@ -71,7 +71,7 @@ WITH
             {{ process_null('racacor') }} AS racacor,
             {{ process_null('religiao') }} AS religiao,
             {{ process_null('situacaoprofissional') }} AS situacaoprofissional,
-            {{ process_null('nomesocial') }} AS nomesocial,
+            {{ process_null(proper_br('nomesocial')) }} AS nomesocial,
             CASE
                 WHEN frequentaescola = '1' THEN TRUE
                 WHEN frequentaescola = '0' THEN FALSE
