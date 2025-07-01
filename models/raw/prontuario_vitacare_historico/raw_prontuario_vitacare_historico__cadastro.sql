@@ -7,7 +7,9 @@
             "field": "data_particao",
             "data_type": "date",
             "granularity": "day"
-        }
+        },
+        incremental_strategy='merge', 
+        unique_key=['cpf', 'id_cnes']
     )
 }}
 
@@ -17,6 +19,9 @@ WITH
         SELECT
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'cadastro') }}
+        {% if is_incremental() %}
+            WHERE DATE(extracted_at) > (SELECT MAX(data_particao) FROM {{ this }})
+        {% endif %}
     ),
 
 
@@ -27,7 +32,7 @@ WITH
         FROM (
             SELECT
                 *,
-                ROW_NUMBER() OVER (PARTITION BY cpf, id_cnes ORDER BY extracted_at DESC) AS rn
+                ROW_NUMBER() OVER (PARTITION BY cpf, id_cnes ORDER BY dataatualizacaocadastro DESC, extracted_at DESC) AS rn
             FROM source_pacientes
         )
         WHERE rn = 1
