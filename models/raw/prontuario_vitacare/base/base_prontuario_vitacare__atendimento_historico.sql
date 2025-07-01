@@ -8,6 +8,8 @@
             "data_type": "date",
             "granularity": "day",
         },
+        incremental_strategy='merge', 
+        unique_key=['id_prontuario_global']
     )
 }}
 
