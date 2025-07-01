@@ -31,6 +31,7 @@ WITH
     -- ------------------------------------------------------------
     eventos_brutos AS (
         SELECT
+            id_hci,
             paciente.id_paciente AS id_paciente,
             paciente_cpf as cpf,
             cp.nome,
@@ -163,6 +164,7 @@ WITH
     -- ------------------------------------------------------------
     gestacoes_unicas AS (
         SELECT
+            i.id_hci,
             i.id_paciente,
             i.cpf,
             i.nome,
@@ -300,6 +302,7 @@ WITH
 -- Finalização do Modelo
 -- ------------------------------------------------------------
 SELECT
+    filtrado.id_hci,
     filtrado.id_gestacao,
     filtrado.id_paciente,
     filtrado.cpf,

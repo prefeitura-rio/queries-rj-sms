@@ -1229,7 +1229,7 @@ SELECT
     f.fase_atual,
     f.trimestre_atual_gestacao AS trimestre, -- Usando o trimestre calculado em 'filtrado'
     CASE
-        WHEN f.fase_atual IN ('Gestação', 'Puerpério') THEN DATE_DIFF (
+        WHEN f.fase_atual IN ('Gestação') THEN DATE_DIFF (
             CURRENT_DATE(),
             f.data_inicio,
             WEEK
@@ -1237,7 +1237,7 @@ SELECT
         ELSE NULL
     END AS IG_atual_semanas,
     CASE
-        WHEN f.fase_atual = 'Encerrada'
+        WHEN f.fase_atual IN ('Encerrada', 'Puerpério')
         AND f.data_fim_efetiva IS NOT NULL THEN DATE_DIFF (
             f.data_fim_efetiva,
             f.data_inicio,
