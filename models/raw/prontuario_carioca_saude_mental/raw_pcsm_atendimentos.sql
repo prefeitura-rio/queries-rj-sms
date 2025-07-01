@@ -13,7 +13,7 @@ select
     safe_cast(dtentrada as date) as data_entrada_atendimento,
     safe_cast(horaent as string) as hora_entrada_atendimento,
     safe_cast(dtsaida as date) as data_saida_atendimento,
-    safe_cast(horasaida as string) as hora_saida_atendimento,
+    safe_cast(horasai as string) as hora_saida_atendimento,
     safe_cast(seqtpatend as int64) as id_tipo_atendimento,
     safe_cast(codclin as string) as codigo_clinica,
     safe_cast(seqprof as int64) as id_profissional_saude,
