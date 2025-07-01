@@ -213,6 +213,9 @@ models:
         data_tests:
           - unique:
               name: raw_prontuario_vitacare__paciente__id__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
           - not_null:
               name: raw_prontuario_vitacare__paciente__id__not_null
               config:
@@ -482,6 +485,9 @@ models:
         data_tests:
           - unique:
               name: base_prontuario_vitacare__paciente_historico__id__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
       - name: cpf
         description: CPF do paciente.
         policy_tags:

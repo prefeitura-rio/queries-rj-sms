@@ -37,9 +37,11 @@ with
             ) as rank --rankeria registro mais novo e confiavel do cpf
         from {{ ref("raw_prontuario_vitacare__paciente") }}
         where {{ validate_cpf("cpf") }}
+        qualify row_number() over (
+                partition by cpf order by source_updated_at desc
+            ) = 1 -- deduplica cpf, mantendo o mais novo
 
     ),
-
     paciente_com_cadastro_permanente as (
         select * from paciente where cadastro_permanente_indicador = true
     ),
@@ -484,29 +486,12 @@ with
             cpf,
             'vitacare' as sistema,
             id_cnes,
-            id_paciente,
+            id as id_paciente,
             row_number() over (
                 partition by cpf
-                order by
-                    data_atualizacao_vinculo_equipe desc,
-                    cadastro_permanente_indicador desc,
-                    updated_at desc
+                order by source_updated_at
             ) as rank
-        from paciente
-        group by
-            cpf,
-            id_cnes,
-            id_paciente,
-            data_atualizacao_vinculo_equipe,
-            cadastro_permanente_indicador,
-            updated_at
-        qualify row_number() over (
-            partition by cpf, id_cnes, id_paciente
-            order by 
-            data_atualizacao_vinculo_equipe desc,
-            cadastro_permanente_indicador desc,
-            updated_at desc
-        ) = 1
+        from {{ ref("raw_prontuario_vitacare__paciente") }}
     ),
 
     prontuario_dados as (
