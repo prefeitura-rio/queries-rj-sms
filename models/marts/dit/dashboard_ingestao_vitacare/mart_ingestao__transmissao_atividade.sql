@@ -63,56 +63,57 @@ WITH
   -- -----------------------------
   -- Agrupamentos
   -- -----------------------------
-
   transmissoes_agrupadas as (
     select id_cnes, dia_ingestao, tipo_registro, count(*) as quantidade
     from transmissoes_individuais
     group by 1, 2, 3
   ),
-
   transmissoes_agrupadas_mes as (
     select id_cnes, tipo_registro, round(avg(quantidade),2) as quantidade
     from transmissoes_agrupadas
     group by 1, 2
   ),
-
   transmissoes_agrupadas_semana as (
     select id_cnes, tipo_registro, round(avg(quantidade),2) as quantidade
     from transmissoes_agrupadas
     WHERE DATE(dia_ingestao) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
     group by 1, 2
   ),
-
   transmissoes_agrupadas_dia as (
     select id_cnes, tipo_registro, round(avg(quantidade),2) as quantidade
     from transmissoes_agrupadas
     WHERE DATE(dia_ingestao) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
     group by 1, 2
   ),
+
+
   -- -----------------------------
   -- Analise p/ Registros de Pacientes
   -- -----------------------------
-  analise as (
+  analise_paciente as (
     select 
       unidades.area_programatica,
       transmissoes_agrupadas_mes.id_cnes,
       unidades.nome_fantasia,
       struct(
-        coalesce(transmissoes_agrupadas_dia.quantidade,0) as ultimo_dia,
-        coalesce(transmissoes_agrupadas_semana.quantidade,0) as ultima_semana,
-        coalesce(transmissoes_agrupadas_mes.quantidade,0) as ultimo_mes
+        coalesce(dia.quantidade,0) as ultimo_dia,
+        coalesce(semana.quantidade,0) as ultima_semana,
+        coalesce(mes.quantidade,0) as ultimo_mes
       ) as quantidade_media_registros_paciente
     from unidades
-      left join transmissoes_agrupadas_mes mes using(id_cnes)
-      left join transmissoes_agrupadas_semana semana
-        on semana.id_cnes = mes.id_cnes and semana.tipo_registro = m
-      left join transmissoes_agrupadas_dia using(id_cnes)
+      left join transmissoes_agrupadas_mes as mes using(id_cnes)
+      left join transmissoes_agrupadas_semana as semana
+        on semana.id_cnes = mes.id_cnes
+        and semana.tipo_registro = mes.tipo_registro
+      left join transmissoes_agrupadas_dia as dia
+        on semana.id_cnes = dia.id_cnes
+        and semana.tipo_registro = dia.tipo_registro
     order by id_cnes asc
   ),
   analise_atendimento as (
     select 
       unidades.area_programatica,
-      transmissoes_agrupadas_mes.id_cnes,
+      mes.id_cnes,
       unidades.nome_fantasia,
       struct(
         coalesce(transmissoes_agrupadas_dia.quantidade,0) as ultimo_dia,
@@ -120,7 +121,7 @@ WITH
         coalesce(transmissoes_agrupadas_mes.quantidade,0) as ultimo_mes
       ) as quantidade_media_registros_atendimento
     from unidades
-      left join transmissoes_agrupadas_mes using(id_cnes, tipo_registro)
+      left join transmissoes_agrupadas_mes as mes using(id_cnes, tipo_registro)
       left join transmissoes_agrupadas_semana using(id_cnes, tipo_registro)
       left join transmissoes_agrupadas_dia using(id_cnes, tipo_registro)
     where tipo_registro = 'atendimento'
