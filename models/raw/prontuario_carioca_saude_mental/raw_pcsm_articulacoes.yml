@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: raw_pcsm_articulacoes
+    description: "Articulações feitas entre unidades de saúde do Rio de Janeiro. Uma articulação é uma reunião de unidades de saúde quando é necessário se trabalhar em conjunto para atingir a um objetivo."
+    columns:
+      - name: id_articulacao
+        description: "Identificador único da articulação."
+        data_tests:
+          - not_null:
+              name: raw_pcsm_articulacoes__id_articulacao__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_articulacoes__id_articulacao__unique
+              severity: error
+        data_type: int64
+      - name: nome_articulacao
+        description: "Descrição da articulação."
+        data_type: string
+      - name: data_entrada_articulacao
+        description: "Data de entrada da articulação."
+        data_type: date
+      - name: hora_entrada_articulacao
+        description: "Hora de entrada da articulação."
+        data_type: string
+      - name: tipo_articulacao
+        description: "Tipo de articulação (U-Urgência/Emergência/Hospitalar, A-Atenção básica)."
+        data_type: string
+      - name: forma_articulacao
+        description: "Forma da articulação (P-Presencial, T-Telefônico, V-Vídeo)."
+        data_type: string
+      - name: id_unidade_saude
+        description: "Identificador da unidade de saúde onde está sendo realizada a articulação."
+        data_type: int64
+      - name: evolucao_articulacao
+        description: "Booleano que indica que a articulação já evoluiu (Y-Sim, N-Não)."
+        data_type: string

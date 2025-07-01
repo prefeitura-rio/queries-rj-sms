@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: raw_pcsm_matriciamentos
+    description: "Matriciamentos feitos em unidades de saúde psico-sociais da prefeitura do Rio de Janeiro. Matriciamento é uma estratégia de organização do cuidado em saúde mental baseada na interdisciplinaridade e na articulação em rede."
+    columns:
+      - name: id_matriciamento
+        description: "Identificador único do matriciamento, onde diferentes equipes de saúde trabalham em conjunto."
+        data_tests:
+          - not_null:
+              name: raw_pcsm_matriciamentos__id_matriciamento__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_matriciamentos__id_matriciamento__unique
+              severity: error
+        data_type: int64
+      - name: nome_matriciamento
+        description: "Nome do matriciamento."
+        data_type: string
+      - name: data_inicio_matriciamento
+        description: "Data de início do matriciamento."
+        data_type: date
+      - name: hora_inicio_matriciamento
+        description: "Hora de início do matriciamento."
+        data_type: string
+      - name: tipo_matriciamento
+        description: "Tipo de matriciamento. Exemplos: de urgência/emergência/hospitalar ou atenção básica."
+        data_type: string
+      - name: forma_matriciamento
+        description: "Forma de realização do matriciamento. Exemplos: presencial, telefônico ou por vídeo."
+        data_type: string
+      - name: id_unidade_saude
+        description: "Identificador da unidade de saúde onde foi feito o matriciamento."
+        data_type: int64
+      - name: evolucao_matriciamento
+        description: "Booleano que indica que houve pelo menos uma evolução associada ao matriciamento."
+        data_type: string
