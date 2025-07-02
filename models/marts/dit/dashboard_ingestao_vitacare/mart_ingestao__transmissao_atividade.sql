@@ -29,7 +29,7 @@ with
   -- -----------------------------
   -- Transmissões
   -- -----------------------------
-  transmissoes_individuais_paciente as (
+  initial_transmissoes_individuais_paciente as (
     select
       source_id,
       coalesce(nullif(json_extract_scalar(trans.data,'$.cnes'), ''), 'nao-informado') AS id_cnes,
@@ -40,7 +40,27 @@ with
     from {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} trans
     where DATE(datalake_loaded_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
   ),
-  transmissoes_individuais_atendimento as (
+  transmissoes_individuais_paciente as (
+    select *
+    from initial_transmissoes_individuais_paciente
+    -- Pega somente ocorrências dos último mês
+    where current_datetime("America/Sao_Paulo") >= dia_ocorrencia
+      and dia_ocorrencia >=
+        -- [Ref] https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions
+        -- Transforma dia em 01 (i.e. conta a partir do dia 1º de 30 dias atrás)
+        date_trunc(
+          -- Subtrai 1 mês do dia em que o código está sendo executado
+          date(
+            datetime_sub(
+              current_datetime("America/Sao_Paulo"),
+              interval 30 day
+            )
+          ),
+          month
+        )
+  ),
+
+  initial_transmissoes_individuais_atendimento as (
     select
       source_id,
       coalesce(nullif(json_extract_scalar(trans.data,'$.unidade_cnes'), ''), 'nao-informado') AS id_cnes,
@@ -50,6 +70,18 @@ with
       safe_cast(datalake_loaded_at as date) AS dia_ingestao,
     from {{ source('brutos_prontuario_vitacare_staging', 'atendimento_continuo') }} trans
     where DATE(datalake_loaded_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+  ),
+  transmissoes_individuais_atendimento as (
+    select *
+    from initial_transmissoes_individuais_atendimento
+    -- Pega somente ocorrências dos último mês
+    where current_datetime("America/Sao_Paulo") >= dia_ocorrencia
+      and dia_ocorrencia >= date_trunc(
+        date(
+          datetime_sub(current_datetime("America/Sao_Paulo"), interval 30 day)
+        ),
+        month
+      )
   ),
 
   -- -----------------------------

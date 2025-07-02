@@ -25,7 +25,7 @@ with
   ),
 
 
-  transmissoes_individuais as (
+  initial_transmissoes_individuais as (
     select
       source_id,
 
@@ -55,6 +55,18 @@ with
 
       'atendimento' as tipo_registro
     from {{ source('brutos_prontuario_vitacare_staging', 'atendimento_continuo') }} trans
+  ),
+  transmissoes_individuais as (
+    select *
+    from initial_transmissoes_individuais
+    -- Pega somente ocorrências dos último mês
+    where current_datetime("America/Sao_Paulo") >= dia_ocorrencia
+      and dia_ocorrencia >= date_trunc(
+        date(
+          datetime_sub(current_datetime("America/Sao_Paulo"), interval 30 day)
+        ),
+        month
+      )
   ),
 
   analise as (
@@ -105,7 +117,7 @@ with
   final as (
     select
       unidades.area_programatica,
-      unidades.id_cnes,
+      coalesce(unidades.id_cnes, com_cnes.id_cnes) as id_cnes,
       unidades.nome_fantasia,
 
       com_cnes.* except(id_cnes)
