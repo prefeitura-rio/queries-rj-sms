@@ -6,6 +6,23 @@
 }}
 
 with
+  -- -----------------------------
+  -- Dados de Unidades
+  -- -----------------------------
+  unidades as (
+    select
+      id_cnes,
+      area_programatica,
+      nome_fantasia
+    from {{ ref('dim_estabelecimento') }} est
+    where est.prontuario_versao = 'vitacare'
+      and est.prontuario_episodio_tem_dado = 'sim'
+      and id_cnes is not null
+
+    union all
+
+    select 'nao-informado', 'nao-se-aplica', 'CNES não informado'
+  ),
 
   -- -----------------------------
   -- Dados Históricos
@@ -19,7 +36,8 @@ with
     from {{ source('brutos_prontuario_vitacare_historico_staging', 'cadastro') }}
     where cnes is not null
       -- Pega somente ocorrências dos últimos 6 meses
-      and datetime(updated_at) >
+      and current_datetime("America/Sao_Paulo") >= datetime(updated_at)
+      and datetime(updated_at) >=
         -- [Ref] https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions
         -- Transforma dia em 01 (i.e. conta a partir do dia 1º de 6 meses atrás)
         date_trunc(
@@ -27,7 +45,7 @@ with
           date(
             datetime_sub(
               current_datetime("America/Sao_Paulo"),
-              interval 6 month
+              interval 1 month
             )
           ),
           month
@@ -97,23 +115,35 @@ with
         else 'presente-em-ambos'
       end as caso
     from analise
+  ),
+
+  final as (
+    select
+      unidades.area_programatica,
+      unidades.id_cnes,
+      unidades.nome_fantasia,
+
+      analise_faltantes.mes,
+      analise_faltantes.source_id,
+      analise_faltantes.caso
+    from unidades
+      left join analise_faltantes using(id_cnes)
   )
 
-select distinct mes, id_cnes, source_id,
+select distinct area_programatica, id_cnes, nome_fantasia, mes, source_id,
   countif(caso = 'presente-em-ambos') as presente_em_ambos,
   countif(caso = 'falta-no-continuo') as falta_continuo,
   countif(caso = 'falta-no-historico') as falta_historico
-from analise_faltantes
-group by mes, id_cnes, source_id
+from final
+group by 1, 2, 3, 4, 5
 order by mes desc, id_cnes desc
 
-
--- select distinct mes, id_cnes,
+-- select distinct area_programatica, id_cnes, mes, nome_fantasia,
 --   sum(presente_em_ambos) as presente_em_ambos,
 --   sum(falta_continuo) as falta_continuo,
 --   sum(falta_historico) as falta_historico
 -- from `...`
 -- where mes = '2025-05'
--- group by mes, id_cnes
+-- group by 1,2,3,4
 -- order by mes desc
 

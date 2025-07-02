@@ -12,13 +12,17 @@ with
   -- Dados de Unidades
   -- -----------------------------
   unidades as (
-    select 
+    select
       id_cnes,
       area_programatica,
       nome_fantasia
     from {{ ref('dim_estabelecimento') }} est
-    where est.prontuario_versao = 'vitacare' and est.prontuario_episodio_tem_dado = 'sim'
+    where est.prontuario_versao = 'vitacare'
+      and est.prontuario_episodio_tem_dado = 'sim'
+      and id_cnes is not null
+
     union all
+
     select 'nao-informado', 'nao-se-aplica', 'CNES não informado'
   ),
 

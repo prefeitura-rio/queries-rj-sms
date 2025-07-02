@@ -6,6 +6,25 @@
 }}
 
 with
+  -- -----------------------------
+  -- Dados de Unidades
+  -- -----------------------------
+  unidades as (
+    select
+      id_cnes,
+      area_programatica,
+      nome_fantasia
+    from {{ ref('dim_estabelecimento') }} est
+    where est.prontuario_versao = 'vitacare'
+      and est.prontuario_episodio_tem_dado = 'sim'
+      and id_cnes is not null
+
+    union all
+
+    select 'nao-informado', 'nao-se-aplica', 'CNES não informado'
+  ),
+
+
   transmissoes_individuais as (
     select
       source_id,
@@ -74,9 +93,27 @@ with
       momento_ingestao
 
     from transmissoes_individuais
+  ),
+
+  com_cnes as (
+    select
+      * except(cnes),
+      coalesce(cnes, 'nao-informado') as id_cnes,
+    from analise
+  ),
+
+  final as (
+    select
+      unidades.area_programatica,
+      unidades.id_cnes,
+      unidades.nome_fantasia,
+
+      com_cnes.* except(id_cnes)
+    from com_cnes
+      left join unidades using (id_cnes)
   )
 
 select *
-from analise
+from final
 where problema_cnes is not null or problema_data is not null
 order by momento_ingestao desc

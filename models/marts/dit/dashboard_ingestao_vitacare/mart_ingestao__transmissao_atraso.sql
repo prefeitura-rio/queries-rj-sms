@@ -18,8 +18,6 @@ with
     from {{ ref('dim_estabelecimento') }} est
     where est.prontuario_versao = 'vitacare'
       and est.prontuario_episodio_tem_dado = 'sim'
-      -- Hoje (2025-07-02) aparece uma linha com CNES nulo pro
-      -- "SMS HOSPITAL MUNICIPAL ALVARO RAMOS AP 40"; filtra:
       and id_cnes is not null
 
     union all
