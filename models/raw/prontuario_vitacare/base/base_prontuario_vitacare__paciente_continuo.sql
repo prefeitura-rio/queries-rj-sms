@@ -47,8 +47,12 @@ with
             json_extract_scalar(data, "$.nome") as nome,
             json_extract_scalar(data, "$.nomeSocial") as nome_social,
             json_extract_scalar(data, "$.nomeMae") as nome_mae,
-            json_extract_scalar(data, "$.nomePai") as nome_pai,            
-            json_extract_scalar(data, "$.obito") as obito,
+            json_extract_scalar(data, "$.nomePai") as nome_pai, 
+            case           
+                when json_extract_scalar(data, "$.obito") = 'true' then true
+                when json_extract_scalar(data, "$.obito") = 'false' then false
+                else null
+            end as obito,
             json_extract_scalar(data, "$.sexo") as sexo,
             json_extract_scalar(data, "$.orientacaoSexual") as orientacao_sexual,
             json_extract_scalar(data, "$.identidadeGenero") as identidade_genero,
@@ -56,7 +60,11 @@ with
 
             -- Informações Cadastrais
             safe_cast(null as string) as situacao,  -- #TODO: Pedir para vitacare essa informação
-            json_extract_scalar(data, "$.cadastroPermanente") as cadastro_permanente,
+            case 
+                when json_extract_scalar(data, "$.cadastroPermanente") = 'true' then true 
+                when json_extract_scalar(data, "$.cadastroPermanente") = 'false' then false 
+                else null 
+            end as cadastro_permanente,
             safe_cast(json_extract_scalar(data, "$.dataCadastro") as timestamp) as data_cadastro,
             safe_cast(json_extract_scalar(data, "$.dataAtualizacaoCadastro") as timestamp) as data_atualizacao_cadastro,
             
