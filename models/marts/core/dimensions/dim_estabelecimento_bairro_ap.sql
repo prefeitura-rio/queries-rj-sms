@@ -56,5 +56,5 @@ with
     )
 
 
-select *
+select distinct *
 from estabs_bairros_aps_titulo
