@@ -416,6 +416,14 @@ models:
             dado_sensivel: sim
             dominio: subpav
       subgeral:
+        indicadores_aps:
+          +schema: projeto_subgeral_indicadores
+          +tags: ["daily"]                
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
+            dominio: subgeral
         cnes:
           +schema: projeto_cnes_subgeral
           +tags: ["weekly", "subgeral", "cnes_subgeral"]
