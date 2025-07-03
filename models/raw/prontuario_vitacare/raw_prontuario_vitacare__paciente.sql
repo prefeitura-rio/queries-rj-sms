@@ -27,7 +27,8 @@ with
     corrige_cadastro as (
         select
 
-            * except (cadastro_permanente, nome_social, sexo, raca_cor, nome_mae, obito),
+            * except (cadastro_permanente, nome_social, sexo, raca_cor, nome_mae, obito, codigo_ine_equipe_saude),
+            {{process_null('codigo_ine_equipe_saude')}} as codigo_ine_equipe_saude,
 
             case when nome_social in ('') then null else nome_social end as nome_social,
 

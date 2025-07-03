@@ -112,7 +112,8 @@ with
                 as date) as data_particao,
             safe_cast(nullif(json_extract_scalar(data, "$.dataCadastro"),'') as timestamp) as source_created_at,
             updated_at_rank as source_updated_at,
-            safe_cast(null as timestamp) as datalake_imported_at
+            safe_cast(null as timestamp) as datalake_imported_at,
+            updated_at_rank
         from latest_events
     )
 select * 
