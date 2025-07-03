@@ -87,6 +87,12 @@ WITH
             safe_cast(data_cadastro as timestamp) as source_created_at,
             safe_cast(data_atualizacao_cadastro as timestamp) as source_updated_at,
             safe_cast(loaded_at as timestamp) as datalake_imported_at,
+            greatest(
+                safe_cast(data_atualizacao_cadastro as timestamp),
+                safe_cast(data_cadastro as timestamp),
+                safe_cast(data_atualizacao_vinculo_equipe as timestamp),
+                safe_cast(data_atualizacao_cadastro as timestamp)
+            ) as updated_at_rank
 
         FROM source_cadastro
     )

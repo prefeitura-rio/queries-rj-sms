@@ -20,7 +20,7 @@ with
         from paciente
         qualify
             row_number() over (
-                partition by id order by source_updated_at desc
+                partition by id order by updated_at_rank desc
             ) = 1
     ),
 
@@ -124,6 +124,7 @@ with
             -- Metadados
             timestamp_add(datetime(timestamp(source_created_at), 'America/Sao_Paulo'),interval 3 hour) as source_created_at,
             timestamp_add(datetime(timestamp(source_updated_at), 'America/Sao_Paulo'),interval 3 hour) as source_updated_at,
+            updated_at_rank
 
         from corrige_cadastro
     ),
