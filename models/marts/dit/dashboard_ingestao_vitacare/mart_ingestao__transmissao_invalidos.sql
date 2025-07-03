@@ -121,8 +121,8 @@ with
       unidades.nome_fantasia,
 
       com_cnes.* except(id_cnes)
-    from com_cnes
-      left join unidades using (id_cnes)
+    from unidades
+      left join com_cnes using (id_cnes)
   )
 
 select *

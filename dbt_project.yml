@@ -360,6 +360,12 @@ models:
             dado_sensivel: nao
             dominio: cie
       dit:
+        dashboard_ingestao_vitacare:
+          +schema: relatorio_ingestao_vitacare
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
         dengue:
           +schema: projeto_dengue
           +tags: "daily"

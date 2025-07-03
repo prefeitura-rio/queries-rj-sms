@@ -16,9 +16,9 @@ with
       id_cnes,
       area_programatica,
       nome_fantasia
-    from {{ ref('dim_estabelecimento') }} est
-    where est.prontuario_versao = 'vitacare'
-      and est.prontuario_episodio_tem_dado = 'sim'
+    from {{ ref('dim_estabelecimento') }}
+    where prontuario_versao = 'vitacare'
+      and prontuario_episodio_tem_dado = 'sim'
       and id_cnes is not null
 
     union all
@@ -32,11 +32,11 @@ with
   initial_transmissoes_individuais_paciente as (
     select
       source_id,
-      coalesce(nullif(json_extract_scalar(trans.data,'$.cnes'), ''), 'nao-informado') AS id_cnes,
+      coalesce(nullif(json_extract_scalar(trans.data,'$.cnes'), ''), 'nao-informado') as id_cnes,
       safe_cast(
         TIMESTAMP(DATETIME(source_updated_at), "America/Sao_Paulo") as date
       ) as dia_ocorrencia,
-      safe_cast(datalake_loaded_at as date) AS dia_ingestao,
+      safe_cast(datalake_loaded_at as date) as dia_ingestao,
     from {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} trans
     where DATE(datalake_loaded_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
   ),
@@ -63,11 +63,11 @@ with
   initial_transmissoes_individuais_atendimento as (
     select
       source_id,
-      coalesce(nullif(json_extract_scalar(trans.data,'$.unidade_cnes'), ''), 'nao-informado') AS id_cnes,
+      coalesce(nullif(json_extract_scalar(trans.data,'$.unidade_cnes'), ''), 'nao-informado') as id_cnes,
       safe_cast(
         TIMESTAMP(DATETIME(source_updated_at), "America/Sao_Paulo") as date
       ) as dia_ocorrencia,
-      safe_cast(datalake_loaded_at as date) AS dia_ingestao,
+      safe_cast(datalake_loaded_at as date) as dia_ingestao,
     from {{ source('brutos_prontuario_vitacare_staging', 'atendimento_continuo') }} trans
     where DATE(datalake_loaded_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
   ),
@@ -116,13 +116,21 @@ with
   transmissoes_agrupadas_semana as (
     select id_cnes, tipo_registro, round(avg(quantidade),2) as quantidade
     from transmissoes_agrupadas
-    where DATE(dia_ingestao) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+    where dia_ingestao >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
     group by 1, 2
   ),
   transmissoes_agrupadas_dia as (
-    select id_cnes, tipo_registro, sum(quantidade) as quantidade
+    select id_cnes, tipo_registro, round(avg(quantidade),2) as quantidade
     from transmissoes_agrupadas
-    where DATE(dia_ingestao) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+    -- Aqui é complicado, porque eu (oi, avellar aqui) não sei quando esse código
+    -- vai ser executado. Se queremos contabilizar 1 dia, queremos um dia completo,
+    -- então o seguro seria pegar o dia de ontem. Mas isso pode ser executado em
+    -- uma segunda-feira às 18h (e aí 'ontem' seria domingo e os dados valiosos são
+    -- da própria segunda) ou num dia qualquer às 01h (e aí não faz sentido só
+    -- pegar dados do próprio dia).
+    -- Achei que a melhor opção, então, era calcular média entre dados *a partir de*
+    -- ontem. A quantidade é, então, média de até 2 dias.
+    where dia_ingestao >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
     group by 1, 2
   ),
 
@@ -136,8 +144,8 @@ with
       unidades.id_cnes,
       unidades.nome_fantasia,
 
-      coalesce(dia.quantidade,0) as pacientes_ultimo_dia,
       struct(
+        coalesce(dia.quantidade,0) as ultimos_2_dias,
         coalesce(semana.quantidade,0) as ultima_semana,
         coalesce(mes.quantidade,0) as ultimo_mes
       ) as media_pacientes
@@ -158,8 +166,8 @@ with
       unidades.id_cnes,
       unidades.nome_fantasia,
 
-      coalesce(dia.quantidade,0) as atendimentos_ultimo_dia,
       struct(
+        coalesce(dia.quantidade,0) as ultimos_2_dias,
         coalesce(semana.quantidade,0) as ultima_semana,
         coalesce(mes.quantidade,0) as ultimo_mes
       ) as media_atendimentos
@@ -181,7 +189,6 @@ with
   final as (
     select
       analise_paciente.*,
-      analise_atendimento.atendimentos_ultimo_dia,
       analise_atendimento.media_atendimentos
     from analise_paciente
       inner join analise_atendimento using(area_programatica, id_cnes, nome_fantasia)

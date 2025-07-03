@@ -63,7 +63,7 @@ with
   ),
 
 
-  transmissoes_individuais_atendimento as (
+  initial_transmissoes_individuais_atendimento as (
     select
       source_id,
       coalesce(nullif(json_extract_scalar(trans.data,'$.unidade_cnes'), ''), 'nao-informado') as id_cnes,
@@ -76,6 +76,19 @@ with
       datalake_loaded_at as momento_ingestao,
     from {{ source('brutos_prontuario_vitacare_staging', 'atendimento_continuo') }} trans
     where DATE(datalake_loaded_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+  ),
+  transmissoes_individuais_atendimento as (
+    select *
+    from initial_transmissoes_individuais_atendimento
+    -- Pega somente ocorrências do último mês
+    where current_datetime("America/Sao_Paulo") >= dia_ocorrencia
+      and dia_ocorrencia >=
+        date_trunc(
+          date(
+            datetime_sub(current_datetime("America/Sao_Paulo"),interval 30 day)
+          ),
+          month
+        )
   ),
 
   -- -----------------------------
@@ -121,7 +134,7 @@ with
       round(avg(atraso_minutos_transmissao), 0) as media_atraso,
       max(atraso_minutos_transmissao) as max_atraso
     from transmissoes_individuais
-    where dia_ingestao >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    where dia_ingestao >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
     group by 1
   )
 
@@ -129,14 +142,21 @@ select
   unidades.area_programatica,
   unidades.id_cnes,
   unidades.nome_fantasia,
-  transmissoes_agrupadas_dia.media_atraso as media_atraso_minutos_dia,
-  transmissoes_agrupadas_dia.max_atraso as max_atraso_minutos_dia,
-  transmissoes_agrupadas_semana.media_atraso as media_atraso_minutos_semana,
-  transmissoes_agrupadas_semana.max_atraso as max_atraso_minutos_semana,
-  transmissoes_agrupadas_mes.media_atraso as media_atraso_minutos_mes,
-  transmissoes_agrupadas_mes.max_atraso as max_atraso_minutos_mes
+
+  struct(
+    transmissoes_agrupadas_dia.media_atraso as dia,
+    transmissoes_agrupadas_semana.media_atraso as semana,
+    transmissoes_agrupadas_mes.media_atraso as mes
+  ) as media_atraso_minutos,
+
+  struct(
+    transmissoes_agrupadas_dia.max_atraso as dia,
+    transmissoes_agrupadas_semana.max_atraso as semana,
+    transmissoes_agrupadas_mes.max_atraso as mes
+  ) as max_atraso_minutos
+
 from unidades
   left join transmissoes_agrupadas_mes using(id_cnes)
   left join transmissoes_agrupadas_semana using(id_cnes)
   left join transmissoes_agrupadas_dia using(id_cnes)
-order by media_atraso_minutos_dia desc
+order by media_atraso_minutos.dia desc

@@ -138,7 +138,7 @@ from final
 group by 1, 2, 3, 4, 5
 order by mes desc, id_cnes desc
 
--- select distinct area_programatica, id_cnes, mes, nome_fantasia,
+-- select area_programatica, id_cnes, mes, nome_fantasia,
 --   sum(presente_em_ambos) as presente_em_ambos,
 --   sum(falta_continuo) as falta_continuo,
 --   sum(falta_historico) as falta_historico

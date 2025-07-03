@@ -2,22 +2,23 @@
 - Administrador: ([Thiago Trabach](https://github.com/ThiagoTrabach))
 
 ## Setup do Projeto
-### Etapa 1 - Instalação das dependências 
+### Etapa 1 - Instalação das dependências
 Na raiz do projeto, execute os comandos abaixo para instalar o dbt:
  1. `poetry shell`
  2. `poetry install`
 
-E o seguinte para instalar os pacotes de dependência do projeto:
+A versão do Poetry utilizada é 1.7.1. Se você instalou uma versão mais recente, você pode fazer downgrade com `poetry self update 1.7.1`.
 
+Para instalar os pacotes de dependência do projeto, execute o seguinte comando:
  3. `dbt deps`
 
- ### Etapa 2 - Configuração da autenticação
+### Etapa 2 - Configuração da autenticação
  3. Obtenha o arquivo de credenciais do Google Cloud `rj-sms-dev-dbt.json`.
  4. Copie o arquivo `./profiles.yml` para o diretório de sua preferência.
  5. Na cópia do arquivo `profiles.yml` altere o path da chave `keyfile` no profile `dev` para onde está armazenada suas credenciais do Google Cloud.
  6. Crie uma variável de ambiente `DBT_PROFILES_DIR` apontando para o diretório onde está a cópia do `profiles.yml` 
 
-    **ex.** DBT_PROFILES_DIR='/Users/foo/.credentials/'
+  **ex.** DBT_PROFILES_DIR='/Users/foo/.credentials/'
 
 
  ### Etapa 3 - Configuração do ambiente de dev
