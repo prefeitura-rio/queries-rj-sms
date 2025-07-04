@@ -991,8 +991,8 @@ CASE
     -- Cada COALESCE(..., 0) trata casos onde o LEFT JOIN não encontrou correspondência para id_gestacao,
     -- resultando em NULL para a flag, que então é convertida para 0.
     (
-        COALESCE(rcp.qtd_pas_alteradas, 0) > 2 -- Mais de 2 PAs alteradas (≥140/90 mmHg).
-        -- Verifique se o limiar ">2" (ou seja, 3 ou mais) é o clinicamente desejado.
+        COALESCE(rcp.qtd_pas_alteradas, 0) >= 2 -- 2 ou mais PAs alteradas (≥140/90 mmHg).
+        -- Verifique se o limiar ">=2" (ou seja, 2 ou mais) é o clinicamente desejado.
         -- Algumas diretrizes consideram 2 ou mais medições.
         OR COALESCE(rcp.teve_pa_grave, 0) = 1 -- Ou teve PA grave (>160/110 mmHg).
         OR COALESCE(cah.tem_anti_hipertensivo, 0) = 1 -- Ou tem prescrição de anti-hipertensivo.
@@ -1344,9 +1344,9 @@ CASE
         CURRENT_DATE(),
         ucp.data_ultima_consulta,
         DAY
-    ) > 45 THEN 'sim'
+    ) >= 30 THEN 'sim'
     ELSE 'não'
-END AS mais_de_45_sem_atd,
+END AS mais_de_30_sem_atd,
 COALESCE(v_acs.total_visitas_acs, 0) AS total_visitas_acs,
 uv_acs.data_ultima_visita,
 CASE

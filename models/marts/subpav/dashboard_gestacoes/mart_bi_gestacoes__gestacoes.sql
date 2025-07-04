@@ -200,7 +200,7 @@ WITH
     -- ------------------------------------------------------------
     -- Gestações com Status
     -- ------------------------------------------------------------
-    -- Calcula a 'data_fim_efetiva' (data de fim real ou estimada após 308 dias se não houver fim registrado e já passou o período).
+    -- Calcula a 'data_fim_efetiva' (data de fim real ou estimada após 300 dias se não houver fim registrado e já passou o período).
     -- Calcula a DPP (Data Provável do Parto) como 40 semanas após a data de início.
     -- ------------------------------------------------------------
     gestacoes_com_status AS (
@@ -225,15 +225,15 @@ WITH
                 WHEN gcs.data_fim IS NULL
                 AND DATE_ADD(
                     gcs.data_inicio,
-                    INTERVAL 308 DAY
-                ) > CURRENT_DATE() THEN 'Gestação' -- Sem data de fim e dentro dos 308 dias esperados
+                    INTERVAL 300 DAY
+                ) > CURRENT_DATE() THEN 'Gestação' -- Sem data de fim e dentro dos 300 dias esperados
                 WHEN gcs.data_fim IS NOT NULL
                 AND DATE_DIFF (
                     CURRENT_DATE(),
                     gcs.data_fim,
                     DAY
                 ) <= 45 THEN 'Puerpério' -- Com data de fim, e dentro de 45 dias do fim
-                ELSE 'Encerrada' -- Outros casos (com data de fim e > 45 dias, ou sem data de fim mas > 308 dias)
+                ELSE 'Encerrada' -- Outros casos (com data de fim e > 45 dias, ou sem data de fim mas > 300 dias)
             END AS fase_atual,
             -- Adicionando o cálculo do trimestre aqui para evitar uma CTE separada depois
             CASE
