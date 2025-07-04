@@ -208,8 +208,8 @@ WITH
             *,
             CASE
                 WHEN data_fim IS NOT NULL THEN data_fim -- Usa a data de fim registrada se existir
-                WHEN DATE_ADD(data_inicio, INTERVAL 308 DAY) <= CURRENT_DATE() THEN DATE_ADD(data_inicio, INTERVAL 308 DAY) -- Se passou 308 dias e não tem data_fim, considera encerrada
-                ELSE NULL -- Ainda em curso e sem data de fim, ou não atingiu 308 dias. Será tratada pela fase_atual.
+                WHEN DATE_ADD(data_inicio, INTERVAL 300 DAY) <= CURRENT_DATE() THEN DATE_ADD(data_inicio, INTERVAL 300 DAY) -- Se passou 300 dias (42sem + 6 dias) e não tem data_fim, considera encerrada
+                ELSE NULL -- Ainda em curso e sem data de fim, ou não atingiu 300 dias. Será tratada pela fase_atual.
             END AS data_fim_efetiva,
             DATE_ADD(data_inicio, INTERVAL 40 WEEK) AS dpp
         FROM gestacoes_unicas
