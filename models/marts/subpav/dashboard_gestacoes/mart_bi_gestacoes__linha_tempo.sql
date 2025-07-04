@@ -984,40 +984,41 @@ hipertensao_gestacional_completa AS (
    reh.data_primeiro_encaminhamento_has,
    reh.cids_encaminhamento_has,
 
--- Provável hipertensa sem diagnóstico (LÓGICA AJUSTADA PARA MAIOR CLAREZA E ROBUSTEZ)
-CASE
-    WHEN
-    -- CONDIÇÃO 1: Tem evidência SUGESTIVA de hipertensão.
-    -- Cada COALESCE(..., 0) trata casos onde o LEFT JOIN não encontrou correspondência para id_gestacao,
-    -- resultando em NULL para a flag, que então é convertida para 0.
-    (
-        COALESCE(rcp.qtd_pas_alteradas, 0) >= 2 -- 2 ou mais PAs alteradas (≥140/90 mmHg).
-        -- Verifique se o limiar ">=2" (ou seja, 2 ou mais) é o clinicamente desejado.
-        -- Algumas diretrizes consideram 2 ou mais medições.
-        OR COALESCE(rcp.teve_pa_grave, 0) = 1 -- Ou teve PA grave (>160/110 mmHg).
-        OR COALESCE(cah.tem_anti_hipertensivo, 0) = 1 -- Ou tem prescrição de anti-hipertensivo.
-        OR COALESCE(reh.tem_encaminhamento_has, 0) = 1 -- Ou tem encaminhamento SISREG por HAS
-        -- (a CTE resumo_encaminhamento_has já filtra por CIDs de HAS).
-    )
-    -- CONDIÇÃO 2: E NÃO tem diagnóstico formal de hipertensão registrado.
-    AND COALESCE(cf.hipertensao_previa, 0) = 0 -- Sem CID de hipertensão prévia (I10-I15, O10).
-    AND COALESCE(cf.preeclampsia, 0) = 0 -- Sem CID de pré-eclâmpsia/eclâmpsia (O11, O14, O15).
-    AND COALESCE(
-        cf.hipertensao_nao_especificada,
-        0
-    ) = 0 -- Sem CID de hipertensão gestacional ou não especificada (O13, O16).
-    THEN 1
-    ELSE 0
-END AS provavel_hipertensa_sem_diagnostico,
+    -- Provável hipertensa sem diagnóstico (LÓGICA AJUSTADA PARA MAIOR CLAREZA E ROBUSTEZ)
+    CASE
+        WHEN
+        -- CONDIÇÃO 1: Tem evidência SUGESTIVA de hipertensão.
+        -- Cada COALESCE(..., 0) trata casos onde o LEFT JOIN não encontrou correspondência para id_gestacao,
+        -- resultando em NULL para a flag, que então é convertida para 0.
+        (
+            COALESCE(rcp.qtd_pas_alteradas, 0) >= 2 -- 2 ou mais PAs alteradas (≥140/90 mmHg).
+            -- Verifique se o limiar ">=2" (ou seja, 2 ou mais) é o clinicamente desejado.
+            -- Algumas diretrizes consideram 2 ou mais medições.
+            OR COALESCE(rcp.teve_pa_grave, 0) = 1 -- Ou teve PA grave (>160/110 mmHg).
+            OR COALESCE(cah.tem_anti_hipertensivo, 0) = 1 -- Ou tem prescrição de anti-hipertensivo.
+            OR COALESCE(reh.tem_encaminhamento_has, 0) = 1 -- Ou tem encaminhamento SISREG por HAS
+            OR COALESCE(dap.tem_aparelho_pa_dispensado, 0) = 1 -- Ou tem aparelho de PA dispensado
+            -- (a CTE resumo_encaminhamento_has já filtra por CIDs de HAS).
+        )
+        -- CONDIÇÃO 2: E NÃO tem diagnóstico formal de hipertensão registrado.
+        AND COALESCE(cf.hipertensao_previa, 0) = 0 -- Sem CID de hipertensão prévia (I10-I15, O10).
+        AND COALESCE(cf.preeclampsia, 0) = 0 -- Sem CID de pré-eclâmpsia/eclâmpsia (O11, O14, O15).
+        AND COALESCE(
+            cf.hipertensao_nao_especificada,
+            0
+        ) = 0 -- Sem CID de hipertensão gestacional ou não especificada (O13, O16).
+        THEN 1
+        ELSE 0
+    END AS provavel_hipertensa_sem_diagnostico,
 
--- AAS
-COALESCE(paas.tem_prescricao_aas, 0) AS tem_prescricao_aas,
-   paas.data_primeira_prescricao_aas,
-   paas.data_ultima_prescricao_aas,
-   -- Aparelho PA
-   COALESCE(dap.tem_aparelho_pa_dispensado, 0) AS tem_aparelho_pa_dispensado,
-   dap.data_primeira_dispensacao_pa,
-   COALESCE(dap.qtd_aparelhos_pa_dispensados, 0) AS qtd_aparelhos_pa_dispensados
+    -- AAS
+    COALESCE(paas.tem_prescricao_aas, 0) AS tem_prescricao_aas,
+    paas.data_primeira_prescricao_aas,
+    paas.data_ultima_prescricao_aas,
+    -- Aparelho PA
+    COALESCE(dap.tem_aparelho_pa_dispensado, 0) AS tem_aparelho_pa_dispensado,
+    dap.data_primeira_dispensacao_pa,
+    COALESCE(dap.qtd_aparelhos_pa_dispensados, 0) AS qtd_aparelhos_pa_dispensados
  FROM filtrado f
  LEFT JOIN resumo_controle_pressorico rcp ON f.id_gestacao = rcp.id_gestacao
  LEFT JOIN ultima_pa_aferida upa ON f.id_gestacao = upa.id_gestacao
