@@ -984,40 +984,41 @@ hipertensao_gestacional_completa AS (
    reh.data_primeiro_encaminhamento_has,
    reh.cids_encaminhamento_has,
 
--- Provável hipertensa sem diagnóstico (LÓGICA AJUSTADA PARA MAIOR CLAREZA E ROBUSTEZ)
-CASE
-    WHEN
-    -- CONDIÇÃO 1: Tem evidência SUGESTIVA de hipertensão.
-    -- Cada COALESCE(..., 0) trata casos onde o LEFT JOIN não encontrou correspondência para id_gestacao,
-    -- resultando em NULL para a flag, que então é convertida para 0.
-    (
-        COALESCE(rcp.qtd_pas_alteradas, 0) > 2 -- Mais de 2 PAs alteradas (≥140/90 mmHg).
-        -- Verifique se o limiar ">2" (ou seja, 3 ou mais) é o clinicamente desejado.
-        -- Algumas diretrizes consideram 2 ou mais medições.
-        OR COALESCE(rcp.teve_pa_grave, 0) = 1 -- Ou teve PA grave (>160/110 mmHg).
-        OR COALESCE(cah.tem_anti_hipertensivo, 0) = 1 -- Ou tem prescrição de anti-hipertensivo.
-        OR COALESCE(reh.tem_encaminhamento_has, 0) = 1 -- Ou tem encaminhamento SISREG por HAS
-        -- (a CTE resumo_encaminhamento_has já filtra por CIDs de HAS).
-    )
-    -- CONDIÇÃO 2: E NÃO tem diagnóstico formal de hipertensão registrado.
-    AND COALESCE(cf.hipertensao_previa, 0) = 0 -- Sem CID de hipertensão prévia (I10-I15, O10).
-    AND COALESCE(cf.preeclampsia, 0) = 0 -- Sem CID de pré-eclâmpsia/eclâmpsia (O11, O14, O15).
-    AND COALESCE(
-        cf.hipertensao_nao_especificada,
-        0
-    ) = 0 -- Sem CID de hipertensão gestacional ou não especificada (O13, O16).
-    THEN 1
-    ELSE 0
-END AS provavel_hipertensa_sem_diagnostico,
+    -- Provável hipertensa sem diagnóstico (LÓGICA AJUSTADA PARA MAIOR CLAREZA E ROBUSTEZ)
+    CASE
+        WHEN
+        -- CONDIÇÃO 1: Tem evidência SUGESTIVA de hipertensão.
+        -- Cada COALESCE(..., 0) trata casos onde o LEFT JOIN não encontrou correspondência para id_gestacao,
+        -- resultando em NULL para a flag, que então é convertida para 0.
+        (
+            COALESCE(rcp.qtd_pas_alteradas, 0) >= 2 -- 2 ou mais PAs alteradas (≥140/90 mmHg).
+            -- Verifique se o limiar ">=2" (ou seja, 2 ou mais) é o clinicamente desejado.
+            -- Algumas diretrizes consideram 2 ou mais medições.
+            OR COALESCE(rcp.teve_pa_grave, 0) = 1 -- Ou teve PA grave (>160/110 mmHg).
+            OR COALESCE(cah.tem_anti_hipertensivo, 0) = 1 -- Ou tem prescrição de anti-hipertensivo.
+            OR COALESCE(reh.tem_encaminhamento_has, 0) = 1 -- Ou tem encaminhamento SISREG por HAS
+            OR COALESCE(dap.tem_aparelho_pa_dispensado, 0) = 1 -- Ou tem aparelho de PA dispensado
+            -- (a CTE resumo_encaminhamento_has já filtra por CIDs de HAS).
+        )
+        -- CONDIÇÃO 2: E NÃO tem diagnóstico formal de hipertensão registrado.
+        AND COALESCE(cf.hipertensao_previa, 0) = 0 -- Sem CID de hipertensão prévia (I10-I15, O10).
+        AND COALESCE(cf.preeclampsia, 0) = 0 -- Sem CID de pré-eclâmpsia/eclâmpsia (O11, O14, O15).
+        AND COALESCE(
+            cf.hipertensao_nao_especificada,
+            0
+        ) = 0 -- Sem CID de hipertensão gestacional ou não especificada (O13, O16).
+        THEN 1
+        ELSE 0
+    END AS provavel_hipertensa_sem_diagnostico,
 
--- AAS
-COALESCE(paas.tem_prescricao_aas, 0) AS tem_prescricao_aas,
-   paas.data_primeira_prescricao_aas,
-   paas.data_ultima_prescricao_aas,
-   -- Aparelho PA
-   COALESCE(dap.tem_aparelho_pa_dispensado, 0) AS tem_aparelho_pa_dispensado,
-   dap.data_primeira_dispensacao_pa,
-   COALESCE(dap.qtd_aparelhos_pa_dispensados, 0) AS qtd_aparelhos_pa_dispensados
+    -- AAS
+    COALESCE(paas.tem_prescricao_aas, 0) AS tem_prescricao_aas,
+    paas.data_primeira_prescricao_aas,
+    paas.data_ultima_prescricao_aas,
+    -- Aparelho PA
+    COALESCE(dap.tem_aparelho_pa_dispensado, 0) AS tem_aparelho_pa_dispensado,
+    dap.data_primeira_dispensacao_pa,
+    COALESCE(dap.qtd_aparelhos_pa_dispensados, 0) AS qtd_aparelhos_pa_dispensados
  FROM filtrado f
  LEFT JOIN resumo_controle_pressorico rcp ON f.id_gestacao = rcp.id_gestacao
  LEFT JOIN ultima_pa_aferida upa ON f.id_gestacao = upa.id_gestacao
@@ -1204,7 +1205,8 @@ Urgencia_e_emergencia as (
     WHERE
         rn_ue = 1 -- Seleciona apenas a primeira consulta de emergência
 ),
-resultado as (
+
+final AS (
 
     -- Consulta Final: Junta todas as informações preparadas nas CTEs
     SELECT
@@ -1247,152 +1249,150 @@ resultado as (
             ELSE NULL
         END AS IG_final_semanas,
 
-        -- Condições (agora vindo da CTE condicoes_flags)
+    -- Condições (agora vindo da CTE condicoes_flags)
+    cf.diabetes_previo,
+    cf.diabetes_gestacional,
+    cf.diabetes_nao_especificado,
+    -- Diabetes Total: Se qualquer um dos indicadores de diabetes for 1
+    GREATEST(
         cf.diabetes_previo,
         cf.diabetes_gestacional,
-        cf.diabetes_nao_especificado,
-        -- Diabetes Total: Se qualquer um dos indicadores de diabetes for 1
-        GREATEST(
-            cf.diabetes_previo,
-            cf.diabetes_gestacional,
-            cf.diabetes_nao_especificado
-        ) AS diabetes_total,
+        cf.diabetes_nao_especificado
+    ) AS diabetes_total,
+    cf.hipertensao_previa,
+    cf.preeclampsia,
+    cf.hipertensao_nao_especificada,
+    -- Hipertensão Total: Se qualquer um dos indicadores de hipertensão for 1
+    GREATEST(
         cf.hipertensao_previa,
         cf.preeclampsia,
-        cf.hipertensao_nao_especificada,
-        -- Hipertensão Total: Se qualquer um dos indicadores de hipertensão for 1
-        GREATEST(
-            cf.hipertensao_previa,
-            cf.preeclampsia,
-            cf.hipertensao_nao_especificada
-        ) AS hipertensao_total,
-
-        -- ========================================
-        -- NOVOS CAMPOS DE HIPERTENSÃO
-        -- ========================================
-        -- Controle pressórico
-        hgc.qtd_pas_alteradas,
-        hgc.teve_pa_grave,
-        hgc.total_medicoes_pa,
-        hgc.percentual_pa_controlada,
-        hgc.data_ultima_pa,
-        hgc.ultima_sistolica,
-        hgc.ultima_diastolica,
-        hgc.ultima_pa_controlada,
-        -- Medicamentos
-        hgc.tem_anti_hipertensivo,
-        hgc.tem_anti_hipertensivo_seguro,
-        hgc.tem_anti_hipertensivo_contraindicado,
-        hgc.anti_hipertensivos_seguros,
-        hgc.anti_hipertensivos_contraindicados,
-        -- Provável hipertensa
-        hgc.provavel_hipertensa_sem_diagnostico,
-        -- Encaminhamento HAS
-        hgc.tem_encaminhamento_has,
-        hgc.data_primeiro_encaminhamento_has,
-        hgc.cids_encaminhamento_has,
-        -- AAS e aparelho PA
-        hgc.tem_prescricao_aas,
-        hgc.data_primeira_prescricao_aas,
-        hgc.tem_aparelho_pa_dispensado,
-        hgc.data_primeira_dispensacao_pa,
-        hgc.qtd_aparelhos_pa_dispensados,
-        -- Antidiabéticos
-        pad.tem_antidiabetico,
-        pad.antidiabeticos_lista,
-        -- Fatores de risco
-        frc.doenca_renal_cat,
-        frc.doenca_autoimune_cat,
-        frc.gravidez_gemelar_cat,
-        -- Adequação AAS
-        frpa.hipertensao_cronica_confirmada,
-        frpa.diabetes_previo_confirmado,
-        frpa.total_fatores_risco_pe,
-        frpa.tem_indicacao_aas,
-        frpa.adequacao_aas_pe,
-
-        -- ========================================
-        -- FIM DOS NOVOS CAMPOS DE HIPERTENSÃO
-        -- ========================================
-        cf.hiv,
-        cf.sifilis,
-        cf.tuberculose,
-        crg.categorias_risco,
-        pa_max.pressao_sistolica AS max_pressao_sistolica,
-        pa_max.pressao_diastolica AS max_pressao_diastolica,
-        pa_max.data_consulta AS data_max_pa,
-        COALESCE(
-            cp.total_consultas_prenatal,
-            0
-        ) AS total_consultas_prenatal,
-        COALESCE(
-            sp.prescricao_acido_folico,
-            'não'
-        ) AS prescricao_acido_folico,
-        COALESCE(
-            sp.prescricao_carbonato_calcio,
-            'não'
-        ) AS prescricao_carbonato_calcio,
-        CASE
-            WHEN ucp.data_ultima_consulta IS NOT NULL THEN DATE_DIFF (
-                    CURRENT_DATE(),
-                    ucp.data_ultima_consulta,
-                    DAY
-                )
-                ELSE NULL
-            END AS dias_desde_ultima_consulta,
-        CASE
-            WHEN ucp.data_ultima_consulta IS NOT NULL
-            AND DATE_DIFF (
-                CURRENT_DATE(),
-                ucp.data_ultima_consulta,
-                DAY
-            ) > 45 THEN 'sim'
-            ELSE 'não'
-        END AS mais_de_45_sem_atd,
-        COALESCE(v_acs.total_visitas_acs, 0) AS total_visitas_acs,
-        uv_acs.data_ultima_visita,
-        CASE
-            WHEN uv_acs.data_ultima_visita IS NOT NULL THEN DATE_DIFF (
-                CURRENT_DATE(),
-                uv_acs.data_ultima_visita,
-                DAY
-            )
-            ELSE NULL
-        END AS dias_desde_ultima_visita_acs,
-        pi.obito_indicador,
-        pi.obito_data,
-        iap.area_programatica,
-        edf.clinica_nome,
-        edf.equipe_nome,
-        COALESCE(
-            me.mudanca_equipe_durante_pn,
-            0
-        ) AS mudanca_equipe_durante_pn,
-        pa.evento_parto_associado.data_parto,
-        pa.evento_parto_associado.tipo_parto,
-        pa.evento_parto_associado.estabelecimento_parto,
-        pa.evento_parto_associado.motivo_atencimento_parto, -- Mantendo tipo se for assim na origem
-        pa.evento_parto_associado.desfecho_atendimento_parto,
-        CASE
-            WHEN sis_sol.data_solicitacao_date IS NOT NULL THEN 'sim'
-            ELSE 'não'
-        END AS encaminhado_sisreg,
-        sis_sol.data_solicitacao_date AS sisreg_primeira_data_solicitacao,
-        sis_sol.solicitacao_status AS sisreg_primeira_status,
-        sis_sol.solicitacao_situacao AS sisreg_primeira_situacao,
-        sis_sol.procedimento AS sisreg_primeira_procedimento_nome,
-        sis_sol.procedimento_id AS sisreg_primeira_procedimento_id,
-        sis_sol.unidade_solicitante AS sisreg_primeira_unidade_solicitante,
-        sis_sol.medico_solicitante AS sisreg_primeira_medico_solicitante,
-        sis_sol.operador_solicitante_nome AS sisreg_primeira_operador_solicitante,
-        CASE
-            WHEN ue.data_consulta IS NOT NULL THEN 'sim'
-            ELSE 'não'
-        END AS Urg_Emrg,
-        ue.data_consulta as ue_data_consulta,
-        ue.motivo_atendimento as ue_motivo_atendimento,
-        ue.nome_estabelecimento as ue_nome_estabelecimento
+        cf.hipertensao_nao_especificada
+    ) AS hipertensao_total,
+    -- ========================================
+    -- NOVOS CAMPOS DE HIPERTENSÃO
+    -- ========================================
+    -- Controle pressórico
+    hgc.qtd_pas_alteradas,
+    hgc.teve_pa_grave,
+    hgc.total_medicoes_pa,
+    hgc.percentual_pa_controlada,
+    hgc.data_ultima_pa,
+    hgc.ultima_sistolica,
+    hgc.ultima_diastolica,
+    hgc.ultima_pa_controlada,
+    -- Medicamentos
+    hgc.tem_anti_hipertensivo,
+    hgc.tem_anti_hipertensivo_seguro,
+    hgc.tem_anti_hipertensivo_contraindicado,
+    hgc.anti_hipertensivos_seguros,
+    hgc.anti_hipertensivos_contraindicados,
+    -- Provável hipertensa
+    hgc.provavel_hipertensa_sem_diagnostico,
+    -- Encaminhamento HAS
+    hgc.tem_encaminhamento_has,
+    hgc.data_primeiro_encaminhamento_has,
+    hgc.cids_encaminhamento_has,
+    -- AAS e aparelho PA
+    hgc.tem_prescricao_aas,
+    hgc.data_primeira_prescricao_aas,
+    hgc.tem_aparelho_pa_dispensado,
+    hgc.data_primeira_dispensacao_pa,
+    hgc.qtd_aparelhos_pa_dispensados,
+    -- Antidiabéticos
+    pad.tem_antidiabetico,
+    pad.antidiabeticos_lista,
+    -- Fatores de risco
+    frc.doenca_renal_cat,
+    frc.doenca_autoimune_cat,
+    frc.gravidez_gemelar_cat,
+    -- Adequação AAS
+    frpa.hipertensao_cronica_confirmada,
+    frpa.diabetes_previo_confirmado,
+    frpa.total_fatores_risco_pe,
+    frpa.tem_indicacao_aas,
+    frpa.adequacao_aas_pe,
+    -- ========================================
+    -- FIM DOS NOVOS CAMPOS DE HIPERTENSÃO
+    -- ========================================
+    cf.hiv,
+    cf.sifilis,
+    cf.tuberculose,
+    crg.categorias_risco,
+    pa_max.pressao_sistolica AS max_pressao_sistolica,
+    pa_max.pressao_diastolica AS max_pressao_diastolica,
+    pa_max.data_consulta AS data_max_pa,
+    COALESCE(
+        cp.total_consultas_prenatal,
+        0
+    ) AS total_consultas_prenatal,
+    COALESCE(
+        sp.prescricao_acido_folico,
+        'não'
+    ) AS prescricao_acido_folico,
+    COALESCE(
+        sp.prescricao_carbonato_calcio,
+        'não'
+    ) AS prescricao_carbonato_calcio,
+    CASE
+        WHEN ucp.data_ultima_consulta IS NOT NULL THEN DATE_DIFF (
+            CURRENT_DATE(),
+            ucp.data_ultima_consulta,
+            DAY
+        )
+        ELSE NULL
+    END AS dias_desde_ultima_consulta,
+    CASE
+        WHEN ucp.data_ultima_consulta IS NOT NULL
+        AND DATE_DIFF (
+            CURRENT_DATE(),
+            ucp.data_ultima_consulta,
+            DAY
+        ) >= 30 THEN 'sim'
+        ELSE 'não'
+    END AS mais_de_30_sem_atd,
+    COALESCE(v_acs.total_visitas_acs, 0) AS total_visitas_acs,
+    uv_acs.data_ultima_visita,
+    CASE
+        WHEN uv_acs.data_ultima_visita IS NOT NULL THEN DATE_DIFF (
+            CURRENT_DATE(),
+            uv_acs.data_ultima_visita,
+            DAY
+        )
+        ELSE NULL
+    END AS dias_desde_ultima_visita_acs,
+    pi.obito_indicador,
+    pi.obito_data,
+    iap.area_programatica,
+    edf.clinica_nome,
+    edf.equipe_nome,
+    COALESCE(
+        me.mudanca_equipe_durante_pn,
+        0
+    ) AS mudanca_equipe_durante_pn,
+    pa.evento_parto_associado.data_parto,
+    pa.evento_parto_associado.tipo_parto,
+    pa.evento_parto_associado.estabelecimento_parto,
+    pa.evento_parto_associado.motivo_atencimento_parto, -- Mantendo tipo se for assim na origem
+    pa.evento_parto_associado.desfecho_atendimento_parto,
+    CASE
+        WHEN sis_sol.data_solicitacao_date IS NOT NULL THEN 'sim'
+        ELSE 'não'
+    END AS encaminhado_sisreg,
+    sis_sol.data_solicitacao_date AS sisreg_primeira_data_solicitacao,
+    sis_sol.solicitacao_status AS sisreg_primeira_status,
+    sis_sol.solicitacao_situacao AS sisreg_primeira_situacao,
+    sis_sol.procedimento AS sisreg_primeira_procedimento_nome,
+    sis_sol.procedimento_id AS sisreg_primeira_procedimento_id,
+    sis_sol.unidade_solicitante AS sisreg_primeira_unidade_solicitante,
+    sis_sol.medico_solicitante AS sisreg_primeira_medico_solicitante,
+    sis_sol.operador_solicitante_nome AS sisreg_primeira_operador_solicitante,
+    CASE
+        WHEN ue.data_consulta IS NOT NULL THEN 'sim'
+        ELSE 'não'
+    END AS Urg_Emrg,
+    ue.data_consulta as ue_data_consulta,
+    ue.motivo_atendimento as ue_motivo_atendimento,
+    ue.nome_estabelecimento as ue_nome_estabelecimento
     FROM
         filtrado f
         LEFT JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
@@ -1410,7 +1410,6 @@ resultado as (
         LEFT JOIN maior_pa_por_gestacao pa_max ON f.id_gestacao = pa_max.id_gestacao
         LEFT JOIN categorias_risco_gestacional crg ON f.id_gestacao = crg.id_gestacao
         LEFT JOIN condicoes_flags cf ON f.id_gestacao = cf.id_gestacao -- Nova CTE para flags de condição
-
         -- ========================================
         -- NOVOS JOINS DE HIPERTENSÃO
         -- ========================================
@@ -1418,7 +1417,6 @@ resultado as (
         LEFT JOIN prescricoes_antidiabeticos pad ON f.id_gestacao = pad.id_gestacao
         LEFT JOIN fatores_risco_categorias frc ON f.id_gestacao = frc.id_gestacao
         LEFT JOIN fatores_risco_pe_adequacao frpa ON f.id_gestacao = frpa.id_gestacao
-
         -- ========================================
         -- FIM DOS NOVOS JOINS
         -- ========================================
@@ -1428,10 +1426,12 @@ resultado as (
             WHERE
                 rn_solicitacao = 1
         ) sis_sol ON f.id_gestacao = sis_sol.id_gestacao
+        -- WHERE f.fase_atual = 'Gestação'
+        -- Filtro aplicado no final
         LEFT JOIN Urgencia_e_emergencia ue ON f.id_gestacao = ue.id_gestacao
-
 )
 
-SELECT *
-FROM resultado
+SELECT
+    *
+FROM final
 WHERE fase_atual IN ('Gestação', 'Puerpério')
