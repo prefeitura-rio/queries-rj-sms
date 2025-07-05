@@ -1,46 +1,114 @@
-# Queries SMS/RJ
-- Administrador: ([Thiago Trabach](https://github.com/ThiagoTrabach))
+# 📊 Queries SMS/RJ
+> Ambiente para modelagem de dados da **SMS Rio** com **dbt**, **BigQuery** e comparação de ambientes via **Recce**.
 
-## Setup do Projeto
-### Etapa 1 - Instalação das dependências
-Na raiz do projeto, execute os comandos abaixo para instalar o dbt:
- 1. `poetry shell`
- 2. `poetry install`
+Administrador: **[Pedro Marques](https://github.com/TanookiVerde)**  
 
-A versão do Poetry utilizada é 1.7.1. Se você instalou uma versão mais recente, você pode fazer downgrade com `poetry self update 1.7.1`.
+---
 
-Para instalar os pacotes de dependência do projeto, execute o seguinte comando:
- 3. `dbt deps`
+## 🛠️ Pré-requisitos
 
-### Etapa 2 - Configuração da autenticação
- 3. Obtenha o arquivo de credenciais do Google Cloud `rj-sms-dev-dbt.json`.
- 4. Copie o arquivo `./profiles.yml` para o diretório de sua preferência.
- 5. Na cópia do arquivo `profiles.yml` altere o path da chave `keyfile` no profile `dev` para onde está armazenada suas credenciais do Google Cloud.
- 6. Crie uma variável de ambiente `DBT_PROFILES_DIR` apontando para o diretório onde está a cópia do `profiles.yml` 
+| Ferramenta | Versão | Observações |
+|------------|--------|-------------|
+| **Python** | 3.10.x | Windows: Baixe o instalador https://www.python.org/downloads/release/python-3109/ |
+| **Poetry** | 1.7.1  | `pip install poetry==1.7.1` |
+| **dbt-core** + **dbt-bigquery** |  | `pip install dbt-core dbt-bigquery` |
+| **Recce** | | Ferramenta para checar a diferença entre os dados em diversos ambientes <br> <span style="color:gray; font-size:smaller;">Obs: O uso do Recce ainda está em construção e pode sofrer alterações.</span> |
+| **Git** | | Windows: Baixe o instalador https://git-scm.com/downloads/win |
 
-  **ex.** DBT_PROFILES_DIR='/Users/foo/.credentials/'
+> **Clone o repositório**  
+> ```bash
+> git clone https://github.com/prefeitura-rio/queries-rj-sms
+> cd queries-sms-rj
+> ```  
+
+---
+
+## ⚙️ Instalação passo-a-passo
+
+### 1 - Criar o ambiente Poetry
+```bash
+poetry shell          # cria/ativa o venv isolado
+poetry install        # instala todas as dependências declaradas em pyproject.toml
+```
+
+O comando `poetry shell` garante que as libs sejam instaladas no ambiente virtual correto, evitando conflitos.
 
 
- ### Etapa 3 - Configuração do ambiente de dev
- 7. Crie uma variável de ambiente `DBT_USER` com o nome de usuário de sua preferência 
- 8. Dê privilegio de execução para o script `./recce.sh`
-    - **Linux e MacOS**: `chmod +x recce.sh`
+### 2 - Instalar pacotes dbt
+```bash
+dbt deps              # baixa dbt-utils e demais packages declarados em packages.yml
+```
+
+`dbt deps` resolve versões e coloca tudo em .dbt_packages/.
+
+### 3 - Configurar credenciais do Google Cloud
+1. Obtenha o arquivo `rj-sms-dev-dbt.json` (IAM → Service Accounts).
+
+2. Copie o arquivo `profiles.yml` para um diretório seguro de sua preferência.
+
+3. Edite o parâmetro keyfile no profile `dev` do arquivo `profiles.yml` para apontar para o JSON.
+    - No Windows, coloque o path completo entre aspas duplas.
+
+5. Crie uma variável de ambiente chamada `DBT_PROFILES_DIR` que aponte para o caminho do arquivo `profiles.yml`
+    -    **ex.** `DBT_PROFILES_DIR='/Users/foo/.credentials/'` 
+
+
+### 3 - Configure seu ambiente de desenvolvimento
+
+1. Crie uma variável de ambiente chamada `DBT_USER`, que receba seu nome.
+    -    **ex.** `DBT_USER='seu_nome'`
+
+ 8. Dê privilegio de execução para o script ./recce.sh
+    - **Linux e MacOS**: chmod +x recce.sh
     - **Windows**: Não precisa
 
+---
 
-## Usando
-- Uso Comum
-  - Construção de Modelos: `dbt run`
-  - Teste de Modelos: `dbt test`
-  - Gere a documentação: `dbt docs`
-- Dica: no `run` ou no `test`, utilize `--select` para filtrar modelos
-  - Por nome do modelo: `dbt run --select <NOME_MODELO>`
-  - Por tag: `dbt run --select tag:<NOME_TAG>`
+## 💡 Dicas
+1. Use a extensão ([Power User for dbt](https://marketplace.visualstudio.com/items?itemName=innoverio.vscode-dbt-power-user)) no vscode ou similares, para ter acesso a uma interface gráfica para interagir com o dbt.  
+  
+2. Cheque se seu ambiente está executando com o compilador certo (Python 3.10.x)
 
-## Usando o Recce
-- O Recce permite comparar os dados de produção com os gerados por uma nova configuração DBT
-- Para subir um servidor Recce basta chamar o script dando como entrada o nome da branch.
-  - **Linux e MacOS**: Rode `./tools/recce.sh <NOME_BRANCH>`
-  - **Windows**: Rode `./tools/recce.ps1 <NOME_BRANCH>`
-- O servidor fica disponível em `localhost:8000`
-- Exemplo: no linux eu posso rodar `./tools/recce.sh feat/transforming-vitai-database-into-datalake`
+---
+
+## 🏗️ Fluxo de trabalho com o dbt
+| Ação                 | Comando básico                        | Exemplos úteis                                                       |
+| -------------------- | ------------------------------------- | -------------------------------------------------------------------- |
+| **Executar modelos** | `dbt run`                             | `dbt run -s "nome_modelo"` |
+| **Rodar testes**     | `dbt test`                            | `dbt test -s tag:sua_tag` |
+| **Executar e testar**| `dbt build`                           | `dbt build -s staging.*` |
+| **Gerar docs HTML**  | `dbt docs generate && dbt docs serve` | Abre em `localhost:8080` |
+
+---
+
+## 🔍 Fluxo de trabalho com o recce
+> 🚧 **Esta seção está em construção.**  
+> Documentação detalhada será adicionada em breve.  
+
+| Sistema         | Comando para iniciar                 |
+| --------------- | ------------------------------------ |
+| **Linux/macOS** |  |
+| **Windows**     |  |
+
+O script spawna um contêiner e publica a interface em `http://localhost:8000`.  
+Assim você avalia o diff entre produção e a sua branch antes mesmo do merge.
+
+---
+
+## 🤝 Como contribuir com o projeto
+Não esqueça de checar se você está logado no seu ambiente com a sua conta certa do GitHub.  
+(A que você quer usar para trabalhar nesse projeto).
+### 1 - Fork & Branch
+- Crie branches no formato `feat/<breve-descrição>` ou `fix/<issue>`
+### 2 - Commits semânticos
+- `feat:<descricao>`, `fix:<descricao>`, `refact:<descricao>`, ...
+### 3 - Execute build e rode o recce para checar que está tudo certo e não quebrou nada
+
+### 4 - Abra o Pull Request
+ - Descreva brevemente o contexto e a solução
+ - Adicione screenshot do Recce se aplicável
+
+--- 
+
+## Qualquer dúvida, erro, crítica ou sugestão:  
+### Basta entrar em contato com o [Administrador](@TanookiVerde) ❤️
