@@ -348,6 +348,7 @@ models:
       dit:
         dashboard_ingestao_vitacare:
           +schema: relatorio_ingestao_vitacare
+          +tags: ["daily", "vitacare", "ingestao"]
           +labels:
             dado_publico: nao
             dado_pessoal: nao
