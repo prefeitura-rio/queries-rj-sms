@@ -8,9 +8,6 @@
 -- dbt run --select raw_prontuario_vitacare__paciente
 with
     ficha_a as (
-        select *, 'rotineiro' as tipo,
-        from {{ ref("base_prontuario_vitacare__ficha_a_rotineiro") }}
-        union all
         select *, 'historico' as tipo,
         from {{ ref("base_prontuario_vitacare__ficha_a_historico") }}
         union all 
@@ -21,6 +18,12 @@ with
     -- -----------------------------------------------------
     -- Padronização
     -- -----------------------------------------------------
+    ficha_a_deduplicado as (
+        select *
+        from ficha_a
+        qualify row_number() over (partition by id order by updated_at desc) = 1 
+    ),
+
     ficha_a_padronizada as (
         select 
             id, 
@@ -353,7 +356,7 @@ with
             datetime(timestamp({{process_null('loaded_at')}}), 'America/Sao_Paulo') as loaded_at,
             tipo
 
-        from ficha_a
+        from ficha_a_deduplicado
     ),
 
     -- Enriquecimento da tabela com nome da unidade e nome da equipe

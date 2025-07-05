@@ -1,5 +1,4 @@
 # 📊 Queries SMS/RJ
-
 > Ambiente para modelagem de dados da **SMS Rio** com **dbt**, **BigQuery** e comparação de ambientes via **Recce**.
 
 Administrador: **[Pedro Marques](https://github.com/TanookiVerde)**  
