@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: raw_pcsm_comorbidades_pacientes
+    description: "comorbidades de pacientes atendidos em CAPS da Prefeitura do Rio de Janeiro."
+    columns:
+      - name: id_paciente
+        description: "identificador do paciente que tem a comorbidade."
+        data_type: int64
+      - name: id_comorbidade
+        description: "identificador da comorbidade que o paciente possui."
+        data_type: int64

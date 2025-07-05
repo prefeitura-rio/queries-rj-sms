@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: raw_pcsm_articulacao_pacientes
+    description: "Pacientes que participaram de articulações."
+    columns:
+      - name: id_articulacao
+        description: "Identificador único da articulação."
+        data_type: int64
+      - name: id_paciente
+        description: "Número sequencial do paciente no sistema (Prontuário RAPS)."
+        data_type: int64
+      - name: paciente_evoluido
+        description: "Booleano que indica se o paciente já evoluiu (S-Sim, N-Não)."
+        data_type: string

@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: raw_pcsm_drogas_pacientes
+    description: "Drogas usadas por pacientes atendidos por caps da prefeitura do Rio de Janeiro."
+    columns:
+      - name: id_paciente
+        description: "Identificador do paciente que está usando a droga."
+        data_type: int64
+      - name: id_droga
+        description: "Identificador da droga sendo utilizada."
+        data_type: int64

@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: raw_pcsm_atendimentos
+    description: "Atendimentos simplificados realizados pela prefeitura do Rio de Janeiro. O atendimento simplificado é um tipo de atendimento, não se encaixando em ambulatorial etc."
+    columns:
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+        data_tests:
+          - not_null:
+              name: raw_pcsm_atendimentos__id_atendimento__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_atendimentos__id_atendimento__unique
+              severity: error
+        data_type: int64
+      - name: data_entrada_atendimento
+        description: "Data de entrada do paciente no atendimento."
+        data_type: date
+      - name: hora_entrada_atendimento
+        description: "Hora de entrada do paciente no atendimento."
+        data_type: string
+      - name: data_saida_atendimento
+        description: "Data de saída do paciente no atendimento."
+        data_type: date
+      - name: hora_saida_atendimento
+        description: "Hora de saída do paciente no atendimento."
+        data_type: string
+      - name: id_tipo_atendimento
+        description: "Identificador para o tipo de atendimento efetuado."
+        data_type: int64
+      - name: codigo_clinica
+        description: "Código de Clínica - Não utilizado."
+        data_type: string
+      - name: id_profissional_saude
+        description: "Identificador do profissional de saúde que atendeu ao paciente."
+        data_type: int64
+      - name: id_paciente
+        description: "Identificador do paciente atendido."
+        data_type: int64
+      - name: id_unidade_saude
+        description: "Identificador da unidade de saúde onde foi feito o atendimento."
+        data_type: int64
+      - name: id_funcionario_cadastramento
+        description: "Identificador do funcionário do posto de saúde que registrou o atendimento no sistema. Pode ser o próprio profissional de saúde que atendeu ao paciente."
+        data_type: int64
+      - name: id_atividade_grupo
+        description: "Identificador da atividade de grupo caso o atendimento seja deste tipo. Alguns dos atendimentos simplificados podem conter atividades de grupo."
+        data_type: int64
+      - name: id_encaminhamento
+        description: "Identificador do encaminhamento que foi dado no atendimento. É opcional."
+        data_type: int64
+      - name: id_unidade_saude_encaminhada
+        description: "Identificador da unidade de saúde para onde o profissional de saúde encaminhou o paciente."
+        data_type: int64
+      - name: data_inclusao_cadastro
+        description: "Data de inclusão do registro do atendimento."
+        data_type: date
+      - name: local_atendimento
+        description: "Indicador de local do atendimento (C-CAPS,T-Território). Território é quando há um evento que é feito em lugar público."
+        data_type: string
+      - name: atendimento_cancelado
+        description: "Indicador de que o registro de atendimento realizado foi posteriormente cancelado. (S-Sim,N-Não)."
+        data_type: string
+      - name: lista_profissionais_atendimento
+        description: "Lista contendo os identificadores dos profissionais que fizeram parte do atendimento. Usando separador por vírgula. Preenchido caso vários profissionais tenham participado do atendimento."
+        data_type: string

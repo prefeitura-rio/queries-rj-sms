@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: raw_pcsm_acolhimento
+    description: "Acolhimentos feitos em unidades de acolhimento (tipos especiais de unidades de saúde) da prefeitura do Rio de Janeiro. Acolhimento é a recepção temporária para o cuidado de pacientes de saúde mental. Um acolhimento é período de uso de um leito."
+    columns:
+      - name: id_acolhimento
+        description: "Identificador único do acolhimento."
+        data_type: int64
+        _data_tests:
+          - not_null:
+              name: raw_pcsm_acolhimento__id_acolhimento__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_acolhimento__id_acolhimento__unique
+              severity: error
+      - name: data_entrada_acolhimento
+        description: "Data de entrada do acolhimento."
+        data_type: date
+      - name: hora_entrada_acolhimento
+        description: "Hora de entrada do acolhimento."
+        data_type: string
+      - name: data_saida_acolhimento
+        description: "Data de saída do acolhimento."
+        data_type: date
+      - name: hora_saida_acolhimento
+        description: "Hora de saída do acolhimento."
+        data_type: string
+      - name: id_profissional
+        description: "Identificador do profissional responsável primário pelo atendimento."
+        data_type: int64
+      - name: id_paciente
+        description: "Identificador do paciente que está sendo acolhido."
+        data_type: int64
+      - name: id_unidade_saude
+        description: "Identificador da unidade de saúde onde foi feito o acolhimento."
+        data_type: int64
+      - name: id_profissional_secundario
+        description: "Identificador do profissional responsável secundário pelo atendimento. Nem sempre é obrigatório ter um responsável secundário."
+        data_type: int64
+      - name: id_funcionario_cadastramento
+        description: "Identificador do funcionário da unidade de saúde que registrou o acolhimento no sistema."
+        data_type: int64
+      - name: id_tipo_saida
+        description: "Identificador do tipo de saída de acolhimento."
+        data_type: int64
+      - name: leito_ocupado
+        description: "Booleano que indica que o leito de acolhimento está ocupado (Sim/Não)."
+        data_type: string
+      - name: leito_extra
+        description: "Booleano que indica que o acolhimento foi feito em um leito extra. S indica que foi feito, N indica que não foi feito."
+        data_type: string
+      - name: turno_acolhimento
+        description: "Turno do acolhimento. Acolhimento diurno, noturno ou terceiro turno ou uma combinação destes valores."
+        data_type: string
+      - name: data_cadastro
+        description: "Data do registro do acolhimento no sistema."
+        data_type: date
+      - name: tipo_leito
+        description: "Tipo de leito do acolhimento. Ex. (C) Leito clínico ou (A) leito de acolhimento."
+        data_type: string
