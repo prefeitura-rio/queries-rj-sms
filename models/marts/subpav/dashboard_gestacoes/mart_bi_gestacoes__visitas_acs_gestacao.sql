@@ -43,7 +43,7 @@ visitas_com_join AS (
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
-   AND ea.entrada_data BETWEEN mt.data_inicio AND mt.data_fim_efetiva
+   AND ea.entrada_data BETWEEN mt.data_inicio AND coalesce(mt.data_fim_efetiva, CURRENT_DATE())
  WHERE ea.prontuario.fornecedor = 'vitacare'
    AND ea.profissional_saude_responsavel.especialidade = 'Agente comunitário de saúde'
    AND ea.subtipo = 'Visita Domiciliar'
