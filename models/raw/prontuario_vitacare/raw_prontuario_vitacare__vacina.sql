@@ -87,7 +87,7 @@ with
             paciente_obito,
             lower(descricao) as descricao,
             safe_cast(aplicacao_data as date) as aplicacao_data,
-            timestamp_add(datetime(timestamp({{process_null('registro_data')}}), 'America/Sao_Paulo'),interval 3 hour) as registro_data,
+            timestamp_add(datetime(safe_cast({{process_null('registro_data')}} as timestamp), 'America/Sao_Paulo'),interval 3 hour) as registro_data,
             lower(dose) as dose,
             lote,
             lower(registro_tipo) as registro_tipo,
