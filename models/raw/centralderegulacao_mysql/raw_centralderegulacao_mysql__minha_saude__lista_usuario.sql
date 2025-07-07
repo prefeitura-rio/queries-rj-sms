@@ -11,7 +11,7 @@ with
             {{
                 source(
                     "brutos_centralderegulacao_mysql_staging",
-                    "monitoramento__vw_minhaSaude_listaUsuario",
+                    "vw_minhaSaude_listaUsuario",
                 )
             }}
     ),

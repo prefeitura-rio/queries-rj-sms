@@ -23,7 +23,7 @@ with
             {{
                 source(
                     "brutos_centralderegulacao_mysql_staging",
-                    "monitoramento__vw_MS_CadastrosAtivacoesGov",
+                    "vw_MS_CadastrosAtivacoesGov",
                 )
             }}
     ),
