@@ -476,7 +476,15 @@ models:
             dado_publico: sim
             dado_pessoal: nao
             dado_sensivel: nao
-
+        indicadores_aps:
+          +schema: projeto_subgeral_indicadores
+          +tags: ["weekly"]                
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
+            dominio: subgeral
+            
 data_tests:
   rj_sms:
     +severity: error
