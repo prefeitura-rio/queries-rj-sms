@@ -259,6 +259,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      sim:
+        +schema: brutos_sim
+        +tags: ["weekly", "sim"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       sisreg_api:
         +schema: brutos_sisreg_api
         +tags: ["daily", "subgeral", "sisreg", "sisreg_reports"]
