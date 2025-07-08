@@ -142,6 +142,8 @@ with
 
     renomeado as (
         select
+            to_hex(sha256(cast({{ process_null('AH_NUM_AIH') }} as string))) as id_hash,
+            {{ process_null('AH_NUM_AIH') }} as id_aih,
             {{ process_null('AH_CNES') }} as id_cnes,
             {{ process_null('AH_PRONTUARIO') }} as numero_prontuario,
             substr({{ process_null('AH_CMPT') }}, 1, 4) AS ano_competencia,
@@ -239,7 +241,6 @@ with
                     then 'Longa permanência'
                 else null
             end as aih_identificador,
-            {{ process_null('AH_NUM_AIH') }} as id_aih,
             if(AH_NUM_AIH_PROX in ("0000000000000", "0"), null, {{ process_null('AH_NUM_AIH_PROX') }}) as id_aih_proximo,
             if(AH_NUM_AIH_ANT in ("0000000000000", "0"), null, {{ process_null('AH_NUM_AIH_ANT') }}) as id_aih_anterior,
             {{ process_null('AH_SEQ') }} as aih_sequencial_lote,

@@ -6,7 +6,8 @@
 }}
 
 SELECT
-  {{ process_null("NUMERODO") }} as numero_do,
+  to_hex(sha256(cast({{ process_null("NUMERODO") }} as string))) as id_hash,
+  {{ process_null("NUMERODO") }} as id_declaracao_obito,
   {{ process_null("NUMERODV") }} as numero_dv,
   {{ process_null("CODESTCART") }} as codigo_estab_cartorio,
   {{ process_null("CODMUNCART") }} as codigo_municipio_cartorio,

@@ -335,6 +335,13 @@ models:
               dado_pessoal: sim
               dado_sensivel: sim
               dominio: estoque
+        linkage:
+          +schema: saude_linkage
+          +tags: ["daily", "linkage"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
       cie:
         alerta_doencas:
           +schema: projeto_alerta_doencas
