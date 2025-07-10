@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_plataforma_subpav_staging
+    database: rj-sms
+    schema: brutos_plataforma_subpav_staging
+    tables:
+      - name: views_ipp__Unidades_OSA
