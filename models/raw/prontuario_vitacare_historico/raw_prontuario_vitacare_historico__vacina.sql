@@ -51,7 +51,7 @@ WITH
             lote AS lote,
             safe_cast(substr(data_aplicacao, 1, 10) AS DATE) AS data_aplicacao,
             timestamp_add(datetime(safe_cast({{process_null('data_registro')}} as timestamp), 'America/Sao_Paulo'),interval 3 hour) as data_registro,
-            {{ process_null('diff') }} AS diff,
+            REPLACE({{ process_null('diff') }}, '.0', '') AS diff,
             calendario_vacinal_atualizado AS calendario_vacinal_atualizado,
             {{ process_null('tipo_registro') }} AS tipo_registro,
             {{ process_null('estrategia_imunizacao') }} AS estrategia_imunizacao,
