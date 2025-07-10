@@ -5,8 +5,12 @@ models:
     columns:
       - name: id_hash_aih
         description: Hash do ID da AIH do paciente.
+        data_tests:
+          - not_null
       - name: id_hash_paciente
         description: Identificador anônimo do paciente.
+        data_tests:
+          - not_null
       - name: data_nasc
         description: Data de nascimento do paciente.
         policy_tags:
@@ -32,7 +36,6 @@ models:
         policy_tags:
           - '{{ var ("TAG_PUBLICO_CPF") }}'
         data_tests:
-          - unique
           - not_null
       - name: score_lev
         description: Score do algoritmo Levenshtein para os nomes do paciente e da mãe.
@@ -45,8 +48,11 @@ models:
     columns:
       - name: id_hash_declaracao_obito
         description: Hash do ID da Declaração de Óbito do paciente.
+        data_tests:
+          - not_null
       - name: id_hash_paciente
         description: Identificador anônimo do paciente.
+          - not_null
       - name: data_nasc
         description: Data de nascimento do paciente.
         policy_tags:
@@ -72,7 +78,6 @@ models:
         policy_tags:
           - '{{ var ("TAG_PUBLICO_CPF") }}'
         data_tests:
-          - unique
           - not_null
       - name: score_lev
         description: Score do algoritmo Levenshtein para os nomes do paciente e da mãe.

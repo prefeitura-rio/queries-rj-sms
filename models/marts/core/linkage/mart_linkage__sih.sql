@@ -88,5 +88,5 @@ select distinct
 from ranking_scores
 where
     rn = 1
-    and ((score_lev <= 0.3) or (score_jac <= 0.3))
+    and ((score_lev <= 0.2) or (score_jac <= 0.2))
     and score_final <= 0.4
