@@ -46,7 +46,7 @@ with
 
             safe_cast({{process_null("datalake_loaded_at")}} as timestamp) as datalake_loaded_at,
             safe_cast(current_timestamp() as timestamp) as processed_at
-        from source
+        from removendo_duplicados
     )
 select *
 from renamed
