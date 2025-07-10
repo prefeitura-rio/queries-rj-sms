@@ -6,7 +6,28 @@
 
 with
     source as (
-        select *
+        select
+            safe_cast(idusuario as int64) as idusuario,
+            cadastroconfirmado,
+            cadastroativo,
+            ultimaatualizacaocadsus,
+            celularvalido,
+            datahoravalidacaocelular,
+            datahoracadastro,
+            cadastrogovbr,
+            datanascimento,
+            safe_cast(idadepaciente as int64) as idadepaciente,
+            sexo,
+            racacor,
+            bairroresidencia,
+            safe_cast(cap as int64) as cap,
+            municipioresidencia,
+            ufresidencia,
+            safe_cast(safe_cast(fontecadastro as float64) as int64) as fontecadastro,    
+            data_extracao,
+            ano_particao,
+            mes_particao,
+            data_particao
         from
             {{
                 source(
