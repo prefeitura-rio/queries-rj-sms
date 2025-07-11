@@ -45,7 +45,7 @@ with
           date(
             datetime_sub(
               current_datetime("America/Sao_Paulo"),
-              interval 1 month
+              interval 6 month
             )
           ),
           month
@@ -63,6 +63,7 @@ with
       format_datetime('%Y-%m', datetime(source_updated_at)) as mes
     from {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} as tab
     where nullif(json_extract_scalar(tab.data,'$.cnes'), '') is not null
+      and current_datetime("America/Sao_Paulo") >= datetime(source_updated_at)
       and datetime(source_updated_at) >
         date_trunc(
           date(
