@@ -32,7 +32,7 @@ WITH
         FROM (
             SELECT
                 *,
-                ROW_NUMBER() OVER (PARTITION BY cpf, id_cnes ORDER BY dataatualizacaocadastro DESC, extracted_at DESC) AS rn
+                ROW_NUMBER() OVER (PARTITION BY cpf, id_cnes ORDER BY dataatualizacaocadastro DESC, cadastropermanente DESC) AS rn
             FROM source_pacientes
         )
         WHERE rn = 1
