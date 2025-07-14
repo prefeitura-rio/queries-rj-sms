@@ -136,6 +136,7 @@ with
             funcao_grupo in (
                 'MEDICOS',
                 'ENFERMEIROS',
+                'DENTISTAS',
                 'DIRETORES DE SAUDE'
             )
     ),
