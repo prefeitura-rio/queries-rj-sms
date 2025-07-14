@@ -1,0 +1,42 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_vitacare_api_staging
+    database: rj-sms-dev
+    schema: brutos_prontuario_vitacare_api_staging
+    tables:
+    # Estoque Posição
+      - name: estoque_posicao_ap10
+      - name: estoque_posicao_ap21
+      - name: estoque_posicao_ap22
+      - name: estoque_posicao_ap31
+      - name: estoque_posicao_ap32
+      - name: estoque_posicao_ap33
+      - name: estoque_posicao_ap40
+      - name: estoque_posicao_ap51
+      - name: estoque_posicao_ap52
+      - name: estoque_posicao_ap53
+
+    # # Estoque Movimento
+    #   - name: estoque_movimento_ap10
+    #   - name: estoque_movimento_ap21
+    #   - name: estoque_movimento_ap22
+    #   - name: estoque_movimento_ap31
+    #   - name: estoque_movimento_ap32
+    #   - name: estoque_movimento_ap33
+    #   - name: estoque_movimento_ap40
+    #   - name: estoque_movimento_ap51
+    #   - name: estoque_movimento_ap52
+    #   - name: estoque_movimento_ap53
+
+    # # Vacina
+    #   - name: vacina_ap10
+    #   - name: vacina_ap21
+    #   - name: vacina_ap22
+    #   - name: vacina_ap31
+    #   - name: vacina_ap32
+    #   - name: vacina_ap33
+    #   - name: vacina_ap40
+    #   - name: vacina_ap51
+    #   - name: vacina_ap52
+    #   - name: vacina_ap53
