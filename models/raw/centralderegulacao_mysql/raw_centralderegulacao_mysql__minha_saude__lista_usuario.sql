@@ -20,7 +20,7 @@ with
             sexo,
             racacor,
             bairroresidencia,
-            safe_cast(cap as int64) as cap,
+            safe_cast(safe_cast(cap as float64) as int64) as cap,    
             municipioresidencia,
             ufresidencia,
             safe_cast(safe_cast(fontecadastro as float64) as int64) as fontecadastro,    
