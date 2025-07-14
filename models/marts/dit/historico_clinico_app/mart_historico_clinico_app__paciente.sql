@@ -61,7 +61,16 @@ with
             dados.genero as gender,
             dados.raca as race,
             dados.obito_indicador as deceased,
-            {{ padronize_telefone("contato.telefone[safe_offset(0)].valor")}} as phone,
+            case 
+                when contato.telefone[safe_offset(0)].rank = 1
+                    then {{ padronize_telefone("contato.telefone[safe_offset(0)].valor")}}
+                when contato.telefone[safe_offset(1)].rank = 1
+                    then {{ padronize_telefone("contato.telefone[safe_offset(1)].valor")}}
+                when contato.telefone[safe_offset(2)].rank = 1
+                    then {{ padronize_telefone("contato.telefone[safe_offset(2)].valor")}}
+                else 
+                    null
+            end as phone,
             struct(
                 equipe_saude_familia[safe_offset(0)].clinica_familia.id_cnes as cnes,
                 equipe_saude_familia[safe_offset(0)].clinica_familia.nome as name,
