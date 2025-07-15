@@ -1,6 +1,6 @@
 {{
     config(
-        alias="diarios_rj",
+        alias="diarios_rj_html",
         materialized="table",
         partition_by={
             "field": "data_particao",
@@ -15,36 +15,28 @@ with
             {{ process_null(clean_numeric_string('do_id')) }} as id_diario,
             {{ process_null(clean_numeric_string('materia_id')) }} as id_materia,
             {{ process_null('do_data') }} as data_publicacao,
-            {{ process_null(clean_numeric_string('secao_indice')) }} as secao_indice,
-            {{ process_null(clean_numeric_string('bloco_indice')) }} as bloco_indice,
-            {{ process_null(clean_numeric_string('conteudo_indice')) }} as conteudo_indice,
             trim({{ process_null('secao') }}) as pasta,
             trim({{ process_null('titulo') }}) as arquivo,
-            trim({{ process_null('cabecalho') }}) as cabecalho,
-            trim({{ process_null('conteudo') }}) as conteudo,
+            trim({{ process_null('html') }}) as html,
             _extracted_at as data_extracao,
             ano_particao,
             mes_particao,
             data_particao
-        from {{ source("brutos_diario_oficial_staging", "diarios_municipio") }}
+        from {{ source("brutos_diario_oficial_staging", "diarios_municipio_html") }}
     ),
     deduplicated as (
         select *
         from preprocessed
-        qualify row_number() over (partition by arquivo, id_diario, secao_indice,bloco_indice,conteudo_indice  order by data_particao) = 1
+        qualify row_number() over (partition by arquivo, id_diario) = 1
     ),
     typed as (
         select
             cast(id_diario as INT64) as id_diario,
             cast(id_materia as INT64) as id_materia,
             DATE(data_publicacao) as data_publicacao,
-            cast(secao_indice as INT64) as secao_indice,
-            cast(bloco_indice as INT64) as bloco_indice,
-            cast(conteudo_indice as INT64) as conteudo_indice,
             pasta,
             arquivo,
-            cabecalho,
-            conteudo,
+            html,
 
             -- (0) Em `data_extracao`, recebemos uma string como '2025-06-04 13:37:04.182894-03:00'
             --     Mas DATETIME no BigQuery não tem informação de fusos
