@@ -9,7 +9,8 @@ SELECT
   {{
     dbt_utils.generate_surrogate_key(
       [
-          "cast({{ process_null('NUMERODO') }} as string)",
+          "NUMERODO",
+          "CODCART"
       ]
     )
   }} as id_hash,

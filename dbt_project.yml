@@ -261,14 +261,14 @@ models:
           dominio: subgeral
       sih:
         +schema: brutos_sih
-        +tags: ["weekly", "sih", "subgeral"]
+        +tags: ["sih", "subgeral"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
       sim:
         +schema: brutos_sim
-        +tags: ["weekly", "sim"]
+        +tags: ["sim", "subgeral"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim

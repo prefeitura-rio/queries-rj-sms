@@ -142,14 +142,6 @@ with
 
     renomeado as (
         select
-            {{
-                dbt_utils.generate_surrogate_key(
-                    [
-                        "AH_NUM_AIH",
-                        "AH_CMPT"
-                    ]
-                )
-            }} as id_hash,
             {{ process_null('AH_NUM_AIH') }} as id_aih,
             {{ process_null('AH_CNES') }} as id_cnes,
             {{ process_null('AH_PRONTUARIO') }} as numero_prontuario,
@@ -469,7 +461,24 @@ with
     ),
 
     deduplicado as (
-        select * 
+        select
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "ano_competencia",
+                        "mes_competencia",
+                        "id_cnes",
+                        "numero_prontuario",
+                        "paciente_cpf",
+                        "data_internacao",
+                        "lote_apresentacao",
+                        "data_emissao",
+                        "data_saida",
+                        "codigo_seguranca"
+                    ]
+                )
+            }} as id_hash,
+            *
         from renomeado
         qualify
             row_number() over (
