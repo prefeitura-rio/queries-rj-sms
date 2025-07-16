@@ -1,7 +1,8 @@
 {{ config(
-    materialized = "table",
+    materialized = "incremental",
     schema = "projeto_subgeral_indicadores",
-    alias = "indicadores_aps"
+    alias = "indicadores_aps",
+    unique_key = "data_referencia"
 ) }}
 
 -- Seleciona tipos de atendimento com pelo menos 30% realizados por médicos (CBO 225 ou 2231)
@@ -61,3 +62,9 @@ SELECT
   (SELECT COUNT(*) FROM pacientes_contagem WHERE total_consultas >= 1) AS acesso_realizado,
   -- Pacientes com 3 ou mais consultas médicas no mesmo período
   (SELECT COUNT(*) FROM pacientes_contagem WHERE total_consultas >= 3) AS acesso_efetivo
+
+{% if is_incremental() %}
+  WHERE CURRENT_DATETIME() NOT IN (
+    SELECT data_referencia FROM {{ this }}
+  )
+{% endif %}
