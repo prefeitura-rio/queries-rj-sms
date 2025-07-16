@@ -498,6 +498,7 @@ with
 
 select *
 from deduplicado
+where id_aih != 'AH_NUM_AIH' -- remove header
 order by data_internacao asc
 
 
