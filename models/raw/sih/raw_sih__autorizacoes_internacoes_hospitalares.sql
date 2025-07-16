@@ -142,7 +142,14 @@ with
 
     renomeado as (
         select
-            to_hex(sha256(cast({{ process_null('AH_NUM_AIH') }} as string))) as id_hash,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "AH_NUM_AIH",
+                        "AH_CMPT"
+                    ]
+                )
+            }} as id_hash,
             {{ process_null('AH_NUM_AIH') }} as id_aih,
             {{ process_null('AH_CNES') }} as id_cnes,
             {{ process_null('AH_PRONTUARIO') }} as numero_prontuario,
@@ -480,7 +487,9 @@ with
                 order by rownumber desc) = 1
     )
 
-select * from deduplicado
+select *
+from deduplicado
+order by data_internacao asc
 
 
 

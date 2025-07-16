@@ -6,7 +6,13 @@
 }}
 
 SELECT
-  to_hex(sha256(cast({{ process_null("NUMERODO") }} as string))) as id_hash,
+  {{
+    dbt_utils.generate_surrogate_key(
+      [
+          "cast({{ process_null('NUMERODO') }} as string)",
+      ]
+    )
+  }} as id_hash,
   {{ process_null("NUMERODO") }} as id_declaracao_obito,
   {{ process_null("NUMERODV") }} as numero_dv,
   {{ process_null("CODESTCART") }} as codigo_estab_cartorio,
@@ -148,3 +154,4 @@ SELECT
   {{ process_null("STDONOVA") }} as st_nova,
   {{ process_null("ano") }} as ano_referencia
 FROM {{ source("brutos_sim_staging", "sim_2014_2024") }}
+ORDER BY DTOBITO ASC

@@ -351,7 +351,7 @@ models:
               dominio: estoque
         linkage:
           +schema: saude_linkage
-          +tags: ["daily", "linkage"]
+          +tags: ["weekly", "linkage"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
