@@ -29,13 +29,8 @@ WITH
     vacinas_deduplicados AS (
         SELECT
             *
-        FROM (
-            SELECT
-                *,
-                ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY extracted_at DESC) AS rn
-            FROM source_vacinas
-        )
-        WHERE rn = 1
+        FROM source_vacinas 
+        qualify row_number() over (partition by id_prontuario_global order by extracted_at desc) = 1
     ),
 
     fato_vacinas AS (
