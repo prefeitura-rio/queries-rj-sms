@@ -30,7 +30,7 @@ WITH
         SELECT
             *
         FROM source_vacinas 
-        qualify row_number() over (partition by id_prontuario_global order by extracted_at desc) = 1
+        qualify row_number() over (partition by id_prontuario_global, cod_vacina order by extracted_at desc) = 1
     ),
 
     fato_vacinas AS (
