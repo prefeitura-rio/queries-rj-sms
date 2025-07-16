@@ -29,13 +29,8 @@ WITH
     prescricoes_deduplicados AS (
         SELECT
             *
-        FROM (
-            SELECT
-                *,
-                ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY extracted_at DESC) AS rn
-            FROM source_prescricoes
-        )
-        WHERE rn = 1
+        FROM source_prescricoes 
+        qualify row_number() over (partition by id_prontuario_global, cod_medicamento order by extracted_at desc) = 1
     ),
 
     fato_prescricoes AS (
@@ -49,10 +44,8 @@ WITH
             posologia,
             safe_cast((quantidade) AS NUMERIC) AS quantidade,
             uso_continuado,
-   
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
-
         FROM prescricoes_deduplicados
     ),
 
