@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: raw_diario_oficial__diarios_rj
+  - name: int_cdi__diario_oficial_rj_filtrado
     description: >
       Conteúdo textual de artigos do Diário Oficial do Município
       que podem ser relevantes para a Secretaria Municipal de Saúde segundo regras do CDI.
@@ -35,40 +35,14 @@ models:
       - name: conteudo
         description: Conteúdo textual do artigo, que pode conter informações adicionais
         data_type: string
-      - name: data_extracao
-        description: A data e hora em que os dados foram extraídos
-        data_type: datetime
-      - name: ano_particao
-        description: Ano da partição
-        data_type: int64
-      - name: mes_particao
-        description: Mês da partição
-        data_type: int64
-      - name: data_particao
-        description: Data da partição (YYYY-MM-DD)
-        data_type: date
-  - name: raw_diario_oficial__diarios_rj_html
-    description: >
-      Conteúdo em html de artigos do Diário Oficial do Município
-      que podem ser relevantes para a Secretaria Municipal de Saúde segundo regras do CDI.
-    columns:
-      - name: id_diario
-        description: Identificador do Diário Oficial
-        data_type: int64
-      - name: data_publicacao
-        description: Data de publicação do Diário Oficial (YYYY-DD-MM)
-        data_type: date
-      - name: id_materia
-        description: Identificador da matéria no Diário Oficial
-        data_type: int64
-      - name: pasta
-        description: Pasta do Diário Oficial onde a matéria foi publicada
+      - name: content_email
+        description: Conteúdo formatado para email, que pode conter informações adicionais
         data_type: string
-      - name: arquivo
-        description: Nome do arquivo do Diário Oficial onde a matéria foi publicada
+      - name: voto
+        description: Voto do relacionado, caso contenha
         data_type: string
-      - name: html
-        description: Conteúdo em html do artigo, que pode conter informações adicionais
+      - name: html 
+        description: HTML da matéria.
         data_type: string
       - name: data_extracao
         description: A data e hora em que os dados foram extraídos
@@ -82,9 +56,9 @@ models:
       - name: data_particao
         description: Data da partição (YYYY-MM-DD)
         data_type: date
-  - name : raw_diario_oficial__diarios_uniao
+  - name : int_cdi__diario_oficial_uniao_filtrado
     description: >  
-        Conteúdo textual de artigos do Diário Oficial da União
+        Conteúdo textual de artigos do Diário Oficial da União ja filtrado pelas regras do CDI
     columns:
       - name: titulo
         description: Título do ato oficial.
@@ -118,9 +92,9 @@ models:
         data_type: string
       - name: link
         description: Link para o ato oficial no DOU.
-      - name: texto_titulo
-        description: Título do texto
         data_type: string
+      - name: content_email
+        description: Conteúdo formatado para email, que pode conter informações adicionais
       - name: data_extracao
         description: A data e hora em que os dados foram extraídos
         data_type: datetime

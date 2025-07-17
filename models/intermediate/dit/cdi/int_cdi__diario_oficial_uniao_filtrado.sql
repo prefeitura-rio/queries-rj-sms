@@ -8,7 +8,8 @@
 -- Monta tabela base para envio de emails CDI
 
 with filtros_diario_uniao as (
-    select *
+    select * except(texto_titulo),
+    texto_titulo as content_email
     from {{ref('raw_diario_oficial__diarios_uniao')}}
     where (
         lower(texto)  like "%município do rio de janeiro%"

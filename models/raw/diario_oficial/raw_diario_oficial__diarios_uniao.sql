@@ -23,7 +23,7 @@ with
             {{ process_null('agency') }} as organizacao_principal,
             trim({{ process_null('text') }}) as texto,
             {{ process_null('url') }} as link,
-            {{ process_null('text_title') }} as content_email,
+            {{ process_null('text_title') }} as texto_titulo,
             {{ process_null('html') }} as html, 
             safe_cast(_extracted_at as timestamp) as data_extracao,
             {{ process_null('ano_particao') }} as ano_particao,

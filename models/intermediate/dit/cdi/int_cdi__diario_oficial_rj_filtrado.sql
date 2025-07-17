@@ -120,7 +120,11 @@ select
   pasta,
   arquivo,
   cabecalho, 
-  conteudo
+  conteudo,
+  data_extracao,
+  ano_particao,
+  mes_particao,
+  data_particao
 from merge_palavras_chave_add 
 where concat(id_diario,id_materia,secao_indice,bloco_indice) not in (select distinct id_bloco from merge_palavras_chave_del)
 ),
@@ -250,8 +254,12 @@ final_all_sections as (
 )
 
 select 
-    final_all_sections.*,
-    html.html as html 
+    final_all_sections.* except(data_extracao,ano_particao,mes_particao,data_particao,id),
+    html.html as html,
+    final_all_sections.data_extracao,
+    final_all_sections.ano_particao,
+    final_all_sections.mes_particao,
+    final_all_sections.data_particao
 from final_all_sections
 left join diarios_municipio_html as html
 on concat(final_all_sections.id_diario,final_all_sections.id_materia) = concat(html.id_diario,html.id_materia)
