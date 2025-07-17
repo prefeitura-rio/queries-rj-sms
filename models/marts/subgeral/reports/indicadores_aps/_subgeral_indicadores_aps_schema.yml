@@ -1,0 +1,15 @@
+version: 2
+models:
+  - name: mart_subgeral_indicadores_aps
+    description: >
+      Tabela de indicadores de acesso à Atenção Primária à Saúde, baseada em atendimentos médicos nos últimos 12 meses. 
+      Considera apenas consultas realizadas por profissionais com CBO iniciado por '225' ou '2231', excluindo tipos que não caracterizam consulta médica.
+    columns:
+      - name: data_referencia
+        description: Data e hora de geração do indicador.
+      - name: acesso_potencial
+        description: Total de pacientes cadastrados (cadastro definitivo e temporário).
+      - name: acesso_realizado
+        description: Total de pacientes com pelo menos 1 consulta médica nos últimos 12 meses.
+      - name: acesso_efetivo
+        description: Total de pacientes com 3 ou mais consultas médicas nos últimos 12 meses.

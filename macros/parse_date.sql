@@ -7,6 +7,10 @@
         -- Brasil: 05/06/2024 ou 05/06/2024 15:55
         when REGEXP_CONTAINS({{ col_name }}, r'\d{2}/\d{2}/\d{4}')
             then PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT({{ col_name }}, r'\d{2}/\d{2}/\d{4}'))
+        
+        -- Brasil: 05062024
+        when REGEXP_CONTAINS({{ col_name }}, r'\d{2}\d{2}\d{4}')
+            then PARSE_DATE('%d%m%Y', REGEXP_EXTRACT({{ col_name }}, r'\d{2}\d{2}\d{4}'))
 
         else null
     end

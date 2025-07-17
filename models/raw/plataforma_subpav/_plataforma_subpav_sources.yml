@@ -21,3 +21,4 @@ sources:
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
         freshness:
           error_after: {count: 30, period: day}
+      - name: views_ipp__Unidades_OSA

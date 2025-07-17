@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_sim_staging
+    database: rj-sms
+    schema: brutos_sim_staging
+    tables:
+      - name: sim_2014_2024

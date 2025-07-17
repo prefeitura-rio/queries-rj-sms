@@ -142,6 +142,7 @@ with
 
     renomeado as (
         select
+            {{ process_null('AH_NUM_AIH') }} as id_aih,
             {{ process_null('AH_CNES') }} as id_cnes,
             {{ process_null('AH_PRONTUARIO') }} as numero_prontuario,
             substr({{ process_null('AH_CMPT') }}, 1, 4) AS ano_competencia,
@@ -239,7 +240,6 @@ with
                     then 'Longa permanência'
                 else null
             end as aih_identificador,
-            {{ process_null('AH_NUM_AIH') }} as id_aih,
             if(AH_NUM_AIH_PROX in ("0000000000000", "0"), null, {{ process_null('AH_NUM_AIH_PROX') }}) as id_aih_proximo,
             if(AH_NUM_AIH_ANT in ("0000000000000", "0"), null, {{ process_null('AH_NUM_AIH_ANT') }}) as id_aih_anterior,
             {{ process_null('AH_SEQ') }} as aih_sequencial_lote,
@@ -461,7 +461,24 @@ with
     ),
 
     deduplicado as (
-        select * 
+        select
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "ano_competencia",
+                        "mes_competencia",
+                        "id_cnes",
+                        "numero_prontuario",
+                        "paciente_cpf",
+                        "data_internacao",
+                        "lote_apresentacao",
+                        "data_emissao",
+                        "data_saida",
+                        "codigo_seguranca"
+                    ]
+                )
+            }} as id_hash,
+            *
         from renomeado
         qualify
             row_number() over (
@@ -479,7 +496,10 @@ with
                 order by rownumber desc) = 1
     )
 
-select * from deduplicado
+select *
+from deduplicado
+where id_aih != 'AH_NUM_AIH' -- remove header
+order by data_internacao asc
 
 
 

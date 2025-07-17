@@ -7,7 +7,7 @@
             "field": "cpf_particao",
             "data_type": "int64",
             "range": {"start": 0, "end": 100000000000, "interval": 34722222},
-        },
+        }
     )
 }}
 
@@ -61,16 +61,16 @@ with
             dados.genero as gender,
             dados.raca as race,
             dados.obito_indicador as deceased,
-            contato.telefone[safe_offset(0)].valor as phone,
+            {{ padronize_telefone("contato.telefone[safe_offset(0)].valor")}} as phone,
             struct(
                 equipe_saude_familia[safe_offset(0)].clinica_familia.id_cnes as cnes,
                 equipe_saude_familia[safe_offset(0)].clinica_familia.nome as name,
-                equipe_saude_familia[safe_offset(0)].clinica_familia.telefone as phone
+                {{  padronize_telefone("equipe_saude_familia[safe_offset(0)].clinica_familia.telefone") }} as phone
             ) as family_clinic,
             struct(
                 equipe_saude_familia[safe_offset(0)].id_ine as ine_code,
                 equipe_saude_familia[safe_offset(0)].nome as name,
-                equipe_saude_familia[safe_offset(0)].telefone as phone
+                {{ padronize_telefone("equipe_saude_familia[safe_offset(0)].telefone") }} as phone
             ) as family_health_team,
             array(
                 select 

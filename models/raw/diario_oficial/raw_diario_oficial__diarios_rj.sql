@@ -13,10 +13,15 @@ with
     preprocessed as (
         select
             {{ process_null(clean_numeric_string('do_id')) }} as id_diario,
+            {{ process_null(clean_numeric_string('materia_id')) }} as id_materia,
             {{ process_null('do_data') }} as data_publicacao,
-            trim({{ process_null('titulo') }}) as titulo,
-            trim({{ process_null('texto') }}) as texto,
-            trim({{ process_null('html') }}) as html,
+            {{ process_null(clean_numeric_string('secao_indice')) }} as secao_indice,
+            {{ process_null(clean_numeric_string('bloco_indice')) }} as bloco_indice,
+            {{ process_null(clean_numeric_string('conteudo_indice')) }} as conteudo_indice,
+            trim({{ process_null('secao') }}) as pasta,
+            trim({{ process_null('titulo') }}) as arquivo,
+            trim({{ process_null('cabecalho') }}) as cabecalho,
+            trim({{ process_null('conteudo') }}) as conteudo,
             _extracted_at as data_extracao,
             ano_particao,
             mes_particao,
@@ -26,15 +31,20 @@ with
     deduplicated as (
         select *
         from preprocessed
-        qualify row_number() over (partition by titulo, id_diario) = 1
+        qualify row_number() over (partition by arquivo, id_diario, secao_indice,bloco_indice,conteudo_indice  order by data_particao desc) = 1
     ),
     typed as (
         select
-            cast(id_diario as INT64) as id_diario,
+            cast(id_diario as STRING) as id_diario,
+            cast(id_materia as STRING) as id_materia,
             DATE(data_publicacao) as data_publicacao,
-            titulo,
-            texto,
-            html,
+            cast(secao_indice as INT64) as secao_indice,
+            cast(bloco_indice as INT64) as bloco_indice,
+            cast(conteudo_indice as INT64) as conteudo_indice,
+            pasta,
+            arquivo,
+            cabecalho,
+            conteudo,
 
             -- (0) Em `data_extracao`, recebemos uma string como '2025-06-04 13:37:04.182894-03:00'
             --     Mas DATETIME no BigQuery não tem informação de fusos

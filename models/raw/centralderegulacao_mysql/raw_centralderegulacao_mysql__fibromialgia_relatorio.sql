@@ -7,7 +7,7 @@ with
             {{
                 source(
                     "brutos_centralderegulacao_mysql_staging",
-                    "monitoramento__vw_fibromialgia_relatorio",
+                    "vw_fibromialgia_relatorio",
                 )
             }}
     ),
