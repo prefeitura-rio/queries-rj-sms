@@ -27,7 +27,10 @@ models:
         description: "Apelido do paciente."
         data_type: string
       - name: raca_cor_paciente
-        description: "Raça/Cor do paciente. 01-Branca, 02-Preta, 03-Parda, 04-Amarela, 05-Indígena, 99-Sem informação."
+        description: "Raça/Cor do paciente. 01-Branca, 02-Preta, 03-Parda, 04-Amarela, 05-Indígena, 00-Sem informação."
+        data_type: string
+        name: descricao_raca_cor_paciente
+        description: "Descrição da raça/cor do paciente. Branca, Preta, Parda, Amarela, Indígena, Sem informação."
         data_type: string
       - name: data_nascimento_paciente
         description: "Data de nascimento do paciente."
@@ -41,8 +44,14 @@ models:
       - name: sexo_paciente
         description: "Sexo do paciente. F-Feminino, M-Masculino, vazio-Sem informação."
         data_type: string
+        name: descricao_sexo_paciente
+        description: "Descrição do sexo do paciente. M-Masculino, F-Feminino, I-Não informado, Vazio['']-Não informado. Qualquer outro valor não previsto será tratado como 'Desconhecido'."
+        data_type: string
       - name: genero_paciente
-        description: "Gênero do paciente. 06-Homem cisgênero, 03-Homem transgênero, 05-Mulher cisgênero, 01-Mulher transgênero, 04-Não binário, 02-Travesti, 99-Sem informação."
+        description: "Gênero do paciente. 01: Mulher transgênero, 02: Travesti, 03: Homem transgênero, 04: Intersexo, 05: Mulher cisgênero, 06: Homem cisgênero, 07: Não binário, 98: Outro, 99: Não informado, 00: Não informado, vazio ['']: Não informado."
+        data_type: string
+        name: descricao_genero_paciente
+        description: "Descrição do gênero do paciente."
         data_type: string
       - name: sigla_uf_nascimento
         description: "Sigla da UF do estado de nascimento do paciente."
@@ -51,7 +60,7 @@ models:
         description: "Município de nascimento do paciente."
         data_type: string
       - name: nacionalidade_paciente
-        description: "Nacionalidade do paciente. 1-Brasileira, 3-Brasileiro naturalizado, 2-Estrangeira."
+        description: "Nacionalidade do paciente. 1-Brasileira, 2-Estrangeira, 3-Brasileiro naturalizado."
         data_type: string
       - name: pais_origem_paciente
         description: "País de origem do paciente."
@@ -69,7 +78,10 @@ models:
         description: "Número do Registro civil do paciente."
         data_type: string
       - name: tipo_registro_civil
-        description: "Tipo de documento do registro civil. 60-Carteira de identidade classista, 20-DIC-Detran, 82-Documento Estrangeiro, etc."
+        description: "Tipo de documento do registro civil. 10: SSP, 12: OAB, 20: DIC, 40: Organismos militares, 41: Ministério da aeronáutica, 42: Ministério do exército, 43: Ministério da marinha, 44: Polícia federal, 60: Carteira de identidade classista, 81: Outros emissores, 82: Documento estrangeiro."
+        data_type: string
+        name: descricao_tipo_registro_civil
+        description: "Descrição do tipo de registro civil do paciente. 10-SSP, 12-OAB, 20-DIC, 40-Organismos militares, 41-Ministério da aeronáutica, 42-Ministério do exército, 43-Ministério da marinha, 44-Polícia federal, 60-Carteira de identidade classista, 81-Outros emissores, 82-Documento estrangeiro."
         data_type: string
       - name: data_expedicao_registro
         description: "Data da expedição do registro civil."
@@ -85,6 +97,9 @@ models:
         data_type: string
       - name: estado_civil_paciente
         description: "Estado civil do paciente. vazio-Sem informação, 1-Solteiro, 2-Casado, 3-Viúvo, 4-Separado Judicialmente, 5-União consensual."
+        data_type: string
+        name: descricao_estado_civil_paciente
+        description: "Descrição do estado civil do paciente. Solteiro, Casado, Viúvo, Separado Judicialmente, União consensual, Sem informação."
         data_type: string
       - name: numero_cep_paciente
         description: "Número do CEP do endereço de residência do paciente."
@@ -116,6 +131,9 @@ models:
       - name: status_acompanhamento
         description: "Status do paciente. B-Acompanhamento AMBULATORIO, E-Acompanhamento CAPS, P-Alta a Pedido, S-Alta para Atenção Básica, etc."
         data_type: string
+        name: descricao_status_acompanhamento
+        description: "Descrição do status de acompanhamento do paciente. B-Acompanhamento AMBULATORIO, E-Acompanhamento CAPS, P-Alta a Pedido, S-Alta para Atenção Básica, U-Alta para outro ponto de atenção, X-Fechado pela unificação, Z-Finalização do programa Seguir em Frente, ''-Não informado."
+        data_type: string
       - name: id_unidade_atencao_primaria_referencia
         description: "Identificador da unidade de saúde da atenção primária referência do paciente."
         data_type: int64
@@ -141,14 +159,22 @@ models:
         description: "Descrição das Notificações de sistema para o paciente (campo JSON)."
         data_type: string
       - name: origem_cadastro
-        description: "Origem do cadastro. R-RAPS, B-Atenção Básica, I-Intersetorial."
+        description: "Origem do cadastro. R: RAPS, I: Intersetorial, B: Atenção básica, F: Programa Seguir em Frente, N: Não informado, '': Não informado, null: Não informado, outros: Não classificado."
         data_type: string
+        name: descricao_origem_cadastro
+        description: "Descrição da origem do cadastro do paciente. R: RAPS, I: Intersetorial, B: Atenção básica, F: Programa Seguir em Frente, N: Não informado, '': Não informado, null: Não informado, outros: Não classificado."
       - name: status_paciente_nao_brasileiro
-        description: "Status do paciente não-brasileiro. 1-Apatrida, 2-Asilado, 3-Imigrante com autorização de residência, etc."
+        description: "Status do paciente não-brasileiro. 1: Apátrida, 2: Asilado, 3: Imigrante com autorização de residência, 4: Imigrante com visto temporário, 5: Refugiado (não legalizado), 6: Refugiado (em solicitação), 7: Refugiado legalizado, 8: Turista, '': Não informado."
+        data_type: string
+        name: descricao_status_paciente_nao_brasileiro
+        description: "Descrição do status do paciente não-brasileiro. 1: Apátrida, 2: Asilado, 3: Imigrante com autorização de residência, 4: Imigrante com visto temporário, 5: Refugiado (não legalizado), 6: Refugiado (em solicitação), 7: Refugiado legalizado, 8: Turista, '': Não informado."
         data_type: string
       - name: ciclo_atendimento_aberto
-        description: "Pontos de atenção com ciclo de atendimento em aberto. C-somente CAPS, D-somente deambulatório, C,D-tem os dois."
+        description: "Pontos de atenção com ciclo de atendimento em aberto. C: Somente um ciclo de CAPS, C,D: Tem os dois, D: Somente um ciclo de deambulatório, D,C: Tem os dois, '': Não possui ciclo aberto."
         data_type: string
+        name: descricao_ciclo_atendimento_aberto
+        description: "Descrição do ciclo de atendimento aberto do paciente. C: Somente um ciclo de CAPS, C,D: Tem os dois, D: Somente um ciclo de deambulatório, D,C: Tem os dois, '': Não possui ciclo aberto."
+        datate: string
       - name: id_primeiro_profissional_deambulatorial
         description: "Identificador do primeiro profissional deambulatorial de referência."
         data_type: int64
@@ -160,205 +186,267 @@ models:
         data_type: int64
       - name: moradia_coberta_saude_familia
         description: "Booleano que indica se a área de moradia do paciente é coberta pela ESF (Equipe da Saúde da família). Valores: S-Sim,N-Nao"
-        data_type: STRING
+        data_type: string
+        name: descricao_moradia_coberta_saude_familia
+        description: "Descrição da moradia coberta pela saúde da família. Sim, Não, Não informado."
+        data_type: string
       - name: cadastrado_saude_familia
         description: "Booleano que indica se o paciente está cadastrado na ESF. Valores: S-Sim,N-Não. Preencher apenas se moradia_coberta_saude_familia = S."
-        data_type: STRING
+        data_type: string
+        name: descricao_cadastrado_saude_familia
+        description: "Descrição do cadastro na saúde da família. Sim, Não, Não informado."
+        data_type: string
       - name: situacao_familiar
         description: "Indica qual situação familiar do paciente: 01-Convive c/companheira(o) e filho(s), 02-Convive c/companheira(o), com laços conjugais e sem filhos, 03-Convive c/companheira(o), com filho(s) e/ou familiares, 04-Convive com familiar(es) sem companheira(o), 05-Convive com outra(s) pessoa(s) sem laços consanguíneos e/ou conjugais, 06-Vive só, 07-Vive com familiares ou responsáveis, 08-Vive em situação de acolhimento institucional, 99-Sem informações"
-        data_type: STRING
+        data_type: string
+        name: descricao_situacao_familiar
+        description: "Descrição da situação familiar do paciente. 01-Convive c/companheira(o) e filho(s), 02-Convive c/companheira(o), com laços conjugais e sem filhos, 03-Convive c/companheira(o), com filho(s) e/ou familiares, 04-Convive com familiar(es) sem companheira(o), 05-Convive com outra(s) pessoa(s) sem laços consanguíneos e/ou conjugais, 06-Vive só, 07-Vive com familiares ou responsáveis, 08-Vive em situação de acolhimento institucional, 99-Sem informações."
+        data_type: string 
       - name: tipo_moradia
-        description: "Indica o tipo de moradia do paciente. Valores: 1-Propria, 2-Alugada, 3-Cedida, 4-Abrigo, 5-Situação de rua, 6-Srt, 7-Pensionato, 8-Família Acolhedora, 9-Instituição, 10-Unidade de Acolhimento Adulto (UAA)"
-        data_type: STRING
+        description: "Indica o tipo de moradia do paciente. Valores: : Própria, 2: Alugada, 3: Cedida, 4: Unidades da assistência social, 5: Situação de rua, 6: SRT / República, 7: Pensionato, 8: Família acolhedora, 9: Instituição, A: Unidade de acolhimento adulto - UAA, B: Moradia assistida, C: Ocupação/Invasão, D: Moradia Programa Seguir em Frente, E: Desconhecido, '': Não informado."
+        data_type: string
+        name: descricao_tipo_moradia
+        description: "Descrição do tipo de moradia do paciente. Própria, Alugada, Cedida, Unidades da assistência social, Situação de rua, SRT / República, Pensionato, Família acolhedora, Instituição, Unidade de acolhimento adulto - UAA, Moradia assistida, Ocupação/Invasão, Moradia Programa Seguir em Frente, Desconhecido, Não informado."
+        data_type: string
       - name: local_moradia
         description: "Descrição do local de moradia do paciente. Texto que descreve o lugar onde o paciente mora. Ex: Mora debaixo do viaduto."
-        data_type: STRING
+        data_type: string
       - name: horario_moradia
-        description: "Indica o Horário de Circulação ou Moradia. Valores: 1-Diurno, 2-Noturno. O tipo de moradia está no atributo tipo_moradia."
-        data_type: STRING
+        description: "Indica o Horário de Circulação ou Moradia. Valores: 1-Diurno, 2-Noturno, 1,2-Diurno e Noturno. O tipo de moradia está no atributo tipo_moradia."
+        data_type: string
       - name: obs_situacao_rua
         description: "Observações sobre situação de rua. Preencher apenas se paciente estiver em situação de rua."
-        data_type: STRING
+        data_type: string
       - name: endereco_ocupacao
         description: "Endereço do local de ocupação do paciente."
-        data_type: STRING
+        data_type: string
       - name: telefone_trabalho
         description: "Telefone do local de ocupação do paciente. Telefone do local de trabalho do paciente."
-        data_type: STRING
+        data_type: string
       - name: responsavel_paciente
         description: "Descrição do responsável eventual pelo paciente: MAE,PAI,PROPRIO e OUTROS (Campo de livre descrição). Se não for nem mãe, nem pai, nem próprio entra o nome do responsável."
-        data_type: STRING
+        data_type: string
       - name: telefone_responsavel
         description: "Telefone do responsável eventual."
-        data_type: STRING
+        data_type: string
       - name: parentesco_responsavel
         description: "Parentesco do responsável pelo paciente quando é outros em responsavel_paciente."
-        data_type: STRING
+        data_type: string
       - name: paciente_trabalhando
         description: "Booleano que indica se o paciente está trabalhando ou não, (1-Sim,2-Não)."
-        data_type: STRING
+        data_type: string
+        name: descricao_paciente_trabalhando
+        description: "Descrição do estado de trabalho do paciente. Sim, Não, Não informado."
+        data_type: string
       - name: profissao_paciente
         description: "Descrição da profissão exercida campo livre, apenas se paciente_trabalhando = 1."
-        data_type: STRING
+        data_type: string
       - name: escolaridade_paciente
         description: "Escolaridade do paciente. Pode ter um dos seguintes valores: 01-Não sabe ler/escrever, 02-Alfabetizado, 03-Nível fundamental incompleto, 04-Nível fundamental completo, 05-Nível médio incompleto, 06-Nível médio completo, 07-Superior incompleto, 08-Superior completo, 09-Especialização, 10-Mestrado, 11-Doutorado."
-        data_type: STRING
+        data_type: string
+        name: descricao_escolaridade_paciente
+        description: "Descrição da escolaridade do paciente. Não sabe ler/escrever, Alfabetizado, Nível fundamental incompleto, Nível fundamental completo, Nível médio incompleto, Nível médio completo, Superior incompleto, Superior completo, Especialização, Mestrado, Doutorado."
+        data_type: string
       - name: frequenta_escola
         description: "Booleano que indica se o paciente frequenta a escola atualmente. Pode ter os seguintes valores: I-Não informado, S-Sim, N-Não"
-        data_type: STRING
+        data_type: string
+        name: descricao_frequenta_escola
+        description: "Descrição da frequência escolar do paciente. Sim, Não, Não informado."
+        data_type: string
       - name: serie_cursando
         description: "Série que o paciente está cursando atualmente. Pode conter os seguintes valores: 1-Infantil - G1, 2-Infantil - G2, 3-Infantil - G3, 4-Infantil - G4, 5-Infantil - G5, 6-Fundamental I - 1º Ano, 7-Fundamental I - 2º Ano, 8-Fundamental I - 3º Ano, 9-Fundamental I - 4º Ano, 10-Fundamental I - 5º Ano, 11-Fundamental II - 6º Ano, 12-Fundamental II - 7º Ano, 13-Fundamental II - 8º Ano, 14-Fundamental II - 9º Ano, 15-Ensino Médio - 1º Ano, 16-Ensino Médio - 2º Ano, 17-Ensino Médio - 3º Ano, 18-Ensino Superior"
-        data_type: STRING
+        data_type: string
+        name: descricao_serie_cursando
+        description: "Descrição da série que o paciente está cursando atualmente. Infantil - G1, Infantil - G2, Infantil - G3, Infantil - G4, Infantil - G5, Fundamental I - 1º Ano, Fundamental I - 2º Ano, Fundamental I - 3º Ano, Fundamental I - 4º Ano, Fundamental I - 5º Ano, Fundamental II - 6º Ano, Fundamental II - 7º Ano, Fundamental II - 8º Ano, Fundamental II - 9º Ano, Ensino Médio - 1º Ano, Ensino Médio - 2º Ano, Ensino Médio - 3º Ano, Ensino Superior."
+        data_type: string
       - name: recebe_beneficio
         description: "Booleano que indica se o paciente recebe algum benefício. Pode assumir um dos seguintes valores: S-Sim, N-Não"
-        data_type: STRING
+        data_type: string
+        name: descricao_recebe_beneficio
+        description: "Descrição do recebimento de benefício pelo paciente. Sim, Não, Não informado."
+        data_type: string
       - name: qual_beneficio
         description: "Benefícios que o paciente recebe. Lista numerada separada por vírgula podendo conter: 1-Aposentadoria, 13-Assalariado, 2-Auxilio Doença, 11-Auxilio Emergêncial, 12-Auxilio Brasil, 3-Bolsa BAR (Bolsa de apoio à ressocialização), 4-Bolsa de volta para casa (PVC nacional), 5-Bolsa Família, 6-Bolsa-Rio Tipo I, 7-Bolsa-Rio Tipo II, 9-BPC-Benefício de Prestação Continuada (LOAS), 8-Cartão Família Carioca (CFC), 10-Pensão"
-        data_type: STRING
+        data_type: string
       - name: possui_curador
         description: "Booleano que indica se o paciente tem curador. Pode assumir um dos seguintes valores: S-Sim, N-Não"
-        data_type: STRING
+        data_type: string
+        name: descricao_possui_curador
+        description: "Descrição da posse de curador pelo paciente. Sim, Não, Não informado."
+        data_type: string
       - name: tipo_curador
-        description: "Tipo de curatela. Pode assumir um dos seguintes valores: 1-Família, 2-Público, 3-Conhecido/Amigo"
-        data_type: STRING
+        description: "Tipo de curatela. Pode assumir um dos seguintes valores: 1-Família Extensa, 2-Público, 3-Conhecido/Amigo, 4-Conselho de contabilidade."
+        data_type: string
+        name: descricao_tipo_curador
+        description: "Descrição do tipo de curador do paciente. Família Extensa, Público, Conhecido/Amigo, Conselho de contabilidade."
+        data_type: string
       - name: nome_curador
         description: "Nome do curador do paciente. Preencher apenas se tipo_curador = 1."
-        data_type: STRING
+        data_type: string
       - name: telefone_curador
         description: "Telefone do curador"
-        data_type: STRING
+        data_type: string
       - name: possui_deficiencia
         description: "Booleano que indica se o paciente possui alguma deficiência. (S-Sim, N-Não)."
-        data_type: STRING
+        data_type: string
+        name: descricao_possui_deficiencia
+        description: "Descrição da posse de deficiência pelo paciente. Sim, Não, Não informado."
+        data_type: string
       - name: tipo_deficiencia
         description: "Tipo de deficiência do paciente. Pode assumir um dos seguintes valores: 1-Auditiva, 2-Motora, 3-Intelectual, 4-Visual"
-        data_type: STRING
+        data_type: string
       - name: data_obito_paciente
         description: "Data do óbito do paciente. Preencher apenas se status_acompanhamento = Óbito"
-        data_type: DATE
+        data_type: date
       - name: tipo_obito_paciente
         description: "Tipo do óbito. Pode assumir um dos seguintes valores: 1-Causa externa, 2-Acidente de trabalho, 3-Causa natural"
-        data_type: STRING
+        data_type: string
+        name: descricao_tipo_obito_paciente
+        description: "Descrição do tipo de óbito do paciente. Causa externa, Acidente de trabalho, Causa natural, Não possui."
+        data_type: string
       - name: tipo_causa_externa_obito
         description: "Tipo de causa externa do óbito. Pode assumir um dos seguintes valores: 01-Acidente, 02-Suicidio, 03-Homicidio, 04-Violência, 99-Sem informação."
-        data_type: STRING
+        data_type: string
+        name: descricao_tipo_causa_externa_obito
+        description: "Descrição do tipo de causa externa do óbito do paciente. Acidente, Suicidio, Homicidio, Violência, Sem informação."
+        data_type: string
       - name: instituicao_ensino
         description: "Nome da instituição de ensino do paciente"
-        data_type: STRING
+        data_type: string
       - name: classe_instituicao_ensino
         description: "Tipo da classe, no instituto de ensino, do paciente (Especial ou Regular)"
-        data_type: STRING
+        data_type: string
       - name: status_alta_transferencia
         description: "Observação para status de alta por transferência."
-        data_type: STRING
+        data_type: string
       - name: endereco_familia_acolhedora
         description: "Endereço da família acolhedora."
-        data_type: STRING
+        data_type: string
       - name: instituicao_psico_social
         description: "Nome da instituição de atendimento psico-social pertencente à prefeitura do Rio de Janeiro que o acolheu."
-        data_type: STRING
+        data_type: string
       - name: data_entrada_instituicao
         description: "Data de entrada na instituição"
-        data_type: DATE
+        data_type: date
       - name: data_saida_instituicao
         description: "Data de saída da instituição"
-        data_type: DATE
+        data_type: date
       - name: paciente_institucionalizado
         description: "Booleano que indica que o paciente está institucionalizado (S-Sim, N-Não). Paciente institucionalizado é aquele que está em uma instituição de atendimento psico-social pertencente à prefeitura do Rio de Janeiro."
-        data_type: STRING
+        data_type: string
+        name: descricao_paciente_institucionalizado
+        description: "Descrição do estado de institucionalização do paciente. Sim, Não, Não informado."
+        data_type: string
       - name: id_instituicao
         description: "Identificador da unidade de Saúde de referência, que é a instituição onde o paciente está. Aponta para a tabela de unidade de saúde (gh_us)."
-        data_type: INT64
+        data_type: int64
       - name: equipe_saude_familia
         description: "Descrição da Equipe de saúde da família que faz o atendimento do paciente. Ex: Equipe 10."
-        data_type: STRING
+        data_type: string
       - name: codigo_cid10_primario
         description: "Código CID10 (Código Internacional de Doenças) primário atribuído ao paciente."
-        data_type: STRING
+        data_type: string
       - name: codigo_ciap2_primaria
         description: "Código CIAP (Classificação internacional da atenção primária) atribuído ao paciente."
-        data_type: STRING
+        data_type: string
       - name: data_inicio_cid10_primario
         description: "Data em que foi atribuído o CID10 primário"
-        data_type: DATE
+        data_type: date
       - name: data_inicio_ciap2_primario
         description: "Data em que foi atribuído o CIAP primário"
-        data_type: DATE
+        data_type: date
       - name: mediador_ensino
         description: "Booleano que indica que o paciente tem um mediador do ensino (S-Sim, N-Não)."
-        data_type: STRING
+        data_type: string
+        name: descricao_mediador_ensino
+        description: "Descrição do estado de mediador de ensino do paciente. Sim, Não, Não informado."
+        data_type: string
       - name: sala_recurso
         description: "Booleano que indica que o paciente usa uma sala de recursos (S-Sim, N-Não)."
-        data_type: STRING
+        data_type: string
+        name: descricao_sala_recurso
+        description: "Descrição do estado de sala de recurso do paciente. Sim, Não, Não informado."
+        data_type: string
       - name: id_origem_paciente
         description: "Identificador da origem do paciente para uso no faturamento por RAAS (Registro de ações ambulatoriais de saúde). Ex. Demanda espontânea etc."
-        data_type: INT64
+        data_type: int64
       - name: data_origem_paciente
         description: "Data de registro da origem do paciente para uso no faturamento por RAAS."
-        data_type: DATE
+        data_type: date
       - name: historico_prontuario
         description: "Relaciona os prontuários unificados do paciente usando os números de RAPS separados por vírgula, guardando este histórico."
-        data_type: STRING
+        data_type: string
       - name: tratamento_judicial
         description: "Booleano que indica que o paciente está em tratamento obrigatório judicial, (S-Sim, N-Não)."
-        data_type: STRING
+        data_type: string
+        name: descricao_tratamento_judicial
+        description: "Descrição do estado de tratamento judicial do paciente. Sim, Não, Não informado."
+        data_type: string
       - name: empresa_trabalho_assistido
         description: "Nome da empresa em que o paciente está em trabalho assistido. Trabalho obrigado pelo judiciário que é acompanhado pela prefeitura."
-        data_type: STRING
+        data_type: string
       - name: data_inicio_trabalho_assistido
         description: "Data de início do paciente em trabalho assistido. (MM/YYYY)"
-        data_type: STRING
+        data_type: string
       - name: id_equipe_deambulatorio
         description: "Identificador da equipe de deambulatório que acompanha o paciente."
-        data_type: INT64
+        data_type: int64
       - name: codigo_cid10_secundario
         description: "Código CID10 secundário atribuído ao paciente."
-        data_type: STRING
+        data_type: string
       - name: data_cid10_secundario
         description: "Data em que foi atribuído o CID10 secundário"
-        data_type: DATE
+        data_type: date
       - name: data_frequencia_escola
         description: "Data de quando foi informada a frequência da escola."
-        data_type: DATE
+        data_type: date
       - name: descricao_nao_frequencia_escola
         description: "Descrição de justificativa da não frequência da escola."
-        data_type: STRING
+        data_type: string
       - name: contatos_adicionais
         description: "Contatos adicionais e/ou Estado de nascimento estrangeiro"
-        data_type: STRING
+        data_type: string
       - name: vinculo_trabalho_paciente
         description: "Tipo de vínculo de trabalho do paciente. Pode assumir os seguintes valores: F-Formal, I-Informal e T-Trabalho assistido"
-        data_type: STRING
+        data_type: string
       - name: ocupacao_formal
         description: "Descrição da ocupação formal"
-        data_type: STRING
+        data_type: string
       - name: empresa_vinculo_formal
         description: "Nome da empresa em que o paciente ocupa um vínculo formal."
-        data_type: STRING
+        data_type: string
       - name: inicio_vinculo_formal
         description: "Início do vínculo formal (mm/aaaa)."
-        data_type: STRING
+        data_type: string
       - name: ocupacao_pessoa_deficiente
         description: "Booleano que indica que a ocupação atual foi conseguida se utilizando de cotas PCD (Pessoa com deficiência) (Sim/Nao)."
-        data_type: STRING
+        data_type: string
+        name: descricao_ocupacao_pessoa_deficiente
+        description: "Descrição da ocupação de pessoa com deficiência. Sim, Não, Não informado."
+        data_type: string
       - name: local_ocupacao_informal
         description: "Local de trabalho quando em ocupação informal."
-        data_type: STRING
+        data_type: string
       - name: inicio_trabalho_informal
         description: "Início do trabalho informal (mm/aaaa)."
-        data_type: STRING
+        data_type: string
       - name: local_trabalho_assistido
         description: "Descrição do local em que realiza trabalho assistido."
-        data_type: STRING
+        data_type: string
       - name: endereco_trabalho_assistido
         description: "Endereço do local do trabalho assistido"
-        data_type: STRING
+        data_type: string
       - name: telefone_trabalho_assistido
         description: "Telefones de contato do local de trabalho assistido"
-        data_type: STRING
+        data_type: string
       - name: trabalho_pessoa_deficiente
         description: "Booleano que indica que o trabalho assistido foi conseguido se utilizando de cotas PCD (Sim/Nao)."
-        data_type: STRING
+        data_type: string
+        name: descricao_trabalho_pessoa_deficiente
+        description: "Descrição que indica que o trabalho assistido foi conseguido se utilizando de cotas PCD. Sim, Não, Não informado."  
       - name: reinsercao_assistido
         description: "Booleano que indica se o paciente participa do programa de reinserção produtiva de trabalho assistido, (Sim/Nao)."
-        data_type: STRING
+        data_type: string
+        name: descricao_reinsercao_assistido
+        description: "Descrição que indica se o paciente participa do programa de reinserção produtiva de trabalho assistido. Sim, Não, Não informado."
+        data_type: string

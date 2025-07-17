@@ -41,9 +41,6 @@ models:
       - name: id_unidade_saude
         description: "Identificador da unidade de saúde onde foi feito o atendimento."
         data_type: int64
-      - name: id_funcionario_cadastramento
-        description: "Identificador do funcionário do posto de saúde que registrou o atendimento no sistema. Pode ser o próprio profissional de saúde que atendeu ao paciente."
-        data_type: int64
       - name: id_atividade_grupo
         description: "Identificador da atividade de grupo caso o atendimento seja deste tipo. Alguns dos atendimentos simplificados podem conter atividades de grupo."
         data_type: int64
@@ -59,9 +56,21 @@ models:
       - name: local_atendimento
         description: "Indicador de local do atendimento (C-CAPS,T-Território). Território é quando há um evento que é feito em lugar público."
         data_type: string
+      - name: descricao_local_atendimento
+        description: "Descrição do local do atendimento. Pode ser 'CAPS', 'Território' ou 'Não informado. Outros valores serão classificados como Não Catalogado."
+        data_type: string
       - name: atendimento_cancelado
         description: "Indicador de que o registro de atendimento realizado foi posteriormente cancelado. (S-Sim,N-Não)."
+        data_type: string
+      - name: descricao_atendimento_cancelado
+        description: "Descrição do cancelamento do atendimento. Pode ser 'Sim', 'Não', 'Não informado' ou 'Não classificado'."
         data_type: string
       - name: lista_profissionais_atendimento
         description: "Lista contendo os identificadores dos profissionais que fizeram parte do atendimento. Usando separador por vírgula. Preenchido caso vários profissionais tenham participado do atendimento."
         data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp

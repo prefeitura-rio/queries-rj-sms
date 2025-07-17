@@ -19,13 +19,28 @@ select
     safe_cast(seqprof as int64) as id_profissional_saude,
     safe_cast(seqpac as int64) as id_paciente,
     safe_cast(sequs as int64) as id_unidade_saude,
-    safe_cast(seqlogincad as int64) as id_funcionario_cadastramento,
     safe_cast(seqativgrp as int64) as id_atividade_grupo,
     safe_cast(seqenatend as int64) as id_encaminhamento,
     safe_cast(sequsenc as int64) as id_unidade_saude_encaminhada,
     safe_cast(datcadast as date) as data_inclusao_cadastro,
     safe_cast(indlocalatend as string) as local_atendimento,
+    case trim(safe_cast(indlocalatend as string))
+        when 'C' then 'Atendimento na Unidade (CAPS)'
+        when 'T' then 'Atendimento no território'
+        when '' then 'Não informado'
+        when null then 'Não informado'
+        else 'Não classificado'
+    end as descricao_local_atendimento,
     safe_cast(indatendcanc as string) as atendimento_cancelado,
-    safe_cast(dsclstprof as string) as lista_profissionais_atendimento
+    case trim(safe_cast(indatendcanc as string))
+        when 'S' then 'Sim'
+        when 'N' then 'Não'
+        when '' then 'Não informado'
+        when null then 'Não informado'
+        else 'Não classificado'
+    end as descricao_atendimento_cancelado,
+    safe_cast(dsclstprof as string) as lista_profissionais_atendimento,
+    _airbyte_extracted_at as loaded_at,
+    current_timestamp() as transformed_at
 from
     {{ source('brutos_prontuario_carioca_saude_mental_staging','gh_atendimentos') }}

@@ -21,9 +21,43 @@ select
     safe_cast(seqlogincad as int64) as id_funcionario_cadastramento,
     safe_cast(seqtpsaida as int64) as id_tipo_saida,
     safe_cast(indocupacao as string) as leito_ocupado,
+    case trim(safe_cast(indocupacao as string))
+        when 'S' then 'Sim'
+        when 'N' then 'Não'
+        when '' then 'Não informado'
+        when null then 'Não informado'
+        else 'Não classificado'
+    end as leito_ocupado_descricao,
     safe_cast(indleitoextra as string) as leito_extra,
+    case trim(safe_cast(indleitoextra as string))
+        when 'S' then 'Sim'
+        when 'N' then 'Não'
+        when '' then 'Não informado'
+        when null then 'Não informado'
+        else 'Não classificado'
+    end as descricao_leito_extra,
     safe_cast(indturno as string) as turno_acolhimento,
+    case trim(safe_cast(indturno as string))
+        when 'D' then 'Diurno'
+        when '3' then 'Terceiro turno'
+        when 'N' then 'Noturno'
+        when 'D3N' then 'Diurno, Terceiro turno e Noturno'
+        when 'D3' then 'Diurno e Terceiro turno'
+        when 'DN' then 'Diurno e Noturno'
+        when '' then 'Não informado'
+        when null then 'Não informado'
+        else 'Não classificado'
+    end as descricao_turno_acolhimento,
     safe_cast(datcadast as date) as data_cadastro,
-    safe_cast(indtipoleito as string) as tipo_leito
+    safe_cast(indtipoleito as string) as tipo_leito,
+    case trim(safe_cast(indtipoleito as string))
+        when 'C' then 'Leito clínico'
+        when 'A' then 'Leito de acolhimento'
+        when '' then 'Não informado'
+        when null then 'Não informado'
+        else 'Não classificado'
+    end as descricao_tipo_leito,    
+    _airbyte_extracted_at as loaded_at, 
+    current_timestamp() as transformed_at
 from
     {{ source('brutos_prontuario_carioca_saude_mental_staging','gh_acolhimento') }}

@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: raw_pcsm_tipos_vinculo_trabalho_pacientes
+    description: >
+      "Tabela associativa que contem a lista de deficiências de cada paciente
+    columns:
+      - name: codigo_tipo_vinculo_trabalho
+        description: Código do tipo de vínculo de trabalho do paciente.
+        data_type: string
+      - name: id_paciente
+        description: Identificador do paciente que possui os vínculos.
+        data_type: int64

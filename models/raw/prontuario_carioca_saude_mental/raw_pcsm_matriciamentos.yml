@@ -26,8 +26,14 @@ models:
       - name: tipo_matriciamento
         description: "Tipo de matriciamento. Exemplos: de urgência/emergência/hospitalar ou atenção básica."
         data_type: string
+      - name: descricao_tipo_matriciamento
+        description: "Descrição do tipo de matriciamento. Pode ser 'Urgência/emergência/hospitalar' ou 'Atenção básica'."
+        data_type: string
       - name: forma_matriciamento
         description: "Forma de realização do matriciamento. Exemplos: presencial, telefônico ou por vídeo."
+        data_type: string
+      - name: descricao_forma_matriciamento
+        description: "Descrição da forma de matriciamento. Pode ser 'Presencial', 'Telefônico' ou 'Vídeo'."
         data_type: string
       - name: id_unidade_saude
         description: "Identificador da unidade de saúde onde foi feito o matriciamento."
@@ -35,3 +41,12 @@ models:
       - name: evolucao_matriciamento
         description: "Booleano que indica que houve pelo menos uma evolução associada ao matriciamento."
         data_type: string
+      - name: descricao_evolucao_matriciamento
+        description: "Descrição da evolução do matriciamento. Pode ser 'Sim', se 'S', ou 'Não', se 'N' ou vazio. Outro valor será colocado como 'Não classificado'."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp

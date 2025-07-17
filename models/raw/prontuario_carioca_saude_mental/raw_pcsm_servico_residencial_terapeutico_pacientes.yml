@@ -20,3 +20,9 @@ models:
       - name: data_cadastro
         description: "Data do cadastro do serviço residencial terapêutico."
         data_type: date
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp

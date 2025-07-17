@@ -10,6 +10,8 @@
 
 select
     safe_cast(seqpac as int64) as id_paciente,
-    safe_cast(seqdroga as int64) as id_droga
+    safe_cast(seqdroga as int64) as id_droga,
+    _airbyte_extracted_at as loaded_at,
+    current_timestamp() as transformed_at
 from
     {{ source('brutos_prontuario_carioca_saude_mental_staging','gh_drogaspacientes') }}

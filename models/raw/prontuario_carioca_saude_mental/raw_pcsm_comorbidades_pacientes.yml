@@ -10,3 +10,9 @@ models:
       - name: id_comorbidade
         description: "identificador da comorbidade que o paciente possui."
         data_type: int64
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp

@@ -23,6 +23,9 @@ models:
       - name: tipo_ciclo
         description: "Indicador de tipo do ciclo sendo C-CAPS e D-Deambulatório."
         data_type: string
+      - name: descricao_tipo_ciclo
+        description: "Descrição do tipo de ciclo, podendo ser CAPS, Deambulatório, Não informado ou Não classificado."
+        data_type: string
       - name: data_inicio_ciclo
         description: "Data de início do ciclo do paciente."
         data_type: date
@@ -35,8 +38,11 @@ models:
       - name: hora_termino_ciclo
         description: "Hora de fim do ciclo do paciente."
         data_type: string
-      - name: fechamento_ciclo
-        description: "Fechamento do ciclo (motivo/status)."
+      - name: situacao_paciente_ciclo
+        description: "Situação do paciente no ciclo de tratamento (eventual motivo de saída e status do paciente). P-Alta a pedido, S-Alta para Atenção Primária, C-Alta para CAPS de outro município, I-Alta por insucesso de busca ativa, M-Alta por melhora, U-Alta para outro ponto de atenção, A-Busca ativa, D-Desaparecido, T-Mudança para outro município, O-Óbito, X-Fechado pela unificação, Z-Finalização do programa Seguir em Frente"
+        data_type: string
+      - name: descricao_situacao_paciente_ciclo
+        description: "Descrição da situação do paciente no ciclo, podendo ser P-Alta a pedido, S-Alta para Atenção Primária, C-Alta para CAPS de outro município, I-Alta por insucesso de busca ativa, M-Alta por melhora, U-Alta para outro ponto de atenção, A-Busca ativa, D-Desaparecido, T-Mudança para outro município, O-Óbito, X-Fechado pela unificação, Z-Finalização do programa Seguir em Frente."
         data_type: string
       - name: id_usuario_entrada_ciclo
         description: "Identificador do usuário(login) que realizou a operação de entrada no ciclo."
@@ -47,3 +53,9 @@ models:
       - name: id_paciente_unificado
         description: "Identificador do paciente participante em caso de unificação."
         data_type: int64
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp

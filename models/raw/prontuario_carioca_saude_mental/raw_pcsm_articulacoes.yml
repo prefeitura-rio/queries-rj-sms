@@ -26,12 +26,27 @@ models:
       - name: tipo_articulacao
         description: "Tipo de articulação (U-Urgência/Emergência/Hospitalar, A-Atenção básica)."
         data_type: string
+        name: descricao_tipo_articulacao
+        description: "Descrição do tipo de articulação (Urgência/Emergência/Hospitalar, Atenção básica, Não informado, Não classificado)."
+        data_type: string
       - name: forma_articulacao
         description: "Forma da articulação (P-Presencial, T-Telefônico, V-Vídeo)."
+        data_type: string
+      - name: descricao_forma_articulacao
+        description: "Descrição da forma de articulação (Presencial, Telefônico, Vídeo, Não informado, Não classificado)."
         data_type: string
       - name: id_unidade_saude
         description: "Identificador da unidade de saúde onde está sendo realizada a articulação."
         data_type: int64
       - name: evolucao_articulacao
-        description: "Booleano que indica que a articulação já evoluiu (Y-Sim, N-Não)."
+        description: "Booleano que indica que a articulação já evoluiu (S-Sim, N-Não)."
         data_type: string
+      - name: descricao_evolucao_articulacao
+        description: "Descrição da evolução da articulação (Sim, Não, Não informado, Não classificado)."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp
