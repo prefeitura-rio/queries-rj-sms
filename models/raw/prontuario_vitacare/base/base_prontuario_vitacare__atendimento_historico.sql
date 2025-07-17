@@ -144,8 +144,8 @@ with
             to_json_string(
                 array_agg(
                     struct(
-                        id_medicamento,
-                        medicamento_nome,
+                        id_medicamento as cod_medicamento,
+                        medicamento_nome as nome_medicamente,
                         posologia,
                         quantidade,
                         uso_continuado
