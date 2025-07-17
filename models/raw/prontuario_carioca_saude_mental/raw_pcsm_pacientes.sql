@@ -458,6 +458,8 @@ select
         when '' then 'Não informado'
         when null then 'Não informado'
         else 'Não classificado'
-    end as descricao_reinsercao_assistido
+    end as descricao_reinsercao_assistido,
+    cp._airbyte_extracted_at as loaded_at,
+    current_timestamp() as transformed_at
 from {{ source('brutos_prontuario_carioca_saude_mental_staging', 'gh_cidadao_pac') }} cp
 inner join {{ source('brutos_prontuario_carioca_saude_mental_staging', 'gh_pacientes_sm') }} p_sm on p_sm.seqpacsm = cp.seqpac
