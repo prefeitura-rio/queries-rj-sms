@@ -204,6 +204,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      plataforma_subpav:
+        +schema: brutos_plataforma_subpav
+        +tags: ["subpav", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       plataforma_clickup:
         +schema: brutos_plataforma_clickup
         +tags: ["daily"]
@@ -279,7 +286,6 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-
 
     intermediate:
       +materialized: ephemeral
@@ -404,6 +410,7 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subpav
+        #pic
       subgeral:
         cnes:
           +schema: projeto_cnes_subgeral
