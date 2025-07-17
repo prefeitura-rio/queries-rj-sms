@@ -31,8 +31,8 @@ with
     ),
     typed as (
         select
-            cast(id_diario as INT64) as id_diario,
-            cast(id_materia as INT64) as id_materia,
+            cast(id_diario as STRING) as id_diario,
+            cast(id_materia as STRING) as id_materia,
             DATE(data_publicacao) as data_publicacao,
             pasta,
             arquivo,
