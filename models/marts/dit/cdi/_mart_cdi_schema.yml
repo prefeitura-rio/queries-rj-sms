@@ -1,0 +1,24 @@
+version: 2
+models:
+  - name: mart_cdi__email
+    description: >
+      Tabela com os emails a serem enviados pelo time do CDI.
+    columns:
+      - name: data_publicacao
+        description: Data de publicação dos diários e de envio do email.
+      - name: fonte
+        description: Distingue entre Diário Oficial do Município ou Diário Oficial da União.
+      - name: pasta
+        description: Pasta sob a qual se encontra o conteúdo. É aplicável apenas para o Diário Oficial do Município.
+      - name: content_email
+        description: Conteúdo a ser enviado no email.
+        data_tests:
+          - not_null:
+              name: mart_cdi__email__content_email__not_null
+      - name: voto
+        description: No caso do conteúdo conter um voto, traz o numero do voto.
+      - name: html
+        description: HTML relativo a pasta sob a qual o conteúdo esta inserido.
+        data_tests:
+          - not_null:
+              name: mart_cdi__email__html__not_null

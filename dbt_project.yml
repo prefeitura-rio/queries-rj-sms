@@ -308,6 +308,13 @@ models:
             dominio: historico_clinico
           paciente:
             +tags: ["paciente"]
+        cdi:
+          +tags: ["cdi", "daily"]
+          +schema: intermediario_cdi
+          +labels:
+            dado_publico: sim
+            dado_pessoal: nao
+            dado_sensivel: nao
         monitoramento:
           +tags: "daily"
           +labels:
@@ -392,6 +399,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: estoque
+        cdi:
+          +schema: projeto_cdi
+          +tags: ["daily", "cdi"]
+          +labels:
+            dado_publico: sim
+            dado_pessoal: sim
+            dado_sensivel: sim
         gerenciamento:
           +tags: "daily"
         historico_clinico:
