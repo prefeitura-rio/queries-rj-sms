@@ -295,7 +295,6 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
 
-
     intermediate:
       +materialized: ephemeral
       dit:
@@ -464,6 +463,7 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subpav
+        #pic
       subgeral:
         cnes_subgeral:
           +schema: projeto_cnes_subgeral
