@@ -93,13 +93,6 @@ models:
     raw:
       +materialized: table
       +tags: "raw"
-      aplicacao_hci:
-        +schema: brutos_aplicacao_hci
-        +tags: ["aplicacao_hci", "daily"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: sim
-          dado_sensivel: sim
       cnes_web:
         +schema: brutos_cnes_web
         +tags: "weekly"
@@ -152,13 +145,6 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      conectividade:
-        +schema: brutos_conectividade
-        +tags: ["daily"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
       datasus:
         +schema: brutos_datasus
         +tags: ["weekly", "subgeral"]
@@ -222,6 +208,14 @@ models:
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+      prontuario_vitacare_historico:
+        +schema: brutos_prontuario_vitacare_historico
+        +tags: ["vitacare", "daily", "vitacare_historico"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -352,6 +346,13 @@ models:
             dado_sensivel: nao
             dominio: cie
       dit:
+        dashboard_ingestao_vitacare:
+          +schema: relatorio_ingestao_vitacare
+          +tags: ["daily", "vitacare", "ingestao"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
         dengue:
           +schema: projeto_dengue
           +tags: "daily"
@@ -422,7 +423,7 @@ models:
             dado_sensivel: sim
             dominio: subpav
       subgeral:
-        cnes:
+        cnes_subgeral:
           +schema: projeto_cnes_subgeral
           +tags: ["weekly", "subgeral", "cnes_subgeral"]
           +labels:
@@ -461,7 +462,7 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: nao
-        sisreg_tme:
+        tempo_medio_espera:
           +schema: projeto_sisreg_tme
           +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
           +labels:
@@ -469,7 +470,7 @@ models:
             dado_pessoal: nao
             dado_sensivel: nao
 
-tests:
+data_tests:
   rj_sms:
     +severity: error
     +store_failures: true

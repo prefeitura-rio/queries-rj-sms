@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_vitacare_historico_staging
+    database: rj-sms
+    schema: brutos_prontuario_vitacare_historico_staging
+    tables:
+      - name: alergias
+      - name: acto
+      - name: condicoes
+      - name: encaminhamentos
+      - name: equipes
+      - name: hiv
+      - name: indicadores
+      - name: cadastro
+      - name: prenatal
+      - name: prescricoes
+      - name: procedimentos_clinicos
+      - name: profissionais
+      - name: saudecrianca
+      - name: saudemulher
+      - name: sifilis
+      - name: solicitacao_exames
+      - name: testesrapidos
+      - name: tuberculose
+      - name: unidade
+      - name: vacinas

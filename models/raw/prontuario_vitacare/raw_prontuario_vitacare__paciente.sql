@@ -8,9 +8,6 @@
 -- dbt run --select raw_prontuario_vitacare__paciente
 with
     paciente as (
-        select *, 'rotineiro' as tipo,
-        from {{ ref("base_prontuario_vitacare__paciente_rotineiro") }}
-        union all
         select *, 'historico' as tipo,
         from {{ ref("base_prontuario_vitacare__paciente_historico") }}
         union all 
@@ -23,14 +20,15 @@ with
         from paciente
         qualify
             row_number() over (
-                partition by id order by source_updated_at desc
+                partition by id order by updated_at_rank desc
             ) = 1
     ),
 
     corrige_cadastro as (
         select
 
-            * except (cadastro_permanente, nome_social, sexo, raca_cor, nome_mae, obito),
+            * except (cadastro_permanente, nome_social, sexo, raca_cor, nome_mae, obito, codigo_ine_equipe_saude),
+            {{process_null('codigo_ine_equipe_saude')}} as codigo_ine_equipe_saude,
 
             case when nome_social in ('') then null else nome_social end as nome_social,
 
@@ -42,18 +40,14 @@ with
                 else initcap(raca_cor)
             end as raca_cor,
 
-            case
-                when obito = '1' or obito = 'True'
-                then true
-                else false
-            end as obito_indicador,
+            obito as obito_indicador,
 
             case when nome_mae in ("NONE") then null else nome_mae end as nome_mae,
 
             case
-                when cadastro_permanente = "True" or codigo_ine_equipe_saude is not null
+                when cadastro_permanente is true or codigo_ine_equipe_saude is not null
                 then true
-                when cadastro_permanente = "False"
+                when cadastro_permanente is false
                 then false
                 else false
             end as cadastro_permanente_indicador,
@@ -131,6 +125,7 @@ with
             -- Metadados
             timestamp_add(datetime(timestamp(source_created_at), 'America/Sao_Paulo'),interval 3 hour) as source_created_at,
             timestamp_add(datetime(timestamp(source_updated_at), 'America/Sao_Paulo'),interval 3 hour) as source_updated_at,
+            updated_at_rank
 
         from corrige_cadastro
     ),

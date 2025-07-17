@@ -9,10 +9,11 @@ with
 
     posicao_atual as (
         select raw.*, case
-                when current_date('America/Sao_Paulo') > lote_data_vencimento
-                then "Vencido"
+                -- Vide comentários em marts/dit/estoque/mart_estoque__posicao_atual
                 when lote_status = "removed"
                 then "Removido"
+                when current_date('America/Sao_Paulo') > lote_data_vencimento
+                then "Vencido"
                 when lote_status = "suspended"
                 then "Suspenso"
                 when lote_status = "active" or lote_status = "recovered"
