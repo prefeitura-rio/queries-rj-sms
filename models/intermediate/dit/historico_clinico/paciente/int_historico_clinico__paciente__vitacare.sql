@@ -29,7 +29,7 @@ with
             source_updated_at as updated_at,
             row_number() over (
                 partition by cpf
-                order by updated_at_rank desc
+                order by cadastro_permanente_indicador desc, updated_at_rank desc
             ) as rank --rankeria registro mais novo e confiavel do cpf
         from {{ ref("raw_prontuario_vitacare__paciente") }}
         where {{ validate_cpf("cpf") }}
