@@ -145,7 +145,7 @@ with
                 array_agg(
                     struct(
                         id_medicamento as cod_medicamento,
-                        medicamento_nome as nome_medicamente,
+                        medicamento_nome as nome_medicamento,
                         posologia,
                         quantidade,
                         uso_continuado
