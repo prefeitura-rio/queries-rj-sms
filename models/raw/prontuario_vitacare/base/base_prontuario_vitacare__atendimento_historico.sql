@@ -21,7 +21,6 @@ with
         from {{ ref("raw_prontuario_vitacare_historico__equipe") }}
     ),
 
-
     fato_atendimento as (
         select
             -- PK
@@ -103,20 +102,6 @@ with
         from {{ ref("raw_prontuario_vitacare_historico__indicador")}}
         group by id_prontuario_global
     ),
-    dim_procedimentos_realizados as (
-        select
-            id_prontuario_global,
-            to_json_string(
-                array_agg(
-                    struct(
-                        co_procedimento as cod_procedimento,
-                        no_procedimento
-                    )
-                )
-            ) as procedimentos_realizados
-        from {{ ref("raw_prontuario_vitacare_historico__procedimentos_clinicos") }}
-        group by id_prontuario_global
-    ),
     dim_exames as (
         select
             id_prontuario_global,
@@ -181,7 +166,6 @@ with
             dim_alergias.alergias as alergias_anamnese,
             dim_vacinas.vacinas,
             dim_indicadores.indicadores,
-            dim_procedimentos_realizados.procedimentos_realizados,
             dim_encaminhamentos.encaminhamentos,
             atendimentos.updated_at,
             atendimentos.loaded_at,
@@ -195,7 +179,6 @@ with
         left join dim_exames using (id_prontuario_global)
         left join dim_vacinas using (id_prontuario_global)
         left join dim_prescricoes using (id_prontuario_global)
-        left join dim_procedimentos_realizados using (id_prontuario_global)
     ),
 
     final as (
