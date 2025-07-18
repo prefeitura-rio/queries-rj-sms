@@ -31,6 +31,7 @@ models:
         tests:
           - accepted_values:
               values: [0, 1]
+              quote: false
 
       - name: id_cnes
         description: Identificador único da unidade de saúde no CNES (Cadastro Nacional de Estabelecimentos de Saúde).
@@ -75,6 +76,7 @@ models:
         tests:
           - accepted_values:
               values: [0, 1]
+              quote: false
 
       - name: id_cnes
         description: Identificador único da unidade de saúde no CNES (Cadastro Nacional de Estabelecimentos de Saúde).
