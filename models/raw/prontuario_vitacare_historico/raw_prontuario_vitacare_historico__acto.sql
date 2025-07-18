@@ -19,7 +19,7 @@ WITH
                 array_agg(
                     struct(
                         co_procedimento,
-                        no_procedimento
+                        no_procedimento AS procedimento_clinico
                     )
                 )
             ) as procedimentos_clinicos
