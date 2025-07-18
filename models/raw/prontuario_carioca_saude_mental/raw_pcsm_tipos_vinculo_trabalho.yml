@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: raw_pcsm_tipos_vinculo_trabalho
+    description: "Tipos de beneficios sociais que os pacientes recebem. Esta lista foi criada com base em um arquivo .ini do Sistema PCSM"
+    columns:
+      - name: codigo
+        description: "Código do tipo de vínculo de trabalho, segundo consta no arquivo .ini do sistema PCSM."
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_pcsm_tipos_vinculo_trabalho__codigo__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_tipos_vinculo_trabalho__codigo__unique
+              severity: error
+      - name: descricao
+        description: "Descrição do tipo de vínculo de trabalho."
+        data_type: string

@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: raw_pcsm_beneficios_pacientes
+    description: >
+      "Tabela associativa que contem a lista de beneficios sociais recebidos por cada paciente
+    columns:
+      - name: codigo_beneficio
+        description: Código do tipo de benefício social recebido pelo paciente.
+        data_type: int64
+      - name: id_paciente
+        description: Identificador do paciente que recebe os benefícios.
+        data_type: int64
+      - name: transformed_at
+        description: Timestamp de quando o dado foi transformado no DBT.
+        data_type: timestamp
+        
