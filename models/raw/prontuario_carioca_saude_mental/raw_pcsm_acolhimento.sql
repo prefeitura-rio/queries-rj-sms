@@ -13,7 +13,7 @@ select
     safe_cast(dtentrada as date) as data_entrada_acolhimento,
     safe_cast(horaent as string) as hora_entrada_acolhimento,
     safe_cast(dtsaida as date) as data_saida_acolhimento,
-    safe_cast(horasai as string) as hora_saida_acolhimento,
+    safe_cast({{ process_null('horasai') }} as string) as hora_saida_acolhimento,
     safe_cast(seqprof as int64) as id_profissional,
     safe_cast(seqpac as int64) as id_paciente,
     safe_cast(sequs as int64) as id_unidade_saude,
