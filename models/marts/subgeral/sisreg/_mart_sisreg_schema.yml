@@ -1,0 +1,93 @@
+# Documentação em Português (Brasil)
+# Objetivo: estas tabelas listam as unidades ativas no SISREG ― tanto solicitantes quanto executantes ―
+# e os procedimentos que elas solicitaram ou realizaram nos últimos três meses.
+
+models:
+  - name: marts_sisreg__unidades_solicitantes
+    description: >
+      Consolida dados provenientes da API do SISREG sobre as unidades
+      SOLICITANTES nos últimos três meses. Para cada unidade, traz a data de
+      referência, um indicador de atividade no período, o código CNES e a lista
+      de procedimentos distintos solicitados.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_referencia
+            - id_cnes
+    columns:
+      - name: data_referencia
+        description: Data de atualização da presente tabela..
+        data_type: date
+        quote: true
+        tests:
+          - not_null
+
+      - name: unidade_ativa_ultimos_3m
+        description: >
+          Indicador de atividade da unidade nos últimos três meses:
+          1 = ativa; 0 = inativa.
+        data_type: int64
+        quote: true
+        tests:
+          - accepted_values:
+              values: [0, 1]
+              quote: false
+
+      - name: id_cnes
+        description: Identificador único da unidade de saúde no CNES (Cadastro Nacional de Estabelecimentos de Saúde).
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: procedimentos
+        description: >
+          Array com os identificadores internos de procedimentos distintos
+          executados pela unidade nos últimos 90 dias.
+        data_type: string
+        quote: true
+
+
+  - name: marts_sisreg__unidades_executantes
+    description: >
+      Consolida dados provenientes da API do SISREG sobre as unidades
+      EXECUTANTES nos últimos três meses. Para cada unidade, traz a data de
+      referência, um indicador de atividade no período, o código CNES e a lista
+      de procedimentos distintos executados.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_referencia
+            - id_cnes
+    columns:
+      - name: data_referencia
+        description: Data de atualização da presente tabela..
+        data_type: date
+        quote: true
+        tests:
+          - not_null
+
+      - name: unidade_ativa_ultimos_3m
+        description: >
+          Indicador de atividade da unidade nos últimos três meses:
+          1 = ativa; 0 = inativa.
+        data_type: int64
+        quote: true
+        tests:
+          - accepted_values:
+              values: [0, 1]
+              quote: false
+
+      - name: id_cnes
+        description: Identificador único da unidade de saúde no CNES (Cadastro Nacional de Estabelecimentos de Saúde).
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: procedimentos
+        description: >
+          Array com os identificadores internos de procedimentos distintos
+          executados pela unidade nos últimos 90 dias.
+        data_type: string
+        quote: true
