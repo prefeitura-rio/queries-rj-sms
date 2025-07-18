@@ -52,7 +52,7 @@ with
             subjetivo_motivo as soap_subjetivo_motivo,
             objetivo_descricao as soap_objetivo_descricao,
             avaliacao_observacoes as soap_avaliacao_observacoes,
-            safe_cast(null as string) as soap_plano_procedimentos_clinicos,
+            procedimentos_clinicos as soap_plano_procedimentos_clinicos,
             plano_observacoes as soap_plano_observacoes,
             notas_observacoes as soap_notas_observacoes,
 
