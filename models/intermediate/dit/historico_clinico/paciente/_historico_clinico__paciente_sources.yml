@@ -5,4 +5,4 @@ sources:
     database: rj-sms-dev
     schema: intermediario_historico_clinico_staging
     tables:
-      - name: pacientes_restritos
+      - name: paciente_restrito
