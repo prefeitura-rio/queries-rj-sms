@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: raw_pcsm_ciclos_tratamento_pacientes
+    description: "Ciclos de pacientes de caps da prefeitura do Rio de Janeiro. Ciclo é um conjunto de atendimentos feitos em um ambulatório ou em um CAPS. Não se pode ter mais de um ciclo aberto ao mesmo tempo nem em um ambulatório nem em um CAPS."
+    columns:
+      - name: id_ciclo
+        description: "Identificador único do ciclo do paciente no sistema."
+        data_tests:
+          - not_null:
+              name: raw_pcsm_ciclos_tratamento_pacientes__id_ciclo__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_ciclos_tratamento_pacientes__id_ciclo__unique
+              severity: error
+        data_type: int64
+      - name: id_paciente
+        description: "Identificador do paciente no sistema (Prontuário RAPS)."
+        data_type: int64
+      - name: id_unidade_saude
+        description: "Identificador da unidade de saúde onde o paciente está com o prontuário aberto."
+        data_type: int64
+      - name: tipo_ciclo
+        description: "Indicador de tipo do ciclo sendo C-CAPS e D-Deambulatório."
+        data_type: string
+      - name: descricao_tipo_ciclo
+        description: "Descrição do tipo de ciclo, podendo ser CAPS, Deambulatório, Não informado ou Não classificado."
+        data_type: string
+      - name: data_inicio_ciclo
+        description: "Data de início do ciclo do paciente."
+        data_type: date
+      - name: hora_inicio_ciclo
+        description: "Hora de início do ciclo do paciente."
+        data_type: string
+      - name: data_termino_ciclo
+        description: "Data de término do ciclo do paciente."
+        data_type: date
+      - name: hora_termino_ciclo
+        description: "Hora de fim do ciclo do paciente."
+        data_type: string
+      - name: situacao_paciente_ciclo
+        description: "Situação do paciente no ciclo de tratamento (eventual motivo de saída e status do paciente). P-Alta a pedido, S-Alta para Atenção Primária, C-Alta para CAPS de outro município, I-Alta por insucesso de busca ativa, M-Alta por melhora, U-Alta para outro ponto de atenção, A-Busca ativa, D-Desaparecido, T-Mudança para outro município, O-Óbito, X-Fechado pela unificação, Z-Finalização do programa Seguir em Frente"
+        data_type: string
+      - name: descricao_situacao_paciente_ciclo
+        description: "Descrição da situação do paciente no ciclo, podendo ser P-Alta a pedido, S-Alta para Atenção Primária, C-Alta para CAPS de outro município, I-Alta por insucesso de busca ativa, M-Alta por melhora, U-Alta para outro ponto de atenção, A-Busca ativa, D-Desaparecido, T-Mudança para outro município, O-Óbito, X-Fechado pela unificação, Z-Finalização do programa Seguir em Frente."
+        data_type: string
+      - name: id_usuario_entrada_ciclo
+        description: "Identificador do usuário(login) que realizou a operação de entrada no ciclo."
+        data_type: int64
+      - name: id_usuario_saida_ciclo
+        description: "Identificador do usuário(login) que realizou a operação de saída."
+        data_type: int64
+      - name: id_paciente_unificado
+        description: "Identificador do paciente participante em caso de unificação."
+        data_type: int64
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp

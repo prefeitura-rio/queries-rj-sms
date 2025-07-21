@@ -10,6 +10,7 @@ sources:
       - name: subpav_cnes__contatos_equipes
       - name: subpav_cnes__contatos_unidades
       - name: subpav_cnes__unidades
+      - name: transparencia__tb_preparos_finais
       - name: sms_pacientes__tb_pacientes
         loaded_at_field: "CAST(timestamp AS TIMESTAMP)"
         freshness:

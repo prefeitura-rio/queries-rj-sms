@@ -15,7 +15,13 @@ with
 
     source as (
         select *, 
-            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
+            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id,
+            greatest(safe_cast(source_updated_at as timestamp),
+            safe_cast(json_extract_scalar(data, "$.dataCadastro") as timestamp),
+            safe_cast(json_extract_scalar(data, "$.dataAtualizacaoCadastro") as timestamp),
+            safe_cast(json_extract_scalar(data, "$.dataAtualizacaoVinculoEquipe") as timestamp),
+            safe_cast(nullif(json_extract_scalar(data, "$.dataCadastro"),'') as timestamp)
+            ) as updated_at_rank
         from {{ source("brutos_prontuario_vitacare_staging", "paciente_continuo") }}
         {% if is_incremental() %} where source_updated_at > '{{seven_days_ago}}' {% endif %}
     ),
@@ -24,8 +30,9 @@ with
         select
             *
         from source
+        where {{process_null('payload_cnes')}} is not null
         qualify 
-            row_number() over (partition by id order by source_updated_at desc) = 1
+            row_number() over (partition by id order by updated_at_rank desc) = 1
         
     ),
 
@@ -47,8 +54,12 @@ with
             json_extract_scalar(data, "$.nome") as nome,
             json_extract_scalar(data, "$.nomeSocial") as nome_social,
             json_extract_scalar(data, "$.nomeMae") as nome_mae,
-            json_extract_scalar(data, "$.nomePai") as nome_pai,            
-            json_extract_scalar(data, "$.obito") as obito,
+            json_extract_scalar(data, "$.nomePai") as nome_pai, 
+            case           
+                when json_extract_scalar(data, "$.obito") = 'true' then true
+                when json_extract_scalar(data, "$.obito") = 'false' then false
+                else null
+            end as obito,
             json_extract_scalar(data, "$.sexo") as sexo,
             json_extract_scalar(data, "$.orientacaoSexual") as orientacao_sexual,
             json_extract_scalar(data, "$.identidadeGenero") as identidade_genero,
@@ -56,7 +67,11 @@ with
 
             -- Informações Cadastrais
             safe_cast(null as string) as situacao,  -- #TODO: Pedir para vitacare essa informação
-            json_extract_scalar(data, "$.cadastroPermanente") as cadastro_permanente,
+            case 
+                when json_extract_scalar(data, "$.cadastroPermanente") = 'true' then true 
+                when json_extract_scalar(data, "$.cadastroPermanente") = 'false' then false 
+                else null 
+            end as cadastro_permanente,
             safe_cast(json_extract_scalar(data, "$.dataCadastro") as timestamp) as data_cadastro,
             safe_cast(json_extract_scalar(data, "$.dataAtualizacaoCadastro") as timestamp) as data_atualizacao_cadastro,
             
@@ -96,8 +111,9 @@ with
                 safe_cast(json_extract_scalar(data, "$.dataCadastro") as datetime)
                 as date) as data_particao,
             safe_cast(nullif(json_extract_scalar(data, "$.dataCadastro"),'') as timestamp) as source_created_at,
-            safe_cast(nullif(source_updated_at,'') as timestamp) as source_updated_at,
+            updated_at_rank as source_updated_at,
             safe_cast(null as timestamp) as datalake_imported_at,
+            updated_at_rank
         from latest_events
     )
 select * 

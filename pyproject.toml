@@ -59,6 +59,7 @@ certifi = "^2024.07.04"
 tqdm = "^4.66.3"
 sqlfluff = "^3.2.3"
 sqlfluff-templater-dbt = "^3.2.3"
+recce = "^1.10.0"
 
 [tool.poetry.group.dev]
 optional = true

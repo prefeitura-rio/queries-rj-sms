@@ -133,7 +133,7 @@ with
     ),
 
     enriquecimento_cpf as (
-        select final.*, coalesce(final.cpf_temp, aux_cpfs.cpf[ordinal(1)]) as cpf
+        select final.*, coalesce(final.cpf_temp, aux_cpfs.cpf[ordinal(1)]) as cpf_enriq
 
         from final
 
@@ -142,12 +142,25 @@ with
             on safe_cast(final.cns as int64) = safe_cast(aux_cpfs.cns as int64)
     ),
 
+    enriquecimento_cpf_gdb as (
+        select ec.* except (cpf_temp), coalesce(ec.cpf_enriq, gdb.cpf) as cpf
+        from enriquecimento_cpf as ec
+
+        left join
+            (
+                select distinct safe_cast(cns as int64) as cns, cpf
+                from {{ ref("raw_cnes_gdb__profissional") }}
+            ) as gdb
+
+            on safe_cast(ec.cns as int64) = gdb.cns
+    ),
+
     enriquecimento_duracao_contrato as (
         select
-            ec.* except (cpf_temp),
+            ec.* except (cpf_enriq),
             dc.data_entrada_profissional,
             dc.data_desligamento_profissional
-        from enriquecimento_cpf ec
+        from enriquecimento_cpf_gdb as ec
         left join
             duracao_contrato as dc
             on ec.profissional_codigo_sus = dc.id_profissional_sus

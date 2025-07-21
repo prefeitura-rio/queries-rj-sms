@@ -1,0 +1,462 @@
+version: 2
+
+models:
+  - name: raw_sim__mortalidades
+    description: "Modelo raw SIM Mortalidades transformado com macros process_null, parse_date e parse_time."
+    columns:
+      - name: id_hash
+        description: "Identificador hash único da declaração de óbito."
+
+      - name: id_declaracao_obito
+        description: "Número da declaração de óbito."
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: numero_dv
+        description: "Dígito verificador do número da declaração."
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: codigo_estab_cartorio
+        description: "Código do estabelecimento do cartório."
+
+      - name: codigo_municipio_cartorio
+        description: "Código do município do cartório."
+
+      - name: codigo_cartorio
+        description: "Código do cartório."
+
+      - name: numero_registro_cartorio
+        description: "Número do registro no cartório."
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: data_registro_cartorio
+        description: "Data do registro no cartório."
+        data_type: date
+
+      - name: tipo_obito
+        description: "Tipo de óbito (fetal ou não fetal)."
+
+      - name: data_obito
+        description: "Data do óbito."
+        data_type: date
+
+      - name: hora_obito
+        description: "Hora do óbito."
+        data_type: time
+
+      - name: numero_sus
+        description: "Número do SUS do falecido."
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: naturalidade
+        description: "Naturalidade do falecido."
+
+      - name: codigo_municipio_natural
+        description: "Código do município de naturalidade."
+
+      - name: nome
+        description: "Nome do falecido."
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+
+      - name: nome_pai
+        description: "Nome do pai."
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+
+      - name: nome_mae
+        description: "Nome da mãe."
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+
+      - name: data_nascimento
+        description: "Data de nascimento."
+        data_type: date
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+
+      - name: idade
+        description: "Idade do falecido."
+
+      - name: sexo
+        description: "Sexo do falecido."
+
+      - name: raca_cor
+        description: "Raça/cor do falecido."
+
+      - name: estado_civil
+        description: "Estado civil."
+
+      - name: esc
+        description: "Escolaridade declarada."
+
+      - name: esc_2010
+        description: "Escolaridade declarada (código 2010)."
+
+      - name: seri_esc_fal
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: ocupacao
+        description: "Ocupação do falecido."
+
+      - name: codigo_estab_residencia
+        description: "Código do estabelecimento de residência."
+
+      - name: codigo_municipio_residencia
+        description: "Código do município de residência."
+
+      - name: bairro_residencia
+        description: "Bairro de residência."
+
+      - name: codigo_bairro_residencia
+        description: "Código do bairro de residência."
+
+      - name: codigo_endereco_residencia
+        description: "Código do endereço de residência."
+
+      - name: endereco_residencia
+        description: "Endereço de residência."
+
+      - name: codigo_registro_residencia
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: numero_residencia
+        description: "Número da residência."
+
+      - name: complemento_residencia
+        description: "Complemento da residência."
+
+      - name: cep_residencia
+        description: "CEP da residência."
+
+      - name: codigo_distrito_residencia
+        description: "Código do distrito de residência."
+
+      - name: codigo_pais_residencia
+        description: "Código do país de residência."
+
+      - name: local_ocorrencia
+        description: "Código do local da ocorrência."
+
+      - name: codigo_estab
+        description: "Código do estabelecimento do óbito."
+
+      - name: codigo_estab_ocorrencia
+        description: "Código do estabelecimento da ocorrência."
+
+      - name: codigo_municipio_ocorrencia
+        description: "Código do município da ocorrência."
+
+      - name: bairro_ocorrencia
+        description: "Bairro da ocorrência."
+
+      - name: codigo_bairro_ocorrencia
+        description: "Código do bairro da ocorrência."
+
+      - name: endereco_ocorrencia
+        description: "Endereço da ocorrência."
+
+      - name: codigo_endereco_ocorrencia
+        description: "Código do endereço da ocorrência."
+
+      - name: codigo_registro_ocorrencia
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: numero_endereco_ocorrencia
+        description: "Número do endereço da ocorrência."
+
+      - name: complemento_ocorrencia
+        description: "Complemento do local de ocorrência."
+
+      - name: cep_ocorrencia
+        description: "CEP da ocorrência."
+
+      - name: codigo_distrito_ocorrencia
+        description: "Código do distrito da ocorrência."
+
+      - name: idade_mae
+        description: "Idade da mãe."
+
+      - name: esc_mae
+        description: "Escolaridade da mãe."
+
+      - name: esc_mae_2010
+        description: "Escolaridade da mãe (código 2010)."
+
+      - name: serie_esc_mae
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: ocupacao_mae
+        description: "Ocupação da mãe."
+
+      - name: qtd_filho_vivo
+        description: "Quantidade de filhos vivos."
+
+      - name: qtd_filho_morto
+        description: "Quantidade de filhos mortos."
+
+      - name: gravidez
+        description: "Informação sobre gravidez."
+
+      - name: semana_gestacao
+        description: "Semana da gestação."
+
+      - name: gestacao
+        description: "Tipo de gestação."
+
+      - name: parto
+        description: "Tipo de parto."
+
+      - name: obito_parto
+        description: "Óbito relacionado ao parto."
+
+      - name: peso
+        description: "Peso do recém-nascido."
+
+      - name: numero_do_nascimento
+        description: "Número do nascimento."
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: tipo_obito_co
+        description: "Tipo de óbito CO."
+
+      - name: obito_gravidez
+        description: "Óbito na gravidez."
+
+      - name: obito_puerperio
+        description: "Óbito no puerpério."
+
+      - name: assistencia_medica
+        description: "Assistência médica."
+
+      - name: exame
+        description: "Exame realizado."
+
+      - name: cirurgia
+        description: "Cirurgia realizada."
+
+      - name: necropsia
+        description: "Necropsia realizada."
+
+      - name: linha_a
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: linha_b
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: linha_c
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: linha_d
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: linha_ii
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: ds_tempo
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: causa_bas
+        description: "Causa básica do óbito."
+
+      - name: ds_explica
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: medico
+        description: "Nome do médico que assinou."
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+
+      - name: crm
+        description: "Número do CRM do médico."
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: tpassina
+        description: "Tipo de assinatura."
+
+      - name: comun_voim
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: contato
+        description: "Contato informado."
+        policy_tags:
+          - '{{ var ("TAG_CONTATO") }}'
+
+      - name: dt_atestado
+        description: "Data do atestado de óbito."
+        data_type: date
+
+      - name: circustancia_obito
+        description: "Circunstância do óbito."
+
+      - name: acidente_de_trabalho
+        description: "Acidente de trabalho relacionado."
+
+      - name: fonte
+        description: "Fonte da informação."
+
+      - name: ds_evento
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: endereco_acidente
+        description: "Endereço do acidente."
+
+      - name: numero_lote
+        description: "Número do lote."
+
+      - name: tp_pos
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: dt_investigacao
+        description: "Data da investigação."
+        data_type: date
+
+      - name: linha_a_o
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: linha_b_o
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: linha_c_o
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: linha_d_o
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: linha_ii_o
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: causa_bas_o
+        description: "Causa básica (original)."
+
+      - name: dt_cadastro
+        description: "Data de cadastro."
+        data_type: date
+
+      - name: atestante
+        description: "Atestante."
+
+      - name: desc_acidente
+        description: "Descrição do acidente."
+
+      - name: cod_end_acidente
+        description: "Código do endereço do acidente."
+
+      - name: num_end_acidente
+        description: "Número do endereço do acidente."
+
+      - name: complemento_acidente
+        description: "Complemento do endereço do acidente."
+
+      - name: cep_acidente
+        description: "CEP do local do acidente."
+
+      - name: conf_peso
+        description: "Confirmação de peso."
+
+      - name: conf_idade
+        description: "Confirmação de idade."
+
+      - name: conf_causa
+        description: "Confirmação da causa."
+
+      - name: conf_cidade
+        description: "Confirmação da cidade."
+
+      - name: critica
+        description: "Consultar S/SUBPAV/SVS/CIE"
+
+      - name: cod_inst
+        description: "Código da instituição."
+
+      - name: st_codifica
+        description: "Status da codificação."
+
+      - name: codificado
+        description: "Codificado."
+
+      - name: versao_sist
+        description: "Versão do sistema."
+
+      - name: versao_scb
+        description: "Versão do SCB."
+
+      - name: retro_alim
+        description: "Retroalimentação."
+
+      - name: fonte_investigacao
+        description: "Fonte da investigação."
+
+      - name: dt_recebimento
+        description: "Data de recebimento."
+        data_type: date
+
+      - name: atestado
+        description: "Atestado."
+
+      - name: causa_bas_r
+        description: "Causa básica revisada."
+
+      - name: dt_ressele
+        description: "Data de resseleção."
+        data_type: date
+
+      - name: st_ressele
+        description: "Status de resseleção."
+
+      - name: explica_r
+        description: "Explicação revisada."
+
+      - name: vrs_ressele
+        description: "Versão resseleção."
+
+      - name: compara_cb
+        description: "Comparação CB."
+
+      - name: n_ressele
+        description: "Número resseleção."
+
+      - name: cb_pre
+        description: "CB pré."
+
+      - name: n_proc
+        description: "Número do processo."
+
+      - name: dif_data
+        description: "Diferença de data."
+
+      - name: versao_cb_pre
+        description: "Versão CB pré."
+
+      - name: dt_recorrigido
+        description: "Data de recorrigido."
+        data_type: date
+
+      - name: causa_mat
+        description: "Causa materna."
+
+      - name: esc_mae_agr1
+        description: "Escolaridade da mãe agrupada 1."
+
+      - name: esc_mae_agr2
+        description: "Escolaridade da mãe agrupada 2."
+
+      - name: esc_fal_agr1
+        description: "Escolaridade do falecido agrupada 1."
+
+      - name: esc_fal_agr2
+        description: "Escolaridade do falecido agrupada 2."
+
+      - name: st_do_epidem
+        description: "Status do epidemiológico."
+
+      - name: st_nova
+        description: "Status nova."
+
+      - name: ano_referencia
+        description: "Ano de referência."

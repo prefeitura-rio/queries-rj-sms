@@ -1,0 +1,73 @@
+models:
+  - name: mart_subgeral__completude_cpf_paciente
+    description: "Tabela para acompanhamento mensal contínuo da completude de CPFs dos pacientes atendidos através dos prontuários contratados pela SMS Rio."
+    data_tests:
+        - dbt_utils.unique_combination_of_columns:
+            name: mart_prontuarios_reports__completude_cpf_paciente__combination_of_columns
+            combination_of_columns:
+              - mes_referencia
+              - fornecedor    
+    columns:
+      - name: mes_referencia
+        data_type: date
+        quote: true
+      - name: fornecedor
+        description: Empresa fornecedora dos dados.
+        data_type: string
+        quote: true
+      - name: n_pacientes
+        description: Número total de pacientes distintos que passaram por cada fornecedor no mês de referência.
+        data_type: int64
+        quote: true
+      - name: com_cpf_nulo
+        description: Número de pacientes cujo CPF é nulo.
+        data_type: int64
+        quote: true
+      - name: com_cpf_invalidos
+        description: Número de pacientes cujo CPF é inválido.
+        data_type: int64
+        quote: true
+      - name: perc_cpf_nulo
+        description: Porcentagem de pacientes cujo CPF é nulo (arredondada para duas casas decimais).
+        data_type: float64
+        quote: true
+      - name: perc_cpf_invalido
+        description: Porcentagem de pacientes cujo CPF é invalido (arredondada para duas casas decimais).
+        quote: true
+
+  - name: mart_subgeral__completude_cpf_atendimento
+    description: "Tabela para acompanhamento mensal contínuo da completude de CPFs dos atendimentos registrados pelos prontuários contratados pela SMS Rio."
+    data_tests:
+        - dbt_utils.unique_combination_of_columns:
+            name: mart_prontuarios_reports__completude_cpf_atendimento__combination_of_columns
+            combination_of_columns:
+              - mes_referencia
+              - fornecedor      
+    columns:
+      - name: mes_referencia
+        description: Mês dos atendimentos.
+        data_type: date
+        quote: true
+      - name: fornecedor
+        description: Empresa fornecedora dos dados.
+        data_type: string
+        quote: true
+      - name: n_atendimentos
+        description: Número total de atendimentos registrados por cada fornecedor no mês de referência.
+        data_type: int64
+        quote: true
+      - name: com_cpf_nulo
+        description: Número de atendimentos cujo CPF é nulo.
+        data_type: int64
+        quote: true
+      - name: com_cpf_invalidos
+        description: Número de atendimentos cujo CPF é inválido.
+        data_type: int64
+        quote: true
+      - name: perc_cpf_nulo
+        description: Porcentagem de atendimentos cujo CPF é nulo (arredondada para duas casas decimais).
+        data_type: float64
+        quote: true
+      - name: perc_cpf_invalido
+        description: Porcentagem de atendimentos cujo CPF é invalido (arredondada para duas casas decimais).
+        quote: true

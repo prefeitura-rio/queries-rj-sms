@@ -12,7 +12,7 @@ with
             {{
                 source(
                     "brutos_centralderegulacao_mysql_staging",
-                    "dw__vw_minhasauderio_pesquisa_satisfacao",
+                    "vw_minhasauderio_pesquisa_satisfacao",
                 )
             }}
     ),

@@ -1,0 +1,8 @@
+version: 2
+
+sources:  
+  - name: brutos_prefect_staging
+    database: rj-sms
+    schema: brutos_prefect_staging
+    tables:
+    - name: flow_state_change

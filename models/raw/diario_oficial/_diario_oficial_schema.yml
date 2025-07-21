@@ -1,0 +1,135 @@
+version: 2
+models:
+  - name: raw_diario_oficial__diarios_rj
+    description: >
+      Conteúdo textual de artigos do Diário Oficial do Município
+      que podem ser relevantes para a Secretaria Municipal de Saúde segundo regras do CDI.
+    columns:
+      - name: id_diario
+        description: Identificador do Diário Oficial
+        data_type: int64
+      - name: data_publicacao
+        description: Data de publicação do Diário Oficial (YYYY-DD-MM)
+        data_type: date
+      - name: id_materia
+        description: Identificador da matéria no Diário Oficial
+        data_type: int64
+      - name: secao_indice
+        description: Índice da seção onde se encontra o conteudo. Uma seção é definida por cabeçalho, que é um texto centralizado. O indice é relativo ao arquivo que pertence.
+        data_type: int64
+      - name: bloco_indice
+        description: Índice do bloco onde se encontra o conteudo. Um bloco é definido por um paragrafo e o indice é relativo a seção que pertence.
+        data_type: int64
+      - name: conteudo_indice
+        description: Índice da linha onde se encontra o conteudo. Relativa ao bloco e seção que pertence.
+        data_type: int64
+      - name: pasta
+        description: Pasta do Diário Oficial onde a matéria foi publicada
+        data_type: string
+      - name: arquivo
+        description: Nome do arquivo do Diário Oficial onde a matéria foi publicada
+        data_type: string
+      - name: cabecalho
+        description: Cabeçalho do artigo, que pode conter informações adicionais
+        data_type: string
+      - name: conteudo
+        description: Conteúdo textual do artigo, que pode conter informações adicionais
+        data_type: string
+      - name: data_extracao
+        description: A data e hora em que os dados foram extraídos
+        data_type: datetime
+      - name: ano_particao
+        description: Ano da partição
+        data_type: int64
+      - name: mes_particao
+        description: Mês da partição
+        data_type: int64
+      - name: data_particao
+        description: Data da partição (YYYY-MM-DD)
+        data_type: date
+  - name: raw_diario_oficial__diarios_rj_html
+    description: >
+      Conteúdo em html de artigos do Diário Oficial do Município
+      que podem ser relevantes para a Secretaria Municipal de Saúde segundo regras do CDI.
+    columns:
+      - name: id_diario
+        description: Identificador do Diário Oficial
+        data_type: int64
+      - name: data_publicacao
+        description: Data de publicação do Diário Oficial (YYYY-DD-MM)
+        data_type: date
+      - name: id_materia
+        description: Identificador da matéria no Diário Oficial
+        data_type: int64
+      - name: pasta
+        description: Pasta do Diário Oficial onde a matéria foi publicada
+        data_type: string
+      - name: arquivo
+        description: Nome do arquivo do Diário Oficial onde a matéria foi publicada
+        data_type: string
+      - name: html
+        description: Conteúdo em html do artigo, que pode conter informações adicionais
+        data_type: string
+      - name: data_extracao
+        description: A data e hora em que os dados foram extraídos
+        data_type: datetime
+      - name: ano_particao
+        description: Ano da partição
+        data_type: int64
+      - name: mes_particao
+        description: Mês da partição
+        data_type: int64
+      - name: data_particao
+        description: Data da partição (YYYY-MM-DD)
+        data_type: date
+  - name : raw_diario_oficial__diarios_uniao
+    description: >  
+        Conteúdo textual de artigos do Diário Oficial da União
+    columns:
+      - name: titulo
+        description: Título do ato oficial.
+        data_type: string
+      - name: data_publicacao
+        description: Data de publicação do ato oficial.
+        data_type: date
+      - name: assinaturas
+        description: Assinaturas do ato oficial.
+        data_type: string
+      - name: cabecalho
+        description: Primeiro paragrafo do texto.
+        data_type: string
+      - name: edicao
+        description: Edição do ato oficial.
+        data_type: string
+      - name: secao
+        description: Seção do ato oficial.
+        data_type: string
+      - name: pagina
+        description: Página do ato oficial no DOU.
+        data_type: string
+      - name: organizacao_principal
+        description: Organização principal do ato oficial.
+        data_type: string
+      - name: texto        
+        description: Conteúdo textual do ato oficial.
+        data_type: string
+      - name: html
+        description: HTML cru extraído do ato oficial.
+        data_type: string
+      - name: link
+        description: Link para o ato oficial no DOU.
+      - name: texto_titulo
+        description: Título do texto
+        data_type: string
+      - name: data_extracao
+        description: A data e hora em que os dados foram extraídos
+        data_type: datetime
+      - name: ano_particao
+        description: Ano da partição
+        data_type: int64
+      - name: mes_particao
+        description: Mês da partição
+        data_type: int64
+      - name: data_particao
+        description: Data da partição (YYYY-MM-DD)
+        data_type: date

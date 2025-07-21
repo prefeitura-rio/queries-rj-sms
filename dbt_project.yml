@@ -93,13 +93,6 @@ models:
     raw:
       +materialized: table
       +tags: "raw"
-      aplicacao_hci:
-        +schema: brutos_aplicacao_hci
-        +tags: ["aplicacao_hci", "daily"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: sim
-          dado_sensivel: sim
       cnes_web:
         +schema: brutos_cnes_web
         +tags: "weekly"
@@ -114,14 +107,13 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
-      area_programatica:
-        +schema: brutos_area_programatica
-        +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
+      cnes_gdb:
+        +schema: brutos_cnes_gdb
+        +tags: ["weekly",'cnes_gdb']
         +labels:
           dado_publico: sim
-          dado_pessoal: nao
-          dado_sensivel: nao
-          dominio: subgeral
+          dado_pessoal: sim
+          dado_sensivel: sim
       geo_pgeo3:
         +schema: brutos_geo_pgeo3
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
@@ -153,13 +145,6 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      conectividade:
-        +schema: brutos_conectividade
-        +tags: ["daily"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
       datasus:
         +schema: brutos_datasus
         +tags: ["weekly", "subgeral"]
@@ -168,6 +153,13 @@ models:
           dado_pessoal: sim
           dado_sensivel: nao
           dominio: subgeral
+      diario_oficial:
+        +schema: brutos_diario_oficial
+        +tags: "daily"
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       monitoramento:
         +schema: gerenciamento__historico_clinico__logs
         +tags: "daily"
@@ -198,6 +190,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      plataforma_subpav:
+        +schema: brutos_plataforma_subpav
+        +tags: ["plataforma_subpav", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       plataforma_clickup:
         +schema: brutos_plataforma_clickup
         +tags: ["daily"]
@@ -216,6 +215,14 @@ models:
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+      prontuario_vitacare_historico:
+        +schema: brutos_prontuario_vitacare_historico
+        +tags: ["vitacare", "daily", "vitacare_historico"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -254,11 +261,18 @@ models:
           dominio: subgeral
       sih:
         +schema: brutos_sih
-        +tags: "daily"
+        +tags: ["sih", "subgeral"]
         +labels:
           dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      sim:
+        +schema: brutos_sim
+        +tags: ["sim", "subgeral"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       sisreg_api:
         +schema: brutos_sisreg_api
         +tags: ["daily", "subgeral", "sisreg", "sisreg_reports"]
@@ -266,13 +280,21 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      sisreg_tme:
-        +schema: projeto_sisreg_tme
-        +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
+      cientificalab:
+        +schema: brutos_cientificalab
+        +tags: ["daily", "cientificalab"]
         +labels:
-          dado_publico: sim
-          dado_pessoal: nao
-          dado_sensivel: nao
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      projeto_c34:
+        +schema: projeto_c34
+        +tags: ["weekly", "subgeral", "projeto_c34"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+
 
     intermediate:
       +materialized: ephemeral
@@ -286,6 +308,13 @@ models:
             dominio: historico_clinico
           paciente:
             +tags: ["paciente"]
+        cdi:
+          +tags: ["cdi", "daily"]
+          +schema: intermediario_cdi
+          +labels:
+            dado_publico: sim
+            dado_pessoal: nao
+            dado_sensivel: nao
         monitoramento:
           +tags: "daily"
           +labels:
@@ -327,6 +356,13 @@ models:
               dado_pessoal: sim
               dado_sensivel: sim
               dominio: estoque
+        linkage:
+          +schema: saude_linkage
+          +tags: ["weekly", "linkage"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
       cie:
         alerta_doencas:
           +schema: projeto_alerta_doencas
@@ -336,7 +372,22 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: cie
+        dashboard:
+          +schema: projeto_cie_dashboard
+          +tags: ["cie", "dashboard", "daily"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
+            dominio: cie
       dit:
+        dashboard_ingestao_vitacare:
+          +schema: relatorio_ingestao_vitacare
+          +tags: ["daily", "vitacare", "ingestao"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
         dengue:
           +schema: projeto_dengue
           +tags: "daily"
@@ -348,6 +399,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: estoque
+        cdi:
+          +schema: projeto_cdi
+          +tags: ["daily", "cdi"]
+          +labels:
+            dado_publico: sim
+            dado_pessoal: sim
+            dado_sensivel: sim
         gerenciamento:
           +tags: "daily"
         historico_clinico:
@@ -372,7 +430,24 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+      iplanrio:
+        whatsapp:
+          +tags: ["daily", "iplanrio", "whatsapp"]
+          +schema: projeto_whatsapp
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: iplanrio
       subpav:
+        dashboard_gestacoes:
+          +schema: projeto_gestacoes
+          +tags: ["daily", "subpav", "gestacoes"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: gestacoes
         farmacia:
           +schema: projeto_subpav
           +tags: ["daily", "subpav"]
@@ -390,7 +465,7 @@ models:
             dado_sensivel: sim
             dominio: subpav
       subgeral:
-        cnes:
+        cnes_subgeral:
           +schema: projeto_cnes_subgeral
           +tags: ["weekly", "subgeral", "cnes_subgeral"]
           +labels:
@@ -414,7 +489,7 @@ models:
             dado_pessoal: sim
             dado_sensivel: nao
             dominio: subgeral
-        projeto_nps:
+        nps:
           +schema: projeto_nps
           +tags: ["weekly", "subgeral", "nps"]
           +labels:
@@ -422,8 +497,30 @@ models:
             dado_pessoal: sim
             dado_sensivel: nao
             dominio: subgeral
-
-tests:
+        prontuarios_reports:
+          +schema: projeto_prontuarios_reports
+          +tags: ["daily", "subgeral", "prontuarios_reports"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: nao
+        tempo_medio_espera:
+          +schema: projeto_sisreg_tme
+          +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
+          +labels:
+            dado_publico: sim
+            dado_pessoal: nao
+            dado_sensivel: nao
+        indicadores_aps:
+          +schema: projeto_subgeral_indicadores
+          +tags: ["weekly"]                
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
+            dominio: subgeral
+            
+data_tests:
   rj_sms:
     +severity: error
     +store_failures: true

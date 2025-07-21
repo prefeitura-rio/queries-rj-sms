@@ -54,7 +54,9 @@ with
                 when (
                         (regexp_contains(lower(cbo_datasus.descricao),'enferm')) and 
                         (lower(cbo_datasus.descricao) !='socorrista (exceto medicos e enfermeiros)') and
-                        (not regexp_contains(lower(cbo_datasus.descricao),'tecnico'))
+                        (not regexp_contains(lower(cbo_datasus.descricao),'tecnico')) and
+                        (not regexp_contains(lower(cbo_datasus.descricao),'auxiliar')) and
+                        (not regexp_contains(lower(cbo_datasus.descricao),'atendente')) 
                     )
                     then 'ENFERMEIROS' 
                 when cbo_datasus.descricao in ('Dirigente do servico publico municipal',
@@ -68,7 +70,30 @@ with
         left join cbo_datasus using (id_cbo)
         inner join unidades_de_saude using (id_unidade)
     ),
+        -- -----------------------------------------
+    -- Lista profissionais alocados em consultórios de rua
+    -- -----------------------------------------
+    equipe_consultorio_rua as (
+        select 
+            equipe_ine, 
+            equipe_sequencial, 
+            id_equipe_tipo,
+            equipe_descricao
+        from {{ ref('raw_cnes_gdb__equipe')}}
+        left join {{ ref('raw_cnes_gdb__equipe_tipo')}}
+        using (id_equipe_tipo)
+    ),
+    profissionais_consultorio_rua as (
+        select 
+            id_profissional_sus,
+            id_equipe_tipo,
+            equipe_descricao 
+        from {{ ref('raw_cnes_gdb__equipe_profissionais') }} 
+        left join equipe_consultorio_rua
+        using (equipe_sequencial)
+        where id_equipe_tipo = '73'
 
+    ),
     -- -----------------------------------------
     -- Enriquecimento de Dados dos Funcionários
     -- -----------------------------------------
@@ -80,11 +105,16 @@ with
             tipo_sms_simplificado as unidade_tipo,
             id_cnes as unidade_cnes,
             area_programatica as unidade_ap,
+            case 
+                when id_equipe_tipo = '73' then true
+                else false
+            end as eh_equipe_consultorio_rua, 
             cbo_nome as funcao_detalhada,
             {{ remove_accents_upper('cbo_agrupador') }} as funcao_grupo,
             data_ultima_atualizacao
         from vinculos_profissionais_cnes
             left join profissionais_cnes using (id_profissional_sus)
+            left join profissionais_consultorio_rua using (id_profissional_sus)
     ),
     -- -----------------------------------------
     -- Filtrando funcionários com acesso autorizado
@@ -97,6 +127,7 @@ with
             unidade_tipo,
             unidade_cnes,
             unidade_ap,
+            eh_equipe_consultorio_rua,
             funcao_detalhada,
             funcao_grupo
         from funcionarios_ativos_enriquecido
@@ -105,45 +136,49 @@ with
             funcao_grupo in (
                 'MEDICOS',
                 'ENFERMEIROS',
+                'DENTISTAS',
                 'DIRETORES DE SAUDE'
             )
     ),
     -- -----------------------------------------
-    -- Adicionando Nível de Acesso
+    -- Agrupando vinculos de profissionais
     -- -----------------------------------------
-    funcionarios_nivel_acesso as (
-    select
-        cpf,
-        upper(nome_completo) as nome_completo,
-        unidade_nome,
-        unidade_tipo,
-        unidade_cnes,
-        unidade_ap,
-        funcao_detalhada,
-        funcao_grupo,
-        struct(
-            case
-                when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')
-                then 'full_permission'
-                when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
-                then 'only_from_same_cnes'
-                when (unidade_tipo in ('CGS'))
-                then 'only_from_same_ap'
-                ELSE null
-            end as nivel_acesso_descricao,
-            CASE
-                when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CCO','MATERNIDADE')
-                then 4
-                when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
-                then 2
-                when (unidade_tipo in ('CGS'))
-                then 3
-                else null
-            end as nivel_acesso_rank
-        ) as acesso
-    from funcionarios_ativos_enriquecido_autorizados
+    funcionario_vinculos as (
+        select 
+            cpf,
+            nome_completo,
+            array_agg(
+                struct(
+                    unidade_nome,
+                    unidade_tipo,
+                    unidade_cnes,
+                    unidade_ap,
+                    eh_equipe_consultorio_rua,
+                    funcao_detalhada,
+                    funcao_grupo,
+                    case
+                        when eh_equipe_consultorio_rua is true 
+                        then 'full_permission'
+                        when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO','CASS')
+                        then 'full_permission'
+                        when (unidade_tipo in ('CGS','CAPS') and funcao_grupo = 'MEDICOS' )
+                        then 'full_permission'
+                        when (unidade_tipo in ('CGS','CAPS') and funcao_grupo != 'MEDICOS' )
+                        then 'only_from_same_ap'
+                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo = 'MEDICOS' 
+                        then 'full_permission'
+                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo != 'MEDICOS' 
+                        then 'only_from_same_cnes'
+                        ELSE null
+                    end as nivel_acesso
+                )
+            ) as vinculos 
+        from funcionarios_ativos_enriquecido_autorizados
+        group by 1,2
     )
 
-    select * 
-    from funcionarios_nivel_acesso 
-    qualify row_number() over (partition by cpf order by acesso.nivel_acesso_rank desc) = 1
+    select 
+        cpf,
+        nome_completo,
+        {{ dedup_array_of_struct('vinculos')}} as vinculos
+    from funcionario_vinculos

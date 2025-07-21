@@ -13,7 +13,7 @@ with
     ),
     transformed as (
         select
-            {{ clean_numeric_string("codigo_sma") }} as id_material,
+            {{ clean_numeric_string("codigo") }} as id_material,
             codigo_br as id_br,
             nome_padronizado,
             licitacao_realizada__para as licitacao_realizada_para,

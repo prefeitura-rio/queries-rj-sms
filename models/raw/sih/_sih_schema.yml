@@ -217,7 +217,8 @@ models:
         data_type: string
         quote: true
       - name: nacional
-        description: Código da nacionalidade do paciente.
+        description: > 
+          Código da nacionalidade do paciente (ver TB_C_D TABELA 29).
         data_type: string
         quote: true
       - name: num_proc
@@ -338,7 +339,8 @@ models:
         data_type: string
         quote: true
       - name: raca_cor
-        description: Raça/Cor do paciente.
+        description: >
+          Código da raça/cor do paciente. Vem do CNS.
         data_type: string
         quote: true
       - name: etnia
@@ -482,52 +484,72 @@ models:
     description: Relação de todos os atendimentos provenientes de internações
       hospitalares que foram financiados pelo SUS.
 
-  - name: raw_sih__sih_2008_2024
+  - name: raw_sih__autorizacoes_internacoes_hospitalares
     columns:
       - name: id_cnes
         description: Código CNES do hospital.
-      - name: competencia
-        description: ""
-      - name: ano_cmpt
+      - name: ano_competencia
         description: Ano de processamento da AIH, no formato aaaa.
-      - name: mes_cmpt
+      - name: mes_competencia
         description: Mês de processamento da AIH, no formato mm.
       - name: paciente_cpf
         description: Número do CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: paciente_rg
+        description: Número de Registro Geral do paciente.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIDADE") }}'
       - name: numero_prontuario
+        description: Número do Prontuário do paciente.
+      - name: paciente_pis_pasep
+        description: Número de PIS/PASEP do paciente.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIDADE") }}'
+      - name: paciente_certidao_nascimento
+        description: Número de Certidão de Nascimento do paciente. 
+        policy_tags:
+          - '{{ var ("TAG_IDENTIDADE") }}'
         description: Número do prontuário do paciente.
       - name: paciente_nome
         description: Nome do paciente.
-      - name: paciente_data_nasc
+        policy_tags:
+        - '{{ var ("TAG_NOME") }}'
+      - name: paciente_data_nascimento
         description: Data de nascimento do paciente.
       - name: paciente_sexo
         description: Sexo do Paciente.
       - name: paciente_raca_cor
         description: Raça/Cor do paciente.
-      - name: paciente_nome_resp
+      - name: paciente_responsavel_nome
         description: Nome do responsável pela internação do paciente (parente, amigo etc.)
-      - name: paciente_nome_mae
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: paciente_mae_nome
         description: Nome da mãe do paciente
-      - name: paciente_ident_doc
+        policy_tags:
+        - '{{ var ("TAG_NOME_MAE") }}'
+      - name: paciente_documento_tipo
         description: > 
-          Identificador do tipo de documento do paciente:
-          1 = PIS/PASEP.
-          2 = Registro geral.
-          3 = Certidão de nascimento.
-          4 = CPF.
-          5 = Ignorado. 
-      - name: paciente_numero_doc
+          Identificador do tipo de documento do paciente.
+      - name: paciente_documento
         description: Número do documento do paciente.
       - name: paciente_cns
         description: Número do Cartão Nacional de Saúde do paciente. 
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
       - name: paciente_nacionalidade
         description: Nacionalidade do paciente.
       - name: paciente_mun_origem
         description: Código IBGE do município do paciente.
-      - name: paciente_tipo_logr
-        description: Tipo de logradouro do paciente.
-      - name: paciente_logr
+      - name: paciente_tipo_logradouro
+        description: >
+          Tipo de logradouro do paciente: rua, praça, avenida etc.
+          (ver TB_C_D tabela 21).
+      - name: paciente_logradouro
         description: Logradouro do paciente.
+        policy_tags:
+        - '{{ var ("TAG_ENDERECO") }}'
       - name: paciente_numero
         description: Número do endereço do paciente.
       - name: paciente_complemento
@@ -546,34 +568,28 @@ models:
         description: Sequencial da AIH no lote.
       - name: aih_situacao
         description: >
-          Situação da AIH, onde:
-          0 = aprovada.
-          1 = rejeitada.
+          Situação da AIH.
       - name: lote
         description: Número do lote.
-      - name: lote_apres
+      - name: lote_apresentacao
         description: Competência de apresentação da AIH ao gestor para processamento (AAAAMM).
       - name: aih_identificador
         description: >
-          Identificação do tipo de AIH onde:
-          1 = normal.
-          3 = de continuação (quando a AIH tem muitos exames e não cabe em uma única AIH).
-          4 = de registro civil (para documentar se houve emissão de Certidão de Nascimento em determinado parto).
-          5 = de longa permanência.
-      - name: especialidade
+          Identificação do tipo de AIH.
+      - name: leito_especialidade
         description: >
           Código da especialidade do leito (ver TB_C_D tabela 7) .
           No Banco Firebird a Tabela 7 existe.
           No Banco Oracle a especialidade é checada contra a Tabela de Especialidade do Banco do CNES.
-      - name: num_aih
+      - name: id_aih
         description: Número da AIH.
-      - name: num_aih_prox
+      - name: id_aih_proximo
         description: Número da próxima AIH (para parto).
-      - name: num_aih_ant
+      - name: id_aih_anterior
         description: >
-          Número da AIH anterior (para parto).
-          Quando a paciente é encaminhada para parto, deve ser informado o número da AIH anterior.
-      - name: seq_aih5
+          Número da AIH anterior (para parto). Quando a paciente é encaminhada para parto,
+          deve ser informado o número da AIH anterior.
+      - name: aih_sequencial_longa_permanencia
         description: >
           Sequencial da AIH tipo 5 (longa permanência).
           Quando é AIH de longa permanência tem outro seqüencial.
@@ -584,7 +600,7 @@ models:
       - name: orgao_emissor_regional
         description: >
           Código do órgão emissor da regional (quando a Secretaria é muito grande e se divide em Regionais).
-      - name: municipio_hospital
+      - name: hospital_municipio
         description: Código IBGE do município do paciente.
       - name: data_emissao
         description: Data da emissão da AIH.
@@ -592,53 +608,55 @@ models:
         description: Data da internação do paciente.
       - name: data_saida
         description: Data da saída do paciente.
-      - name: proc_solicitado
+      - name: procedimento_solicitado
         description: Código do procedimento solicitado.
-      - name: mudanca_proc_indicador
+      - name: procedimento_mudanca_indicador
         description: Indicador de mudança de procedimento
-      - name: proc_realizado
+      - name: procedimento_realizado
         description: Código do procedimento principal realizado no paciente.
+      - name: procedimento_complexidade
+        description: Complexidade do procedimento.
       - name: internacao_carater
-        description: Caráter da internação
+        description: Caráter da internação (ver TB_C_D tabela 28).
       - name: internacao_modalidade
-        description: >
-          Modalidade da internação, onde:
-          02 = hospitalar.
-          03 = hospitalar dia (quando o paciente fica apenas um dia no hospital).
-          04 = internação domiciliar.
+        description: Modalidade da internação
       - name: motivo_saida
-        description: Motivo da alta do paciente.
-      - name: med_sol_ident
+        description: Motivo da alta do paciente (ver TB_C_D tabela 23).
+      - name: medico_solicitante_documento_tipo
         description: >
-          Identificador do tipo de documento do médico solicitante: 1 = CPF, 2 = CNS.
-      - name: med_sol_doc
+          Identificador do tipo de documento do médico solicitante.
+      - name: medico_solicitante_documento
         description: Número do documento do médico que pediu a internação.
-      - name: med_resp_ident
+        policy_tags:
+        - '{{ var ("TAG_IDENTIDADE") }}'
+      - name: medico_responsavel_documento_tipo
         description: > 
-          Identificador do documento do médico responsável: 1 = CPF, 2 = CNS.
-      - name: med_resp_doc
+          Identificador do documento do médico responsável.
+      - name: medico_responsavel_documento
         description: Documento do médico responsável pelo paciente.
-      - name: dir_clinico_ident
+        policy_tags:
+        - '{{ var ("TAG_IDENTIDADE") }}'
+      - name: diretor_clinico_documento_tipo
         description: >
-          Identificador do tipo de documento do diretor clínico que se responsabiliza pela internação:
-          1 = CPF.
-          2 = CNS.
-      - name: dir_clinico_doc
+          Identificador do tipo de documento do diretor clínico que se responsabiliza pela internação.
+      - name: diretor_clinico_documento
         description: Número do documento do diretor clínico que se responsabiliza pela internação.
-      - name: autorizador_ident
+        policy_tags:
+        - '{{ var ("TAG_IDENTIDADE") }}'
+      - name: medico_autorizador_documento_tipo
         description: >
-          Identificador do tipo de documento do médico autorizador:
-          1 = CPF.
-          2 = CNS.
-      - name: autorizador_doc
+          Identificador do tipo de documento do médico autorizador.
+      - name: medico_autorizador_documento
         description: Número do documento do médico autorizador.
-      - name: diag_principal
+        policy_tags:
+        - '{{ var ("TAG_IDENTIDADE") }}'
+      - name: diagnostico_principal
         description: Código do diagnóstico principal.
-      - name: diag_secundario
+      - name: diagnostico_secundario
         description: Código do diagnóstico secundário.
       - name: diagnostico_comp
         description: ""
-      - name: diag_obito
+      - name: diagnostico_obito
         description: Código do diagnóstico do óbito.
       - name: enfermaria
         description: Número da enfermaria.
@@ -656,45 +674,34 @@ models:
         description: Código do CBO (Código Brasileiro de Ocupações).
       - name: id_cnaer
         description: Código do acidente de trabalho.
-      - name: indicador_vinculo_previdencia
+      - name: vinculo_previdencia
         description: >
-          Tipo de vínculo com a Previdência:
-          1 = autônomo.
-          2 = desempregado.
-          3 = aposentado.
-          4 = não segurado.
-          5 = empregado.
-          6 = empregador.
-      - name: parto_nasc_vivos
+          Tipo de vínculo com a Previdência.
+      - name: parto_nascidos_vivos
         description: Quantidade de nascidos vivos.
-      - name: parto_nasc_mortos
+      - name: parto_nascidos_mortos
         description: Quantidade de nascidos mortos.
-      - name: parto_nasc_alta
+      - name: parto_nascidos_alta
         description: Quantidade de nascidos que tiveram alta.
       - name: parto_transferidos
         description: Quantidade de nascidos que foram transferidos.
       - name: parto_obito
         description: Quantidade de nascidos vivos que morreram mais os natimortos
-      - name: parto_id_prenatal
+      - name: id_parto_prenatal
         description: Número da gestante no Pré-Natal.
-      - name: laqvas_filhos
+      - name: esterilizacao_filhos
         description: >
           Quantidade de filhos do paciente. Informado apenas quando o paciente é submetido a
           laqueadura ou vasectomia.
-      - name: laqvas_grau_instruc
-        description: >
-          Grau de instrução do paciente:
-          1 = analfabeto.
-          2 = primeiro grau.
-          3 = segundo grau.
-          4 = terceiro grau.
-      - name: laqvas_cid_indicacao
+      - name: esterilizacao_grau_instrucao
+        description: Grau de instrução do paciente.
+      - name: esterilizacao_cid_indicacao
         description: CID de indicação de laqueadura ou de vasectomia.
-      - name: laqvas_met_contracep1
+      - name: esterilizacao_metodo_contraceptivo1
         description: Método contraceptivo.
-      - name: laqvas_met_contracep2
+      - name: esterilizacao_metodo_contraceptivo2
         description: Método contraceptivo.
-      - name: laqvas_gestacao_risco_indicador
+      - name: esterilizacao_gestacao_risco_indicador
         description: > 
           Indicador de que a gestação é de alto risco
       - name: versao_sisaih01
@@ -716,24 +723,24 @@ models:
           Motivo do bloqueio da AIH. Quando o gestor bloqueia a AIH, ele tem que dizer o motivo.
       - name: in_ger_inf
         description: Flag de uso interno. Indica se a AIH foi gerenciada. O gestor pode bloquear ou liberar.
-      - name: gestor_ident
+      - name: gestor_documento_tipo
         description: >
           Identificador do tipo de documento do gestor: 1 = CPF, 2 = CNS .
       - name: gestor_documento
         description: > 
           Número do documento do gestor.Gestor e quem é o responsável pelo processamento da AIH.
-      - name: cod_sol_lib
-        description: Código de solicitação de liberação
+      - name: id_solicitacao_liberacao
+        description: Código de solicitação de liberação.
       - name: into_indicador
         description: >
           Indicador de que a AIH é do INTO (Instituto de Traumato-Ortopedia)
       - name: contrato
         description: Número do contrato de gestão e metas.
-      - name: valorizacao_serv_hosp
+      - name: valorizacao_servicos_hospitalares
         description: >
           Índice de valorização dos serviços hospitalares.
           Vem de um cadastro do próprio hospital.
-      - name: valorizacao_serv_prest
+      - name: valorizacao_servicos_prestados
         description: > 
           Índice de valorização dos serviços prestados.
           Varia de hospital para hospital. Não é mais usado hoje em dia.
@@ -743,13 +750,12 @@ models:
         description: Diárias de unidade de tratamento intensivo.
       - name: diarias_ui
         description: Diárias de unidade intermediária.
-      - name: cateterismo_anest_indicador
+      - name: cateterismo_anestesia_indicador
         description: >
           Informa utilização de anestesia
-      - name: complexidade
-        description: Complexidade do procedimento.
       - name: financiamento
-        description: Tipo de financiamento.
+        description: > 
+          Tipo de financiamento.
       - name: faec
         description: Código do tipo de FAEC.
       - name: codigo_seguranca
@@ -757,80 +763,84 @@ models:
           Código de segurança preenchido pelo sistema
           (calculado) para evitar alteração no registro.
       - name: paciente_etnia
-        description: Etnia do paciente.
+        description: Etnia do paciente ver tb_c_d
       - name: paciente_tel_ddd
         description: Código DDD do telefone do paciente. 
       - name: paciente_tel_num
         description: Número de telefone do paciente.
-      - name: audit_just
-        description: ""
-      - name: audit_sisaih01_just
-        description: ""
+        policy_tags:
+        - '{{ var ("TAG_TELEFONE") }}'
       - name: duplicidade_cns
         description: Indicador de duplicidade do CNS
-      - name: paciente_fonetico_nome
+      - name: internacao_concom
+        description: ...
+      - name: paciente_nome_fonetico
         description: Fonética do nome do paciente.
-      - name: paciente_fonetico_nome_mae
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: paciente_mae_nome_fonetico
         description: Fonética do nome da mãe do paciente.
-      - name: diagsec1
+        policy_tags: 
+          - '{{ var ("TAG_NOME_MAE") }}'
+      - name: diagnostico_secundario1
         description: Código do diagnóstico secundário.
-      - name: diagsec1_class
+      - name: diagnostico_secundario1_class
         description: > 
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
           2-ADQUIRIDO
-      - name: diagsec2
+      - name: diagnostico_secundario2
         description: Código do diagnóstico secundário.
-      - name: diagsec2_class
+      - name: diagnostico_secundario2_class
         description: >
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
           2-ADQUIRIDO
-      - name: diagsec3
+      - name: diagnostico_secundario3
         description: Código do diagnóstico secundário.
-      - name: diagsec3_class
+      - name: diagnostico_secundario3_class
         description: >
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
           2-ADQUIRIDO
-      - name: diagsec4
+      - name: diagnostico_secundario4
         description: Código do diagnóstico secundário.
-      - name: diagsec4_class
+      - name: diagnostico_secundario4_class
         description: >
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
           2-ADQUIRIDO
-      - name: diagsec5
+      - name: diagnostico_secundario5
         description: Código do diagnóstico secundário.
-      - name: diagsec5_class
+      - name: diagnostico_secundario5_class
         description: >
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
           2-ADQUIRIDO
-      - name: diagsec6
+      - name: diagnostico_secundario6
         description: Código do diagnóstico secundário.
-      - name: diagsec6_class
+      - name: diagnostico_secundario6_class
         description: >
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
           2-ADQUIRIDO
-      - name: diagsec7
+      - name: diagnostico_secundario7
         description: Código do diagnóstico secundário.
-      - name: diagsec7_class
+      - name: diagnostico_secundario7_class
         description: >
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
           2-ADQUIRIDO
-      - name: diagsec8
+      - name: diagnostico_secundario8
         description: Código do diagnóstico secundário.
-      - name: diagsec8_class
+      - name: diagnostico_secundario8_class
         description: >
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
           2-ADQUIRIDO
-      - name: diagsec9
+      - name: diagnostico_secundario9
         description: Código do diagnóstico secundário.
-      - name: diagsec9_class
+      - name: diagnostico_secundario9_class
         description: >
           0-Quando campo anterior em branco, 
           1-PREEXISTENTE, 
