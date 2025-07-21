@@ -2,7 +2,7 @@
     config(
         enabled=true,
         materialized="table",
-        schema="sisreg",
+        schema="saude_sisreg",
         alias="unidades_solicitantes"
     )
 }}
