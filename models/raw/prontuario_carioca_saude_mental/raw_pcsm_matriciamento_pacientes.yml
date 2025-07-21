@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: raw_pcsm_matriciamento_pacientes
+    description: "Pacientes participantes de matriciamento."
+    columns:
+      - name: id_matriciamento
+        description: "Identificador do matriciamento que o paciente participou."
+        data_type: int64
+      - name: id_paciente
+        description: "Identificador do paciente que participou do matriciamento."
+        data_type: int64
+      - name: paciente_evoluido
+        description: "Indicador de paciente já evoluído (S-Sim)."
+        data_type: string
+      - name: descricao_paciente_evoluido
+        description: "Descrição do estado de evolução do paciente. Pode ser 'Sim', se 'S', ou 'Não', se 'N' ou vazio. Outro valor será colocado como 'Não classificado'."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp
