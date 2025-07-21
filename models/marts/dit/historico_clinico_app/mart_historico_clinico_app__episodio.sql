@@ -36,6 +36,10 @@ with
         'B211','B213','Z830','B208','Z114','B231','B203','B201','Z206','B212','B221',
         'B24','B209','B220','B219','B210','B230','B207','B21','B22','F024','B232',
         'B23','B206','Z717','R75','B218','B202','B227')
+        union all 
+        select distinct cpf 
+        from {{ref('int_historico_clinico__paciente__restrito')}}
+        where flag_gemini = '1'
     ),
     todos_episodios as (
         select

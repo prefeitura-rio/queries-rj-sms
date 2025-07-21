@@ -87,3 +87,32 @@ models:
       - name: metadados
         data_type: record
         quote: true
+  - name: int_historico_clinico__paciente__restrito
+    columns:
+      - name: cpf
+        description: CPF do paciente relacionado ao atendimento
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        data_tests:
+          - not_null:
+              name: int_historico_clinico__paciente__restrito__cpf__not_null
+          - unique:
+              name: int_historico_clinico__paciente__restrito__cpf__unique
+      - name: raw
+        description: Dado bruto de motivo do atendimento. De onde vem a citação a alguma doença restritiva
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: id_hci
+        description: ID do atendimento no HCI
+      - name: flag_gemini
+        description: Flag que resultado do gemini se o paciente é restrito ou não
+      - name: motivo_gemini
+        description: Explicação do gemini sobre a flag atribuida
+      - name: _extracted_at
+        description: Data de extração do dado
+      - name: ano_particao
+        description: Ano da partição do dado
+      - name: mes_particao
+        description: Mês da partição do dado
+      - name: data_particao
+        description: Data de partição do dado
