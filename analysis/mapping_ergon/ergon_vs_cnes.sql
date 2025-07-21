@@ -2,7 +2,7 @@ with
 
 profissionais_ergon_032025 as (
     select
-        f.cpf,
+        safe_cast(f.cpf as int64) as cpf,
         d.nome as profissional_nome,
         d.provimento_inicio as data_inicio_provimento,
         d.provimento_fim as data_fim_provimento,
@@ -41,7 +41,7 @@ ergon_agrupado as (
 
 profissionais_cnes as (
     SELECT 
-        profissional__cpf,
+        safe_cast(profissional__cpf as int64) as profissional__cpf,
         profissional__cns,
         profissional__nome,
         estabelecimento__id_cnes,
@@ -51,6 +51,7 @@ profissionais_cnes as (
     where 
         metadado__ano_competencia = 2025
         and metadado__mes_competencia = 4
+        and estabelecimento__sms_indicador = 1
 ),
 
 cnes_agrupado as (
@@ -63,23 +64,30 @@ cnes_agrupado as (
 
     from profissionais_cnes
     group by profissional__cpf
+),
+
+compatibilidade as (
+  select
+      coalesce(cnes.profissional__cpf, ergon.cpf) as profissional_cpf,
+      cnes.profissional_nome_cnes,
+      ergon.profissional_nome as profissional_nome_ergon,
+      estabelecimento_id_cnes,
+      estabelecimento_nome_fantasia as estabelecimento_nome_fantasia_cnes,
+      setor_sigla as setor_sigla_ergon,
+      setor as setor_ergon,
+      profissional_cbo as profissionais_ocupacao_cnes,
+      cargo as profissionais_ocupacao_ergon,
+      case
+          when cnes.profissional__cpf is not null and ergon.cpf is not null then true
+          else false
+      end as houve_match
+
+  from cnes_agrupado as cnes 
+  full outer join ergon_agrupado as ergon
+  on cnes.profissional__cpf = ergon.cpf
+  order by houve_match desc
 )
 
 select
-    coalesce(cnes.profissional__cpf, ergon.cpf) as profissional_cpf,
-    cnes.profissional_nome_cnes,
-    ergon.profissional_nome as profissional_nome_ergon,
-    estabelecimento_id_cnes,
-    estabelecimento_nome_fantasia as estabelecimento_nome_fantasia_cnes,
-    setor_sigla as setor_sigla_ergon,
-    setor as setor_ergon,
-    profissional_cbo as profissionais_ocupacao_cnes,
-    cargo as profissionais_ocupacao_ergon,
-    case
-        when cnes.profissional__cpf is not null and ergon.cpf is not null then true
-        else false
-    end as houve_match
-
-from cnes_agrupado as cnes 
-full outer join ergon_agrupado as ergon
-on safe_cast(cnes.profissional__cpf as int64) = safe_cast(ergon.cpf as int64)
+    *
+from compatibilidade
