@@ -1,34 +1,59 @@
 {{
     config(
-        materialized='view',
-        alias = "subpav_sinanrio__sintomaticos_respiratorios",
-        schema = "projeto_subpav",
+        materialized='table',
+        alias = "sintomaticos_respiratorios_dia",
     )
 }}
 
-with atendimentos_com_cids as (
+{% set ontem = (
+    modules.datetime.date.today() - modules.datetime.timedelta(days=1)
+).isoformat() %}
+
+with
+
+atendimentos_chegados_ontem as (
+    -- Utiliza data_particao para filtrar apenas os atendimentos do dia de ontem e diminuir custos de processamento
+    select 
+        cpf,
+        condicoes,
+        soap_subjetivo_motivo,
+        soap_objetivo_descricao,
+        soap_avaliacao_observacoes,
+        datahora_fim
+    from {{ ref('raw_prontuario_vitacare__atendimento') }}
+    where data_particao >= '{{ ontem }}'
+),
+
+cadastros_de_paciente as (
+    select
+        cpf,
+        nome,
+        data_nascimento
+    from {{ ref('raw_prontuario_vitacare__paciente') }}
+),
+
+atendimentos_com_cids as (
 
     select
-        a.*,
+        atendimentos_chegados_ontem.*,
+        cadastros_de_paciente.* except(cpf),
         array_concat(
             ARRAY(
                 SELECT cod
-                FROM UNNEST(JSON_EXTRACT_ARRAY(a.condicoes)) AS item,
+                FROM UNNEST(JSON_EXTRACT_ARRAY(atendimentos_chegados_ontem.condicoes)) AS item,
                     UNNEST([
                         JSON_VALUE(item, '$.cod_cid10'),
                         JSON_VALUE(item, '$.cod_ciap2')
                     ]) AS cod
                 WHERE cod IS NOT NULL AND cod != ''
                 ),
-            regexp_extract_all(upper(a.soap_subjetivo_motivo), r'\b[A-Z][0-9]{3}\b'),
-            regexp_extract_all(upper(a.soap_objetivo_descricao), r'\b[A-Z][0-9]{3}\b'),
-            regexp_extract_all(upper(a.soap_avaliacao_observacoes), r'\b[A-Z][0-9]{3}\b')
+            regexp_extract_all(upper(atendimentos_chegados_ontem.soap_subjetivo_motivo), r'\b[A-Z][0-9]{3}\b'),
+            regexp_extract_all(upper(atendimentos_chegados_ontem.soap_objetivo_descricao), r'\b[A-Z][0-9]{3}\b'),
+            regexp_extract_all(upper(atendimentos_chegados_ontem.soap_avaliacao_observacoes), r'\b[A-Z][0-9]{3}\b')
         ) as cids_extraidos
-
-    from `brutos_prontuario_vitacare.atendimento` a
-    left join `brutos_prontuario_vitacare.paciente` p
-        on a.cpf = p.cpf
-    where date(a.datahora_inicio) >= date_sub(current_date(), interval 1 day)
+    from atendimentos_chegados_ontem
+        left join cadastros_de_paciente using (cpf)
+    where cast(datahora_fim as date) >= '{{ ontem }}'
 
 ),
 
@@ -46,7 +71,7 @@ atendimentos_filtrados as (
 -- Retorna apenas o atendimento mais recente por CPF
 atendimento_unico as (
     select *,
-        row_number() over (partition by cpf order by datahora_inicio desc) as rn
+        row_number() over (partition by cpf order by datahora_fim desc) as rn
     from atendimentos_filtrados
 )
 
