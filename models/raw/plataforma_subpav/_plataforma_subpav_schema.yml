@@ -1,5 +1,5 @@
 models:
-  - name: raw_subpav_cnes__competencias
+  - name: raw_plataforma_subpav_cnes__competencias
     description: Modelo contendo dados de identificação da competencia do dado CNES
     columns:
       - name: id
@@ -21,7 +21,7 @@ models:
         description: 'Status da base da competência: 0-Parcial/1-Final'
         type: tinyint
 
-  - name: raw_subpav_cnes__equipes
+  - name: raw_plataforma_subpav_cnes__equipes
     description: |
       Modelo contendo dados de equipes com origem no sistema CNES.
       Tabelas de referência - LFCES037 (TB_EQUIPE)
@@ -108,7 +108,7 @@ models:
         description: "Data da última atualização do registro na SUBPAV"
         type: timestamp
 
-  - name: raw_subpav_cnes__unidades
+  - name: raw_plataforma_subpav_cnes__unidades
     description: |
       Modelo contendo dados de identificação das unidades de saúde com origem no sistema CNES
     columns:
@@ -167,7 +167,7 @@ models:
         description: 'Data da última atualização do registro na SUBPAV'
         type: timestamp
 
-  - name: raw_subpav_principal__bairros
+  - name: raw_plataforma_subpav_principal__bairros
     description: |
       Modelo contendo os Bairros do município com identificador oficial do IPP.
     columns:
