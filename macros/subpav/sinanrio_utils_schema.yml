@@ -1,0 +1,11 @@
+version: 2
+
+group: "sinanrio"
+
+macros:
+  - name: sinanrio_lista_cids_sintomaticos
+    description: >
+      Retorna a lista de CIDs usados para identificar possíveis sintomáticos respiratórios nos atendimentos registrados no prontuário. 
+      Essa lista é usada para filtrar
+      pacientes com suspeita clínica compatível com tuberculose ou condições respiratórias afins.
+    arguments: []

@@ -303,7 +303,6 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
 
-
     intermediate:
       +materialized: ephemeral
       dit:
@@ -464,6 +463,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subpav
+        sinanrio:
+          +schema: projeto_sinanrio
+          +tags: ["daily", "subpav", "sinanrio"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
         indicadores_paciente:
           +schema: projeto_subpav
           +tags: ["weekly", "subpav"]
@@ -472,6 +479,7 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subpav
+        #pic
       subgeral:
         cnes_subgeral:
           +schema: projeto_cnes_subgeral
