@@ -12,21 +12,6 @@
 }}
 
 WITH
-    dim_procedimentos_clinicos as (
-        select
-            id_prontuario_global,
-            to_json_string(
-                array_agg(
-                    struct(
-                        co_procedimento,
-                        no_procedimento AS procedimento_clinico
-                    )
-                )
-            ) as procedimentos_clinicos
-        from {{ ref("raw_prontuario_vitacare_historico__procedimentos_clinicos") }}
-        group by id_prontuario_global
-    ),
-
     source_atendimentos AS (
         SELECT 
             CONCAT(
@@ -55,8 +40,8 @@ WITH
     fato_atendimentos AS (
         SELECT
             -- PKs e Chaves
-            a.id_prontuario_global,
-            REPLACE(a.acto_id, '.0', '') AS id_prontuario_local,
+            id_prontuario_global,
+            REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             id_cnes ,
 
             unidade_ap AS unidade_ap,
@@ -77,7 +62,6 @@ WITH
             {{ process_null('subjetivo_motivo') }} AS subjetivo_motivo,
             {{ process_null('plano_observacoes') }} AS plano_observacoes,
             {{ process_null('avaliacao_observacoes') }} AS avaliacao_observacoes,
-            {{ process_null('procedimentos_clinicos') }} AS procedimentos_clinicos,
             {{ process_null('objetivo_descricao') }} AS objetivo_descricao,
             {{ process_null('notas_observacoes') }} AS notas_observacoes,
             ut_id AS ut_id,
@@ -87,8 +71,8 @@ WITH
 
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
-        FROM atendimentos_deduplicados a 
-        LEFT JOIN dim_procedimentos_clinicos using (id_prontuario_global)
+        FROM atendimentos_deduplicados 
+        
     ),
 
     -- Filtro temporário para remover registros anteriores à carga oficial (24/06/2025 17:15)
