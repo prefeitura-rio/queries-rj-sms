@@ -24,7 +24,7 @@ with
             municipioresidencia,
             ufresidencia,
             safe_cast(safe_cast(fontecadastro as float64) as int64) as fontecadastro,    
-            date(data_extracao) as data_extracao,
+            safe_cast(safe_cast(data_extracao as timestamp) as date) as data_extracao,
             ano_particao,
             mes_particao,
             data_particao
