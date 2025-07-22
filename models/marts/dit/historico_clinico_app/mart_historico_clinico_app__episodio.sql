@@ -38,7 +38,7 @@ with
         'B23','B206','Z717','R75','B218','B202','B227')
         union all 
         select distinct cpf 
-        from {{ref('int_historico_clinico__paciente__restrito')}}
+        from {{ref('int_historico_clinico__paciente_restrito')}}
         where flag_gemini = '1'
     ),
     todos_episodios as (
