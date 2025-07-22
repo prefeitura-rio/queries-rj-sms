@@ -395,6 +395,13 @@ models:
             dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
+        dashboard_infraestrutura:
+          +schema: dashboard_infraestrutura
+          +tags: ["daily", "infraestrutura"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
         dengue:
           +schema: projeto_dengue
           +tags: "daily"
