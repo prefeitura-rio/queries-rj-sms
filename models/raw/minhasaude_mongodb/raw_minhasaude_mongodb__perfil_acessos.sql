@@ -29,7 +29,7 @@ with
 
             __v,
 
-            safe_cast(data_extracao as date) as data_extracao,
+            safe_cast(safe_cast(data_extracao as timestamp) as date) as data_extracao,
             safe_cast(ano_particao as int64) as ano_particao,
             safe_cast(mes_particao as int64) as mes_particao,
             safe_cast(data_particao as date) as data_particao

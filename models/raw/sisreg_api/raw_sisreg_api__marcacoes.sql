@@ -287,9 +287,7 @@ with
             version as elastic__version,
 
             -- Metadado SMS 
-            safe_cast(
-                {{ process_null("data_extracao") }} as date
-            ) as data_extracao,
+            safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
 
             -- Partições
             safe_cast(ano_particao as int) as particao_ano,
