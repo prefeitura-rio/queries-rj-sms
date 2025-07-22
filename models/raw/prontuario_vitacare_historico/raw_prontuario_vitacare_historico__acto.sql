@@ -73,7 +73,6 @@ WITH
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM atendimentos_deduplicados 
-    
     ),
 
     -- Filtro temporário para remover registros anteriores à carga oficial (24/06/2025 17:15)
