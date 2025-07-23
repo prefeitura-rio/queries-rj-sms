@@ -179,7 +179,7 @@ WITH
       END                                                                                 AS vulnerabilidade_social,
       SAFE_CAST(source_updated_at    AS DATETIME)                                         AS updated_at,
       SAFE_CAST(datalake_loaded_at   AS DATETIME)                                         AS loaded_at,
-      DATE(datalake_loaded_at)                                                             AS data_particao
+      safe_cast(safe_cast(json_extract_scalar(data, "$.datahora_fim_atendimento")as datetime) as date) as data_particao
     FROM source_raw
   ),
 
