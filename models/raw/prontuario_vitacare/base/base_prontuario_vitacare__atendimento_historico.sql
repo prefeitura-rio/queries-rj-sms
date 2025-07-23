@@ -52,7 +52,6 @@ with
             subjetivo_motivo as soap_subjetivo_motivo,
             objetivo_descricao as soap_objetivo_descricao,
             avaliacao_observacoes as soap_avaliacao_observacoes,
-            safe_cast(null as string) as soap_plano_procedimentos_clinicos,
             plano_observacoes as soap_plano_observacoes,
             notas_observacoes as soap_notas_observacoes,
 
@@ -144,8 +143,8 @@ with
             to_json_string(
                 array_agg(
                     struct(
-                        id_medicamento,
-                        medicamento_nome,
+                        id_medicamento as cod_medicamento,
+                        medicamento_nome as nome_medicamento,
                         posologia,
                         quantidade,
                         uso_continuado
@@ -155,11 +154,27 @@ with
         from {{ ref("raw_prontuario_vitacare_historico__prescricao") }}
         group by id_prontuario_global
     ),
+    dim_procedimentos_clinicos as (
+        select
+            id_prontuario_global,
+            to_json_string(
+                array_agg(
+                    struct(
+                        co_procedimento,
+                        no_procedimento AS procedimento_clinico
+                    )
+                )
+            ) as procedimentos_clinicos
+        from {{ ref("raw_prontuario_vitacare_historico__procedimentos_clinicos") }}
+        group by id_prontuario_global
+    ),
 
     atendimentos_eventos_historicos as (
         select
             atendimentos.* except (updated_at, loaded_at),
 
+
+            dim_procedimentos_clinicos.procedimentos_clinicos AS soap_plano_procedimentos_clinicos,
             dim_prescricoes.prescricoes,
             dim_condicoes.condicoes,
             dim_exames.exames_solicitados,
@@ -179,6 +194,7 @@ with
         left join dim_exames using (id_prontuario_global)
         left join dim_vacinas using (id_prontuario_global)
         left join dim_prescricoes using (id_prontuario_global)
+        left join dim_procedimentos_clinicos using (id_prontuario_global)
     ),
 
     final as (

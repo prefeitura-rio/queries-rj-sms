@@ -21,10 +21,10 @@
 with
 
     atendimentos as (
-        select *, 'historico' as origem
+        select *, 'historico' as origem, 1  as rank
         from {{ ref("base_prontuario_vitacare__atendimento_historico") }}
         union all
-        select *, 'continuo' as origem 
+        select *, 'continuo' as origem, 2  as rank
         from {{ ref("base_prontuario_vitacare__atendimento_continuo") }}
     ),
     atendimentos_teste_duplicados as (
@@ -43,7 +43,7 @@ with
     atendimentos_deduplicados as (
         select *
         from atendimentos_sem_teste_duplicados
-        qualify row_number() over (partition by id_prontuario_global order by updated_at desc) = 1
+        qualify row_number() over (partition by id_prontuario_global order by rank, updated_at desc) = 1
     ),
 
     atendimentos_unicos as (
