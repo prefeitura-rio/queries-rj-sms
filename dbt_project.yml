@@ -437,7 +437,7 @@ models:
             dado_sensivel: sim
             dominio: historico_clinico_app
         historico_clinico_app_treinamento:
-          +tags: ["hci_app_treinamento"]
+          +tags: ["hci_app_treinamento","daily"]
           +schema: app_historico_clinico_treinamento
           +labels:
             dado_publico: nao
