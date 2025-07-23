@@ -3,46 +3,44 @@ models:
   - name: mart_linkage__sih
     description: Tabela contendo os CPFs recuperados através de técnicas de fuzzy matching (levenshtein & jaccard) contra as bases de pacientes do SIH.
     columns:
-      - name: id_hash_aih
+      - name: id_base
         description: Hash do ID da AIH do paciente.
         data_tests:
           - not_null
-      - name: id_hash_paciente
+      - name: id_paciente
         description: Identificador anônimo do paciente.
         data_tests:
           - not_null
-      - name: data_nasc
-        description: Data de nascimento do paciente.
-        policy_tags:
-          - '{{ var ("TAG_PUBLICO_DATA_NASCIMENTO") }}'
-      - name: nome
-        description: Nome do paciente.
-        policy_tags:
-          - '{{ var ("TAG_PUBLICO_NOME") }}'
-      - name: nome_candidato
-        description: Nome no registro do paciente com maior score no fuzzy matching.
+      - name: data_nascimento_base
+        description: Data de nascimento do paciente no SIH.
+      - name: data_nascimento_fonte
+        description: Data de nascimento do paciente no HCI.
+      - name: nome_base
+        description: Nome do paciente no SIH.
         policy_tags:
           - '{{ var ("TAG_PUBLICO_NOME") }}'
-      - name: nome_mae
-        description: Nome da mãe do paciente.
+      - name: nome_fonte
+        description: Nome do paciente no HCI.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+      - name: nome_mae_base
+        description: Nome da mãe do paciente no SIH.
         policy_tags:
           - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
-      - name: nome_mae_candidato
-        description: Nome da mãe no registro do paciente com maior score no fuzzy matching.
+      - name: nome_mae_fonte
+        description: Nome da mãe do paciente no HCI.
         policy_tags:
           - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
-      - name: cpf_candidato
-        description: CPF no registro do paciente com maior score no fuzzy matching.
-        policy_tags:
-          - '{{ var ("TAG_PUBLICO_CPF") }}'
+      - name: cpf_base
+        description: CPF do paciente no SIH.  
+      - name: cpf_fonte
+        description: CPF do paciente no HCI.
         data_tests:
           - not_null
-      - name: score_lev
-        description: Score do algoritmo Levenshtein para os nomes do paciente e da mãe.
-      - name: score_jac
-        description: Score do algoritmo Jaccard para os nomes do paciente e da mãe.
       - name: score_final
         description: Score final do fuzzy matching, calculado como a média dos scores Levenshtein e Jaccard, para o nome do paciente e da mãe.
+      - name: tipo_linkage
+        description: Tipo de linkage utilizado no linkage.
   - name: mart_linkage__sim
     description: Tabela contendo os CPFs recuperados através de técnicas de fuzzy matching (levenshtein & jaccard) contra as bases de pacientes do HCI.
     columns:

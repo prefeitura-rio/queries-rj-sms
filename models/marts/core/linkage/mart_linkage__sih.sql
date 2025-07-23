@@ -11,7 +11,7 @@ with
     -- ------------------------------------------------------------------------------------------------
     pacientes_base as (
         select distinct
-            id_hash as id_base,
+            id_aih as id_base,
             paciente_cpf as cpf_base,
             {{ clean_name_string("upper(paciente_nome)") }} as nome_base,
             {{ clean_name_string("upper(paciente_mae_nome)") }} as nome_mae_base,
