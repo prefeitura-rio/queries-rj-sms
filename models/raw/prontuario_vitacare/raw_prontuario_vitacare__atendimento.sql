@@ -4,7 +4,8 @@
     config(
         alias="atendimento",
         materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy='merge', 
+        unique_key=['id_hci'],
         cluster_by="cpf",
         partition_by={
             "field": "data_particao",
