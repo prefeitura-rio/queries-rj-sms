@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: raw_pcsm_tipos_atendimentos_relacionados
+    description: "Lista de tipos de atendimentos que podem ser utilizados juntos em saúde mental."
+    columns:
+      - name: id_tipo_atendimento
+        description: "Identificador único do tipo de atendimento."
+        data_type: int64
+      - name: id_tipo_relacionado
+        description: "Identificador do tipo de atendimento relacionado que pode ser utilizado junto."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp
