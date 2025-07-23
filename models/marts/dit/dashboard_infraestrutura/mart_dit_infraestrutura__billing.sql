@@ -11,7 +11,6 @@
             "data_type": "date",
             "granularity": "month",
         },
-        tags=["daily"],
     )
 }}
 
@@ -118,11 +117,11 @@ with
             struct(
                 user_email as email,
                 nome as name,
-                forma as type,
+                forma_de_uso as type,
                 organizacao as organization,
-                subsecretaria as subsecretary,
+                subsecretaria_da_sms as subsecretary,
                 setor_da_sms as sms_sector,
-                nucleo as team
+                nome_do_nucleo as team
             ) as user,
             job_type,
             query,
