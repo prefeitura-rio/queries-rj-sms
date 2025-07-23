@@ -30,6 +30,10 @@ sources:
       - name: gh_tpatendimentos
       - name: gh_encam_atend
       - name: gh_tpsaidaacolhe
+      - name: gh_tplocal
+      - name: gh_local
+      - name: gh_tpatividades
+      - name: gh_clinfamil_equipes
       
   - name: brutos_prontuario_carioca_saude_mental
     database: rj-sms
