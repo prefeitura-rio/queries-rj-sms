@@ -3,7 +3,8 @@
         schema="brutos_prontuario_vitacare_staging",
         alias="_base_atendimento_rotineiro",
         materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy='merge', 
+        unique_key=['id_hci'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
