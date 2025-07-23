@@ -13,8 +13,12 @@ models:
           - not_null
       - name: data_nascimento_base
         description: Data de nascimento do paciente no SIH.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_DATA_NASCIMENTO") }}'
       - name: data_nascimento_fonte
         description: Data de nascimento do paciente no HCI.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_DATA_NASCIMENTO") }}'
       - name: nome_base
         description: Nome do paciente no SIH.
         policy_tags:
@@ -33,8 +37,12 @@ models:
           - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
       - name: cpf_base
         description: CPF do paciente no SIH.  
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
       - name: cpf_fonte
         description: CPF do paciente no HCI.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
         data_tests:
           - not_null
       - name: score_final
