@@ -53,7 +53,7 @@ with
       safe_cast({{ process_null("json_extract_scalar(data,'$.realizado')") }} as BOOLEAN) as realizado,
       {{ process_null("json_extract_scalar(data,'$.tipo_atendimento')") }} as tipo_atendimento,
       loaded_at,
-      date(json_extract_scalar(data,'$.datahora_fim_atendimento')) as data_particao
+      date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) as data_particao
     from bruto_atendimento
   )
 
