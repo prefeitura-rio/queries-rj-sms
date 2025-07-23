@@ -21,6 +21,7 @@ sources:
       - name: projeto_c34_procedimentos
       - name: procedimentos_ser
       - name: bairros_rio
+      - name: usuarios_bigquery
       - name: cids_risco_gestacional
       
   - name: brutos_sheets

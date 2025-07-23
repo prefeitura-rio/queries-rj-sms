@@ -2,7 +2,23 @@ version: 2
 
 sources:
   - name: brutos_plataforma_subpav_staging
-    database: rj-sms
+    database: rj-sms-dev
     schema: brutos_plataforma_subpav_staging
     tables:
+      - name: subpav_cnes__equipes
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: subpav_cnes__competencias
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: subpav_cnes__unidades
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: subpav_principal__bairros
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
       - name: views_ipp__Unidades_OSA

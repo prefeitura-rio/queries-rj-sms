@@ -228,6 +228,14 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      prontuario_vitacare_api:
+      +schema: brutos_prontuario_vitacare_api
+      +tags: ["vitacare", "daily", "vitacare_api"]
+      +labels:
+        dado_publico: nao
+        dado_pessoal: sim
+        dado_sensivel: sim
+        dominio: historico_clinico
       prontuario_vitacare_historico:
         +schema: brutos_prontuario_vitacare_historico
         +tags: ["vitacare", "daily", "vitacare_historico"]
@@ -269,14 +277,14 @@ models:
           dominio: subgeral
       sih:
         +schema: brutos_sih
-        +tags: ["weekly", "sih", "subgeral"]
+        +tags: ["sih", "subgeral"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
       sim:
         +schema: brutos_sim
-        +tags: ["weekly", "sim"]
+        +tags: ["sim", "subgeral"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -303,7 +311,6 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
 
-
     intermediate:
       +materialized: ephemeral
       dit:
@@ -316,6 +323,13 @@ models:
             dominio: historico_clinico
           paciente:
             +tags: ["paciente"]
+        cdi:
+          +tags: ["cdi", "daily"]
+          +schema: intermediario_cdi
+          +labels:
+            dado_publico: sim
+            dado_pessoal: nao
+            dado_sensivel: nao
         monitoramento:
           +tags: "daily"
           +labels:
@@ -359,7 +373,7 @@ models:
               dominio: estoque
         linkage:
           +schema: saude_linkage
-          +tags: ["daily", "linkage"]
+          +tags: ["weekly", "linkage"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -389,6 +403,13 @@ models:
             dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
+        dashboard_infraestrutura:
+          +schema: dashboard_infraestrutura
+          +tags: ["daily", "infraestrutura"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
         dengue:
           +schema: projeto_dengue
           +tags: "daily"
@@ -400,6 +421,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: estoque
+        cdi:
+          +schema: projeto_cdi
+          +tags: ["daily", "cdi"]
+          +labels:
+            dado_publico: sim
+            dado_pessoal: sim
+            dado_sensivel: sim
         gerenciamento:
           +tags: "daily"
         historico_clinico:
@@ -450,6 +478,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subpav
+        sinanrio:
+          +schema: projeto_sinanrio
+          +tags: ["daily", "subpav", "sinanrio"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
         indicadores_paciente:
           +schema: projeto_subpav
           +tags: ["weekly", "subpav"]
@@ -458,6 +494,7 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subpav
+        #pic
       subgeral:
         cnes_subgeral:
           +schema: projeto_cnes_subgeral

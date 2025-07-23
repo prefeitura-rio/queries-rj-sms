@@ -6,3 +6,5 @@ sources:
     schema: brutos_diario_oficial_staging
     tables:
       - name: diarios_municipio
+      - name: diarios_municipio_html
+      - name: diarios_uniao

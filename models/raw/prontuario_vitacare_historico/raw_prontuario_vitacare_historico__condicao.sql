@@ -29,13 +29,8 @@ WITH
     condicoes_deduplicados AS (
         SELECT
             *
-        FROM (
-            SELECT
-                *,
-                ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY extracted_at DESC) AS rn
-            FROM source_condicoes
-        )
-        WHERE rn = 1
+        FROM source_condicoes 
+        qualify row_number() over (partition by id_prontuario_global, cod_cid10 order by extracted_at desc) = 1 
     ),
 
     fato_condicoes AS (
@@ -44,12 +39,9 @@ WITH
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             id_cnes,
-
             cod_cid10 AS cod_cid10,
             estado AS estado,
             SAFE_CAST((data_diagnostico) AS DATETIME) AS data_diagnostico,
-   
-   
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM condicoes_deduplicados
