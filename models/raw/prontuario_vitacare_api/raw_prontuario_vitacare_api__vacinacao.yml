@@ -1,0 +1,203 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__vacinacao
+    description: >
+      Esta tabela contém informações detalhadas sobre os registros de vacinação dos pacientes
+      no sistema Vitacare. Inclui dados do paciente, da equipe e estabelecimento de saúde,
+      além de informações sobre a vacina administrada e o profissional responsável.
+
+    columns:
+      - name: id_vacinacao
+        description: Identificador único do registro, composto por id_cnes e id_vacinacao_local.
+        data_type: string
+        data_tests:
+          - unique:
+              name: raw_prontuario_vitacare_api__vacinacao__id_vacinacao__unique
+              config:
+                severity: warn
+          - not_null:
+              name: raw_prontuario_vitacare_api__vacinacao__id_vacinacao__not_null
+              config:
+                severity: warn
+
+      - name: id_surrogate
+        description: >
+          Chave substituta gerada a partir do id_cnes, id_vacinacao_local e paciente_cns,
+          usada para garantir integridade e rastreabilidade do dado.
+        data_type: string
+        data_tests:
+          - unique:
+              name: raw_prontuario_vitacare_api__vacinacao__id_surrogate__unique
+          - not_null:
+              name: raw_prontuario_vitacare_api__vacinacao__id_surrogate__not_null
+              config:
+                severity: warn
+
+      # Foreign Keys
+      - name: id_cnes
+        description: Identificador CNES do estabelecimento de saúde onde a vacina foi administrada.
+        data_type: string
+
+      - name: id_equipe
+        description: Identificador da equipe de saúde responsável pela vacinação.
+        data_type: string
+
+      - name: id_equipe_ine
+        description: Identificador INE da equipe de saúde conforme o CNES.
+        data_type: string
+
+      - name: id_microarea
+        description: Identificador da microárea de atuação da equipe de saúde.
+        data_type: string
+
+      - name: paciente_id_prontuario
+        description: Identificador do prontuário do paciente na unidade.
+        data_type: string
+
+      - name: paciente_cns
+        description: CNS (Cartão Nacional de Saúde) do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      # Common Fields
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de saúde.
+        data_type: string
+
+      - name: equipe_nome
+        description: Nome da equipe de saúde vinculada.
+        data_type: string
+
+      - name: profissional_nome
+        description: Nome do profissional de saúde que aplicou a vacina.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: profissional_cbo
+        description: Código CBO do profissional.
+        data_type: string
+
+      - name: profissional_cns
+        description: CNS do profissional.
+        data_type: string
+
+      - name: profissional_cpf
+        description: CPF do profissional.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: vacina_descricao
+        description: Descrição da vacina administrada.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      - name: vacina_dose
+        description: Dose da vacina (exemplo 1ª, 2ª, reforço).
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      - name: vacina_lote
+        description: Número do lote da vacina.
+        data_type: string
+
+      - name: vacina_registro_tipo
+        description: Tipo de registro da vacina (exemplo normal, retroativo).
+        data_type: string
+
+      - name: vacina_estrategia
+        description: Estratégia de vacinação utilizada.
+        data_type: string
+
+      - name: vacina_diff
+        description: Diferença (em dias) entre data de aplicação e registro.
+        data_type: string
+
+      - name: vacina_aplicacao_data
+        description: Data de aplicação da vacina.
+        data_type: date
+
+      - name: vacina_registro_data
+        description: Data/hora em que o registro da vacina foi efetivado no sistema.
+        data_type: datetime
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitacare_api__vacinacao__vacina_registro_data__not_null
+              config:
+                severity: warn
+
+      - name: paciente_nome
+        description: Nome do paciente vacinado.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: paciente_sexo
+        description: Sexo do paciente.
+        data_type: string
+
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: paciente_nome_mae
+        description: Nome da mãe do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+
+      - name: paciente_mae_nascimento_data
+        description: Data de nascimento da mãe do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: paciente_situacao
+        description: Situação atual do paciente no sistema (ativo, inativo, etc.).
+        data_type: string
+
+      - name: paciente_cadastro_data
+        description: Data de cadastro do paciente no sistema.
+        data_type: date
+
+      - name: paciente_obito
+        description: Indicador de óbito do paciente.
+        data_type: string
+
+      # Dados da requisição
+      - name: requisicao_id_cnes
+        description: ID CNES da unidade requisitante.
+        data_type: string
+
+      - name: requisicao_area_programatica
+        description: Área programática da requisição.
+        data_type: string
+
+      - name: requisicao_endpoint
+        description: Endpoint de origem da requisição.
+        data_type: string
+
+      # Metadados e Partição
+      - name: metadados
+        description: Campo estruturado com timestamps de atualização, replicação e carga.
+        data_type: struct
+      - name: metadados.updated_at
+        description: Data/hora da aplicação da vacina (última modificação lógica).
+        data_type: datetime
+      - name: metadados.extracted_at
+        description: Data/hora da replicação dos dados do sistema origem.
+        data_type: datetime
+      - name: metadados.loaded_at
+        description: Data/hora de carga no Data Lake.
+        data_type: timestamp
+
+      - name: particao_data_vacinacao
+        description: Data de aplicação da vacina, usada para particionamento da tabela.
+        data_type: date
