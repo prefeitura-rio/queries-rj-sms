@@ -9,6 +9,11 @@
             "dado_anonimizado": "nao",
             "dado_sensivel_saude": "nao",
         },
+        partition_by={
+            "field": "particao_data_posicao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
@@ -93,16 +98,19 @@ with
             safe_cast(lote_data_cadastro as date) as lote_data_cadastro,
             safe_cast(lote_data_vencimento as date) as lote_data_vencimento,
             material_descricao,
-            safe_cast(material_quantidade as float64) as material_quantidade,
+            safe_cast(material_quantidade as int64) as material_quantidade,
             lower({{ clean_name_string("armazem") }}) as armazem,
             
             struct(
                 safe_cast(data_replicacao as datetime) as updated_at,
                 safe_cast(loaded_at as timestamp) as loaded_at
-            ) as metadados
+            ) as metadados,
+
+            cast(safe_cast(data_replicacao as datetime) as date) as particao_data_posicao
 
         from renamed
     )
 
 select *
 from final
+qualify row_number() over(partition by id_surrogate order by metadados.updated_at desc) = 1
