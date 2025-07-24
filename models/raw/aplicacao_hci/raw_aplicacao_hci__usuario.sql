@@ -16,17 +16,17 @@ select
         when is_active = 'True' then true
         when is_active = 'False' then false
         else null
-    end as is_active,
+    end as eh_ativado,
     case 
         when is_superuser = 'True' then true
         when is_superuser = 'False' then false
         else null
-    end as is_superuser,
-    cast(created_at as datetime) as created_at,
-    cast(updated_at as datetime) as updated_at,
+    end as eh_superuser,
+    SAFE_CAST(created_at as timestamp) as created_at,
+    SAFE_CAST(updated_at as timestamp) as updated_at,
     upper(cast(name as string)) as nome,
     cpf,
-    cast(use_terms_accepted_at as datetime) as aceita_termos_datahora,
+    SAFE_CAST(use_terms_accepted_at as timestamp) as aceita_termos_datahora,
         case 
         when is_use_terms_accepted = 'True' then true
         when is_use_terms_accepted = 'False' then false
@@ -35,7 +35,7 @@ select
     {{process_null('password')}} as senha,
     {{process_null('password')}} as telefone,
     {{process_null('email')}} as email,
-    cast(loaded_at as datetime) as loaded_at,
+    SAFE_CAST(loaded_at as timestamp) as loaded_at,
     ano_particao,
     mes_particao,
     data_particao,
