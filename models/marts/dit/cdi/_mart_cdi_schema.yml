@@ -17,8 +17,8 @@ models:
               name: mart_cdi__email__content_email__not_null
       - name: voto
         description: No caso do conteúdo conter um voto, traz o numero do voto.
-      - name: html
-        description: HTML relativo a pasta sob a qual o conteúdo esta inserido.
+      - name: link
+        description: Link relativo ao PDF ligado ao conteudo do DO.
         data_tests:
           - not_null:
-              name: mart_cdi__email__html__not_null
+              name: mart_cdi__email__link__not_null
