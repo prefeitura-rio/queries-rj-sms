@@ -93,6 +93,13 @@ models:
     raw:
       +materialized: table
       +tags: "raw"
+      aplicacao_hci:
+        +schema: brutos_aplicacao_hci
+        +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       cnes_web:
         +schema: brutos_cnes_web
         +tags: "weekly"
