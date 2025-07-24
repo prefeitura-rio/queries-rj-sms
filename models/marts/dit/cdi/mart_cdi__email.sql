@@ -13,7 +13,7 @@ with diario_municipal as (
         pasta,
         content_email,
         voto,
-        html 
+        link
     from {{ ref('int_cdi__diario_oficial_rj_filtrado') }}
 ),
 diario_uniao as (
@@ -23,7 +23,7 @@ diario_uniao as (
         cast(null as string) as pasta,
         content_email,
         cast(null as string) as voto,
-        html  
+        link 
     from {{ ref('int_cdi__diario_oficial_uniao_filtrado')}}
 )
 

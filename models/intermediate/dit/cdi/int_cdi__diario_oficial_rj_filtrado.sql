@@ -274,6 +274,7 @@ final_all_sections as (
 select 
     final_all_sections.* except(data_extracao,ano_particao,mes_particao,data_particao,id),
     html.html as html,
+    concat('https://doweb.rio.rj.gov.br/apifront/portal/edicoes/publicacoes_ver_conteudo/',final_all_sections.id_materia) as link,
     final_all_sections.data_extracao,
     final_all_sections.ano_particao,
     final_all_sections.mes_particao,
