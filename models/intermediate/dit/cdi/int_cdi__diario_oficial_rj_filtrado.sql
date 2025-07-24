@@ -98,8 +98,8 @@ tribunal_contas_controladoria_del as (
     select concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id, 
     concat(id_diario,id_materia,secao_indice,bloco_indice) as id_bloco 
   FROM diarios_municipio
-  where pasta like ('%TRIBUNAL DE CONTAS DO MUNICÍPIO%')
-  or pasta like ('%CONTROLADORIA GERAL DO MUNICÍPIO%')
+  where (pasta like ('%TRIBUNAL DE CONTAS DO MUNICÍPIO%')
+  or pasta like ('%CONTROLADORIA GERAL DO MUNICÍPIO%'))
   and (
     lower(conteudo) like "%despacho%"
     or lower(conteudo) like "%legalidade%para fins de registro%"
