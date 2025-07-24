@@ -5,22 +5,31 @@ sources:
     database: rj-sms
     schema: brutos_prontuario_vitacare_historico_staging
     tables:
-      - name: alergias
       - name: acto
+      - name: agendamentos
+      - name: alergias
+      - name: arboviroses
+      - name: cadastro
       - name: condicoes
+      - name: curativos
       - name: encaminhamentos
       - name: equipes
+      - name: ficha_a
+      - name: hanseniase
       - name: hiv
+      - name: idoso
       - name: indicadores
-      - name: cadastro
+      - name: plano
       - name: prenatal
       - name: prescricoes
       - name: procedimentos_clinicos
       - name: profissionais
+      - name: saude_bucal
       - name: saudecrianca
       - name: saudemulher
       - name: sifilis
       - name: solicitacao_exames
+      - name: tabagismo
       - name: testesrapidos
       - name: tuberculose
       - name: unidade
