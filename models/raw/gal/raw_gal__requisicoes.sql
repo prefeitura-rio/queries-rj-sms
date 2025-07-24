@@ -133,7 +133,7 @@ with
             laboratorio_cadastro as laboratorio_cadastro,
             {{process_null('cnes_laboratorio_cadastro')}} as laboratorio_cnes_cadastro,
             {{process_null('cnes_laboratorio_responsavel')}} as laboratorio_cnes_responsavel,
-            {{process_null('cnes_laboratorio_execucao')}} as laboratorio_cnes_execucao,
+            {{process_null('cnes_laboratorio_execucao')}} as laboratorio_cnes_execucao
         from source
     )
 
