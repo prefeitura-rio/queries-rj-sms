@@ -14,7 +14,6 @@ sources:
       - name: curativos
       - name: encaminhamentos
       - name: equipes
-      - name: ficha_a
       - name: hanseniase
       - name: hiv
       - name: idoso
