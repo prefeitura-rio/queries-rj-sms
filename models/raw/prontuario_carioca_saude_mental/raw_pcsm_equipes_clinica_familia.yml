@@ -32,4 +32,4 @@ models:
         data_type: timestamp
       - name: transformed_at
         description: "Timestamp de quando o dado foi transformado no dbt."
-        data_type:
+        data_type: timestamp

@@ -4,7 +4,7 @@ models:
   - name: raw_pcsm_acolhimento
     description: "Acolhimentos feitos em unidades de acolhimento (tipos especiais de unidades de saúde) da prefeitura do Rio de Janeiro. Acolhimento é a recepção temporária para o cuidado de pacientes de saúde mental. Um acolhimento é período de uso de um leito."
     columns:
-      - name: id_tipo_saida_acolhimento
+      - name: id_acolhimento
         description: "Identificador único do acolhimento."
         data_type: int64
         _data_tests:
@@ -41,7 +41,7 @@ models:
       - name: id_funcionario_cadastramento
         description: "Identificador do funcionário da unidade de saúde que registrou o acolhimento no sistema."
         data_type: int64
-      - name: id_tipo_saida
+      - name: id_tipo_saida_acolhimento
         description: "Identificador do tipo de saída de acolhimento."
         data_type: int64
       - name: leito_ocupado
