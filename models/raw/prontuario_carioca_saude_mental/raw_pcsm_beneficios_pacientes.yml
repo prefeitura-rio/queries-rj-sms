@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: raw_pcsm_beneficios_pacientes
-    description: >
-      "Tabela associativa que contem a lista de beneficios sociais recebidos por cada paciente
+    description: Tabela associativa que contem a lista de beneficios sociais recebidos por cada paciente
     columns:
       - name: codigo_beneficio
         description: Código do tipo de benefício social recebido pelo paciente.

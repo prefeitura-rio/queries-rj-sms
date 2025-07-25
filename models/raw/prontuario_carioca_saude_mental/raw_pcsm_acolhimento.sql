@@ -19,7 +19,7 @@ select
     safe_cast(sequs as int64) as id_unidade_saude,
     safe_cast(seqprof2 as int64) as id_profissional_secundario,
     safe_cast(seqlogincad as int64) as id_funcionario_cadastramento,
-    safe_cast(seqtpsaida as int64) as id_tipo_saida,
+    safe_cast(seqtpsaida as int64) as id_tipo_saida_acolhimento,
     safe_cast(indocupacao as string) as leito_ocupado,
     case trim(safe_cast(indocupacao as string))
         when 'S' then 'Sim'
@@ -56,7 +56,7 @@ select
         when '' then 'Não informado'
         when null then 'Não informado'
         else 'Não classificado'
-    end as descricao_tipo_leito,    
+    end as descricao_tipo_leito,
     _airbyte_extracted_at as loaded_at, 
     current_timestamp() as transformed_at
 from
