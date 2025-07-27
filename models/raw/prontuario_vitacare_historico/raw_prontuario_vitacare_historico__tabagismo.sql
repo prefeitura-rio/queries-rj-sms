@@ -52,25 +52,25 @@ WITH
             {{ process_null('tempoprimcig') }} as tempo_prim_cig,
             case 
                 when {{ process_null('fumarlocaisproib') }} = 'Sim' 
-                then 1
+                then true
                 when {{ process_null('fumarlocaisproib') }} = 'Não' 
-                then 0
+                then false
                 else NULL
             end as fumar_locais_proib,
             {{ process_null('melhorcigdia') }} as melhor_cig_dia,
             {{ process_null('numcigdia') }} as num_cig_dia,
             case 
                 when {{ process_null('fumamanha') }} = 'Sim' 
-                then 1
+                then true
                 when {{ process_null('fumamanha') }} = 'Não' 
-                then 0
+                then false
                 else NULL
             end as fuma_manha,
             case 
                 when {{ process_null('fumadoente') }} = 'Sim' 
-                then 1
+                then true
                 when {{ process_null('fumadoente') }} = 'Não' 
-                then 0
+                then false
                 else NULL
             end as fuma_doente,
             {{ process_null('fagerstrongraudepend') }} as fagerstrom_grau_depend,
@@ -84,9 +84,9 @@ WITH
             {{ process_null('tabacosituacaopacientefase1') }} as tabaco_situacao_paciente_fase1,
             case 
                 when {{ process_null('tabacoapoiomedicamento') }} = 'Sim' 
-                then 1
+                then true
                 when {{ process_null('tabacoapoiomedicamento') }} = 'Não' 
-                then 0
+                then false
                 else NULL
             end as tabaco_apoio_medicamento,
             safe_cast({{ process_null('tabacoapoiomedicamentodata') }} as datetime) as tabaco_apoio_medicamento_data,
