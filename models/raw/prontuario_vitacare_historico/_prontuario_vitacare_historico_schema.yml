@@ -82,7 +82,7 @@ models:
         description: Observações das notas do atendimento SOAP.
 
       - name: ut_id
-        description: Identificador da unidade de trabalho responsável pelo atendimento.
+        description: Identificador local do paciente.
 
       - name: realizado
         description: Indica se o atendimento foi realizado ou não.
