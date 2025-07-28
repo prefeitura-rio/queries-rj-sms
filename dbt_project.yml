@@ -259,6 +259,14 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      prontuario_vitai_api:
+        +schema: brutos_prontuario_vitai_api
+        +tags: ["vitai", "daily", "vitai_api"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
       osinfo:
         +schema: brutos_osinfo
         +tags: "daily"
