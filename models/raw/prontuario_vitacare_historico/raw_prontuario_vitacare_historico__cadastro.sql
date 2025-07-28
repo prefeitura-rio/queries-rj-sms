@@ -93,7 +93,11 @@ WITH
             {{ process_null('orientacaosexual') }} AS orientacao_sexual, 
             {{ process_null('nacionalidade') }} AS nacionalidade,
             {{ process_null('paisnascimento') }} AS pais_nascimento, 
-            participagrupocomunitario = '1' AS participa_grupo_comunitario, 
+            CASE
+                WHEN participagrupocomunitario = '1' THEN TRUE
+                WHEN participagrupocomunitario = '0' THEN FALSE
+                ELSE NULL
+            END AS participa_grupo_comunitario,
             CASE
                 WHEN possuiplanosaude = '1' THEN TRUE
                 WHEN possuiplanosaude = '0' THEN FALSE
