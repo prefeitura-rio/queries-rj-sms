@@ -57,12 +57,16 @@ WITH
                 when sexo='male' then 'Masculino'
                 else null
             end as sexo,
-            SAFE_CAST({{ process_null('dta_nasc') }} AS DATE) AS data_nascimento,
+            {{ process_null('dta_nasc') }} AS data_nascimento,
             {{ process_null('code') }} AS code,
-            cadastropermanente = '1' AS cadastro_permanente, 
-            SAFE_CAST(dataatualizacaocadastro AS DATETIME) AS data_atualizacao_cadastro, 
-            SAFE_CAST({{ process_null('dataatualizacaovinculoequipe') }} AS DATETIME) AS data_atualizacao_vinculo_equipe, 
-            SAFE_CAST({{ process_null('datacadastro') }} AS DATETIME) AS data_cadastro, 
+            CASE
+                WHEN cadastropermanente = '1' THEN TRUE
+                WHEN cadastropermanente = '0' THEN FALSE
+                ELSE NULL
+            END AS cadastro_permanente,
+            {{ process_null('dataatualizacaocadastro') }}  AS data_atualizacao_cadastro, 
+            {{ process_null('dataatualizacaovinculoequipe') }}  AS data_atualizacao_vinculo_equipe, 
+            {{ process_null('datacadastro') }} AS data_cadastro, 
             CASE
                 WHEN obito = '1' THEN TRUE
                 WHEN obito = '0' THEN FALSE
@@ -93,7 +97,11 @@ WITH
             {{ process_null('orientacaosexual') }} AS orientacao_sexual, 
             {{ process_null('nacionalidade') }} AS nacionalidade,
             {{ process_null('paisnascimento') }} AS pais_nascimento, 
-            participagrupocomunitario = '1' AS participa_grupo_comunitario, 
+            CASE
+                WHEN participagrupocomunitario = '1' THEN TRUE
+                WHEN participagrupocomunitario = '0' THEN FALSE
+                ELSE NULL
+            END AS participa_grupo_comunitario,
             CASE
                 WHEN possuiplanosaude = '1' THEN TRUE
                 WHEN possuiplanosaude = '0' THEN FALSE
@@ -178,7 +186,7 @@ WITH
                 WHEN vulnerabilidadesocial = '0' THEN FALSE
                 ELSE NULL
             END AS vulnerabilidade_social, 
-            SAFE_CAST(updated_at AS DATETIME) AS updated_at,
+            {{ process_null('updated_at')}}  AS updated_at,
 
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
