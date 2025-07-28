@@ -59,7 +59,11 @@ WITH
             end as sexo,
             SAFE_CAST({{ process_null('dta_nasc') }} AS DATE) AS data_nascimento,
             {{ process_null('code') }} AS code,
-            cadastropermanente = '1' AS cadastro_permanente, 
+            CASE
+                WHEN cadastropermanente = '1' THEN TRUE
+                WHEN cadastropermanente = '0' THEN FALSE
+                ELSE NULL
+            END AS cadastro_permanente,
             SAFE_CAST(dataatualizacaocadastro AS DATETIME) AS data_atualizacao_cadastro, 
             SAFE_CAST({{ process_null('dataatualizacaovinculoequipe') }} AS DATETIME) AS data_atualizacao_vinculo_equipe, 
             SAFE_CAST({{ process_null('datacadastro') }} AS DATETIME) AS data_cadastro, 
