@@ -52,10 +52,10 @@ with
         select
             cpf,
             case when trim(cns) in ('NONE') then null else trim(cns) end as cns,
-            row_number() over (partition by cpf order by updated_at desc, rank_cns asc) as rank_dupl, -- Ordenação levando em consideração a data de atualização e a posição no array de cns
+            row_number() over (partition by cpf order by updated_at desc, pos_lista asc) as rank_dupl, -- Ordenação levando em consideração a data de atualização e a posição no array de cns
         from
             (
-                select cpf, cns, updated_at, rank_cns
+                select cpf, cns, updated_at, pos_lista
                 from
                     smsrio_tb,
                     unnest(
@@ -63,9 +63,9 @@ with
                             replace(replace(replace(cns_lista, '[', ''), ']', ''), '"', ''),
                             ','
                         )
-                    ) as cns with offset as rank_cns -- Obtendo o elemento e a posição no array
+                    ) as cns with offset as pos_lista -- Obtendo o elemento e a posição no array
             )
-        group by cpf, cns, updated_at, rank_cns
+        group by cpf, cns, updated_at, pos_lista
 
     ),
 
@@ -100,7 +100,7 @@ with
         select
             cpf,
             telefone,
-            rank_telefone, -- Posição do telefone no array de telefones
+            pos_lista, -- Posição do telefone no array de telefones
             case
                 when regexp_contains(telefone, r'@')
                 then regexp_replace(trim(lower(telefone)), r'(\.com).*', '.com')
@@ -109,7 +109,7 @@ with
             updated_at
         from
             smsrio_tb,
-            unnest(telefone_lista) as telefone with offset as rank_telefone -- Obtendo o elemento e a posição no array
+            unnest(telefone_lista) as telefone with offset as pos_lista -- Obtendo o elemento e a posição no array
     ),
 
     -- CONTATO TELEPHONE
@@ -145,7 +145,7 @@ with
             end as valor_tipo,
             length(valor) as len,
             rank_dupl,
-            rank_telefone
+            pos_lista
         from
             (
                 select
@@ -154,11 +154,11 @@ with
                     telefone as valor_original,
                     {{ padronize_telefone("telefone") }} as valor,
                     row_number() over (
-                        partition by cpf order by rank_telefone asc
+                        partition by cpf order by pos_lista asc
                     ) as rank_dupl,
-                    rank_telefone
+                    pos_lista
                 from smsrio_contato_tb
-                group by cpf, telefone, updated_at, rank_telefone
+                group by cpf, telefone, updated_at, pos_lista
             )
         where not (trim(valor) in ("NONE", "NULL", "") and (rank_dupl >= 2))
     ),
@@ -200,7 +200,7 @@ with
             "smsrio" as sistema
         from smsrio_contato_telefone
         qualify row_number() over (
-                        partition by cpf, valor order by rank_dupl asc, rank_telefone asc
+                        partition by cpf, valor order by rank_dupl asc, pos_lista asc
                     )  = 1
         order by rank_dupl asc
     ),
