@@ -2,9 +2,16 @@
     config(
         schema="brutos_prontuario_vitacare_staging",
         alias="_base_ficha_a_historico",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy='merge', 
+        unique_key="id",
+        tags=['weekly']
     )
 }}
+
+{% set partitions_to_replace = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 10 day)"
+) %}
 
 with
 
@@ -17,6 +24,9 @@ with
             ) as id, 
             * 
         from {{ ref("raw_prontuario_vitacare_historico__cadastro") }}
+        {% if is_incremental() %} 
+        where data_particao >=  {{ partitions_to_replace }}
+        {% endif %}
     ),
 
     dados_ficha_a as (

@@ -2,6 +2,7 @@
     config(
         alias="paciente",
         materialized="table",
+        tags=['daily']
     )
 }}
 

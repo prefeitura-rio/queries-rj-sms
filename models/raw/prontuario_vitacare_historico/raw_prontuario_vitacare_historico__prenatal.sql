@@ -2,6 +2,8 @@
     config(
         alias="pre_natal",
         materialized="incremental",
+        incremental_strategy='merge', 
+        unique_key=['id_prontuario_global'],
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
