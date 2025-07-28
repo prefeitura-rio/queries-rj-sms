@@ -10,6 +10,7 @@
             "data_type": "date",
             "granularity": "month",
         },
+        tags=['daily']
     )
 }}
 
@@ -24,6 +25,7 @@ with
             source_id  as id_prontuario_local,
             concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_prontuario_global
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+        {% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}
     ),
     bruto_atendimento_eventos_ranqueados as (
         select *,
@@ -104,4 +106,3 @@ select id_prontuario_local,
             }} as id_hci,
             * except (id_prontuario_local,id_prontuario_global),
 from atendimento_continuo
-{% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}

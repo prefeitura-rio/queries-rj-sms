@@ -2,6 +2,8 @@
     config(
         alias="unidade", 
         materialized="incremental",
+        incremental_strategy='merge', 
+        unique_key=['id_cnes'],
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
