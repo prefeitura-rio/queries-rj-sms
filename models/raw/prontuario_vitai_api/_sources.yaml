@@ -8,3 +8,4 @@ sources:
       - name: boletim
       - name: atendimento
       - name: estabelecimento
+      - name: profissional
