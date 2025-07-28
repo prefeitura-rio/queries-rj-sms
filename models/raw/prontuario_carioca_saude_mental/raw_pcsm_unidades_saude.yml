@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: raw_pcsm_unidades_saude
+    description: "Unidades de saúde da prefeitura do Rio de Janeiro."
+    columns:
+      - name: id_unidade_saude
+        description: "Identificador único da Unidade de Saúde."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_unidades_saude__id_unidade_saude__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_unidades_saude__id_unidade_saude__unique
+              severity: error
+      - name: nome_unidade_saude
+        description: "Nome da Unidade de Saúde."
+        data_type: string
+      - name: endereco_unidade_saude
+        description: "Endereço da Unidade de Saúde."
+        data_type: string
+      - name: unidade_federativa
+        description: "Sigla da UF do endereço da Unidade de Saúde."
+        data_type: string
+      - name: cidade_unidade_saude
+        description: "Cidade do endereço da Unidade de Saúde."
+        data_type: string
+      - name: bairro_unidade_saude
+        description: "Bairro do endereço da Unidade de Saúde."
+        data_type: string
+      - name: cep_unidade_saude
+        description: "CEP do endereço da Unidade de Saúde."
+        data_type: string
+      - name: cnpj_unidade_saude
+        description: "CNPJ da Unidade de Saúde."
+        data_type: string
+      - name: codigo_nacional_estabelecimento_saude
+        description: "Código de CNES (SUS) da Unidade de Saúde."
+        data_type: string
+      - name: telefone_unidade_saude
+        description: "Telefone da Unidade de Saúde."
+        data_type: string
+      - name: pernoite_unidade_saude
+        description: "Booleano que indica que pode haver pernoite na unidade de saúde (S-Sim,N-Não)."
+        data_type: string
+      - name: descricao_pernoite_unidade_saude
+        description: "Descrição do pernoite na unidade de saúde. (Sim, Não, Não informado, Não classificado)"
+        data_type: string
+      - name: atendimento24h_unidade_saude
+        description: "Booleano que indica que pode haver atendimento 24h na unidade de saúde. (S-Sim,N-Não)"
+        data_type: string
+        -name: descricao_atendimento24h_unidade_saude
+        description: "Descrição do atendimento 24h na unidade de saúde. (Sim, Não, Não informado, Não classificado)"
+        data_type: string
+      - name: leito_numerado_unidade_saude
+        description: "Booleano que indica que há leito numerado na unidade de saúde. (S-Sim,N-Não)"
+        data_type: string
+      - name: descricao_leito_numerado_unidade_saude
+        description: "Descrição do leito numerado na unidade de saúde. (Sim, Não, Não informado, Não classificado)"
+        data_type: string
+      - name: acolhimento_noturno_unidade_saude
+        description: "Booleano que indica que pode haver acolhimento noturno na unidade de saúde. (S-Sim,N-Não)"
+        data_type: string
+      - name: descricao_acolhimento_noturno_unidade_saude
+        description: "Descrição do acolhimento noturno na unidade de saúde. (Sim, Não, Não informado, Não classificado)"
+        data_type: string
+      - name: utilizacao_procedimento
+        description: "Booleano que indica que pode haver utilização de procedimentos. (S-Sim,N-Não). Ex. A unidade de saúde utiliza procedimentos quando está organizada em setores."
+        data_type: string
+      - name: descricao_utilizacao_procedimento
+        description: "Descrição da utilização de procedimentos na unidade de saúde. (Sim, Não, Não informado, Não classificado)"
+        data_type: string
+      - name: atendimento8as5h_unidade_saude
+        description: "Booleano que indica que o atendimento é de 8 as 5h na unidade de saúde. (S-Sim,N-Não)"
+        data_type: string
+      - name: descricao_atendimento8as5h_unidade_saude
+        description: "Descrição do atendimento de 8 as 5h na unidade de saúde. (Sim, Não, Não informado, Não classificado)"
+        data_type: string
+      - name: id_tipo_unidade_saude
+        description: "Identificador de tipo de atendimento da Unidade de Saúde. Aponta para a tabela de tipo de Unidade de Saúde (gh_us_tipo)."
+        data_type: int64
+      - name: tipo_esfera_administrativa
+        description: "Tipo de esfera administrativa da Unidade de Saúde. (Municipal, Estadual e Federal)"
+        data_type: string
+      - name: area_progamatica_servico
+        description: "Área programática do serviço. Ex: 1.0, 2.1 (sem pontuação)"
+        data_type: string
+      - name: status_registro
+        description: "Indicador de status do registro (N ou vazio - Ativo, S-Inativo)."
+        data_type: string
+      - name: descricao_status_registro
+        description: "Descrição do status do registro. (N ou vazio - Ativo, S-Inativo)"
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

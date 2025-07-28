@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: raw_pcsm_comorbidades
+    description: "Comorbidades possíveis para pacientes."
+    columns:
+      - name: id_comorbidade
+        description: "Identificador único da comorbidade."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_comorbidades__id_comorbidade__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_comorbidades__id_comorbidade__unique
+              severity: error
+      - name: descricao_comorbidade
+        description: "Descrição da comorbidade."
+        data_type: string
+      - name: codigo_doenca
+        description: "Código internacional de doenças (CID10) dado à comorbidade."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

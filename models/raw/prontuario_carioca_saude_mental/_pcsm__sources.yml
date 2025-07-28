@@ -20,6 +20,20 @@ sources:
       - name: gh_articula
       - name: gh_articula_paciente
       - name: gh_acolhimento
+      - name: gh_us
+      - name: gh_us_tipo 
+      - name: gh_comorbidades
+      - name: gh_drogas
+      - name: gh_equipe
+      - name: gh_srt
+      - name: gh_ativgrp
+      - name: gh_tpatendimentos
+      - name: gh_encam_atend
+      - name: gh_tpsaidaacolhe
+      - name: gh_tplocal
+      - name: gh_local
+      - name: gh_tpatividades
+      - name: gh_clinfamil_equipes
       
   - name: brutos_prontuario_carioca_saude_mental
     database: rj-sms

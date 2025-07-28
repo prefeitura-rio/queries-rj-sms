@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: raw_pcsm_cbos_relacionados_tipo_atendimento
+    description: "Lista de CBOs relacionados a cada tipo de atendimento em saúde mental."
+    columns:
+      - name: id_tipo_atendimento
+        description: "Identificador único do tipo de atendimento."
+        data_type: int64
+      - name: cbo
+        description: "Código Brasileiro de Ocupação (CBO) relacionado ao tipo de atendimento."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

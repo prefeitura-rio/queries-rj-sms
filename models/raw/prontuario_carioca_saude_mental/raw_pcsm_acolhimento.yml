@@ -9,10 +9,10 @@ models:
         data_type: int64
         _data_tests:
           - not_null:
-              name: raw_pcsm_acolhimento__id_acolhimento__not_null
+              name: raw_pcsm_acolhimento__id_tipo_saida_acolhimento__not_null
               severity: error
           - unique:
-              name: raw_pcsm_acolhimento__id_acolhimento__unique
+              name: raw_pcsm_acolhimento__id_tipo_saida_acolhimento__unique
               severity: error
       - name: data_entrada_acolhimento
         description: "Data de entrada do acolhimento."
@@ -41,7 +41,7 @@ models:
       - name: id_funcionario_cadastramento
         description: "Identificador do funcionário da unidade de saúde que registrou o acolhimento no sistema."
         data_type: int64
-      - name: id_tipo_saida
+      - name: id_tipo_saida_acolhimento
         description: "Identificador do tipo de saída de acolhimento."
         data_type: int64
       - name: leito_ocupado
