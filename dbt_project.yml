@@ -229,7 +229,7 @@ models:
           dominio: subpav
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
-        +tags: ["vitacare", "daily"]
+        +tags: ["vitacare"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -245,7 +245,7 @@ models:
           dominio: historico_clinico
       prontuario_vitacare_historico:
         +schema: brutos_prontuario_vitacare_historico
-        +tags: ["vitacare", "daily", "vitacare_historico"]
+        +tags: ["vitacare", "weekly", "vitacare_historico"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim

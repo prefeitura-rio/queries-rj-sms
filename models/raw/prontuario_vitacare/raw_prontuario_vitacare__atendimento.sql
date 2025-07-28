@@ -1,5 +1,3 @@
-
-
 {{
     config(
         alias="atendimento",
@@ -12,6 +10,7 @@
             "data_type": "date",
             "granularity": "day",
         },
+        tags=['daily']
     )
 }}
 
@@ -20,13 +19,25 @@
 ) %}
 
 with
-
-    atendimentos as (
+    atendimento_historico as (
         select *, 'historico' as origem, 1  as rank
         from {{ ref("base_prontuario_vitacare__atendimento_historico") }}
-        union all
+        {% if is_incremental() %}
+        where data_particao >= {{ partitions_to_replace }}
+        {% endif %}    
+    ),
+    atendimento_continuo as (
         select *, 'continuo' as origem, 2  as rank
         from {{ ref("base_prontuario_vitacare__atendimento_continuo") }}
+        {% if is_incremental() %}
+        where data_particao >= {{ partitions_to_replace }}
+        {% endif %}
+    ),
+
+    atendimentos as (
+        select * from atendimento_historico
+        union all
+        select * from atendimento_continuo
     ),
     atendimentos_teste_duplicados as (
         select id_hci, count(*) as qtd
@@ -34,22 +45,13 @@ with
         where cnes_unidade in ('6922031', '9391983', '7856954', '7414226') 
         and datahora_inicio > '2024-11-06'
         group by 1
+        having count(*) > 1
     ),
-    atendimentos_sem_teste_duplicados as (
+    atendimentos_unicos as (
         select *
         from atendimentos
         where id_hci not in (select id_hci from atendimentos_teste_duplicados)
-    ),
-
-    atendimentos_deduplicados as (
-        select *
-        from atendimentos_sem_teste_duplicados
         qualify row_number() over (partition by id_prontuario_global order by rank, updated_at desc) = 1
-    ),
-
-    atendimentos_unicos as (
-        select * 
-        from atendimentos_deduplicados
     )
 
 select 

@@ -2,6 +2,7 @@
     config(
         alias="ficha_a",
         materialized="table",
+        tags=['daily']
     )
 }}
 
