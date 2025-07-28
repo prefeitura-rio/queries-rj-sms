@@ -27,7 +27,7 @@ with
             ut_id as id_paciente,
             npront as numero_prontuario,
             
-            id_cnes as unidade_cadastro
+            id_cnes as unidade_cadastro,
             ap as ap_cadastro,
 
             nome,
