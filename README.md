@@ -12,7 +12,7 @@ Administrador: **[Pedro Marques](https://github.com/TanookiVerde)**
 | **Python** | 3.10.x | Windows: Baixe o instalador https://www.python.org/downloads/release/python-3109/ |
 | **Poetry** | 1.7.1  | `pip install poetry==1.7.1` |
 | **dbt-core** + **dbt-bigquery** |  | `pip install dbt-core dbt-bigquery` |
-| **Recce** | | Ferramenta para checar a diferença entre os dados em diversos ambientes <br> <span style="color:gray; font-size:smaller;">Obs: O uso do Recce ainda está em construção e pode sofrer alterações.</span> |
+| **Recce** | | Ferramenta para checar a diferença entre os dados em diversos ambientes <br> |
 | **Git** | | Windows: Baixe o instalador https://git-scm.com/downloads/win |
 
 > **Clone o repositório**  
@@ -82,16 +82,10 @@ dbt deps              # baixa dbt-utils e demais packages declarados em packages
 ---
 
 ## 🔍 Fluxo de trabalho com o recce
-> 🚧 **Esta seção está em construção.**  
-> Documentação detalhada será adicionada em breve.  
+A ferramenta spawna um contêiner e publica a interface em `http://localhost:8000`.  
+Assim você avalia o diff entre produção e a sua branch antes mesmo do merge, sendo útil para avaliar a extensão das suas alterações no fluxo de transformação de dados.
 
-| Sistema         | Comando para iniciar                 |
-| --------------- | ------------------------------------ |
-| **Linux/macOS** |  |
-| **Windows**     |  |
-
-O script spawna um contêiner e publica a interface em `http://localhost:8000`.  
-Assim você avalia o diff entre produção e a sua branch antes mesmo do merge.
+[Passo a passo de como utilizar o recce](tools/recce.md)
 
 ---
 
