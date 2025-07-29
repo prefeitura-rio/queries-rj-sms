@@ -678,7 +678,7 @@ models:
       - name: metadados
         description: "Metadados associados ao registro." 
 
-  - name: raw_informes_vitacare_ficha_c_v2
+  - name: raw_informes_vitacare__ficha_c_v2
     description: >
       Modelo contendo dados de pacientes atendidos pela atenção primária, incluindo informações demográficas, de saúde, socioeconômicas do cadastro infantil.
     columns:
@@ -807,7 +807,7 @@ models:
       - name: data_particao
         description: "Data completa de partição dos dados"
 
-  - name: raw_informes_vitacare_estado_nutricional_sisvan
+  - name: raw_informes_vitacare__estado_nutricional_sisvan
     description: >
       Modelo contendo dados extraídos do VitahisCare com informações nutricionais de indivíduos atendidos na atenção primária, incluindo peso, altura, IMC e classificações por faixa etária. Baseado no SISVAN (Sistema de Vigilância Alimentar e Nutricional).
     columns:
@@ -868,7 +868,7 @@ models:
       - name: data_particao
         description: "Data completa de partição dos dados"
 
-  - name: raw_informes_vitacare_criancas_menores_5_anos
+  - name: raw_informes_vitacare__criancas_menores_5_anos
     description: >
       Modelo contendo dados sobre crianças menores de 5 anos atendidos pela atenção primária, incluindo informações cadastrais, dados de saúde, consultas médicas e de enfermagem, visitas de ACS, aleitamento materno, exames neonatais (teste do pezinho, da orelhinha, reflexo vermelho), dados de vacinação e antropometria.
     columns:
@@ -997,7 +997,7 @@ models:
       - name: data_particao
         description: "Data completa de partição dos dados"
 
-  - name: raw_informes_vitacare_indicadores_cg_variavel_1
+  - name: raw_informes_vitacare__indicadores_cg_variavel_1
     description: "Modelo de Indicadores do contrato de gestão referente a Variável 1."
     columns:
       - name: competencia
@@ -1025,7 +1025,7 @@ models:
       - name: data_particao
         description: "Data completa de partição dos dados"
 
-  - name: raw_informes_vitacare_indicadores_cg_variavel_2
+  - name: raw_informes_vitacare__indicadores_cg_variavel_2
     description: "Modelo de Indicadores do contrato de gestão referente a Variável 2."
     columns:
       - name: competencia
@@ -1057,7 +1057,7 @@ models:
       - name: data_particao
         description: "Data completa de partição dos dados"
 
-  - name: raw_informes_vitacare_indicadores_cg_variavel_3
+  - name: raw_informes_vitacare__indicadores_cg_variavel_3
     description: "Modelo de Indicadores do contrato de gestão referente a Variável 3."
     columns:
       - name: competencia
@@ -1103,7 +1103,7 @@ models:
       - name: data_particao
         description: "Data completa de partição dos dados"
 
-  - name: raw_informes_vitacare_listagem_pacientes_tea
+  - name: raw_informes_vitacare__listagem_pacientes_tea
     description: |
       Modelo contendo dados detalhados dos pacientes atendidos com Transtorno do Espectro Autista (TEA), 
       incluindo informações demográficas, diagnósticos clínicos (CID), e avaliações comportamentais realizadas pelas escalas M-CHAT-R/F e AQ-10.

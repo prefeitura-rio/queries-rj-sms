@@ -6,22 +6,21 @@
 }}
 
 with
-    pacientes_sih as (
+    -- ------------------------------------------------------------------------------------------------
+    -- Base de Dados
+    -- ------------------------------------------------------------------------------------------------
+    pacientes_base as (
         select distinct
-            {{ clean_name_string("upper(paciente_nome)") }} as nome_sih,
-            {{ clean_name_string("upper(paciente_mae_nome)") }} as nome_mae_sih,
-            paciente_data_nascimento as data_nascimento_sih,
-            id_hash as id_hash_aih
+            id_aih as id_base,
+            paciente_cpf as cpf_base,
+            {{ clean_name_string("upper(paciente_nome)") }} as nome_base,
+            {{ clean_name_string("upper(paciente_mae_nome)") }} as nome_mae_base,
+            cast(paciente_data_nascimento as date) as data_nascimento_base,
         from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}
-
-        where
-            paciente_nome is not null
-            and paciente_mae_nome is not null
-            and paciente_data_nascimento is not null
     ),
     pacientes_hci as (
         select
-            safe_cast(cpf as int64) as cpf_fonte,
+            safe_cast(cpf as string) as cpf_fonte,
             {{ clean_name_string("upper(dados.nome)") }} as nome_fonte,
             {{ clean_name_string("upper(dados.mae_nome)") }} as nome_mae_fonte,
             dados.data_nascimento as data_nascimento_fonte
@@ -31,62 +30,162 @@ with
             and dados.mae_nome is not null
             and dados.data_nascimento is not null
     ),
-    scores_fuzzy as (
+    -- ------------------------------------------------------------------------------------------------
+    -- Identificando Casos
+    -- ------------------------------------------------------------------------------------------------
+    caso_1_com_cpf as (
         select
-            nome_sih,
-            nome_mae_sih,
-            data_nascimento_sih,
-            id_hash_aih,
-            cpf_fonte,
-            nome_fonte,
-            nome_mae_fonte,
-
-            {{ calculate_lev("nome_sih", "nome_fonte") }} as d_lev_nome,
-            {{ calculate_lev("nome_mae_sih", "nome_mae_fonte") }} as d_lev_mae,
-            {{ calculate_jaccard("nome_sih", "nome_fonte") }} as d_jac_nome,
-            {{ calculate_jaccard("nome_mae_sih", "nome_mae_fonte") }} as d_jac_mae
-
-        from pacientes_sih as sih
-        join pacientes_hci as fonte on sih.data_nascimento_sih = fonte.data_nascimento_fonte
+            *
+        from pacientes_base
+        where
+            cpf_base is not null
     ),
-    scores_fuzzy_resumidos as (
+    caso_2_sem_cpf_com_dados_fuzzy as (
+        select
+            *
+        from pacientes_base
+        where
+            cpf_base is null 
+            and (
+                nome_base is not null 
+                and nome_mae_base is not null 
+                and data_nascimento_base is not null
+            )
+    ),
+    caso_3_sem_cpf_sem_dados_suficientes as (
+        select
+            *
+        from pacientes_base
+        where
+            cpf_base is null 
+            and (
+                nome_base is null 
+                or nome_mae_base is null 
+                or data_nascimento_base is null
+            )
+    ),
+    -- ------------------------------------------------------------------------------------------------
+    -- Processando Casos
+    -- ------------------------------------------------------------------------------------------------
+    -- Caso 1: CPF Presente
+    caso_1_com_cpf_resultados as (
+        select
+            id_base,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "cpf_base",
+                    ]
+                )
+            }} as id_paciente,
+            'chave-cpf' as tipo_linkage,
+            cast(null as float64) as score_final,
+
+            nome_base,
+            nome_mae_base,
+            cast(data_nascimento_base as date) as data_nascimento_base,
+            cpf_base,
+
+            cast(null as string) as nome_fonte,
+            cast(null as string) as nome_mae_fonte,
+            cast(null as date) as data_nascimento_fonte,
+            cast(null as string) as cpf_fonte
+        from caso_1_com_cpf
+    ),
+
+    -- Caso 2: CPF Não Presente + Campos Nome, Nome da Mãe e Data de Nascimento Presentes
+    caso_2_sem_cpf_com_dados_scores as (
         select
             *,
 
-            (0.5 * d_lev_nome) + (0.5 * d_lev_mae) as score_lev,
-            (0.5 * d_jac_nome) + (0.5 * d_jac_mae) as score_jac,
+            (
+                {{ calculate_lev("nome_base", "nome_fonte") }} + 
+                {{ calculate_lev("nome_mae_base", "nome_mae_fonte") }}
+            )/2 as score_lev,
+            (
+                {{ calculate_jaccard("nome_base", "nome_fonte") }} + 
+                {{ calculate_jaccard("nome_mae_base", "nome_mae_fonte") }}
+            )/2 as score_jac,
+            (
+                {{ calculate_lev("nome_base", "nome_fonte") }} + 
+                {{ calculate_lev("nome_mae_base", "nome_mae_fonte") }} + 
+                {{ calculate_jaccard("nome_base", "nome_fonte") }} + 
+                {{ calculate_jaccard("nome_mae_base", "nome_mae_fonte") }}
+            )/4 as score_final
 
-            (0.25 * d_lev_nome)
-            + (0.25 * d_lev_mae)
-            + (0.25 * d_jac_nome)
-            + (0.25 * d_jac_mae) as score_final
-
-        from scores_fuzzy
+        from caso_2_sem_cpf_com_dados_fuzzy
+            left join pacientes_hci on data_nascimento_base = data_nascimento_fonte
     ),
-    ranking_scores as (
+    caso_2_sem_cpf_com_dados_ranked as (
         select
             *,
             row_number() over (
-                partition by nome_sih, nome_mae_sih, data_nascimento_sih
+                partition by id_base
                 order by score_final asc
-            ) as rn
-        from scores_fuzzy_resumidos
+            ) as rn,
+
+            case 
+                when score_final = 0 then 'match-exato'
+                else 'match-fuzzy' 
+            end as tipo_linkage
+        from caso_2_sem_cpf_com_dados_scores
+    ),
+    caso_2_sem_cpf_com_dados_resultados as (
+        select
+            id_base,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "cpf_fonte",
+                    ]
+                )
+            }} as id_paciente,
+            tipo_linkage,
+            score_final,
+
+            nome_base,
+            nome_mae_base,
+            data_nascimento_base,
+            cpf_base,
+
+            nome_fonte,
+            nome_mae_fonte,
+            data_nascimento_fonte,
+            cpf_fonte
+        from caso_2_sem_cpf_com_dados_ranked
+        where rn = 1
+    ),
+
+    -- Caso 3: CPF Não Presente + Campos Nome, Nome da Mãe e Data de Nascimento Não Presentes
+    caso_3_sem_cpf_sem_dados_suficientes_resultados as (
+        select
+            id_base,
+            cast(null as string) as id_paciente,
+            'dados-insuficientes' as tipo_linkage,
+            null as score_final,
+
+            nome_base,
+            nome_mae_base,
+            data_nascimento_base,
+            cpf_base,
+
+            cast(null as string) as nome_fonte,
+            cast(null as string) as nome_mae_fonte,
+            cast(null as date) as data_nascimento_fonte,
+            cast(null as string) as cpf_fonte
+        from caso_3_sem_cpf_sem_dados_suficientes
+    ),
+    -- ------------------------------------------------------------------------------------------------
+    -- Unindo Casos
+    -- ------------------------------------------------------------------------------------------------
+    casos_unidos as (
+        select * from caso_1_com_cpf_resultados
+        union all
+        select * from caso_2_sem_cpf_com_dados_resultados
+        union all
+        select * from caso_3_sem_cpf_sem_dados_suficientes_resultados
     )
 
-select distinct
-    id_hash_aih,
-    to_hex(sha256(cast(cpf_fonte as string))) as id_hash_paciente,
-    data_nascimento_sih as data_nasc,
-    nome_sih as nome,
-    nome_fonte as nome_candidato,
-    nome_mae_sih as nome_mae,
-    nome_mae_fonte as nome_mae_candidato,
-    cpf_fonte as cpf_candidato,
-    score_lev,
-    score_jac,
-    score_final
-from ranking_scores
-where
-    rn = 1
-    and ((score_lev <= 0.2) or (score_jac <= 0.2))
-    and score_final <= 0.4
+select *
+from casos_unidos
+order by tipo_linkage, score_final asc

@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: raw_pcsm_beneficios
+    description: "Tipos de beneficios sociais que os pacientes recebem. Esta lista foi criada com base em um arquivo .ini do Sistema PCSM"
+    columns:
+      - name: codigo
+        description: "Código do tipo de benefício segundo consta no arquivo .ini do sistema PCSM."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_beneficios__codigo__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_beneficios__codigo__unique
+              severity: error
+      - name: descricao
+        description: "Descrição do tipo de benefício social."
+        data_type: string
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp

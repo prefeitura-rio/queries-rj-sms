@@ -3,7 +3,9 @@
         schema="brutos_prontuario_vitacare_staging",
         alias="_base_paciente_continuo",
         materialized="incremental",
+        incremental_strategy='merge', 
         unique_key="id",
+        tags=['daily']
     )
 }}
 

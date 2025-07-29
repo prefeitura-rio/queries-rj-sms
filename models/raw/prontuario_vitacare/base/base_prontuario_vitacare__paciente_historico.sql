@@ -2,14 +2,20 @@
     config(
         schema="brutos_prontuario_vitacare_staging",
         alias="_base_paciente_historico",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy='merge', 
+        unique_key="id",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "day",
         },
+        tags=['weekly']
     )
 }}
+{% set seven_days_ago = (
+    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
+).isoformat() %}
 
 WITH
 
@@ -17,6 +23,7 @@ WITH
         SELECT
             *
         FROM {{ ref('raw_prontuario_vitacare_historico__cadastro') }} 
+        {% if is_incremental() %} where loaded_at > '{{seven_days_ago}}' {% endif %}
     ),
 
     selecao_pacientes AS (

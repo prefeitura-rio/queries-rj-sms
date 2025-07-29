@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: raw_pcsm_tipos_atividades
+    description: "Tipos possíveis de atividades. Exemplo: Reabilitação psicosocial."
+    columns:
+      - name: id_tipo_atividade
+        description: "Identificador único do tipo de atividade."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_tipo_atividade__id_tipo_atividade__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_tipo_atividade__id_tipo_atividade__unique
+              severity: error
+      - name: descricao_tipo_atividade
+        description: "Descrição do tipo da atividade."
+        data_type: string
+      - name: codigo_procedimento
+        description: "Código do procedimento que deverá corresponder a este tipo de atividade."
+        data_type: int64
+      - name: lista_cbos_permitidos
+        description: "Lista, cujos elementos são separados por vírgula, de CBO de profissionais que terão a permissão para realizar este tipo de atividade."
+        data_type: string
+      - name: criterio_paciente_sem_cadastro
+        description: "Indicador de uso do critério de pacientes sem cadastro para faturamento."
+        data_type: string
+      - name: descricao_criterio_paciente_sem_cadastro
+        description: "Descrição do critério de pacientes sem cadastro para faturamento."
+        data_type: string
+      - name: forma_faturamento
+        description: "Indicador de forma de faturamento do tipo de atendimento. (BPA-I,BPA-C,RAAS)."
+        data_type: string
+      - name: descricao_forma_faturamento
+        description: "Descrição da forma de faturamento do tipo de atendimento."
+        data_type: string
+      - name: status_registro
+        description: "Booleano que indica o status do registro. (S-Ativo,N-Inativo)."
+        data_type: string
+      - name: descricao_status_registro
+        description: "Descrição do status do registro (Ativo, Inativo)."
+        data_type: string
+      - name: lista_rede_atencao_habilitado
+        description: "Lista de pontos de atenção da RAPS que estarão habilitados neste tipo de atividade (separados por vírgula)."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

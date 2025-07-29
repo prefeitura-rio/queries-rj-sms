@@ -2,6 +2,8 @@
     config(
         alias="encaminhamento", 
         materialized="incremental",
+        incremental_strategy='merge', 
+        unique_key=['id_prontuario_global'],
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -12,7 +14,6 @@
 }}
 
 WITH
-
     source_encaminhamentos AS (
         SELECT 
             CONCAT(
@@ -24,18 +25,12 @@ WITH
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'encaminhamentos') }} 
     ),
 
-
       -- Using window function to deduplicate encaminhamentos
     encaminhamentos_deduplicados AS (
         SELECT
             *
-        FROM (
-            SELECT
-                *,
-                ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY extracted_at DESC) AS rn
-            FROM source_encaminhamentos
-        )
-        WHERE rn = 1
+        FROM source_encaminhamentos 
+        qualify row_number() over (partition by id_prontuario_global, encaminhamento_especialidade order by extracted_at desc) = 1
     ),
 
     fato_encaminhamentos AS (
@@ -44,9 +39,7 @@ WITH
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             id_cnes,
-
             encaminhamento_especialidade,
-   
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM encaminhamentos_deduplicados

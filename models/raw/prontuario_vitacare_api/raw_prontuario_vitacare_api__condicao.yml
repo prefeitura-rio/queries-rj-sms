@@ -1,0 +1,114 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__condicao
+    description: >
+      Tabela contendo registros de atendimentos realizados nas unidades de saúde, incluindo informações do profissional, do paciente, dados clínicos e metadados de replicação.
+
+    columns:
+      - name: id_surrogate
+        description: Chave primária gerada a partir de uma combinação dos campos `id_cnes`, `cpf_paciente`, `data_consulta` e `tipo_atendimento`.
+        tests:
+          - unique
+          - not_null
+
+      # Foreign Keys
+      - name: id_cnes
+        description: Identificador CNES da unidade de saúde onde ocorreu o atendimento.
+
+      - name: id_ine
+        description: Identificador INE da equipe responsável pelo atendimento.
+
+      - name: id_cns_profissional
+        description: CNS do profissional de saúde responsável pelo atendimento.
+
+      - name: area_programatica
+        description: Área programática da unidade de saúde.
+
+      - name: unidade
+        description: Nome ou identificador da unidade de saúde.
+
+      # Common Fields
+      - name: nome_profissional
+        description: Nome do profissional que realizou o atendimento.
+
+      - name: cbo_profissional
+        description: Código da Classificação Brasileira de Ocupações (CBO) do profissional.
+
+      - name: nome_paciente
+        description: Nome completo do paciente.
+
+      - name: cpf_paciente
+        description: CPF do paciente.
+
+      - name: cns_paciente
+        description: Cartão Nacional de Saúde (CNS) do paciente.
+
+      - name: sexo_paciente
+        description: Sexo do paciente.
+
+      - name: data_nasc_paciente
+        description: Data de nascimento do paciente.
+
+      - name: raca_paciente
+        description: Raça/cor do paciente conforme classificação oficial.
+
+      - name: tipo_atendimento
+        description: Tipo de atendimento realizado (ex consulta, retorno, acolhimento, etc.).
+
+      - name: data_consulta
+        description: Data e hora em que o atendimento foi realizado.
+
+      - name: diagnosticos_cid
+        description: Lista de diagnósticos registrados no atendimento conforme a CID.
+
+      - name: diagnosticos_ciap
+        description: Lista de diagnósticos registrados no atendimento conforme a CIAP.
+
+      - name: peso
+        description: Peso do paciente registrado no atendimento, em quilogramas.
+
+      - name: altura
+        description: Altura do paciente registrada no atendimento, em centímetros.
+
+      - name: pa_max
+        description: Pressão arterial sistólica (máxima) registrada.
+
+      - name: pa_min
+        description: Pressão arterial diastólica (mínima) registrada.
+
+      - name: temperatura
+        description: Temperatura corporal do paciente em graus Celsius.
+
+      - name: saturacao_o2
+        description: Nível de saturação de oxigênio no sangue, em percentual.
+
+      - name: paciente_temporario
+        description: Indica se o paciente é temporário ou não (booleano ou categórico).
+
+      - name: paciente_situacao_rua
+        description: Indica se o paciente está em situação de rua.
+
+      # Dados de requisição
+      - name: requisicao_id_cnes
+        description: ID da unidade CNES da origem da requisição.
+
+      - name: requisicao_area_programatica
+        description: Área programática informada na requisição.
+
+      - name: requisicao_endpoint
+        description: Endpoint de origem do dado.
+
+      # Metadados
+      - name: metadados
+        description: Campo estruturado contendo metadados do registro.
+      - name: metadados.updated_at
+        description: Data e hora da última atualização da informação na origem.
+      - name: metadados.extracted_at
+        description: Data e hora em que o dado foi replicado pela Vitacare.
+      - name: metadados.loaded_at
+        description: Data e hora em que o dado foi carregado no data warehouse.
+
+      # Partição
+      - name: particao_data_consulta
+        description: Data do atendimento utilizada como partição da tabela.

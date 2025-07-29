@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: raw_pcsm_servico_residencial_terapeutico_pacientes
+    description: "Pacientes cadastrados em srt (serviço residencial terapêutico)."
+    columns:
+      - name: id_paciente
+        description: "Identificador do paciente."
+        data_tests:
+          - not_null:
+              name: raw_pcsm_servico_residencial_terapeutico_pacientes__id_paciente__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_servico_residencial_terapeutico_pacientes__id_paciente__unique
+              severity: error
+        data_type: int64
+      - name: id_servico_residencial
+        description: "Identificador do srt (serviço residencial terapêutico)."
+        data_type: int64
+      - name: data_cadastro
+        description: "Data do cadastro do serviço residencial terapêutico."
+        data_type: date
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no DBT."
+        data_type: timestamp
