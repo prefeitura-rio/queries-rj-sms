@@ -99,7 +99,7 @@ WITH
             end as irritabilidade_observada,
             {{ process_null('fluidaccumulationtype') }} as tipo_acumulacao_liquido,
             {{ process_null('classificationgroup') }} as grupo_classificacao,
-            replace({{ process_null('sinan') }}, '.0', '') as sinan
+            replace({{ process_null('sinan') }}, '.0', '') as sinan,
 
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
