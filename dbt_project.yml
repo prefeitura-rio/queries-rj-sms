@@ -245,7 +245,7 @@ models:
           dominio: historico_clinico
       prontuario_vitacare_historico:
         +schema: brutos_prontuario_vitacare_historico
-        +tags: ["vitacare", "daily", "vitacare_historico"]
+        +tags: ["vitacare", "vitacare_historico"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
