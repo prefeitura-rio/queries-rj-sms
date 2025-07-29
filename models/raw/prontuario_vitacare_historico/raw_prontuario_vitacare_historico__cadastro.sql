@@ -57,7 +57,7 @@ WITH
                 when sexo='male' then 'Masculino'
                 else null
             end as sexo,
-            {{ process_null('dta_nasc') }} AS data_nascimento,
+            SAFE_CAST({{ process_null('dta_nasc') }} AS DATE) AS data_nascimento,
             {{ process_null('code') }} AS code,
             CASE
                 WHEN cadastropermanente = '1' THEN TRUE

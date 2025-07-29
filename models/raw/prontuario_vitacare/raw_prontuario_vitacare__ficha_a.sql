@@ -138,7 +138,7 @@ with
                 'taipa revestida','madeira','taipa não revestida') then null
                 else tipo_domicilio
             end as tipo_domicilio,-- ver com poli preenchimentos possiveis
-            safe_cast(data_nascimento as date) as data_nascimento,
+            data_nascimento as data_nascimento,
             safe_cast(initcap(pais_nascimento) as string) as pais_nascimento,
             safe_cast(initcap(tipo_logradouro) as string) as tipo_logradouro,
             case 

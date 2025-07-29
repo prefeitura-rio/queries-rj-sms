@@ -73,7 +73,8 @@ with
             nullif(JSON_EXTRACT_SCALAR(data, '$.nacionalidade'), '') AS nacionalidade,
             nullif(JSON_EXTRACT_SCALAR(data, '$.rendaFamiliar'), '') AS renda_familiar,
             nullif(JSON_EXTRACT_SCALAR(data, '$.tipoDomicilio'), '') AS tipo_domicilio,
-            nullif(JSON_EXTRACT_SCALAR(data, '$.dataNascimento'), '') AS data_nascimento,
+            safe_cast(
+                safe_cast(nullif(JSON_EXTRACT_SCALAR(data, '$.dataNascimento'), '') as datetime) as date) AS data_nascimento,
             nullif(JSON_EXTRACT_SCALAR(data, '$.paisNascimento'), '') AS pais_nascimento,
             nullif(JSON_EXTRACT_SCALAR(data, '$.tipoLogradouro'), '') AS tipo_logradouro,
             nullif(JSON_EXTRACT_SCALAR(data, '$.tratamentoAgua'), '') AS tratamento_agua,
