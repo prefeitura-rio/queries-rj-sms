@@ -130,10 +130,12 @@ with
                             "não registrado"
                         )
                     )
+                when
+                    movimento_tipo_grupo = "CONSUMO"
+                    and movimento_tipo = "OUTRO"
+                then "Correção de lote (diminuição) / Outro"
                 when movimento_tipo_grupo = "TRANSFERENCIA EXTERNA"
                 then "Transferência entre unidades"
-                when movimento_tipo_grupo = "CORRECAO DE ESTOQUE / OUTRO"
-                then "Correção de lote (diminuição) / Outro"
                 when movimento_tipo = "AVARIA"
                 then "Avaria"
                 when movimento_tipo = "VALIDADE_EXPIRADA"
