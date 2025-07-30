@@ -20,8 +20,11 @@ with
       patient_cpf,
       safe_cast(datalake_loaded_at as datetime) as loaded_at,
       data
-    from {{ source("brutos_prontuario_vitacare_staging","atendimento_continuo") }}
-    qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc)=1
+    from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+    {% if is_incremental() %}
+      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
+    {% endif %}
+    qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
   ),
 
   acto_flat as (
@@ -58,7 +61,3 @@ with
   )
 
 select * from acto_flat
-
-{% if is_incremental() %}
-where data_particao >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
-{% endif %}
