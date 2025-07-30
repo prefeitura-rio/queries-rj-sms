@@ -21,6 +21,10 @@ with
       safe_cast(datalake_loaded_at as datetime)                          as loaded_at,
       safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+    {% if is_incremental() %}
+      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) 
+            >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
+    {% endif %}
     qualify row_number() over(partition by codigo order by datalake_loaded_at desc) = 1
   ),
 
@@ -44,7 +48,3 @@ select
   safe_cast(loaded_at as string)                                     as loaded_at,
   data_particao
 from flat
-
-{% if is_incremental() %}
-  where data_particao >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
-{% endif %}
