@@ -68,7 +68,7 @@ with
                 else null
             end as luz_eletrica,
             nullif(JSON_EXTRACT_SCALAR(data, '$.codigoEquipe'), '') AS codigo_equipe,
-            nullif(JSON_EXTRACT_SCALAR(data, '$.dataCadastro'), '') AS data_cadastro,
+            CAST(nullif(JSON_EXTRACT_SCALAR(data, '$.dataCadastro'), '') AS DATETIME) AS data_cadastro,
             nullif(JSON_EXTRACT_SCALAR(data, '$.escolaridade'), '') AS escolaridade,
             nullif(JSON_EXTRACT_SCALAR(data, '$.tempoMoradia'), '') AS tempo_moradia,
             nullif(JSON_EXTRACT_SCALAR(data, '$.nacionalidade'), '') AS nacionalidade,
