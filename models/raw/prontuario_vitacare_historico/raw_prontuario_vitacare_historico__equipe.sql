@@ -1,10 +1,8 @@
 {{
     config(
-        schema="brutos_prontuario_vitacare_historico",
         alias="equipe", 
-        materialized="incremental",
-        incremental_strategy='merge', 
-        unique_key=['codigo','n_ine'],
+        materialized="table",
+        schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
