@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: raw_prescricao_medicamentos
+    description: "Produtos farmacêuticos disponíveis para dispensação e uso nos hospitais e clínicas da rede municipal de saúde do Rio de Janeiro."
+    columns:
+      - name: id_medicamento
+        description: "Identificador único para cada medicamento na base de dados."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_prescricao_medicamentos__id_medicamento__not_null
+              severity: error
+          - unique:
+              name: raw_prescricao_medicamentos__id_medicamento__unique
+              severity: error
+      - name: nome_medicamento
+        description: "Nome comercial do medicamento prescrito."
+        data_type: string
+      - name: via_administracao
+        description: "Via de administração do medicamento (ex: oral, intravenosa)."
+        data_type: string
+      - name: dose_administrada
+        description: "Quantidade do medicamento administrada em cada tomada."
+        data_type: numeric
+      - name: intervalo_doses
+        description: "Tempo entre as doses do medicamento (ex: 8 horas, 12 horas)."
+        data_type: string
+      - name: previsao_consumo
+        description: "Previsão de consumo do medicamento, em dias."
+        data_type: string
+      - name: justificativa_prescricao
+        description: "Justificativa para a prescrição do medicamento."
+        data_type: string
+      - name: observacao_administracao
+        description: "Observações relevantes sobre a administração do medicamento."
+        data_type: string
+      - name: id_prescricao
+        description: "Identificador único da prescrição médica."
+        data_type: int64
+      - name: quantidade_atendida
+        description: "Quantidade do medicamento atendida na dispensação."
+        data_type: numeric
+      - name: codigo_medicamento
+        description: "Código do medicamento no sistema do hospital."
+        data_type: string
+      - name: cpf_farmaceutico
+        description: "CPF do farmacêutico que dispensou o medicamento."
+        data_type: string
+      - name: nome_farmaceutico
+        description: "Nome completo do farmacêutico que dispensou o medicamento."
+        data_type: string
+      - name: apresentacao_medicamento
+        description: "Apresentação comercial do medicamento (ex: comprimido, solução)."
+        data_type: string
+      - name: dose_total_prescrita
+        description: "Dose total do medicamento prescrita."
+        data_type: string
+      - name: total_dias_tratamento
+        description: "Número total de dias de tratamento com o medicamento."
+        data_type: string
+      - name: administrado_soro
+        description: "Nome do tipo de soro diluente usado na medicação."
+        data_type: string
+      - name: hidratacao_associada
+        description: "Indica se há necessidade de hidratação associada (Sim/Não)."
+        data_type: string
+      - name: descricao_hidratacao_associada
+        description: "Descrição da necessidade de hidratação associada (ex: 'Sim', 'Não', 'Não informado')."
+        data_type: string
+      - name: quantidade_estoque
+        description: "Quantidade do medicamento em estoque."
+        data_type: string
+      - name: medicamento_disponivel_unidade
+        description: "Indica se o medicamento está disponível na unidade de saúde (Sim/Não)."
+        data_type: string
+      - name: etiqueta_aprasamento
+        description: "Indica se a etiqueta de aprasamento foi aplicada (Sim/Não)."
+        data_type: int64
+      - name: quantidade_posologia2
+        description: "Quantidade do medicamento em segunda posologia."
+        data_type: numeric
+      - name: quantidade_posologia3
+        description: "Quantidade do medicamento em terceira posologia."
+        data_type: numeric
+      - name: data_dispensacao
+        description: "Data da dispensação do medicamento."
+        data_type: date
+      - name: quantidade_dispensada_dia
+        description: "Quantidade dispensada por dia."
+        data_type: int64
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

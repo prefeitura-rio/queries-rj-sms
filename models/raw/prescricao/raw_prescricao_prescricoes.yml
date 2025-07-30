@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: raw_prescricao_prescricoes
+    description: "Ordens médicas para tratamento, medicamentos ou procedimentos, emitidas pelos profissionais de saúde nos hospitais e clínicas da rede municipal do Rio de Janeiro."
+    columns:
+      - name: id_prescricao
+        description: "Identificador único para cada prescrição médica. Chave primária e auto-incrementável."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_prescricao_prescricoes__id_prescricao__not_null
+              severity: error
+          - unique:
+              name: raw_prescricao_prescricoes__id_prescricao__unique
+              severity: error
+      - name: id_atendimento
+        description: "Identificador do atendimento ao qual esta prescrição está vinculada. Chave estrangeira para a tabela fa_atendimento."
+        data_type: int64
+      - name: impressao_farmacia
+        description: "Indica se a prescrição foi impressa para a farmácia (1 para sim, 0 para não)."
+        data_type: int64
+      - name: descricao_impressao_farmacia
+        description: "Descrição do status da impressão para a farmácia (e.g. 'Sim' ou 'Não')."
+        data_type: string
+      - name: impressao_nutricao
+        description: "Indica se a prescrição foi impressa para a nutrição (1 para sim, 0 para não)."
+        data_type: int64
+      - name: descricao_impressao_nutricao
+        description: "Descrição do status da impressão para a nutrição (e.g. 'Sim' ou 'Não')."
+        data_type: string
+      - name: status_impressao
+        description: "Status geral da impressão da prescrição (e.g. 1 para 'pronto para imprimir', 0 para 'não pronto')."
+        data_type: int64
+      - name: descricao_status_impressao
+        description: "Descrição do status da impressão (e.g. 'Pronto para imprimir', 'Não pronto')."
+        data_type: string
+      - name: prescricao_aprazada
+        description: "Indica se a prescrição foi aprazada/programada (1 para sim, 0 para não)."
+        data_type: int64
+      - name: descricao_prescricao_aprazada
+        description: "Descrição do status da prescrição aprazada (e.g. 'Sim', 'Não')."
+        data_type: string
+      - name: etiqueta_aprazada_impressa
+        description: "Indica se a etiqueta de aprazamento/programação foi impressa (1 para sim, 0 para não)."
+        data_type: int64
+      - name: descricao_etiqueta_aprazada_impressa
+        description: "Descrição do status da impressão da etiqueta de aprazamento (e.g. 'Sim', 'Não')."
+        data_type: string
+      - name: aprazamento_ativo
+        description: "Indica se o aprazamento/programação da prescrição está ativo (1 para ativo, 0 para inativo)."
+        data_type: int64
+      - name: descricao_aprazamento_ativo
+        description: "Descrição do status do aprazamento ativo (e.g. 'Ativo', 'Inativo')."
+        data_type: string
+      - name: status_aprazado
+        description: "Status atual do aprazamento da prescrição (e.g., 1 para 'aprazado', 0 para 'pendente')."
+        data_type: int64
+      - name: descricao_status_aprazado
+        description: "Descrição do status do aprazamento (e.g. 'Aprazado', 'Pendente')."
+        data_type: string
+      - name: tipo_receita
+        description: "Indica o tipo da receita ou prescrição (1-Receituário comum, 2-Receituário Controlado, 3-Rec. com Imagens, 4-Rec. Excepcional)."
+        data_type: string
+      - name: descricao_tipo_receita
+        description: "Descrição do tipo de receita associada à prescrição (e.g. 'Receituário comum', 'Receituário Controlado', etc.)."
+        data_type: string
+      - name: validade_receita
+        description: "Número de dias de validade da receita."
+        data_type: int64
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

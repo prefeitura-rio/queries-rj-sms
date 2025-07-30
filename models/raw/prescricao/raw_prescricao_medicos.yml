@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: raw_prescricao_medicos
+    description: "Profissionais de saúde atuantes nos diversos setores e especialidades dos hospitais e unidades de atendimento da rede municipal do Rio de Janeiro."
+    columns:
+      - name: numero_crm
+        description: "Número do Conselho Regional de Medicina (CRM) do médico. Chave primária."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_prescricao_medicos__numero_crm__not_null
+              severity: error
+          - unique:
+              name: raw_prescricao_medicos__numero_crm__unique
+              severity: error
+      - name: nome_medico
+        description: "Nome completo do médico."
+        data_type: string
+      - name: cadastro_ativo
+        description: "Indica se o cadastro do médico está ativo (1) ou inativo (0) no sistema. Padrão '1'."
+        data_type: int64
+      - name: descricao_cadastro_ativo
+        description: "Descrição do status do cadastro do médico. Valores possíveis: 'Ativo', 'Inativo', 'Não informado', 'Não classificado'."
+        data_type: string
+      - name: cpf_medico
+        description: "Cadastro de Pessoa Física (CPF) do médico."
+        data_type: string
+      - name: unidade_federativa_crm
+        description: "Unidade Federativa (UF) de registro do CRM do médico (ex: RJ, SP)."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

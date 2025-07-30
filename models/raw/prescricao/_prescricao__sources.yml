@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: brutos_prescricao_staging
+    database: rj-sms
+    schema: brutos_prescricao_staging
+    freshness: # default freshness
+      error_after: {count: 24, period: hour}
+    loaded_at_field: TIMESTAMP(createdAt)
+    tables:
+      - name: fa_atendimento
+      - name: fa_us
+      - name: fa_paciente
+      - name: fa_catalogmat
+      - name: fa_medicamento
+      - name: fa_medico
+      - name: fa_prescricao
+      - name: fa_catalogmat_prescr
