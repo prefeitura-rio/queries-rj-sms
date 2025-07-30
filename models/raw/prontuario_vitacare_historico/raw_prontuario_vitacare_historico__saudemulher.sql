@@ -41,7 +41,7 @@ WITH
     fato_saudemulher AS (
         SELECT
             -- PKs e Chaves
-           id_prontuario_global,
+            id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             id_cnes,
 
@@ -128,7 +128,7 @@ WITH
             {{ process_null('planonmotivomcont') }} AS planejamento_natural_motivo_m_cont,
             {{ process_null('planoncomplicacoesmcont') }} AS planejamento_natural_complicacoes_m_cont,
 
-            extracted_at AS loaded_at
+            extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM saudemulher_deduplicados

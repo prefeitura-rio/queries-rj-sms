@@ -62,7 +62,7 @@ WITH
             {{ process_null('sarscov2testresult') }} AS resultado_teste_sarscov2,
             {{ process_null('positivesarscov2testresult') }} AS resultado_teste_sarscov2_positivo,
 
-            extracted_at AS loaded_at
+            extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM testesrapidos_deduplicados
