@@ -9,17 +9,16 @@
     )
 }}
 
-{% set seven_days_ago = (
-    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
-).isoformat() %}
-
 with
 
     source as (
         select *, 
                 concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
             from {{ source("brutos_prontuario_vitacare_staging", "paciente_continuo") }}
-            {% if is_incremental() %} where source_updated_at > '{{seven_days_ago}}' {% endif %}
+            {% if is_incremental() %} 
+            where 
+            TIMESTAMP_TRUNC(datalake_loaded_at, DAY) > TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+            {% endif %}
     ),
 
 
