@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: procedimento_clinicos
+    description: Tabela contendo informações sobre os procedimentos clínicos realizados em pacientes.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o procedimento foi realizado.
+      - name: co_procedimento
+        description: Código do procedimento clínico.
+      - name: no_procedimento
+        description: Nome do procedimento clínico.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.

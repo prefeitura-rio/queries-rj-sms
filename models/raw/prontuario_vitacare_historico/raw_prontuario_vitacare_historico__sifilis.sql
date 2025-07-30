@@ -45,18 +45,18 @@ WITH
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             id_cnes,
 
-            safe_cast({{ process_null('acquiredsyphilissinannumber') }} as NUMERIC) AS acquiredsyphilissinannumber,
-            {{ process_null('acquiredsyphilisclinicalclassification') }} AS acquiredsyphilisclinicalclassification,
-            {{ process_null('acquiredsyphilistreatmentregimen') }} AS acquiredsyphilistreatmentregimen,
-            safe_cast({{ process_null('acquiredsyphilistreatmentstartdate') }} as DATE) AS acquiredsyphilistreatmentstartdate,
-            {{ process_null('acquiredsyphilisfinalclassification') }} AS acquiredsyphilisfinalclassification,
-            {{ process_null('acquiredsyphilisfinalclassificationreason') }} AS acquiredsyphilisfinalclassificationreason,
-            {{ process_null('acquiredsyphilisobservations') }} AS acquiredsyphilisobservations,
-            safe_cast({{ process_null('acquiredsyphilisclosuredate') }} as DATE) AS acquiredsyphilisclosuredate,
-            safe_cast({{ process_null('acquiredsyphilisageatclosure') }} as INT) AS acquiredsyphilisageatclosure,
-            {{ process_null('acquiredsyphilisclosurereason') }} AS acquiredsyphilisclosurereason,
+            safe_cast({{ process_null('acquiredsyphilissinannumber') }} as NUMERIC) AS sifilis_adquirida_numero_sinan,
+            {{ process_null('acquiredsyphilisclinicalclassification') }} AS sifilis_adquirida_classificacao_clinica,
+            {{ process_null('acquiredsyphilistreatmentregimen') }} AS sifilis_adquirida_regime_tratamento,
+            safe_cast({{ process_null('acquiredsyphilistreatmentstartdate') }} as DATE) AS sifilis_adquirida_data_inicio_tratamento,
+            {{ process_null('acquiredsyphilisfinalclassification') }} AS sifilis_adquirida_classificacao_final,
+            {{ process_null('acquiredsyphilisfinalclassificationreason') }} AS sifilis_adquirida_motivo_classificacao_final,
+            {{ process_null('acquiredsyphilisobservations') }} AS sifilis_adquirida_observacoes,
+            safe_cast({{ process_null('acquiredsyphilisclosuredate') }} as DATE) AS sifilis_adquirida_data_encerramento,
+            safe_cast({{ process_null('acquiredsyphilisageatclosure') }} as INT) AS sifilis_adquirida_idade_encerramento,
+            {{ process_null('acquiredsyphilisclosurereason') }} AS sifilis_adquirida_motivo_encerramento,
 
-            extracted_at AS loaded_at,
+            extracted_at AS loaded_at
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM sifilis_deduplicados
