@@ -221,7 +221,7 @@ models:
           dado_sensivel: sim
       informes_vitacare:
         +schema: brutos_informes_vitacare
-        +tags: ["vitacare", "daily"]
+        +tags: ["vitacare", "weekly"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -229,7 +229,7 @@ models:
           dominio: subpav
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
-        +tags: ["vitacare", "daily"]
+        +tags: ["vitacare"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -254,6 +254,14 @@ models:
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
         +tags: "vitai"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+      prontuario_vitai_api:
+        +schema: brutos_prontuario_vitai_api
+        +tags: ["vitai", "daily", "vitai_api"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim

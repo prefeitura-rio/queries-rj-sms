@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: raw_pcsm_equipes
+    description: "Equipes em que estão organizados os profissionais de saúde mental da prefeitura do Rio de Janeiro. Nem todos os profissionais de saúde estão organizados em equipe."
+    columns:
+      - name: id_equipe
+        description: "Identificador único da equipe."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_equipes__id_equipe__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_equipes__id_equipe__unique
+              severity: error
+      - name: id_unidade_saude
+        description: "Identificador da Unidade de Saúde de origem da equipe. Aponta para a tabela de Unidade de Saúde (gh_us)."
+        data_type: int64
+      - name: descricao_equipe
+        description: "Descrição da equipe."
+        data_type: string
+      - name: tipo_equipe
+        description: "Indicador de tipo de equipe (D-Deambulatorio, M-Mini equipe)."
+        data_type: string
+      - name: descricao_tipo_equipe
+        description: "Descrição do tipo de equipe. (Deambulatório, Mini equipe, Não informado, Não classificado)"
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

@@ -3,7 +3,7 @@
 
 {{
     config(
-        alias="billing",
+        alias="queries",
         materialized="incremental",
         incremental_strategy="insert_overwrite",
         partition_by={
@@ -128,11 +128,8 @@ with
             state,
             struct(
                 destination_project_id as project_id,
-                regexp_replace(
-                destination_dataset_id,
-                r'(dev_fantasma__|diego__|miloskimatheus__|pedro__|thiago__|vit__)',
-                ''
-                ) as dataset_id,
+                split(destination_dataset_id, '__')[safe_ordinal(1)] as user_slug,
+                split(destination_dataset_id, '__')[safe_ordinal(2)] as dataset_id,
                 destination_table_id as table_id
             ) as destination,
             total_tib_processed,

@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: raw_pcsm_atividades_grupo
+    description: "Atividades de grupo realizadas em unidades de saúde mental (psicossociais) do município do Rio de Janeiro."
+    columns:
+      - name: id_atividade_grupo
+        description: "Identificador único da atividade em grupo."
+        data_type: int64
+      - name: nome_atividade_grupo
+        description: "Nome da atividade em grupo."
+        data_type: string
+      - name: data_inicio_atividade
+        description: "Data prevista para início da atividade em grupo."
+        data_type: date
+      - name: hora_inicio_atividade
+        description: "Hora em que ocorreu a atividade em grupo iniciou."
+        data_type: string
+      - name: hora_termino_atividade
+        description: "Hora em que a atividade em grupo terminou."
+        data_type: string
+      - name: local_atividade_grupo
+        description: "Identificador do local onde ocorreu a atividade em grupo."
+        data_type: int64
+      - name: id_tipo_atividade_grupo
+        description: "Identificador do tipo da atividade em grupo."
+        data_type: int64
+      - name: data_termino_atividade
+        description: "Data em que a atividade em grupo terminou."
+        data_type: date
+      - name: observacao_atividade
+        description: "Observações sobre a atividade."
+        data_type: string
+      - name: id_unidade_saude
+        description: "Identificador da unidade de saúde responsável pela atividade em grupo."
+        data_type: int64
+      - name: periodo_atividade_grupo
+        description: "Período da atividade em grupo. Dias da semana em que ocorrem as atividades e a parte do dia (0-Selecione, 1-Manhã, 2-Tarde, 3-Noite, 4-Manhã e tarde, 5-Tarde e noite, 6-Manhã e noite, 7-Manhã, tarde e noite)."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp
