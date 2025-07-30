@@ -12,7 +12,7 @@
 
 with
 
-  bruto_atualizado as (
+  bruto_atendimento as (
     select
       *,
       source_id  as id_prontuario_local,
@@ -21,6 +21,10 @@ with
       safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)
                                                               as datahora_fim
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+    {% if is_incremental() %}
+      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) 
+            >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
+    {% endif %}
     qualify
       row_number()
       over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
@@ -34,12 +38,8 @@ with
       json_extract_scalar(al, '$.descricao') as alergias_anamnese_descricao,
       loaded_at,
       date(datahora_fim)  as data_particao
-    from bruto_atualizado,
+    from bruto_atendimento,
     unnest(json_extract_array(data, '$.alergias_anamnese')) as al
   )
 
 select * from alergias_flat
-
-{% if is_incremental() %}
-  where data_particao >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
-{% endif %}
