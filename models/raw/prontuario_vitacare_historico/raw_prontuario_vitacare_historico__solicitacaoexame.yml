@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: solicitacao_exame
+    description: Tabela contendo informações sobre as solicitações de exames para pacientes.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o exame foi solicitado.
+      - name: nome_exame
+        description: Nome do exame solicitado.
+      - name: cod_exame
+        description: Código do exame solicitado.
+      - name: quantidade
+        description: Quantidade do exame solicitada.
+      - name: material
+        description: Tipo de material biológico necessário para o exame.
+      - name: data_solicitacao
+        description: Data e hora da solicitação do exame.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.

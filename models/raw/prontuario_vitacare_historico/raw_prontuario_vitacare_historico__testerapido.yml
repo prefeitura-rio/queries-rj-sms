@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: teste_rapido
+    description: Tabela contendo os resultados de diversos testes rápidos realizados em pacientes, incluindo gravidez, glicemia, sífilis, tuberculose, hepatites e COVID-19.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o teste rápido foi realizado.
+      - name: resultado_teste_gravidez
+        description: Resultado do teste rápido de gravidez.
+      - name: resultado_teste_gravidez_positivo
+        description: Indica se o teste rápido de gravidez foi positivo.
+      - name: glicemia_jejum
+        description: Valor da glicemia em jejum.
+      - name: glicemia_pos_prandial
+        description: Valor da glicemia pós-prandial.
+      - name: glicemia_capilar
+        description: Valor da glicemia capilar.
+      - name: resultado_teste_sifilis
+        description: Resultado do teste rápido de sífilis.
+      - name: resultado_teste_sifilis_positivo
+        description: Indica se o teste rápido de sífilis foi positivo.
+      - name: resultado_ppd
+        description: Resultado do teste PPD (Derivado Proteico Purificado) para tuberculose.
+      - name: data_teste_ppd
+        description: Data de realização do teste PPD.
+      - name: resultado_teste_hepatite_c
+        description: Resultado do teste rápido de Hepatite C.
+      - name: resultado_teste_hepatite_c_positivo
+        description: Indica se o teste rápido de Hepatite C foi positivo.
+      - name: resultado_teste_molecular_tuberculose
+        description: Resultado do teste molecular para tuberculose.
+      - name: resultado_teste_hepatite_b
+        description: Resultado do teste rápido de Hepatite B.
+      - name: resultado_teste_hepatite_b_positivo
+        description: Indica se o teste rápido de Hepatite B foi positivo.
+      - name: resultado_teste_sarscov2
+        description: Resultado do teste rápido para SARS-CoV-2 (COVID-19).
+      - name: resultado_teste_sarscov2_positivo
+        description: Indica se o teste rápido para SARS-CoV-2 foi positivo.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
