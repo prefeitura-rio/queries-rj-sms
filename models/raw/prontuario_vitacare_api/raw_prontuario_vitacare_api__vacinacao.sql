@@ -10,7 +10,7 @@
         partition_by={
             "field": "particao_data_vacinacao",
             "data_type": "date",
-            "granularity": "day",
+            "granularity": "month",
         },
     )
 }}
