@@ -16,18 +16,11 @@ with
 
   bruto_atendimento as (
     select
-      source_id                                                      as id_prontuario_local,
-      concat(
-        nullif(payload_cnes, ''), 
-        '.', 
-        nullif(source_id, '')
-      )                                                               as id_prontuario_global,
-      payload_cnes                                                   as id_cnes,
+      safe_cast(source_id as string) as id_prontuario_local,
+      concat(safe_cast(payload_cnes as string), '.', safe_cast(source_id as string)) as id_prontuario_global,  
+      safe_cast(payload_cnes as string) as id_cnes,
       safe_cast(datalake_loaded_at as datetime)                      as loaded_at,
-      safe_cast(
-        json_extract_scalar(data, '$.datahora_fim_atendimento') 
-        as datetime
-      )                                                               as datahora_fim,
+      safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim,
       data
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
     {% if is_incremental() %}
@@ -46,14 +39,11 @@ with
       id_prontuario_global,
       id_prontuario_local,
       id_cnes,
-      json_extract_scalar(cond, '$.cod_cid10')                       as cod_cid10,
-      json_extract_scalar(cond, '$.estado')                          as estado,
-      safe_cast(
-        json_extract_scalar(cond, '$.data_diagnostico') 
-        as datetime
-      )                                                               as data_diagnostico,
+      json_extract_scalar(cond, '$.cod_cid10')  as cod_cid10,
+      json_extract_scalar(cond, '$.estado')     as estado,
+      safe_cast(json_extract_scalar(cond, '$.data_diagnostico') as datetime) as data_diagnostico,
       loaded_at,
-      date(datahora_fim)                                             as data_particao
+      date(datahora_fim) as data_particao
     from bruto_atendimento,
     unnest(json_extract_array(data, '$.condicoes')) as cond
   ),
@@ -75,7 +65,7 @@ select
   cod_cid10,
   estado,
   data_diagnostico,
-  safe_cast(loaded_at as string)                                 as loaded_at,
+  loaded_at,
   data_particao
 from condicoes_dedup
 where rn = 1
