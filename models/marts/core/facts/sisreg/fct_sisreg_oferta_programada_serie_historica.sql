@@ -3,6 +3,7 @@
         schema="saude_sisreg",
         alias="oferta_programada_serie_historica",
         materialized="incremental",
+        incremental_strategy='insert_overwrite',
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -11,12 +12,17 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date( this ) %}
+
 with
     -- sources
     sisreg as (
         select *
         from {{ ref("raw_sisreg__oferta_programada") }}
         where escala_status != "EXCLUIDA"
+        {% if is_incremental() %}
+        and data_particao >= '{{ last_partition }}'
+        {% endif %}
     ),
 
     sisreg_explodido_data as (
@@ -148,9 +154,3 @@ select
     data_particao
 
 from final
-
-{% if is_incremental() %}
-
-    where data_particao > (select max(data_particao) from {{ this }})
-
-{% endif %}
