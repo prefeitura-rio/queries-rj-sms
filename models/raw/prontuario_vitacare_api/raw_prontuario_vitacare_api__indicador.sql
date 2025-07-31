@@ -33,7 +33,7 @@ with
       id_prontuario_global,
       id_prontuario_local,
       id_cnes,
-      cast(json_extract_scalar(ind, '$.nome') as string) as indicadores_nome,
+      json_extract_scalar(ind, '$.nome') as indicadores_nome,
       safe_cast(json_extract_scalar(ind, '$.valor') as float64) as valor,
       loaded_at,
       date(datahora_fim)                        as data_particao,
@@ -57,7 +57,7 @@ select
   id_cnes,
   indicadores_nome,
   valor,
-  safe_cast(loaded_at as string) as loaded_at,
+  loaded_at,
   data_particao,
 from indicadores_dedup
 where rn = 1
