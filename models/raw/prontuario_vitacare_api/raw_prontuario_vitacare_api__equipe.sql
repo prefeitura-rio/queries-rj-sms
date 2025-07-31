@@ -11,7 +11,6 @@
 ) }}
 
 with
-
   bruto as (
     select
       payload_cnes                                                       as id_cnes,
@@ -28,23 +27,23 @@ with
     qualify row_number() over(partition by codigo order by datalake_loaded_at desc) = 1
   ),
 
-  flat as (
+  equipe_flat as (
     select
       id_cnes,
       codigo,
       n_ine,
       nome,
       loaded_at,
-      date(datahora_fim)                                                as data_particao
+      date(datahora_fim) as data_particao
     from bruto
   )
 
 select
   id_cnes,
-  null                                                             as id,
+  null as id,
   codigo,
   nome,
   n_ine,
-  safe_cast(loaded_at as string)                                     as loaded_at,
+  loaded_at,
   data_particao
-from flat
+from equipe_flat
