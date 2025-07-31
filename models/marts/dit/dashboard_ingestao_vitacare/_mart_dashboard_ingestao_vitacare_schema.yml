@@ -66,9 +66,9 @@ models:
         description: >
           Maior atraso encontrado para um evento carregado no último mês.
 
-  - name: mart_ingestao__transmissao_completude
+  - name: mart_ingestao__transmissao_paridade
     description: >
-      Modelo que avalia a completude dos backups mensais comparados aos dados
+      Modelo que avalia a paridade dos backups mensais quando comparados aos dados
       recebidos pela API. Recomenda-se seu uso agregado por somas; por exemplo:
       `select id_cnes, mes, sum(presente_em_ambos) as presente_em_ambos,
       sum(falta_continuo) as falta_continuo, sum(falta_historico) as falta_historico
