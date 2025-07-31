@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__agendamento
+    description: Tabela contendo informações detalhadas sobre os agendamentos de consultas e atendimentos em unidades de saúde.
+    columns:
+      - name: source_id
+        description: Identificador único do agendamento na fonte de dados original.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o agendamento foi realizado.
+      - name: ut_id
+        description: Identificador da unidade de tratamento ou setor específico dentro da unidade de saúde.
+      - name: prof_id
+        description: Identificador do profissional de saúde responsável pelo agendamento ou atendimento.
+      - name: datahora_agendamento
+        description: Data e hora em que o agendamento foi marcado.
+      - name: datahora_marcacao_atendimento
+        description: Data e hora prevista para a realização do atendimento.
+      - name: source_updated_at
+        description: Timestamp da última atualização do registro na fonte de dados original.
+      - name: estado_marcacao
+        description: Situação atual da marcação do agendamento (ex: agendado, cancelado, realizado).
+      - name: motivo
+        description: Motivo do agendamento ou do cancelamento, se aplicável.
+      - name: tipo_consulta
+        description: Tipo de consulta agendada (ex: primeira consulta, retorno, emergência).
+      - name: tipo_atendimento
+        description: Categoria do atendimento (ex: médico, enfermagem, psicológico).
+      - name: consulta_realizada
+        description: Indicador booleano que informa se a consulta foi efetivamente realizada.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
