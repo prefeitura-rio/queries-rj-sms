@@ -56,7 +56,7 @@ select
   id_prontuario_local,
   id_cnes,
   encaminhamento_especialidade,
-  safe_cast(loaded_at as string) as loaded_at,
+  loaded_at,
   data_particao
 from encaminhamentos_dedup
 where rn = 1
