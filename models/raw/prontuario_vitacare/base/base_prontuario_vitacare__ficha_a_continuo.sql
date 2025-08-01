@@ -74,7 +74,7 @@ with
             nullif(JSON_EXTRACT_SCALAR(data, '$.nacionalidade'), '') AS nacionalidade,
             nullif(JSON_EXTRACT_SCALAR(data, '$.rendaFamiliar'), '') AS renda_familiar,
             nullif(JSON_EXTRACT_SCALAR(data, '$.tipoDomicilio'), '') AS tipo_domicilio,
-            nullif(JSON_EXTRACT_SCALAR(data, '$.dataNascimento'), '') AS data_nascimento,
+            CAST(nullif(JSON_EXTRACT_SCALAR(data, '$.dataNascimento'), '') AS DATE) AS data_nascimento,
             nullif(JSON_EXTRACT_SCALAR(data, '$.paisNascimento'), '') AS pais_nascimento,
             nullif(JSON_EXTRACT_SCALAR(data, '$.tipoLogradouro'), '') AS tipo_logradouro,
             nullif(JSON_EXTRACT_SCALAR(data, '$.tratamentoAgua'), '') AS tratamento_agua,
@@ -145,7 +145,7 @@ with
                 when nullif(json_extract_scalar(data, "$.familiaBeneficiariaCfc"), '') = 'false' then false
                 else null
             end as familia_beneficiaria_cfc,
-            nullif(JSON_EXTRACT_SCALAR(data, '$.dataAtualizacaoCadastro'), '') AS data_atualizacao_cadastro,
+            CAST(nullif(JSON_EXTRACT_SCALAR(data, '$.dataAtualizacaoCadastro'), '') AS DATETIME) AS data_atualizacao_cadastro,
             case           
                 when nullif(json_extract_scalar(data, "$.participaGrupoComunitario"), '') = 'true' then true
                 when nullif(json_extract_scalar(data, "$.participaGrupoComunitario"), '') = 'false' then false
@@ -157,7 +157,7 @@ with
                 when nullif(json_extract_scalar(data, "$.membroComunidadeTradicional"), '') = 'false' then false
                 else null
             end as membro_comunidade_tradicional,
-            nullif(JSON_EXTRACT_SCALAR(data, '$.dataAtualizacaoVinculoEquipe'), '') AS data_atualizacao_vinculo_equipe,
+            CAST(nullif(JSON_EXTRACT_SCALAR(data, '$.dataAtualizacaoVinculoEquipe'), '') AS DATETIME) AS data_atualizacao_vinculo_equipe,
             case           
                 when nullif(json_extract_scalar(data, "$.familiaBeneficiariaAuxilioBrasil"), '') = 'true' then true
                 when nullif(json_extract_scalar(data, "$.familiaBeneficiariaAuxilioBrasil"), '') = 'false' then false
@@ -169,7 +169,7 @@ with
                 else null
             end as crianca_matriculada_creche_pre_escola,
 
-            source_updated_at as updated_at,
+            cast(nullif(source_updated_at, '') as datetime) as updated_at,
             cast(datalake_loaded_at as string) as loaded_at
 
         from latest_events

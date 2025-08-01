@@ -268,12 +268,7 @@ with
             end as situacao_profissional,
             vulnerabilidade_social as vulnerabilidade_social,
             familia_beneficiaria_cfc as familia_beneficiaria_cfc,
-            case 
-                when data_atualizacao_cadastro = ''
-                    then null
-                else
-                    timestamp_add(timestamp(data_atualizacao_cadastro, "America/Sao_Paulo"),interval 3 hour)
-            end as data_atualizacao_cadastro,
+            timestamp_add(timestamp(data_atualizacao_cadastro, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_cadastro,
             participa_grupo_comunitario as participa_grupo_comunitario,
             case 
                 when lower(relacao_responsavel_familiar) not in ('filho(a)','cônjuge/companheiro(a)','outro parente',
@@ -281,16 +276,11 @@ with
                 else relacao_responsavel_familiar
             end as relacao_responsavel_familiar,
             membro_comunidade_tradicional as membro_comunidade_tradicional,
-            case 
-                when data_atualizacao_vinculo_equipe = ''
-                    then null
-                else
-                    timestamp_add(timestamp(data_atualizacao_vinculo_equipe, "America/Sao_Paulo"),interval 3 hour)
-            end as data_atualizacao_vinculo_equipe,
+            timestamp_add(timestamp(data_atualizacao_vinculo_equipe, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_vinculo_equipe,
             familia_beneficiaria_auxilio_brasil as familia_beneficiaria_auxilio_brasil,
             crianca_matriculada_creche_pre_escola as crianca_matriculada_creche_pre_escola,
-            timestamp_add(datetime(timestamp({{process_null('updated_at')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
-            datetime(timestamp({{process_null('loaded_at')}}), 'America/Sao_Paulo') as loaded_at,
+            timestamp_add(datetime(timestamp(updated_at), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
+            datetime(timestamp(loaded_at), 'America/Sao_Paulo') as loaded_at,
             tipo
 
         from ficha_a_deduplicado
