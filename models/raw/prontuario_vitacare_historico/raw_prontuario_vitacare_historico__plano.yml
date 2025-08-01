@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__plano
+    description: Tabela contendo informações detalhadas sobre o plano de cuidados e condutas estabelecidas para o paciente, incluindo prescrições, encaminhamentos, procedimentos e observações diversas.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o plano foi elaborado.
+      - name: observacoes_plano
+        description: Observações gerais e detalhes adicionais sobre o plano de cuidados.
+      - name: selecao_da_prescricao
+        description: Tipo ou categoria da prescrição selecionada.
+      - name: itens_prescritos
+        description: Lista dos itens (medicamentos, exames, etc.) que foram prescritos.
+      - name: prescricao_em_texto_livre
+        description: Campo para a prescrição médica ou de enfermagem em formato de texto livre.
+      - name: sub_entidade_da_prescricao
+        description: Sub-entidade ou detalhe adicional da prescrição.
+      - name: recomendacao_de_pratica_esportiva_ac_carioca
+        description: Recomendação de prática esportiva ou atividade física (específico para o programa AC Carioca).
+      - name: coleta_de_material
+        description: Informações sobre coleta de materiais para exames (ex: tipo de material, local).
+      - name: motivo_da_entrada_ac_carioca
+        description: Motivo da entrada do paciente no programa AC Carioca.
+      - name: indicacao_clinica_ac_carioca
+        description: Indicação clínica para participação no programa AC Carioca.
+      - name: fatores_de_risco_ac_carioca
+        description: Fatores de risco identificados para o paciente no contexto do programa AC Carioca.
+      - name: acompanhamento_clinico_ac_carioca
+        description: Descrição do acompanhamento clínico planejado no programa AC Carioca.
+      - name: detalhes_do_acompanhamento_clinico_ac_carioca
+        description: Detalhes adicionais sobre o acompanhamento clínico no programa AC Carioca.
+      - name: encaminhamentos_para_especialidade
+        description: Detalhes sobre encaminhamentos realizados para outras especialidades médicas.
+      - name: procedimentos_clinicos
+        description: Lista ou descrição dos procedimentos clínicos realizados ou planejados.
+      - name: observacoes_da_remocao_de_gesso
+        description: Observações específicas relacionadas à remoção de gesso.
+      - name: observacoes_da_desintoxicacao_de_alcool
+        description: Observações específicas relacionadas ao processo de desintoxicação de álcool.
+      - name: observacoes_da_cantoplastia_remocao_de_unha
+        description: Observações específicas relacionadas a procedimentos de cantoplastia ou remoção de unha.
+      - name: observacoes_da_nebulizacao
+        description: Observações específicas relacionadas ao procedimento de nebulização.
+      - name: observacoes_da_sutura
+        description: Observações específicas relacionadas ao procedimento de sutura.
+      - name: observacoes_da_insercao_de_diu
+        description: Observações específicas relacionadas à inserção de DIU.
+      - name: observacoes_da_remocao_de_cerume
+        description: Observações específicas relacionadas à remoção de cerume.
+      - name: observacoes_da_drenagem_de_abscesso
+        description: Observações específicas relacionadas à drenagem de abscesso.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.

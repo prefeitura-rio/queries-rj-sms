@@ -1,0 +1,134 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__hiv
+    description: Tabela contendo informações detalhadas sobre pacientes com HIV/AIDS, incluindo dados epidemiológicos e clínicos.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde os dados de HIV foram registrados.
+      - name: aids_transfusao
+        description: Indica se a infecção por AIDS está relacionada a transfusão de sangue.
+      - name: aids_data_transfusao
+        description: Data da transfusão de sangue, se aplicável.
+      - name: aids_idade_transfusao
+        description: Idade do paciente no momento da transfusão de sangue, se aplicável.
+      - name: aids_toxicodependente
+        description: Indica se a infecção por AIDS está relacionada a toxicodependência.
+      - name: aids_data_inicio_toxicodependente
+        description: Data de início da toxicodependência, se aplicável.
+      - name: aids_idade_inicio_toxicodependente
+        description: Idade do paciente no início da toxicodependência, se aplicável.
+      - name: aids_homosexual
+        description: Indica se a infecção por AIDS está relacionada a prática sexual homossexual.
+      - name: aids_data_inicio_homosexual
+        description: Data de início da prática sexual homossexual, se aplicável.
+      - name: aids_idade_inicio_homosexual
+        description: Idade do paciente no início da prática sexual homossexual, se aplicável.
+      - name: aids_heterosexual
+        description: Indica se a infecção por AIDS está relacionada a prática sexual heterossexual.
+      - name: aids_data_inicio_heterosexual
+        description: Data de início da prática sexual heterossexual, se aplicável.
+      - name: aids_idade_inicio_heterosexual
+        description: Idade do paciente no início da prática sexual heterossexual, se aplicável.
+      - name: aids_bisexual
+        description: Indica se a infecção por AIDS está relacionada a prática sexual bissexual.
+      - name: aids_data_inicio_bisexual
+        description: Data de início da prática sexual bissexual, se aplicável.
+      - name: aids_idade_inicio_bisexual
+        description: Idade do paciente no início da prática sexual bissexual, se aplicável.
+      - name: aids_parceiro_vih
+        description: Indica se a infecção por AIDS está relacionada a ter um parceiro soropositivo para HIV.
+      - name: aids_data_inicio_parceiro_vih
+        description: Data de início do relacionamento com parceiro soropositivo, se aplicável.
+      - name: aids_idade_inicio_parceiro_vih
+        description: Idade do paciente no início do relacionamento com parceiro soropositivo, se aplicável.
+      - name: aids_obs_epidemiologia
+        description: Observações epidemiológicas relacionadas à AIDS.
+      - name: aids_doenca_atual_ano_1_teste
+        description: Ano do primeiro teste de doença atual relacionado à AIDS.
+      - name: aids_doenca_atual_data_provavel_infeccao
+        description: Data provável da infecção pela doença atual.
+      - name: aids_doenca_atual_febre
+        description: Indica a presença de febre na doença atual.
+      - name: aids_doenca_atual_astenia
+        description: Indica a presença de astenia (fadiga) na doença atual.
+      - name: aids_doenca_atual_anorexia
+        description: Indica a presença de anorexia na doença atual.
+      - name: aids_doenca_atual_emagrecimento
+        description: Peso (em kg) do emagrecimento na doença atual.
+      - name: aids_doenca_atual_hipersudorese
+        description: Indica a presença de hipersudorese (suor excessivo) na doença atual.
+      - name: aids_doenca_atual_erupcao_cutanea
+        description: Indica a presença de erupção cutânea na doença atual.
+      - name: aids_doenca_atual_alteracao_pele
+        description: Indica a presença de alterações na pele na doença atual.
+      - name: aids_doenca_atual_alteracao_mucosa
+        description: Indica a presença de alterações na mucosa na doença atual.
+      - name: aids_doenca_atual_adenopatias
+        description: Indica a presença de adenopatias (inchaço dos gânglios linfáticos) na doença atual.
+      - name: aids_doenca_atual_adeno_tamanho
+        description: Tamanho das adenopatias (em mm) na doença atual.
+      - name: aids_doenca_atual_adeno_dolorosas
+        description: Indica se as adenopatias são dolorosas na doença atual.
+      - name: aids_doenca_atual_vomitos
+        description: Indica a presença de vômitos na doença atual.
+      - name: aids_doenca_atual_diarreia
+        description: Duração da diarreia (em dias) na doença atual.
+      - name: aids_doenca_atual_disfagia
+        description: Indica a presença de disfagia (dificuldade para engolir) na doença atual.
+      - name: aids_doenca_atual_dor_abdominal
+        description: Indica a presença de dor abdominal na doença atual.
+      - name: aids_doenca_atual_tosse
+        description: Indica a presença de tosse na doença atual.
+      - name: aids_doenca_atual_expectoracao
+        description: Indica a presença de expectoração na doença atual.
+      - name: aids_doenca_atual_dispneia
+        description: Indica a presença de dispneia (dificuldade para respirar) na doença atual.
+      - name: aids_doenca_atual_dor_toraxica
+        description: Indica a presença de dor torácica na doença atual.
+      - name: aids_doenca_atual_cefaleias
+        description: Indica a presença de cefaleias (dores de cabeça) na doença atual.
+      - name: aids_doenca_atual_perturbacoes_visuais
+        description: Indica a presença de perturbações visuais na doença atual.
+      - name: aids_doenca_atual_alteracao_comportamento
+        description: Indica a presença de alteração de comportamento na doença atual.
+      - name: aids_doenca_atual_vertigens
+        description: Indica a presença de vertigens (tontura) na doença atual.
+      - name: aids_doenca_atual_alteracoes_esfincterianas
+        description: Indica a presença de alterações esfincterianas na doença atual.
+      - name: aids_doenca_atual_alteracoes_sensibilidade
+        description: Indica a presença de alterações de sensibilidade na doença atual.
+      - name: aids_doenca_atual_alteracoes_motoras_superiores
+        description: Indica a presença de alterações motoras em membros superiores na doença atual.
+      - name: aids_doenca_atual_alteracoes_motoras_inferiores
+        description: Indica a presença de alterações motoras em membros inferiores na doença atual.
+      - name: aids_doenca_atual_data_inicio_queixas
+        description: Data de início das queixas relacionadas à doença atual.
+      - name: aids_doenca_atual_obs
+        description: Observações sobre a doença atual.
+      - name: aids_transfusao_vertical
+        description: Indica se a infecção por AIDS foi transmitida verticalmente (mãe para filho).
+      - name: aids_transfusao_vertical_data
+        description: Data da transfusão vertical, se aplicável.
+      - name: aids_hemofilico
+        description: Indica se o paciente é hemofílico e a infecção por AIDS está relacionada.
+      - name: aids_hemofilico_data
+        description: Data de diagnóstico de hemofilia, se aplicável.
+      - name: aids_acidente_trabalho
+        description: Indica se a infecção por AIDS está relacionada a acidente de trabalho.
+      - name: aids_acidente_trabalho_data
+        description: Data do acidente de trabalho, se aplicável.
+      - name: aids_tempo_emagrecimento
+        description: Tempo (em meses) de emagrecimento relacionado à AIDS.
+      - name: epidemiologia_ignorado
+        description: Indica se os dados epidemiológicos são ignorados ou desconhecidos.
+      - name: aids_obs_notas
+        description: Notas ou observações adicionais sobre o caso de AIDS.
+      - name: aids_em_terapia_antiretroviral
+        description: Indica se o paciente está em terapia antirretroviral (TARV).
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.

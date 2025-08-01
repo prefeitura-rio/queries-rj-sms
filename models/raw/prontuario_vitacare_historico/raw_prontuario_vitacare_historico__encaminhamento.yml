@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__encaminhamento
+    description: Tabela contendo informações sobre os encaminhamentos de pacientes para especialidades ou outros serviços de saúde.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde que realizou o encaminhamento.
+      - name: encaminhamento_especialidade
+        description: Especialidade ou serviço para o qual o paciente foi encaminhado.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.

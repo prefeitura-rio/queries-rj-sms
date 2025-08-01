@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__alergia
+    description: Modelo histórico de alergias registradas no prontuário Vitacare.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global criado para cada registro a partir da junção do id_cnes e do id_prontuario_local.
+
+      - name: id_prontuario_local
+        description: Identificador único do atendimento no prontuário local.
+
+      - name: id_cnes
+        description: Número CNES da unidade de saúde onde o atendimento ocorreu.
+
+      - name: alergias_anamnese_descricao
+        description: Alergias registradas na anamnese do atendimento.
+
+      - name: loaded_at
+        description: Data e hora de carregamento dos dados no sistema.
+
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

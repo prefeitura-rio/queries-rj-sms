@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__indicador
+    description: Tabela contendo diversos indicadores de saúde associados a prontuários de pacientes e unidades de saúde.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o indicador foi registrado.
+      - name: indicadores_nome
+        description: Nome ou tipo do indicador de saúde (ex: glicemia, pressão arterial).
+      - name: valor
+        description: Valor numérico do indicador.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.

@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: vacina
+    description: Tabela contendo informações detalhadas sobre as vacinas aplicadas nos pacientes, incluindo dados da vacina, dose, lote e datas de aplicação e registro.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde a vacina foi aplicada.
+      - name: nome_vacina
+        description: Nome da vacina aplicada.
+      - name: cod_vacina
+        description: Código da vacina aplicada.
+      - name: dose
+        description: Dose da vacina (ex: 1ª dose, 2ª dose, reforço).
+      - name: lote
+        description: Número do lote da vacina.
+      - name: data_aplicacao
+        description: Data em que a vacina foi aplicada.
+      - name: data_registro
+        description: Data e hora do registro da aplicação da vacina, ajustada para o fuso horário de São Paulo.
+      - name: diff
+        description: Campo genérico para diferença ou identificador adicional, sem descrição específica clara.
+      - name: calendario_vacinal_atualizado
+        description: Indica se o calendário vacinal do paciente está atualizado.
+      - name: tipo_registro
+        description: Tipo de registro da vacina.
+      - name: estrategia_imunizacao
+        description: Estratégia de imunização utilizada (ex: rotina, campanha).
+      - name: foi_aplicada
+        description: Indica se a vacina foi de fato aplicada.
+      - name: justificativa
+        description: Justificativa para a aplicação ou não aplicação da vacina.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
