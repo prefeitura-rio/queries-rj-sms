@@ -31,6 +31,7 @@ models:
         description: >
           Média de registros de atendimentos por dia nos últimos 30 dias nessa unidade.
 
+
   - name: mart_ingestao__transmissao_atraso
     description: >
       Modelo que contabiliza, por unidade de saúde, o atraso, em minutos, entre
@@ -66,13 +67,14 @@ models:
         description: >
           Maior atraso encontrado para um evento carregado no último mês.
 
-  - name: mart_ingestao__transmissao_paridade
+
+  - name: mart_ingestao__transmissao_completude
     description: >
-      Modelo que avalia a paridade dos backups mensais quando comparados aos dados
-      recebidos pela API. Recomenda-se seu uso agregado por somas; por exemplo:
-      `select id_cnes, mes, sum(presente_em_ambos) as presente_em_ambos,
-      sum(falta_continuo) as falta_continuo, sum(falta_historico) as falta_historico
-      from (...) group by 1, 2`.
+      Modelo que avalia a completude dos dados nos últimos 30 dias. Cada registro possui
+      um identificador único (por CNES) que é, em teoria, incrementado em 1 do
+      identificador do registro anterior. Esta tabela contabiliza o número de
+      identificadores distintos encontrados e a diferença para o número esperado caso
+      todos os identificadores no intervalo estivessem presentes.
     columns:
       - name: area_programatica
         description: AP da unidade de saúde
@@ -81,25 +83,27 @@ models:
           Código Nacional de Estabelecimento de Saúde (CNES) da unidade de saúde.
       - name: nome_fantasia
         description: Nome fantasia da unidade de saúde.
-      - name: mes
-        description: Mês de referência (YYYY-MM).
-      - name: source_id
+      - name: origem
+        description: "Fonte dos dados: `continuo` (API) ou `historico` (backup)."
+      - name: id_minimo
         description: >
-          Identificador do evento, definido pelo provedor. O par (id_cnes, source_id)
-          é, em teoria, único.
-      - name: presente_em_ambos
+          Menor identificador encontrado para essa unidade, no intervalo de tempo avaliado.
+      - name: id_maximo
         description: >
-          Flag que indica se o evento definido pelo identificador foi obtido tanto
-          pela API (continuo) quanto pelos backups (historico). Valor 1 se sim; 0
-          se não.
-      - name: falta_continuo
+          Maior identificador encontrado para essa unidade, no intervalo de tempo avaliado.
+      - name: qtd_esperada
         description: >
-          Flag que indica se o evento foi obtido somente pelos backups (historico);
-          isto é, não foi informado pela API (continuo). Valor 1 se sim; 0 se não.
-      - name: falta_historico
+          Diferença entre o maior identificador e o menor; quantidade esperada de registros.
+      - name: qtd_real
         description: >
-          Flag que indica se o evento foi obtido somente pela API (continuo);
-          isto é, não consta no backup mensal (historico). Valor 1 se sim; 0 se não.
+          Quantidade real de registros recebidos.
+      - name: qtd_falta
+        description: >
+          Diferença entre a quantidade esperada e a quantidade real de registros.
+      - name: cobertura_pct
+        description: >
+          Porcentagem de cobertura; i.e. (quantidade real) ÷ (quantidade esperada).
+
 
   - name: mart_ingestao__transmissao_invalidos
     description: >
@@ -147,3 +151,39 @@ models:
       - name: momento_ingestao
         description: >
           Data e hora em que o valor foi carregado no datalake (`datalake_loaded_at`).
+
+
+  - name: mart_ingestao__transmissao_paridade
+    description: >
+      Modelo que avalia a paridade dos backups mensais quando comparados aos dados
+      recebidos pela API. Recomenda-se seu uso agregado por somas; por exemplo:
+      `select id_cnes, mes, sum(presente_em_ambos) as presente_em_ambos,
+      sum(falta_continuo) as falta_continuo, sum(falta_historico) as falta_historico
+      from (...) group by 1, 2`.
+    columns:
+      - name: area_programatica
+        description: AP da unidade de saúde
+      - name: id_cnes
+        description: >
+          Código Nacional de Estabelecimento de Saúde (CNES) da unidade de saúde.
+      - name: nome_fantasia
+        description: Nome fantasia da unidade de saúde.
+      - name: mes
+        description: Mês de referência (YYYY-MM).
+      - name: source_id
+        description: >
+          Identificador do evento, definido pelo provedor. O par (id_cnes, source_id)
+          é, em teoria, único.
+      - name: presente_em_ambos
+        description: >
+          Flag que indica se o evento definido pelo identificador foi obtido tanto
+          pela API (continuo) quanto pelos backups (historico). Valor 1 se sim; 0
+          se não.
+      - name: falta_continuo
+        description: >
+          Flag que indica se o evento foi obtido somente pelos backups (historico);
+          isto é, não foi informado pela API (continuo). Valor 1 se sim; 0 se não.
+      - name: falta_historico
+        description: >
+          Flag que indica se o evento foi obtido somente pela API (continuo);
+          isto é, não consta no backup mensal (historico). Valor 1 se sim; 0 se não.
