@@ -26,4 +26,4 @@ with
             datetime(timestamp(datalake_loaded_at), 'America/Sao_Paulo') as loaded_at
         from most_recent
     )
-select * from source
+select * from transform
