@@ -116,7 +116,7 @@ models:
           dado_sensivel: nao
       gal:
         +schema: brutos_gal
-        +tags: ["weekly", "gal"]
+        +tags: ["daily", "gal"]
         +labels:
           dominio: subpav
           dado_publico: nao

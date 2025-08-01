@@ -2,6 +2,7 @@
     config(
         alias="resultados_pcr",
         materialized="table",
+        enabled=false
     )
 }}
 

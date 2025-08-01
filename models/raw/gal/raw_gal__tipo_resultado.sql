@@ -2,6 +2,7 @@
     config(
         alias="tipo_resultado",
         materialized="table",
+        enabled=false
     )
 }}
 

@@ -2,6 +2,7 @@
     config(
         alias="resultados_tsa",
         materialized="table",
+        enabled=false
     )
 }}
 

@@ -2,6 +2,7 @@
     config(
         alias="requisicoes",
         materialized="table",
+        enabled=false
     )
 }}
 

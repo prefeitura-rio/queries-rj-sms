@@ -2,6 +2,7 @@
     config(
         alias="resultados_culmb",
         materialized="table",
+        enabled=false
     )
 }}
 
