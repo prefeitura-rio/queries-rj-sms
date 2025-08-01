@@ -36,28 +36,11 @@ filtro_palavras_chave as (
   or lower(conteudo) like "%unidade%saúde%"
   or lower(conteudo) like "%rio%saúde%"
 ),
--- filtro especifico de retirar exonerações e designações em secretaria municipal
-exoneracoes_designacoes as (
-    SELECT concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id, 
-    concat(id_diario,id_materia,secao_indice,bloco_indice) as id_bloco,
-    * 
+-- filtro que busca todas as resoluções da secretaria de saúde
+secretaria_saude_add as (
+  SELECT concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id,* 
   FROM diarios_municipio
   where pasta = 'SECRETARIA MUNICIPAL DE SAÚDE/RESOLUÇÕES/RESOLUÇÃO N'
-  and (
-    lower(conteudo) like "%exoneração%"
-    or lower(conteudo) like "%designa%servidores%"
-  )
-),
--- filtro especifico de retirar plantoes de funeraria
-funeraria as (
-    SELECT concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id, 
-    concat(id_diario,id_materia,secao_indice,bloco_indice) as id_bloco,
-    * 
-  FROM diarios_municipio
-  where pasta = 'AVISOS EDITAIS E TERMOS DE CONTRATOS/SECRETARIA MUNICIPAL DE SAÚDE/AVISOS'
-  and (
-    lower(conteudo) like "%funerária%"
-  )
 ),
 -- filtro especifico para adicionar outros termos em CGM
 controladoria_add as (
@@ -69,22 +52,48 @@ controladoria_add as (
   or lower(conteudo) like "%gestão fiscal do município do rio de janeiro%"
   or lower(conteudo) like "%órgãos e entidades da administração municipal%"
   or lower(conteudo) like "%execução orçamentária%"
-  or lower(conteudo) like "%prestação de contas%gestão%"
   )
 ),
--- filtro especifico para adicionar outros termos em TCM
-tribunal_contas_add as (
-    select concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id,* 
+-- filtro que adiciona palavras chaves de atos do prefeito
+atos_prefeito_add as (
+  SELECT concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id,* 
   FROM diarios_municipio
-  where pasta like 'TRIBUNAL DE CONTAS DO MUNICÍPIO%'
-  and lower(conteudo) like "%prestação de contas%"
+  where pasta = 'ATOS DO PREFEITO/DECRETOS N'
+  and conteudo like "%CGM%"
+  or conteudo like "%TCMRJ%"
+  or cabecalho like "%CGM%"
+  or cabecalho like "%TCMRJ%"
+),
+-- filtro especifico de retirar exonerações e designações em secretaria municipal
+secretaria_saude_del as (
+    SELECT concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id, 
+    concat(id_diario,id_materia,secao_indice,bloco_indice) as id_bloco,
+    * 
+  FROM diarios_municipio
+  where pasta = 'SECRETARIA MUNICIPAL DE SAÚDE/RESOLUÇÕES/RESOLUÇÃO N'
+  and (
+    lower(conteudo) like "%exoneração%"
+    or lower(conteudo) like "%designa%servidores%"
+  )
+),
+-- filtro especifico de retirar plantoes de funeraria
+avisos_secretaria_saude_del as (
+    SELECT concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id, 
+    concat(id_diario,id_materia,secao_indice,bloco_indice) as id_bloco,
+    * 
+  FROM diarios_municipio
+  where pasta = 'AVISOS EDITAIS E TERMOS DE CONTRATOS/SECRETARIA MUNICIPAL DE SAÚDE/AVISOS'
+  and (
+    lower(conteudo) like "%funerária%"
+  )
 ),
 -- filtro especifico para retirar despachos e legalidade para fins de registro de TCM e CGM
 tribunal_contas_controladoria_del as (
     select concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id, 
     concat(id_diario,id_materia,secao_indice,bloco_indice) as id_bloco 
   FROM diarios_municipio
-  where pasta like ('%TRIBUNAL DE CONTAS DO MUNICÍPIO%')
+  where (pasta like ('%TRIBUNAL DE CONTAS DO MUNICÍPIO%')
+  or pasta like ('%CONTROLADORIA GERAL DO MUNICÍPIO%'))
   and (
     lower(conteudo) like "%despacho%"
     or lower(conteudo) like "%legalidade%para fins de registro%"
@@ -94,22 +103,24 @@ tribunal_contas_controladoria_del as (
 -- constroi tabelas com todos as palavras chaves
 merge_palavras_chave_add as (
 select * from filtro_palavras_chave
+union all 
+select * from secretaria_saude_add
 union all
 select * from controladoria_add
 union all
-select * from tribunal_contas_add
+select * from atos_prefeito_add
 ),
 -- retira-se marcações baseando em regras especificas
 merge_palavras_chave_del as (
-  select id, id_bloco from exoneracoes_designacoes
+  select id, id_bloco from secretaria_saude_del
   union all
   select id, id_bloco from tribunal_contas_controladoria_del
   union all 
-  select id, id_bloco from funeraria
+  select id, id_bloco from avisos_secretaria_saude_del
 ),
 -- tabela final a partir da qual vamos filtrar o que leva-se para o email
 conteudos_para_email as (
-select 
+select distinct
   id,  
   data_publicacao,
   id_diario,
@@ -136,14 +147,22 @@ where concat(id_diario,id_materia,secao_indice,bloco_indice) not in (select dist
 
 -- TRIBUNAL DE CONTAS --
 final_tcm as (
-  select tcm.*, 
-    concat(
-      assunto.conteudo,
-      '\n',
-      tcm.conteudo
-    )as content_email,
+  select tcm.*,
+  case 
+    when assunto.conteudo = tcm.conteudo then tcm.conteudo 
+    else
+      concat(
+        assunto.conteudo,
+        '\n',
+        tcm.conteudo
+      )
+  end as content_email,
     regexp_extract(tcm.conteudo,r'^[0-9\/]+ ') as voto
-  from ( select * from conteudos_para_email where pasta like '%TRIBUNAL DE CONTAS DO MUNICÍPIO%') as tcm
+  from ( 
+    select * 
+    from conteudos_para_email 
+    where pasta like '%TRIBUNAL DE CONTAS DO MUNICÍPIO%' 
+  ) as tcm
   left join 
   (
     select 
@@ -159,7 +178,7 @@ final_tcm as (
 ),
 
 -- SECRETARIA DE SAUDE --
-avisos_secretaria as (
+final_secretaria_saude as (
   select conteudos_para_email.*, 
     concat(
       do_raw.cabecalho,
@@ -171,27 +190,18 @@ avisos_secretaria as (
   left join 
   (
     select 
+      concat(id_diario,id_materia,secao_indice)  as id_materia_secao_do,
       pasta,
       arquivo,
-      cabecalho,
-      conteudo,
-      concat(id_diario,id_materia)  as id_materia_do
+      regexp_replace(cabecalho,'DANIEL SORANZ\n','') as cabecalho,
+      string_agg(conteudo,'\n') as conteudo
     from diarios_municipio
     where bloco_indice = 0
-    and secao_indice = 0
+    group by 1,2,3,4
   ) as do_raw
   on 
-  concat(conteudos_para_email.id_diario,conteudos_para_email.id_materia) = do_raw.id_materia_do
-  where conteudos_para_email.pasta like 'AVISOS EDITAIS E TERMOS DE CONTRATOS/SECRETARIA MUNICIPAL DE SAÚDE%'
-),
-final_secretaria_saude as (
-  select tcm.*, 
-    cabecalho as content_email,
-    cast(null as string) as voto
-  from ( select * from conteudos_para_email where pasta like 'SECRETARIA MUNICIPAL DE SAÚDE%') as tcm
-  union all
-  select * from avisos_secretaria
-
+  concat(conteudos_para_email.id_diario,conteudos_para_email.id_materia, conteudos_para_email.secao_indice) = do_raw.id_materia_secao_do
+  where conteudos_para_email.pasta like '%SECRETARIA MUNICIPAL DE SAÚDE%'
 ),
 -- ATOS DO PREFEITO --
 final_atos_prefeito as (
@@ -202,19 +212,19 @@ final_atos_prefeito as (
       assunto.conteudo
      ) as content_email,
      cast(null as string) as voto
-  from ( select * from conteudos_para_email where pasta  like 'ATOS DO PREFEITO%') as atos
+  from ( select * from conteudos_para_email where pasta  = 'ATOS DO PREFEITO/DECRETOS N') as atos
   left join 
   (
     select 
+      concat(id_diario,id_materia)  as id_materia_do,
       pasta,
       arquivo,
       cabecalho,
-      conteudo,
-      concat(id_diario,id_materia)  as id_materia_do
+      string_agg(conteudo,'\n') as conteudo
     from diarios_municipio
     where bloco_indice = 0
-    and conteudo_indice = 0
     and secao_indice = 0
+    group by 1,2,3,4
   ) as assunto
   on id_materia_do = concat(atos.id_diario,atos.id_materia)
 ),
@@ -231,15 +241,15 @@ final_controladoria as (
   left join
   (
     select 
+      concat(id_diario,id_materia)  as id_materia_do,
       pasta,
       arquivo,
       cabecalho,
-      conteudo,
-      concat(id_diario,id_materia)  as id_materia_do
+      string_agg(conteudo,'\n') as conteudo
     from diarios_municipio
     where bloco_indice = 0
-    and conteudo_indice = 0
     and secao_indice = 0
+    group by 1,2,3,4
   ) as assunto
   on id_materia_do = concat(atos.id_diario,atos.id_materia)
 ),
@@ -256,6 +266,7 @@ final_all_sections as (
 select 
     final_all_sections.* except(data_extracao,ano_particao,mes_particao,data_particao,id),
     html.html as html,
+    concat('https://doweb.rio.rj.gov.br/apifront/portal/edicoes/publicacoes_ver_conteudo/',final_all_sections.id_materia) as link,
     final_all_sections.data_extracao,
     final_all_sections.ano_particao,
     final_all_sections.mes_particao,
@@ -263,6 +274,7 @@ select
 from final_all_sections
 left join diarios_municipio_html as html
 on concat(final_all_sections.id_diario,final_all_sections.id_materia) = concat(html.id_diario,html.id_materia)
+where lower(content_email) not like 'anexo%[tabela]'
 
 
 

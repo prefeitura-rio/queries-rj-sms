@@ -1,0 +1,72 @@
+version: 2
+models:
+  - name: marts_sisreg__unidades
+    description: >
+      Consolida dados provenientes da API do SISREG sobre TODAS as unidades,
+      tanto SOLICITANTES quanto EXECUTANTES, nos últimos três meses. Para cada unidade, traz a data de
+      referência, o tipo de atividade ("SOLICITANTE", "EXECUTANTE") um indicador de atividade no período,
+      o código CNES, a lista de procedimentos, nome, esfera e tipo da unidade.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_referencia
+            - unidade_id_cnes
+            - unidade_atividade
+
+    columns:
+      - name: data_referencia
+        description: Data de atualização da presente tabela.
+        data_type: date
+        quote: true
+        tests:
+          - not_null
+
+      - name: unidade_ativa_ultimos_3m
+        description: >
+          Indicador de atividade da unidade nos últimos três meses:
+          1 = ativa; 0 = inativa.
+        data_type: int64
+        quote: true
+        tests:
+          - accepted_values:
+              values: [0, 1]
+              quote: false
+
+      - name: unidade_id_cnes
+        description: Identificador único da unidade de saúde no CNES (Cadastro Nacional de Estabelecimentos de Saúde).
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: procedimentos
+        description: >
+          Array com os identificadores internos de procedimentos distintos
+          executados pela unidade nos últimos 90 dias.
+        data_type: string
+        quote: true
+
+      - name: unidade_atividade
+        description: Indica se a unidade é SOLICITANTE ou EXECUTANTE
+        data_type: string
+        quote: true
+        tests:
+          - accepted_values:
+              values: ["SOLICITANTE", "EXECUTANTE"]
+              quote: true
+
+      - name: unidade_nome
+        description: Nome da unidade de saúde.
+        data_type: string
+        quote: true
+
+      - name: unidade_tipo
+        description: Tipo da unidade de saúde (HOSPITAL, ATENÇÃO PRIMÁRIA, ATENÇÃO ESPECIALIZADA, PRÉ HOSPITALAR, ...)
+        data_type: string
+        quote: true
+
+      - name: unidade_esfera
+        description: Esfera administrativa da unidade (eMUNICIPAL - PÚBLICO, MUNICIPAL - PRIVADO, ESTADUAL, ...)
+        data_type: string
+        quote: true
+

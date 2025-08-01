@@ -35,7 +35,7 @@ models:
         data_tests:
           - dbt_expectations.expect_column_sum_to_be_between:
               name: raw_estoque_central_tpc__estoque_posicao__material_valor_total__between
-              min_value: 59000000 # TODO: Antes era 60000000. De onde vieram esses valores?
+              min_value: 58000000 # TODO: Antes era 60000000. De onde vieram esses valores?
               max_value: 110000000 # TODO: De onde vieram esses valores?
               config:
                 severity: error

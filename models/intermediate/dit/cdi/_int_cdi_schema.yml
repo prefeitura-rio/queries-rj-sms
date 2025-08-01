@@ -44,6 +44,9 @@ models:
       - name: html 
         description: HTML da matéria.
         data_type: string
+      - name: link
+        description: Link para o ato oficial no DOU.
+        data_type: string
       - name: data_extracao
         description: A data e hora em que os dados foram extraídos
         data_type: datetime

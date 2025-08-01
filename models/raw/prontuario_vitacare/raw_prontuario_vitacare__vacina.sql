@@ -2,6 +2,7 @@
     config(
         alias="vacina",
         materialized="table",
+        tags=['daily']
     )
 }}
 

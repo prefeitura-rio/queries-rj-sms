@@ -1,7 +1,7 @@
 {{
     config(
         alias="indicador", 
-        materialized="incremental",
+        materialized="table",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",

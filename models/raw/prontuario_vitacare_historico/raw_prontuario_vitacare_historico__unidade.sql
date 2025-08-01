@@ -1,7 +1,7 @@
 {{
     config(
         alias="unidade", 
-        materialized="incremental",
+        materialized="table",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -35,7 +35,8 @@ WITH
     fato_unidades AS (
         SELECT
             -- PKs e Chaves
-            id AS id_cnes,
+            id_cnes,
+            replace(id, '.0', '') as id,
             unidade_nome,
             unidade_ap,
             {{ process_null('tipo_entid') }} AS tipo_entid,

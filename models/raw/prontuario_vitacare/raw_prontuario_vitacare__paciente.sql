@@ -2,6 +2,7 @@
     config(
         alias="paciente",
         materialized="table",
+        tags=['daily']
     )
 }}
 
@@ -104,12 +105,12 @@ with
             }} as endereco_logradouro,
             {{
                 remove_accents_upper(
-                    'REGEXP_EXTRACT(endereco_logradouro, r"\b(\d+)\b")'
+                    'REGEXP_EXTRACT(endereco_logradouro, r\"\\b(\\d+|S\\/?[Nn])\\b\")'
                 )
             }} as endereco_numero,
             {{
                 remove_accents_upper(
-                    'REGEXP_REPLACE(endereco_logradouro, r"^.*?\d+\s*(.*)$", r"\1")'
+                    'REGEXP_EXTRACT(endereco_logradouro, r\"(?:\\b\\d+|\\bS\\/?[Nn])\\b\\s*[\\-|\\s]*(.*)$\" )'
                 )
             }} as endereco_complemento,
             {{ remove_accents_upper("endereco_bairro") }} as endereco_bairro,

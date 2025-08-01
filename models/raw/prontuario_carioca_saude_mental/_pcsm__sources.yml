@@ -1,0 +1,52 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_carioca_saude_mental_staging
+    database: rj-sms
+    schema: brutos_prontuario_carioca_saude_mental_staging
+    freshness: # default freshness
+      error_after: {count: 24, period: hour}
+    loaded_at_field: TIMESTAMP(createdAt)
+    tables:
+      - name: gh_cidadao_pac
+      - name: gh_pacientes_sm
+      - name: gh_srtpacientes
+      - name: gh_pac_ciclos
+      - name: gh_comorbpacientes
+      - name: gh_drogaspacientes
+      - name: gh_atendimentos
+      - name: gh_matric
+      - name: gh_matric_paciente
+      - name: gh_articula
+      - name: gh_articula_paciente
+      - name: gh_acolhimento
+      - name: gh_us
+      - name: gh_us_tipo 
+      - name: gh_comorbidades
+      - name: gh_drogas
+      - name: gh_equipe
+      - name: gh_srt
+      - name: gh_ativgrp
+      - name: gh_tpatendimentos
+      - name: gh_encam_atend
+      - name: gh_tpsaidaacolhe
+      - name: gh_tplocal
+      - name: gh_local
+      - name: gh_tpatividades
+      - name: gh_clinfamil_equipes
+      
+  - name: brutos_prontuario_carioca_saude_mental
+    database: rj-sms
+    schema: brutos_prontuario_carioca_saude_mental
+    freshness: # default freshness
+      error_after: {count: 24, period: hour}
+    loaded_at_field: TIMESTAMP(createdAt)
+    tables:
+      - name: beneficios
+        description: "Tipos de beneficios sociais que os pacientes recebem. Esta lista foi criada com base em um arquivo .ini do Sistema PCSM"
+      - name: pacientes
+        description: "Pacientes que já obtiveram atendimento em um Centro de Atenção Psicosocial (CAPS) ou dentro da RAPS (Rede de atenção Psicosocial). Esta tabela tem informações complementares na tabela gh_paciente_sm."
+      - name: deficiencias
+        description: "Tipos de deficiências que os pacientes podem ter. Esta lista foi criada com base em um arquivo .ini do Sistema PCSM"
+      - name: tipos_vinculo_trabalho_pacientes
+        description: "Tipos de vínculos de trabalho que os pacientes podem ter. Esta lista foi criada com base em um arquivo .ini do Sistema PCSM"

@@ -1,14 +1,13 @@
 {{
     config(
         alias="cadastro",
-        materialized="incremental",
+        materialized="table",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "day"
         },
-        incremental_strategy='merge', 
         unique_key=['cpf', 'id_cnes']
     )
 }}

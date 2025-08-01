@@ -2,16 +2,22 @@
     config(
         schema="brutos_prontuario_vitacare_staging",
         alias="_base_atendimento_historico",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy='merge', 
+        unique_key=['id_prontuario_global'],
+        cluster_by="cpf",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "day",
         },
-        incremental_strategy='merge', 
-        unique_key=['id_prontuario_global']
+        tags=['weekly']
     )
 }}
+
+{% set partitions_to_replace = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 10 day)"
+) %}
 
 with
     dim_equipe as (
@@ -37,7 +43,8 @@ with
             profissional_nome as nome_profissional,
             profissional_cbo as cbo_profissional,
             profissional_cbo_descricao as cbo_descricao_profissional,
-            dim_equipe.codigo as cod_equipe_profissional,
+            -- dim_equipe.codigo 
+            '' as cod_equipe_profissional,
             profissional_equipe_cod_ine as cod_ine_equipe_profissional,
             profissional_equipe_nome as nome_equipe_profissional,
 
@@ -52,7 +59,6 @@ with
             subjetivo_motivo as soap_subjetivo_motivo,
             objetivo_descricao as soap_objetivo_descricao,
             avaliacao_observacoes as soap_avaliacao_observacoes,
-            safe_cast(null as string) as soap_plano_procedimentos_clinicos,
             plano_observacoes as soap_plano_observacoes,
             notas_observacoes as soap_notas_observacoes,
 
@@ -64,6 +70,9 @@ with
             as atendimentos
         left join
             dim_equipe on atendimentos.profissional_equipe_cod_ine = dim_equipe.n_ine
+        {% if is_incremental() %} 
+        where data_particao >=  {{ partitions_to_replace }}
+        {% endif %}
             
     ),
     dim_alergias as (
@@ -73,6 +82,9 @@ with
                 array_agg(struct(alergias_anamnese_descricao as descricao))
             ) as alergias
         from {{ref("raw_prontuario_vitacare_historico__alergia") }}
+        {% if is_incremental() %} 
+        where data_particao >= {{ partitions_to_replace }} 
+        {% endif %}
         group by id_prontuario_global
     ),
     dim_condicoes as (
@@ -82,6 +94,9 @@ with
                 array_agg(struct(cod_cid10, "" as cod_ciap2, estado, data_diagnostico))
             ) as condicoes
         from {{ ref("raw_prontuario_vitacare_historico__condicao") }}
+        {% if is_incremental() %} 
+        where data_particao >= {{ partitions_to_replace }} 
+        {% endif %}
         group by id_prontuario_global
     ),
     dim_encaminhamentos as (
@@ -91,6 +106,9 @@ with
                 array_agg(struct(encaminhamento_especialidade as descricao))
             ) as encaminhamentos
         from{{ ref("raw_prontuario_vitacare_historico__encaminhamento")}}
+        {% if is_incremental() %} 
+        where data_particao >= {{ partitions_to_replace }} 
+        {% endif %}
         group by id_prontuario_global
     ),
     dim_indicadores as (
@@ -100,6 +118,9 @@ with
                 array_agg(struct(indicadores_nome as nome, valor))
             ) as indicadores
         from {{ ref("raw_prontuario_vitacare_historico__indicador")}}
+        {% if is_incremental() %} 
+        where data_particao >= {{ partitions_to_replace }} 
+        {% endif %}
         group by id_prontuario_global
     ),
     dim_exames as (
@@ -113,6 +134,9 @@ with
                 )
             ) as exames_solicitados
         from {{ ref("raw_prontuario_vitacare_historico__solicitacaoexame") }}
+        {% if is_incremental() %} 
+        where data_particao >=  {{ partitions_to_replace }} 
+        {% endif %}
         group by id_prontuario_global
     ),
     dim_vacinas as (
@@ -136,6 +160,9 @@ with
                 )
             ) as vacinas
         from {{ ref("raw_prontuario_vitacare_historico__vacina") }}
+        {% if is_incremental() %} 
+        where data_particao >= {{ partitions_to_replace }} 
+        {% endif %}
         group by id_prontuario_global
     ),
     dim_prescricoes as (
@@ -144,8 +171,8 @@ with
             to_json_string(
                 array_agg(
                     struct(
-                        id_medicamento,
-                        medicamento_nome,
+                        id_medicamento as cod_medicamento,
+                        medicamento_nome as nome_medicamento,
                         posologia,
                         quantidade,
                         uso_continuado
@@ -153,6 +180,26 @@ with
                 )
             ) as prescricoes
         from {{ ref("raw_prontuario_vitacare_historico__prescricao") }}
+        {% if is_incremental() %} 
+        where data_particao >= {{ partitions_to_replace }} 
+        {% endif %}
+        group by id_prontuario_global
+    ),
+    dim_procedimentos_clinicos as (
+        select
+            id_prontuario_global,
+            to_json_string(
+                array_agg(
+                    struct(
+                        co_procedimento,
+                        no_procedimento AS procedimento_clinico
+                    )
+                )
+            ) as procedimentos_clinicos
+        from {{ ref("raw_prontuario_vitacare_historico__procedimentos_clinicos") }}
+        {% if is_incremental() %} 
+        where data_particao >= {{ partitions_to_replace }} 
+        {% endif %}
         group by id_prontuario_global
     ),
 
@@ -160,6 +207,8 @@ with
         select
             atendimentos.* except (updated_at, loaded_at),
 
+
+            dim_procedimentos_clinicos.procedimentos_clinicos AS soap_plano_procedimentos_clinicos,
             dim_prescricoes.prescricoes,
             dim_condicoes.condicoes,
             dim_exames.exames_solicitados,
@@ -179,6 +228,7 @@ with
         left join dim_exames using (id_prontuario_global)
         left join dim_vacinas using (id_prontuario_global)
         left join dim_prescricoes using (id_prontuario_global)
+        left join dim_procedimentos_clinicos using (id_prontuario_global)
     ),
 
     final as (
@@ -196,4 +246,5 @@ with
         from atendimentos_eventos_historicos
     )
 
-select * from final
+select *
+from final

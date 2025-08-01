@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: brutos_gal_staging
+    database: rj-sms
+    schema: brutos_gal_staging
+    tables:
+      - name: agravos
+      - name: tipo_resultado
+      - name: exames_laboratoriais
+      - name: colzn_resultados_2020-2024
+      - name: culmb_resultados_2020-2024
+      - name: pcr_resultados_2020-2024
+      - name: requisicoes_2020-2024
+      - name: tsa_resultados_2020-2024

@@ -24,7 +24,7 @@ with
             municipioresidencia,
             ufresidencia,
             safe_cast(safe_cast(fontecadastro as float64) as int64) as fontecadastro,    
-            data_extracao,
+            safe_cast(safe_cast(data_extracao as timestamp) as date) as data_extracao,
             ano_particao,
             mes_particao,
             data_particao
@@ -39,7 +39,10 @@ with
     deduplicated as (
         select *
         from source
-        qualify row_number() over (partition by idusuario order by datahoracadastro desc) = 1
+        qualify row_number() over (
+            partition by idusuario 
+            order by data_extracao desc, datahoracadastro desc
+        ) = 1
     )
 select *
 from deduplicated
