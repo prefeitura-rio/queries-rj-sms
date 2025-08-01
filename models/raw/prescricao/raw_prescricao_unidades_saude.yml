@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: raw_prescricao_unidades_saude
+    description: "Instalações físicas ou setores específicos de atendimento à saúde, presentes em todos os hospitais e clínicas da rede municipal do Rio de Janeiro."
+    columns:
+      - name: id_unidade_saude
+        description: "Identificador sequencial único da Unidade de Saúde (US). Chave primária."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_prescricao_unidades_saude__id_unidade_saude__not_null
+              severity: error
+          - unique:
+              name: raw_prescricao_unidades_saude__id_unidade_saude__unique
+              severity: error
+      - name: nome_unidade_saude
+        description: "Descrição ou nome da Unidade de Saúde (US)."
+        data_type: string
+      - name: cnes_unidade_saude
+        description: "Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade."
+        data_type: string
+      - name: sequencial_unidade_saude
+        description: "Sequencial da Unidade de Saúde ou do sistema de saúde mental (SSM) ao qual a US pertence."
+        data_type: int64
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

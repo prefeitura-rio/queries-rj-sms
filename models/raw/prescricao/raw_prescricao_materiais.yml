@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: raw_prescricao_materiais
+    description: "Itens e materiais padronizados disponíveis para uso em todos os hospitais e unidades de saúde da rede municipal do Rio de Janeiro."
+    columns:
+      - name: id_material
+        description: "Código único de identificação do material ou medicamento no catálogo. Chave primária."
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prescricao_material__id_material__not_null
+              severity: error
+          - unique:
+              name: raw_prescricao_material__id_material__unique
+              severity: error
+      - name: grupo_principal
+        description: "Código do grupo ao qual o material pertence (categoria geral do insumo)."
+        data_type: string
+      - name: subgrupo_principal
+        description: "Código do subgrupo dentro do grupo principal do material."
+        data_type: string
+      - name: classe_subgrupo
+        description: "Código de classificação do material (mais específico que grupo/subgrupo)."
+        data_type: string
+      - name: unidade_medida
+        description: "Unidade de medida do material (ex: 'UN' para unidade, 'MG' para miligrama)."
+        data_type: string
+      - name: custo_aquisicao
+        description: "Código de classificação SIAF (Sistema Integrado de Administração Financeira)."
+        data_type: string
+      - name: custo_substituicao
+        description: "Sub-código SIAF, complementar ao custo_aquisicao."
+        data_type: string
+      - name: peso_unidade
+        description: "Indicador de controle de estoque ou tipo de consumo do material (ex: 'P' para permanente, 'C' para consumo)."
+        data_type: string
+      - name: descricao_tipo_consumo
+        description: "Descrição do tipo de consumo do material (ex: 'Permanente', 'Consumo')."
+        data_type: string
+      - name: descricao_detalhada
+        description: "Descrição detalhada do material ou medicamento."
+        data_type: string
+      - name: status_atual
+        description: "Status do material no catálogo (ex: 'A' para ativo, 'I' para inativo)."
+        data_type: string
+      - name: descricao_status
+        description: "Descrição do status do material (ex: 'Ativo', 'Inativo')."
+        data_type: string
+      - name: tipo_material
+        description: "Tipo de material (ex: 'M' para medicamento, 'I' para insumo)."
+        data_type: string
+      - name: descricao_tipo_material
+        description: "Descrição do tipo de material (ex: 'Medicamento', 'Insumo', 'Não classificado')."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp
