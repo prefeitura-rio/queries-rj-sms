@@ -1,9 +1,7 @@
 {{
     config(
         alias="solicitacao_exame", 
-        materialized="incremental",
-        incremental_strategy='merge', 
-        unique_key=['id_prontuario_global'],
+        materialized="table",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",

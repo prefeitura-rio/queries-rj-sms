@@ -25,7 +25,9 @@ with
             safe_cast(nullif(json_extract_scalar(data, "$.dataCadastro"),'') as timestamp)
             ) as updated_at_rank
         from {{ source("brutos_prontuario_vitacare_staging", "paciente_continuo") }}
-        {% if is_incremental() %} where source_updated_at > '{{seven_days_ago}}' {% endif %}
+        {% if is_incremental() %}
+        WHERE TIMESTAMP_TRUNC(datalake_loaded_at, DAY) > TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+        {% endif %}
     ),
     
     latest_events as (

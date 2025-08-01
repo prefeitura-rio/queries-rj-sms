@@ -52,7 +52,6 @@ controladoria_add as (
   or lower(conteudo) like "%gestão fiscal do município do rio de janeiro%"
   or lower(conteudo) like "%órgãos e entidades da administração municipal%"
   or lower(conteudo) like "%execução orçamentária%"
-  or lower(conteudo) like "%prestação de contas%gestão%"
   )
 ),
 -- filtro que adiciona palavras chaves de atos do prefeito
@@ -62,13 +61,8 @@ atos_prefeito_add as (
   where pasta = 'ATOS DO PREFEITO/DECRETOS N'
   and conteudo like "%CGM%"
   or conteudo like "%TCMRJ%"
-),
--- filtro especifico para adicionar outros termos em TCM
-tribunal_contas_add as (
-    select concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id,* 
-  FROM diarios_municipio
-  where pasta like '%TRIBUNAL DE CONTAS DO MUNICÍPIO%'
-  and lower(conteudo) like "%prestação de contas%"
+  or cabecalho like "%CGM%"
+  or cabecalho like "%TCMRJ%"
 ),
 -- filtro especifico de retirar exonerações e designações em secretaria municipal
 secretaria_saude_del as (
@@ -113,8 +107,6 @@ union all
 select * from secretaria_saude_add
 union all
 select * from controladoria_add
-union all
-select * from tribunal_contas_add
 union all
 select * from atos_prefeito_add
 ),
@@ -198,17 +190,17 @@ final_secretaria_saude as (
   left join 
   (
     select 
+      concat(id_diario,id_materia,secao_indice)  as id_materia_secao_do,
       pasta,
       arquivo,
-      cabecalho,
-      conteudo,
-      concat(id_diario,id_materia)  as id_materia_do
+      regexp_replace(cabecalho,'DANIEL SORANZ\n','') as cabecalho,
+      string_agg(conteudo,'\n') as conteudo
     from diarios_municipio
     where bloco_indice = 0
-    and secao_indice = 0
+    group by 1,2,3,4
   ) as do_raw
   on 
-  concat(conteudos_para_email.id_diario,conteudos_para_email.id_materia) = do_raw.id_materia_do
+  concat(conteudos_para_email.id_diario,conteudos_para_email.id_materia, conteudos_para_email.secao_indice) = do_raw.id_materia_secao_do
   where conteudos_para_email.pasta like '%SECRETARIA MUNICIPAL DE SAÚDE%'
 ),
 -- ATOS DO PREFEITO --
@@ -224,15 +216,15 @@ final_atos_prefeito as (
   left join 
   (
     select 
+      concat(id_diario,id_materia)  as id_materia_do,
       pasta,
       arquivo,
       cabecalho,
-      conteudo,
-      concat(id_diario,id_materia)  as id_materia_do
+      string_agg(conteudo,'\n') as conteudo
     from diarios_municipio
     where bloco_indice = 0
-    and conteudo_indice = 0
     and secao_indice = 0
+    group by 1,2,3,4
   ) as assunto
   on id_materia_do = concat(atos.id_diario,atos.id_materia)
 ),
@@ -249,15 +241,15 @@ final_controladoria as (
   left join
   (
     select 
+      concat(id_diario,id_materia)  as id_materia_do,
       pasta,
       arquivo,
       cabecalho,
-      conteudo,
-      concat(id_diario,id_materia)  as id_materia_do
+      string_agg(conteudo,'\n') as conteudo
     from diarios_municipio
     where bloco_indice = 0
-    and conteudo_indice = 0
     and secao_indice = 0
+    group by 1,2,3,4
   ) as assunto
   on id_materia_do = concat(atos.id_diario,atos.id_materia)
 ),
@@ -282,6 +274,7 @@ select
 from final_all_sections
 left join diarios_municipio_html as html
 on concat(final_all_sections.id_diario,final_all_sections.id_materia) = concat(html.id_diario,html.id_materia)
+where lower(content_email) not like 'anexo%[tabela]'
 
 
 

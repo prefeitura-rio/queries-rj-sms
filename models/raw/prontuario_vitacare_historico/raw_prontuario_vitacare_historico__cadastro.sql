@@ -1,15 +1,14 @@
 {{
     config(
-        schema="brutos_prontuario_vitacare_historico",
         alias="cadastro",
-        materialized="incremental",
-        incremental_strategy='merge', 
-        unique_key=['cpf', 'id_cnes'],
+        materialized="table",
+        schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "day"
         },
+        unique_key=['cpf', 'id_cnes']
     )
 }}
 
@@ -59,14 +58,10 @@ WITH
             end as sexo,
             SAFE_CAST({{ process_null('dta_nasc') }} AS DATE) AS data_nascimento,
             {{ process_null('code') }} AS code,
-            CASE
-                WHEN cadastropermanente = '1' THEN TRUE
-                WHEN cadastropermanente = '0' THEN FALSE
-                ELSE NULL
-            END AS cadastro_permanente,
-            {{ process_null('dataatualizacaocadastro') }}  AS data_atualizacao_cadastro, 
-            {{ process_null('dataatualizacaovinculoequipe') }}  AS data_atualizacao_vinculo_equipe, 
-            {{ process_null('datacadastro') }} AS data_cadastro, 
+            cadastropermanente = '1' AS cadastro_permanente, 
+            SAFE_CAST(dataatualizacaocadastro AS DATETIME) AS data_atualizacao_cadastro, 
+            SAFE_CAST({{ process_null('dataatualizacaovinculoequipe') }} AS DATETIME) AS data_atualizacao_vinculo_equipe, 
+            SAFE_CAST({{ process_null('datacadastro') }} AS DATETIME) AS data_cadastro, 
             CASE
                 WHEN obito = '1' THEN TRUE
                 WHEN obito = '0' THEN FALSE
@@ -97,11 +92,7 @@ WITH
             {{ process_null('orientacaosexual') }} AS orientacao_sexual, 
             {{ process_null('nacionalidade') }} AS nacionalidade,
             {{ process_null('paisnascimento') }} AS pais_nascimento, 
-            CASE
-                WHEN participagrupocomunitario = '1' THEN TRUE
-                WHEN participagrupocomunitario = '0' THEN FALSE
-                ELSE NULL
-            END AS participa_grupo_comunitario,
+            participagrupocomunitario = '1' AS participa_grupo_comunitario, 
             CASE
                 WHEN possuiplanosaude = '1' THEN TRUE
                 WHEN possuiplanosaude = '0' THEN FALSE
@@ -186,7 +177,7 @@ WITH
                 WHEN vulnerabilidadesocial = '0' THEN FALSE
                 ELSE NULL
             END AS vulnerabilidade_social, 
-            {{ process_null('updated_at')}}  AS updated_at,
+            SAFE_CAST(updated_at AS DATETIME) AS updated_at,
 
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao

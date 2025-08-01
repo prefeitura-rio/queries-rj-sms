@@ -189,9 +189,3 @@ sources:
         freshness:
           warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
-
-      - name: basecentral__consistencia_etl
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}

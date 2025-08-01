@@ -1,0 +1,130 @@
+{{
+    config(
+        alias="exames_laboratoriais",
+        materialized="table",
+    )
+}}
+WITH
+
+    source as (
+        select *
+        from {{ source("brutos_gal_staging", "exames_laboratoriais") }}
+    ),
+    dedup as (
+        select *
+        from source
+        qualify row_number() over (partition by file_path, row_number order by loaded_at desc) = 1
+    ),
+    cleared as (
+        select
+            -- Chaves
+            {{process_null('file_path')}} as caminho_arquivo,
+            {{process_null('row_number')}} as indice_linha,
+            
+            json_extract_scalar(data, '$.Requisição') as requisicao,
+            json_extract_scalar(data, "$['Requisição Correlativo (S/N)']") as requisicao_correlativo,
+            json_extract_scalar(data, '$.Regional de Cadastro') as regional_cadastro,
+            json_extract_scalar(data, '$.Laboratório de Cadastro') as laboratorio_cadastro,
+            json_extract_scalar(data, '$.CNES Laboratório de Cadastro') as cnes_laboratorio_cadastro,
+            json_extract_scalar(data, '$.Unidade Solicitante') as unidade_solicitante,
+            json_extract_scalar(data, '$.CNES Unidade Solicitante') as cnes_unidade_solicitante,
+            json_extract_scalar(data, '$.Municipio do Solicitante') as municipio_solicitante,
+            json_extract_scalar(data, '$.IBGE Município Solicitante') as ibge_municipio_solicitante,
+            json_extract_scalar(data, '$.Estado do Solicitante') as estado_solicitante,
+            json_extract_scalar(data, '$.CNS do Profissional de Saúde') as cns_profissional_saude,
+            json_extract_scalar(data, '$.Nome Profissional de Saúde') as nome_profissional_saude,
+            json_extract_scalar(data, "$['Reg. Conselho/Matrícula']") as reg_conselho_matricula,
+            json_extract_scalar(data, '$.Agravo da Requisição') as agravo_requisicao,
+            json_extract_scalar(data, '$.Data da Solicitação') as data_solicitacao,
+            json_extract_scalar(data, "$['Data do 1º Sintomas']") as data_primeiros_sintomas,
+            json_extract_scalar(data, '$.Tomou Vacina') as tomou_vacina,
+            json_extract_scalar(data, '$.Qual Vacina') as qual_vacina,
+            json_extract_scalar(data, '$.Data Última Dose') as data_ultima_dose,
+            json_extract_scalar(data, '$.Finalidade') as finalidade,
+            json_extract_scalar(data, '$.Descrição Finalidade') as descricao_finalidade,
+            json_extract_scalar(data, '$.Observação') as observacao,
+            json_extract_scalar(data, '$.Núm. Notificação Sinan') as numero_notificacao_sinan,
+            json_extract_scalar(data, '$.Agravo Sinan') as agravo_sinan,
+            json_extract_scalar(data, '$.CID Agravo Sinan') as cid_agravo_sinan,
+            json_extract_scalar(data, '$.Data Notificação Sinan') as data_notificacao_sinan,
+            json_extract_scalar(data, '$.Unidade Notificação Sinan') as unidade_notificacao_sinan,
+            json_extract_scalar(data, '$.CNES Unidade Notificação Sinan') as cnes_unidade_notificacao_sinan,
+            json_extract_scalar(data, '$.Município Notificação Sinan') as municipio_notificacao_sinan,
+            json_extract_scalar(data, '$.IBGE Município Notificação SINAN') as ibge_municipio_notificacao_sinan,
+            json_extract_scalar(data, "$['Núm. Notificação Gal']") as numero_notificacao_gal,
+            json_extract_scalar(data, '$.Agravo Gal') as agravo_gal,
+            json_extract_scalar(data, '$.CID Agravo Gal') as cid_agravo_gal,
+            json_extract_scalar(data, '$.Data Notificação Gal') as data_notificacao_gal,
+            json_extract_scalar(data, '$.Unidade Notificação Gal') as unidade_notificacao_gal,
+            json_extract_scalar(data, '$.CNES Unidade Notificação Gal') as cnes_unidade_notificacao_gal,
+            json_extract_scalar(data, '$.Município Notificação Gal') as municipio_notificacao_gal,
+            json_extract_scalar(data, '$.IBGE Município Notificação Gal') as ibge_municipio_notificacao_gal,
+            json_extract_scalar(data, '$.CNS do Paciente') as cns_paciente,
+            json_extract_scalar(data, '$.Paciente') as paciente,
+            json_extract_scalar(data, '$.Nome Social') as nome_social,
+            json_extract_scalar(data, '$.Data de Nascimento') as data_nascimento,
+            json_extract_scalar(data, '$.Idade') as idade,
+            json_extract_scalar(data, '$.Tipo Idade') as tipo_idade,
+            json_extract_scalar(data, '$.Sexo') as sexo,
+            json_extract_scalar(data, '$.Idade Gestacional') as idade_gestacional,
+            json_extract_scalar(data, '$.Nacionalidade') as nacionalidade,
+            json_extract_scalar(data, "$['Raça/Cor']") as raca_cor,
+            json_extract_scalar(data, '$.Etnia') as etnia,
+            json_extract_scalar(data, '$.Tipo Doc. Paciente 1') as tipo_doc_paciente_1,
+            json_extract_scalar(data, '$.Documento Paciente 1') as documento_paciente_1,
+            json_extract_scalar(data, '$.Tipo Doc. Paciente 2') as tipo_doc_paciente_2,
+            json_extract_scalar(data, '$.Documento Paciente 2') as documento_paciente_2,
+            json_extract_scalar(data, '$.Nome da Mãe') as nome_mae,
+            json_extract_scalar(data, '$.Endereço') as endereco,
+            json_extract_scalar(data, '$.Bairro') as bairro,
+            json_extract_scalar(data, '$.CEP de Residência') as cep_residencia,
+            json_extract_scalar(data, '$.Municipio de Residência') as municipio_residencia,
+            json_extract_scalar(data, '$.IBGE Município de Residência') as ibge_municipio_residencia,
+            json_extract_scalar(data, '$.Estado de Residência') as estado_residencia,
+            json_extract_scalar(data, '$.País de Residência') as pais_residencia,
+            json_extract_scalar(data, '$.Zona') as zona,
+            json_extract_scalar(data, '$.Telefone de Contato') as telefone_contato,
+            json_extract_scalar(data, '$.Nome da Pesquisa') as nome_pesquisa,
+            json_extract_scalar(data, '$.Número Interno') as numero_interno,
+            json_extract_scalar(data, '$.Exame') as exame,
+            json_extract_scalar(data, '$.Metodologia') as metodologia,
+            json_extract_scalar(data, "$['Exame Condicionado (S/N)']") as exame_condicionado,
+            json_extract_scalar(data, "$['Exame Restrito (S/N)']") as exame_restrito,
+            json_extract_scalar(data, "$['Exame Complementar (S/N)']") as exame_complementar,
+            json_extract_scalar(data, "$['Exame Correlativo (S/N)']") as exame_correlativo,
+            json_extract_scalar(data, '$.Data de Cadastro') as data_cadastro,
+            json_extract_scalar(data, '$.Material Biológico') as material_biologico,
+            json_extract_scalar(data, '$.Localização') as localizacao,
+            json_extract_scalar(data, '$.Material Clínico') as material_clinico,
+            json_extract_scalar(data, '$.Amostra') as amostra,
+            json_extract_scalar(data, '$.Código da Amostra') as codigo_amostra,
+            json_extract_scalar(data, '$.Data da Coleta') as data_coleta,
+            json_extract_scalar(data, '$.Hora da Coleta') as hora_coleta,
+            json_extract_scalar(data, '$.Usou Medicamento') as usou_medicamento,
+            json_extract_scalar(data, '$.Medicamento') as medicamento,
+            json_extract_scalar(data, '$.Data Uso Antibiótico') as data_uso_antibiotico,
+            json_extract_scalar(data, '$.Kit') as kit,
+            json_extract_scalar(data, '$.Fabricante') as fabricante,
+            json_extract_scalar(data, '$.Lote do Kit') as lote_kit,
+            json_extract_scalar(data, '$.Reteste') as reteste,
+            json_extract_scalar(data, '$.Data do Encaminhamento') as data_encaminhamento,
+            json_extract_scalar(data, '$.Data do Recebimento') as data_recebimento,
+            json_extract_scalar(data, '$.Data Início do Processamento') as data_inicio_processamento,
+            json_extract_scalar(data, '$.Data do Processamento') as data_processamento,
+            json_extract_scalar(data, '$.Laboratório Responsável') as laboratorio_responsavel,
+            json_extract_scalar(data, '$.CNES Laboratório responsável') as cnes_laboratorio_responsavel,
+            json_extract_scalar(data, '$.Laboratório de Execução') as laboratorio_execucao,
+            json_extract_scalar(data, '$.CNES Laboratório de Execução') as cnes_laboratorio_execucao,
+            json_extract_scalar(data, '$.Data da Liberação') as data_liberacao,
+            json_extract_scalar(data, '$.Resultado') as resultado,
+            json_extract_scalar(data, '$.Cultura prevista para') as cultura_prevista,
+            json_extract_scalar(data, '$.Aspecto da Amostra de Escarro') as aspecto_amostra_escarro,
+            json_extract_scalar(data, '$.Observações do Resultado') as observacoes_resultado,
+
+            -- Metadados
+            {{process_null('loaded_at')}} as loaded_at
+
+            from dedup
+    )
+select * 
+from cleared

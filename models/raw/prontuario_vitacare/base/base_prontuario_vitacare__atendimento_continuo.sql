@@ -14,18 +14,18 @@
     )
 }}
 
-{% set partitions_to_replace = (
-    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
-) %}
-
 with
 
     bruto_atendimento_continuo_com_repeticao as (
-        select *,
-            source_id  as id_prontuario_local,
+        select
+            *,
+            source_id as id_prontuario_local,
             concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_prontuario_global
         from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
-        {% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}
+        {% if is_incremental() %}
+        where
+            TIMESTAMP_TRUNC(datalake_loaded_at, DAY) > TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+        {% endif %}
     ),
     bruto_atendimento_eventos_ranqueados as (
         select *,

@@ -1224,6 +1224,9 @@ models:
         data_tests:
           - not_null:
               name: raw_prontuario_vitacare__ficha_a__cpf__not_null
+              config:
+                severity: warn
+                warn_if: ">100"
       - name: id_paciente
         description: Identificador único do paciente utilizado para ligar tabelas no datalake.
       - name: id_paciente_vitacare

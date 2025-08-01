@@ -1,9 +1,7 @@
 {{
     config(
         alias="profissional", 
-        materialized="incremental",
-        incremental_strategy='merge', 
-        unique_key=['id_prof'],
+        materialized="table",
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
