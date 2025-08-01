@@ -1,6 +1,6 @@
 {{
     config(
-        schema="bbrutos_prontuario_carioca_saude_mental_prescricao",
+        schema="brutos_prontuario_carioca_saude_mental_prescricao",
         alias="medicamentos",
         materialized="table",
         tags=["raw", "pcsm", "medicamentos"],
