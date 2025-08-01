@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_prescricao",
+        schema="brutos_prontuario_carioca_saude_mental_prescricao",
         alias="prescricoes",
         materialized="table",
         tags=["raw", "pcsm", "prescricoes"],
@@ -87,4 +87,4 @@ select
     safe_cast(numvalidreceit as int64) as validade_receita,                       -- Número de dias de validade da receita
     _airbyte_extracted_at as loaded_at,
     current_timestamp() as transformed_at
-from {{ source('brutos_prescricao_staging', 'fa_prescricao') }}
+from {{ source('brutos_prontuario_carioca_saude_mental_prescricao_staging', 'fa_prescricao') }}

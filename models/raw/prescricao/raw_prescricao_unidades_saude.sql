@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_prescricao",
+        schema="brutos_prontuario_carioca_saude_mental_prescricao",
         alias="unidades_saude",
         materialized="table",
         tags=["raw", "pcsm", "unidades_saude"],
@@ -15,4 +15,4 @@ select
     safe_cast(sequssm as int64) as sequencial_unidade_saude,      -- Sequencial da Unidade de Saúde ou do sistema de saúde mental
     _airbyte_extracted_at as loaded_at,
     current_timestamp() as transformed_at
-from {{ source('brutos_prescricao_staging', 'fa_us') }}
+from {{ source('brutos_prontuario_carioca_saude_mental_prescricao_staging', 'fa_us') }}

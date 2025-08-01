@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_prescricao",
+        schema="brutos_prontuario_carioca_saude_mental_prescricao",
         alias="material_prescricao",
         materialized="table",
         tags=["raw", "pcsm", "material_prescricao"],
@@ -29,4 +29,4 @@ select
   ) as descricao_tipo_prescricao,                        -- Descrição do tipo de prescrição associada ao material
   _airbyte_extracted_at as loaded_at,
   current_timestamp() as transformed_at
-from {{ source('brutos_prescricao_staging', 'fa_catalogmat_prescr') }}
+from {{ source('brutos_prontuario_carioca_saude_mental_prescricao_staging', 'fa_catalogmat_prescr') }}

@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_prescricao",
+        schema="brutos_prontuario_carioca_saude_mental_prescricao",
         alias="atendimentos",
         materialized="table",
         tags=["raw", "pcsm", "atendimentos"],
@@ -115,4 +115,4 @@ select
     safe_cast(sequs as int64) as id_unidade_saude,                                -- Identificador sequencial da unidade de saúde
     _airbyte_extracted_at as loaded_at,
     current_timestamp() as transformed_at
-from {{ source('brutos_prescricao_staging', 'fa_atendimento') }}
+from {{ source('brutos_prontuario_carioca_saude_mental_prescricao_staging', 'fa_atendimento') }}

@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_prescricao",
+        schema="brutos_prontuario_carioca_saude_mental_prescricao",
         alias="pacientes",
         materialized="table",
         tags=["raw", "pcsm", "pacientes"],
@@ -29,4 +29,4 @@ select
     safe_cast(dscnmresp as string) as nome_responsavel_legal,             -- Nome completo do responsável legal pelo paciente
     _airbyte_extracted_at as loaded_at,
     current_timestamp() as transformed_at
-from {{ source('brutos_prescricao_staging', 'fa_paciente') }}
+from {{ source('brutos_prontuario_carioca_saude_mental_prescricao_staging', 'fa_paciente') }}

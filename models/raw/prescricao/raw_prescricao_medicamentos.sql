@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_prescricao",
+        schema="bbrutos_prontuario_carioca_saude_mental_prescricao",
         alias="medicamentos",
         materialized="table",
         tags=["raw", "pcsm", "medicamentos"],
@@ -43,4 +43,4 @@ select
     safe_cast(numqtddispensdia as int64) as quantidade_dispensada_dia,            -- Quantidade dispensada por dia
     _airbyte_extracted_at as loaded_at,
     current_timestamp() as transformed_at
-from {{ source('brutos_prescricao_staging', 'fa_medicamento') }}
+from {{ source('brutos_prontuario_carioca_saude_mental_prescricao_staging', 'fa_medicamento') }}

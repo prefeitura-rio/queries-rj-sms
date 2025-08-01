@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_prescricao",
+        schema="brutos_prontuario_carioca_saude_mental_prescricao",
         alias="medicos",
         materialized="table",
         tags=["raw", "pcsm", "medicos"],
@@ -23,4 +23,4 @@ select
     safe_cast(crm_uf as string) as unidade_federativa_crm,           -- UF de registro do CRM do médico
     _airbyte_extracted_at as loaded_at,
     current_timestamp() as transformed_at
-from {{ source('brutos_prescricao_staging', 'fa_medico') }}
+from {{ source('brutos_prontuario_carioca_saude_mental_prescricao_staging', 'fa_medico') }}
