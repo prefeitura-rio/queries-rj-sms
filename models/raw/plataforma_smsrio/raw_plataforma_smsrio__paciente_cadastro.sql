@@ -66,7 +66,7 @@ with
     cns_lista as (
         select
             cns,
-            array_agg(cns_provisorio ignore nulls by updated_at desc) as cns_provisorio_lista -- Ordenação de cns pela data de atualização
+            array_agg(cns_provisorio ignore nulls order by updated_at desc) as cns_provisorio_lista -- Ordenação de cns pela data de atualização
         from todos_cns
         group by cns
     ),
