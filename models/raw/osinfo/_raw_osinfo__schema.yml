@@ -392,7 +392,7 @@ models:
         data_type: string
         quote: true
       - name: alteracao_tipo
-        description: "Tipo de alteração realizada (ex: Exclusão, Importação)."
+        description: "Tipo de alteração realizada (exemplo Exclusão, Importação)."
         data_type: string
         quote: true
       - name: usuario_cod
@@ -466,7 +466,7 @@ models:
         data_type: string
         quote: true
       - name: unidade_medida
-        description: "Unidade de medida do item ou serviço (ex: Unidade, Litros, etc.)."
+        description: "Unidade de medida do item ou serviço (exemplo Unidade, Litros, etc.)."
         data_type: string
         quote: true
   - name: raw_osinfo__receitas
@@ -533,7 +533,7 @@ models:
         data_type: string
         quote: true
       - name: item
-        description: "Descrição do item ou tipo de receita (ex: Obtenção de Recursos
+        description: "Descrição do item ou tipo de receita (exemplo Obtenção de Recursos
           Externos)."
         data_type: string
         quote: true
@@ -548,7 +548,7 @@ models:
         data_type: string
         quote: true
       - name: item_nome
-        description: "Descrição do item de saldo (ex: Conta Corrente, Aplicação
+        description: "Descrição do item de saldo (exemplo Conta Corrente, Aplicação
           Financeira)."
         data_type: string
         quote: true

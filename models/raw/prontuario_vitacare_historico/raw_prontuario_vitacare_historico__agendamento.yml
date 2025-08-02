@@ -19,13 +19,13 @@ models:
       - name: source_updated_at
         description: Timestamp da última atualização do registro na fonte de dados original.
       - name: estado_marcacao
-        description: Situação atual da marcação do agendamento (ex: agendado, cancelado, realizado).
+        description: Situação atual da marcação do agendamento (exemplo agendado, cancelado, realizado).
       - name: motivo
         description: Motivo do agendamento ou do cancelamento, se aplicável.
       - name: tipo_consulta
-        description: Tipo de consulta agendada (ex: primeira consulta, retorno, emergência).
+        description: Tipo de consulta agendada (exemplo primeira consulta, retorno, emergência).
       - name: tipo_atendimento
-        description: Categoria do atendimento (ex: médico, enfermagem, psicológico).
+        description: Categoria do atendimento (exemplo médico, enfermagem, psicológico).
       - name: consulta_realizada
         description: Indicador booleano que informa se a consulta foi efetivamente realizada.
       - name: loaded_at

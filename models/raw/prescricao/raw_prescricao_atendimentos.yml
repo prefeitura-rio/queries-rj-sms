@@ -57,7 +57,7 @@ models:
         description: "Peso do paciente (formato char(5) sugere texto, verificar necessidade de conversão para numérico)."
         data_type: string
       - name: status_parenteral
-        description: "Status da nutrição parenteral (ex: 'A'tivo, 'S'uspenso, 'C'ancelado)."
+        description: "Status da nutrição parenteral (exemplo 'A'tivo, 'S'uspenso, 'C'ancelado)."
         data_type: string
       - name: descricao_status_parenteral
         description: "Descrição do status da nutrição parenteral (Ativo, Suspenso, Cancelado, etc.)."

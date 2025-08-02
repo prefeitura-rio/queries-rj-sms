@@ -31,7 +31,7 @@ models:
       - name: registocrescimentio_obs
         description: Observações sobre o registro de crescimento.
       - name: tipo_parto
-        description: Tipo de parto (ex: normal, cesariana).
+        description: Tipo de parto (exemplo normal, cesariana).
       - name: peso_nascer
         description: Peso da criança ao nascer (em kg).
       - name: comprimento

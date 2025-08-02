@@ -15,7 +15,7 @@ models:
       - name: cod_vacina
         description: Código da vacina aplicada.
       - name: dose
-        description: Dose da vacina (ex: 1ª dose, 2ª dose, reforço).
+        description: Dose da vacina (exemplo 1ª dose, 2ª dose, reforço).
       - name: lote
         description: Número do lote da vacina.
       - name: data_aplicacao
@@ -29,7 +29,7 @@ models:
       - name: tipo_registro
         description: Tipo de registro da vacina.
       - name: estrategia_imunizacao
-        description: Estratégia de imunização utilizada (ex: rotina, campanha).
+        description: Estratégia de imunização utilizada (exemplo rotina, campanha).
       - name: foi_aplicada
         description: Indica se a vacina foi de fato aplicada.
       - name: justificativa

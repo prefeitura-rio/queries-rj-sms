@@ -43,7 +43,7 @@ models:
       - name: fagerstrom_grau_depend
         description: Pontuação da Escala de Fagerström, indicando o grau de dependência à nicotina.
       - name: fumante_fases_motivacionais
-        description: Fase motivacional do fumante (ex: pré-contemplação, contemplação, ação).
+        description: Fase motivacional do fumante (exemplo pré-contemplação, contemplação, ação).
       - name: fumante_notas_observacoes_txt
         description: Notas e observações em texto livre sobre o paciente tabagista.
       - name: tabaco_tipo_utilizado

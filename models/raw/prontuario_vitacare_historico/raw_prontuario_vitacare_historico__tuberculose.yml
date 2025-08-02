@@ -19,15 +19,15 @@ models:
       - name: contato_tb
         description: Indica se o paciente teve contato com casos de tuberculose.
       - name: tipo_entrada
-        description: Tipo de entrada do caso no sistema (ex: caso novo, retratamento).
+        description: Tipo de entrada do caso no sistema (exemplo caso novo, retratamento).
       - name: forma
-        description: Forma clínica da tuberculose (ex: pulmonar, extrapulmonar).
+        description: Forma clínica da tuberculose (exemplo pulmonar, extrapulmonar).
       - name: bacilo_escarro
         description: Resultado da baciloscopia de escarro.
       - name: cultura_escarro
         description: Resultado da cultura de escarro.
       - name: forma_tratamento
-        description: Forma de tratamento (ex: DOTS - Tratamento Diretamente Observado de Curta Duração).
+        description: Forma de tratamento (exemplo DOTS - Tratamento Diretamente Observado de Curta Duração).
       - name: drogas_utilizadas
         description: Quais drogas foram utilizadas no tratamento.
       - name: tipo_programa
@@ -93,7 +93,7 @@ models:
       - name: resultado_bacilo_escarro_encerramento
         description: Resultado da baciloscopia de escarro no encerramento.
       - name: motivo_encerramento
-        description: Motivo do encerramento do caso (ex: cura, óbito).
+        description: Motivo do encerramento do caso (exemplo cura, óbito).
       - name: hiv_positivo_negativo_encerramento
         description: Status HIV (positivo/negativo) no encerramento.
       - name: raio_x_torax_encerramento

@@ -18,13 +18,13 @@ models:
         description: "Nome comercial do medicamento prescrito."
         data_type: string
       - name: via_administracao
-        description: "Via de administração do medicamento (ex: oral, intravenosa)."
+        description: "Via de administração do medicamento (exemplo oral, intravenosa)."
         data_type: string
       - name: dose_administrada
         description: "Quantidade do medicamento administrada em cada tomada."
         data_type: numeric
       - name: intervalo_doses
-        description: "Tempo entre as doses do medicamento (ex: 8 horas, 12 horas)."
+        description: "Tempo entre as doses do medicamento (exemplo 8 horas, 12 horas)."
         data_type: string
       - name: previsao_consumo
         description: "Previsão de consumo do medicamento, em dias."
@@ -51,7 +51,7 @@ models:
         description: "Nome completo do farmacêutico que dispensou o medicamento."
         data_type: string
       - name: apresentacao_medicamento
-        description: "Apresentação comercial do medicamento (ex: comprimido, solução)."
+        description: "Apresentação comercial do medicamento (exemplo comprimido, solução)."
         data_type: string
       - name: dose_total_prescrita
         description: "Dose total do medicamento prescrita."
@@ -66,7 +66,7 @@ models:
         description: "Indica se há necessidade de hidratação associada (Sim/Não)."
         data_type: string
       - name: descricao_hidratacao_associada
-        description: "Descrição da necessidade de hidratação associada (ex: 'Sim', 'Não', 'Não informado')."
+        description: "Descrição da necessidade de hidratação associada (exemplo 'Sim', 'Não', 'Não informado')."
         data_type: string
       - name: quantidade_estoque
         description: "Quantidade do medicamento em estoque."

@@ -27,7 +27,7 @@ models:
       - name: anomalia_congenita
         description: Indica a presença de anomalias congênitas na cavidade oral.
       - name: habitos_prejudiciais
-        description: Descrição de hábitos orais prejudiciais (ex: bruxismo, sucção de dedo).
+        description: Descrição de hábitos orais prejudiciais (exemplo bruxismo, sucção de dedo).
       - name: necessidade_de_protese
         description: Indica se o paciente necessita de algum tipo de prótese dentária.
       - name: atividade_de_carie
@@ -37,7 +37,7 @@ models:
       - name: observacoes_da_avaliacao_clinica
         description: Observações adicionais da avaliação clínica odontológica.
       - name: tipo_de_demanda
-        description: Tipo de demanda que levou ao atendimento (ex: espontânea, programada).
+        description: Tipo de demanda que levou ao atendimento (exemplo espontânea, programada).
       - name: vigilancia_em_saude_bucal
         description: Tipo de vigilância em saúde bucal realizada.
       - name: tipo_de_tratamento

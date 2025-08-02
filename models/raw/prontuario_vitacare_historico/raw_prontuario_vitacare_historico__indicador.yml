@@ -11,7 +11,7 @@ models:
       - name: id_cnes
         description: Código CNES da unidade de saúde onde o indicador foi registrado.
       - name: indicadores_nome
-        description: Nome ou tipo do indicador de saúde (ex: glicemia, pressão arterial).
+        description: Nome ou tipo do indicador de saúde (exemplo glicemia, pressão arterial).
       - name: valor
         description: Valor numérico do indicador.
       - name: loaded_at

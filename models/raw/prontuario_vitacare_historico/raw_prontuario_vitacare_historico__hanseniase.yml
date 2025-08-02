@@ -15,7 +15,7 @@ models:
       - name: num_lesoes_cut
         description: Número de lesões cutâneas observadas no paciente.
       - name: forma_clinica
-        description: Classificação da forma clínica da hanseníase (ex: Tuberculoide, Virchowiana, Dimorfa, Indeterminada).
+        description: Classificação da forma clínica da hanseníase (exemplo Tuberculoide, Virchowiana, Dimorfa, Indeterminada).
       - name: classificacao_operacional
         description: Classificação operacional do caso de hanseníase (Paucibacilar ou Multibacilar).
       - name: num_nervos_afetados
@@ -23,7 +23,7 @@ models:
       - name: avaliacao_grau_incapacidade
         description: Grau de incapacidade física avaliado no paciente.
       - name: modo_entrada
-        description: Modo de entrada do paciente no sistema de tratamento (ex: caso novo, recidiva, transferência).
+        description: Modo de entrada do paciente no sistema de tratamento (exemplo caso novo, recidiva, transferência).
       - name: baciloscopia
         description: Resultado do exame de baciloscopia (positivo, negativo, não realizado).
       - name: data_exame_histopatologico
@@ -65,7 +65,7 @@ models:
       - name: idade_na_exclusao
         description: Idade do paciente na data de exclusão.
       - name: motivo_exclusao
-        description: Motivo da exclusão do paciente (ex: cura, óbito, abandono).
+        description: Motivo da exclusão do paciente (exemplo cura, óbito, abandono).
       - name: numero_sinan_hansen
         description: Número de notificação do caso no SINAN para hanseníase.
       - name: hanseniase_comunicantes_referidos

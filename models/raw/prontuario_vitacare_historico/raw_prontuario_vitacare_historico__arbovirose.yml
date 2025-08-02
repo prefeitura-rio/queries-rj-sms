@@ -13,7 +13,7 @@ models:
       - name: data_inicio_sintomas
         description: Data e hora de início dos primeiros sintomas relatados pelo paciente.
       - name: definicao_caso
-        description: Classificação da definição do caso de arbovirose (ex: suspeito, provável, confirmado, descartado).
+        description: Classificação da definição do caso de arbovirose (exemplo suspeito, provável, confirmado, descartado).
       - name: dias_com_febre
         description: Número de dias em que o paciente apresentou febre.
       - name: episodios_de_vomito
@@ -35,7 +35,7 @@ models:
       - name: figado_aumentado
         description: Indica se o fígado do paciente está aumentado.
       - name: acumulacao_liquido
-        description: Indica se há acúmulo de líquido (ex: ascite, derrame pleural).
+        description: Indica se há acúmulo de líquido (exemplo ascite, derrame pleural).
       - name: letargia_observada
         description: Indica se o paciente apresentou letargia (sonolência anormal).
       - name: irritabilidade_observada

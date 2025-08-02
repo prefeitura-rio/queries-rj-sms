@@ -13,7 +13,7 @@ models:
       - name: sifilis_adquirida_numero_sinan
         description: Número de notificação do caso de sífilis adquirida no sistema SINAN.
       - name: sifilis_adquirida_classificacao_clinica
-        description: Classificação clínica da sífilis adquirida (ex: primária, secundária, latente).
+        description: Classificação clínica da sífilis adquirida (exemplo primária, secundária, latente).
       - name: sifilis_adquirida_regime_tratamento
         description: Regime de tratamento utilizado para a sífilis adquirida.
       - name: sifilis_adquirida_data_inicio_tratamento

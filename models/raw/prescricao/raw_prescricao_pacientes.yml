@@ -30,10 +30,10 @@ models:
         description: "Descrição da origem da prescrição: p=Prontuário, b=BE (boletim de emergência), i=Internação, ou Não informado."
         data_type: string
       - name: peso_paciente
-        description: "Peso do paciente em quilogramas (ex: 65.50)."
+        description: "Peso do paciente em quilogramas (exemplo 65.50)."
         data_type: numeric
       - name: altura_paciente
-        description: "Altura (estatura) do paciente, geralmente em metros (ex: 1.75) ou centímetros."
+        description: "Altura (estatura) do paciente, geralmente em metros (exemplo 1.75) ou centímetros."
         data_type: float64
       - name: superficie_corporal
         description: "Superfície corporal do paciente, calculada a partir do peso e altura."

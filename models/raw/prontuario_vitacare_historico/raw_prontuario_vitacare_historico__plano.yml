@@ -23,7 +23,7 @@ models:
       - name: recomendacao_de_pratica_esportiva_ac_carioca
         description: Recomendação de prática esportiva ou atividade física (específico para o programa AC Carioca).
       - name: coleta_de_material
-        description: Informações sobre coleta de materiais para exames (ex: tipo de material, local).
+        description: Informações sobre coleta de materiais para exames (exemplo tipo de material, local).
       - name: motivo_da_entrada_ac_carioca
         description: Motivo da entrada do paciente no programa AC Carioca.
       - name: indicacao_clinica_ac_carioca
