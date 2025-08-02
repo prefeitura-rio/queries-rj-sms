@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: sifilis
+  - name: raw_prontuario_vitacare_historico__sifilis
     description: Tabela contendo informações sobre casos de sífilis adquirida, incluindo classificação clínica, tratamento e desfecho.
     columns:
       - name: id_prontuario_global

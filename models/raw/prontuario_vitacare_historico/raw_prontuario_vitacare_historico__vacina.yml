@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: vacina
+  - name: raw_prontuario_vitacare_historico__vacina
     description: Tabela contendo informações detalhadas sobre as vacinas aplicadas nos pacientes, incluindo dados da vacina, dose, lote e datas de aplicação e registro.
     columns:
       - name: id_prontuario_global

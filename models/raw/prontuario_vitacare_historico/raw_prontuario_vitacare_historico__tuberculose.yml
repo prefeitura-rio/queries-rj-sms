@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: tuberculose
+  - name: raw_prontuario_vitacare_historico__tuberculose
     description: Tabela contendo informações detalhadas sobre casos de tuberculose, incluindo dados de tratamento, exames laboratoriais e acompanhamento.
     columns:
       - name: id_prontuario_global

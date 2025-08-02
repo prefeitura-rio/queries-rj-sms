@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: solicitacao_exame
+  - name: raw_prontuario_vitacare_historico__solicitacaoexame
     description: Tabela contendo informações sobre as solicitações de exames para pacientes.
     columns:
       - name: id_prontuario_global

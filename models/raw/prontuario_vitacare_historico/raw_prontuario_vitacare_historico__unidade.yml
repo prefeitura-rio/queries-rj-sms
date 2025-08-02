@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: unidade
+  - name: raw_prontuario_vitacare_historico__unidade
     description: Tabela contendo informações sobre as unidades de saúde.
     columns:
       - name: id_cnes

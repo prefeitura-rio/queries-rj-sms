@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: saudemulher
+  - name: raw_prontuario_vitacare_historico__saudemulher
     description: Tabela contendo informações detalhadas sobre a saúde da mulher, focando em planejamento familiar, métodos contraceptivos e outras ações de saúde.
     columns:
       - name: id_prontuario_global

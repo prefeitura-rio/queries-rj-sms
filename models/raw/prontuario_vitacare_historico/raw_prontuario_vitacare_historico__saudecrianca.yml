@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: saudecrianca
+  - name: raw_prontuario_vitacare_historico__saudecrianca
     description: Tabela contendo informações detalhadas sobre a saúde e desenvolvimento de crianças, incluindo dados do período neonatal, crescimento, rastreios e avaliações de desenvolvimento.
     columns:
       - name: id_prontuario_global

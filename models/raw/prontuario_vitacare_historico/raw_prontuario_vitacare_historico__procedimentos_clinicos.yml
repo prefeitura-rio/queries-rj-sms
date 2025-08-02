@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: procedimento_clinicos
+  - name: raw_prontuario_vitacare_historico__procedimentos_clinicos
     description: Tabela contendo informações sobre os procedimentos clínicos realizados em pacientes.
     columns:
       - name: id_prontuario_global

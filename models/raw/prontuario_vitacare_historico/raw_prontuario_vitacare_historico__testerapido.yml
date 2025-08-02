@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: teste_rapido
+  - name: raw_prontuario_vitacare_historico__testerapido
     description: Tabela contendo os resultados de diversos testes rápidos realizados em pacientes, incluindo gravidez, glicemia, sífilis, tuberculose, hepatites e COVID-19.
     columns:
       - name: id_prontuario_global

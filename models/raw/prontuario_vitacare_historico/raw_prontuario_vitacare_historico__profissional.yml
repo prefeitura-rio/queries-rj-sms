@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: profissional
+  - name: raw_prontuario_vitacare_historico__profissional
     description: Tabela contendo informações detalhadas sobre os profissionais de saúde.
     columns:
       - name: id_prof
