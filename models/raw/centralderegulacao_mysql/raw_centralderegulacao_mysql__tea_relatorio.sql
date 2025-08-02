@@ -3,7 +3,7 @@
 with
     source as (
         select *
-        from {{ source("brutos_centralderegulacao_mysql_staging", "monitoramento__vw_tea_relatorio") }}
+        from {{ source("brutos_centralderegulacao_mysql_staging", "vw_tea_relatorio") }}
     ),
     deduplicated as (
         select *

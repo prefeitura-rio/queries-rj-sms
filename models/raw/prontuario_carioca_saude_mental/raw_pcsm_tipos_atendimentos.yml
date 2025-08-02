@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: raw_pcsm_tipos_atendimentos
+    description: "Tipos de atendimentos oferecidos para saúde mental pela prefeitura do Rio de Janeiro."
+    columns:
+      - name: id_tipo_atendimento
+        description: "Identificador único do tipo de atendimento."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_tipos_atendimentos__id_tipo_atendimento__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_tipos_atendimentos__id_tipo_atendimento__unique
+              severity: error
+      - name: classificacao_atendimento
+        description: "Classificação de tipo de atendimento (AM-Deambulatório, CA-CAPS, EM-Emergência, HP-Internação)."
+        data_type: string
+      - name: descricao_classificacao_atendimento
+        description: "Descrição da classificação de tipo de atendimento: AM-Deambulatório, CA-CAPS, EM-Emergência, HP-Internação."
+        data_type: string
+      - name: descricao_tipo_atendimento
+        description: "Descrição do tipo de atendimento."
+        data_type: string
+      - name: acao_pos_atentimento
+        description: "Indicador de Ação de condição pós-atendimento (S-Sim, N-Não)."
+        data_type: string
+      - name: descricao_acao_pos_atendimento
+        description: "Descrição da ação de condição pós-atendimento. (Sim, Não, Não informado, Não classificado)"
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

@@ -17,6 +17,7 @@ with
         select *
         from {{ ref("raw_prontuario_vitacare__atendimento") }}
         where updated_at >= date_sub(current_date(), interval 1 year)
+        and cpf is not null
     ),
     
     prescricoes as (

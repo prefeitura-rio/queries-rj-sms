@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: raw_prescricao_pacientes
+    description: "Indivíduos recebendo assistência e cuidados de saúde em qualquer uma das unidades de atendimento e hospitais da rede municipal do Rio de Janeiro."
+    columns:
+      - name: id_paciente
+        description: "Identificador único do paciente no sistema. Chave primária."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_prescricao_pacientes__id_paciente__not_null
+              severity: error
+          - unique:
+              name: raw_prescricao_pacientes__id_paciente__unique
+              severity: error
+      - name: registro_prontuario
+        description: "Número de registro hospitalar ou prontuário do paciente."
+        data_type: int64
+      - name: nome_paciente
+        description: "Nome completo do paciente."
+        data_type: string
+      - name: data_nascimento
+        description: "Data de nascimento do paciente."
+        data_type: date
+      - name: tipo_documento
+        description: "Origem da prescrição: p=Prontuário, b=BE (boletim de emergência), i=Internação."
+        data_type: string
+      - name: descricao_tipo_documento
+        description: "Descrição da origem da prescrição: p=Prontuário, b=BE (boletim de emergência), i=Internação, ou Não informado."
+        data_type: string
+      - name: peso_paciente
+        description: "Peso do paciente em quilogramas (exemplo 65.50)."
+        data_type: numeric
+      - name: altura_paciente
+        description: "Altura (estatura) do paciente, geralmente em metros (exemplo 1.75) ou centímetros."
+        data_type: float64
+      - name: superficie_corporal
+        description: "Superfície corporal do paciente, calculada a partir do peso e altura."
+        data_type: float64
+      - name: nome_mae_paciente
+        description: "Nome completo da mãe do paciente."
+        data_type: string
+      - name: nome_responsavel_legal
+        description: "Nome completo do responsável legal pelo paciente."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

@@ -54,7 +54,9 @@ with
                 when (
                         (regexp_contains(lower(cbo_datasus.descricao),'enferm')) and 
                         (lower(cbo_datasus.descricao) !='socorrista (exceto medicos e enfermeiros)') and
-                        (not regexp_contains(lower(cbo_datasus.descricao),'tecnico'))
+                        (not regexp_contains(lower(cbo_datasus.descricao),'tecnico')) and
+                        (not regexp_contains(lower(cbo_datasus.descricao),'auxiliar')) and
+                        (not regexp_contains(lower(cbo_datasus.descricao),'atendente')) 
                     )
                     then 'ENFERMEIROS' 
                 when cbo_datasus.descricao in ('Dirigente do servico publico municipal',
@@ -134,6 +136,7 @@ with
             funcao_grupo in (
                 'MEDICOS',
                 'ENFERMEIROS',
+                'DENTISTAS',
                 'DIRETORES DE SAUDE'
             )
     ),
@@ -158,10 +161,14 @@ with
                         then 'full_permission'
                         when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO','CASS')
                         then 'full_permission'
-                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE')
-                        then 'only_from_same_cnes'
-                        when (unidade_tipo in ('CGS'))
+                        when (unidade_tipo in ('CGS','CAPS') and funcao_grupo = 'MEDICOS' )
+                        then 'full_permission'
+                        when (unidade_tipo in ('CGS','CAPS') and funcao_grupo != 'MEDICOS' )
                         then 'only_from_same_ap'
+                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo = 'MEDICOS' 
+                        then 'full_permission'
+                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo != 'MEDICOS' 
+                        then 'only_from_same_cnes'
                         ELSE null
                     end as nivel_acesso
                 )

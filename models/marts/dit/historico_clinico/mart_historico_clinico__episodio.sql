@@ -3,18 +3,16 @@
         schema="saude_historico_clinico",
         alias="episodio_assistencial",
         materialized="incremental",
-        incremental_strategy="insert_overwrite",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "month",
         },
+        incremental_strategy='merge', 
+        unique_key=['id_hci']
     )
 }}
 
-{% set partitions_to_replace = (
-    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
-) %}
 
 with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -56,6 +54,9 @@ with
             metadados,
             cpf_particao,
         from {{ ref("int_historico_clinico__episodio__vitai") }}
+        {% if is_incremental() %}
+            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+        {% endif %}
         union all
         select
             id_hci,
@@ -81,6 +82,9 @@ with
             metadados,
             cpf_particao,
         from {{ ref("int_historico_clinico__episodio__vitacare") }}
+        {% if is_incremental() %}
+            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+        {% endif %}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- PATIENT DATA: Patient Enrichment 
@@ -219,5 +223,3 @@ with
 )
 select *
 from final
-
-{% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}

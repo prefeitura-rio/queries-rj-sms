@@ -129,6 +129,12 @@ with
                     )
                 then "CONSUMO"
                 when
+                    -- [2025-07-15] Pedido da Subpav: incluir "Correção de lotes > Motivo > Outro"
+                    -- no cálculo de Consumo Médio Mensal, independente da justificativa
+                    estoque_movimento_tipo = "CORREÇÃO DE LOTE - DIMINUIÇÃO"
+                    and estoque_movimento_correcao_tipo = "OUTRO"
+                then "CONSUMO"
+                when
                     estoque_movimento_tipo_corrigido
                     in ("REMOÇÃO DE LOTE", "CORRECAO", "OUTRO")
                 then "CORRECAO DE ESTOQUE / OUTRO"

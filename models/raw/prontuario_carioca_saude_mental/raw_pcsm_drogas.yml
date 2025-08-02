@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: raw_pcsm_drogas
+    description: "Drogas usadas por pacientes."
+    columns:
+      - name: id_droga
+        description: "Identificador único da droga."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_drogas__id_droga__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_drogas__id_droga__unique
+              severity: error
+      - name: descricao_droga
+        description: "Descrição da droga."
+        data_type: string
+      - name: descricao_detalhada_droga
+        description: "Descrição detalhada da droga."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

@@ -14,11 +14,17 @@
 }}
 
 with
+    casted_partitions as (
+        select 
+            safe_cast(data_particao as date) as data_particao
+        from {{ source("brutos_sisreg_api_staging", "solicitacoes") }}
+    ),
+    
     most_complete_partition as (
         select 
             data_particao, 
             count(*) as registros
-        from {{ source("brutos_sisreg_api_staging", "solicitacoes") }}
+        from casted_partitions
         group by data_particao
         order by registros desc
         limit 1
@@ -140,7 +146,7 @@ with
             version as elastic__version,
 
             -- Metadado SMS 
-            safe_cast({{ process_null("data_extracao") }} as timestamp) as data_extracao,
+            safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
 
             -- Partições
             safe_cast(ano_particao as int) as particao_ano,
@@ -151,7 +157,7 @@ with
         from {{ source("brutos_sisreg_api_staging", "solicitacoes") }}
         left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
         left join unnest(json_extract_array(replace(procedimentos, "'", '"'))) as proceds_json
-        where data_particao = (select data_particao from most_complete_partition)
+        where safe_cast(data_particao as date) = (select data_particao from most_complete_partition)
 
     )
 

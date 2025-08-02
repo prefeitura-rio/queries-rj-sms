@@ -231,7 +231,7 @@ models:
         description: Esta coluna representa a data e hora em que o snapshot dos dados
           foi tirado. É útil para rastrear as alterações históricas nos dados ao
           longo do tempo. O tipo de dados dessa coluna é datetime.time
-  - name: raw_cnes_gdb__equipe_profissional
+  - name: raw_cnes_gdb__equipe_profissionais
     description: |-
       Tabelas contendo os profissonais pertencentes as equipes nas unidades de saúde
       Arquivo CNES: LFCES038

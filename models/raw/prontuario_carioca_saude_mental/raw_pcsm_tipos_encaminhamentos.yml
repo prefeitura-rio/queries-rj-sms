@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: raw_pcsm_tipos_encaminhamentos
+    description: "Tipos de encaminhamentos dos atendimentos."
+    columns:
+      - name: id_tipo_encaminhamento
+        description: "Identificador único do encaminhamento do atendimento."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_tipos_encaminhamentos__id_tipo_encaminhamento__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_tipos_encaminhamentos__id_tipo_encaminhamento__unique
+              severity: error
+      - name: descricao_encaminhamento
+        description: "Descrição do encaminhamento do atendimento."
+        data_type: string
+      - name: tipo_atendimento
+        description: "Classificação do tipo do atendimento que gerou o encaminhamento. Valores possíveis D - Deambulatorio, C - CAPS ou T - Transferência."
+        data_type: string
+      - name: descricao_tipo_atendimento
+        description: "Classificação do tipo do atendimento que gerou o encaminhamento. Valores possíveis D - Deambulatorio, C - CAPS ou T - Transferência."
+        data_type: string
+      - name: encaminhamento_inativo
+        description: "Booleano que indica que o encaminhamento está inativo. (S-inativo, N-Ativo, ''-Ativo)"
+        data_type: string
+      - name: descricao_encaminhamento_inativo
+        description: "Descrição do encaminhamento inativo. (S-inativo, N-Ativo, ''-Ativo)"
+        data_type: string
+      - name: atendimento_encaminhado
+        description: "Booleano que indica que o encaminhamento é um destino pós atendimento. (S-Sim, N-Não)"
+        data_type: string
+      - name: descricao_atendimento_encaminhado
+        description: "Descrição do encaminhamento pós atendimento. (Sim, Não, Não informado, Não classificado)"
+        data_type: string
+      - name: classificacao_encaminhamento
+        description: "Classificação do tipo de encaminhamento. AM-Deambulatório, AP-Atenção Primária, CA-CAPS, EM-Emergência Psiquiátrica, HP-Internação Psiquiátrica, HE-Internação / Emergência, HO-Hosp. Outros Municípios, CO-CAPS Outros Municípios, PL-Policlínica, CR-Reabilitação, NC-Nível Central, EG-Emergência Geral, HG-Hospital Geral, HZ-Hospital Especializado, HC-Hospital de Custódia, HU-Hospital Universitário, IN-Institutos."
+        data_type: string
+      - name: descricao_classificacao_encaminhamento
+        description: "Descrição da classificação do tipo de encaminhamento. AM-Deambulatório, AP-Atenção Primária, CA-CAPS, EM-Emergência Psiquiátrica, HP-Internação Psiquiátrica, HE-Internação / Emergência, HO-Hosp. Outros Municípios, CO-CAPS Outros Municípios, PL-Policlínica, CR-Reabilitação, NC-Nível Central, EG-Emergência Geral, HG-Hospital Geral, HZ-Hospital Especializado, HC-Hospital de Custódia, HU-Hospital Universitário, IN-Institutos."
+        data_type: string
+      - name: tipo_encaminhamento
+        description: "Classificação do tipo de encaminhamento. (F-Facultativo, N-Nao informar, ''-Obrigatório)"
+      - name: descricao_tipo_encaminhamento
+        description: "Descrição do tipo de encaminhamento. (F-Facultativo, N-Nao informar, ''-Obrigatório)"
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

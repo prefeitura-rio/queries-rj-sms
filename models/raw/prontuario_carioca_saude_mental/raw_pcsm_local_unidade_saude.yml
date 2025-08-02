@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: raw_pcsm_local_unidade_saude
+    description: "Locais de unidades de saúde. Um local é uma edificação pertencente a uma unidade."
+    columns:
+      - name: id_local
+        description: "Identificador único do local."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_local_unidade_saude__id_local__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_local_unidade_saude__id_local__unique
+              severity: error
+      - name: descricao_local
+        description: "Descrição do local, como 'Centro de Saúde X'."
+        data_type: string
+      - name: endereco_local
+        description: "Endereço completo do local, incluindo rua, número, bairro, etc."
+        data_type: string
+      - name: id_tipo_local
+        description: "Identificador do tipo de local, referenciando a tabela de tipos de locais."
+        data_type: int64
+      - name: id_unidade_saude
+        description: "Identificador da unidade de saúde à qual o local pertence."
+        data_type: int64
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

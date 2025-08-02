@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: raw_pcsm_tipos_saida_acolhimento
+    description: "Tipos possíveis de saída de acolhimento."
+    columns:
+      - name: id_tipo_saida_acolhimento
+        description: "Identificador único para o tipo de saída de acolhimento."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_tipos_saida_acolhimento__id_tipo_saida_acolhimento__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_tipos_saida_acolhimento__id_tipo_saida_acolhimento__unique
+              severity: error
+      - name: descricao_tipo_saida_acolhimento
+        description: "Descrição do tipo de saída do acolhimento."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

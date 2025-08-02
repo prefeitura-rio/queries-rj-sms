@@ -4,13 +4,13 @@
 
 with parent as (
     select
-        {{ field }} as id
+        distinct {{ field }} as id
     from {{ to }}
 ),
 
 child as (
     select
-        {{ column_name }} as id
+        distinct {{ column_name }} as id
     from {{ model }}
 ),
 error_threshold as (

@@ -25,3 +25,31 @@ sources:
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
         freshness:
           error_after: {count: 30, period: day}
+      - name: ficha_c_v2
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: estado_nutricional_sisvan
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: criancas_menores_5_anos
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: indicadores_cg_variavel_1
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: indicadores_cg_variavel_2
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: indicadores_cg_variavel_3
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+      - name: listagem_pacientes_tea
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}

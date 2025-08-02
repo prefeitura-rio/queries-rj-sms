@@ -3,7 +3,8 @@
         schema="intermediario_historico_clinico",
         alias="episodio_assistencial_vitacare",
         materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy='merge', 
+        unique_key=['id_hci'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -79,7 +80,6 @@ with
             ) as data_diagnostico,
 
         from bruto_atendimento, unnest(json_extract_array(condicoes)) as condicao_json
-        order by fk_atendimento, data_diagnostico desc
     ),
 
     dim_condicoes_atribuidas as (
@@ -92,7 +92,7 @@ with
                     condicoes.situacao as situacao,
                     condicoes.data_diagnostico as data_diagnostico
                 )
-                order by data_diagnostico desc, cid_descricao.descricao
+                order by data_diagnostico desc
             ) as condicoes
         from condicoes
         left join
@@ -119,8 +119,8 @@ with
                     )
             end as procedimento,
             case
-                when json_extract_scalar(procedimentos_json, '$.observacao') = ''
-                then null
+                when json_extract_scalar(procedimentos_json, '$.observacao') = '' or json_extract_scalar(procedimentos_json, '$.observacao') is null 
+                then ''
                 else upper(json_extract_scalar(procedimentos_json, '$.observacao'))
             end as observacao,
 
@@ -129,7 +129,6 @@ with
             unnest(
                 json_extract_array(soap_plano_procedimentos_clinicos)
             ) as procedimentos_json
-        order by fk_atendimento
     ),
     procedimentos_sem_nulos as (
         select

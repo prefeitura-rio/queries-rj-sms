@@ -18,9 +18,9 @@ with
         select
             {{ remove_accents_upper("cpf") }} as cpf,
             {{ validate_cpf(remove_accents_upper("cpf")) }} as cpf_valido_indicador,
-            {{ remove_accents_upper("cns_lista") }} as cns,
+            {{ remove_accents_upper("cns_lista") }} as cns_lista,
             {{ remove_accents_upper("nome") }} as nome,
-            {{ remove_accents_upper("telefone_lista") }} as telefones,
+            split(telefone_lista, ',') as telefone_lista,
             {{ remove_accents_upper("email") }} as email,
             {{ padronize_cep(remove_accents_upper("endereco_cep")) }} as cep,
             {{ remove_accents_upper("endereco_tipo_logradouro") }} as tipo_logradouro,
@@ -52,20 +52,20 @@ with
         select
             cpf,
             case when trim(cns) in ('NONE') then null else trim(cns) end as cns,
-            row_number() over (partition by cpf order by updated_at desc) as rank_dupl,
+            row_number() over (partition by cpf order by updated_at desc, pos_lista asc) as rank_dupl, -- Ordenação levando em consideração a data de atualização e a posição no array de cns
         from
             (
-                select cpf, cns, updated_at
+                select cpf, cns, updated_at, pos_lista
                 from
                     smsrio_tb,
                     unnest(
                         split(
-                            replace(replace(replace(cns, '[', ''), ']', ''), '"', ''),
+                            replace(replace(replace(cns_lista, '[', ''), ']', ''), '"', ''),
                             ','
                         )
-                    ) as cns
+                    ) as cns with offset as pos_lista -- Obtendo o elemento e a posição no array
             )
-        group by cpf, cns, updated_at
+        group by cpf, cns, updated_at, pos_lista
 
     ),
 
@@ -99,20 +99,17 @@ with
     smsrio_contato_tb as (
         select
             cpf,
-            telefones,
+            telefone,
+            pos_lista, -- Posição do telefone no array de telefones
             case
-                when regexp_contains(telefones, r'@')
-                then regexp_replace(trim(lower(telefones)), r'(\.com).*', '.com')
+                when regexp_contains(telefone, r'@')
+                then regexp_replace(trim(lower(telefone)), r'(\.com).*', '.com')
                 else email
             end as email,
             updated_at
         from
             smsrio_tb,
-            unnest(
-                split(
-                    replace(replace(replace(telefones, '[', ''), ']', ''), '"', ''), ','
-                )
-            ) as telefones
+            unnest(telefone_lista) as telefone with offset as pos_lista -- Obtendo o elemento e a posição no array
     ),
 
     -- CONTATO TELEPHONE
@@ -147,19 +144,21 @@ with
                 else null
             end as valor_tipo,
             length(valor) as len,
-            rank_dupl
+            rank_dupl,
+            pos_lista
         from
             (
                 select
                     cpf,
                     'telefone' as tipo,
-                    telefones as valor_original,
-                    {{ padronize_telefone("telefones") }} as valor,
+                    telefone as valor_original,
+                    {{ padronize_telefone("telefone") }} as valor,
                     row_number() over (
-                        partition by cpf order by updated_at desc
-                    ) as rank_dupl
+                        partition by cpf order by pos_lista asc
+                    ) as rank_dupl,
+                    pos_lista
                 from smsrio_contato_tb
-                group by cpf, telefones, updated_at
+                group by cpf, telefone, updated_at, pos_lista
             )
         where not (trim(valor) in ("NONE", "NULL", "") and (rank_dupl >= 2))
     ),
@@ -201,7 +200,7 @@ with
             "smsrio" as sistema
         from smsrio_contato_telefone
         qualify row_number() over (
-                        partition by cpf, valor order by rank_dupl asc
+                        partition by cpf, valor order by rank_dupl asc, pos_lista asc
                     )  = 1
         order by rank_dupl asc
     ),

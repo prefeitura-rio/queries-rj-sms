@@ -1,0 +1,191 @@
+models:
+  - name: raw_plataforma_subpav_cnes__competencias
+    description: Modelo contendo dados de identificação da competencia do dado CNES
+    columns:
+      - name: id
+        description: 'Código da competência'
+        type: bigint
+      - name: ds_competencia
+        description: 'Descrição da competência'
+        type: varchar
+      - name: dt_final
+        description: 'Data Final da competência'
+        type: date
+      - name: created_at
+        description: 'Data de criação do registro'
+        type: timestamp
+      - name: updated_at
+        description: 'Data da última atualização do registro na SUBPAV'
+        type: timestamp
+      - name: base_final
+        description: 'Status da base da competência: 0-Parcial/1-Final'
+        type: tinyint
+
+  - name: raw_plataforma_subpav_cnes__equipes
+    description: |
+      Modelo contendo dados de equipes com origem no sistema CNES.
+      Tabelas de referência - LFCES037 (TB_EQUIPE)
+    columns:
+      - name: id
+        description: "Sequencial da Equipe - Col: SEQ_EQUIPE"
+        type: bigint
+      - name: ine
+        description: "Código da Equipe (Identificador Nacional de Equipe - INE) - Col: CO_EQUIPE"
+        type: int
+      - name: cod_area
+        description: "Código da Área da Equipe - Col: COD_AREA"
+        type: int
+      - name: nm_referencia
+        description: "Nome de Referência da Equipe - Col: NM_REFERENCIA"
+        type: varchar
+      - name: dt_ativacao
+        description: "Data de Ativação da Equipe - Col: DT_ATIVACAO"
+        type: date
+      - name: dt_desativacao
+        description: "Data de Desativação da Equipe - Col: DT_DESATIVACAO"
+        type: date
+      - name: tp_pop_assist_quilomb
+        description: "Atende População Assistida Quilombolas - Col: TP_POP_ASSIST_QUILOMB"
+        type: tinyint
+      - name: tp_pop_assist_assent
+        description: "Atende População Assistida Assentados - Col: TP_POP_ASSIST_ASSENT"
+        type: tinyint
+      - name: tp_pop_assist_geral
+        description: "Atende População Assistida Geral - Col: TP_POP_ASSIST_GERAL"
+        type: tinyint
+      - name: tp_pop_assist_escola
+        description: "Atende População Assistida Escola - Col: TP_POP_ASSIST_ESCOLA"
+        type: tinyint
+      - name: tp_pop_assist_pronasci
+        description: "Atende População Assistida Pronasci - Col: TP_POP_ASSIST_PRONASCI"
+        type: tinyint
+      - name: tp_pop_assist_indigena
+        description: "Atende População Assistida Indígena - Col: TP_POP_ASSIST_INDIGENA"
+        type: tinyint
+      - name: tp_pop_assist_ribeirinha
+        description: "Atende População Assistida Ribeirinha - Col: TP_POP_ASSIST_RIBEIRINHA"
+        type: tinyint
+      - name: tp_pop_assist_situacao_rua
+        description: "Atende População Assistida em Situação de Rua - Col: TP_POP_ASSIST_SITUACAO_RUA"
+        type: tinyint
+      - name: tp_pop_assist_priv_liberdade
+        description: "Atende População Assistida Privada de Liberdade - Col: TP_POP_ASSIST_PRIV_LIBERDADE"
+        type: tinyint
+      - name: tp_pop_assist_conflito_lei
+        description: "Atende População Assistida Com Transtorno Mental em Conflito com a Lei - Col: TP_POP_ASSIST_CONFLITO_LEI"
+        type: tinyint
+      - name: tp_pop_assist_adol_conf_lei
+        description: "Atende População Assistida Adolescente em Conflito com a Lei - Col: TP_POP_ASSIST_ADOL_CONF_LEI"
+        type: tinyint
+      - name: co_prof_sus_preceptor
+        description: "Código do profissional Preceptor na equipe - Col: CO_PROF_SUS_PRECEPTOR"
+        type: varchar
+      - name: dt_atualiza
+        description: "Data da Última Atualização do Registro no CNES - Col: DATA_ATU"
+        type: date
+      - name: competencia_id
+        description: "Competência de registro"
+        type: bigint
+      - name: unidade_id
+        description: "Código do Estabelecimento de Saúde - Col: UNIDADE_ID"
+        type: bigint
+      - name: tipo_equipe_id
+        description: "Tipo de Equipe - Col: TP_EQUIPE"
+        type: bigint
+      - name: subtipo_equipe_id
+        description: "FK da tabela TABELA DE SUBTIPOS DE EQUIPES - NFCES095 (1-Convencional e 3-Mais Medicos)"
+        type: bigint
+      - name: motivo_desativacao_equipe_id
+        description: "FK da tabela TABELA DE MOTIVOS DE DESATIVAÇÃO DA EQUIPE - NFCES053"
+        type: bigint
+      - name: tipo_desativacao_id
+        description: "FK  da tabela TABELA DE TIPOS DE DESATIVAÇÃO DA EQUIPE - NFCES050"
+        type: bigint
+      - name: created_at
+        description: "Data de criação do registro"
+        type: timestamp
+      - name: updated_at
+        description: "Data da última atualização do registro na SUBPAV"
+        type: timestamp
+
+  - name: raw_plataforma_subpav_cnes__unidades
+    description: |
+      Modelo contendo dados de identificação das unidades de saúde com origem no sistema CNES
+    columns:
+      - name: id
+        description: 'Identificador incremental'
+        type: bigint
+      - name: cnes
+        description: 'Código Nacional do Estabelecimento de Saúde - Col: CNES'
+        type: int
+      - name: ap
+        description: 'Código do Distrito Sanitário (AP: área programática) - Col: DIST_SANIT'
+        type: int
+      - name: nome_fanta
+        description: 'Nome Fantasia - Col: NOME_FANTA'
+        type: varchar
+      - name: r_social
+        description: 'Razão Social - Col: R_SOCIAL'
+        type: varchar
+      - name: dt_atualiza
+        description: 'Data da Última Atualização do Registro - Col: DATA_ATU'
+        type: date
+      - name: tp_gestao
+        description: 'Tipo de Gestão - Col: TP_GESTAO - Valores: M – Municipal, E – Estadual, D – Dupla, S – Sem Gestão'
+        type: varchar
+      - name: tp_estab_sempre_aberto
+        description: 'Funcionamento do estabelecimento :indica se fica sempre aberto / Ininterrupto 0 Não - 1 Sim'
+        type: tinyint
+      - name: dt_inaugura
+        description: 'Data de inauguração da unidade, não migrado do CNES'
+        type: date
+      - name: tipo_unidade_id
+        description: 'Tipo de Estabelecimento - Col:TP_UNID_ID'
+        type: bigint
+      - name: cod_turnat_id
+        description: 'Código do Turno de Atendimento - Col: COD_TURNAT'
+        type: bigint
+      - name: motivo_desativacao_unidade_id
+        description: 'Código do Motivo de Desativação do Estabelecimento - Col: CD_MOTIVO_DESAB'
+        type: bigint
+      - name: natureza_juridica_id
+        description: 'Código da Natureza Jurídica do Estabelecimento - Col: CO_NATUREZA_JUR'
+        type: bigint
+      - name: tipo_estabelecimento_id
+        description: 'Código do Tipo de Estabelecimento - Col: CO_TIPO_ESTABELECIMENTO'
+        type: bigint
+      - name: atividade_principal_id
+        description: 'Código da Atividade Principal - Col: CO_ATIVIDADE_PRINCIPAL'
+        type: bigint
+      - name: prof_diretor_id
+        description: 'CPF do Diretor Clínico ou  Gerente / Administrador - Col: CPFDIRETORCLINICO'
+        type: bigint
+      - name: created_at
+        description: 'Data de criação do registro'
+        type: timestamp
+      - name: updated_at
+        description: 'Data da última atualização do registro na SUBPAV'
+        type: timestamp
+
+  - name: raw_plataforma_subpav_principal__bairros
+    description: |
+      Modelo contendo os Bairros do município com identificador oficial do IPP.
+    columns:
+      - name: id
+        description: 'Identificador único - Bairros do MRJ.'
+        type: int
+      - name: descricao
+        description: 'Nome do Bairro.'
+        type: varchar
+      - name: cod_ra
+        description: 'Identificador único - Região Administrativa.'
+        type: int
+      - name: regiao_adm
+        description: 'Região administrativa.'
+        type: varchar
+      - name: area_plane
+        description: 'Area de Planejamento - Divisão administrativa.'
+        type: int
+      - name: aps
+        description: 'Área de Planejamento de Saúde. Subdivisão das áreas de planejamento.'
+        type: int

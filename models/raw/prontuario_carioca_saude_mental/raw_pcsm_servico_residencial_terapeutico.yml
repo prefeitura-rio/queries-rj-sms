@@ -1,0 +1,118 @@
+version: 2
+
+models:
+  - name: raw_pcsm_servico_residencial_terapeutico
+    description: "Serviços Residencial Terapêutico a disposição da prefeitura do Rio de Janeiro. Um SRT é uma residência onde são tratados pacientes de saúde mental."
+    columns:
+      - name: id_servico_residencial
+        description: "Identificador do Serviço Residencial Terapeutico."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_pcsm_servico_residencial_terapeutico__id_servico_residencial__not_null
+              severity: error
+          - unique:
+              name: raw_pcsm_servico_residencial_terapeutico__id_servico_residencial__unique
+              severity: error
+      - name: area_programatica_servico
+        description: "Área Programática onde está localizado o SRT."
+        data_type: string
+      - name: id_unidade_saude
+        description: "Identificador da Unidade de Saúde de referência (um CAPS) do SRT. Chave estrangeira da tabela gh_us (sequs)."
+        data_type: int64
+      - name: id_segmento_servico
+        description: "Indicador de segmento do SRT. Tipo dado pelo SUS. Ex: 1, 2 etc."
+        data_type: string
+      - name: endereco_servico
+        description: "Endereço."
+        data_type: string
+      - name: bairro_servico
+        description: "Bairro."
+        data_type: string
+      - name: tipo_habilitacao_servico
+        description: "Tipo de habilitação do SRT. (Tipo I ou Tipo II) Baixa e alta complexidade."
+        data_type: string
+      - name: servico_habilitado
+        description: "Status Habilitação: Não habilitado (e Não Habilitado) ou Habilitado."
+        data_type: string
+      - name: tipo_habilitacao_servico_atual
+        description: "Tipo da Habilitação atual (Tipo I ou Tipo II)."
+        data_type: string
+      - name: data_implantacao_servico
+        description: "Data da implantação."
+        data_type: date
+      - name: data_habilitacao_servico
+        description: "Data da habilitação."
+        data_type: date
+      - name: codigo_servico
+        description: "Código Unidade (no controle do SSM)."
+        data_type: int64
+      - name: portaria_habilitacao_servico
+        description: "Portaria que normatiza a habilitação da SRT."
+        data_type: string
+      - name: tipo_servico_srt
+        description: "Tipo Unidade (P=SRT, A=UAA, I=UAI, R=República)."
+        data_type: string
+      - name: descricao_tipo_servico
+        description: "Descrição do tipo de serviço (SRT, UAA, UAI, República, Não informado, Tipo de serviço não classificado)."
+        data_type: string
+      - name: nome_servico
+        description: "Nome (somente para UAA / UAI)."
+        data_type: string
+      - name: numero_leitos_servico
+        description: "Quantidade de leitos habilitados."
+        data_type: int64
+      - name: numero_leitos_previstos
+        description: "Quantidade de leitos previstos."
+        data_type: int64
+      - name: numero_leitos_bloqueados
+        description: "Quantidade de leitos bloqueados."
+        data_type: int64
+      - name: numero_leitos_indicados
+        description: "Quantidade de leitos indicados."
+        data_type: int64
+      - name: detalhes_pacientes_indicados
+        description: "Detalhes dos pacientes indicados."
+        data_type: string
+      - name: cep_endereco_srt
+        description: "CEP."
+        data_type: string
+      - name: numero_porta_endereco
+        description: "Número endereço."
+        data_type: string
+      - name: complemento_endereco
+        description: "Complemento endereço."
+        data_type: string
+      - name: municipio_endereco
+        description: "Município endereço."
+        data_type: string
+      - name: uf_endereco
+        description: "UF endereço."
+        data_type: string
+      - name: codigo_anterior_servico
+        description: "Código Unidade anterior (controle SSM)."
+        data_type: int64
+      - name: status_ativo
+        description: "Ativo (S/N)."
+        data_type: string
+      - name: descricao_status_ativo
+        description: "Descrição do status ativo (Ativo, Inativo, Não informado, Status não classificado)."
+        data_type: string
+      - name: data_inativacao
+        description: "Data da inativação."
+        data_type: date
+      - name: id_profissional_acompanhante
+        description: "Acompanhante terapêutico (FK com gh_prof)."
+        data_type: int64
+      - name: id_profissional_coordenador
+        description: "Coordenador técnico (FK com gh_prof)."
+        data_type: int64
+      - name: codigo_cnes
+        description: "N° do Min. Saúde (referente a habilitação pelo MS) - CNES."
+        data_type: string
+      - name: loaded_at
+        description: "Data/hora de extração do registro."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Data/hora de transformação do registro."
+        data_type:

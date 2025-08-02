@@ -1,0 +1,176 @@
+models:
+  - name: raw_centralderegulacao_mysql__minha_saude__lista_usuario
+    description: >
+      Modelo que trata a tabela bruta de usuários do aplicativo **Minha Saúde Rio**,
+      garantindo consistência e remoção de duplicidades. Ele extrai os campos
+      relevantes, faz o cast adequado dos tipos e mantém apenas o registro mais
+      recente de cada usuário com base em **datahoracadastro**. O resultado serve
+      de base para análises sobre perfil demográfico e detalhes de cadastro.
+    columns:
+      - name: idusuario
+        description: Identificador único do usuário (chave primária).
+        data_type: int64
+        quote: true
+
+      - name: cadastroconfirmado
+        description: Indica se o cadastro foi confirmado (`'sim'` ou `'não'`).
+        data_type: string
+        quote: true
+
+      - name: cadastroativo
+        description: Indica se o cadastro está ativo.
+        data_type: string
+        quote: true
+
+      - name: ultimaatualizacaocadsus
+        description: Data-hora da última atualização do usuário no CADSUS.
+        data_type: string
+        quote: true
+
+      - name: celularvalido
+        description: Flag que indica se o celular foi validado (`'true'`/`'false'`).
+        data_type: string
+        quote: true
+
+      - name: datahoravalidacaocelular
+        description: Data-hora em que o celular foi validado.
+        data_type: string
+        quote: true
+
+      - name: datahoracadastro
+        description: Data-hora de criação do cadastro.
+        data_type: string
+        quote: true
+
+      - name: cadastrogovbr
+        description: Flag que indica se o usuário possui conta no Gov.br.
+        data_type: string
+        quote: true
+
+      - name: datanascimento
+        description: Data de nascimento do usuário.
+        data_type: string
+        quote: true
+
+      - name: idadepaciente
+        description: Idade, em anos, calculada a partir da data de nascimento.
+        data_type: int64
+        quote: true
+
+      - name: sexo
+        description: Sexo do paciente (`'M'` para masculino, `'F'` para feminino).
+        data_type: string
+        quote: true
+
+      - name: racacor
+        description: Raça/cor do paciente segundo classificação padronizada.
+        data_type: string
+        quote: true
+
+      - name: bairroresidencia
+        description: Bairro de residência do usuário no município.
+        data_type: string
+        quote: true
+
+      - name: cap
+        description: CEP (Código de Endereçamento Postal) da residência.
+        data_type: int64
+        quote: true
+
+      - name: municipioresidencia
+        description: Município de residência do usuário.
+        data_type: string
+        quote: true
+
+      - name: ufresidencia
+        description: Unidade federativa de residência (`'RJ'`, por exemplo).
+        data_type: string
+        quote: true
+
+      - name: fontecadastro
+        description: Código numérico que indica a origem do cadastro.
+        data_type: int64
+        quote: true
+
+      - name: data_extracao
+        description: Data da extração dos dados (`YYYY-MM-DD`).
+        data_type: string
+        quote: true
+
+      - name: ano_particao
+        description: Ano da partição de dados.
+        data_type: string
+        quote: true
+
+      - name: mes_particao
+        description: Mês da partição de dados.
+        data_type: string
+        quote: true
+
+      - name: data_particao
+        description: Data específica da partição.
+        data_type: string
+        quote: true
+
+  - name: raw_centralderegulacao_mysql__ms__cadastros_ativacoes_gov
+    description: >
+      Modelo que processa a view **vw_MS_CadastrosAtivacoesGov** (base de
+      staging), convertendo tipos, removendo duplicidades (mantém o registro
+      com **data_extracao** mais recente por **dia**) e fornecendo métricas
+      consolidadas sobre cadastros e ativações vinculadas ao **Ministério da
+      Saúde (MS)** e à plataforma Gov.br.
+    columns:
+      - name: dia
+        description: Data (YYYY-MM-DD) referente ao registro.
+        data_type: date
+        quote: true
+
+      - name: cadastroativo
+        description: Quantidade de cadastros ativos no dia.
+        data_type: int64
+        quote: true
+
+      - name: cadastronaoativo
+        description: Quantidade de cadastros inativos no dia.
+        data_type: int64
+        quote: true
+
+      - name: qtdtotal
+        description: Total de cadastros (ativos + inativos) no dia.
+        data_type: int64
+        quote: true
+
+      - name: cadastrosgovbr
+        description: Total de cadastros ativos associados ao Gov.br.
+        data_type: int64
+        quote: true
+
+      - name: porcativogovbr
+        description: Percentual de cadastros Gov.br ativos sobre o total.
+        data_type: float64
+        quote: true
+
+      - name: porcinativo
+        description: Percentual de cadastros inativos sobre o total.
+        data_type: float64
+        quote: true
+
+      - name: data_extracao
+        description: Timestamp da extração dos dados.
+        data_type: timestamp
+        quote: true
+
+      - name: ano_particao
+        description: Ano de partição (inteiro).
+        data_type: int64
+        quote: true
+
+      - name: mes_particao
+        description: Mês de partição (inteiro).
+        data_type: int64
+        quote: true
+
+      - name: data_particao
+        description: Data de partição (DATE).
+        data_type: date
+        quote: true

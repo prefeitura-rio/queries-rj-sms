@@ -1,4 +1,4 @@
-{{ config(alias="bairros_aps", schema="brutos_area_programatica") }}
+{{ config(alias="bairros_aps", schema="brutos_sheets") }}
 
 with
     source as (
