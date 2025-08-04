@@ -10,8 +10,9 @@ WITH riscos_separados AS (
   SELECT 
     id_gestacao,
     TRIM(risco) AS categoria_risco
- FROM {{ ref('mart_bi_gestacoes__linha_tempo') }},
-    UNNEST(SPLIT(categorias_risco, ';')) AS risco
+ FROM {{ ref('mart_bi_gestacoes__linha_tempo') }}
+ --AJUSTE UNNEST (foi retirado a vírgula ao fim da linha acima)
+    LEFT JOIN UNNEST(SPLIT(categorias_risco, ';')) AS risco
   WHERE 
     TRIM(risco) != ''  -- Remove entradas vazias
 )
