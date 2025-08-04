@@ -146,12 +146,13 @@ atendimentos_filtrados AS (
    ea.desfecho_atendimento,
    c.id AS cid,
    -- STRING_AGG(DISTINCT c.id, '; ' ORDER BY c.id) AS cid_string
- FROM {{ ref('mart_historico_clinico__episodio') }} ea,
-      UNNEST(ea.condicoes) AS c
+ FROM {{ ref('mart_historico_clinico__episodio') }} ea
+ --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+    LEFT JOIN UNNEST(ea.condicoes) AS c
  WHERE ea.subtipo = 'Atendimento SOAP'
    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
-   AND c.situacao = 'ATIVO'
-   AND (c.id = 'Z321' OR c.id LIKE 'Z34%' OR c.id LIKE 'Z35%')
+  --  AND c.situacao = 'ATIVO'
+  --  AND (c.id = 'Z321' OR c.id LIKE 'Z34%' OR c.id LIKE 'Z35%')
    AND ea.profissional_saude_responsavel.especialidade IN (
      'Médico da estratégia de saúde da família',
      'Enfermeiro da estratégia saúde da família',
@@ -195,8 +196,9 @@ prescricoes_aggregadas AS (
  SELECT
    ea.id_hci,
    STRING_AGG(p.nome, ', ') AS prescricoes
- FROM {{ ref('mart_historico_clinico__episodio') }} ea,
-      UNNEST(ea.prescricoes) AS p
+ FROM {{ ref('mart_historico_clinico__episodio') }} ea
+  --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+  LEFT JOIN UNNEST(ea.prescricoes) AS p
  WHERE ea.subtipo = 'Atendimento SOAP'
    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
  GROUP BY ea.id_hci

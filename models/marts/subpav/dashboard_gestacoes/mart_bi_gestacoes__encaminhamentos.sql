@@ -25,8 +25,9 @@ eventos_brutos AS (
      ELSE NULL -- Em teoria, o filtro WHERE já garante que só teremos 'gestacao', mas é bom ser explícito
    END AS tipo_evento
  FROM
-   {{ ref('mart_historico_clinico__episodio') }},
-   UNNEST(condicoes) c -- Expande o array de condições para processar cada uma individualmente
+   {{ ref('mart_historico_clinico__episodio') }}
+    --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+   LEFT JOIN UNNEST(condicoes) c -- Expande o array de condições para processar cada uma individualmente
  WHERE
    c.data_diagnostico IS NOT NULL AND c.data_diagnostico != '' -- Garante que a data do diagnóstico existe
    AND c.situacao IN ('ATIVO', 'RESOLVIDO') -- Considera apenas condições ativas ou resolvidas

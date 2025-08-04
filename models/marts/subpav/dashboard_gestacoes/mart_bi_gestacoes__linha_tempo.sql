@@ -27,8 +27,9 @@ condicoes_gestantes_raw AS (
             '%Y-%m-%d', SUBSTR(c.data_diagnostico, 1, 10)
         ) AS data_diagnostico, c.situacao -- Mantido para referência, embora já filtrado
     FROM
-        {{ ref('mart_historico_clinico__episodio') }} ea,
-        UNNEST (condicoes) c
+        {{ ref('mart_historico_clinico__episodio') }} ea
+        --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+        LEFT JOIN UNNEST (condicoes) c
     WHERE
         c.situacao IN ('ATIVO', 'RESOLVIDO')
         AND c.id IS NOT NULL -- Garante que o CID existe para o JOIN
@@ -52,7 +53,8 @@ categorias_risco_gestacional AS (
             f.data_fim_efetiva,
             CURRENT_DATE()
         )
-        JOIN UNNEST (ea.condicoes) AS c
+        --Ajuste UNNEST | Acrescentei somente o 'left'
+        LEFT JOIN UNNEST (ea.condicoes) AS c
         JOIN {{ ref('raw_sheets__cids_risco_gestacional') }} r ON c.id = r.cid
     WHERE
         c.id IS NOT NULL -- Redundante se r.cid não puder ser NULL, mas seguro
@@ -97,8 +99,9 @@ pacientes_todos_cns AS (
             ORDER BY cns_individual
         ) AS cns_string
     FROM
-        {{ ref('mart_historico_clinico__paciente') }} p,
-        UNNEST (p.cns) AS cns_individual
+        {{ ref('mart_historico_clinico__paciente') }} p
+        -- Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+        LEFT JOIN UNNEST (p.cns) AS cns_individual
     WHERE
         cns_individual IS NOT NULL
         AND cns_individual != ''
@@ -116,8 +119,9 @@ unnested_equipes AS (
         eq.nome AS equipe_nome,
         eq.clinica_familia.nome AS clinica_nome
     FROM
-        {{ ref('mart_historico_clinico__paciente') }} p,
-        UNNEST (p.equipe_saude_familia) AS eq
+        {{ ref('mart_historico_clinico__paciente') }} p
+        -- Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+        LEFT JOIN UNNEST (p.equipe_saude_familia) AS eq
 ),
 
 -- CTE 14: equipe_durante_gestacao
@@ -217,8 +221,9 @@ eventos_parto AS (
         END AS tipo_parto,
         c.id as cid_parto -- Para depuração ou análise mais fina
     FROM
-        {{ ref('mart_historico_clinico__episodio') }} ea,
-        UNNEST (ea.condicoes) AS c
+        {{ ref('mart_historico_clinico__episodio') }} ea
+        -- Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+        LEFT JOIN UNNEST (ea.condicoes) AS c
     WHERE
         ea.entrada_data >= DATE '2021-01-01' -- Filtro de data para relevância
         AND LOWER(ea.prontuario.fornecedor) = 'vitai' -- Filtro específico de fornecedor
