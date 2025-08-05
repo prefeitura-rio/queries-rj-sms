@@ -195,7 +195,7 @@ models:
       - name: meios_comunicacao
         description: Meios de comunicação disponíveis na residência.
 
-      - name: meiostransporte
+      - name: meios_transporte
         description: Meios de transporte utilizados pelo paciente.
 
       - name: possui_filtro_agua
