@@ -14,11 +14,11 @@ models:
         description: Resultado do teste rápido de gravidez.
       - name: resultado_teste_gravidez_positivo
         description: Indica se o teste rápido de gravidez foi positivo.
-      - name: glicemia_jejum
+      - name: glicose_jejum
         description: Valor da glicemia em jejum.
-      - name: glicemia_pos_prandial
+      - name: glicose_pos_prandial
         description: Valor da glicemia pós-prandial.
-      - name: glicemia_capilar
+      - name: glicose_capilar
         description: Valor da glicemia capilar.
       - name: resultado_teste_sifilis
         description: Resultado do teste rápido de sífilis.
