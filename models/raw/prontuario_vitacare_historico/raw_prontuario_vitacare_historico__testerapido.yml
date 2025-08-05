@@ -44,3 +44,5 @@ models:
         description: Indica se o teste rápido para SARS-CoV-2 foi positivo.
       - name: loaded_at
         description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.
