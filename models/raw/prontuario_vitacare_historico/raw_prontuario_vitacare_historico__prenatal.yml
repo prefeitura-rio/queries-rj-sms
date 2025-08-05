@@ -16,7 +16,7 @@ models:
         description: Pressão arterial diastólica (mínima).
       - name: param_tamax
         description: Pressão arterial sistólica (máxima).
-      - name: consseguintes_afu
+      - name: cons_seguintes_afu
         description: Altura do fundo uterino (AFU) em consultas subsequentes.
       - name: edema
         description: Presença de edema (inchaço).
@@ -32,7 +32,7 @@ models:
         description: Grupo sanguíneo da gestante.
       - name: pconsulta_grupo_sanguineo_pai
         description: Grupo sanguíneo do pai (parceiro da gestante).
-      - name: consseguintes_afuobs
+      - name: cons_seguintes_afu_obs
         description: Observações sobre a altura do fundo uterino em consultas subsequentes.
       - name: pelvimetria_clinica
         description: Resultado da pelvimetria clínica.
@@ -82,13 +82,13 @@ models:
         description: Resultado da urocultura nos exames laboratoriais.
       - name: exames_lab_urocultura_positiva
         description: Indica se a urocultura foi positiva nos exames laboratoriais.
-      - name: exame_clinic_mama_esq_inspeccao
+      - name: exame_clinico_mama_esq_inspeccao
         description: Resultado da inspeção clínica da mama esquerda.
-      - name: exame_clini_cmama_esq_palpacao
+      - name: exame_clinico_mama_esq_palpacao
         description: Resultado da palpação clínica da mama esquerda.
-      - name: exame_clinic_mama_dir_inspeccao
+      - name: exame_clinico_mama_dir_inspeccao
         description: Resultado da inspeção clínica da mama direita.
-      - name: exame_clinic_mama_dir_palpacao
+      - name: exame_clinico_mama_dir_palpacao
         description: Resultado da palpação clínica da mama direita.
       - name: exame_ginec_vulva_vagina
         description: Resultado do exame ginecológico da vulva e vagina.
@@ -96,7 +96,7 @@ models:
         description: Resultado do exame do colo do útero.
       - name: colo_utero_toque
         description: Resultado do toque do colo do útero.
-      - name: exame_citologiares
+      - name: exame_citologia_res
         description: Resultado do exame de citologia.
       - name: pconsulta_dum1
         description: Data da última menstruação (DUM) na primeira consulta.
@@ -106,13 +106,13 @@ models:
         description: Observações sobre a avaliação de risco pré-natal.
       - name: pconsulta_idade_gestacional_dias
         description: Idade gestacional em dias na primeira consulta.
-      - name: exame_clinic_mama_esq_inspeccao_obs
+      - name: exame_clinico_mama_esq_inspeccao_obs
         description: Observações sobre a inspeção clínica da mama esquerda.
-      - name: exame_clinic_mama_dir_inspeccao_obs
+      - name: exame_clinico_mama_dir_inspeccao_obs
         description: Observações sobre a inspeção clínica da mama direita.
-      - name: exame_clinic_mama_esq_palpacao_obs
+      - name: exame_clinico_mama_esq_palpacao_obs
         description: Observações sobre a palpação clínica da mama esquerda.
-      - name: exame_clinic_mama_dir_palpacao_obs
+      - name: exame_clinico_mama_dir_palpacao_obs
         description: Observações sobre a palpação clínica da mama direita.
       - name: queixas_mam
         description: Queixas relacionadas às mamas.
@@ -140,37 +140,37 @@ models:
         description: Contagem de linfócitos nas análises.
       - name: analises_monocitos
         description: Contagem de monócitos nas análises.
-      - name: cseguintes_alalises_plaquetas
+      - name: cons_seguintes_analises_plaquetas
         description: Contagem de plaquetas em análises subsequentes.
-      - name: cseguintes_alalises_acidourico
+      - name: cons_seguintes_analises_acidourico
         description: Nível de ácido úrico em análises subsequentes.
-      - name: cseguintes_alalises_citomegalo_virus
+      - name: cons_seguintes_analises_citomegalo_virus
         description: Resultado para citomegalovírus em análises subsequentes.
-      - name: cseguintes_alalises_achbs
+      - name: cons_seguintes_analises_achbs
         description: Nível de anti-HBs (anticorpos contra Hepatite B) em análises subsequentes.
-      - name: cseguintes_alalises_achbc
+      - name: cons_seguintes_analises_achbc
         description: Nível de anti-HBc (anticorpos contra o core da Hepatite B) em análises subsequentes.
-      - name: cseguintes_alalises_achvc
+      - name: cons_seguintes_analises_achvc
         description: Nível de anti-HCV (anticorpos contra Hepatite C) em análises subsequentes.
-      - name: cseguintes_alalises_alfa_proteina
+      - name: cons_seguintes_analises_alfa_proteina
         description: Nível de alfa-fetoproteína em análises subsequentes.
-      - name: cseguintes_alalises_inibinaa
+      - name: cons_seguintes_analises_inibinaa
         description: Nível de inibina A em análises subsequentes.
-      - name: cseguintes_alalises_estradiol
+      - name: cons_seguintes_analises_estradiol
         description: Nível de estradiol em análises subsequentes.
-      - name: cseguintes_alalises_hormona_beta_corionica
+      - name: cons_seguintes_analises_hormona_beta_corionica
         description: Nível de hormona beta-coriônica em análises subsequentes.
-      - name: cseguintes_alalises_tempo_protrombina
+      - name: cons_seguintes_analises_tempo_protrombina
         description: Tempo de protrombina em análises subsequentes.
-      - name: cseguintes_alalises_ttrombo_plastina_parcial
+      - name: cons_seguintes_analises_ttrombo_plastina_parcial
         description: Tempo de tromboplastina parcial ativada (TTPA) em análises subsequentes.
-      - name: cseguintes_alalises_ecografia_obstetrica
+      - name: cons_seguintes_analises_ecografia_obstetrica
         description: Resultado da ecografia obstétrica em análises subsequentes.
-      - name: alalises_eco_obstet_morfologica
+      - name: analises_eco_obstet_morfologica
         description: Resultado da ecografia obstétrica morfológica nas análises.
-      - name: exame_citologia_resrccu
+      - name: exame_citologia_res_rccu
         description: Resultado da citologia (cervical) de rastreio.
-      - name: pconsulta_dum1dias
+      - name: pconsulta_dum1_dias
         description: Dias da DUM na primeira consulta.
       - name: data_mamografia
         description: Data da mamografia.
@@ -280,7 +280,7 @@ models:
         description: Características do líquido amniótico em consultas subsequentes.
       - name: cons_seguintes_liquido_amniotico_observacoes
         description: Observações sobre o líquido amniótico em consultas subsequentes.
-      - name: cseguintes_cardiotocografia
+      - name: cons_seguintes_cardiotocografia
         description: Resultado da cardiotocografia em consultas subsequentes.
       - name: sifilis_titulacao_parceiro
         description: Titulação da sífilis do parceiro.
@@ -290,83 +290,83 @@ models:
         description: Resultado dos testes rápidos de HIV em exames laboratoriais adicionais.
       - name: exames_lab_agr_testes_rapidos_hiv_positivo
         description: Indica se o teste rápido de HIV foi positivo.
-      - name: smrpuerperiodata
+      - name: sm_puerperio_data
         description: Data da avaliação no puerpério (SM).
-      - name: smlocalparto
+      - name: sm_local_parto
         description: Local do parto (SM).
-      - name: smtipoparto
+      - name: sm_tipo_parto
         description: Tipo de parto (SM).
-      - name: smresivaopuerpobs
+      - name: sm_res_ivaopuerpo_obs
         description: Observações sobre a avaliação puerperal (SM).
-      - name: smpuerperioparametrospeso
+      - name: sm_puerperio_parametros_peso
         description: Peso no puerpério (SM).
-      - name: smpuerperioparametrostamin
+      - name: sm_puerperio_parametros_tamin
         description: Pressão arterial diastólica (mínima) no puerpério (SM).
-      - name: smpuerperioparametrostamax
+      - name: sm_puerperio_parametros_tamax
         description: Pressão arterial sistólica (máxima) no puerpério (SM).
-      - name: smpuerperiocitologia
+      - name: sm_puerperio_citologia
         description: Resultado da citologia no puerpério (SM).
-      - name: smpuerperioalalisesplaquetas
+      - name: sm_puerperio_analises_plaquetas
         description: Contagem de plaquetas nas análises do puerpério (SM).
-      - name: smpuerperioalalisesglicemia
+      - name: sm_puerperio_analises_glicemia
         description: Nível de glicemia nas análises do puerpério (SM).
-      - name: smpuerperioalalisescreatinina
+      - name: sm_puerperio_analises_creatinina
         description: Nível de creatinina nas análises do puerpério (SM).
-      - name: smpuerperioalalisesgamagt
+      - name: sm_puerperio_analises_gamagt
         description: Nível de Gama-GT nas análises do puerpério (SM).
-      - name: smpuerperioalalisesgot
+      - name: sm_puerperio_analises_got
         description: Nível de GOT (AST) nas análises do puerpério (SM).
-      - name: smpuerperioalalisesgtp
+      - name: sm_puerperio_analises_gtp
         description: Nível de GTP (ALT) nas análises do puerpério (SM).
-      - name: smpuerperioalalisesbilirrubinas
+      - name: sm_puerperio_analises_bilirrubinas
         description: Nível de bilirrubinas nas análises do puerpério (SM).
-      - name: smpuerperioalaliseacidourico
+      - name: sm_puerperio_analise_acidourico
         description: Nível de ácido úrico nas análises do puerpério (SM).
-      - name: smpuerperiourocultura
+      - name: sm_puerperio_urocultura
         description: Resultado da urocultura no puerpério (SM).
-      - name: classificacaotipoparto
+      - name: classificacao_tipo_parto
         description: Classificação do tipo de parto.
-      - name: puerperiomcdtsfosfatasealcalina
+      - name: puerperio_mcdts_fosfatase_alcalina
         description: Nível de fosfatase alcalina nas análises de MCDT no puerpério.
-      - name: puerperiomcdtsurinai
+      - name: puerperio_mcdts_urinai
         description: Resultado do exame de urina I (MCDT) no puerpério.
-      - name: puerperiomcdtsurinaiobs
+      - name: puerperio_mcdts_urinai_obs
         description: Observações sobre o exame de urina I (MCDT) no puerpério.
-      - name: puerperiourocultura
+      - name: puerperio_urocultura
         description: Resultado da urocultura no puerpério.
-      - name: puerperionumcolonias
+      - name: puerperio_num_colonias
         description: Número de colônias na urocultura do puerpério.
-      - name: puerperioagentespatologicos
+      - name: puerperio_agentes_patologicos
         description: Agentes patológicos identificados na urocultura do puerpério.
-      - name: puerperiotsasensiveis
+      - name: puerperio_tsa_sensiveis
         description: Sensibilidade a antimicrobianos na cultura do puerpério.
-      - name: puerperiotsaresistentes
+      - name: puerperio_tsa_resistentes
         description: Resistência a antimicrobianos na cultura do puerpério.
-      - name: puerperiomcdtsurinairesulltado
+      - name: puerperio_mcdts_urinai_resultado
         description: Resultado do exame de urina I (MCDT) no puerpério.
-      - name: puerperiotermo
+      - name: puerperio_termo
         description: Termo do parto no puerpério.
-      - name: puerperiorazaocesareo
+      - name: puerperio_razao_cesareo
         description: Razão para cesariana no puerpério.
-      - name: puerperiorh
+      - name: puerperio_rh
         description: Fator RH da gestante no puerpério.
-      - name: puerperiogamaglobulinaantid
+      - name: puerperio_gama_globulina_antid
         description: Administração de gamaglobulina anti-D no puerpério.
-      - name: puerperiogamaglobulinaantiddata
+      - name: puerperio_gama_globulina_antid_data
         description: Data da administração de gamaglobulina anti-D no puerpério.
-      - name: gestantepuerperionumrecemnascidos
+      - name: gestante_puerperio_num_recem_nascidos
         description: Número de recém-nascidos no puerpério.
-      - name: gestantepuerperioamamentacao
+      - name: gestante_puerperio_amamentacao
         description: Status de amamentação no puerpério.
-      - name: puerperiodataaborto
+      - name: puerperio_data_aborto
         description: Data do aborto, se aplicável, no puerpério.
-      - name: puerperiotipoaborto
+      - name: puerperio_tipo_aborto
         description: Tipo de aborto, se aplicável, no puerpério.
-      - name: puerperioidadegestacao
+      - name: puerperio_idade_gestacao
         description: Idade gestacional no momento do aborto, se aplicável, no puerpério.
-      - name: gestantepuerperiocuretagem
+      - name: gestante_puerperio_curetagem
         description: Indica se houve curetagem no puerpério.
-      - name: puerperiooutrotermoqual
+      - name: puerperio_outro_termo_qual
         description: Outro termo ou condição relevante no puerpério.
       - name: loaded_at
         description: Timestamp de quando o registro foi carregado no sistema.
