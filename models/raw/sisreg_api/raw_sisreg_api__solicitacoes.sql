@@ -17,16 +17,19 @@
 -- Obs: `particao_data` vem de `data_extracao`
 
 with
+
     correct_partition as (
         select
-            cast(format_date('%d/%m/%Y', max(data_particao)) as string) as data_particao
-        from {{ ref("raw_sisreg_api_log__logs")}} as completed_runs
-        where bq_table = "solicitacoes"
+            format_date('%Y-%m-%d', max(data_particao)) as particao_str
+        from {{ ref('raw_sisreg_api_log__logs') }}
+        where bq_table = 'solicitacoes'
     ),
 
     sisreg as (
-        select * from {{ source("brutos_sisreg_api_staging", "solicitacoes") }} 
-        where data_particao = (select data_particao from correct_partition)
+        select s.*
+        from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
+        join correct_partition p
+        on s.data_particao = p.particao_str
     ),
 
     sisreg_transformed as (
@@ -143,7 +146,7 @@ with
             -- Partições
             cast(ano_particao as int) as particao_ano,
             cast(mes_particao as int) as particao_mes,
-            parse_date('%d/%m/%Y', data_particao) as particao_data
+            parse_date('%Y-%m-%d', data_particao) as particao_data
 
         from sisreg
         left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
