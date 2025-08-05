@@ -6,6 +6,9 @@ models:
     columns:
       - name: id_cnes
         description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade.
+      - name: id
+      # -- ?
+        description: Id grupo
       - name: unidade_nome
         description: Nome da unidade de saúde.
       - name: unidade_ap
