@@ -32,3 +32,5 @@ models:
         description: Motivo do encerramento do caso de sífilis adquirida.
       - name: loaded_at
         description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.
