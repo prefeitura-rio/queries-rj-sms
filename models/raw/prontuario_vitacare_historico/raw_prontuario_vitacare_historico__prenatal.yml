@@ -370,3 +370,5 @@ models:
         description: Outro termo ou condição relevante no puerpério.
       - name: loaded_at
         description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.
