@@ -10,19 +10,19 @@ models:
         description: Identificador local do prontuário da paciente, específico da unidade de saúde.
       - name: id_cnes
         description: Código CNES da unidade de saúde onde os dados de saúde da mulher foram registrados.
-      - name: obs_pf
+      - name: observacoes_planejamento_familiar
         description: Observações sobre planejamento familiar.
-      - name: sterilization_methods
+      - name: metodos_esterilizacao
         description: Métodos de esterilização utilizados pela paciente.
-      - name: education_actions
+      - name: acoes_educacao
         description: Ações de educação em saúde realizadas.
-      - name: diu_dtainim_mcont
+      - name: diu_data_inicio_mcont
         description: Data de início do uso de DIU como método contraceptivo.
-      - name: diu_dtatermo_mcont
+      - name: diu_data_termino_mcont
         description: Data de término do uso de DIU como método contraceptivo.
-      - name: diu_interr_mcont
+      - name: diu_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de DIU como método contraceptivo.
-      - name: diu_comp_mcont
+      - name: diu_complicacao_mcont
         description: Complicações relacionadas ao uso de DIU como método contraceptivo.
       - name: choc_qual_mcont
         description: Qual tipo de pílula combinada como método contraceptivo.
@@ -30,147 +30,151 @@ models:
         description: Qual tipo de injeção mensal como método contraceptivo.
       - name: it_qual_mcont
         description: Qual tipo de injeção trimestral como método contraceptivo.
-      - name: mp_qual_m_cont
+      - name: mp_qual_mcont
         description: Qual tipo de minipílula como método contraceptivo.
-      - name: o_qual_m_cont
+      - name: outro_qual_mcont
         description: Outro método contraceptivo, qual.
-      - name: pm_dtainim_mcont
+      - name: pm_data_inicio_mcont
         description: Data de início do uso de pílula mensal como método contraceptivo.
-      - name: pf_dtainim_mcont
+      - name: pf_data_inicio_mcont
         description: Data de início do uso de pílula familiar como método contraceptivo.
-      - name: choc_dtainim_mcont
+      - name: choc_data_inicio_mcont
         description: Data de início do uso de pílula combinada como método contraceptivo.
-      - name: im_dtainim_mcont
+      - name: im_data_inicio_mcont
         description: Data de início do uso de injeção mensal como método contraceptivo.
-      - name: it_dtainim_mcont
+      - name: it_data_inicio_mcont
         description: Data de início do uso de injeção trimestral como método contraceptivo.
-      - name: mp_dtainim_mcont
+      - name: mp_data_inicio_mcont
         description: Data de início do uso de minipílula como método contraceptivo.
-      - name: dg_dtainim_mcont
+      - name: dg_data_inicio_mcont
         description: Data de início do uso de diafragma como método contraceptivo.
-      - name: esp_dtainim_mcont
+      - name: esp_data_inicio_mcont
         description: Data de início do uso de espermicida como método contraceptivo.
-      - name: em_dtainim_mcont
+      - name: em_data_inicio_mcont
         description: Data de início do uso de implante como método contraceptivo.
-      - name: ef_dtainim_mcont
+      - name: ef_data_inicio_mcont
         description: Data de início do uso de adesivo como método contraceptivo.
-      - name: o_dtainim_mcont
+      - name: outro_data_inicio_mcont
         description: Data de início de outro método contraceptivo.
-      - name: pm_dtatermo_mcont
+      - name: pm_data_termino_mcont
         description: Data de término do uso de pílula mensal como método contraceptivo.
-      - name: pf_dtatermo_mcont
+      - name: pf_data_termino_mcont
         description: Data de término do uso de pílula familiar como método contraceptivo.
-      - name: choc_dtatermo_mcont
+      - name: choc_data_termino_mcont
         description: Data de término do uso de pílula combinada como método contraceptivo.
-      - name: im_dtatermo_mcont
+      - name: im_data_termino_mcont
         description: Data de término do uso de injeção mensal como método contraceptivo.
-      - name: it_dtatermo_mcont
+      - name: it_data_termino_mcont
         description: Data de término do uso de injeção trimestral como método contraceptivo.
-      - name: mp_dtatermo_mcont
+      - name: mp_data_termino_mcont
         description: Data de término do uso de minipílula como método contraceptivo.
-      - name: dg_dtatermo_mcont
+      - name: dg_data_termino_mcont
         description: Data de término do uso de diafragma como método contraceptivo.
-      - name: esp_dtatermo_mcont
+      - name: esp_data_termino_mcont
         description: Data de término do uso de espermicida como método contraceptivo.
-      - name: em_dtatermo_mcont
+      - name: em_data_termino_mcont
         description: Data de término do uso de implante como método contraceptivo.
-      - name: ef_dtatermo_mcont
+      - name: ef_data_termino_mcont
         description: Data de término do uso de adesivo como método contraceptivo.
-      - name: o_dtatermo_mcont
+      - name: outro_data_termino_mcont
         description: Data de término de outro método contraceptivo.
-      - name: pm_interr_mcont
+      - name: pm_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de pílula mensal como método contraceptivo.
-      - name: pf_interr_mcont
+      - name: pf_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de pílula familiar como método contraceptivo.
-      - name: choc_interr_mcont
+      - name: choc_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de pílula combinada como método contraceptivo.
-      - name: im_interr_mcont
+      - name: im_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de injeção mensal como método contraceptivo.
-      - name: it_interr_mcont
+      - name: it_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de injeção trimestral como método contraceptivo.
-      - name: mp_interr_mcont
+      - name: mp_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de minipílula como método contraceptivo.
-      - name: dg_interr_mcont
+      - name: dg_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de diafragma como método contraceptivo.
-      - name: esp_interr_mcont
+      - name: esp_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de espermicida como método contraceptivo.
-      - name: em_interr_mcont
+      - name: em_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de implante como método contraceptivo.
-      - name: ef_interr_mcont
+      - name: ef_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de adesivo como método contraceptivo.
-      - name: o_interr_mcont
+      - name: outro_motivo_interrupcao_mcont
         description: Motivo de interrupção de outro método contraceptivo.
-      - name: pm_comp_mcont
+      - name: pm_complicacao_mcont
         description: Complicações relacionadas ao uso de pílula mensal como método contraceptivo.
-      - name: pf_comp_mcont
+      - name: pf_complicacao_mcont
         description: Complicações relacionadas ao uso de pílula familiar como método contraceptivo.
-      - name: choc_comp_mcont
+      - name: choc_complicacao_mcont
         description: Complicações relacionadas ao uso de pílula combinada como método contraceptivo.
-      - name: im_comp_mcont
+      - name: im_complicacao_mcont
         description: Complicações relacionadas ao uso de injeção mensal como método contraceptivo.
-      - name: it_comp_mcont
+      - name: it_complicacao_mcont
         description: Complicações relacionadas ao uso de injeção trimestral como método contraceptivo.
-      - name: mp_comp_mcont
+      - name: mp_complicacao_mcont
         description: Complicações relacionadas ao uso de minipílula como método contraceptivo.
-      - name: dg_comp_mcont
+      - name: dg_complicacao_mcont
         description: Complicações relacionadas ao uso de diafragma como método contraceptivo.
-      - name: esp_comp_mcont
+      - name: esp_complicacao_mcont
         description: Complicações relacionadas ao uso de espermicida como método contraceptivo.
-      - name: em_comp_mcont
+      - name: em_complicacao_mcont
         description: Complicações relacionadas ao uso de implante como método contraceptivo.
-      - name: ef_comp_mcont
+      - name: ef_complicacao_mcont
         description: Complicações relacionadas ao uso de adesivo como método contraceptivo.
-      - name: diu_qual_m_cont
+      - name: i_complicacao_mcont
+        description: Complicações relacionadas ao uso de um método contraceptivo (código 'i').
+      - name: o_complicacao_mcont
+        description: Complicações relacionadas a outro método contraceptivo.
+      - name: diu_qual_mcont
         description: Qual tipo de DIU como método contraceptivo.
-      - name: ci_dtainim_mcont
+      - name: ci_data_inicio_mcont
         description: Data de início do uso de camisinha masculina como método contraceptivo.
-      - name: ci_dtatermo_mcont
+      - name: ci_data_termino_mcont
         description: Data de término do uso de camisinha masculina como método contraceptivo.
-      - name: ci_interr_mcont
+      - name: ci_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de camisinha masculina como método contraceptivo.
-      - name: ci_comp_mcont
+      - name: ci_complicacao_mcont
         description: Complicações relacionadas ao uso de camisinha masculina como método contraceptivo.
-      - name: tab_dtainim_mcont
+      - name: tab_data_inicio_mcont
         description: Data de início do uso de tabelinha como método contraceptivo.
-      - name: tab_dtatermo_mcont
+      - name: tab_data_termino_mcont
         description: Data de término do uso de tabelinha como método contraceptivo.
-      - name: tab_interr_mcont
+      - name: tab_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de tabelinha como método contraceptivo.
-      - name: tab_comp_mcont
+      - name: tab_complicacao_mcont
         description: Complicações relacionadas ao uso de tabelinha como método contraceptivo.
       - name: m_contracepcao_mcont
         description: Qual método contraceptivo utilizado.
-      - name: mb_dtainim_mcont
+      - name: mb_data_inicio_mcont
         description: Data de início do uso de método de barreira como método contraceptivo.
-      - name: mb_dtatermo_mcont
+      - name: mb_data_termino_mcont
         description: Data de término do uso de método de barreira como método contraceptivo.
-      - name: mb_interr_mcont
+      - name: mb_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de método de barreira como método contraceptivo.
-      - name: mb_comp_mcont
+      - name: mb_complicacao_mcont
         description: Complicações relacionadas ao uso de método de barreira como método contraceptivo.
-      - name: ce_dtainim_mcont
+      - name: ce_data_inicio_mcont
         description: Data de início do uso de camisinha feminina como método contraceptivo.
-      - name: ce_dtatermo_mcont
+      - name: ce_data_termino_mcont
         description: Data de término do uso de camisinha feminina como método contraceptivo.
-      - name: ce_interr_mcont
+      - name: ce_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de camisinha feminina como método contraceptivo.
-      - name: ce_comp_mcont
+      - name: ce_complicacao_mcont
         description: Complicações relacionadas ao uso de camisinha feminina como método contraceptivo.
-      - name: av_dtainim_mcont
+      - name: av_data_inicio_mcont
         description: Data de início do uso de anel vaginal como método contraceptivo.
-      - name: av_dtatermo_mcont
+      - name: av_data_termino_mcont
         description: Data de término do uso de anel vaginal como método contraceptivo.
-      - name: av_interr_mcont
+      - name: av_motivo_interrupcao_mcont
         description: Motivo de interrupção do uso de anel vaginal como método contraceptivo.
-      - name: av_comp_mcont
+      - name: av_complicacao_mcont
         description: Complicações relacionadas ao uso de anel vaginal como método contraceptivo.
-      - name: planon_dtainim_mcont
+      - name: planon_data_inicio_mcont
         description: Data de início do uso de planejamento natural como método contraceptivo.
-      - name: planon_dtatermo_mcont
+      - name: planon_data_termino_mcont
         description: Data de término do uso de planejamento natural como método contraceptivo.
       - name: planon_motivo_mcont
         description: Motivo de interrupção do uso de planejamento natural como método contraceptivo.
-      - name: planon_complicacoes_mcont
+      - name: planon_complicacao_mcont
         description: Complicações relacionadas ao uso de planejamento natural como método contraceptivo.
       - name: loaded_at
         description: Timestamp de quando o registro foi carregado no sistema.
