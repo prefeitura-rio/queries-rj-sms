@@ -10,11 +10,11 @@ models:
         description: Identificador local do prontuário do paciente, específico da unidade de saúde.
       - name: id_cnes
         description: Código CNES da unidade de saúde onde o caso de tuberculose foi registrado.
-      - name: data_inicio_tratamento
+      - name: data_inicio_trat
         description: Data de início do tratamento da tuberculose.
-      - name: idade_inicio_tratamento
+      - name: idade_inicio_trat
         description: Idade do paciente no início do tratamento.
-      - name: peso_inicio_tratamento
+      - name: peso_inicio_trat
         description: Peso do paciente no início do tratamento (em kg).
       - name: contato_tb
         description: Indica se o paciente teve contato com casos de tuberculose.
@@ -32,17 +32,17 @@ models:
         description: Quais drogas foram utilizadas no tratamento.
       - name: tipo_programa
         description: Tipo de programa ao qual o paciente está vinculado.
-      - name: numero_sinan
+      - name: num_sinan
         description: Número de notificação do caso no sistema SINAN.
       - name: hiv
         description: Indica o status sorológico para HIV do paciente.
       - name: comunica_tb
         description: Indica se houve comunicação do caso de tuberculose.
-      - name: raio_x_torax
+      - name: raiox_torax
         description: Resultado do exame de raio-x de tórax.
       - name: data_inicio_registro
         description: Data de início do registro do caso.
-      - name: resultado_raio_x
+      - name: resultado_raiox
         description: Resultado detalhado do raio-x.
       - name: hist_biopsia_pleural
         description: Resultado da biópsia pleural (histopatológico).
@@ -80,11 +80,11 @@ models:
         description: Observações sobre o acompanhamento mensal.
       - name: hiv_positivo_negativo_mensal
         description: Status HIV (positivo/negativo) no acompanhamento mensal.
-      - name: raio_x_torax_mensal
+      - name: raiox_torax_mensal
         description: Resultado do raio-x de tórax no acompanhamento mensal.
-      - name: resultado_raio_x_torax_acompanhamento_mensal
+      - name: resultado_raiox_torax_acompanhamento_mensal
         description: Resultado detalhado do raio-x de tórax no acompanhamento mensal.
-      - name: idade_exclusao_tratamento
+      - name: idade_excl_trat
         description: Idade do paciente no momento da exclusão do tratamento.
       - name: data_exclusao
         description: Data de exclusão do caso.
@@ -96,13 +96,13 @@ models:
         description: Motivo do encerramento do caso (exemplo cura, óbito).
       - name: hiv_positivo_negativo_encerramento
         description: Status HIV (positivo/negativo) no encerramento.
-      - name: raio_x_torax_encerramento
+      - name: raiox_torax_encerramento
         description: Resultado do raio-x de tórax no encerramento.
-      - name: resultado_raio_x_torax_encerramento
+      - name: resultado_raiox_torax_encerramento
         description: Resultado detalhado do raio-x de tórax no encerramento.
       - name: data_inicio_tratamento_latente
         description: Data de início do tratamento para tuberculose latente.
-      - name: raio_x_torax_tratamento_latente
+      - name: raiox_torax_tratamento_latente
         description: Resultado do raio-x de tórax no tratamento da tuberculose latente.
       - name: ppd_tratamento_latente
         description: Resultado do PPD no tratamento da tuberculose latente.
@@ -112,11 +112,11 @@ models:
         description: Indicação do tratamento para tuberculose latente.
       - name: data_encerramento_tratamento_latente
         description: Data de encerramento do tratamento para tuberculose latente.
-      - name: resultado_raio_x_torax_tratamento_latente
+      - name: resultado_raiox_torax_tratamento_latente
         description: Resultado detalhado do raio-x de tórax no tratamento da tuberculose latente.
-      - name: esquema_ilbt
+      - name: esquema_iltb
         description: Esquema de tratamento para Infecção Latente por Mycobacterium tuberculosis (ILTB).
-      - name: observacoes_tuberculose
+      - name: observacoes_tuber
         description: Observações gerais sobre o caso de tuberculose.
       - name: loaded_at
         description: Timestamp de quando o registro foi carregado no sistema.
