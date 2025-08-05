@@ -282,15 +282,6 @@ with
             {{ clean_name_string(process_null("descricao_cid_agendado")) }}
             as cid_agendado,
 
-            -- Metadados Elasticsearch
-            type as elastic__type,
-            json_value(laudo_json, '$.nome_cnes_operador') as laudo_operador_cnes,
-            json_value(laudo_json, '$.operador') as laudo_operador,
-            json_value(laudo_json, '$.tipo_perfil') as laudo_perfil_tp,
-            carga_epoch as elastic__carga_epoch,
-            timestamp as elastic__timestamp,
-            version as elastic__version,
-
             -- Metadado SMS 
             safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
 
