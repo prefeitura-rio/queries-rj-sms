@@ -35,6 +35,7 @@ filtro_palavras_chave as (
   or lower(conteudo) like "%hospita%municipa%"
   or lower(conteudo) like "%unidade%saúde%"
   or lower(conteudo) like "%rio%saúde%"
+  or conteudo like "%Sistema de Controle de Bens Patrimoniais (SISBENS)%"
 ),
 -- filtro que busca todas as resoluções da secretaria de saúde
 secretaria_saude_add as (
@@ -59,10 +60,10 @@ atos_prefeito_add as (
   SELECT concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id,* 
   FROM diarios_municipio
   where pasta = 'ATOS DO PREFEITO/DECRETOS N'
-  and conteudo like "%CGM%"
+  and (conteudo like "%CGM%"
   or conteudo like "%TCMRJ%"
   or cabecalho like "%CGM%"
-  or cabecalho like "%TCMRJ%"
+  or cabecalho like "%TCMRJ%")
 ),
 -- filtro especifico de retirar exonerações e designações em secretaria municipal
 secretaria_saude_del as (
@@ -202,6 +203,7 @@ final_secretaria_saude as (
   on 
   concat(conteudos_para_email.id_diario,conteudos_para_email.id_materia, conteudos_para_email.secao_indice) = do_raw.id_materia_secao_do
   where conteudos_para_email.pasta like '%SECRETARIA MUNICIPAL DE SAÚDE%'
+  and do_raw.cabecalho != 'DANIEL SORANZ'
 ),
 -- ATOS DO PREFEITO --
 final_atos_prefeito as (
