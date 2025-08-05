@@ -1,3 +1,0 @@
-i. Atualizar dicionário para adequação das descrições e cobertura de todos os modelos
-ii. Adicionar testes (validar cardinalidade contra N de origem)
-iii. Descobrir combinação de pk para adicionar teste

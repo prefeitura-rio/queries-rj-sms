@@ -1,33 +1,38 @@
 -- noqa: disable=LT08
 {{
-    config(
-        enabled=true,
-        schema="brutos_sisreg_api",
-        alias="marcacoes",
-        partition_by={
-            "field": "particao_data",
-            "data_type": "date",
-            "granularity": "month",
-        },
-    )
+  config(
+    enabled=true,
+    materialized='table',
+    schema="brutos_sisreg_api",
+    alias="marcacoes",
+    partition_by={
+      "field": "particao_data",
+      "data_type": "date",
+      "granularity": "month",
+    },
+    cluster_by=['unidade_executante_id', 'unidade_solicitante_id', 'procedimento_interno_id'],
+  )
 }}
 
+
 with
-    casted_partitions as (
-        select safe_cast(data_particao as date) as data_particao
-        from {{ source("brutos_sisreg_api_staging", "marcacoes") }}
+    correct_partition as (
+        select
+            cast(format_date('%d/%m/%Y', max(data_particao)) as string) as data_particao
+        from {{ ref("raw_sisreg_api_log__logs")}} as completed_runs
+        where bq_table = "marcacoes"
     ),
 
-    most_complete_partition as (
-        select data_particao, count(*) as registros
-        from casted_partitions
-        group by data_particao
-        order by registros desc
-        limit 1
-    ),  
+    sisreg as (
+        select * from {{ source("brutos_sisreg_api_staging", "marcacoes") }} 
+        where data_particao = (select data_particao from correct_partition)
+    ),
     
-    source as (
+    sisreg_transformed as (
         select
+            -- Metadados da extração
+            run_id,
+
             -- Identificação básica da solicitação
             {{ process_null("codigo_solicitacao") }} as solicitacao_id,
             safe_cast(
@@ -290,15 +295,13 @@ with
             safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
 
             -- Partições
-            safe_cast(ano_particao as int) as particao_ano,
-            safe_cast(mes_particao as int) as particao_mes,
-            safe_cast(data_particao as date) as particao_data
+            cast(ano_particao as int) as particao_ano,
+            cast(mes_particao as int) as particao_mes,            
+            parse_date('%d/%m/%Y', data_particao) as particao_data
 
-        from {{ source("brutos_sisreg_api_staging", "marcacoes") }}
+        from sisreg
         left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
-        where safe_cast(data_particao as date) = (select data_particao from most_complete_partition)
-
     )
 
-select distinct *
-from source
+select *
+from sisreg_transformed
