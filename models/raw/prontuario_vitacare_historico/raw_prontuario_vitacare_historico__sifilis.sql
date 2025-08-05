@@ -54,7 +54,7 @@ WITH
             {{ process_null('acquiredsyphilisobservations') }} AS sifilis_adquirida_observacoes,
             safe_cast({{ process_null('acquiredsyphilisclosuredate') }} as DATE) AS sifilis_adquirida_data_fechamento,
             safe_cast({{ process_null('acquiredsyphilisageatclosure') }} as INT) AS sifilis_adquirida_idade_fechamento,
-            {{ process_null('acquiredsyphilisclosurereason') }} AS sifilis_adquirida_motivo_fechamento
+            {{ process_null('acquiredsyphilisclosurereason') }} AS sifilis_adquirida_motivo_fechamento,
 
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
