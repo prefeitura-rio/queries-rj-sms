@@ -149,7 +149,11 @@ telefones_clinicas AS (
 frequencia AS (
   SELECT
     *,
-    COUNT(DISTINCT cpf) OVER (PARTITION BY telefone_formatado) AS total_cpfs_com_mesmo_telefone
+    CASE
+      WHEN telefone_limpo IS NOT NULL
+        THEN COUNT(DISTINCT cpf) OVER (PARTITION BY telefone_limpo)
+      ELSE NULL
+    END AS total_cpfs_com_mesmo_telefone
   FROM formatacao
 ),
 
@@ -157,7 +161,10 @@ avaliacoes AS (
   SELECT
     *,
     telefone_formatado IS NULL AS flag_telefone_formatado_nulo,
-    total_cpfs_com_mesmo_telefone >= 10 AS flag_numero_compartilhado,
+    CASE 
+      WHEN telefone_limpo IS NULL THEN FALSE
+      ELSE total_cpfs_com_mesmo_telefone >= 10
+    END AS flag_numero_compartilhado,
     UPPER(TRIM(telefone)) IN (
       'NAO INFORMADO', 'NAO TEM', 'NAO POSSUI', 'NONE', 'SEM INFORMACAO', 'SEM TELEFONE',
       'NAO TEM CELULAR', 'NAO INFORMOU', 'SEM INF', 'SEM TELEFONE NO MOMENTO', 'SEM CONTATO',
