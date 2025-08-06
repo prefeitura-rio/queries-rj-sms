@@ -1,33 +1,41 @@
 -- noqa: disable=LT08
 {{
-    config(
-        enabled=true,
-        schema="brutos_sisreg_api",
-        alias="marcacoes",
-        partition_by={
-            "field": "particao_data",
-            "data_type": "date",
-            "granularity": "month",
-        },
-    )
+  config(
+    enabled=true,
+    materialized='table',
+    schema="brutos_sisreg_api",
+    alias="marcacoes",
+    partition_by={
+      "field": "particao_data",
+      "data_type": "date",
+      "granularity": "month",
+    },
+    cluster_by=['unidade_executante_id', 'unidade_solicitante_id', 'procedimento_interno_id'],
+  )
 }}
 
+
 with
-    casted_partitions as (
-        select safe_cast(data_particao as date) as data_particao
-        from {{ source("brutos_sisreg_api_staging", "marcacoes") }}
+
+    correct_partition as (
+        select
+            format_date('%Y-%m-%d', max(data_particao)) as particao_str
+        from {{ ref('raw_sisreg_api_log__logs') }}
+        where bq_table = 'marcacoes'
     ),
 
-    most_complete_partition as (
-        select data_particao, count(*) as registros
-        from casted_partitions
-        group by data_particao
-        order by registros desc
-        limit 1
-    ),  
-    
-    source as (
+    sisreg as (
+        select s.*
+        from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
+        join correct_partition p
+        on s.data_particao = p.particao_str
+    ),
+        
+    sisreg_transformed as (
         select
+            -- Metadados da extração
+            run_id,
+
             -- Identificação básica da solicitação
             {{ process_null("codigo_solicitacao") }} as solicitacao_id,
             safe_cast(
@@ -277,28 +285,17 @@ with
             {{ clean_name_string(process_null("descricao_cid_agendado")) }}
             as cid_agendado,
 
-            -- Metadados Elasticsearch
-            type as elastic__type,
-            json_value(laudo_json, '$.nome_cnes_operador') as laudo_operador_cnes,
-            json_value(laudo_json, '$.operador') as laudo_operador,
-            json_value(laudo_json, '$.tipo_perfil') as laudo_perfil_tp,
-            carga_epoch as elastic__carga_epoch,
-            timestamp as elastic__timestamp,
-            version as elastic__version,
-
             -- Metadado SMS 
             safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
 
             -- Partições
-            safe_cast(ano_particao as int) as particao_ano,
-            safe_cast(mes_particao as int) as particao_mes,
-            safe_cast(data_particao as date) as particao_data
+            cast(ano_particao as int) as particao_ano,
+            cast(mes_particao as int) as particao_mes,            
+            parse_date('%Y-%m-%d', data_particao) as particao_data
 
-        from {{ source("brutos_sisreg_api_staging", "marcacoes") }}
+        from sisreg
         left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
-        where safe_cast(data_particao as date) = (select data_particao from most_complete_partition)
-
     )
 
-select distinct *
-from source
+select *
+from sisreg_transformed

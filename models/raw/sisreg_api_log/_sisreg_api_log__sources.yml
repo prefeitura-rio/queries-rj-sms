@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_sisreg_api_log_staging
+    database: rj-sms
+    schema: brutos_sisreg_api_log_staging
+    tables:
+      - name: solicitacoes
+      - name: marcacoes

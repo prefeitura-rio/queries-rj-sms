@@ -1,7 +1,19 @@
 models:
   - name: raw_sisreg_api__marcacoes
     description: Tabela atualizada diariamente, obtida a partir da API do SISREG. A tabela contém informacoes sobre todas as solicitacoes que foram marcadas, ou seja, foram aprovadas e chegaram pelo menos ate o status de AGENDAMENTO. Nem todos os registros contidos nesta tabela foram executados de fato. Ex. Agendamentos cancelados. Checar coluna de status. 
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - unidade_solicitante_id
+            - procedimento_interno_id
+            - paciente_cpf
+            - data_solicitacao        
+    
     columns:
+      - name: run_id
+        description: Identificador único para cada execução do processo de extração de dados. Este é um valor string que é gerado automaticamente.
+        data_type: string
+        quote: true
       - name: solicitacao_id
         description: O identificador único para cada solicitação.
         data_type: string
@@ -415,7 +427,19 @@ models:
 
   - name: raw_sisreg_api__solicitacoes
     description: O modelo raw_sisreg_api__solicitacoes é um conjunto de dados abrangente que contém informações sobre solicitações médicas feitas através da API SISREG. Inclui detalhes sobre a solicitação, como ID da solicitação, status e nível de risco, bem como informações sobre o paciente, como nome, data de nascimento e informações de contato. Inclui também detalhes sobre o procedimento médico solicitado, o profissional médico que fez a solicitação e a unidade médica onde a solicitação foi feita. O modelo também contém timestamps de quando a solicitação foi feita, atualizada e cancelada, se aplicável. Os dados são particionados por ano, mês e data para consulta eficiente.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - unidade_solicitante_id
+            - procedimento_id
+            - paciente_cpf
+            - data_solicitacao    
+    
     columns:
+      - name: run_id
+        description: Identificador único para cada execução do processo de extração de dados. Este é um valor string.
+        data_type: string
+        quote: true
       - name: solicitacao_id
         description: O identificador único para cada solicitação. Este é um valor string.
         data_type: string

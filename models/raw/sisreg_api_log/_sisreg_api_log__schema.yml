@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: raw_sisreg_api_log__logs
+    description: "Consolida logs de duas fontes — 'marcacoes' e 'solicitacoes' do dataset 'brutos_sisreg_api_log_staging' — transformando e combinando-os para oferecer uma visão unificada da atividade da API, incluindo metadados de execução, detalhes de ambiente e informações de partição. As principais transformações incluem o parsing de datas e a conversão de carimbos de tempo (timestamps) para o tipo DATETIME."
+    columns:
+      - name: run_id
+        description: "Identificador único de cada execução (run) do processo."
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+          - unique
+          
+      - name: run_inicio
+        description: "Timestamp de início da execução do processo, convertido para DATETIME."
+        data_type: datetime
+        quote: true
+
+      - name: run_fim
+        description: "Timestamp de término da execução do processo, convertido para DATETIME."
+
+      - name: run_ambiente
+        description: "Ambiente em que a execução ocorreu (por exemplo, 'production' ou 'staging')."
+        data_type: string
+        quote: true
+
+      - name: bq_table
+        description: "Nome da tabela no BigQuery onde os dados são armazenados."
+        data_type: string
+        quote: true
+
+      - name: bq_dataset
+        description: "Nome do dataset do BigQuery que contém a tabela."
+        data_type: string
+        quote: true
+
+      - name: data_inicial
+        description: "Data inicial do intervalo de dados processados, normalmente o início do período a que os logs se referem."
+        data_type: string
+        quote: true
+
+      - name: data_final
+        description: "Data final do intervalo de dados processados, normalmente o fim do período a que os logs se referem."
+        data_type: string
+        quote: true
+
+      - name: completed
+        description: "Indicador de status informando se o processamento do intervalo foi concluído com sucesso."
+        data_type: string
+        quote: true
+
+      - name: ano_particao
+        description: "Ano da partição, extraído da fonte para facilitar organização e consultas."
+        data_type: string
+        quote: true
+
+      - name: mes_particao
+        description: "Mês da partição, extraído da fonte para facilitar organização e consultas."
+        data_type: string
+        quote: true
+
+      - name: data_particao
+        description: "Data completa da partição, parseada do formato original ('%d/%m/%Y') para o tipo DATE, permitindo operações corretas baseadas em data."
+        data_type: date
+        quote: true
+        tests:
+          - not_null
