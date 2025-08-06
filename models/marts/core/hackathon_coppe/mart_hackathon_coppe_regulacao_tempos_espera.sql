@@ -1,0 +1,1 @@
+select * from {{ref("mart_tme__tempos_espera")}}
