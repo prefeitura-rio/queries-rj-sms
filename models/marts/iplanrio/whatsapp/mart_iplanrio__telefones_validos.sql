@@ -66,7 +66,6 @@ limpa_telefone AS (
   SELECT
     *,
     CASE
-      -- Remove o 0 inicial se o número tiver 12 dígitos no padrão 0 + DDD + 9 dígitos
       WHEN REGEXP_CONTAINS(REGEXP_REPLACE(telefone, r'[^0-9]', ''), r'^0\d{11}$')
         THEN SUBSTR(REGEXP_REPLACE(telefone, r'[^0-9]', ''), 2)
       ELSE REGEXP_REPLACE(telefone, r'[^0-9]', '')
@@ -172,7 +171,7 @@ avaliacoes AS (
     (LENGTH(telefone_limpo) = 11 AND SUBSTR(telefone_limpo, 3, 1) != '9') AS flag_celular_9d_digito_invalido,
     (
       REGEXP_CONTAINS(telefone_limpo, r'^(0800|0300|0500|400[0-9])') OR
-      telefone_limpo IN ('2134601746', '6133152425') -- (21) 3460‑1746 e (61) 3315‑2425 numeros instituic
+      telefone_limpo IN ('2134601746', '6133152425')
     ) AS flag_numero_institucional
   FROM frequencia
 ),
@@ -181,49 +180,53 @@ final AS (
   SELECT
     a.*,
     EXISTS (
-    SELECT 1
-    FROM telefones_clinicas tc
-    WHERE tc.telefone_clinica_formatado = a.telefone_formatado
-  ) AS flag_telefone_clinica,
-
-  (
-    a.flag_telefone_formatado_nulo OR -- Se não for possível extrair e formatar um número válido. telefone não pôde ser formatado no padrão 55DDD9XXXXXXXX
-    a.flag_numero_compartilhado OR -- O mesmo telefone aparece em 10 ou mais CPFs diferentes
-    a.flag_texto_indefinido OR -- o campo tem textos especificos
-    a.flag_poucos_digitos OR -- menos de 8 digiitos
-    a.flag_todos_digitos_iguais OR
-    a.flag_repetidos_5_ou_mais OR
-    a.flag_ddd_invalido OR
-    a.flag_celular_9d_digito_invalido OR -- O número é um celular com 11 dígitos, mas o terceiro dígito não é 9
-    a.flag_numero_institucional OR --central de atendimento
-    EXISTS (
       SELECT 1
       FROM telefones_clinicas tc
       WHERE tc.telefone_clinica_formatado = a.telefone_formatado
-    )
-  ) AS numero_invalidado
+    ) AS flag_telefone_clinica,
+
+    (
+      a.flag_telefone_formatado_nulo OR
+      a.flag_numero_compartilhado OR
+      a.flag_texto_indefinido OR
+      a.flag_poucos_digitos OR
+      a.flag_todos_digitos_iguais OR
+      a.flag_repetidos_5_ou_mais OR
+      a.flag_ddd_invalido OR
+      a.flag_celular_9d_digito_invalido OR
+      a.flag_numero_institucional OR
+      EXISTS (
+        SELECT 1
+        FROM telefones_clinicas tc
+        WHERE tc.telefone_clinica_formatado = a.telefone_formatado
+      )
+    ) AS flag_numero_invalidado
   FROM avaliacoes a
 )
 
 SELECT
   cpf,
-  telefone,
-  telefone_limpo,
-  telefone_formatado, -- se for null eh porque nao pode ser convertido pro padrao esperado 55DDD9XXXXXXXX
-  data_ultima_atualizacao_cadastral,
-  flag_telefone_formatado_nulo,
-  flag_numero_compartilhado,
-  flag_texto_indefinido,
-  flag_poucos_digitos,
-  flag_todos_digitos_iguais,
-  flag_repetidos_5_ou_mais,
-  flag_ddd_invalido,
-  flag_celular_9d_digito_invalido,
-  flag_numero_institucional,
-  flag_telefone_clinica,
-  numero_invalidado
+  ARRAY_AGG(STRUCT(
+    telefone AS telefone_raw,
+    telefone_limpo,
+    telefone_formatado,
+    data_ultima_atualizacao_cadastral,
+    STRUCT(
+      flag_numero_invalidado,
+      flag_telefone_formatado_nulo,
+      flag_numero_compartilhado,
+      flag_texto_indefinido,
+      flag_poucos_digitos,
+      flag_todos_digitos_iguais,
+      flag_repetidos_5_ou_mais,
+      flag_ddd_invalido,
+      flag_celular_9d_digito_invalido,
+      flag_numero_institucional,
+      flag_telefone_clinica
+    ) AS status
+  ) ORDER BY data_ultima_atualizacao_cadastral DESC) AS telefones
 FROM final
 WHERE cpf IS NOT NULL
   AND cpf != ''
   AND UPPER(cpf) NOT IN ('00000000000', 'NONE', 'NAO TEM', 'NAO INFORMADO')
-
+GROUP BY cpf
