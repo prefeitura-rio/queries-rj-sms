@@ -2,10 +2,10 @@ with
 
 sisreg_solicitacoes as (
     select
-        -- profissionais (hashear todos)
-        profissional_solicitante_cpf,
-        operador_solicitante_nome,
-        operador_cancelamento_nome,
+        -- profissionais
+        to_hex(sha256(cast(profissional_solicitante_cpf as string))) as profissional_solicitante_id,
+        to_hex(sha256(operador_solicitante_nome)) as operador_solicitante_id,
+        to_hex(sha256(operador_cancelamento_nome)) as operador_cancelamento_id,
 
         -- unidades
         central_solicitante,
@@ -14,12 +14,26 @@ sisreg_solicitacoes as (
         unidade_desejada_id as unidade_desejada_id_cnes,
 
         -- paciente
-        paciente_cpf, -- hashear
-        paciente_dt_nasc, -- transformar em faixa etaria
+        to_hex(sha256(cast(paciente_cpf as string))) as paciente_id,
         paciente_sexo,
 
+        case
+            when paciente_dt_nasc is null then 'Desconhecida'
+            else (
+                case
+                    when date_diff(current_date(), cast(paciente_dt_nasc as date), year) < 0 then 'Desconhecida'
+                    when date_diff(current_date(), cast(paciente_dt_nasc as date), year) < 15 then '0-14'
+                    when date_diff(current_date(), cast(paciente_dt_nasc as date), year) < 30 then '15-29'
+                    when date_diff(current_date(), cast(paciente_dt_nasc as date), year) < 45 then '30-44'
+                    when date_diff(current_date(), cast(paciente_dt_nasc as date), year) < 60 then '45-59'
+                    when date_diff(current_date(), cast(paciente_dt_nasc as date), year) < 75 then '60-74'
+                    else '75+'
+                end
+            )
+        end as paciente_faixa_etaria,
+
         -- solicitacao & andamento
-        solicitacao_id, -- hashear
+        solicitacao_id,
         data_solicitacao,
         data_desejada,
         data_cancelamento,
@@ -31,9 +45,8 @@ sisreg_solicitacoes as (
 
         -- procedimento & cid
         procedimento_id as procedimento_sisreg_id,
-        procedimento_grupo,
+        vaga_solicitada_tp,
         cid_id,
-        vaga_solicitada_tp
 
         -- laudo
         laudo_descricao_tp,
@@ -53,3 +66,4 @@ sisreg_solicitacoes as (
 
 select *
 from sisreg_solicitacoes
+where profissional_solicitante_id is not null

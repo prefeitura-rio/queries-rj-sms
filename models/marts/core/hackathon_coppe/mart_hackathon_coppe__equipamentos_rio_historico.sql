@@ -15,4 +15,5 @@ equipamentos_rio_historico as (
         and ano_competencia < 2025
 )
 
-select * from equipamentos_rio
+select * from equipamentos_rio_historico
+where equipamento is not null

@@ -5,11 +5,12 @@ profissionais_rio_historico as (
         ano_competencia as ano,
         mes_competencia as mes,
         id_cnes as unidade_id_cnes,
-        cpf as profissional_cpf, --hashear
+        -- cpf as profissional_cpf,
+        to_hex(sha256(cast(cpf as string))) as profissional_id,
 
         -- atributos
-        cbo_familia as profissional_ocupacao,
-        cbo as profissional_ocupacao_especifica,
+        upper(cbo_familia) as profissional_ocupacao,
+        upper(cbo) as profissional_ocupacao_especifica,
         vinculacao as profissional_vinculo,
         vinculo_tipo as profissional_vinculo_especifico,
 
@@ -26,3 +27,4 @@ profissionais_rio_historico as (
 )
 
 select * from profissionais_rio_historico
+where profissional_id is not null

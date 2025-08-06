@@ -1,1 +1,0 @@
-select * from {{ref("dim_condicao_cid10")}}

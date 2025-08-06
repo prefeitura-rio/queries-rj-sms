@@ -5,8 +5,8 @@ leitos_rio_historico as (
         mes_competencia as mes,
         id_cnes as unidade_id_cnes,
 
-        tipo_leito_descr as tipo_leito,
-        tipo_especialidade_leito_descr as tipo_leito_especialidade,
+        tipo_leito_descr as leito,
+        tipo_especialidade_leito_descr as leito_especialidade,
 
         quantidade_sus as leito_quantidade_sus,
         quantidade_contratado as leito_quantidade_contratado,
@@ -19,3 +19,4 @@ leitos_rio_historico as (
 )
 
 select * from leitos_rio_historico
+where leito is not null

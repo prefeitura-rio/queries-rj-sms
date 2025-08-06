@@ -1,15 +1,15 @@
 with
 habilitacoes_rio_historico as (
     select
-        ano_competencia,
-        mes_competencia,
+        ano_competencia as ano,
+        mes_competencia as mes,
         id_cnes as unidade_id_cnes,
 
         habilitacao,
         habilitacao_ano_inicio,
         habilitacao_ano_fim,
-        habilitacao_mes_inicio
-        habilitacao_mes_fim
+        habilitacao_mes_inicio,
+        habilitacao_mes_fim,
         habilitacao_ativa_indicador
 
     from {{ ref("dim_habilitacao_sus_rio_historico")}}
@@ -19,3 +19,4 @@ habilitacoes_rio_historico as (
 )
 
 select * from habilitacoes_rio_historico
+where habilitacao is not null
