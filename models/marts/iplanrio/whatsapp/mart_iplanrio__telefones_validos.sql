@@ -145,12 +145,6 @@ telefones_clinicas AS (
     UNNEST(telefone) AS telefone_elemento
   )
   WHERE telefone_limpo IS NOT NULL AND telefone_limpo != ''
-
-  UNION ALL
-
-  -- Telefones institucionais
-  SELECT '552134601746' UNION ALL  
-  SELECT '556133152425'           
 ),
 
 frequencia AS (
@@ -176,7 +170,10 @@ avaliacoes AS (
     REGEXP_CONTAINS(telefone_limpo, r'0{5,}|1{5,}|2{5,}|3{5,}|4{5,}|5{5,}|6{5,}|7{5,}|8{5,}|9{5,}') AS flag_repetidos_5_ou_mais,
     NOT ddd_valido AS flag_ddd_invalido,
     (LENGTH(telefone_limpo) = 11 AND SUBSTR(telefone_limpo, 3, 1) != '9') AS flag_celular_9d_digito_invalido,
-    REGEXP_CONTAINS(telefone_limpo, r'^(0800|0300|0500|400[0-9])') AS flag_numero_gratuito_ou_central,
+    (
+      REGEXP_CONTAINS(telefone_limpo, r'^(0800|0300|0500|400[0-9])') OR
+      telefone_limpo IN ('2134601746', '6133152425') -- (21) 3460‑1746 e (61) 3315‑2425 numeros instituic
+    ) AS flag_numero_institucional
   FROM frequencia
 ),
 
@@ -190,15 +187,15 @@ final AS (
   ) AS flag_telefone_clinica,
 
   (
-    a.flag_telefone_formatado_nulo OR -- Se não for possível extrair e formatar um número válido no padrão 55DDD9XXXXXXXX
+    a.flag_telefone_formatado_nulo OR -- Se não for possível extrair e formatar um número válido. telefone não pôde ser formatado no padrão 55DDD9XXXXXXXX
     a.flag_numero_compartilhado OR -- O mesmo telefone aparece em 10 ou mais CPFs diferentes
-    a.flag_texto_indefinido OR -- o campo contem textos especificos
+    a.flag_texto_indefinido OR -- o campo tem textos especificos
     a.flag_poucos_digitos OR -- menos de 8 digiitos
     a.flag_todos_digitos_iguais OR
     a.flag_repetidos_5_ou_mais OR
     a.flag_ddd_invalido OR
     a.flag_celular_9d_digito_invalido OR -- O número é um celular com 11 dígitos, mas o terceiro dígito não é 9
-    a.flag_numero_gratuito_ou_central OR --central de atendimento
+    a.flag_numero_institucional OR --central de atendimento
     EXISTS (
       SELECT 1
       FROM telefones_clinicas tc
@@ -222,7 +219,7 @@ SELECT
   flag_repetidos_5_ou_mais,
   flag_ddd_invalido,
   flag_celular_9d_digito_invalido,
-  flag_numero_gratuito_ou_central,
+  flag_numero_institucional,
   flag_telefone_clinica,
   numero_invalidado
 FROM final
