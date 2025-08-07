@@ -12,9 +12,9 @@ with
         select 
             id_cnes as cnes_unidade,
             paciente_cpf as cpf,
-            paciente_nome as nome,
+            {{ proper_br('paciente_nome') }} as nome,
             paciente_nascimento_data as data_nascimento,
-            nome_mae as nome_mae,
+            {{ proper_br('nome_mae') }} as nome_mae,
             lower({{ remove_accents_upper('descricao') }}) as nome_vacina,
             dose as dose,
             aplicacao_data as data_aplicacao,

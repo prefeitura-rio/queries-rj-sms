@@ -40,9 +40,9 @@ with
        select
             sv.id_cnes as cnes_unidade,
             sc.cpf as cpf,
-            sc.nome as nome,
+            {{ proper_br('sc.nome') }} as nome,
             sc.data_nascimento as data_nascimento,
-            sc.mae_nome as nome_mae,
+            {{ proper_br('sc.mae_nome') }} as nome_mae,
             lower({{ remove_accents_upper('sv.nome_vacina') }}) as nome_vacina,
             case
               when sv.dose = 'Single Dose' then 'dose unica'
