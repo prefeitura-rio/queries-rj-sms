@@ -253,7 +253,7 @@ models:
           dominio: historico_clinico
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
-        +tags: "vitai"
+        +tags: ["vitai","daily"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
