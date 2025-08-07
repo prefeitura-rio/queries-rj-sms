@@ -23,26 +23,27 @@ with
     source_atendimento as (
         select 
             id_prontuario_global,
-            patient_cpf
-        from {{ ref('raw_prontuario_vitacare_historico__acto') }} 
+            cpf
+        from {{ ref('raw_prontuario_vitacare__atendimento') }} 
     ),
 
     source_cadastro as (
         select 
             cpf,
             nome,
-            nome_mae,
+            mae_nome,
             data_nascimento
-        from {{ ref('raw_prontuario_vitacare_historico__cadastro') }} 
+        from {{ ref('raw_prontuario_vitacare__paciente') }} 
     ),
 
     vacinas as (
        select
             sv.id_cnes as cnes_unidade,
             sc.cpf as cpf,
+            sc.nome as nome,
             sc.data_nascimento as data_nascimento,
-            sc.nome_mae as nome_mae,
-            sv.nome_vacina as nome_vacina,
+            sc.mae_nome as nome_mae,
+            lower({{ remove_accents_upper('sv.nome_vacina') }}) as nome_vacina,
             case
               when sv.dose = '1ª Dose' then '1 dose'
               when sv.dose = '2ª Dose' then '2 dose'
@@ -65,7 +66,7 @@ with
             safe_cast(sv.data_registro as date) as data_registro
         from source_vacina sv
         left join source_atendimento sa on sv.id_prontuario_global = sa.id_prontuario_global
-        left join source_cadastro sc on sa.patient_cpf = sc.cpf
+        left join source_cadastro sc on sa.cpf = sc.cpf
     )
 
 select * from vacinas
