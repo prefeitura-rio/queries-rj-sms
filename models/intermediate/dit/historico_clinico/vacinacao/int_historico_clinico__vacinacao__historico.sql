@@ -43,7 +43,24 @@ with
             sc.data_nascimento as data_nascimento,
             sc.nome_mae as nome_mae,
             sv.nome_vacina as nome_vacina,
-            sv.dose as dose,
+            case
+              when sv.dose = '1ª Dose' then '1 dose'
+              when sv.dose = '2ª Dose' then '2 dose'
+              when sv.dose = '3ª Dose' then '3 dose'
+              when sv.dose = '4ª Dose' then '4 dose'
+              when sv.dose = '5ª Dose' then '5 dose'
+              when sv.dose = 'Dose única' then 'dose unica'
+              when sv.dose = 'Dose adicional' then 'dose adicional'
+              when sv.dose = 'Dose inicial' then 'dose inicial'
+              when sv.dose = 'Revacinação' then 'revacinacao'
+              when sv.dose = 'Reforço' then 'reforco'
+              when sv.dose = '1º Reforço' then '1 reforco'
+              when sv.dose = '2º Reforço' then '2 reforco'
+              when sv.dose = '3º Reforço' then '3 reforco'
+              when sv.dose = 'Dose D' then 'dose d'
+              when sv.dose = 'Outro' then 'outra'
+              else lower(sv.dose) 
+            end as dose,
             sv.data_aplicacao as data_aplicacao,
             safe_cast(sv.data_registro as date) as data_registro
         from source_vacina sv
