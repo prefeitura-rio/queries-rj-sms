@@ -77,7 +77,7 @@ formatacao AS (
   SELECT
     f.*,
     LENGTH(f.telefone_limpo) AS tamanho,
-    d.ddd IS NOT NULL AS ddd_valido,
+    IF((d.ddd IS NOT NULL) and (char_length(f.telefone_limpo)>9), true, false) AS ddd_valido,
 
     CASE
       WHEN LENGTH(f.telefone_limpo) = 11
@@ -216,11 +216,12 @@ SELECT
   ARRAY_AGG(STRUCT(
     telefone AS telefone_raw,
     telefone_limpo,
-    telefone_formatado,
+    if(flag_numero_invalidado is true, null, telefone_formatado) as telefone_formatado,
     data_ultima_atualizacao_cadastral,
     STRUCT(
       flag_numero_invalidado,
       flag_telefone_formatado_nulo,
+      total_cpfs_com_mesmo_telefone,
       flag_numero_compartilhado,
       flag_texto_indefinido,
       flag_poucos_digitos,
