@@ -3,7 +3,7 @@
         enabled=true,
         materialized='table',
         schema="brutos_sisreg_api_log",
-        alias="marcacoes",
+        alias="logs",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
