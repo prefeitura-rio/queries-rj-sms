@@ -1,0 +1,43 @@
+version: 2
+
+sources:
+  - name: saude_dados_mestres
+    database: rj-sms
+    schema: saude_dados_mestres
+    tables:
+      - name: condicao_cid10
+
+  - name: saude_cnes
+    database: rj-sms
+    schema: saude_cnes
+    tables:
+      - name: equipamento_sus_rio_historico
+      - name: habilitacao_sus_rio_historico
+      - name: leito_sus_rio_historico
+      - name: profissional_sus_rio_historico
+      - name: estabelecimento_sus_rio_historico
+
+  - name: brutos_sisreg_api
+    database: rj-sms
+    schema: brutos_sisreg_api
+    tables:
+      - name: marcacoes
+      - name: solicitacoes
+
+  - name: saude_sisreg
+    database: rj-sms
+    schema: saude_sisreg
+    tables:
+      - name: oferta_programada_serie_historica
+
+  - name: brutos_sheets
+    database: rj-sms
+    schema: brutos_sheets
+    tables:
+      - name: assistencial_procedimento
+
+  - name: projeto_sisreg_tme
+    database: rj-sms
+    schema: projeto_sisreg_tme
+    tables:
+      - name: tme_procedimento

@@ -1,3 +1,8 @@
+{{
+    config(
+        alias="equipamento_historico"
+    )
+}}
 with
 equipamentos_rio_historico as (
     select
@@ -9,7 +14,7 @@ equipamentos_rio_historico as (
         equipamentos_quantidade,
         equipamentos_quantidade_ativos
 
-    from {{ ref("dim_equipamento_sus_rio_historico")}}
+    from {{source("saude_cnes","equipamento_sus_rio_historico")}}
     where 1 = 1
         and ano_competencia >= 2022
         and ano_competencia < 2025

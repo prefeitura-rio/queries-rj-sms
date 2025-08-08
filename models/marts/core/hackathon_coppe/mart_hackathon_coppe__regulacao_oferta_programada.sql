@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = "table",
+        alias = "oferta_programada"
+    )
+}}
 with oferta_programada as (
     select 
         id_escala_ambulatorial as escala_id,
@@ -18,7 +24,7 @@ with oferta_programada as (
         vagas_retorno_qtd as vagas_programadas_retorno,
         vagas_todas_qtd as vagas_programadas_todas,
 
-    from {{ref("fct_sisreg_oferta_programada_serie_historica")}}
+    from {{source("saude_sisreg","oferta_programada_serie_historica")}}
 )
 
 select *

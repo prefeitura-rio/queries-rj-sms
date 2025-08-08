@@ -1,5 +1,11 @@
-with
+{{
+    config(
+        materialized = "table",
+        alias = "unidade_historico"
+    )
+}}
 
+with
 unidades_rio_historico as (
     select
         -- identificacao
@@ -34,7 +40,7 @@ unidades_rio_historico as (
         atendimento_regulacao_sus_indicador as indicador_unidade_sus_regulacao,
         atendimento_outros_sus_indicador as indicador_unidade_sus_outros
 
-    from {{ ref("dim_estabelecimento_sus_rio_historico")}}
+    from {{ source("saude_cnes","estabelecimento_sus_rio_historico")}}
     where 1 = 1
         and ano_competencia >= 2022
         and ano_competencia < 2025

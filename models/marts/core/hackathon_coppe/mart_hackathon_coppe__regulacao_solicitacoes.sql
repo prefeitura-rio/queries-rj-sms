@@ -1,5 +1,10 @@
+{{
+    config(
+        materialized = "table",
+        alias = "solicitacao"
+    )
+}}
 with
-
 sisreg_solicitacoes as (
     select
         -- profissionais
@@ -51,10 +56,10 @@ sisreg_solicitacoes as (
         -- laudo
         laudo_descricao_tp,
         laudo_situacao,
-        laudo_observacao,
+        -- laudo_observacao,
         laudo_data_observacao
 
-    from {{ ref("raw_sisreg_api__solicitacoes") }}
+    from {{ source("brutos_sisreg_api","solicitacoes") }}
     where 1 = 1
         and uf_solicitante_id = "33"
         and uf_regulador_id = "33"

@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = "table",
+        alias = "habilitacao_historico"
+    )
+}}
 with
 habilitacoes_rio_historico as (
     select
@@ -12,7 +18,7 @@ habilitacoes_rio_historico as (
         habilitacao_mes_fim,
         habilitacao_ativa_indicador
 
-    from {{ ref("dim_habilitacao_sus_rio_historico")}}
+    from {{ source("saude_cnes","habilitacao_sus_rio_historico")}}
     where 1 = 1
         and ano_competencia >= 2022
         and ano_competencia < 2025

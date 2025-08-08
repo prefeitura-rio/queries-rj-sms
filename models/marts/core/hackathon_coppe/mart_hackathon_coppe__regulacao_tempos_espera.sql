@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = "table",
+        alias = "tempo_espera"
+    )
+}}
 select 
     ano_marcacao,
     mes_marcacao,
@@ -13,4 +19,4 @@ select
     tme_movel_6m as tempo_medio_espera_movel_6m,
     tme_movel_12m as tempo_medio_espera_movel_12m
 
-from {{ref("mart_tme__procedimento_mensal")}}
+from {{source("projeto_sisreg_tme","tme_procedimento")}}

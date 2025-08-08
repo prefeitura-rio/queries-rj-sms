@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = "table",
+        alias = "marcacao"
+    )
+}}
 with
 
 sisreg_marcacoes as (
@@ -64,10 +70,10 @@ sisreg_marcacoes as (
         -- laudo
         laudo_descricao_tp,
         laudo_situacao,
-        laudo_observacao,
+        -- laudo_observacao,
         laudo_data_observacao
 
-    from {{ ref("raw_sisreg_api__marcacoes") }}
+    from {{ source("brutos_sisreg_api","marcacoes") }}
     where 1 = 1
         and uf_solicitante_id = "33"
         and uf_regulador_id = "33"

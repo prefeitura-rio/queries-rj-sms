@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = "table",
+        alias = "profissional_historico"
+    )
+}}
 with
 profissionais_rio_historico as (
     select 
@@ -20,7 +26,7 @@ profissionais_rio_historico as (
         carga_horaria_outros as profissional_carga_horaria_semanal_outros,
         carga_horaria_total as profissional_carga_horaria_semanal_total
 
-    from {{ ref("dim_profissional_sus_rio_historico")}}
+    from {{ source("saude_cnes","profissional_sus_rio_historico")}}
     where 1 = 1
         and ano_competencia >= 2022
         and ano_competencia < 2025

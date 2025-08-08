@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = "table",
+        alias = "leito_historico"
+    )
+}}
 with
 leitos_rio_historico as (
     select
@@ -12,7 +18,7 @@ leitos_rio_historico as (
         quantidade_contratado as leito_quantidade_contratado,
         quantidade_total as leito_quantidade_total
 
-    from {{ ref("dim_leito_sus_rio_historico")}}
+    from {{ source("saude_cnes","leito_sus_rio_historico")}}
     where 1 = 1
         and ano_competencia >= 2022
         and ano_competencia < 2025

@@ -400,6 +400,13 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: nao
+        hackathon_coppe:
+          +schema: hackathon_coppe
+          +tags: ["hackathon_coppe"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
       cie:
         alerta_doencas:
           +schema: projeto_alerta_doencas
