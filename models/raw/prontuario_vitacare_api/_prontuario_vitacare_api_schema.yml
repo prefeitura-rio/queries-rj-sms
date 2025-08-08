@@ -2,26 +2,31 @@ version: 2
 
 sources:
   - name: brutos_prontuario_vitacare_staging
+    description: Tabela staging derivada da tabela do atendimento_continuo, utilizada como fonte de dados para os modelos reestruturados da API. Sua estrutura foi padronizada para se alinhar ao padrão dos modelos de prontuario do histórico.
     database: rj-sms
     schema: brutos_prontuario_vitacare_staging
     tables:
-      - name: alergias
       - name: acto
-      - name: condicoes
-      - name: encaminhamentos
-      - name: equipes
-      - name: hiv
-      - name: indicadores
+      - name: agendamentos
+      - name: alergias
+      - name: arboviroses
       - name: cadastro
+      - name: condicao
+      - name: curativos
+      - name: encaminhamentos
+      - name: equipe
+      - name: hanseniase
+      - name: hiv
+      - name: idoso
+      - name: indicador
       - name: prenatal
-      - name: prescricoes
-      - name: procedimentos_clinicos
-      - name: profissionais
+      - name: prescricao
+      - name: saudebucal
       - name: saudecrianca
       - name: saudemulher
       - name: sifilis
-      - name: solicitacao_exames
+      - name: solicitacaoexames
+      - name: tabagismo
       - name: testesrapidos
       - name: tuberculose
-      - name: unidade
-      - name: vacinas
+      - name: vacina
