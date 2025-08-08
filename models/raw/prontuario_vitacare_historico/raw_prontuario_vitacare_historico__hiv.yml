@@ -132,3 +132,5 @@ models:
         description: Indica se o paciente está em terapia antirretroviral (TARV).
       - name: loaded_at
         description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.
