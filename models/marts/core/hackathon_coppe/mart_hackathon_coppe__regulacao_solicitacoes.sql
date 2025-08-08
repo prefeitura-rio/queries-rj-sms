@@ -56,7 +56,6 @@ sisreg_solicitacoes as (
         -- laudo
         laudo_descricao_tp,
         laudo_situacao,
-        -- laudo_observacao,
         laudo_data_observacao
 
     from {{ source("brutos_sisreg_api","solicitacoes") }}

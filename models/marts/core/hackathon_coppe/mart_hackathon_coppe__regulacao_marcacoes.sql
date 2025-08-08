@@ -24,7 +24,6 @@ sisreg_marcacoes as (
         unidade_executante_id as unidade_executante_id_cnes,
 
         -- paciente
-        -- paciente_cpf,
         to_hex(sha256(cast(paciente_cpf as string))) as paciente_id,
         paciente_sexo,
 
@@ -70,7 +69,6 @@ sisreg_marcacoes as (
         -- laudo
         laudo_descricao_tp,
         laudo_situacao,
-        -- laudo_observacao,
         laudo_data_observacao
 
     from {{ source("brutos_sisreg_api","marcacoes") }}
@@ -87,4 +85,5 @@ select *
 from sisreg_marcacoes
 where 
     profissional_solicitante_id is not null 
-    and profissional_executante_id is not null 
+    and profissional_executante_id is not null
+

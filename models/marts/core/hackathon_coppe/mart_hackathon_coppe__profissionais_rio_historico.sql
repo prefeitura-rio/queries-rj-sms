@@ -11,7 +11,6 @@ profissionais_rio_historico as (
         ano_competencia as ano,
         mes_competencia as mes,
         id_cnes as unidade_id_cnes,
-        -- cpf as profissional_cpf,
         to_hex(sha256(cast(cpf as string))) as profissional_id,
 
         -- atributos
