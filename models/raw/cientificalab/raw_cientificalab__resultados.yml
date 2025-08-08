@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: raw_cientificalab__resultados
+    description: Tabela contendo os resultados dos exames .
+    columns:
+      - name: id
+        description: Identificador único do resultado de um exame.
+      - name: exame_id
+        description: Chave estrangeira que vincula o resultado ao registro de exame correspondente.
+      - name: cod_lis
+        description: Código do resultado no sistema LIS (Laboratory Information System).
+      - name: cod_apoio
+        description: Código do resultado no sistema de apoio.
+      - name: descricao_apoio
+        description: Descrição do resultado no sistema de apoio.
+      - name: decimal
+        description: Número de casas decimais para o resultado.
+      - name: tipo
+        description: Tipo do resultado (e.g., quantitativo, qualitativo).
+      - name: resultado
+        description: O valor numérico do resultado do exame.
+      - name: unidade
+        description: Unidade de medida do resultado (e.g., mg/dL, g/L).
+      - name: alterado
+        description: Indica se o resultado foi alterado ('sim' ou 'nao').
+      - name: valor_referencia_texto
+        description: Valor de referência em formato de texto, se aplicável.
+      - name: valor_referencia_minimo
+        description: Valor mínimo aceitável para a faixa de referência do exame.
+      - name: valor_referencia_maximo
+        description: Valor máximo aceitável para a faixa de referência do exame.
+      - name: loaded_at
+        description: Data e hora em que o registro foi carregado no datalake.
+      - name: processed_at
+        description: Timestamp indicando quando o registro foi processado.
