@@ -34,7 +34,8 @@ with
                     [
                         "id_cnes",
                         "id",
-                        "dose"
+                        "dose",
+                        "data_aplicacao"
                     ]
                 )
             }} as id_surrogate,

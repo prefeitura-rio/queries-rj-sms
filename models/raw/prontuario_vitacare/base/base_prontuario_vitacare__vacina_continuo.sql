@@ -29,7 +29,7 @@ with
     selecao_vacinas as (
         select
             -- PK
-            concat(id_prontuario_global, '.', nome_vacina) as id,
+            id_prontuario_global as id,
             id_cnes as id_cnes,
 
             nome_vacina as nome_vacina,

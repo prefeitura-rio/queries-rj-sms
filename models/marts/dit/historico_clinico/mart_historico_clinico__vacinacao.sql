@@ -26,7 +26,7 @@ with
             ) = 1
     ),
 
-    vacinacao as (
+    selecao_vacinas as (
         select
             cpf,
             array_agg(
@@ -55,4 +55,4 @@ select
     vacinacao, 
     metadados, 
     cpf_particao
-from vacinacao
+from selecao_vacinas
