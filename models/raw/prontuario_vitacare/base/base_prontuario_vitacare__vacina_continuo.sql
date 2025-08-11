@@ -1,7 +1,7 @@
 {{
     config(
         schema="brutos_prontuario_vitacare_staging",
-        alias="_base_vacina_historico",
+        alias="_base_vacina_continuo",
         materialized="incremental",
         incremental_strategy='merge', 
         unique_key="id",
@@ -30,27 +30,20 @@ with
         select
             -- PK
             id_prontuario_global as id,
-
-            -- Outras Chaves
             id_cnes as id_cnes,
-            acto_id as id_local,
-            npront as numero_prontuario,
 
             nome_vacina as nome_vacina,
-            cod_vacina as cod_vacina,
             dose as dose,
-            lote as lote,
             data_aplicacao as data_aplicacao,
             data_registro as data_registro,
             diff as diff,
-            calendario_vacinal_atualizado as calendario_vacinal_atualizado,
+            lote as lote,
+
             tipo_registro as tipo_registro,
             estrategia_imunizacao as estrategia_imunizacao,
-            foi_aplicada as foi_aplicada,
-            justificativa as justificativa,
 
             data_particao as data_particao,
-            loaded_at as datalake_imported_at,
+            loaded_at as loaded_at,
 
             greatest(
                 safe_cast(data_aplicacao as timestamp),
