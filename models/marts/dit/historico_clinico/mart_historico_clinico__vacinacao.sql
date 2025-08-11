@@ -14,11 +14,7 @@
 
 with
     vacinas as (
-        select * from {{ ref("int_historico_clinico__vacinacao__api") }}
-        union all
-        select * from {{ ref('int_historico_clinico__vacinacao__historico') }}
-        union all
-        select * from {{ ref('int_historico_clinico__vacinacao__continuo') }} 
+        select * from {{ ref("int_historico_clinico__vacinacao__vitacare") }}
     ),
 
     vacinas_deduplicados as (
@@ -26,41 +22,37 @@ with
         from vacinas
         qualify
             row_number() over (
-                partition by cpf,nome_vacina,dose,data_aplicacao order by data_registro desc
+                partition by cpf,nome_vacina,dose,aplicacao_data order by registro_data desc
             ) = 1
     ),
 
     vacinacao as (
         select
             cpf,
-            nome,
-            data_nascimento,
-            nome_mae as mae_nome,
             array_agg(
                 struct(
+                    id,
+                    id_cnes,
                     nome_vacina,
                     dose,
-                    data_aplicacao,
-                    data_registro,
-                    cnes_unidade
+                    aplicacao_data,
+                    registro_data,
+                    diff,
+                    lote,
+                    registro_tipo,
+                    estrategia_imunizacao
                 )
-            ) as vacinacoes,
-            current_timestamp() at time zone 'America/Sao_Paulo' as processed_at,
+            ) as vacinacao,
+            struct(datetime(current_timestamp(), 'America/Sao_Paulo') as processed_at) as metadados,
             safe_cast(cpf as int64) as cpf_particao
         from vacinas_deduplicados
         group by
-            cpf,
-            nome,
-            data_nascimento,
-            mae_nome
+            cpf
     )
 
 select 
     cpf, 
-    nome,
-    data_nascimento,
-    mae_nome,
-    vacinacoes, 
-    processed_at, 
+    vacinacao, 
+    metadados, 
     cpf_particao
 from vacinacao

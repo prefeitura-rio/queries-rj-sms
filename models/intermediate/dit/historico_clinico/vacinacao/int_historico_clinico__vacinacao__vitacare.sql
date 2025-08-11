@@ -17,7 +17,7 @@ with
             id_prontuario_global as id,
             cpf
         from {{ref('raw_prontuario_vitacare__atendimento')}}
-    )
+    ),
     agregado as (
         select 
             v.*,
@@ -30,7 +30,7 @@ with
         select
             id, 
             id_cnes,
-            cpf
+            cpf,
             nome_vacina,
             dose,
             aplicacao_data,
@@ -41,7 +41,6 @@ with
             estrategia_imunizacao,
             loaded_at
         from agregado
-        group by cpf
     )
 select 
     *
