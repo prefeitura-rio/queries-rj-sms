@@ -195,7 +195,7 @@ models:
       - name: meios_comunicacao
         description: Meios de comunicação disponíveis na residência.
 
-      - name: meiostransporte
+      - name: meios_transporte
         description: Meios de transporte utilizados pelo paciente.
 
       - name: possui_filtro_agua
@@ -250,4 +250,4 @@ models:
         description: Data de carregamento do registro no BigQuery.
 
       - name: data_particao
-        description: Data de partição dos dados.
+        description: Data de partição dos dados, baseada no campo loaded_at.

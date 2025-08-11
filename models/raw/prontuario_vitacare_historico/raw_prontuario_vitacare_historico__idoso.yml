@@ -266,8 +266,8 @@ models:
         description: Indica se o idoso deixou de fazer compras no questionário IVCF-20.
       - name: ivcf20_plugin_atividades_vida_diaria_deixou_controlar_dinheiro
         description: Indica se o idoso deixou de controlar dinheiro no questionário IVCF-20.
-      - name: ivcf20_plugin_atividades_vida_diaria_deixou_realizar_trab_domesticos
-        description: Indica se o idoso deixou de realizar trabalhos domésticos no questionário IVCF-20.
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_realizar_trabalhos
+        description: Indica se o idoso deixou de realizar trabalhos no questionário IVCF-20.
       - name: ivcf20_plugin_atividades_vida_diaria_deixou_tomar_banho
         description: Indica se o idoso deixou de tomar banho sem ajuda no questionário IVCF-20.
       - name: ivcf20_plugin_cognicao_familiar_falou_ficando_esquecido
@@ -324,8 +324,8 @@ models:
         description: Indica se o idoso deixou de controlar dinheiro devido a incapacidades no questionário VES-13.
       - name: ves13_plugin_incapacidades_deixou_caminhar_casa
         description: Indica se o idoso deixou de caminhar dentro de casa devido a incapacidades no questionário VES-13.
-      - name: ves13_plugin_incapacidades_deixou_realizar_trab_domesticos
-        description: Indica se o idoso deixou de realizar trabalhos domésticos devido a incapacidades no questionário VES-13.
+      - name: ves13_plugin_incapacidades_deixou_realizar_trabalhos
+        description: Indica se o idoso deixou de realizar trabalhos devido a incapacidades no questionário VES-13.
       - name: ves13_plugin_incapacidades_deixou_tomar_banho
         description: Indica se o idoso deixou de tomar banho sem ajuda devido a incapacidades no questionário VES-13.
       - name: ves13_plugin_pontuacao_final
@@ -354,3 +354,5 @@ models:
         description: Grau de parentesco do responsável com o idoso.
       - name: loaded_at
         description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.
