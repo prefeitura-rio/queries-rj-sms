@@ -56,7 +56,7 @@ with
     ),
 
     vacina_deduplicado as (
-        select *,
+        select *
         from padroniza_vacinas
         qualify
             row_number() over (
