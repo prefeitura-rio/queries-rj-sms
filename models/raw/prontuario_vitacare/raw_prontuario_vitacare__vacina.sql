@@ -29,6 +29,15 @@ with
             -- PK
             {{ remove_accents_upper("id") }} as id,
             {{ remove_accents_upper("id_cnes") }} as id_cnes,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "id_cnes",
+                        "id",
+                        "dose"
+                    ]
+                )
+            }} as id_surrogate,
 
             {{ remove_accents_upper("nome_vacina") }} as nome_vacina,
             {{ remove_accents_upper("dose") }} as dose,
@@ -51,7 +60,7 @@ with
         from padroniza_vacinas
         qualify
             row_number() over (
-                partition by id, nome_vacina, dose order by updated_at_rank desc
+                partition by id_surrogate order by updated_at_rank desc
             ) = 1
     )
 

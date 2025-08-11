@@ -33,7 +33,21 @@ with
             id_cnes as id_cnes,
 
             nome_vacina as nome_vacina,
-            dose as dose,
+            case
+              when dose = 'Single Dose' then 'dose unica'
+              when dose = '1st Dose' then '1 dose'
+              when dose = '2nd Dose' then '2 dose'
+              when dose = '3rd Dose' then '3 dose'
+              when dose = '4th Dose' then '4 dose'
+              when dose = '5th Dose' then '5 dose'
+              when dose = 'Booster' then 'reforco'
+              when dose = '1st Booster' then '1 reforco'
+              when dose = '2nd Booster' then '2 reforco'
+              when dose = '3rd Booster' then '3 reforco'
+              when dose = 'Re-Vaccination' then 'revacinacao'
+              when dose = 'Dose D' then 'dose d'
+              else lower(dose)
+            end as dose,
             data_aplicacao as data_aplicacao,
             data_registro as data_registro,
             diff as diff,
