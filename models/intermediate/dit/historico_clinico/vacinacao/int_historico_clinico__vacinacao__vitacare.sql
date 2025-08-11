@@ -23,7 +23,7 @@ with
             v.*,
             e.cpf 
         from vacinas_bruto v
-        left join episodio e on v.id = e.id
+        left join episodio e on rtrim(v.id, concat('.', v.nome_vacina)) = e.id
 
     ),
     vacinacoes as (
