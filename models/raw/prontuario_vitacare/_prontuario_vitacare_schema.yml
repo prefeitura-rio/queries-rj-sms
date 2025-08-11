@@ -777,7 +777,7 @@ models:
           ao estabelecimento de saúde específico no sistema de saúde.
         data_type: string
         quote: true
-      - name: descricao
+      - name: nome_vacina
         description: Esta coluna contém a descrição da vacina que foi administrada ao
           paciente. 
         data_type: string

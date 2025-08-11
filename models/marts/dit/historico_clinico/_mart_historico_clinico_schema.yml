@@ -632,3 +632,85 @@ models:
           Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+  - name: mart_historico_clinico__vacinacao
+    description: >
+      Esta tabela contém informações detalhadas sobre os registros de vacinação dos 
+      pacientes no sistema Vitacare. Inclui identificador para o paciente, nome da vacina, 
+      data de aplicação, dose e lote.
+    columns:
+      - name: id
+        description: > 
+          Este é o identificador único para cada registro de vacinação. 
+          É uma combinação do id_cnes e do id original dos dados de origem, 
+          usado para identificar exclusivamente cada registro dentro do prontuário vitacare.
+        data_type: string
+        quote: true
+        data_tests:
+          - unique:
+              name: mart_historico_clinico__vacinacao__id__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - not_null:
+              name: mart_historico_clinico__vacinacao__id__not_null
+              config:
+                severity: warn
+                warn_if: ">1"
+      - name: id_cnes
+        description: Identificador único para o estabelecimento de saúde onde a vacinação foi administrada
+        data_type: string
+        quote: true
+      - name: cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: nome_vacina
+        description: "Nome da vacina que foi administrada ao paciente."
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: aplicacao_data
+        description: "Data em que a vacina foi aplicada ao paciente, formatada como AAAA-MM-DD."
+        data_type: date
+        quote: true
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico__vacinacao__aplicacao_data__not_null
+              config:
+                severity: warn
+                warn_if: ">1"
+      - name: registro_data
+        description: "Data e hora em que o registro de vacinação foi registrado no sistema"
+        data_type: datetime
+        quote: true
+      - name: dose
+        description: "Dose da vacina que foi administrada."
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: lote
+        description: "Número do lote da vacina."
+        data_type: string
+        quote: true
+      - name: registro_tipo
+        description: "Tipo de registro, indicando se é um novo registro de vacinação ou um registro retroativo."
+        data_type: string
+        quote: true
+      - name: estrategia_imunizacao
+        description: "Estratégia usada para a vacinação."
+        data_type: string
+        quote: true
+      - name: diff
+        description: "Diferença, em dias, entre a data de aplicação da vacina e a data de registro."
+        data_type: string
+        quote: true
+      - name: loaded_at
+        description: "Data e hora em que os dados foram importados para o datalake"
+        data_type: datetime
+        quote: true
+      - name: cpf_particao
+        description: "Campo utilizado para particionamento de dados através do CPF, representado em inteiro."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

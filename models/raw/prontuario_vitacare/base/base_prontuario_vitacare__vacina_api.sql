@@ -30,7 +30,7 @@ with
 
         select
             -- PK
-            concat(ncnesunidade, ".", id) as id,
+            concat(ncnesunidade, ".", id, ".", vacina) as id,
             {{clean_numeric("ncnesunidade")}} as id_cnes,
 
             lower(vacina) as nome_vacina,
