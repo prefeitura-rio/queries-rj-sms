@@ -43,7 +43,7 @@ with
             estrategia_imunizacao as estrategia_imunizacao,
 
             data_particao as data_particao,
-            loaded_at as loaded_at,
+            (safe_cast(loaded_at as datetime)) as loaded_at,
 
             greatest(
                 safe_cast(data_aplicacao as timestamp),

@@ -31,7 +31,7 @@ with
         select
             -- PK
             concat(ncnesunidade, ".", id) as id,
-            {{clean_numeric("id_cnes")}} as id_cnes,
+            {{clean_numeric("ncnesunidade")}} as id_cnes,
 
             lower(vacina) as nome_vacina,
             lower(dosevtc) as dose,
@@ -40,17 +40,17 @@ with
             diff,
             lote,
 
-            lower(tipo_registro) as tipo_registro,
+            lower(tiporegistro) as tipo_registro,
             lower(estrategia) as estrategia_imunizacao,
 
 
             -- Metadata
             safe_cast(data_particao as date) as data_particao,
-            timestamp_add(datetime(timestamp({{process_null('imported_at')}}), 'America/Sao_Paulo'),interval 3 hour) as imported_at,
+            timestamp_add(datetime(timestamp({{process_null('_data_carga')}}), 'America/Sao_Paulo'),interval 3 hour) as loaded_at,
 
             greatest(
-                safe_cast(data_aplicacao as timestamp),
-                safe_cast(data_registro as timestamp)
+                safe_cast(dataaplicacao as timestamp),
+                safe_cast(datahoraregistro as timestamp)
             ) as updated_at_rank
 
         from source_vacina
