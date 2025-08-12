@@ -194,7 +194,7 @@ final_secretaria_saude as (
       concat(id_diario,id_materia,secao_indice)  as id_materia_secao_do,
       pasta,
       arquivo,
-      regexp_replace(cabecalho,'DANIEL SORANZ\n','') as cabecalho,
+      regexp_replace(regexp_replace(cabecalho,'DANIEL SORANZ\n',''),r'\*','') as cabecalho,
       string_agg(conteudo,'\n') as conteudo
     from diarios_municipio
     where bloco_indice = 0
@@ -204,6 +204,7 @@ final_secretaria_saude as (
   concat(conteudos_para_email.id_diario,conteudos_para_email.id_materia, conteudos_para_email.secao_indice) = do_raw.id_materia_secao_do
   where conteudos_para_email.pasta like '%SECRETARIA MUNICIPAL DE SAÚDE%'
   and do_raw.cabecalho != 'DANIEL SORANZ'
+  and do_raw.cabecalho like 'RESOLUÇÃO N%'
 ),
 -- ATOS DO PREFEITO --
 final_atos_prefeito as (
