@@ -299,3 +299,7 @@ with
 
 select *
 from sisreg_transformed
+qualify row_number() over (
+  partition by solicitacao_id
+  order by data_atualizacao desc nulls last
+) = 1
