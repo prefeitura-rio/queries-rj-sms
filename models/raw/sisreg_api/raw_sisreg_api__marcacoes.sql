@@ -2,7 +2,9 @@
 {{
   config(
     enabled=true,
-    materialized='table',
+    materialized='incremental',
+    unique_key='solicitacao_id',
+    incremental_strategy='merge',
     schema="brutos_sisreg_api",
     alias="marcacoes",
     partition_by={
@@ -11,6 +13,9 @@
       "granularity": "month",
     },
     cluster_by=['unidade_executante_id', 'unidade_solicitante_id', 'procedimento_interno_id'],
+    incremental_predicates = [
+      "DBT_INTERNAL_DEST.data_particao = dateadd(day, -1, current_date)"
+    ]
   )
 }}
 
