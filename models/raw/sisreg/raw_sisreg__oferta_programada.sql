@@ -11,9 +11,16 @@
     )
 }}
 
-
+{% set last_partition = get_last_partition_date( this ) %}
 with
-    source as (select * from {{ source("brutos_sisreg_staging", "escala") }}),
+    source as (
+        select * 
+        from {{ source("brutos_sisreg_staging", "escala") }}
+        {% if is_incremental() %}
+
+        where data_particao > '{{ last_partition }}'
+        {% endif %}
+    ),
     renamed as (
         select
             cod_escala_ambulatorial as id_escala_ambulatorial,
@@ -129,8 +136,3 @@ select
     mes_particao,
     data_particao
 from renamed
-{% if is_incremental() %}
-
-    where data_particao > (select max(data_particao) from {{ this }})
-
-{% endif %}
