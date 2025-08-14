@@ -28,8 +28,7 @@ with
     sisreg as (
         select s.*
         from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
-        join correct_partition p
-        on s.data_particao = p.particao_str
+        where s.data_particao = (select particao_str from correct_partition)
     ),
 
     sisreg_transformed as (
@@ -153,4 +152,9 @@ with
         left join unnest(json_extract_array(replace(procedimentos, "'", '"'))) as proceds_json
     )
 
-select * from sisreg_transformed
+select *
+from sisreg_transformed
+qualify row_number() over (
+  partition by solicitacao_id
+  order by data_atualizacao desc nulls last
+) = 1
