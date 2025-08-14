@@ -27,8 +27,7 @@ with
     sisreg as (
         select s.*
         from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
-        join correct_partition p
-        on s.data_particao = p.particao_str
+        where s.data_particao = (select particao_str from correct_partition)
     ),
         
     sisreg_transformed as (
