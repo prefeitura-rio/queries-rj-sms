@@ -15,7 +15,7 @@
         },
         cluster_by=['unidade_solicitante_id', 'procedimento_id'],
         incremental_predicates = [
-        "DBT_INTERNAL_DEST.data_particao = dateadd(day, -1, current_date)"
+        "DBT_INTERNAL_DEST.particao_data = date_sub(current_date(), INTERVAL 1 DAY)"
     ]
     )
 }}
@@ -157,4 +157,9 @@ with
         left join unnest(json_extract_array(replace(procedimentos, "'", '"'))) as proceds_json
     )
 
-select * from sisreg_transformed
+select *
+from sisreg_transformed
+qualify row_number() over (
+  partition by solicitacao_id
+  order by data_atualizacao desc nulls last
+) = 1

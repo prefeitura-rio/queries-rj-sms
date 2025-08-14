@@ -318,6 +318,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      siscan_web:
+        +schema: brutos_sisreg_api_log
+        +tags: ["daily", "subgeral", "siscan"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       cientificalab:
         +schema: brutos_cientificalab
         +tags: ["daily", "cientificalab"]

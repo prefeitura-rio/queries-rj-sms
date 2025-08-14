@@ -14,7 +14,7 @@
     },
     cluster_by=['unidade_executante_id', 'unidade_solicitante_id', 'procedimento_interno_id'],
     incremental_predicates = [
-      "DBT_INTERNAL_DEST.data_particao = dateadd(day, -1, current_date)"
+      "DBT_INTERNAL_DEST.particao_data = date_sub(current_date(), INTERVAL 1 DAY)"
     ]
   )
 }}
@@ -32,7 +32,7 @@ with
     sisreg as (
         select s.*
         from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
-        where s.data_particao = ( select particao_str from correct_partition)
+        where s.data_particao = (select particao_str from correct_partition)
     ),
         
     sisreg_transformed as (
@@ -303,3 +303,7 @@ with
 
 select *
 from sisreg_transformed
+qualify row_number() over (
+  partition by solicitacao_id
+  order by data_atualizacao desc nulls last
+) = 1
