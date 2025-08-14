@@ -23,7 +23,7 @@ with
       safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim_atendimento
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
     {% if is_incremental() %}
-      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) >= date('{{ last_partition }}')
+      WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}
     qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
   ),
