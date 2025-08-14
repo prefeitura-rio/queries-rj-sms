@@ -14,8 +14,8 @@ WITH bruto_atendimento AS (
     CAST(CONCAT(NULLIF(CAST(payload_cnes AS STRING), ''), '.', NULLIF(CAST(source_id AS STRING), '')) AS STRING) AS id_prontuario_global,
     CAST(payload_cnes AS STRING) AS id_cnes,
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
+    SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME) AS datahora_fim_atendimento,
     data,
-    SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME) AS datahora_fim_atendimento
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
   {% if is_incremental() %}
     WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
@@ -92,7 +92,7 @@ arbovirose_extraida AS (
     JSON_EXTRACT_SCALAR(data, '$.arbovirose[0].sinan') AS sinan,
 
     loaded_at,
-    DATE(COALESCE(datahora_fim_atendimento, loaded_at)) AS data_particao
+    date(datahora_fim_atendimento) as data_particao
   FROM bruto_atendimento
 )
 

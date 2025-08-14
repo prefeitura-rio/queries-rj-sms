@@ -24,6 +24,7 @@ WITH bruto_atendimento AS (
   {% if is_incremental() %}
     WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
+  qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
 ),
 
 curativo_extraido AS (

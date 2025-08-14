@@ -13,17 +13,15 @@
 
 {% set last_partition = get_last_partition_date(this) %}
 
-{% set seven_days_ago = (modules.datetime.date.today() - modules.datetime.timedelta(days=7)).isoformat() %}
-
 WITH
-  source_raw AS (
+  bruto_atendimento AS (
     SELECT
       data,
       source_updated_at,
-      datalake_loaded_at
+      safe_cast(datalake_loaded_at as datetime) as loaded_at,
     FROM {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} AS src
     {% if is_incremental() %}
-      WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+        WHERE DATE(SAFE_CAST(datalake_loaded_at AS TIMESTAMP), 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}
     QUALIFY ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY loaded_at DESC) = 1
   ),
@@ -181,9 +179,9 @@ WITH
         ELSE NULL
       END                                                                                 AS vulnerabilidade_social,
       SAFE_CAST(source_updated_at    AS DATETIME)                                         AS updated_at,
-      SAFE_CAST(datalake_loaded_at   AS DATETIME)                                         AS loaded_at,
-      safe_cast(safe_cast(json_extract_scalar(data, "$.datahora_fim_atendimento")as datetime) as date) as data_particao
-    FROM source_raw
+      loaded_at,
+      date(datahora_fim_atendimento) as data_particao
+    FROM bruto_atendimento
   ),
 
   pacientes_deduplicados AS (
