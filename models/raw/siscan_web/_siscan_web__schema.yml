@@ -1,0 +1,229 @@
+models:
+  - name: raw_siscan_web__laudos
+    description: Tabela contendo laudos de mamografia capturados da página web do SISCAN (Sistema de Informação do Câncer), do Ministério da Saúde. Filtre por data_particao (equivalente a data_realizacao) para economizar recursos.
+    columns:
+      - name: protocolo_id
+        description: Identificador único do laudo. Chave primária da tabela.
+        data_type: string
+        quote: true
+        data_tests:
+          - not_null
+          - unique
+      - name: exame_id
+        description: Identificador do exame associado ao laudo.
+        data_type: string
+        quote: true
+      - name: prontuario_id
+        description: Identificador do prontuário.
+        data_type: string
+        quote: true
+      - name: paciente_cns
+        description: Cartão Nacional de Saúde do paciente, com 15 dígitos e zeros à esquerda preservados.
+        data_type: string
+        quote: true
+        data_tests:
+          - not_null
+      - name: paciente_nome
+        description: Nome completo do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_nome_mae
+        description: Nome completo da mãe do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_data_nasc
+        description: Data de nascimento do paciente.
+        data_type: date
+        quote: true
+      - name: paciente_idade
+        description: Idade do paciente em anos.
+        data_type: int64
+        quote: true
+      - name: paciente_sexo
+        description: Sexo do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_telefone
+        description: Telefone de contato do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_uf
+        description: UF (estado) de residência do paciente (sigla de 2 letras).
+        data_type: string
+        quote: true
+      - name: paciente_municipio
+        description: Município de residência do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_bairro
+        description: Bairro de residência do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_cep
+        description: CEP do endereço do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_logradouro
+        description: Logradouro do endereço do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_endereco_complemento
+        description: Complemento do endereço do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_endereco_numero
+        description: Número do endereço do paciente.
+        data_type: string
+        quote: true
+      - name: data_solicitacao
+        description: Data em que o exame foi solicitado.
+        data_type: date
+        quote: true
+      - name: data_realizacao
+        description: Data de realização do exame.
+        data_type: date
+        quote: true
+      - name: data_ultima_menstruacao
+        description: Data da última menstruação (Texto cru da fonte, pode conter formatos variados).
+        data_type: string
+        quote: true
+      - name: data_liberacao_resultado
+        description: Data de liberação do resultado do exame.
+        data_type: date
+        quote: true
+      - name: mama_esquerda_tipo
+        description: Descrição da mama esquerda.
+        data_type: string
+        quote: true
+      - name: mama_esquerda_pele
+        description: Descrição da pele da mama esquerda.
+        data_type: string
+        quote: true
+      - name: mama_esquerda_linfonodos_axilares
+        description: Achados nos linfonodos axilares à esquerda.
+        data_type: string
+        quote: true
+      - name: mama_esquerda_achados_benignos
+        description: Achados benignos na mama esquerda.
+        data_type: string
+        quote: true
+      - name: mama_esquerda_classif_radiologica
+        description: Resultado do exame radiológico na mama esquerda.
+        data_type: string
+        quote: true
+      - name: mama_direita_tipo
+        description: Descrição da mama direita.
+        data_type: string
+        quote: true
+      - name: mama_direita_pele
+        description: Descrição da pele da mama direita.
+        data_type: string
+        quote: true
+      - name: mama_direita_linfonodos_axilares
+        description: Achados nos linfonodos axilares à direita.
+        data_type: string
+        quote: true
+      - name: mama_direita_achados_benignos
+        description: Achados benignos na mama direita.
+        data_type: string
+        quote: true
+      - name: mama_direita_achado_exame
+        description: Achado do exame na mama direita.
+        data_type: string
+        quote: true
+      - name: mama_direita_classif_radiologica
+        description: Resultado do exame radiológico na mama esquerda.
+        data_type: string
+        quote: true
+      - name: mamografia_tipo
+        description: Tipo de mamografia realizado.
+        data_type: string
+        quote: true
+      - name: mamografia_rastreamento_tipo
+        description: Define o subtipo para casos de mamografia de rastreamento.
+        data_type: string
+        quote: true
+      - name: mamografia_microcalcificacoes
+        description: Indicação de microcalcificações observadas no exame.
+        data_type: string
+        quote: true
+      - name: mamografia_numero_filmes
+        description: Quantidade de filmes utilizados no exame.
+        data_type: int64
+        quote: true
+      - name: mamografia_recomendacoes
+        description: Recomendação de próxima etapa com base no laudo.
+        data_type: string
+        quote: true
+      - name: mamografia_observacoes_gerais
+        description: Texto livre contendo observações sobre o exame realizado.
+        data_type: string
+        quote: true
+      - name: mamografia_achado_exame_clinico
+        description: Achados gerais do exame clínico.
+        data_type: string
+        quote: true
+      - name: mamografia_labels
+        description: Rótulos extraídos do laudo.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_uf
+        description: UF da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_id_cnes
+        description: CNES (7 dígitos) da unidade solicitante, com zeros à esquerda preservados.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_nome
+        description: Nome da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_municipio
+        description: Município da unidade solicitante.
+        data_type: string
+        quote: true
+      - name: unidade_prestadora_uf
+        description: UF da unidade prestadora (executante do exame).
+        data_type: string
+        quote: true
+      - name: unidade_prestadora_municipio
+        description: Município da unidade prestadora.
+        data_type: string
+        quote: true
+      - name: unidade_prestadora_id_cnes
+        description: CNES (7 dígitos) da unidade prestadora, com zeros à esquerda preservados.
+        data_type: string
+        quote: true
+      - name: unidade_prestadora_nome
+        description: Nome da unidade prestadora.
+        data_type: string
+        quote: true
+      - name: unidade_prestadora_cnpj
+        description: CNPJ (14 dígitos) da unidade prestadora, com zeros à esquerda preservados.
+        data_type: string
+        quote: true
+      - name: profissional_responsavel_nome
+        description: Nome do profissional responsável pelo resultado.
+        data_type: string
+        quote: true
+      - name: profissional_responsavel_cns
+        description: CNS do profissional responsável (15 dígitos).
+        data_type: string
+        quote: true
+      - name: profissional_responsavel_crm
+        description: CRM do profissional responsável.
+        data_type: string
+        quote: true
+      - name: data_extracao
+        description: Timestamp de extração do registro da fonte (precisão de microssegundos).
+        data_type: timestamp
+        quote: true
+        data_tests:
+          - not_null
+      - name: data_particao
+        description: Data utilizada para particionamento (Equivalente a data de realização do exame).
+        data_type: date
+        quote: true
+        data_tests:
+          - not_null
