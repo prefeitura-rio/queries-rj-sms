@@ -6,18 +6,22 @@
     partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 WITH bruto_atendimento AS (
   SELECT
     CAST(source_id AS STRING) AS id_prontuario_local,
     CONCAT(NULLIF(CAST(payload_cnes AS STRING), ''), '.', NULLIF(CAST(source_id AS STRING), '')) AS id_prontuario_global,
     CAST(payload_cnes AS STRING) AS id_cnes,
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
+    SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME) AS datahora_fim_atendimento,
     SAFE.PARSE_JSON(data) AS json_data,
-    DATE(SAFE_CAST(datalake_loaded_at AS DATETIME)) AS data_particao
+    DATE(COALESCE(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME), SAFE_CAST(datalake_loaded_at AS DATETIME))) AS data_particao
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
   {% if is_incremental() %}
-    WHERE DATE(SAFE_CAST(datalake_loaded_at AS DATETIME)) > (SELECT MAX(data_particao) FROM {{ this }})
+    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
+  qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
 ),
 
 idoso_extraido AS (

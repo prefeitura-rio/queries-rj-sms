@@ -6,6 +6,8 @@
     partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 WITH bruto_atendimento AS (
   SELECT
     CAST(source_id AS STRING) AS id_prontuario_local,
@@ -20,7 +22,7 @@ WITH bruto_atendimento AS (
     DATE(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME)) AS data_particao
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
   {% if is_incremental() %}
-    WHERE DATE(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME)) > (SELECT MAX(data_particao) FROM {{ this }})
+    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
 ),
 

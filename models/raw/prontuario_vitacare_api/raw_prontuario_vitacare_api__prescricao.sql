@@ -10,6 +10,8 @@
   }
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with
 
   bruto_atendimento as (
@@ -18,18 +20,13 @@ with
       concat(nullif(payload_cnes, ''), '.', nullif(source_id, ''))  as id_prontuario_global,
       payload_cnes                                                  as id_cnes,
       safe_cast(datalake_loaded_at as datetime)                     as loaded_at,
-      safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim,
+      safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim_atendimento,
       data
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
     {% if is_incremental() %}
-    where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime))
-          >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
+      WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}
-    qualify
-      row_number() over(
-        partition by id_prontuario_global
-        order by datalake_loaded_at desc
-      ) = 1
+    qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
   ),
 
   prescricoes_flat as (
@@ -43,7 +40,7 @@ with
       safe_cast(json_extract_scalar(pr, '$.quantidade') as numeric)       as quantidade,
       {{ process_null("json_extract_scalar(pr, '$.uso_continuado')") }}   as uso_continuado,
       loaded_at,
-      date(datahora_fim)                                                  as data_particao
+      date(datahora_fim_atendimento)                                                  as data_particao
     from bruto_atendimento,
     unnest(json_extract_array(data, '$.prescricoes')) as pr
   ),

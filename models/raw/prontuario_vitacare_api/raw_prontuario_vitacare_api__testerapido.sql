@@ -6,6 +6,8 @@
     partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 WITH bruto_atendimento AS (
   SELECT
     CAST(source_id AS STRING) AS id_prontuario_local,

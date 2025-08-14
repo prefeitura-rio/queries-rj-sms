@@ -6,18 +6,21 @@
     partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
-WITH bruto AS (
+{% set last_partition = get_last_partition_date(this) %}
+
+WITH bruto_atendimento AS (
   SELECT
     CAST(source_id AS STRING) AS id_prontuario_local,
     CONCAT(NULLIF(CAST(payload_cnes AS STRING), ''), '.', NULLIF(CAST(source_id AS STRING), '')) AS id_prontuario_global,
     CAST(payload_cnes AS STRING) AS id_cnes,
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
     data,
-    DATE(SAFE_CAST(datalake_loaded_at AS DATETIME)) AS data_particao
+    safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim_atendimento
   FROM {{ source('brutos_prontuario_vitacare_staging', 'atendimento_continuo') }}
   {% if is_incremental() %}
-    WHERE DATE(SAFE_CAST(datalake_loaded_at AS DATETIME)) > (SELECT MAX(data_particao) FROM {{ this }})
+    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
+  qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
 ),
 
 saude_bucal_extracted AS (
@@ -61,8 +64,8 @@ saude_bucal_extracted AS (
     JSON_EXTRACT_SCALAR(data, '$.saude_bucal[0].patientReferrals') AS encaminhamento_especialidade,
 
     loaded_at,
-    data_particao
-  FROM bruto
+    date(datahora_fim_atendimento) as data_particao
+  FROM bruto_atendimento
 )
 
 SELECT * FROM saude_bucal_extracted

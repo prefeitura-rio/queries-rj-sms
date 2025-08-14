@@ -11,6 +11,8 @@
     unique_key=['cpf', 'id_cnes']
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 {% set seven_days_ago = (modules.datetime.date.today() - modules.datetime.timedelta(days=7)).isoformat() %}
 
 WITH
@@ -21,8 +23,9 @@ WITH
       datalake_loaded_at
     FROM {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} AS src
     {% if is_incremental() %}
-      WHERE DATE(src.datalake_loaded_at) > (SELECT MAX(data_particao) FROM {{ this }})
+      WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY loaded_at DESC) = 1
   ),
 
   fato_api AS (

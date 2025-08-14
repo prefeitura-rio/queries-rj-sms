@@ -10,36 +10,34 @@
     }
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with
 
   bruto_atendimento as (
     select
       *,
-      source_id  as id_prontuario_local,
-      concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_prontuario_global,
-      safe_cast(datalake_loaded_at as datetime)               as loaded_at,
-      safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)
-                                                              as datahora_fim
+      cast(source_id as string) as id_prontuario_local,
+      cast(concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as string) as id_prontuario_global,
+      safe_cast(datalake_loaded_at as datetime) as loaded_at,
+      safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim_atendimento
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
     {% if is_incremental() %}
-      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) 
-            >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
+      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) >= date('{{ last_partition }}')
     {% endif %}
-    qualify
-      row_number()
-      over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
+    qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
   ),
 
   alergias_flat as (
     select
       id_prontuario_global,
       id_prontuario_local,
-      payload_cnes        as id_cnes,
+      payload_cnes as id_cnes,
       json_extract_scalar(al, '$.descricao') as alergias_anamnese_descricao,
       loaded_at,
-      date(datahora_fim)  as data_particao
+      date(datahora_fim_atendimento) as data_particao
     from bruto_atendimento,
-    unnest(json_extract_array(data, '$.alergias_anamnese')) as al
+    unnest(ifnull(json_extract_array(data, '$.alergias_anamnese'), [])) as al
   )
 
 select * from alergias_flat

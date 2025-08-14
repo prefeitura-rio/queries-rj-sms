@@ -6,6 +6,8 @@
     partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 WITH bruto_atendimento AS (
   SELECT
     CAST(source_id AS STRING) AS id_prontuario_local,
@@ -16,12 +18,14 @@ WITH bruto_atendimento AS (
     ) AS id_prontuario_global,
     CAST(payload_cnes AS STRING) AS id_cnes,
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
+    SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME) AS datahora_fim_atendimento,
     data,
-    DATE(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME)) AS data_particao
+    DATE(datahora_fim_atendimento) AS data_particao
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
   {% if is_incremental() %}
-    WHERE DATE(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME)) > (SELECT MAX(data_particao) FROM {{ this }})
+    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
+  qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
 ),
 
 hiv_extracted_base AS (
@@ -35,8 +39,8 @@ hiv_extracted_base AS (
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsIdadeTransfusao') AS aidsidadetransfusao,
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsToxicoDependente') AS aidstoxicodependente,
 
-    CAST(NULL AS DATE) AS aidsdatainiciotoxicodependente, -- não enviado no payload de atendimento contínuo
-    CAST(NULL AS INT64) AS aidsidadeiniciotoxicodependente, -- não enviado no payload de atendimento contínuo
+    CAST(NULL AS DATE) AS aidsdatainiciotoxicodependente,
+    CAST(NULL AS INT64) AS aidsidadeiniciotoxicodependente,
 
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsHomosexual') AS aidshomosexual,
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsDataInicioHomosexual') AS aidsdatainiciohomosexual,
@@ -46,8 +50,8 @@ hiv_extracted_base AS (
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsIdadeInicioHeterosexual') AS aidsidadeinicioheterosexual,
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsBisexual') AS aidsbisexual,
 
-    CAST(NULL AS DATE) AS aidsdatainiciobisexual, -- não enviado no payload de atendimento contínuo
-    CAST(NULL AS INT64) AS aidsidadeiniciobisexual, -- não enviado no payload de atendimento contínuo
+    CAST(NULL AS DATE) AS aidsdatainiciobisexual,
+    CAST(NULL AS INT64) AS aidsidadeiniciobisexual,
 
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsParceiroVih') AS aidsparceirovih,
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsDataInicioParceiroVih') AS aidsdatainicioparceirovih,
@@ -86,13 +90,13 @@ hiv_extracted_base AS (
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsDoencaAtualObs') AS aidsdoencaatualobs,
 
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsTransfusaoVertical') AS aidstransfusao_vertical,
-    CAST(NULL AS DATE) AS aidstransfusao_vertical_data, -- não enviado no payload de atendimento contínuo
+    CAST(NULL AS DATE) AS aidstransfusao_vertical_data,
 
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsHemofilico') AS aidshemofilico,
-    CAST(NULL AS DATE) AS aidshemofilicodata, -- não enviado no payload de atendimento contínuo
+    CAST(NULL AS DATE) AS aidshemofilicodata,
 
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsAcidenteTrabalho') AS aidsacidentetrabalho,
-    CAST(NULL AS DATE) AS aidsacidentetrabalhodata, -- não enviado no payload de atendimento contínuo
+    CAST(NULL AS DATE) AS aidsacidentetrabalhodata,
 
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsTempoEmagrecimento') AS aidstempoemagrecimento,
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].epidemiologiaIgnorado') AS epidemiologiaignorado,
