@@ -1,0 +1,270 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__saudemulher
+    description: >
+      Dados extraídos do campo `saude_mulher` no JSON da tabela
+      `atendimento_continuo` do VitaCare, com informações de planejamento
+      reprodutivo e métodos contraceptivos.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: obs_pf
+        description: Observações gerais de planejamento familiar.
+        data_type: string
+      - name: sterilization_methods
+        description: Métodos de esterilização informados.
+        data_type: string
+      - name: education_actions
+        description: Ações educativas registradas.
+        data_type: string
+      - name: diudtainim_cont
+        description: DIU — data de início (mês/controle).
+        data_type: string
+      - name: diudtatermom_cont
+        description: DIU — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: diuinterrm_cont
+        description: DIU — intercorrências (mês/controle).
+        data_type: string
+      - name: diucopm_cont
+        description: DIU — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: chocqualm_cont
+        description: CHOC — qual método (mês/controle).
+        data_type: string
+      - name: imqualm_cont
+        description: IM — qual método (mês/controle).
+        data_type: string
+      - name: itqualm_cont
+        description: IT — qual método (mês/controle).
+        data_type: string
+      - name: mpqualm_cont
+        description: MP — qual método (mês/controle).
+        data_type: string
+      - name: oqualm_cont
+        description: Outros — qual método (mês/controle).
+        data_type: string
+      - name: pmdtainim_cont
+        description: PM — data de início (mês/controle).
+        data_type: string
+      - name: pfdtainim_cont
+        description: PF — data de início (mês/controle).
+        data_type: string
+      - name: chocdtainim_cont
+        description: CHOC — data de início (mês/controle).
+        data_type: string
+      - name: imdtainim_cont
+        description: IM — data de início (mês/controle).
+        data_type: string
+      - name: itdtainim_cont
+        description: IT — data de início (mês/controle).
+        data_type: string
+      - name: mpdtainim_cont
+        description: MP — data de início (mês/controle).
+        data_type: string
+      - name: dgdtainim_cont
+        description: DG — data de início (mês/controle).
+        data_type: string
+      - name: espdtainim_cont
+        description: ESP — data de início (mês/controle).
+        data_type: string
+      - name: emdtainim_cont
+        description: EM — data de início (mês/controle).
+        data_type: string
+      - name: efdtainim_cont
+        description: EF — data de início (mês/controle).
+        data_type: string
+      - name: odtainim_cont
+        description: OD — data de início (mês/controle).
+        data_type: string
+      - name: pmdtatermom_cont
+        description: PM — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: pfdtatermom_cont
+        description: PF — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: chocdtatermom_cont
+        description: CHOC — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: imdtatermom_cont
+        description: IM — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: itdtatermom_cont
+        description: IT — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: mpdtatermom_cont
+        description: MP — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: dgdtatermom_cont
+        description: DG — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: espdtatermom_cont
+        description: ESP — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: emdtatermom_cont
+        description: EM — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: efdtatermom_cont
+        description: EF — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: oddtatermom_cont
+        description: OD — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: pminterrm_cont
+        description: PM — intercorrências (mês/controle).
+        data_type: string
+      - name: pfinterrm_cont
+        description: PF — intercorrências (mês/controle).
+        data_type: string
+      - name: chocinterrm_cont
+        description: CHOC — intercorrências (mês/controle).
+        data_type: string
+      - name: iminterrm_cont
+        description: IM — intercorrências (mês/controle).
+        data_type: string
+      - name: itinterrm_cont
+        description: IT — intercorrências (mês/controle).
+        data_type: string
+      - name: mpinterrm_cont
+        description: MP — intercorrências (mês/controle).
+        data_type: string
+      - name: dginterrm_cont
+        description: DG — intercorrências (mês/controle).
+        data_type: string
+      - name: espinterrm_cont
+        description: ESP — intercorrências (mês/controle).
+        data_type: string
+      - name: eminterrm_cont
+        description: EM — intercorrências (mês/controle).
+        data_type: string
+      - name: efinterrm_cont
+        description: EF — intercorrências (mês/controle).
+        data_type: string
+      - name: ointerrm_cont
+        description: Outros — intercorrências (mês/controle).
+        data_type: string
+      - name: pmcompm_cont
+        description: PM — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: pfcompm_cont
+        description: PF — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: choccompm_cont
+        description: CHOC — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: icompm_cont
+        description: IC — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: itcompm_cont
+        description: IT — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: mpcompm_cont
+        description: MP — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: dgcompm_cont
+        description: DG — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: espcompm_cont
+        description: ESP — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: emcompm_cont
+        description: EM — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: efcompm_cont
+        description: EF — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: ocompm_cont
+        description: Outros — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: diuqualm_cont
+        description: DIU — qual método (mês/controle).
+        data_type: string
+      - name: cidtainim_cont
+        description: CID — data de início (mês/controle).
+        data_type: string
+      - name: cidtatermom_cont
+        description: CID — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: ciinterrm_cont
+        description: CI — intercorrências (mês/controle).
+        data_type: string
+      - name: cicompm_cont
+        description: CI — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: tabdtainim_cont
+        description: TAB — data de início (mês/controle).
+        data_type: string
+      - name: tabdtatermom_cont
+        description: TAB — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: tabinterrm_cont
+        description: TAB — intercorrências (mês/controle).
+        data_type: string
+      - name: tabcompm_cont
+        description: TAB — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: mcontracepcao_mcont
+        description: Método de contracepção informado (mês/controle).
+        data_type: string
+      - name: mbdtainim_cont
+        description: MB — data de início (mês/controle).
+        data_type: string
+      - name: mbdtatermom_cont
+        description: MB — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: mbinterrm_cont
+        description: MB — intercorrências (mês/controle).
+        data_type: string
+      - name: mbcompm_cont
+        description: MB — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: cedtainim_cont
+        description: CE — data de início (mês/controle).
+        data_type: string
+      - name: cedtatermom_cont
+        description: CE — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: ceinterrm_cont
+        description: CE — intercorrências (mês/controle).
+        data_type: string
+      - name: cecompm_cont
+        description: CE — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: avdtainim_cont
+        description: AV — data de início (mês/controle).
+        data_type: string
+      - name: avdtatermom_cont
+        description: AV — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: avinterrm_cont
+        description: AV — intercorrências (mês/controle).
+        data_type: string
+      - name: avcompm_cont
+        description: AV — comparecimento/conduta (mês/controle).
+        data_type: string
+      - name: planondtainim_cont
+        description: Planejamento — data de início (mês/controle).
+        data_type: string
+      - name: planondtatermom_cont
+        description: Planejamento — data de término/monitoramento (mês/controle).
+        data_type: string
+      - name: planonmotivo_mcont
+        description: Planejamento — motivo (mês/controle).
+        data_type: string
+      - name: planoncomplicacoes_mcont
+        description: Planejamento — complicações (mês/controle).
+        data_type: string
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

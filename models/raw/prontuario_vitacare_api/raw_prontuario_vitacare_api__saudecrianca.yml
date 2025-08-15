@@ -1,0 +1,330 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__saudecrianca
+    description: >
+      Dados extraídos do campo `saude_crianca[0]` no JSON da tabela
+      `atendimento_continuo` do VitaCare, com informações de perinatal,
+      crescimento, rastreios, acuidade visual e triagem de autismo.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: pp_neonatal
+        description: Informação principal do período neonatal.
+        data_type: string
+      - name: pp_neonatal_obs
+        description: Observações sobre o período neonatal.
+        data_type: string
+      - name: anomalias_congenitas
+        description: Indicação de anomalias congênitas.
+        data_type: string
+      - name: reg_cresc_altura
+        description: Altura registrada no acompanhamento de crescimento.
+        data_type: float64
+      - name: reg_cresc_peso
+        description: Peso registrado no acompanhamento de crescimento.
+        data_type: float64
+      - name: observacoes
+        description: Observações gerais do atendimento infantil.
+        data_type: string
+      - name: reg_cresc_imc
+        description: IMC registrado no acompanhamento de crescimento.
+        data_type: float64
+      - name: rastreios
+        description: Informações gerais sobre rastreios realizados.
+        data_type: string
+      - name: anamalias_cong_obs
+        description: Observações sobre anomalias congênitas.
+        data_type: string
+      - name: registocrescimentio_obs
+        description: Observações sobre registro de crescimento.
+        data_type: string
+      - name: tipo_parto
+        description: Tipo de parto.
+        data_type: string
+      - name: peso_nascer
+        description: Peso ao nascer.
+        data_type: float64
+      - name: comprimento
+        description: Comprimento ao nascer.
+        data_type: float64
+      - name: perimetro_cefalico
+        description: Perímetro cefálico ao nascer.
+        data_type: float64
+      - name: indice_apgar_1_minuto
+        description: Índice de Apgar no 1º minuto.
+        data_type: float64
+      - name: indice_apgar_5_minuto
+        description: Índice de Apgar no 5º minuto.
+        data_type: float64
+      - name: reanimacao
+        description: Indicação de reanimação ao nascer.
+        data_type: string
+      - name: exame_ocular_queixas
+        description: Queixas relacionadas ao exame ocular.
+        data_type: string
+      - name: exame_ocular_doencas
+        description: Doenças relacionadas ao exame ocular.
+        data_type: string
+      - name: exame_ocular_necessita_oculos
+        description: Indicação de necessidade de óculos.
+        data_type: string
+      - name: exame_ocular_referencia
+        description: Referência/encaminhamento no exame ocular.
+        data_type: string
+      - name: exame_ocular_estado
+        description: Estado/condição no exame ocular.
+        data_type: string
+      - name: exame_ocular_observacoes
+        description: Observações do exame ocular.
+        data_type: string
+      - name: teste_pezinho
+        description: Resultado geral do teste do pezinho.
+        data_type: string
+      - name: teste_pezinho_doencas_json
+        description: Doenças do teste do pezinho (JSON).
+        data_type: string
+      - name: reflexo_vermelho_json
+        description: Resultado do reflexo vermelho (JSON).
+        data_type: string
+      - name: teste_orelhinha_json
+        description: Resultado do teste da orelhinha (JSON).
+        data_type: string
+      - name: periodo_prenatal
+        description: Período do pré-natal associado.
+        data_type: string
+      - name: denver_periodo_temporal
+        description: Período temporal do teste de Denver.
+        data_type: string
+      - name: denver_postura
+        description: Marco de postura no teste de Denver.
+        data_type: string
+      - name: denver_observa_rosto
+        description: Observa rostos (Denver).
+        data_type: string
+      - name: denver_reage_som
+        description: Reage a sons (Denver).
+        data_type: string
+      - name: denver_eleva_cabeca
+        description: Eleva a cabeça (Denver).
+        data_type: string
+      - name: denver_sorriso
+        description: Sorriso social (Denver).
+        data_type: string
+      - name: denver_abre_maos
+        description: Abre as mãos (Denver).
+        data_type: string
+      - name: denver_emite_sons
+        description: Emite sons (Denver).
+        data_type: string
+      - name: denver_movimentos
+        description: Movimentos/coordenação (Denver).
+        data_type: string
+      - name: denver_contato_social
+        description: Contato social (Denver).
+        data_type: string
+      - name: denver_segura_objetos
+        description: Segura objetos (Denver).
+        data_type: string
+      - name: denver_emite_sons_24_meses
+        description: Emite sons até 24 meses (Denver).
+        data_type: string
+      - name: denver_bruco_levanta_cabeca
+        description: Em decúbito ventral, levanta a cabeça (Denver).
+        data_type: string
+      - name: denver_busca_objetos
+        description: Busca objetos (Denver).
+        data_type: string
+      - name: denver_leva_objetos
+        description: Leva objetos à boca/mãos (Denver).
+        data_type: string
+      - name: denver_localiza_som
+        description: Localiza som (Denver).
+        data_type: string
+      - name: denver_muda_posicao_rola
+        description: Muda de posição/rola (Denver).
+        data_type: string
+      - name: denver_brinca_esconde_achou
+        description: Brinca de esconde-achou (Denver).
+        data_type: string
+      - name: denver_transfere_objetos
+        description: Transfere objetos entre mãos (Denver).
+        data_type: string
+      - name: denver_duplica_silabas
+        description: Duplica sílabas (Denver).
+        data_type: string
+      - name: denver_senta_sem_apoio
+        description: Senta sem apoio (Denver).
+        data_type: string
+      - name: denver_imita_gestos
+        description: Imita gestos (Denver).
+        data_type: string
+      - name: denver_faz_pinca
+        description: Faz pinça fina (Denver).
+        data_type: string
+      - name: denver_produz_jargao
+        description: Produz jargão (Denver).
+        data_type: string
+      - name: denver_anda_com_apoio
+        description: Anda com apoio (Denver).
+        data_type: string
+      - name: denver_mostra_o_que_quer
+        description: Mostra o que quer (Denver).
+        data_type: string
+      - name: denver_coloca_blocos_caneca
+        description: Coloca blocos na caneca (Denver).
+        data_type: string
+      - name: denver_diz_uma_palavra
+        description: Diz uma palavra (Denver).
+        data_type: string
+      - name: denver_anda_para_tras
+        description: Anda para trás (Denver).
+        data_type: string
+      - name: denver_tira_roupa
+        description: Tira roupa/itens simples (Denver).
+        data_type: string
+      - name: denver_constroi_torre_3_cubos
+        description: Constrói torre de 3 cubos (Denver).
+        data_type: string
+      - name: denver_aponta_2_figuras
+        description: Aponta 2 figuras (Denver).
+        data_type: string
+      - name: denver_chuta_bola
+        description: Chuta bola (Denver).
+        data_type: string
+      - name: denver_brinca_com_outras_criancas
+        description: Brinca com outras crianças (Denver).
+        data_type: string
+      - name: denver_imita_linha_vertical
+        description: Imita linha vertical (Denver).
+        data_type: string
+      - name: denver_reconhece_2_acoes
+        description: Reconhece 2 ações (Denver).
+        data_type: string
+      - name: denver_arremessa_bola
+        description: Arremessa bola (Denver).
+        data_type: string
+      - name: rastreios_testepezinho_observacoes
+        description: Observações do teste do pezinho.
+        data_type: string
+      - name: rastreios_reflexovermelho_observacoes
+        description: Observações do reflexo vermelho.
+        data_type: string
+      - name: rastreios_testeorelhinha_observacoes
+        description: Observações do teste da orelhinha.
+        data_type: string
+      - name: tecnicas_especiais
+        description: Técnicas especiais aplicadas.
+        data_type: string
+      - name: tecnicas_especiais_outras
+        description: Outras técnicas especiais.
+        data_type: string
+      - name: sintomas_acuidade_visual
+        description: Sintomas relacionados à acuidade visual.
+        data_type: string
+      - name: snellen_distancia_esq
+        description: Distância Snellen olho esquerdo.
+        data_type: string
+      - name: snellen_distancia_dir
+        description: Distância Snellen olho direito.
+        data_type: string
+      - name: snellen_tipo_optotipos_esq
+        description: Tipo de optótipos olho esquerdo.
+        data_type: string
+      - name: snellen_tipo_optotipos_dir
+        description: Tipo de optótipos olho direito.
+        data_type: string
+      - name: com_correcao_esq
+        description: Acuidade com correção (ESQ).
+        data_type: string
+      - name: sem_correcao_esq
+        description: Acuidade sem correção (ESQ).
+        data_type: string
+      - name: com_correcao_dir
+        description: Acuidade com correção (DIR).
+        data_type: string
+      - name: sem_correcao_dir
+        description: Acuidade sem correção (DIR).
+        data_type: string
+      - name: acuidade_visual_conduta
+        description: Conduta após avaliação de acuidade visual.
+        data_type: string
+      - name: triagem_autismo_olha_objeto
+        description: Indicador M-CHAT — olha quando apontam objeto.
+        data_type: string
+      - name: triagem_autismo_pode_ser_surda
+        description: Indicador M-CHAT — parece ser surda(o).
+        data_type: string
+      - name: triagem_autismo_brinca_faz_de_contas
+        description: Indicador M-CHAT — brinca de faz de conta.
+        data_type: string
+      - name: triagem_autismo_subir_nas_coisas
+        description: Indicador M-CHAT — sobe nas coisas.
+        data_type: string
+      - name: triagem_autismo_movimentos_estranhos
+        description: Indicador M-CHAT — movimentos/gestos estranhos.
+        data_type: string
+      - name: triagem_autismo_aponta_dedo_pedir
+        description: Indicador M-CHAT — aponta o dedo para pedir.
+        data_type: string
+      - name: triagem_autismo_aponta_dedo_mostrar
+        description: Indicador M-CHAT — aponta o dedo para mostrar.
+        data_type: string
+      - name: triagem_autismo_interesse_outras_criancas
+        description: Indicador M-CHAT — interesse por outras crianças.
+        data_type: string
+      - name: triagem_autismo_traz_coisas
+        description: Indicador M-CHAT — traz coisas para mostrar.
+        data_type: string
+      - name: triagem_autismo_responde_pelo_nome
+        description: Indicador M-CHAT — responde pelo nome.
+        data_type: string
+      - name: triagem_autismo_score
+        description: Pontuação total da triagem de autismo.
+        data_type: float64
+      - name: triagem_autismo_sorri
+        description: Indicador M-CHAT — sorri de volta.
+        data_type: string
+      - name: triagem_autismo_incomodada_barulho
+        description: Indicador M-CHAT — incômodo com barulhos.
+        data_type: string
+      - name: triagem_autismo_anda
+        description: Indicador M-CHAT — já anda.
+        data_type: string
+      - name: triagem_autismo_olha_nos_olhos
+        description: Indicador M-CHAT — olha nos olhos.
+        data_type: string
+      - name: triagem_autismo_imita
+        description: Indicador M-CHAT — imita ações.
+        data_type: string
+      - name: triagem_autismo_olhando
+        description: Indicador M-CHAT — segue o olhar.
+        data_type: string
+      - name: triagem_autismo_faz_olhar
+        description: Indicador M-CHAT — faz olhar para algo.
+        data_type: string
+      - name: triagem_autismo_compreende_pedido
+        description: Indicador M-CHAT — compreende pedidos simples.
+        data_type: string
+      - name: triagem_autismo_olha_como_sente
+        description: Indicador M-CHAT — percebe como outros se sentem.
+        data_type: string
+      - name: triagem_autismo_gosta_atividades
+        description: Indicador M-CHAT — gosta de atividades motoras.
+        data_type: string
+      - name: triagem_autismo_classificacao
+        description: Classificação final da triagem de autismo.
+        data_type: string
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

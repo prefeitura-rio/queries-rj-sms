@@ -10,6 +10,8 @@
   }
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with
 
   bruto as (
@@ -21,11 +23,10 @@ with
       safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim,
       data
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
-    {% if is_incremental() %}
-      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) 
-            >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
-    {% endif %}
-    qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
+  {% if is_incremental() %}
+    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+  {% endif %}
+  qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
   ),
 
   indicadores_flat as (

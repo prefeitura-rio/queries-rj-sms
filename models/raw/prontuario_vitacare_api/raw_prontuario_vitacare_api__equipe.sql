@@ -10,21 +10,22 @@
   }
 ) }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with
-  bruto as (
+  bruto_atendimento as (
     select
-      payload_cnes                                                       as id_cnes,
-      json_extract_scalar(data, '$.profissional.equipe.cod_equipe')      as codigo,
-      json_extract_scalar(data, '$.profissional.equipe.cod_ine')         as n_ine,
-      json_extract_scalar(data, '$.profissional.equipe.nome')            as nome,
-      safe_cast(datalake_loaded_at as datetime)                          as loaded_at,
-      safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim
+      cast(payload_cnes as string) as id_cnes,
+      json_extract_scalar(data, '$.profissional.equipe.cod_equipe') as codigo,
+      json_extract_scalar(data, '$.profissional.equipe.cod_ine') as n_ine,
+      json_extract_scalar(data, '$.profissional.equipe.nome') as nome,
+      safe_cast(datalake_loaded_at as datetime) as loaded_at,
+      safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim_atendimento
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
     {% if is_incremental() %}
-      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) 
-            >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
+      WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}
-    qualify row_number() over(partition by codigo order by datalake_loaded_at desc) = 1
+    qualify row_number() over(partition by codigo order by loaded_at desc) = 1
   ),
 
   equipe_flat as (
@@ -34,8 +35,8 @@ with
       n_ine,
       nome,
       loaded_at,
-      date(datahora_fim) as data_particao
-    from bruto
+      date(coalesce(datahora_fim_atendimento, loaded_at)) as data_particao
+    from bruto_atendimento
   )
 
 select

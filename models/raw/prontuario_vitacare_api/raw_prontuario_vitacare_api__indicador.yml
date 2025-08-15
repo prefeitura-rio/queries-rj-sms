@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__indicador
+    description: >
+      Indicadores registrados no atendimento contínuo do prontuário VitaCare,
+      extraídos do campo `indicadores` do JSON da API. Cada linha representa um
+      indicador associado ao atendimento, com nome, valor e informações de
+      identificação do prontuário.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global do prontuário, formado por `payload_cnes` + "." + `source_id`.
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador local do prontuário, equivalente ao `source_id` original.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES do estabelecimento de saúde.
+        data_type: string
+      - name: indicadores_nome
+        description: Nome do indicador registrado no atendimento.
+        data_type: string
+      - name: valor
+        description: Valor numérico associado ao indicador.
+        data_type: float64
+      - name: loaded_at
+        description: Data e hora em que o registro foi carregado no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de fim do atendimento, utilizada para particionamento.
+        data_type: date

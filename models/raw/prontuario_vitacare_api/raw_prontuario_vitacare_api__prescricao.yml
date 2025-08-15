@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__prescricao
+    description: >
+      Dados extraídos do campo `prescricoes` no JSON da tabela
+      `atendimento_continuo` do VitaCare, contendo informações
+      sobre medicamentos prescritos, posologia e quantidade.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: medicamento_nome
+        description: Nome do medicamento prescrito.
+        data_type: string
+      - name: id_medicamento
+        description: Código identificador do medicamento prescrito.
+        data_type: string
+      - name: posologia
+        description: Orientações de uso e posologia do medicamento.
+        data_type: string
+      - name: quantidade
+        description: Quantidade do medicamento prescrito.
+        data_type: numeric
+      - name: uso_continuado
+        description: Indica se o medicamento é de uso continuado.
+        data_type: string
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

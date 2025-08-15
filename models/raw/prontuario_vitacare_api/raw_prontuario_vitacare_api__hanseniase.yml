@@ -1,0 +1,153 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__hanseniase
+    description: >
+      Tabela contendo registros de casos de hanseníase extraídos do prontuário
+      VitaCare (API) a partir de atendimentos contínuos. Inclui dados clínicos,
+      diagnósticos, exames, tratamentos e metadados de acompanhamento.
+
+    columns:
+      - name: id_prontuario_global
+        description: >
+          Identificador global do prontuário, composto pela concatenação de `payload_cnes`
+          e `source_id`.
+        data_type: string
+
+      - name: id_prontuario_local
+        description: Identificador local do prontuário (source_id original).
+        data_type: string
+
+      - name: id_cnes
+        description: >
+          Código CNES da unidade de saúde onde foi registrado o atendimento.
+        data_type: string
+
+      - name: data_notificacao
+        description: Data e hora da notificação do caso.
+        data_type: datetime
+
+      - name: num_lesoes_cut
+        description: Número de lesões cutâneas.
+        data_type: string
+
+      - name: forma_clinica
+        description: Forma clínica da hanseníase.
+        data_type: string
+
+      - name: classificacao_operacional
+        description: Classificação operacional do caso.
+        data_type: string
+
+      - name: num_nervos_afetados
+        description: Número de nervos afetados.
+        data_type: string
+
+      - name: avaliacao_grau_incapacidade
+        description: Grau de incapacidade avaliado.
+        data_type: string
+
+      - name: modo_entrada
+        description: Modo de entrada do paciente no sistema.
+        data_type: string
+
+      - name: baciloscopia
+        description: Resultado da baciloscopia.
+        data_type: string
+
+      - name: data_exame_histopatologico
+        description: Data do exame histopatológico.
+        data_type: datetime
+
+      - name: resultado_exame_histopatologico
+        description: Resultado do exame histopatológico.
+        data_type: string
+
+      - name: data_inicio_tratamento
+        description: Data de início do tratamento.
+        data_type: datetime
+
+      - name: idade_inicio_tratamento
+        description: Idade do paciente no início do tratamento.
+        data_type: string
+
+      - name: esquema_terapeutico
+        description: Esquema terapêutico utilizado.
+        data_type: string
+
+      - name: historia_clinica_doenca_observacoes
+        description: Observações da história clínica da doença.
+        data_type: string
+
+      - name: incapacidade_olho
+        description: Indica incapacidade ocular.
+        data_type: string
+
+      - name: incapacidade_mao
+        description: Indica incapacidade nas mãos.
+        data_type: string
+
+      - name: incapacidade_pe
+        description: Indica incapacidade nos pés.
+        data_type: string
+
+      - name: maior_grau_avaliado_tratamento
+        description: Maior grau de incapacidade avaliado durante o tratamento.
+        data_type: string
+
+      - name: comprometimento_laringeo
+        description: Indica comprometimento laríngeo.
+        data_type: string
+
+      - name: desabamento_nasal
+        description: Indica desabamento nasal.
+        data_type: string
+
+      - name: paralisia_facial
+        description: Indica paralisia facial.
+        data_type: string
+
+      - name: observacoes_notas_gerais
+        description: Observações gerais registradas.
+        data_type: string
+
+      - name: exame_contatos_resultado
+        description: Resultado dos exames de contatos.
+        data_type: string
+
+      - name: dados_acompanhamento_condicao
+        description: Informações de acompanhamento da condição.
+        data_type: string
+
+      - name: dados_acompanhamento_observacoes
+        description: Observações do acompanhamento da condição.
+        data_type: string
+
+      - name: data_exclusao
+        description: Data de exclusão do caso do sistema.
+        data_type: datetime
+
+      - name: idade_na_exclusao
+        description: Idade do paciente na exclusão do caso.
+        data_type: string
+
+      - name: motivo_exclusao
+        description: Motivo da exclusão do caso.
+        data_type: string
+
+      - name: numero_sinan_hansen
+        description: Número de registro do caso no SINAN.
+        data_type: string
+
+      - name: hanseniase_comunicantes_referidos
+        description: Informações sobre comunicantes referidos.
+        data_type: string
+
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no Data Lake.
+        data_type: datetime
+
+      - name: data_particao
+        description: >
+          Data utilizada para particionamento (derivada de `datahora_fim_atendimento`).
+        data_type: date

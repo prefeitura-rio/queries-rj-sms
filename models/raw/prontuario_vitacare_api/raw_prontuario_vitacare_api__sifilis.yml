@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__sifilis
+    description: >
+      Dados extraídos do campo `syphilis_adquirida[0]` no JSON da tabela
+      `atendimento_continuo` do VitaCare, contendo informações sobre casos
+      de sífilis adquirida.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: acquiredsyphilissinannumber
+        description: Número do SINAN do caso de sífilis adquirida.
+        data_type: numeric
+      - name: acquiredsyphilisclinicalclassification
+        description: Classificação clínica do caso de sífilis adquirida.
+        data_type: string
+      - name: acquiredsyphilistreatmentregimen
+        description: Esquema terapêutico utilizado no tratamento da sífilis adquirida.
+        data_type: string
+      - name: acquiredsyphilistreatmentstartdatetime
+        description: Data e hora de início do tratamento para sífilis adquirida.
+        data_type: datetime
+      - name: acquiredsyphilisfinalclassification
+        description: Classificação final do caso de sífilis adquirida.
+        data_type: string
+      - name: acquiredsyphilisfinalclassificationreason
+        description: Motivo da classificação final do caso.
+        data_type: string
+      - name: acquiredsyphilisobservations
+        description: Observações adicionais registradas no caso.
+        data_type: string
+      - name: acquiredsyphilisclosuredate
+        description: Data e hora de encerramento do caso.
+        data_type: datetime
+      - name: acquiredsyphilisageatclosure
+        description: Idade do paciente no encerramento do caso.
+        data_type: integer
+      - name: acquiredsyphilisclosurereason
+        description: Motivo do encerramento do caso.
+        data_type: string
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

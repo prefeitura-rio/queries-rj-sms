@@ -1,0 +1,745 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__prenatal
+    description: >
+      Informações de pré-natal extraídas do atendimento contínuo da API Vitacare.
+      Cada linha representa o registro mais recente por prontuário global (deduplicado
+      por id_prontuario_global e loaded_at). Particionada por data_particao.
+
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global do prontuário (CNES.source_id).
+        data_type: string
+
+      - name: id_prontuario_local
+        description: Identificador local do prontuário na unidade (source_id).
+        data_type: string
+
+      - name: id_cnes
+        description: CNES da unidade de saúde.
+        data_type: string
+
+      - name: param_peso
+        description: Parâmetro de peso na consulta.
+        data_type: float64
+
+      - name: param_tamin
+        description: Parâmetro de pressão arterial mínima (TA min).
+        data_type: float64
+
+      - name: param_tamax
+        description: Parâmetro de pressão arterial máxima (TA max).
+        data_type: float64
+
+      - name: consseguintes_afu
+        description: Altura do fundo uterino em consultas seguintes.
+        data_type: float64
+
+      - name: edema
+        description: Presença/descrição de edema.
+        data_type: string
+
+      - name: observacoes
+        description: Observações gerais do atendimento de pré-natal.
+        data_type: string
+
+      - name: pconsulta_peso_habitual
+        description: Peso habitual na primeira consulta.
+        data_type: float64
+
+      - name: pconsulta_altura
+        description: Altura na primeira consulta.
+        data_type: float64
+
+      - name: pconsulta_idade_gestacional
+        description: Idade gestacional (semanas) na primeira consulta.
+        data_type: float64
+
+      - name: grupo_sanguineo_gravida
+        description: Grupo sanguíneo da gestante.
+        data_type: string
+
+      - name: pconsulta_grupo_sanguineo_pai
+        description: Grupo sanguíneo do pai informado na primeira consulta.
+        data_type: string
+
+      - name: consseguintes_afuobs
+        description: Observações da AFU em consultas seguintes.
+        data_type: string
+
+      - name: pelvimetria_clinica
+        description: Resultado/descrição da pelvimetria clínica.
+        data_type: string
+
+      - name: agraval_risco_prenatal_histo_reprod
+        description: Itens de risco histórico reprodutivo.
+        data_type: string
+
+      - name: agraval_risco_prenatal_histo_obstet_anterior
+        description: Itens de risco história obstétrica anterior.
+        data_type: string
+
+      - name: agraval_risco_prenatal_patol_associada
+        description: Itens de risco patologias associadas.
+        data_type: string
+
+      - name: agraval_risco_prenatal_gravidez_actual
+        description: Itens de risco condições da gravidez atual.
+        data_type: string
+
+      - name: aval_risco_prenatal_total_indices
+        description: Escore/índice total da avaliação de risco pré-natal.
+        data_type: float64
+
+      - name: agraval_risco_prenatal_escala_nunomont
+        description: Resultado/uso da escala NunoMont (risco).
+        data_type: string
+
+      - name: exames_lab_glicemia_pos_50
+        description: Glicemia pós 50g (mg/dL).
+        data_type: float64
+
+      - name: exames_lab_tcoombs
+        description: Resultado do teste de Coombs.
+        data_type: string
+
+      - name: exames_lab_glicemia_jejum
+        description: Glicemia de jejum (mg/dL).
+        data_type: float64
+
+      - name: exames_lab_ptgo_0
+        description: PTGO - tempo 0 (mg/dL).
+        data_type: float64
+
+      - name: exames_lab_ptgo_60
+        description: PTGO - 60 min (mg/dL).
+        data_type: float64
+
+      - name: exames_lab_ptg_120
+        description: PTGO - 120 min (mg/dL).
+        data_type: float64
+
+      - name: exames_lab_ptg_180
+        description: PTGO - 180 min (mg/dL).
+        data_type: float64
+
+      - name: exames_lab_creatinemia
+        description: Creatinina sérica.
+        data_type: float64
+
+      - name: exames_lab_vdrl
+        description: VDRL (triagem sífilis) - resultado.
+        data_type: string
+
+      - name: exames_lab_toxoplasmose_imun
+        description: Toxoplasmose - imunidade/resultado.
+        data_type: string
+
+      - name: exames_lab_rubeola_igg
+        description: Rubéola IgG.
+        data_type: float64
+
+      - name: exames_lab_rubeola_igm
+        description: Rubéola IgM.
+        data_type: float64
+
+      - name: exames_lab_rubeola_imun
+        description: Rubéola - imunidade/resultado interpretado.
+        data_type: string
+
+      - name: exames_lab_aghbs
+        description: Antígeno HBs (HBsAg).
+        data_type: float64
+
+      - name: exames_lab_hiv
+        description: HIV - resultado.
+        data_type: string
+
+      - name: exames_lab_urocultura
+        description: Urocultura - resultado.
+        data_type: string
+
+      - name: exames_lab_urocultura_positiva
+        description: Flag/descrição de urocultura positiva.
+        data_type: string
+
+      - name: exame_clinic_mama_esq_inspeccao
+        description: Exame clínico mama esquerda - inspeção.
+        data_type: string
+
+      - name: exame_clini_cmama_esq_palpacao
+        description: Exame clínico mama esquerda - palpação.
+        data_type: string
+
+      - name: exame_clinic_mama_dir_inspeccao
+        description: Exame clínico mama direita - inspeção.
+        data_type: string
+
+      - name: exame_clinic_mama_dir_palpacao
+        description: Exame clínico mama direita - palpação.
+        data_type: string
+
+      - name: exame_ginec_vulva_vagina
+        description: Exame ginecológico - vulva/vagina.
+        data_type: string
+
+      - name: colo_utero_exame
+        description: Exame do colo do útero (inspeção).
+        data_type: string
+
+      - name: colo_utero_toque
+        description: Toque do colo do útero.
+        data_type: string
+
+      - name: exame_citologiares
+        description: Citologia (Papanicolau) - resultado.
+        data_type: string
+
+      - name: pconsulta_dum1
+        description: DUM (primeira consulta) - valor numérico/dias.
+        data_type: float64
+
+      - name: pconsulta_dpp1
+        description: DPP (primeira consulta) - data prevista do parto (texto).
+        data_type: string
+
+      - name: agraval_risco_prenatal_obs
+        description: Observações da avaliação de risco.
+        data_type: string
+
+      - name: pconsulta_idade_gestacional_dias
+        description: Idade gestacional na primeira consulta em dias.
+        data_type: float64
+
+      - name: exame_clinic_mama_esq_inspeccao_obs
+        description: Observações - mama esquerda (inspeção).
+        data_type: string
+
+      - name: exame_clinic_mama_dir_inspeccao_obs
+        description: Observações - mama direita (inspeção).
+        data_type: string
+
+      - name: exame_clinic_mama_esq_palpacao_obs
+        description: Observações - mama esquerda (palpação).
+        data_type: string
+
+      - name: exame_clinic_mama_dir_palpacao_obs
+        description: Observações - mama direita (palpação).
+        data_type: string
+
+      - name: queixas_mam
+        description: Queixas mamárias.
+        data_type: string
+
+      - name: analises_eritrocitos
+        description: Eritrócitos (hemograma).
+        data_type: float64
+
+      - name: analises_hemoglobina
+        description: Hemoglobina (g/dL).
+        data_type: float64
+
+      - name: analises_hematocrito
+        description: Hematócrito (%).
+        data_type: float64
+
+      - name: analises_gm
+        description: GM (volume médio) informado.
+        data_type: float64
+
+      - name: analises_hgm
+        description: HGM (hemoglobina globular média).
+        data_type: float64
+
+      - name: analises_chgm
+        description: CHGM (concentração de hemoglobina globular média).
+        data_type: float64
+
+      - name: analises_leucocitos
+        description: Leucócitos.
+        data_type: float64
+
+      - name: analises_neutrifilos
+        description: Neutrófilos.
+        data_type: float64
+
+      - name: analises_eosinofilos
+        description: Eosinófilos.
+        data_type: float64
+
+      - name: analises_basofilos
+        description: Basófilos.
+        data_type: float64
+
+      - name: analises_linfocitos
+        description: Linfócitos.
+        data_type: float64
+
+      - name: analises_monocitos
+        description: Monócitos.
+        data_type: float64
+
+      - name: cseguintes_alalises_plaquetas
+        description: Plaquetas (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_acidourico
+        description: Ácido úrico (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_citomegalo_virus
+        description: Citomegalovírus (consultas seguintes) - resultado.
+        data_type: string
+
+      - name: cseguintes_alalises_achbs
+        description: Anti-HBs (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_achbc
+        description: Anti-HBc (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_achvc
+        description: Anti-HCV (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_alfa_proteina
+        description: Alfa-proteína (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_inibinaa
+        description: Inibina A (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_estradiol
+        description: Estradiol (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_hormona_beta_corionica
+        description: Beta-hCG (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_tempo_protrombina
+        description: Tempo de protrombina (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_ttrombo_plastina_parcial
+        description: TTPa (consultas seguintes).
+        data_type: float64
+
+      - name: cseguintes_alalises_ecografia_obstetrica
+        description: Ecografia obstétrica (consultas seguintes) - resultado/observações.
+        data_type: string
+
+      - name: alalises_eco_obstet_morfologica
+        description: Ecografia obstétrica morfológica - resultado/observações.
+        data_type: string
+
+      - name: exame_citologia_resrccu
+        description: Citologia (registro/resultado adicional).
+        data_type: string
+
+      - name: pconsulta_dum1dias
+        description: DUM (primeira consulta) em dias.
+        data_type: float64
+
+      - name: data_mamografia
+        description: Data da mamografia informada (texto).
+        data_type: string
+
+      - name: res_mamografias
+        description: Resultado/observações de mamografias.
+        data_type: string
+
+      - name: analises_combur_combur
+        description: Combur (urina) - resultado geral.
+        data_type: string
+
+      - name: analises_combur_bilirrubina
+        description: Combur - bilirrubina.
+        data_type: string
+
+      - name: analises_combur_urobilogenio
+        description: Combur - urobilinogênio.
+        data_type: string
+
+      - name: analises_combur_cetonas
+        description: Combur - cetonas.
+        data_type: string
+
+      - name: analises_combur_glucose
+        description: Combur - glicose.
+        data_type: string
+
+      - name: analises_combur_proteinas
+        description: Combur - proteínas.
+        data_type: string
+
+      - name: analises_combur_sangue
+        description: Combur - sangue.
+        data_type: string
+
+      - name: analises_combur_nitritos
+        description: Combur - nitritos.
+        data_type: string
+
+      - name: analises_combur_ph
+        description: Combur - pH.
+        data_type: string
+
+      - name: analises_combur_densidade
+        description: Combur - densidade.
+        data_type: string
+
+      - name: analises_combur_leucocitos
+        description: Combur - leucócitos.
+        data_type: string
+
+      - name: exames_lab_urocultur_ancolonias
+        description: Urocultura - nº de colônias (texto).
+        data_type: string
+
+      - name: data_resultado_citologia
+        description: Data do resultado da citologia (texto).
+        data_type: string
+
+      - name: pconsulta_tamax
+        description: Pressão arterial máxima na primeira consulta.
+        data_type: float64
+
+      - name: pconsulta_tamin
+        description: Pressão arterial mínima na primeira consulta.
+        data_type: float64
+
+      - name: dta_eco
+        description: Data da ecografia (texto).
+        data_type: string
+
+      - name: res_mamografias_obs
+        description: Observações adicionais de mamografia.
+        data_type: string
+
+      - name: cons_seguintes_perimetro_abdominal
+        description: Perímetro abdominal (consultas seguintes).
+        data_type: float64
+
+      - name: primeira_consulta_idade_gestacional
+        description: Idade gestacional (semanas) na primeira consulta (campo alternativo).
+        data_type: float64
+
+      - name: primeira_consulta_idade_gestacional_dias
+        description: Idade gestacional (dias) na primeira consulta (campo alternativo).
+        data_type: float64
+
+      - name: res_exames_lab_toxoplasmose_igg
+        description: Toxoplasmose IgG - interpretação/resultado.
+        data_type: string
+
+      - name: res_exames_lab_toxoplasmose_igm
+        description: Toxoplasmose IgM - interpretação/resultado.
+        data_type: string
+
+      - name: exames_lab_cultura_ag_patologicos
+        description: Cultura - agentes patológicos identificados.
+        data_type: string
+
+      - name: exames_lab_cultura_tsa_sensiveis
+        description: Cultura - TSA sensíveis.
+        data_type: string
+
+      - name: exames_lab_cultura_tsa_resistentes
+        description: Cultura - TSA resistentes.
+        data_type: string
+
+      - name: exame_ginec_vulva_vagina_outras
+        description: Exame ginecológico - vulva/vagina (outros achados).
+        data_type: string
+
+      - name: colo_utero_toque_outras
+        description: Toque do colo do útero (outros achados).
+        data_type: string
+
+      - name: classificacao_gestacao_alto_risco
+        description: Classificação de gestação de alto risco.
+        data_type: string
+
+      - name: gestante_gestacoes_num
+        description: Número de gestações (paridade).
+        data_type: float64
+
+      - name: sifilis_tratamento_dose_1
+        description: Sífilis - dose 1 do tratamento.
+        data_type: string
+
+      - name: sifilis_tratamento_dose_2
+        description: Sífilis - dose 2 do tratamento.
+        data_type: string
+
+      - name: sifilis_tratamento_dose_3
+        description: Sífilis - dose 3 do tratamento.
+        data_type: string
+
+      - name: sifilis_tratamento_de_parceiro
+        description: Sífilis - tratamento do parceiro (status/observação).
+        data_type: string
+
+      - name: sifilis_inc_ou_efetuado_tratamento_parceiro_dose_1
+        description: Sífilis - parceiro dose 1 (data/status).
+        data_type: string
+
+      - name: sifilis_inc_ou_efetuado_tratamento_parceiro_dose_2
+        description: Sífilis - parceiro dose 2 (data/status).
+        data_type: string
+
+      - name: sifilis_inc_ou_efetuado_tratamento_parceiro_dose_3
+        description: Sífilis - parceiro dose 3 (data/status).
+        data_type: string
+
+      - name: sifilis_data_visita_domiciliar
+        description: Data da visita domiciliar (sífilis) - texto.
+        data_type: string
+
+      - name: sifilis_motivo_visita_domiciliar
+        description: Motivo da visita domiciliar (sífilis).
+        data_type: string
+
+      - name: sifilis_observacoes
+        description: Observações relacionadas à sífilis.
+        data_type: string
+
+      - name: exames_lab_streptoccus_b
+        description: Streptococcus do grupo B - resultado.
+        data_type: string
+
+      - name: exames_lab_streptoccus_b_obs
+        description: Observações sobre Streptococcus do grupo B.
+        data_type: string
+
+      - name: consulta_seguintes_intercorrencias
+        description: Intercorrências em consultas subsequentes.
+        data_type: string
+
+      - name: exames_lab_hemoglobina_d
+        description: Hemoglobina (valor adicional).
+        data_type: float64
+
+      - name: exames_lab_vdrl_titulacao
+        description: VDRL - titulação.
+        data_type: string
+
+      - name: sifilis_teste_rapido_sifilis_parceiro
+        description: Teste rápido para sífilis do parceiro (resultado).
+        data_type: string
+
+      - name: sifilis_vdrl_parceiro
+        description: VDRL do parceiro (resultado).
+        data_type: string
+
+      - name: cons_seguintes_placenta_posicionamento
+        description: Avaliação da placenta - posicionamento.
+        data_type: string
+
+      - name: cons_seguintes_placenta_sinais_risco
+        description: Avaliação da placenta - sinais de risco.
+        data_type: string
+
+      - name: cons_seguintes_placenta_maturidade
+        description: Avaliação da placenta - maturidade.
+        data_type: string
+
+      - name: cons_seguintes_placenta_observacoes
+        description: Avaliação da placenta - observações.
+        data_type: string
+
+      - name: cons_seguintes_liquido_amniotico
+        description: Avaliação do líquido amniótico.
+        data_type: string
+
+      - name: cons_seguintes_liquido_amniotico_observacoes
+        description: Observações sobre líquido amniótico.
+        data_type: string
+
+      - name: cseguintes_cardiotocografia
+        description: Cardiotocografia (consultas seguintes) - resultado.
+        data_type: string
+
+      - name: sifilis_titulacao_parceiro
+        description: Titulação do parceiro (sífilis).
+        data_type: string
+
+      - name: sifilis_esquema_tratamento_parceiro
+        description: Esquema de tratamento do parceiro (sífilis).
+        data_type: string
+
+      - name: exames_lab_agr_testes_rapidos_hiv
+        description: Agrupamento de testes rápidos para HIV - resultado.
+        data_type: string
+
+      - name: exames_lab_agr_testes_rapidos_hiv_positivo
+        description: Indicação se testes rápidos HIV foram positivos.
+        data_type: string
+
+      - name: smrpuerperiodata
+        description: Data do puerpério (texto).
+        data_type: string
+
+      - name: smlocalparto
+        description: Local do parto.
+        data_type: string
+
+      - name: smtipoparto
+        description: Tipo de parto.
+        data_type: string
+
+      - name: smresivaopuerpobs
+        description: Observações do parto/puerpério.
+        data_type: string
+
+      - name: smpuerperioparametrospeso
+        description: Peso no puerpério (parâmetro).
+        data_type: float64
+
+      - name: smpuerperioparametrostamin
+        description: Pressão arterial mínima no puerpério (parâmetro).
+        data_type: float64
+
+      - name: smpuerperioparametrostamax
+        description: Pressão arterial máxima no puerpério (parâmetro).
+        data_type: float64
+
+      - name: smpuerperiocitologia
+        description: Citologia no puerpério (resultado).
+        data_type: string
+
+      - name: smpuerperioalalisesplaquetas
+        description: Plaquetas no puerpério.
+        data_type: float64
+
+      - name: smpuerperioalalisesglicemia
+        description: Glicemia no puerpério.
+        data_type: float64
+
+      - name: smpuerperioalalisescreatinina
+        description: Creatinina no puerpério.
+        data_type: float64
+
+      - name: smpuerperioalalisesgamagt
+        description: Gama-GT no puerpério.
+        data_type: float64
+
+      - name: smpuerperioalalisesgot
+        description: GOT/AST no puerpério.
+        data_type: float64
+
+      - name: smpuerperioalalisesgtp
+        description: GTP/ALT no puerpério.
+        data_type: float64
+
+      - name: smpuerperioalalisesbilirrubinas
+        description: Bilirrubinas no puerpério (resultado).
+        data_type: string
+
+      - name: smpuerperioalaliseacidourico
+        description: Ácido úrico no puerpério.
+        data_type: float64
+
+      - name: smpuerperiourocultura
+        description: Urocultura no puerpério - resultado.
+        data_type: string
+
+      - name: classificacaotipoparto
+        description: Classificação do tipo de parto.
+        data_type: string
+
+      - name: puerperiomcdtsfosfatasealcalina
+        description: Fosfatase alcalina no puerpério.
+        data_type: float64
+
+      - name: puerperiomcdtsurinai
+        description: Exame de urina I no puerpério - resultado.
+        data_type: string
+
+      - name: puerperiomcdtsurinaiobs
+        description: Observações do exame de urina I no puerpério.
+        data_type: string
+
+      - name: puerperiourocultura
+        description: Urocultura no puerpério (campo adicional).
+        data_type: string
+
+      - name: puerperionumcolonias
+        description: Nº de colônias na urocultura (puerpério).
+        data_type: string
+
+      - name: puerperioagentespatologicos
+        description: Agentes patológicos identificados (puerpério).
+        data_type: string
+
+      - name: puerperiotsasensiveis
+        description: TSA sensíveis (puerpério).
+        data_type: string
+
+      - name: puerperiotsaresistentes
+        description: TSA resistentes (puerpério).
+        data_type: string
+
+      - name: puerperiomcdtsurinairesulltado
+        description: Resultado do exame de urina (puerpério) - campo livre.
+        data_type: string
+
+      - name: puerperiotermo
+        description: Termo/condição do puerpério.
+        data_type: string
+
+      - name: puerperiorazaocesareo
+        description: Razão para cesáreo (se aplicável).
+        data_type: string
+
+      - name: puerperiorh
+        description: Fator RH no puerpério.
+        data_type: string
+
+      - name: puerperiogamaglobulinaantid
+        description: Aplicação de gamaglobulina anti-D (puerpério) - status.
+        data_type: string
+
+      - name: puerperiogamaglobulinaantiddata
+        description: Data da aplicação de anti-D (texto).
+        data_type: string
+
+      - name: gestantepuerperionumrecemnascidos
+        description: Número de recém-nascidos (puerpério).
+        data_type: float64
+
+      - name: gestantepuerperioamamentacao
+        description: Amamentação no puerpério (status/descrição).
+        data_type: string
+
+      - name: puerperiodataaborto
+        description: Data do aborto (texto).
+        data_type: string
+
+      - name: puerperiotipoaborto
+        description: Tipo de aborto.
+        data_type: string
+
+      - name: puerperioidadegestacao
+        description: Idade gestacional ao aborto/parto (se aplicável).
+        data_type: float64
+
+      - name: gestantepuerperiocuretagem
+        description: Registro de curetagem (puerpério).
+        data_type: string
+
+      - name: puerperiooutrotermoqual
+        description: Outro termo/descrição no puerpério.
+        data_type: string
+
+      - name: loaded_at
+        description: Data/hora de carga no Data Lake (fuso da plataforma).
+        data_type: datetime
+
+      - name: data_particao
+        description: Data de referência do atendimento (partição).
+        data_type: date
