@@ -1,7 +1,7 @@
 {{
     config(
         alias="cadastro",
-        schema="ipp",
+        schema="projeto_ipp",
         materialized="table",
         partition_by={
             "field": "cpf_particao",
