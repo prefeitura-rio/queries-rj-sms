@@ -17,19 +17,36 @@
   )
 }}
 
+{% set src = source('brutos_siscan_web_staging', 'laudos') %}
+{% set cols = adapter.get_columns_in_relation(src) %}
+
 with
 -- garantindo unicidade do n_protocolo e obtendo o registro mais atual
 source as (
     select * 
-    from {{source('brutos_siscan_web_staging', 'laudos')}}
+    from {{ src }}
     qualify row_number() over (
         partition by n_protocolo
         order by data_extracao desc nulls last
     ) = 1
+),
+
+-- aplicando macro process_null em todas as colunas do tipo string
+source_norm as (
+  select
+    {%- for c in cols %}
+      {%- set dtype = (c.data_type) -%}
+      {%- if dtype in ['STRING'] -%}
+        {{ process_null('s.' ~ adapter.quote(c.name)) }} as {{ adapter.quote(c.name) }}
+      {%- else -%}
+        s.{{ adapter.quote(c.name) }}
+      {%- endif -%}
+      {%- if not loop.last %}, {% endif -%}
+    {%- endfor %}
+  from source as s
 )
 
--- OBS: Nos casos de TRIM + UPPER: Analisar distincts
--- OBS2: Os dados são extraídos da fonte por data_liberacao_resultado
+-- OBS: Os dados são extraídos da fonte por data_liberacao_resultado
 --          (Roda diariamente para d-1, e uma vez por mês para os 30 últimos dias)
 --          Exames com data_realizacao diversos podem sair em data_liberacao_resultado diversos.
 select
@@ -44,14 +61,14 @@ select
     {{ clean_name_string("paciente_mae") }} as paciente_nome_mae,
     parse_date('%d/%m/%Y', paciente_dt_nasc) as paciente_data_nasc,
     safe_cast(paciente_idade as int) as paciente_idade, 
-    paciente_sexo, -- TRIM + UPPER?
+    paciente_sexo,
     paciente_telefone,
 
     -- endereco paciente
-    paciente_uf, -- TRIM + UPPER?
-    paciente_municipio, -- TRIM + UPPER?
+    paciente_uf,
+    {{ clean_name_string("paciente_municipio")}} as paciente_municipio,
     {{ clean_name_string("paciente_bairro") }} as paciente_bairro,
-    paciente_cep, -- está no formato 22783-117.. tratar? passar pra int?
+    paciente_cep,
     {{ clean_name_string("paciente_logradouro") }} as paciente_logradouro,
     paciente_endereco_complemento,
     paciente_endereco_numero,
@@ -59,58 +76,63 @@ select
     -- datas
     parse_date('%Y-%m-%d', data_solicitacao) as data_solicitacao,
     parse_date('%d/%m/%Y', data_realizacao) as data_realizacao,
-    data_ultima_menstruacao, -- SCRAPPER BUG: pegando errado
     parse_date('%d/%m/%Y', data_liberacao_resultado) as data_liberacao_resultado,
+    parse_date('%d/%m/%Y',
+      nullif(
+        trim(split(data_ultima_menstruacao, ':')[safe_offset(1)]),
+        'Não lembra'
+      )
+    ) as data_ultima_menstruacao,
 
     -- resultados exame - mama esquerda
-    tipo_mama_esquerda as mama_esquerda_tipo, -- TRIM + UPPER?
-    mama_esquerda_pele, -- TRIM + UPPER? 
-    linfonodos_axiliares_esquerda as mama_esquerda_linfonodos_axilares, -- TRIM + UPPER?
-    achados_benignos_esquerda as mama_esquerda_achados_benignos, -- TRIM + UPPER?
+    tipo_mama_esquerda as mama_esquerda_tipo, 
+    mama_esquerda_pele,
+    linfonodos_axiliares_esquerda as mama_esquerda_linfonodos_axilares, -- incompleto, falta dilatacao ductal ex:121528446
+    split(achados_benignos_esquerda, ', ') as mama_esquerda_achados_benignos,
     -- SCRAPPER BUG: FALTANDO `achado_exame_esquerda`
     trim(split(classif_radiologica_esquerda, ':')[safe_offset(1)]) as mama_esquerda_classif_radiologica,
 
     -- resultados exame - mama direita
-    tipo_mama_direita as mama_direita_tipo, -- TRIM + UPPER?
-    mama_direita_pele, -- TRIM + UPPER?
-    linfonodos_axiliares_direita as mama_direita_linfonodos_axilares, -- TRIM + UPPER?
-    achados_benignos_direita as mama_direita_achados_benignos, -- TRIM + UPPER?
+    tipo_mama_direita as mama_direita_tipo,
+    mama_direita_pele,
+    linfonodos_axiliares_direita as mama_direita_linfonodos_axilares, -- incompleto, falta dilatacao ductal ex:121528446
+    split(achados_benignos_direita, ', ' )  as mama_direita_achados_benignos,
     achado_exame_direita as mama_direita_achado_exame,
     trim(split(classif_radiologica_direita, ':')[safe_offset(1)]) as mama_direita_classif_radiologica,
 
     -- infos exame geral
-    mamografia_tipo, -- (diagnostica/rastreamento) - TRIM + UPPER?
-    mamografia_rastreamento_tipo, -- (populacao alvo, risco elevado, em tratamento) TRIM + UPPER?
+    mamografia_tipo,
+    mamografia_rastreamento_tipo,
     microcalcificacoes as mamografia_microcalcificacoes,    
     safe_cast(numero_filmes as int) as mamografia_numero_filmes, 
-    recomendacoes as mamografia_recomendacoes, -- TRIM + UPPER?
+    recomendacoes as mamografia_recomendacoes,
     observacoes_gerais as mamografia_observacoes_gerais,
-    achado_exame_clinico as mamografia_achado_exame_clinico, -- SCRAPPER BUG: aparentemente vindo todo vazio (checar)
-    texto_mamas_labels as mamografia_labels, -- SCRAPPER BUG: aparentemente todos os registros com "Ministério da Saúde"
+    -- achado_exame_clinico as mamografia_achado_exame_clinico, -- SCRAPPER BUG: só vem ("Achados no exame clínico:"", '')
+    -- texto_mamas_labels as mamografia_labels, -- SCRAPPER BUG: só vem ("Ministério da Saúde")
 
     -- unidade solicitante (? CONFIRMAR)
-    unidade_uf as unidade_solicitante_uf, -- TRIM + UPPER?
+    unidade_uf as unidade_solicitante_uf, -- aparentemente tudo RJ?
+    {{ clean_name_string("unidade_municipio") }} as unidade_solicitante_municipio,
+    upper(trim(unidade_nome)) as unidade_solicitante_nome,
     lpad(safe_cast(safe_cast(unidade_cnes as int) as string), 7, "0") as unidade_solicitante_id_cnes,
-    unidade_nome as unidade_solicitante_nome, -- TRIM + UPPER?
-    unidade_municipio as unidade_solicitante_municipio, -- TRIM + UPPER?
 
     -- unidade que realizou o exame (? CONFIRMAR)
-    prestador_uf as unidade_prestadora_uf, -- TRIM + UPPER?
-    prestador_municipio as unidade_prestadora_municipio, -- TRIM + UPPER?
+    prestador_uf as unidade_prestadora_uf, -- apenas RJ?
+    {{ clean_name_string("prestador_municipio") }} as unidade_prestadora_municipio,
+    upper(trim(prestador_nome)) as unidade_prestadora_nome,
     lpad(safe_cast(safe_cast(prestador_cnes as int) as string), 7, "0") as unidade_prestadora_id_cnes,
-    prestador_nome as unidade_prestadora_nome, -- TRIM + UPPER?
     lpad(safe_cast(safe_cast(prestador_cnpj as int) as string), 14, "0") as unidade_prestadora_cnpj,
 
     -- Profissional responsável pelo resultado (? CONFIRMAR)
-    {{ clean_name_string("responsavel_resultado") }} as profissional_responsavel_nome,
     lpad(safe_cast(safe_cast(cns_resultado as int) as string), 15, "0") as profissional_responsavel_cns,
     trim(split(conselho, ' - ')[safe_offset(1)]) as profissional_responsavel_crm,
+    {{ clean_name_string("responsavel_resultado") }} as profissional_responsavel_nome,
     
     -- metadados
     parse_timestamp('%Y-%m-%d %H:%M:%E6S', data_extracao) as data_extracao,
     parse_date('%d/%m/%Y', data_realizacao) as data_particao
 
-from source
+from source_norm
 {% if is_incremental() %}
     where 
         data_extracao > (select max(data_extracao) from {{ this }})
