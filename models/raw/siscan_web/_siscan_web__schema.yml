@@ -43,6 +43,9 @@ models:
         description: Sexo do paciente.
         data_type: string
         quote: true
+        data_tests:
+          - accepted_values: 
+                values: ['Feminino', 'Masculino']
       - name: paciente_telefone
         description: Telefone de contato do paciente.
         data_type: string
@@ -51,6 +54,9 @@ models:
         description: UF (estado) de residência do paciente (sigla de 2 letras).
         data_type: string
         quote: true
+        data_tests:
+          - accepted_values: 
+                values: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
       - name: paciente_municipio
         description: Município de residência do paciente.
         data_type: string
@@ -139,6 +145,9 @@ models:
         description: Tipo de mamografia realizado.
         data_type: string
         quote: true
+        data_tests:
+          - accepted_values: 
+              values: ['Rastreamento', 'Diagnóstica']
       - name: mamografia_rastreamento_tipo
         description: Define o subtipo para casos de mamografia de rastreamento.
         data_type: string
