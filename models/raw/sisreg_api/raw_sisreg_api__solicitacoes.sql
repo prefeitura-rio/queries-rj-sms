@@ -3,7 +3,9 @@
 {{
     config(
         enabled=true,
-        materialized='table',
+        materialized='incremental',
+        unique_key='solicitacao_id',
+        incremental_strategy='merge',
         schema="brutos_sisreg_api",
         alias="solicitacoes",
         partition_by={
@@ -11,7 +13,10 @@
             "data_type": "date",
             "granularity": "month",
         },
-    cluster_by=['unidade_solicitante_id', 'procedimento_id'],
+        cluster_by=['unidade_solicitante_id', 'procedimento_id'],
+        incremental_predicates = [
+        "DBT_INTERNAL_DEST.particao_data = date_sub(current_date(), INTERVAL 1 DAY)"
+    ]
     )
 }}
 -- Obs: `particao_data` vem de `data_extracao`
