@@ -426,3 +426,43 @@ models:
         description: Descreve a área programatica do paciente em questão.
       - name: exibicao.unidades_cadastro
         description: Descreve quais unidades o paciente em questão tem cadastro.
+  - name: mart_historico_clinico_app__acessos
+    description: >
+      Tabela de acessos permitidos no HCI, tanto automáticos quanto manuais
+    columns:
+      - name: cpf_particao
+        description: CPF utilizado para particionamento da tabela.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: cpf
+        description: CPF do paciente encontrado pela busca.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: nome_completo
+        description: Nome do profissional.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: vinculos
+        description: >
+          Vínculos profissionais; um único indivíduo pode ter múltiplos
+          vínculos em múltiplas unidades.
+      - name: vinculos.unidade_nome
+        description: Nome fantasia da unidade de saúde
+      - name: vinculos.unidade_tipo
+        description: "Tipo de unidade; ex.: CF, CMS, UPA, HOSPITAL, ..."
+      - name: vinculos.unidade_cnes
+        description: Código Nacional de Estabelecimentos de Saúde da unidade
+      - name: vinculos.unidade_ap
+        description: "Área Programática da unidade (ex.: 10, 21, ...)"
+      - name: vinculos.funcao_detalhada
+        description: Nome do cargo do profissional
+      - name: vinculos.funcao_grupo
+        description: "Categoria geral do cargo do profissional (ex.: MEDICOS, ENFERMEIROS, ...)"
+      - name: vinculos.nivel_acesso
+        description: >
+          Permissão de acesso a nível de pacientes. Por exemplo, acesso
+          somente a pacientes de uma mesma AP; de um mesmo CNES; etc.
+      - name: vinculos.granularidade_acesso
+        description: >
+          Permissão de acesso a nível de dados. Por exemplo, acesso
+          somente a informações gerais do paciente; a informações de atendimentos; etc.

@@ -47,7 +47,8 @@ with
             unidade_ap,
             funcao_detalhada,
             funcao_grupo,
-            nivel_acesso
+            nivel_acesso,
+            granularidade_acesso
           )
         ) as vinculos
       from uniao as p, unnest(p.vinculos) as v
@@ -97,4 +98,3 @@ with
 
 select *
 from particionado
-

@@ -8,7 +8,7 @@ models:
       Atualização: mensal
     columns:
       - name: id_unidade
-        description: CCódigo do Estabelecimento de Saúde utlizado no CNES
+        description: Código da unidade de saúde
       - name: id_cnes
         description: Código Nacional do Estabelecimento de Saúde
       - name: id_tipo_unidade
@@ -435,7 +435,9 @@ models:
       - name: id_profissional_sus
         description: Identificador do profissional no SUS
       - name: id_unidade
-        description: Identificador da unidade de saúde (CNES).
+        description: >
+          Código da unidade de saúde. Pode ser cruzado com a tabela de `estabelecimento`
+          para obter o `id_cnes`, que é o que você quer.
       - name: id_profissional_cnes
         description: Identificador interno do profissional no CNES.
       - name: id_cbo
