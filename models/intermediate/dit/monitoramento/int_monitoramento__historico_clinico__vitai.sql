@@ -29,7 +29,7 @@ with
         select 
             gid,
             cnes
-        from {{ source("brutos_prontuario_vitai_staging", "m_estabelecimento_eventos") }}
+        from {{ source("brutos_prontuario_vitai_staging", "basecentral__m_estabelecimento_eventos") }}
     ),
     vitai_paciente_sem_cnes as (
         select
