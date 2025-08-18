@@ -2,6 +2,7 @@
     config(
         schema="brutos_ser_metabase",
         alias="fato_ambulatorio",
+        materialized="incremental",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -9,7 +10,7 @@
         },
     )
 }}
-
+{% set last_partition = get_last_partition_date( this ) %}
 with
     source as (
 
@@ -105,6 +106,9 @@ with
             safe_cast(data_particao as date) as data_particao
 
         from {{ source("brutos_ser_metabase_staging", "FATO_AMBULATORIO") }}
+        {% if is_incremental() %}
+        where data_particao > '{{ last_partition }}'
+        {% endif %}
 
     )
 

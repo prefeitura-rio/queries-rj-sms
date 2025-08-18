@@ -14,7 +14,6 @@
     )
 }}
 
-{% set last_partition = get_last_partition_date( this ) %}
 
 with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
