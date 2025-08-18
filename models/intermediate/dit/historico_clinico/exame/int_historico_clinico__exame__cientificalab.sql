@@ -82,26 +82,6 @@ with
             row_number() over (
                 partition by paciente_cpf, id_cnes, cod_apoio, data_assinatura order by data_assinatura desc
             ) = 1
-    ),
-
-    exame_agg as (
-        select
-            paciente_cpf,
-            array_agg(
-                struct(
-                    id_cnes,
-                    cod_apoio as codigo_do_exame,
-                    data_assinatura as data_do_exame,
-                    resultado,
-                    unidade,
-                    valor_referencia_minimo,
-                    valor_referencia_maximo,
-                    valor_referencia_texto
-                )
-            ) as exames
-        from exame_deduplicado
-        group by
-            paciente_cpf
     )
 
-select * from exame_agg
+select * from exame_deduplicado
