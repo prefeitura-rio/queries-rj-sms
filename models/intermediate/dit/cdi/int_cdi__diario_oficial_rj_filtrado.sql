@@ -204,7 +204,7 @@ final_secretaria_saude as (
   concat(conteudos_para_email.id_diario,conteudos_para_email.id_materia, conteudos_para_email.secao_indice) = do_raw.id_materia_secao_do
   where conteudos_para_email.pasta like '%SECRETARIA MUNICIPAL DE SAÚDE%'
   and do_raw.cabecalho != 'DANIEL SORANZ'
-  and do_raw.cabecalho like 'RESOLUÇÃO N%'
+  and do_raw.cabecalho like 'RESOLUÇÃO%'
 ),
 -- ATOS DO PREFEITO --
 final_atos_prefeito as (
