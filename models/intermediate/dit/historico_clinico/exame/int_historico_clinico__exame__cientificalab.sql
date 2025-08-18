@@ -10,7 +10,7 @@ with
     solicitacoes as (
         select
             paciente_cpf,
-            unidade,
+            unidade as unidade_nome,
             id
         from {{ ref('raw_cientificalab__solicitacoes') }}
     ),
@@ -75,6 +75,15 @@ with
         inner join resultado as r on e.id = r.exame_id
     ),
 
+    exame_deduplicado as (
+        select *
+        from exames_com_resultados
+        qualify
+            row_number() over (
+                partition by paciente_cpf, id_cnes, cod_apoio, data_assinatura order by data_assinatura desc
+            ) = 1
+    ),
+
     exame_agg as (
         select
             paciente_cpf,
@@ -90,7 +99,7 @@ with
                     valor_referencia_texto
                 )
             ) as exames
-        from exames_com_resultados
+        from exame_deduplicado
         group by
             paciente_cpf
     )
