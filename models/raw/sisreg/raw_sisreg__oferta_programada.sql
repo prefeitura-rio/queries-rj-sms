@@ -3,6 +3,9 @@
         schema="brutos_sisreg",
         alias="oferta_programada",
         materialized="incremental",
+        strategy = 'merge',
+        unique_key = 'id_escala_ambulatorial',
+        cluster_by=['id_escala_ambulatorial'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -20,6 +23,7 @@ with
 
         where data_particao > '{{ last_partition }}'
         {% endif %}
+        qualify row_number() over( partition by cod_escala_ambulatorial order by _data_carga desc ) = 1
     ),
     renamed as (
         select
