@@ -53,7 +53,13 @@ final as (
       endereco_cep,
       endereco_latitude,
       endereco_longitude,
-      telefone,
+      case 
+        when ARRAY_LENGTH(telefone) > 1
+          then {{ padronize_telefone('telefone[safe_offset(0)]') }}
+        when ARRAY_LENGTH(telefone) = 1
+          then {{ padronize_telefone('telefone[safe_offset(0)]') }}
+        else null
+      end as telefone,
       email,
       facebook,
       instagram,
