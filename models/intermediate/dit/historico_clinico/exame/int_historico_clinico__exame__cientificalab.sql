@@ -39,7 +39,30 @@ with
     exames_com_resultados as (
         select
             s.paciente_cpf,
-            s.unidade as unidade_nome,
+            case
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL RAPHAEL DE PAULA SOUZA' then '2273349'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL SALGADO FILHO' then '2296306'
+                when upper(unidade_nome) = 'HOSP MATERNIDADE HERCULANO PINHEIRO' then '2270390'
+                when upper(unidade_nome) = 'HOSP MATERNIDADE ALEXANDER FLEMING' then '2269945'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL BARATA RIBEIRO' then '2270242'
+                when upper(unidade_nome) = 'HOSPITAL MATERNIDADE FERNANDO MAGALHÃES' then '2270714'
+                when upper(unidade_nome) = 'HOSP. MAT. CARMELA DUTRA' then '2280248'
+                when upper(unidade_nome) = 'COMPLEXO MIGUEL COUTO' then '2270269'
+                when upper(unidade_nome) = 'INSTITUTO DR. PHILIPPE PINEL' then '2288362'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL SOUZA AGUIAR' then '2280183'
+                when upper(unidade_nome) = 'PAQUETA' then '2277301'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL ALVARO RAMOS' then '2273187'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL DA PIEDADE' then '2269481'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL JESUS' then '2269341'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL LOURENÇO JORGE' then '2270609'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL FRANCISCO DA SILVA TELLES' then '2291266'
+                when upper(unidade_nome) = 'CER CENTRO' then '6716911'
+                when upper(unidade_nome) = 'H.M. NOSSA SENHORA DO LORETO' then '2269724'
+                when upper(unidade_nome) = 'UPA - ROCINHA' then '6507409'
+                when upper(unidade_nome) = 'HOSPITAL MUNICIPAL ROCHA MAIA' then '2273489'
+                when upper(unidade_nome) = 'MATERNIDADE MARIA AMELIA BUARQUE DE HOLLANDA' then '7027397'
+                else unidade_nome 
+            end as id_cnes,
             e.cod_apoio,
             e.data_assinatura,
             r.resultado,
@@ -57,7 +80,7 @@ with
             paciente_cpf,
             array_agg(
                 struct(
-                    unidade_nome,
+                    id_cnes,
                     cod_apoio as codigo_do_exame,
                     data_assinatura as data_do_exame,
                     resultado,
