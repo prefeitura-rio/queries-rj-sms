@@ -12,7 +12,7 @@
 }}
 
 with cadastro as (
-    select 
+    select distinct
         nome,
         mae_nome,
         data_nascimento,
