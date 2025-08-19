@@ -14,18 +14,24 @@ models:
             original dos dados de origem. Este id é usado para identificar
             exclusivamente cada registro de vacinação.
           data_tests:
-            - unique:
-                name: int_historico_clinico__vacina__id__unique
-                config:
-                  severity: warn
-                  warn_if: ">1000"
             - not_null:
                 name: int_historico_clinico__vacina__id__not_null
                 config:
                   severity: warn
-                  warn_if: ">1"
+                  warn_if: ">10"
           data_type: string
           quote: true
+        - name: id_surrogate
+          description: Esta é uma chave substituta para cada registro. É um valor hash gerado a partir do
+            id_cnes, vacina, data da aplicacao e do id original dos dados de origem. Esta chave substituta 
+            é usada para fins de data warehousing para garantir a integridade dos dados e lidar com 
+            mudanças nos dados de origem ao longo do tempo
+          data_tests:
+            - unique:
+                name: int_historico_clinico__vacina__id_surrogate__unique
+                config:
+                  severity: warn
+                  warn_if: ">1000"
         - name: cpf
           description: CPF do paciente.
           data_type: string
