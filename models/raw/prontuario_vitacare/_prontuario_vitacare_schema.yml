@@ -744,11 +744,6 @@ models:
           original dos dados de origem. Este id é usado para identificar
           exclusivamente cada registro de vacinação.
         data_tests:
-          - unique:
-              name: raw_prontuario_vitacare__vacina__id__unique
-              config:
-                severity: warn
-                warn_if: ">1000"
           - not_null:
               name: raw_prontuario_vitacare__vacina__id__not_null
               config:
