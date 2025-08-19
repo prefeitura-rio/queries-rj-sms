@@ -18,7 +18,7 @@ WITH bruto_atendimento AS (
     data,
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
   {% if is_incremental() %}
-    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
   QUALIFY ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY loaded_at DESC) = 1
 ),

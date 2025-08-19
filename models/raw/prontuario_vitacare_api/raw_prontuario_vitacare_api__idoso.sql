@@ -19,7 +19,7 @@ WITH bruto_atendimento AS (
     DATE(COALESCE(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME), SAFE_CAST(datalake_loaded_at AS DATETIME))) AS data_particao
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
   {% if is_incremental() %}
-    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
   qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
 ),

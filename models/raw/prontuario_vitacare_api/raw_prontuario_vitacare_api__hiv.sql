@@ -20,10 +20,9 @@ WITH bruto_atendimento AS (
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
     SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME) AS datahora_fim_atendimento,
     data,
-    DATE(datahora_fim_atendimento) AS data_particao
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
   {% if is_incremental() %}
-    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
   qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
 ),
@@ -104,7 +103,7 @@ hiv_extracted_base AS (
     JSON_EXTRACT_SCALAR(data, '$.hiv[0].aidsEmTerapiaAntiRetroviral') AS aidsemterapiaantiretroviral,
 
     loaded_at,
-    data_particao
+    DATE(datahora_fim_atendimento) AS data_particao
   FROM bruto_atendimento
 ),
 

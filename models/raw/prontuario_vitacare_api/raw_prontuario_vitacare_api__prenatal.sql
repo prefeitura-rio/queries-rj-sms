@@ -200,14 +200,19 @@ WITH bruto_atendimento AS (
     JSON_EXTRACT_SCALAR(data, '$.pre_natal[0].puerperiooutrotermoqual') AS puerperiooutrotermoqual,
 
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
-    date(datahora_fim_atendimento) as data_particao
+    SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATE) AS data_particao,
+    data
     
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
 
   {% if is_incremental() %}
-    WHERE DATE(loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
-  qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
+
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY id_prontuario_global
+    ORDER BY loaded_at DESC
+  ) = 1
 )
 
 SELECT * FROM bruto_atendimento
