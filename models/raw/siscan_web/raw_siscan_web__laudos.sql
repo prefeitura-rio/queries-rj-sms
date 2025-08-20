@@ -12,23 +12,34 @@
       "data_type": "date",
       "granularity": "month",
     },
-    cluster_by=['unidade_prestadora_id_cnes', 'unidade_solicitante_id_cnes', 'mamografia_tipo'],
+    cluster_by=['protocolo_id', 'unidade_prestadora_id_cnes', 'unidade_solicitante_id_cnes', 'mamografia_tipo'],
     on_schema_change='sync_all_columns'
   )
 }}
 
 {% set src = source('brutos_siscan_web_staging', 'laudos') %}
 {% set cols = adapter.get_columns_in_relation(src) %}
+{% set last_partition = get_last_partition_date( this ) %}
 
 with
--- garantindo unicidade do n_protocolo e obtendo o registro mais atual
+-- garantindo unicidade do n_protocolo,
+-- obtendo o registro mais atual,
+-- e pegando so a particao mais atual em staging.
+-- obs: na tabela em staging a data_particao é construida a partir de data_extracao,
+-- porem neste modelo a data_particao é definida posteriormente como a data_realizacao
 source as (
+
     select * 
     from {{ src }}
+    {% if is_incremental() %}
+      where data_particao >= '{{ last_partition }}'
+    {% endif %}
+
     qualify row_number() over (
         partition by n_protocolo
-        order by data_extracao desc nulls last
+        order by data_particao desc nulls last 
     ) = 1
+
 ),
 
 -- aplicando macro process_null em todas as colunas do tipo string
@@ -133,7 +144,3 @@ select
     parse_date('%d/%m/%Y', data_realizacao) as data_particao
 
 from source_norm
-{% if is_incremental() %}
-    where 
-        data_extracao > (select max(data_extracao) from {{ this }})
-{% endif %}
