@@ -2,7 +2,9 @@
 {{
   config(
     enabled=true,
-    materialized='table',
+    materialized='incremental',    
+    unique_key='solicitacao_id',
+    incremental_strategy='merge',
     schema="brutos_sisreg_api",
     alias="marcacoes",
     partition_by={
@@ -10,7 +12,7 @@
       "data_type": "date",
       "granularity": "month",
     },
-    cluster_by=['unidade_executante_id', 'unidade_solicitante_id', 'procedimento_interno_id'],
+    cluster_by=['solicitacao_id'],
   )
 }}
 
