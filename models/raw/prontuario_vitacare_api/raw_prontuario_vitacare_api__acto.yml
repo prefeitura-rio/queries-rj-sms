@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: brutos_prontuario_vitacare_api__acto
+  - name: raw_prontuario_vitacare_api__acto
     description: >
       Tabela contendo registros de atendimentos contínuos da linha de cuidado ACTO
       extraídos do prontuário VitaCare (API). Inclui informações do paciente,
