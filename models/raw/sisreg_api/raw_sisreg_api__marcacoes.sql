@@ -2,7 +2,7 @@
 {{
   config(
     enabled=true,
-    materialized='incremental',    
+    materialized='incremental',
     unique_key='solicitacao_id',
     incremental_strategy='merge',
     schema="brutos_sisreg_api",

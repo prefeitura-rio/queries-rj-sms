@@ -2,7 +2,7 @@
 
 {{
     config(
-        enabled=true,        
+        enabled=true,
         materialized='incremental',
         unique_key='solicitacao_id',
         incremental_strategy='merge',
@@ -13,7 +13,7 @@
             "data_type": "date",
             "granularity": "month",
         },
-    cluster_by=['solicitacao_id'],
+        cluster_by=['solicitacao_id'],
     )
 }}
 -- Obs: `particao_data` vem de `data_extracao`
