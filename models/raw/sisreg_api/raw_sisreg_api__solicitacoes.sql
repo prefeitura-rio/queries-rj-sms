@@ -13,10 +13,7 @@
             "data_type": "date",
             "granularity": "month",
         },
-        cluster_by=['unidade_solicitante_id', 'procedimento_id'],
-        incremental_predicates = [
-        "DBT_INTERNAL_DEST.particao_data = date_sub(current_date(), INTERVAL 1 DAY)"
-    ]
+        cluster_by=['solicitacao_id'],
     )
 }}
 -- Obs: `particao_data` vem de `data_extracao`

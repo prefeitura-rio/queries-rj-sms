@@ -3,6 +3,9 @@
         schema="brutos_ser_metabase",
         alias="fato_ambulatorio",
         materialized="incremental",
+        incremental_strategy='merge',
+        unique_key = 'solicitacao_id',
+        cluster_by = 'solicitacao_id',
         partition_by={
             "field": "data_particao",
             "data_type": "date",
