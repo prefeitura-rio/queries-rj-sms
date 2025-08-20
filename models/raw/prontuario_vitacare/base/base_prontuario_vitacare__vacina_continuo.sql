@@ -23,7 +23,8 @@ with
         select
             *
         from {{ ref('raw_prontuario_vitacare_api__vacina') }} 
-        {% if is_incremental() %} where loaded_at > '{{seven_days_ago}}' {% endif %}
+        where {{process_null('id_cnes')}} is not null
+        {% if is_incremental() %} and loaded_at > '{{seven_days_ago}}' {% endif %}
     ),
 
     selecao_vacinas as (
