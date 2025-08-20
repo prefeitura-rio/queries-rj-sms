@@ -7,8 +7,7 @@ models:
       identificadores do paciente e da unidade, dados demográficos e
       socioeconômicos, flags de vulnerabilidade e metadados de carga.
 
-    # Teste de unicidade pela combinação de chaves de negócio usada no merge
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns: [cpf, id_cnes]
           where: "cpf is not null AND safe_cast(data_particao as date) = current_date('America/Sao_Paulo')"
