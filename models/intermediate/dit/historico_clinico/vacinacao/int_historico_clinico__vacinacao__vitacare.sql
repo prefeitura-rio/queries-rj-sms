@@ -29,6 +29,7 @@ with
     vacinacoes as (
         select
             id, 
+            id_surrogate,
             id_cnes,
             cpf,
             nome_vacina,
