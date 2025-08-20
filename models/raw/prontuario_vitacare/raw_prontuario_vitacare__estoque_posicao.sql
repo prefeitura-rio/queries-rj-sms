@@ -49,7 +49,7 @@ with
     final as (
 
         select
-            -- Primary Key
+            -- Primary Key.
             concat(id_cnes, '.', id, '.', data_particao) as id,
             {{
                 dbt_utils.generate_surrogate_key(
