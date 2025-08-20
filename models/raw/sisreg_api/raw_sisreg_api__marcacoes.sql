@@ -13,6 +13,7 @@
       "granularity": "month",
     },
     cluster_by=['solicitacao_id'],
+    cluster_by=['solicitacao_id'],
   )
 }}
 
