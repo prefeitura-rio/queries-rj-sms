@@ -4,8 +4,16 @@
         alias="oferta_programada",
         materialized="incremental",
         strategy = 'merge',
-        unique_key = 'id_escala_ambulatorial',
-        cluster_by=['id_escala_ambulatorial'],
+        unique_key = ['id_escala_ambulatorial',
+        'procedimento_dia_semana_sigla',
+        'procedimento_hora_inicial',
+        'procedimento_hora_final'
+        ],
+        cluster_by = ['id_escala_ambulatorial',
+        'procedimento_dia_semana_sigla',
+        'procedimento_hora_inicial',
+        'procedimento_hora_final'
+        ],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -23,10 +31,15 @@ with
 
         where data_particao > '{{ last_partition }}'
         {% endif %}
-        qualify row_number() over( partition by cod_escala_ambulatorial order by _data_carga desc ) = 1
+        qualify row_number() over(
+            partition by cod_escala_ambulatorial,
+                        cpf_profissional_exec,
+                        sigla_dia_semana,
+                        hora_inicial,
+                        hora_final order by _data_carga desc ) = 1
     ),
     renamed as (
-        select
+        SELECT
             cod_escala_ambulatorial as id_escala_ambulatorial,
             cod_central_exec as id_central_executante,
             desc_central_exec as central_executante_nome,
