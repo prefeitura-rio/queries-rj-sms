@@ -7,25 +7,26 @@ sources:
     schema: brutos_prontuario_vitacare_staging
     tables:
       - name: acto
-      - name: agendamentos
       - name: alergia
       - name: arbovirose
       - name: cadastro
       - name: condicao
-      - name: curativos
+      - name: curativo
       - name: encaminhamento
       - name: equipe
+      - name: estoque_movimento
+      - name: estoque_posicao
       - name: hanseniase
       - name: hiv
       - name: idoso
       - name: indicador
-      - name: prenatal
+      - name: pre_natal
       - name: saude_bucal
-      - name: saudecrianca
-      - name: saudemulher
+      - name: saude_crianca
+      - name: saude_mulher
       - name: sifilis
       - name: solicitacao_exames
       - name: tabagismo
-      - name: testesrapido
+      - name: teste_rapido
       - name: tuberculose
       - name: vacina
