@@ -112,6 +112,7 @@ with
         {% if is_incremental() %}
         where data_particao > '{{ last_partition }}'
         {% endif %}
+        qualify row_number() over(partition by solicitacao_id order by data_extracao desc) = 1
 
     )
 
