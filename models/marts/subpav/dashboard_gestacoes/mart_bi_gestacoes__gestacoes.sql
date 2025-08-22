@@ -50,8 +50,9 @@ WITH
                 ELSE NULL -- Em teoria, o filtro WHERE já garante que só teremos 'gestacao', mas é bom ser explícito
             END AS tipo_evento
         FROM
-            {{ ref('mart_historico_clinico__episodio') }},
-                UNNEST (condicoes) c -- Expande o array de condições para processar cada uma individualmente
+            {{ ref('mart_historico_clinico__episodio') }}
+            --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+            LEFT JOIN UNNEST (condicoes) c -- Expande o array de condições para processar cada uma individualmente
             INNER JOIN cadastro_paciente cp ON paciente.id_paciente = cp.id_paciente
         WHERE
             c.data_diagnostico IS NOT NULL
@@ -267,8 +268,10 @@ WITH
             eq.nome AS equipe_nome,
             eq.clinica_familia.nome AS clinica_nome
         FROM
-            {{ ref('mart_historico_clinico__paciente') }} p,
-            UNNEST (p.equipe_saude_familia) AS eq
+            {{ ref('mart_historico_clinico__paciente') }} p
+            -- Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+            LEFT JOIN UNNEST (p.equipe_saude_familia) AS eq -- Expande o array de equipes de saúde
+
     ),
     equipe_durante_gestacao AS (
         SELECT f.id_gestacao, -- Chave para JOIN posterior

@@ -1,0 +1,253 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__cadastro
+    description: Cadastro de pacientes com informações sociodemográficas, de contato, moradia e vínculos com equipes de saúde.
+    columns:
+      - name: id_cnes
+        description: Código CNES da unidade de saúde responsável pelo cadastro.
+
+      - name: ap
+        description: Código da área programática do paciente.
+
+      - name: unidade
+        description: Nome da unidade de saúde.
+
+      - name: ut_id
+        description: Identificador local do paciente.
+
+      - name: nome
+        description: Nome do paciente.
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do paciente.
+        policy_tags: ['{{ var("TAG_CNS") }}']
+
+      - name: cpf
+        description: Número do CPF do paciente.
+        policy_tags: ['{{ var("TAG_CPF") }}']
+
+      - name: nis
+        description: Número de Identificação Social (NIS) do paciente.
+
+      - name: npront
+        description: Número do prontuário do paciente.
+
+      - name: sexo
+        description: Sexo do paciente.
+
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: code
+      #---------------------------------?
+        description: Código interno do paciente.
+
+      - name: cadastro_permanente
+        description: Indicação se o paciente possui cadastro permanente.
+
+      - name: data_atualizacao_cadastro
+        description: Data de atualização do cadastro do paciente.
+
+      - name: data_atualizacao_vinculo_equipe
+        description: Data de atualização do vínculo do paciente com equipe de saúde.
+
+      - name: data_cadastro
+        description: Data de criação do cadastro do paciente.
+
+      - name: obito
+        description: Este campo indica se o paciente é falecido.
+
+      - name: dnv
+        description: Declaração de Nascido Vivo (DNV) do paciente.
+
+      - name: email
+        description: Endereço de e-mail do paciente.
+        policy_tags: ['{{ var("TAG_EMAIL") }}']
+
+      - name: telefone
+        description: Número de telefone de contato do paciente.
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: situacao_usuario
+        description: Situação atual do usuário no sistema.
+
+      - name: situacao_familiar
+        description: Situação familiar do paciente.
+
+      - name: raca_cor
+        description: Raça ou cor declarada do paciente.
+
+      - name: religiao
+        description: Religião declarada do paciente.
+
+      - name: situacao_profissional
+        description: Situação profissional do paciente.
+
+      - name: nome_social
+        description: Nome social do paciente.
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: frequenta_escola
+        description: Indica se o paciente frequenta escola.
+
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags: ['{{ var("TAG_NOME_MAE") }}']
+
+      - name: nome_pai
+        description: Nome do pai do paciente.
+        policy_tags: ['{{ var("TAG_NOME_PAI") }}']
+
+      - name: membro_comunidade_tradicional
+        description: Indicação se o paciente é membro de uma comunidade tradicional.
+
+      - name: ocupacao
+        description: Ocupação profissional do paciente.
+
+      - name: orientacao_sexual
+        description: Orientação sexual declarada pelo paciente.
+
+      - name: nacionalidade
+        description: Nacionalidade do paciente.
+
+      - name: pais_nascimento
+        description: País de nascimento do paciente.
+
+      - name: participa_grupo_comunitario
+        description: Indica se o paciente participa de grupos comunitários.
+
+      - name: possui_plano_saude
+        description: Indica se o paciente possui plano de saúde.
+
+      - name: relacao_responsavel_familiar
+        description: Relação do responsável familiar com o paciente.
+
+      - name: territorio_social
+        description: Território social ao qual o paciente pertence.
+
+      - name: escolaridade
+        description: Nível de escolaridade do paciente.
+
+      - name: identidade_genero
+        description: Identidade de gênero declarada do paciente.
+
+      - name: crianca_matriculada_creche_pre_escola
+        description: Indica se criança está matriculada em creche ou pré-escola.
+
+      - name: em_situacao_de_rua
+        description: Indica se o paciente está em situação de rua.
+
+      - name: doencas_condicoes
+        description: Doenças ou condições de saúde registradas no paciente.
+
+      - name: estado_nascimento
+        description: Estado de nascimento do paciente.
+
+      - name: estado_residencia
+        description: Estado de residência do paciente.
+
+      - name: municipio_nascimento
+        description: Município de nascimento do paciente.
+
+      - name: municipio_residencia
+        description: Município de residência do paciente.
+
+      - name: abastecimento_agua
+        description: Forma de abastecimento de água na residência do paciente.
+
+      - name: animais_no_domicilio
+        description: Indica se há animais no domicílio do paciente.
+
+      - name: bairro
+        description: Bairro de residência do paciente.
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: cep
+        description: Código de Endereçamento Postal (CEP) da residência.
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: comodos
+        description: Quantidade de cômodos no domicílio.
+
+      - name: destino_lixo
+        description: Tipo de destino dado ao lixo no domicílio do paciente.
+
+      - name: esgotamento_sanitario
+        description: Tipo de esgotamento sanitário do domicílio.
+
+      - name: familia_beneficiaria_auxilio_brasil
+        description: Indica se a família é beneficiária do Auxílio Brasil.
+
+      - name: familia_beneficiaria_cfc
+        description: Indica se a família é beneficiária do CFC.
+
+      - name: logradouro
+        description: Logradouro da residência.
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: luz_eletrica
+        description: Indica se o domicílio possui energia elétrica.
+
+      - name: meios_comunicacao
+        description: Meios de comunicação disponíveis na residência.
+
+      - name: meios_transporte
+        description: Meios de transporte utilizados pelo paciente.
+
+      - name: possui_filtro_agua
+        description: Indica se há filtro de água no domicílio.
+
+      - name: renda_familiar
+        description: Faixa de renda familiar do paciente.
+
+      - name: responsavel_familiar
+        description: Indica se o paciente é o responsável familiar.
+
+      - name: situacao_moradia_posse
+        description: Situação de posse da moradia.
+
+      - name: tipo_domicilio
+        description: Tipo de domicílio onde o paciente reside.
+
+      - name: tipo_logradouro
+        description: Tipo do logradouro (rua, avenida, etc).
+
+      - name: tratamento_agua
+        description: Tipo de tratamento de água realizado.
+
+      - name: em_caso_doenca_procura
+        description: Indica onde o paciente procura atendimento em caso de doença.
+
+      - name: tempo_moradia
+        description: Tempo de moradia no domicílio atual.
+
+      - name: familia_localizacao
+        description: Localização da família no território.
+
+      - name: codigo_equipe
+        description: Código da equipe de saúde responsável.
+
+      - name: equipe
+        description: Nome da equipe de saúde responsável.
+
+      - name: ine_equipe
+        description: Código INE da equipe de saúde responsável.
+
+      - name: microarea
+        description: Código da microárea de atuação da equipe de saúde.
+
+      - name: vulnerabilidade_social
+        description: Vulnerabilidades sociais associadas ao paciente.
+
+      - name: updated_at
+        description: Data de atualização da informação no sistema.
+
+      - name: loaded_at
+        description: Data de carregamento do registro no BigQuery.
+
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

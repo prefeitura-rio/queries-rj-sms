@@ -1,0 +1,688 @@
+models:
+  - name: mart_hackathon_coppe__regulacao_solicitacoes
+    description: Tabela contendo registros de solicitacoes feitas no SISREG.
+    columns:
+      - name: profissional_solicitante_id
+        description: Codigo unico que representa o profissional que fez a solicitacao.
+        data_type: string
+        quote: true
+      - name: operador_solicitante_id
+        description: Identificador do operador que registrou a solicitacao.
+        data_type: string
+        quote: true
+      - name: operador_cancelamento_id
+        description: Identificador do operador que cancelou a solicitacao.
+        data_type: string
+        quote: true
+      - name: central_solicitante
+        description: Nome da central solicitante.
+        data_type: string
+        quote: true
+      - name: central_reguladora
+        description: Nome da central reguladora.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_id_cnes
+        description: Codigo CNES da unidade de saude que abriu a solicitacao.
+        data_type: string
+        quote: true
+      - name: unidade_desejada_id_cnes
+        description: Codigo CNES da unidade onde se pretende realizar o procedimento.
+        data_type: string
+        quote: true
+      - name: paciente_id
+        description: Identificador do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_sexo
+        description: Sexo biologico do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_faixa_etaria
+        description: Faixa etaria calculada a partir da data de nascimento.
+        data_type: string
+        quote: true
+      - name: solicitacao_id
+        description: Chave primaria da solicitacao no sistema.
+        data_type: string
+        quote: true
+      - name: data_solicitacao
+        description: Data e hora em que a solicitacao foi criada.
+        data_type: timestamp
+        quote: true
+      - name: data_desejada
+        description: Data e hora pretendida para o procedimento solicitado.
+        data_type: timestamp
+        quote: true
+      - name: data_cancelamento
+        description: Data e hora em que a solicitacao foi cancelada.
+        data_type: timestamp
+        quote: true
+      - name: data_atualizacao
+        description: Data e hora da ultima alteracao na solicitacao.
+        data_type: timestamp
+        quote: true
+      - name: solicitacao_status
+        description: Estado atual da solicitacao.
+        data_type: string
+        quote: true
+      - name: solicitacao_situacao
+        description: Estado atual da solicitacao.
+        data_type: string
+        quote: true
+      - name: solicitacao_visualizada_regulador
+        description: Flag que indica se o regulador ja visualizou a solicitacao.
+        data_type: string
+        quote: true
+      - name: solicitacao_risco
+        description: Nivel de risco clinico associado (Azul, Verde, ... , Vermelho)
+        data_type: string
+        quote: true
+      - name: procedimento_sisreg_id
+        description: Codigo do procedimento solicitado no SISREG.
+        data_type: string
+        quote: true
+      - name: vaga_solicitada_tp
+        description: Tipo de vaga solicitada.
+        data_type: string
+        quote: true
+      - name: cid_id
+        description: Codigo CID que descreve o diagnostico relacionado.
+        data_type: string
+        quote: true
+      - name: laudo_descricao_tp
+        description: Tipo de laudo.
+        data_type: string
+        quote: true
+      - name: laudo_situacao
+        description: Status do laudo.
+        data_type: string
+        quote: true
+      - name: laudo_data_observacao
+        description: Data e hora em que observacoes foram adicionadas ao laudo.
+        data_type: timestamp
+        quote: true
+
+  - name: mart_hackathon_coppe__regulacao_marcacoes
+    description: Tabela contendo registros de marcacoes feitas no SISREG.
+    columns:
+      - name: profissional_solicitante_id
+        description: Identificador do profissional que solicitou o agendamento.
+        data_type: string
+        quote: true
+      - name: profissional_executante_id
+        description: Identificador do profissional que realizou o procedimento.
+        data_type: string
+        quote: true
+      - name: operador_solicitante_id
+        description: Identificador do operador que registrou a solicitacao.
+        data_type: string
+        quote: true
+      - name: operador_autorizador_id
+        description: Identificador do operador que aprovou a marcacao.
+        data_type: string
+        quote: true
+      - name: operador_cancelamento_id
+        description: Identificador do operador que cancelou a marcacao.
+        data_type: string
+        quote: true
+      - name: operador_videofonista_id
+        description: Identificador do operador responsavel por confirmacao via telefone ou video.
+        data_type: string
+        quote: true
+      - name: central_solicitante
+        description: Nome da central solicitante.
+        data_type: string
+        quote: true
+      - name: central_reguladora
+        description: Nome da central reguladora.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_id_cnes
+        description: Codigo CNES da unidade que pediu o agendamento.
+        data_type: string
+        quote: true
+      - name: unidade_desejada_id_cnes
+        description: Codigo CNES da unidade preferida pelo paciente.
+        data_type: string
+        quote: true
+      - name: unidade_executante_id_cnes
+        description: Codigo CNES da unidade que executou o procedimento.
+        data_type: string
+        quote: true
+      - name: paciente_id
+        description: Identificador do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_sexo
+        description: Sexo biologico do paciente.
+        data_type: string
+        quote: true
+      - name: paciente_faixa_etaria
+        description: Faixa etaria do paciente.
+        data_type: string
+        quote: true
+      - name: solicitacao_id
+        description: Identificador da solicitacao original associada.
+        data_type: string
+        quote: true
+      - name: data_solicitacao
+        description: Data e hora em que a solicitacao foi registrada.
+        data_type: timestamp
+        quote: true
+      - name: data_desejada
+        description: Data e hora pretendida para o atendimento.
+        data_type: timestamp
+        quote: true
+      - name: data_aprovacao
+        description: Data em que a solicitacao recebeu aprovacao.
+        data_type: timestamp
+        quote: true
+      - name: data_confirmacao
+        description: Data em que o agendamento foi confirmado.
+        data_type: timestamp
+        quote: true
+      - name: data_marcacao
+        description: Data em que o procedimento sera realizado.
+        data_type: timestamp
+        quote: true
+      - name: data_cancelamento
+        description: Data em que a marcacao foi cancelada.
+        data_type: timestamp
+        quote: true
+      - name: data_atualizacao
+        description: Data da ultima alteracao no registro.
+        data_type: timestamp
+        quote: true
+      - name: solicitacao_status
+        description: Estado da solicitacao.
+        data_type: string
+        quote: true
+      - name: solicitacao_situacao
+        description: Estado da solicitacao.
+        data_type: string
+        quote: true
+      - name: solicitacao_visualizada_regulador
+        description: Flag que indica se o regulador ja visualizou a solicitacao.
+        data_type: string
+        quote: true
+      - name: solicitacao_risco
+        description: Nivel de risco clinico associado (Azul, Verde, ... , Vermelho)
+        data_type: string
+        quote: true
+      - name: paciente_avisado
+        description: Flag que indica se o paciente foi notificado.
+        data_type: string
+        quote: true
+      - name: marcacao_executada
+        description: Indica se o atendimento ocorreu conforme marcado.
+        data_type: string
+        quote: true
+      - name: falta_registrada
+        description: Indica se houve falta do paciente.
+        data_type: string
+        quote: true
+      - name: procedimento_sisreg_id
+        description: Codigo do procedimento marcado no SISREG.
+        data_type: string
+        quote: true
+      - name: vaga_solicitada_tp
+        description: Tipo de vaga solicitada.
+        data_type: string
+        quote: true
+      - name: vaga_consumida_tp
+        description: Tipo de vaga efetivamente utilizada.
+        data_type: string
+        quote: true
+      - name: cid_solicitado_id
+        description: CID informado na solicitacao.
+        data_type: string
+        quote: true
+      - name: cid_agendado_id
+        description: CID utilizado no agendamento final.
+        data_type: string
+        quote: true
+      - name: laudo_descricao_tp
+        description: Tipo de laudo.
+        data_type: string
+        quote: true
+      - name: laudo_situacao
+        description: Status do laudo associado.
+        data_type: string
+        quote: true
+      - name: laudo_data_observacao
+        description: Data da ultima observacao no laudo.
+        data_type: timestamp
+        quote: true
+
+  - name: mart_hackathon_coppe__regulacao_oferta_programada
+    description: Tabela com a programacao de vagas a serem oferecidas pelos profissionais.
+    columns:
+      - name: escala_id
+        description: Identificador unico da escala ambulatorial programada.
+        data_type: string
+        quote: true
+      - name: unidade_solicitante_id_cnes
+        description: Codigo CNES da unidade que disponibiliza a agenda.
+        data_type: string
+        quote: true
+      - name: profissional_executante_id
+        description: Identificador do profissional que prestara o atendimento.
+        data_type: string
+        quote: true
+      - name: procedimento_sisreg_id
+        description: Codigo do procedimento ofertado na escala.
+        data_type: string
+        quote: true
+      - name: escala_vigencia_data_inicial
+        description: Data em que a escala passa a valer.
+        data_type: date
+        quote: true
+      - name: escala_vigencia_data_final
+        description: Data em que a escala deixa de valer.
+        data_type: date
+        quote: true
+      - name: ano
+        description: Ano associado a data ofertada.
+        data_type: int64
+        quote: true
+      - name: mes
+        description: Mes associado a data ofertada.
+        data_type: int64
+        quote: true
+      - name: data
+        description: Data especifica da oferta de vagas.
+        data_type: date
+        quote: true
+      - name: dia_semana
+        description: Dia da semana correspondente a data.
+        data_type: string
+        quote: true
+      - name: vagas_programadas_primeira_vez
+        description: Numero de vagas reservadas para primeiras consultas.
+        data_type: int64
+        quote: true
+      - name: vagas_programadas_reserva
+        description: Numero de vagas mantidas como reserva tecnica.
+        data_type: int64
+        quote: true
+      - name: vagas_programadas_retorno
+        description: Numero de vagas destinadas a retornos de pacientes.
+        data_type: int64
+        quote: true
+      - name: vagas_programadas_todas
+        description: Total de vagas incluindo todas as categorias.
+        data_type: int64
+        quote: true
+
+  - name: mart_hackathon_coppe__regulacao_tempos_espera
+    description: Tabela contendo indicadores de tempo de espera de procedimentos no SISREG.
+    columns:
+      - name: ano_marcacao
+        description: Ano em que o procedimento foi agendado.
+        data_type: int64
+        quote: true
+      - name: mes_marcacao
+        description: Mes em que o procedimento foi agendado.
+        data_type: int64
+        quote: true
+      - name: procedimento
+        description: Nome do procedimento analisado.
+        data_type: string
+        quote: true
+      - name: n_execucoes
+        description: Numero de execucoes do procedimento no periodo.
+        data_type: int64
+        quote: true
+      - name: tempo_medio_espera
+        description: Media, em dias, entre solicitacao e execucao.
+        data_type: float64
+        quote: true
+      - name: tempo_espera_mediano
+        description: Mediana, em dias, dos tempos de espera.
+        data_type: float64
+        quote: true
+      - name: tempo_espera_90_percentil
+        description: Valor abaixo do qual 90 por cento dos atendimentos ocorreram.
+        data_type: float64
+        quote: true
+      - name: tempo_espera_desvio_padrao
+        description: Desvio padrao dos tempos de espera.
+        data_type: float64
+        quote: true
+      - name: intervalo_confianca_95_inferior
+        description: Limite inferior do IC 95 por cento para a media de espera.
+        data_type: float64
+        quote: true
+      - name: intervalo_confianca_95_superior
+        description: Limite superior do IC 95 por cento para a media de espera.
+        data_type: float64
+        quote: true
+      - name: tempo_medio_espera_movel_3m
+        description: Media movel de 3 meses dos tempos de espera.
+        data_type: float64
+        quote: true
+      - name: tempo_medio_espera_movel_6m
+        description: Media movel de 6 meses dos tempos de espera.
+        data_type: float64
+        quote: true
+      - name: tempo_medio_espera_movel_12m
+        description: Media movel de 12 meses dos tempos de espera.
+        data_type: float64
+        quote: true
+
+  - name: mart_hackathon_coppe__regulacao_procedimentos
+    description: Tabela contendo procedimentos oferecidos no SISREG e suas caracteristicas.
+    columns:
+      - name: procedimento_sisreg_id
+        description: Codigo identificador do procedimento no SISREG.
+        data_type: string
+        quote: true
+      - name: procedimento
+        description: Nome completo do procedimento.
+        data_type: string
+        quote: true
+      - name: procedimento_tipo
+        description: Categoria geral do procedimento.
+        data_type: string
+        quote: true
+      - name: procedimento_especialidade
+        description: Especialidade medica relacionada ao procedimento.
+        data_type: string
+        quote: true
+      - name: vagas_esperadas_hora
+        description: Quantidade prevista de vagas por hora.
+        data_type: float64
+        quote: true
+      - name: proporcao_esperada_primeira_vez
+        description: Percentual planejado para pacientes de primeira vez ou reserva.
+        data_type: float64
+        quote: true
+      - name: proporcao_esperada_retorno
+        description: Percentual planejado para consultas de retorno.
+        data_type: float64
+        quote: true
+
+  - name: mart_hackathon_coppe__unidades_rio_historico
+    description: Tabela proveniente do CNES com informacoes de unidades de saude no Municipio do Rio de Janeiro.
+    columns:
+      - name: ano
+        description: Ano da competencia do registro.
+        data_type: int64
+        quote: true
+      - name: mes
+        description: Mes da competencia do registro.
+        data_type: int64
+        quote: true
+      - name: unidade_id_cnes
+        description: Codigo CNES da unidade de saude.
+        data_type: string
+        quote: true
+      - name: unidade_nome
+        description: Nome da unidade.
+        data_type: string
+        quote: true
+      - name: unidade_esfera
+        description: Nivel administrativo (municipal publico, municipal privado, estadual, ...).
+        data_type: string
+        quote: true
+      - name: unidade_tipo
+        description: Tipo especifico de estabelecimento.
+        data_type: string
+        quote: true
+      - name: unidade_tipo_agrupado
+        description: Agrupamento mais amplo do tipo de unidade.
+        data_type: string
+        quote: true
+      - name: unidade_gestao
+        description: Orgao gestor responsavel pela unidade.
+        data_type: string
+        quote: true
+      - name: unidade_nat_jur
+        description: Natureza juridica da unidade.
+        data_type: string
+        quote: true
+      - name: unidade_turno_atendimento
+        description: Turnos de funcionamento.
+        data_type: string
+        quote: true
+      - name: unidade_area_programatica
+        description: Area programatica onde a unidade esta situada.
+        data_type: string
+        quote: true
+      - name: unidade_bairro
+        description: Bairro onde a unidade esta situada.
+        data_type: string
+        quote: true
+      - name: unidade_latitude
+        description: Coordenada latitude em graus decimais.
+        data_type: float64
+        quote: true
+      - name: unidade_longitude
+        description: Coordenada longitude em graus decimais.
+        data_type: float64
+        quote: true
+      - name: indicador_unidade_ativa
+        description: Flag que sinaliza se a unidade estava ativa (1 ou 0).
+        data_type: string
+        quote: true
+      - name: indicador_unidade_sms
+        description: Indica participacao na rede da Secretaria Municipal de Saude (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+      - name: indicador_unidade_sus
+        description: Indica participacao no SUS em qualquer modalidade (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+      - name: indicador_unidade_sus_internacao
+        description: Indica se oferece leitos SUS (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+      - name: indicador_unidade_sus_ambulatorial
+        description: Indica se oferece servicos ambulatoriais SUS (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+      - name: indicador_unidade_sus_sadt
+        description: Indica se oferece servicos de diagnostico e terapia SUS (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+      - name: indicador_unidade_sus_urgencia
+        description: Indica se possui pronto atendimento SUS (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+      - name: indicador_unidade_sus_vigilancia
+        description: Indica se realiza atividades de vigilancia em saude SUS (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+      - name: indicador_unidade_sus_regulacao
+        description: Indica se participa de processos de regulacao SUS (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+      - name: indicador_unidade_sus_outros
+        description: Indica outros servicos SUS nao classificados acima (1 sim, 0 nao).
+        data_type: int64
+        quote: true
+
+  - name: mart_hackathon_coppe__profissionais_rio_historico
+    description: Tabela proveniente do CNES com informacoes de profissionais de saude no Municipio do Rio de Janeiro.
+    columns:
+      - name: ano
+        description: Ano da competenca do registro.
+        data_type: int64
+        quote: true
+      - name: mes
+        description: Mes da competenca do registro.
+        data_type: int64
+        quote: true
+      - name: unidade_id_cnes
+        description: Codigo CNES da unidade onde o profissional atua.
+        data_type: string
+        quote: true
+      - name: profissional_id
+        description: Identificador do profissional.
+        data_type: string
+        quote: true
+      - name: profissional_ocupacao
+        description: Familia ocupacional principal segundo CBO.
+        data_type: string
+        quote: true
+      - name: profissional_ocupacao_especifica
+        description: Ocupacao especifica segundo CBO detalhado.
+        data_type: string
+        quote: true
+      - name: profissional_vinculo
+        description: Tipo de vinculo geral.
+        data_type: string
+        quote: true
+      - name: profissional_vinculo_especifico
+        description: Detalhe adicional do tipo de contrato.
+        data_type: string
+        quote: true
+      - name: profissional_carga_horaria_semanal_ambulatorial
+        description: Horas semanais dedicadas ao ambulatorio.
+        data_type: int64
+        quote: true
+      - name: profissional_carga_horaria_semanal_hospitalar
+        description: Horas semanais dedicadas a atividades hospitalares.
+        data_type: int64
+        quote: true
+      - name: profissional_carga_horaria_semanal_outros
+        description: Horas semanais em outras atividades.
+        data_type: int64
+        quote: true
+      - name: profissional_carga_horaria_semanal_total
+        description: Soma de todas as cargas horarias semanais.
+        data_type: int64
+        quote: true
+
+  - name: mart_hackathon_coppe__leitos_rio_historico
+    description: Tabela proveniente do CNES com informacoes de leitos de saude no Municipio do Rio de Janeiro.
+    columns:
+      - name: ano
+        description: Ano da competencia do leito.
+        data_type: int64
+        quote: true
+      - name: mes
+        description: Mes da competencia do leito.
+        data_type: int64
+        quote: true
+      - name: unidade_id_cnes
+        description: Codigo CNES da unidade detentora do leito.
+        data_type: string
+        quote: true
+      - name: leito
+        description: Tipo de leito (clinico, UTI adulto etc.).
+        data_type: string
+        quote: true
+      - name: leito_especialidade
+        description: Especialidade a que o leito esta vinculado.
+        data_type: string
+        quote: true
+      - name: leito_quantidade_sus
+        description: Numero de leitos disponiveis para o SUS.
+        data_type: int64
+        quote: true
+      - name: leito_quantidade_contratado
+        description: Numero de leitos contratados.
+        data_type: int64
+        quote: true
+      - name: leito_quantidade_total
+        description: Total de leitos disponiveis na unidade.
+        data_type: int64
+        quote: true
+
+  - name: mart_hackathon_coppe__habilitacoes_rio_historico
+    description: Tabela proveniente do CNES com informacoes de habilitacoes de unidades de saude no Municipio do Rio de Janeiro.
+    columns:
+      - name: ano
+        description: Ano da competenca da habilitacao.
+        data_type: int64
+        quote: true
+      - name: mes
+        description: Mes da competenca da habilitacao.
+        data_type: int64
+        quote: true
+      - name: unidade_id_cnes
+        description: Codigo CNES da unidade habilitada.
+        data_type: string
+        quote: true
+      - name: habilitacao
+        description: Tipo de habilitacao concedida.
+        data_type: string
+        quote: true
+      - name: habilitacao_ano_inicio
+        description: Ano em que a habilitacao iniciou.
+        data_type: int64
+        quote: true
+      - name: habilitacao_ano_fim
+        description: Ano em que a habilitacao encerrou.
+        data_type: int64
+        quote: true
+      - name: habilitacao_mes_inicio
+        description: Mes em que a habilitacao iniciou.
+        data_type: int64
+        quote: true
+      - name: habilitacao_mes_fim
+        description: Mes em que a habilitacao encerrou.
+        data_type: int64
+        quote: true
+      - name: habilitacao_ativa_indicador
+        description: Flag 1 se a habilitacao esta ativa, 0 caso contrario.
+        data_type: int64
+        quote: true
+
+  - name: mart_hackathon_coppe__equipamentos_rio_historico
+    description: Tabela proveniente do CNES com informacoes de equipamentos de unidades de saude no Municipio do Rio de Janeiro.
+    columns:
+      - name: ano
+        description: Ano da competencia do equipamento.
+        data_type: int64
+        quote: true
+      - name: mes
+        description: Mes da competencia do equipamento.
+        data_type: int64
+        quote: true
+      - name: unidade_id_cnes
+        description: Codigo CNES da unidade que possui o equipamento.
+        data_type: string
+        quote: true
+      - name: equipamento
+        description: Categoria geral do equipamento (tomografo, raio X etc.).
+        data_type: string
+        quote: true
+      - name: equipamento_especifico
+        description: Descricao detalhada do equipamento (ex. tomografo 64 canais).
+        data_type: string
+        quote: true
+      - name: equipamentos_quantidade
+        description: Quantidade total de unidades do equipamento.
+        data_type: int64
+        quote: true
+      - name: equipamentos_quantidade_ativos
+        description: Quantidade de unidades em funcionamento.
+        data_type: int64
+        quote: true
+
+  - name: mart_hackathon_coppe__cids
+    description: Tabela contendo classificacoes da CID (Classificacao Internacional de Doencas).
+    columns:
+      - name: cid_id
+        description: Codigo unico para a doenca na CID-10.
+        data_type: string
+        quote: true
+      - name: cid
+        description: Descricao textual da doenca.
+        data_type: string
+        quote: true
+      - name: cid_categoria
+        description: Categoria intermediaria na hierarquia CID-10.
+        data_type: record
+        quote: true
+      - name: cid_capitulo
+        description: Capitulo superior da CID-10 que agrupa categorias relacionadas.
+        data_type: record
+        quote: true
+      - name: cid_grupo
+        description: Grupo dentro do capitulo que refina ainda mais a classificacao.
+        data_type: record
+        quote: true

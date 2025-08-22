@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__prescricao
+    description: Tabela contendo informações sobre medicamentos prescritos para pacientes.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde a prescrição foi emitida.
+      - name: medicamento_nome
+        description: Nome do medicamento prescrito.
+      - name: id_medicamento
+        description: Código identificador do medicamento.
+      - name: posologia
+        description: Descrição da posologia do medicamento.
+      - name: quantidade
+        description: Quantidade do medicamento prescrita.
+      - name: uso_continuado
+        description: Indica se o medicamento é de uso contínuo.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

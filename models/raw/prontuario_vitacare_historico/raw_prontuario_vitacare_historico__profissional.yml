@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__profissional
+    description: Tabela contendo informações detalhadas sobre os profissionais de saúde.
+    columns:
+      - name: id_prof
+        description: Identificador único do profissional de saúde.
+
+      - name: profissional_cns
+        description: Cartão Nacional de Saúde (CNS) do profissional.
+        policy_tags: ['{{ var("TAG_CNS") }}']
+
+      - name: profissional_cpf
+        description: Cadastro de Pessoa Física (CPF) do profissional.
+        policy_tags: ['{{ var("TAG_CPF") }}']
+
+      - name: profissional_nome
+        description: Nome completo do profissional de saúde.
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: n_registro
+        description: Número de registro profissional.
+
+      - name: profissional_cbo
+        description: Código Brasileiro de Ocupações (CBO) do profissional.
+
+      - name: profissional_cbo_descricao
+        description: Descrição da ocupação do profissional conforme o CBO.
+      
+      - name: profissional_equipe_nome
+        description: Nome da equipe a qual o profissional está vinculado.
+      
+      - name: profissional_equipe_cod_equipe
+        description: Código da equipe do profissional.
+      
+      - name: profissional_equipe_cod_ine
+        description: Código INE (Identificador Nacional de Equipe) da equipe do profissional.
+      
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

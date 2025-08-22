@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__saudebucal
+    description: Tabela contendo informações detalhadas sobre atendimentos e avaliações de saúde bucal de pacientes, incluindo queixas, achados clínicos, tratamentos realizados e necessidade de próteses.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o atendimento de saúde bucal foi realizado.
+      - name: queixa_principal
+        description: A principal queixa relatada pelo paciente relacionada à saúde bucal.
+      - name: lesoes_na_mucosa
+        description: Indica a presença de lesões na mucosa bucal.
+      - name: lesoes_na_mucosa_descricao
+        description: Descrição detalhada das lesões encontradas na mucosa bucal.
+      - name: fluorose
+        description: Indica a presença e o grau de fluorose dentária.
+      - name: alteracoes_do_esmalte
+        description: Descrição de quaisquer alterações ou anomalias no esmalte dos dentes.
+      - name: articulacao_temporomandibular
+        description: Avaliação da articulação temporomandibular (ATM).
+      - name: oclusao
+        description: Avaliação da oclusão dentária (encaixe dos dentes).
+      - name: anomalia_congenita
+        description: Indica a presença de anomalias congênitas na cavidade oral.
+      - name: habitos_prejudiciais
+        description: Descrição de hábitos orais prejudiciais (exemplo bruxismo, sucção de dedo).
+      - name: necessidade_de_protese
+        description: Indica se o paciente necessita de algum tipo de prótese dentária.
+      - name: atividade_de_carie
+        description: Nível de atividade de cárie dentária.
+      - name: ultima_visita_ao_dentista
+        description: Data da última visita do paciente ao dentista.
+      - name: observacoes_da_avaliacao_clinica
+        description: Observações adicionais da avaliação clínica odontológica.
+      - name: tipo_de_demanda
+        description: Tipo de demanda que levou ao atendimento (exemplo espontânea, programada).
+      - name: vigilancia_em_saude_bucal
+        description: Tipo de vigilância em saúde bucal realizada.
+      - name: tipo_de_tratamento
+        description: Descrição do tipo de tratamento odontológico realizado ou planejado.
+      - name: suprimentos_individuais_fornecidos
+        description: Lista de suprimentos individuais de higiene bucal fornecidos ao paciente.
+      - name: alta_do_tratamento
+        description: Indica se o paciente recebeu alta do tratamento odontológico.
+      - name: data_da_alta
+        description: Data em que o paciente recebeu alta do tratamento.
+      - name: tipo_de_alta
+        description: Motivo ou tipo de alta do tratamento odontológico.
+      - name: numero_de_dentes_em_tratamento
+        description: Número de dentes que estão recebendo tratamento.
+      - name: atividade_de_doenca_periodontal
+        description: Nível de atividade de doença periodontal.
+      - name: avaliacao
+        description: Avaliação geral do estado de saúde bucal.
+      - name: observacoes_da_avaliacao
+        description: Observações adicionais sobre a avaliação de saúde bucal.
+      - name: procedimentos_realizados
+        description: Descrição dos procedimentos odontológicos realizados.
+      - name: avaliacao_seguinte_1716
+        description: Avaliação de dentes específicos (17 e 16).
+      - name: avaliacao_seguinte_11
+        description: Avaliação de dente específico (11).
+      - name: avaliacao_seguinte_2627
+        description: Avaliação de dentes específicos (26 e 27).
+      - name: avaliacao_seguinte_3637
+        description: Avaliação de dentes específicos (36 e 37).
+      - name: avaliacao_seguinte_31
+        description: Avaliação de dente específico (31).
+      - name: avaliacao_seguinte_4746
+        description: Avaliação de dentes específicos (47 e 46).
+      - name: uso_de_protese_dentaria
+        description: Informa se o paciente faz uso de prótese dentária.
+      - name: encaminhamento_especialidade
+        description: Especialidade para a qual o paciente foi encaminhado, se aplicável.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__arbovirose
+    description: Tabela contendo informações detalhadas sobre casos suspeitos ou confirmados de arboviroses (como Dengue, Zika, Chikungunya), incluindo sintomas, sinais de alarme e classificação.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o atendimento ou registro de arbovirose foi realizado.
+      - name: data_inicio_sintomas
+        description: Data e hora de início dos primeiros sintomas relatados pelo paciente.
+      - name: definicao_caso
+        description: Classificação da definição do caso de arbovirose (exemplo suspeito, provável, confirmado, descartado).
+      - name: dias_com_febre
+        description: Número de dias em que o paciente apresentou febre.
+      - name: episodios_de_vomito
+        description: Número de episódios de vômito relatados pelo paciente.
+      - name: vomito_persistente
+        description: Indica se o paciente apresentou vômito persistente (Sim/Não).
+      - name: sintomas_de_alarme
+        description: Descrição dos sintomas de alarme observados que indicam gravidade.
+      - name: observacoes_sintomas
+        description: Campo para observações adicionais sobre os sintomas apresentados.
+      - name: comorbidades_vulnerabilidade
+        description: Indica se o paciente possui comorbidades ou condições de vulnerabilidade.
+      - name: teste_do_torniquete
+        description: Resultado do teste do torniquete, usado para avaliar fragilidade capilar em casos de dengue.
+      - name: sangramento_gengival
+        description: Indica se o paciente apresentou sangramento gengival.
+      - name: dor_palpacao_abdominal
+        description: Indica se há dor à palpação abdominal.
+      - name: figado_aumentado
+        description: Indica se o fígado do paciente está aumentado.
+      - name: acumulacao_liquido
+        description: Indica se há acúmulo de líquido (exemplo ascite, derrame pleural).
+      - name: letargia_observada
+        description: Indica se o paciente apresentou letargia (sonolência anormal).
+      - name: irritabilidade_observada
+        description: Indica se o paciente apresentou irritabilidade.
+      - name: tipo_acumulacao_liquido
+        description: Tipo de acúmulo de líquido observado, se aplicável.
+      - name: grupo_classificacao
+        description: Grupo de classificação da arbovirose, conforme critérios clínicos.
+      - name: sinan
+        description: Código de notificação do caso no Sistema de Informação de Agravos de Notificação (SINAN).
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

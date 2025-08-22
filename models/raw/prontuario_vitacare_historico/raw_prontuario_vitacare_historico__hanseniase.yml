@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__hanseniase
+    description: Tabela contendo dados detalhados de casos de hanseníase, incluindo informações sobre diagnóstico, tratamento, acompanhamento e grau de incapacidade dos pacientes.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o registro de hanseníase foi realizado.
+      - name: data_notificacao
+        description: Data de notificação do caso de hanseníase.
+      - name: num_lesoes_cut
+        description: Número de lesões cutâneas observadas no paciente.
+      - name: forma_clinica
+        description: Classificação da forma clínica da hanseníase (exemplo Tuberculoide, Virchowiana, Dimorfa, Indeterminada).
+      - name: classificacao_operacional
+        description: Classificação operacional do caso de hanseníase (Paucibacilar ou Multibacilar).
+      - name: num_nervos_afetados
+        description: Número de nervos periféricos afetados pela doença.
+      - name: avaliacao_grau_incapacidade
+        description: Grau de incapacidade física avaliado no paciente.
+      - name: modo_entrada
+        description: Modo de entrada do paciente no sistema de tratamento (exemplo caso novo, recidiva, transferência).
+      - name: baciloscopia
+        description: Resultado do exame de baciloscopia (positivo, negativo, não realizado).
+      - name: data_exame_histopatologico
+        description: Data da realização do exame histopatológico.
+      - name: resultado_exame_histopatologico
+        description: Resultado do exame histopatológico.
+      - name: data_inicio_tratamento
+        description: Data de início do tratamento da hanseníase.
+      - name: idade_inicio_tratamento
+        description: Idade do paciente no início do tratamento.
+      - name: esquema_terapeutico
+        description: Descrição do esquema terapêutico (medicamentos e dosagens) utilizado.
+      - name: historia_clinica_doenca_observacoes
+        description: Observações adicionais sobre a história clínica da doença do paciente.
+      - name: incapacidade_olho
+        description: Grau de incapacidade ou comprometimento nos olhos devido à hanseníase.
+      - name: incapacidade_mao
+        description: Grau de incapacidade ou comprometimento nas mãos devido à hanseníase.
+      - name: incapacidade_pe
+        description: Grau de incapacidade ou comprometimento nos pés devido à hanseníase.
+      - name: maior_grau_avaliado_tratamento
+        description: O maior grau de incapacidade avaliado durante o tratamento.
+      - name: comprometimento_laringeo
+        description: Indica se há comprometimento laríngeo.
+      - name: desabamento_nasal
+        description: Indica se houve desabamento nasal.
+      - name: paralisia_facial
+        description: Indica se há paralisia facial.
+      - name: observacoes_notas_gerais
+        description: Campo para observações e notas gerais sobre o caso.
+      - name: exame_contatos_resultado
+        description: Resultado do exame dos contatos do paciente.
+      - name: dados_acompanhamento_condicao
+        description: Detalhes da condição do paciente durante o acompanhamento.
+      - name: dados_acompanhamento_observacoes
+        description: Observações adicionais sobre os dados de acompanhamento.
+      - name: data_exclusao
+        description: Data de exclusão do paciente do tratamento ou sistema.
+      - name: idade_na_exclusao
+        description: Idade do paciente na data de exclusão.
+      - name: motivo_exclusao
+        description: Motivo da exclusão do paciente (exemplo cura, óbito, abandono).
+      - name: numero_sinan_hansen
+        description: Número de notificação do caso no SINAN para hanseníase.
+      - name: hanseniase_comunicantes_referidos
+        description: Informações sobre comunicantes de hanseníase referidos.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

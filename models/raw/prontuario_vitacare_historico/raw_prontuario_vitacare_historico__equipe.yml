@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__equipe
+    description: Tabela contendo informações sobre as equipes de saúde, incluindo seus identificadores e associação a unidades.
+    columns:
+      - name: id_cnes
+        description: Código CNES da unidade de saúde à qual a equipe está vinculada.
+      - name: id
+        description: Identificador da equipe.
+      - name: codigo
+        description: Código de identificação da equipe.
+      - name: nome
+        description: Nome da equipe.
+      - name: n_ine
+        description: Número de Identificação Nacional de Equipe (INE).
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__condicao
+    description: Tabela contendo informações sobre as condições de saúde ou diagnósticos dos pacientes.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde a condição foi registrada.
+      - name: cod_cid10
+        description: Código da Classificação Internacional de Doenças (CID-10) referente à condição.
+      - name: estado
+        description: Estado atual da condição de saúde (por exemplo, ativo, resolvido).
+      - name: data_diagnostico
+        description: Data em que a condição foi diagnosticada.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no Datalake.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

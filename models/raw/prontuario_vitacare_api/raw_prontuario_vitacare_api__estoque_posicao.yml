@@ -52,7 +52,7 @@ models:
               name: raw_prontuario_vitacare_api__estoque_posicao__id_cnes__not_null
           - relationships:
               name: raw_prontuario_vitacare_api__estoque_posicao__id_cnes__relationship
-              to: ref('dim_estabelecimento')
+              to: ref('dim_estabelecimento_sus_rio_historico')
               field: id_cnes
 
       - name: id_lote

@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__unidade
+    description: Tabela contendo informações sobre as unidades de saúde.
+    columns:
+      - name: id_cnes
+        description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade.
+      - name: id
+      # -- ?
+        description: Id grupo
+      - name: unidade_nome
+        description: Nome da unidade de saúde.
+      - name: unidade_ap
+        description: Área programatica (AP) da unidade de saúde.
+      - name: tipo_entid
+        description: Tipo de entidade da unidade de saúde.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

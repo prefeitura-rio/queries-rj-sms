@@ -1,0 +1,228 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__saudecrianca
+    description: Tabela contendo informações detalhadas sobre a saúde e desenvolvimento de crianças, incluindo dados do período neonatal, crescimento, rastreios e avaliações de desenvolvimento.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário da criança.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário da criança, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde os dados de saúde da criança foram registrados.
+      - name: pp_neonatal
+        description: Informações sobre o período pós-parto neonatal.
+      - name: pp_neonatal_obs
+        description: Observações sobre o período pós-parto neonatal.
+      - name: anomalias_congenitas
+        description: Indica a presença de anomalias congênitas.
+      - name: reg_cresc_altura
+        description: Registro da altura no acompanhamento de crescimento.
+      - name: reg_cresc_peso
+        description: Registro do peso no acompanhamento de crescimento.
+      - name: observacoes
+        description: Observações gerais sobre a saúde da criança.
+      - name: reg_cresc_imc
+        description: Registro do Índice de Massa Corporal (IMC) no acompanhamento de crescimento.
+      - name: rastreios
+        description: Resultados de rastreios realizados.
+      - name: anamalias_cong_obs
+        description: Observações sobre anomalias congênitas.
+      - name: registocrescimentio_obs
+        description: Observações sobre o registro de crescimento.
+      - name: tipo_parto
+        description: Tipo de parto (exemplo normal, cesariana).
+      - name: peso_nascer
+        description: Peso da criança ao nascer (em kg).
+      - name: comprimento
+        description: Comprimento da criança ao nascer (em cm).
+      - name: perimetro_cefalico
+        description: Perímetro cefálico da criança ao nascer (em cm).
+      - name: indice_apgar_1_minuto
+        description: Índice de Apgar no 1º minuto.
+      - name: indice_apgar_5_minuto
+        description: Índice de Apgar no 5º minuto.
+      - name: reanimacao
+        description: Indica se foi necessária reanimação ao nascer.
+      - name: exame_ocular_queixas
+        description: Queixas relacionadas ao exame ocular.
+      - name: exame_ocular_doencas
+        description: Doenças oculares identificadas no exame.
+      - name: exame_ocular_necessita_oculos
+        description: Indica se a criança necessita de óculos.
+      - name: exame_ocular_referencia
+        description: Informações de referência do exame ocular.
+      - name: exame_ocular_estado
+        description: Estado geral do exame ocular.
+      - name: exame_ocular_observacoes
+        description: Observações sobre o exame ocular.
+      - name: teste_pezinho
+        description: Resultado do Teste do Pezinho.
+      - name: teste_pezinho_doencas
+        description: Doenças identificadas pelo Teste do Pezinho.
+      - name: reflexo_vermelho
+        description: Resultado do reflexo vermelho (teste do olhinho).
+      - name: teste_orelhinha
+        description: Resultado do Teste da Orelhinha.
+      - name: periodo_prenatal
+        description: Informações sobre o período pré-natal.
+      - name: denver_periodo_temporal
+        description: Período temporal de avaliação Denver.
+      - name: denver_postura
+        description: Avaliação da postura no teste de Denver.
+      - name: denver_observa_rosto
+        description: Avaliação da capacidade de observar rostos no teste de Denver.
+      - name: denver_reage_som
+        description: Avaliação da reação a sons no teste de Denver.
+      - name: denver_eleva_cabeca
+        description: Avaliação da capacidade de elevar a cabeça no teste de Denver.
+      - name: denver_sorriso
+        description: Avaliação do sorriso no teste de Denver.
+      - name: denver_abre_maos
+        description: Avaliação da capacidade de abrir as mãos no teste de Denver.
+      - name: denver_emite_sons
+        description: Avaliação da emissão de sons no teste de Denver.
+      - name: denver_movimentos
+        description: Avaliação dos movimentos no teste de Denver.
+      - name: denver_contato_social
+        description: Avaliação do contato social no teste de Denver.
+      - name: denver_segura_objetos
+        description: Avaliação da capacidade de segurar objetos no teste de Denver.
+      - name: denver_emite_sons_24_meses
+        description: Avaliação da emissão de sons em 24 meses no teste de Denver.
+      - name: denver_bruco_levanta_cabeca
+        description: Avaliação da capacidade de levantar a cabeça de bruços no teste de Denver.
+      - name: denver_busca_objetos
+        description: Avaliação da capacidade de buscar objetos no teste de Denver.
+      - name: denver_leva_objetos
+        description: Avaliação da capacidade de levar objetos no teste de Denver.
+      - name: denver_localiza_som
+        description: Avaliação da capacidade de localizar o som no teste de Denver.
+      - name: denver_muda_posicao_rola
+        description: Avaliação da capacidade de mudar de posição e rolar no teste de Denver.
+      - name: denver_brinca_esconde_achou
+        description: Avaliação da capacidade de brincar de esconde-achou no teste de Denver.
+      - name: denver_transfere_objetos
+        description: Avaliação da capacidade de transferir objetos no teste de Denver.
+      - name: denver_duplica_silabas
+        description: Avaliação da capacidade de duplicar sílabas no teste de Denver.
+      - name: denver_senta_sem_apoio
+        description: Avaliação da capacidade de sentar sem apoio no teste de Denver.
+      - name: denver_imita_gestos
+        description: Avaliação da capacidade de imitar gestos no teste de Denver.
+      - name: denver_faz_pinca
+        description: Avaliação da capacidade de fazer pinça no teste de Denver.
+      - name: denver_produz_jargao
+        description: Avaliação da capacidade de produzir jargão no teste de Denver.
+      - name: denver_anda_com_apoio
+        description: Avaliação da capacidade de andar com apoio no teste de Denver.
+      - name: denver_mostra_o_que_quer
+        description: Avaliação da capacidade de mostrar o que quer no teste de Denver.
+      - name: denver_coloca_blocos_caneca
+        description: Avaliação da capacidade de colocar blocos na caneca no teste de Denver.
+      - name: denver_diz_uma_palavra
+        description: Avaliação da capacidade de dizer uma palavra no teste de Denver.
+      - name: denver_anda_para_tras
+        description: Avaliação da capacidade de andar para trás no teste de Denver.
+      - name: denver_tira_roupa
+        description: Avaliação da capacidade de tirar a roupa no teste de Denver.
+      - name: denver_constroi_torre_3_cubos
+        description: Avaliação da capacidade de construir torre com 3 cubos no teste de Denver.
+      - name: denver_aponta_2_figuras
+        description: Avaliação da capacidade de apontar 2 figuras no teste de Denver.
+      - name: denver_chuta_bola
+        description: Avaliação da capacidade de chutar bola no teste de Denver.
+      - name: denver_veste_com_supervisao
+        description: Avaliação da capacidade de vestir-se com supervisão no teste de Denver.
+      - name: denver_constroi_torre_6_cubos
+        description: Avaliação da capacidade de construir torre com 6 cubos no teste de Denver.
+      - name: denver_frases_2_palavras
+        description: Avaliação da capacidade de formar frases com 2 palavras no teste de Denver.
+      - name: denver_pula_ambos_pes
+        description: Avaliação da capacidade de pular com ambos os pés no teste de Denver.
+      - name: denver_brinca_com_outras_criancas
+        description: Avaliação da capacidade de brincar com outras crianças no teste de Denver.
+      - name: denver_imita_linha_vertical
+        description: Avaliação da capacidade de imitar linha vertical no teste de Denver.
+      - name: denver_reconhece_2_acoes
+        description: Avaliação da capacidade de reconhecer 2 ações no teste de Denver.
+      - name: denver_arremessa_bola
+        description: Avaliação da capacidade de arremessar bola no teste de Denver.
+      - name: rastreios_testepezinho_observacoes
+        description: Observações sobre o resultado do teste do pezinho.
+      - name: rastreios_reflexovermelho_observacoes
+        description: Observações sobre o resultado do reflexo vermelho.
+      - name: rastreios_testeorelhinha_observacoes
+        description: Observações sobre o resultado do teste da orelhinha.
+      - name: tecnicas_especiais
+        description: Descrição de técnicas especiais utilizadas.
+      - name: tecnicas_especiais_outras
+        description: Outras informações sobre técnicas especiais.
+      - name: sintomas_acuidade_visual
+        description: Sintomas relacionados à acuidade visual.
+      - name: snellen_distancia_esq
+        description: Acuidade visual (distância) do olho esquerdo, conforme tabela de Snellen.
+      - name: snellen_distancia_dir
+        description: Acuidade visual (distância) do olho direito, conforme tabela de Snellen.
+      - name: snellen_tipo_optotipos_esq
+        description: Tipo de optotipos utilizados para o olho esquerdo no teste de Snellen.
+      - name: snellen_tipo_optotipos_dir
+        description: Tipo de optotipos utilizados para o olho direito no teste de Snellen.
+      - name: com_correcao_esq
+        description: Acuidade visual do olho esquerdo com correção.
+      - name: sem_correcao_esq
+        description: Acuidade visual do olho esquerdo sem correção.
+      - name: com_correcao_dir
+        description: Acuidade visual do olho direito com correção.
+      - name: sem_correcao_dir
+        description: Acuidade visual do olho direito sem correção.
+      - name: acuidade_visual_conduta
+        description: Conduta recomendada com base na acuidade visual.
+      - name: triagem_autismo_olha_objeto
+        description: Resposta da criança ao olhar para objetos na triagem de autismo.
+      - name: triagem_autismo_pode_ser_surda
+        description: Indica se há suspeita de surdez na triagem de autismo.
+      - name: triagem_autismo_brinca_faz_de_contas
+        description: Resposta da criança a brincadeiras de faz de conta na triagem de autismo.
+      - name: triagem_autismo_subir_nas_coisas
+        description: Resposta da criança a subir em coisas na triagem de autismo.
+      - name: triagem_autismo_movimentos_estranhos
+        description: Presença de movimentos estranhos na triagem de autismo.
+      - name: triagem_autismo_aponta_dedo_pedir
+        description: Capacidade de apontar o dedo para pedir algo na triagem de autismo.
+      - name: triagem_autismo_aponta_dedo_mostrar
+        description: Capacidade de apontar o dedo para mostrar algo na triagem de autismo.
+      - name: triagem_autismo_interesse_outras_criancas
+        description: Interesse da criança em outras crianças na triagem de autismo.
+      - name: triagem_autismo_traz_coisas
+        description: Capacidade da criança de trazer coisas na triagem de autismo.
+      - name: triagem_autismo_responde_pelo_nome
+        description: Capacidade da criança de responder pelo nome na triagem de autismo.
+      - name: triagem_autismo_sorri
+        description: Frequência de sorrisos na triagem de autismo.
+      - name: triagem_autismo_incomodada_barulho
+        description: Reação da criança a barulhos altos na triagem de autismo.
+      - name: triagem_autismo_anda
+        description: Habilidade da criança de andar na triagem de autismo.
+      - name: triagem_autismo_olha_nos_olhos
+        description: Contato visual da criança na triagem de autismo.
+      - name: triagem_autismo_imita
+        description: Capacidade da criança de imitar na triagem de autismo.
+      - name: triagem_autismo_olhando
+        description: Comportamento de olhar da criança na triagem de autismo.
+      - name: triagem_autismo_faz_olhar
+        description: Capacidade da criança de fazer contato visual na triagem de autismo.
+      - name: triagem_autismo_compreende_pedido
+        description: Capacidade da criança de compreender pedidos na triagem de autismo.
+      - name: triagem_autismo_olha_como_sente
+        description: Capacidade da criança de expressar sentimentos através do olhar na triagem de autismo.
+      - name: triagem_autismo_gosta_atividades
+        description: Interesse da criança em atividades na triagem de autismo.
+      - name: triagem_autismo_score
+        description: Pontuação total na triagem de autismo.
+      - name: triagem_autismo_classificacao
+        description: Classificação da triagem de autismo.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

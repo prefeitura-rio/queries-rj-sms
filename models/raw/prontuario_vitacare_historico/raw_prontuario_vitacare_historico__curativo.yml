@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__curativo
+    description: Tabela contendo informações detalhadas sobre procedimentos de curativos realizados em pacientes, incluindo características da ferida, tratamentos e observações.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o procedimento de curativo foi realizado.
+      - name: posxy
+        description: Coordenadas ou descrição da localização anatômica da ferida (se aplicável).
+      - name: infeccao_associada
+        description: Indica se há infecção associada à ferida.
+      - name: identificacao_ferida
+        description: Descrição ou identificação do tipo de ferida.
+      - name: tratamento
+        description: Detalhes do tratamento ou tipo de curativo aplicado.
+      - name: ipt_bpas_braquial_esq
+        description: Índice de Pressão Tornozelo-Braquial (IPTB) braquial esquerdo.
+      - name: ipt_bpas_braquial_dir
+        description: Índice de Pressão Tornozelo-Braquial (IPTB) braquial direito.
+      - name: ipt_bpas_pe_esq
+        description: Índice de Pressão Tornozelo-Braquial (IPTB) no pé esquerdo.
+      - name: ipt_bpas_pe_dir
+        description: Índice de Pressão Tornozelo-Braquial (IPTB) no pé direito.
+      - name: ipt_bpas_tibia_post_esq
+        description: Índice de Pressão Tornozelo-Braquial (IPTB) na artéria tibial posterior esquerda.
+      - name: ipt_bpas_tibia_post_dir
+        description: Índice de Pressão Tornozelo-Braquial (IPTB) na artéria tibial posterior direita.
+      - name: ipt_b_esq
+        description: Índice de Pressão Tornozelo-Braquial (IPTB) esquerdo.
+      - name: ipt_b_dir
+        description: Índice de Pressão Tornozelo-Braquial (IPTB) direito.
+      - name: ipt_b_orientacao_esq
+        description: Orientação ou observações relacionadas ao IPTB esquerdo.
+      - name: ipt_b_orientacao_dir
+        description: Orientação ou observações relacionadas ao IPTB direito.
+      - name: enfenf_curativa_obs
+        description: Observações gerais da enfermagem sobre o curativo.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

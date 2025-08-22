@@ -2,6 +2,7 @@
     config(
         alias="resultados_colzn",
         materialized="table",
+        enabled=false
     )
 }}
 

@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: raw_prescricao_material_prescricao
+    description: "Materiais específicos para prescrição médica em todas as unidades de saúde da rede municipal do Rio de Janeiro."
+    columns:
+      - name: id_material
+        description: "Código do material ou medicamento. Chave primária e também chave estrangeira para a tabela fa_catalogmat."
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prescricao_material_prescricao__id_material__not_null
+              severity: error
+      - name: tipo_prescricao
+        description: "Indicador do tipo de prescrição a qual o material ou medicamento pode ser associado (1-Receituário comum, 2-Receituário Controlado, 3-Rec. com Imagens, 4-Rec. Excepcional)."
+        data_type: string
+      - name: descricao_tipo_prescricao
+        description: "Descrição do tipo de prescrição associada ao material ou medicamento (e.g. 'Receituário comum', 'Receituário Controlado', etc.)."
+        data_type: string
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

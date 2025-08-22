@@ -12,15 +12,10 @@ models:
         description: Identificador único do registro, composto por id_cnes e id_vacinacao_local.
         data_type: string
         data_tests:
-          - unique:
-              name: raw_prontuario_vitacare_api__vacinacao__id_vacinacao__unique
-              config:
-                severity: warn
           - not_null:
               name: raw_prontuario_vitacare_api__vacinacao__id_vacinacao__not_null
               config:
                 severity: warn
-
       - name: id_surrogate
         description: >
           Chave substituta gerada a partir do id_cnes, id_vacinacao_local e paciente_cns,

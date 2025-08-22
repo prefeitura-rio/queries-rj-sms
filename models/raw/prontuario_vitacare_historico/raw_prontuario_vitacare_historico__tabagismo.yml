@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__tabagismo
+    description: Tabela contendo dados de avaliação e acompanhamento de pacientes relacionados ao tabagismo, incluindo informações sobre o grau de dependência, fases motivacionais e detalhes de intervenções e tratamentos.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o registro de tabagismo foi realizado.
+      - name: cdt_peso
+        description: Peso do paciente registrado na avaliação de tabagismo.
+      - name: cdt_altura
+        description: Altura do paciente registrada na avaliação de tabagismo.
+      - name: cdt_imc
+        description: Índice de Massa Corporal (IMC) do paciente.
+      - name: cdt_tamax
+        description: Pressão arterial sistólica máxima (TA Max) registrada.
+      - name: cdt_tamin
+        description: Pressão arterial diastólica mínima (TA Min) registrada.
+      - name: cdt_intervencoes
+        description: Descrição das intervenções realizadas ou propostas para o tabagismo.
+      - name: cdt_intervencoesobs
+        description: Observações adicionais sobre as intervenções de tabagismo.
+      - name: cdt_perimabdominal
+        description: Perímetro abdominal do paciente.
+      - name: monoxido_carbono
+        description: Nível de monóxido de carbono exalado pelo paciente (cooximetria).
+      - name: tempo_prim_cig
+        description: Tempo entre acordar e fumar o primeiro cigarro do dia.
+      - name: fumar_locais_proib
+        description: Indica se o paciente fuma em locais proibidos.
+      - name: melhor_cig_dia
+        description: Período do dia em que o cigarro é mais prazeroso.
+      - name: num_cig_dia
+        description: Número de cigarros consumidos por dia.
+      - name: fuma_manha
+        description: Indica se o paciente fuma mais pela manhã.
+      - name: fuma_doente
+        description: Indica se o paciente fuma mesmo quando está doente.
+      - name: fagerstrom_grau_depend
+        description: Pontuação da Escala de Fagerström, indicando o grau de dependência à nicotina.
+      - name: fumante_fases_motivacionais
+        description: Fase motivacional do fumante (exemplo pré-contemplação, contemplação, ação).
+      - name: fumante_notas_observacoes_txt
+        description: Notas e observações em texto livre sobre o paciente tabagista.
+      - name: tabaco_tipo_utilizado
+        description: Tipo de produto de tabaco utilizado pelo paciente.
+      - name: tabaco_tipo_utilizado_qual
+        description: Qual tipo específico de tabaco utilizado, se "Outros".
+      - name: tabaco_participou_tratamento
+        description: Indica se o paciente participou de algum tratamento para tabagismo.
+      - name: tabaco_encontro
+        description: Descrição do encontro ou sessão de tratamento para tabagismo.
+      - name: tabaco_encontro_data
+        description: Data do encontro ou sessão de tratamento.
+      - name: tabaco_situacao_paciente_fase1
+        description: Situação do paciente na fase 1 do tratamento de tabagismo.
+      - name: tabaco_apoio_medicamento
+        description: Indica se houve apoio medicamentoso no tratamento do tabagismo.
+      - name: tabaco_apoio_medicamento_data
+        description: Data de início do apoio medicamentoso.
+      - name: tabaco_tipo_medicacao
+        description: Tipo de medicação utilizada no apoio ao tratamento do tabagismo.
+      - name: tabaco_manutencao
+        description: Informações sobre a fase de manutenção do tratamento.
+      - name: tabaco_manutencao_data
+        description: Data de início da fase de manutenção.
+      - name: tabaco_situacao_paciente_fase2
+        description: Situação do paciente na fase 2 do tratamento de tabagismo.
+      - name: tabaco_apoio_medicamento_data_fim
+        description: Data de término do apoio medicamentoso.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

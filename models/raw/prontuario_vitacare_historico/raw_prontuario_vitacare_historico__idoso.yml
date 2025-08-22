@@ -1,0 +1,358 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__idoso
+    description: Tabela contendo avaliações multifuncionais detalhadas de pacientes idosos, incluindo escalas de independência (Barthel, Katz, Lawton), cognição (Mini-Mental State), equilíbrio e marcha (Tinneti), e outros indicadores de fragilidade e funcionalidade.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde a avaliação do idoso foi realizada.
+      - name: dep_barthel_alimentacao
+        description: Pontuação da Escala de Barthel para Alimentação.
+      - name: dep_barthel_banho
+        description: Pontuação da Escala de Barthel para Banho.
+      - name: dep_barthel_higiene_pessoal
+        description: Pontuação da Escala de Barthel para Higiene Pessoal.
+      - name: dep_barthel_vestirse
+        description: Pontuação da Escala de Barthel para Vestir-se.
+      - name: dep_barthel_controlo_anal
+        description: Pontuação da Escala de Barthel para Controle Anal.
+      - name: dep_barthel_controlo_vesical
+        description: Pontuação da Escala de Barthel para Controle Vesical.
+      - name: dep_barthel_utilizacao_sanita
+        description: Pontuação da Escala de Barthel para Utilização da Sanita.
+      - name: dep_barthel_transferencia
+        description: Pontuação da Escala de Barthel para Transferência (da cama para a cadeira e vice-versa).
+      - name: dep_barthel_mobilidade
+        description: Pontuação da Escala de Barthel para Mobilidade.
+      - name: dep_barthel_escadas
+        description: Pontuação da Escala de Barthel para Escadas.
+      - name: dep_barthel_total
+        description: Pontuação total da Escala de Barthel, indicando o grau de independência nas atividades de vida diária.
+      - name: dep_mms_orientacao_ano
+        description: Pontuação do Mini-Mental State (MMS) para orientação no ano.
+      - name: dep_mms_orientacao_mes
+        description: Pontuação do Mini-Mental State (MMS) para orientação no mês.
+      - name: dep_mms_orientacao_dia_mes
+        description: Pontuação do Mini-Mental State (MMS) para orientação no dia do mês.
+      - name: dep_mms_orientacao_dia_seman
+        description: Pontuação do Mini-Mental State (MMS) para orientação no dia da semana.
+      - name: dep_mms_linguagem_arelogio
+        description: Pontuação do Mini-Mental State (MMS) para a tarefa de linguagem "relógio".
+      - name: dep_mms_linguagem_c1
+        description: Pontuação do Mini-Mental State (MMS) para a primeira parte da tarefa de linguagem.
+      - name: dep_mms_linguagem_c2
+        description: Pontuação do Mini-Mental State (MMS) para a segunda parte da tarefa de linguagem.
+      - name: dep_mms_linguagem_c3
+        description: Pontuação do Mini-Mental State (MMS) para a terceira parte da tarefa de linguagem.
+      - name: dep_mms_linguagem_dolhos
+        description: Pontuação do Mini-Mental State (MMS) para a tarefa de linguagem "olhos".
+      - name: dep_mms_linguagem_efrase
+        description: Pontuação do Mini-Mental State (MMS) para a tarefa de linguagem "frase".
+      - name: dep_mms_habilidade_desenho
+        description: Pontuação do Mini-Mental State (MMS) para a habilidade de desenho.
+      - name: dep_mms_pontos_p
+        description: Pontuação específica "P" do Mini-Mental State (MMS).
+      - name: dep_observacoes
+        description: Campo para observações gerais sobre a avaliação de dependência.
+      - name: dep_mms_conclusao
+        description: Conclusão da avaliação do Mini-Mental State (MMS).
+      - name: dep_mms_retencao_caneca
+        description: Pontuação do Mini-Mental State (MMS) para retenção da palavra "caneca".
+      - name: dep_mms_retencao_tijolo
+        description: Pontuação do Mini-Mental State (MMS) para retenção da palavra "tijolo".
+      - name: dep_mms_retencao_tapete
+        description: Pontuação do Mini-Mental State (MMS) para retenção da palavra "tapete".
+      - name: dep_mms_orientacao_semestre
+        description: Pontuação do Mini-Mental State (MMS) para orientação no semestre.
+      - name: dep_mms_orientacao_estado
+        description: Pontuação do Mini-Mental State (MMS) para orientação no estado.
+      - name: dep_mms_orientacao_cidade
+        description: Pontuação do Mini-Mental State (MMS) para orientação na cidade.
+      - name: dep_mms_orientacao_bairro
+        description: Pontuação do Mini-Mental State (MMS) para orientação no bairro.
+      - name: dep_mms_orientacao_rua
+        description: Pontuação do Mini-Mental State (MMS) para orientação na rua.
+      - name: dep_mms_orientacao_local
+        description: Pontuação do Mini-Mental State (MMS) para orientação no local.
+      - name: dep_mms_calculo_aval
+        description: Pontuação do Mini-Mental State (MMS) para avaliação de cálculo.
+      - name: dep_mms_calculo_93
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (subtraindo 7 de 100 até 93).
+      - name: dep_mms_calculo_86
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (subtraindo 7 de 93 até 86).
+      - name: dep_mms_calculo_79
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (subtraindo 7 de 86 até 79).
+      - name: dep_mms_calculo_72
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (subtraindo 7 de 79 até 72).
+      - name: dep_mms_calculo_65
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (subtraindo 7 de 72 até 65).
+      - name: dep_mms_memorizacao_caneca
+        description: Pontuação do Mini-Mental State (MMS) para memorização da palavra "caneca".
+      - name: dep_mms_memorizacao_tijolo
+        description: Pontuação do Mini-Mental State (MMS) para memorização da palavra "tijolo".
+      - name: dep_mms_memorizacao_tapete
+        description: Pontuação do Mini-Mental State (MMS) para memorização da palavra "tapete".
+      - name: dep_mms_linguagem_acaneca
+        description: Pontuação do Mini-Mental State (MMS) para a tarefa de linguagem "A caneca".
+      - name: dep_mms_linguagem_bfrase2
+        description: Pontuação do Mini-Mental State (MMS) para a segunda frase da tarefa de linguagem.
+      - name: dep_mms_escolaridade2
+        description: Nível de escolaridade do paciente, para ajuste da pontuação do MMS.
+      - name: dep_desenhar_elogio1
+        description: Resultado da primeira parte da tarefa de desenho do relógio.
+      - name: dep_desenhar_elogio2
+        description: Resultado da segunda parte da tarefa de desenho do relógio.
+      - name: dep_desenhar_elogio3
+        description: Resultado da terceira parte da tarefa de desenho do relógio.
+      - name: idoso_depen_nutricao_perdeu_peso
+        description: Indica se o idoso perdeu peso de forma não intencional.
+      - name: idoso_depen_dificuldade_visual
+        description: Indica se o idoso possui dificuldade visual.
+      - name: idoso_depen_dificuldade_visual_olho_dir
+        description: Detalhes da dificuldade visual no olho direito.
+      - name: idoso_depen_dificuldade_visual_olho_esq
+        description: Detalhes da dificuldade visual no olho esquerdo.
+      - name: idoso_depen_teste_sussurro
+        description: Resultado do teste do sussurro para avaliação auditiva.
+      - name: idoso_depen_cerume_od
+        description: Indica a presença de cerume no ouvido direito.
+      - name: idoso_depen_cerume_oe
+        description: Indica a presença de cerume no ouvido esquerdo.
+      - name: idoso_depen_perde_urina
+        description: Indica se o idoso perde urina.
+      - name: idoso_depen_perde_urina_incomodo
+        description: Indica se a perda de urina causa incômodo ao idoso.
+      - name: idoso_depen_triste_frequente
+        description: Indica se o idoso se sente triste frequentemente.
+      - name: idoso_depen_repetir_nomes_object
+        description: Indica se o idoso tem dificuldade em repetir nomes de objetos.
+      - name: idoso_depen_tocar_num_camaos
+        description: Indica se o idoso consegue tocar com os dedos nas mãos (teste de coordenação).
+      - name: idoso_depen_apanhar_lapis_mesa
+        description: Indica se o idoso consegue apanhar um lápis da mesa.
+      - name: idoso_depen_levantar_da_cadeira
+        description: Indica se o idoso consegue levantar de uma cadeira sem ajuda.
+      - name: idoso_depen_capaz_caminhar3m
+        description: Indica se o idoso é capaz de caminhar 3 metros.
+      - name: idoso_depen_voltar_sentar
+        description: Indica se o idoso consegue voltar a sentar após levantar.
+      - name: idoso_depen_sair_cama
+        description: Indica se o idoso consegue sair da cama sem ajuda.
+      - name: idoso_depen_capaz_vestir
+        description: Indica se o idoso é capaz de se vestir sem ajuda.
+      - name: idoso_depen_pre_pre_feicoes
+        description: Indica se o idoso é capaz de preparar refeições.
+      - name: idoso_depen_fazer_compras
+        description: Indica se o idoso é capaz de fazer compras.
+      - name: idoso_depen_ha_escadas
+        description: Indica se há escadas na residência do idoso.
+      - name: idoso_depen_ha_tapetes_soltos
+        description: Indica se há tapetes soltos na residência do idoso.
+      - name: idoso_depen_ha_corrimao_banh
+        description: Indica se há corrimão no banheiro da residência do idoso.
+      - name: idoso_depen_queda_qtd
+        description: Quantidade de quedas que o idoso sofreu.
+      - name: idoso_depen_alg_ajudar_incapc
+        description: Indica se alguém ajuda o idoso em suas incapacidades.
+      - name: idoso_depen_alg_ajudar_incapc_quem
+        description: Quem ajuda o idoso em suas incapacidades.
+      - name: idoso_depen_alg_ajudar_incapc_quem_tomar_decis
+        description: Quem toma decisões para o idoso em caso de incapacidade.
+      - name: katz_tomar_banho
+        description: Pontuação da Escala de Katz para tomar banho.
+      - name: katz_vestirse
+        description: Pontuação da Escala de Katz para vestir-se.
+      - name: katz_irwc
+        description: Pontuação da Escala de Katz para ir ao vaso sanitário (WC).
+      - name: katz_transferencia
+        description: Pontuação da Escala de Katz para transferência.
+      - name: katz_continencia
+        description: Pontuação da Escala de Katz para continência.
+      - name: katz_alimentacao
+        description: Pontuação da Escala de Katz para alimentação.
+      - name: katz_classificacao
+        description: Classificação da Escala de Katz (A-G), indicando o grau de independência do idoso.
+      - name: dep_questionario_pfeffer1
+        description: Resposta à questão 1 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer2
+        description: Resposta à questão 2 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer3
+        description: Resposta à questão 3 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer4
+        description: Resposta à questão 4 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer5
+        description: Resposta à questão 5 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer6
+        description: Resposta à questão 6 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer7
+        description: Resposta à questão 7 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer8
+        description: Resposta à questão 8 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer9
+        description: Resposta à questão 9 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer10
+        description: Resposta à questão 10 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer11
+        description: Resposta à questão 11 do Questionário de Pfeffer para Atividades Funcionais.
+      - name: dep_questionario_pfeffer_pontos
+        description: Pontuação total do Questionário de Pfeffer.
+      - name: lawton_utilizar_telefone
+        description: Pontuação da Escala de Lawton para utilizar o telefone.
+      - name: lawton_plane_special
+        description: Pontuação da Escala de Lawton para planejar refeições especiais.
+      - name: lawton_ir_compras
+        description: Pontuação da Escala de Lawton para ir às compras.
+      - name: lawton_ref_diarias
+        description: Pontuação da Escala de Lawton para preparar refeições diárias.
+      - name: lawton_arru_casa
+        description: Pontuação da Escala de Lawton para arrumar a casa.
+      - name: lawton_cuid_casa
+        description: Pontuação da Escala de Lawton para cuidar da casa.
+      - name: lawton_cuid_roupa
+        description: Pontuação da Escala de Lawton para cuidar da roupa.
+      - name: lawton_med_adequadamente
+        description: Pontuação da Escala de Lawton para tomar medicamentos adequadamente.
+      - name: lawton_gerir_dinheiro
+        description: Pontuação da Escala de Lawton para gerir dinheiro.
+      - name: lawton_pontuacao
+        description: Pontuação total da Escala de Lawton para Atividades Instrumentais de Vida Diária.
+      - name: tinneti_equilibrio
+        description: Pontuação da Escala de Tinneti para equilíbrio.
+      - name: tinneti_levantar
+        description: Pontuação da Escala de Tinneti para levantar.
+      - name: tinneti_levantar_ten
+        description: Pontuação da Escala de Tinneti para levantar de uma cadeira com tenção.
+      - name: tinneti_pos_levantar
+        description: Pontuação da Escala de Tinneti para a postura após levantar.
+      - name: tinneti_3_campos
+        description: Pontuação da Escala de Tinneti para 3 campos (teste de equilíbrio).
+      - name: tinneti_olhos
+        description: Pontuação da Escala de Tinneti para equilíbrio com os olhos fechados.
+      - name: tinneti_girando360
+        description: Pontuação da Escala de Tinneti para girar 360 graus.
+      - name: tinneti_sentado
+        description: Pontuação da Escala de Tinneti para sentar.
+      - name: tinneti_ini_marcha
+        description: Pontuação da Escala de Tinneti para o início da marcha.
+      - name: tinneti_comp_passosd
+        description: Pontuação da Escala de Tinneti para o comprimento do passo direito.
+      - name: tinneti_comp_passose
+        description: Pontuação da Escala de Tinneti para o comprimento do passo esquerdo.
+      - name: tinneti_alt_passosd
+        description: Pontuação da Escala de Tinneti para a altura do passo direito.
+      - name: tinneti_alt_passose
+        description: Pontuação da Escala de Tinneti para a altura do passo esquerdo.
+      - name: tinneti_simetria
+        description: Pontuação da Escala de Tinneti para simetria dos passos.
+      - name: tinneti_continuidade_passos
+        description: Pontuação da Escala de Tinneti para a continuidade dos passos.
+      - name: tinneti_direcao
+        description: Pontuação da Escala de Tinneti para a direção da marcha.
+      - name: tinneti_tronco
+        description: Pontuação da Escala de Tinneti para o movimento do tronco durante a marcha.
+      - name: tinneti_tornozelos
+        description: Pontuação da Escala de Tinneti para os tornozelos durante a marcha.
+      - name: tinneti_pontuacao
+        description: Pontuação total da Escala de Tinneti, para avaliação de equilíbrio e marcha.
+      - name: ivcf20_plugin_idade_qual_sua_idade
+        description: Resposta à pergunta sobre a idade do paciente no questionário IVCF-20.
+      - name: ivcf20_plugin_autopercepcao_saude_vcd_iria_da_sua_saude
+        description: Percepção do paciente sobre sua própria saúde no questionário IVCF-20.
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_fazer_compras
+        description: Indica se o idoso deixou de fazer compras no questionário IVCF-20.
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_controlar_dinheiro
+        description: Indica se o idoso deixou de controlar dinheiro no questionário IVCF-20.
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_realizar_trabalhos
+        description: Indica se o idoso deixou de realizar trabalhos no questionário IVCF-20.
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_tomar_banho
+        description: Indica se o idoso deixou de tomar banho sem ajuda no questionário IVCF-20.
+      - name: ivcf20_plugin_cognicao_familiar_falou_ficando_esquecido
+        description: Indica se o familiar percebeu o idoso ficando esquecido no questionário IVCF-20.
+      - name: ivcf20_plugin_cognicao_esquecimento_esta_piorando_ult_meses
+        description: Indica se o esquecimento do idoso está piorando nos últimos meses no questionário IVCF-20.
+      - name: ivcf20_plugin_cognicao_esquecimento_impedindo_atividade_cotidiano
+        description: Indica se o esquecimento está impedindo atividades cotidianas no questionário IVCF-20.
+      - name: ivcf20_plugin_humor_ult_mes_desanimo
+        description: Indica se o idoso sentiu desânimo no último mês no questionário IVCF-20.
+      - name: ivcf20_plugin_humor_perdeu_interesse_atividade
+        description: Indica se o idoso perdeu interesse em atividades no questionário IVCF-20.
+      - name: ivcf20_plugin_mobilidade_incapaz_elevar_braco
+        description: Indica se o idoso é incapaz de elevar o braço no questionário IVCF-20.
+      - name: ivcf20_plugin_mobilidade_incapaz_segurar_peq_objetos
+        description: Indica se o idoso é incapaz de segurar pequenos objetos no questionário IVCF-20.
+      - name: ivcf20_plugin_mobilidade_tem_alguma_quatro_condicoes
+        description: Indica se o idoso tem alguma das quatro condições relacionadas à mobilidade no questionário IVCF-20.
+      - name: ivcf20_plugin_mobilidade_dificuldade_caminhar
+        description: Indica se o idoso tem dificuldade para caminhar no questionário IVCF-20.
+      - name: ivcf20_plugin_mobilidade_teve_duas_mais_quedas
+        description: Indica se o idoso teve duas ou mais quedas no questionário IVCF-20.
+      - name: ivcf20_plugin_mobilidade_perde_urina_fezes_sem_querer
+        description: Indica se o idoso perde urina ou fezes sem querer no questionário IVCF-20.
+      - name: ivcf20_plugin_comunicacao_visao
+        description: Avaliação da visão do idoso no questionário IVCF-20.
+      - name: ivcf20_plugin_comunicacao_audicao
+        description: Avaliação da audição do idoso no questionário IVCF-20.
+      - name: ivcf20_plugin_comorbidades_multiplas_tem_alguma_tres_condicoes
+        description: Indica se o idoso tem alguma das três condições de comorbidades múltiplas no questionário IVCF-20.
+      - name: ivcf20_plugin_pontuacao_final
+        description: Pontuação final do questionário IVCF-20.
+      - name: ivcf20_plugin_correlacao
+        description: Correlação da pontuação final do IVCF-20 com o risco de fragilidade.
+      - name: ves13_plugin_idade_qual_sua_idade
+        description: Resposta à pergunta sobre a idade do paciente no questionário VES-13.
+      - name: ves13_plugin_autopercepcao_saude_vcd_iria_da_sua_saude
+        description: Percepção do paciente sobre sua própria saúde no questionário VES-13.
+      - name: ves13_plugin_limitacao_fisica_curvar
+        description: Indica limitação física para curvar-se no questionário VES-13.
+      - name: ves13_plugin_limitacao_fisica_levantar
+        description: Indica limitação física para levantar objetos no questionário VES-13.
+      - name: ves13_plugin_limitacao_fisica_elevar
+        description: Indica limitação física para elevar os braços no questionário VES-13.
+      - name: ves13_plugin_limitacao_fisica_escrever
+        description: Indica limitação física para escrever ou manusear pequenos objetos no questionário VES-13.
+      - name: ves13_plugin_limitacao_fisica_andar
+        description: Indica limitação física para andar na vizinhança no questionário VES-13.
+      - name: ves13_plugin_limitacao_fisica_fazer
+        description: Indica limitação física para fazer trabalhos pesados em casa no questionário VES-13.
+      - name: ves13_plugin_incapacidades_deixou_fazer_compras
+        description: Indica se o idoso deixou de fazer compras devido a incapacidades no questionário VES-13.
+      - name: ves13_plugin_incapacidades_deixou_controlar_dinheiro
+        description: Indica se o idoso deixou de controlar dinheiro devido a incapacidades no questionário VES-13.
+      - name: ves13_plugin_incapacidades_deixou_caminhar_casa
+        description: Indica se o idoso deixou de caminhar dentro de casa devido a incapacidades no questionário VES-13.
+      - name: ves13_plugin_incapacidades_deixou_realizar_trabalhos
+        description: Indica se o idoso deixou de realizar trabalhos devido a incapacidades no questionário VES-13.
+      - name: ves13_plugin_incapacidades_deixou_tomar_banho
+        description: Indica se o idoso deixou de tomar banho sem ajuda devido a incapacidades no questionário VES-13.
+      - name: ves13_plugin_pontuacao_final
+        description: Pontuação final do questionário VES-13.
+      - name: ves13_plugin_correlacao
+        description: Correlação da pontuação final do VES-13 com o risco de fragilidade.
+      - name: ves13_plugin_providencias
+        description: Indica as providências a serem tomadas com base no resultado do VES-13.
+      - name: dep_mms_calculo_o
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (letra O).
+      - name: dep_mms_calculo_d
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (letra D).
+      - name: dep_mms_calculo_n
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (letra N).
+      - name: dep_mms_calculo_u
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (letra U).
+      - name: dep_mms_calculo_m
+        description: Pontuação do Mini-Mental State (MMS) para cálculo (letra M).
+      - name: ut_responsavel
+        description: Unidade de tratamento responsável pelo acompanhamento do idoso.
+      - name: utente_escolaridade_responsavel
+        description: Escolaridade do responsável pelo idoso.
+      - name: utente_data_nascimento_responsavel
+        description: Data de nascimento do responsável pelo idoso.
+      - name: utente_grau_parentesco_responsavel
+        description: Grau de parentesco do responsável com o idoso.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__sifilis
+    description: Tabela contendo informações sobre casos de sífilis adquirida, incluindo classificação clínica, tratamento e desfecho.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente.
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o caso de sífilis foi registrado.
+      - name: sifilis_adquirida_sinan_numero
+        description: Número de notificação do caso de sífilis adquirida no sistema SINAN.
+      - name: sifilis_adquirida_classificacao_clinica
+        description: Classificação clínica da sífilis adquirida (exemplo primária, secundária, latente).
+      - name: sifilis_adquirida_tratamento_esquema
+        description: Esquema de tratamento utilizado para a sífilis adquirida.
+      - name: sifilis_adquirida_tratamento_data_inicio
+        description: Data de início do tratamento para a sífilis adquirida.
+      - name: sifilis_adquirida_classificacao_final
+        description: Classificação final do caso de sífilis adquirida.
+      - name: sifilis_adquirida_classificacao_final_motivo
+        description: Motivo da classificação final do caso de sífilis adquirida.
+      - name: sifilis_adquirida_observacoes
+        description: Observações adicionais sobre o caso de sífilis adquirida.
+      - name: sifilis_adquirida_data_fechamento
+        description: Data de fechamento do caso de sífilis adquirida.
+      - name: sifilis_adquirida_idade_fechamento
+        description: Idade do paciente no momento do fechamento do caso de sífilis adquirida.
+      - name: sifilis_adquirida_motivo_fechamento
+        description: Motivo do fechamento do caso de sífilis adquirida.
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.

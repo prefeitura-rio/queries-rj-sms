@@ -3,35 +3,41 @@
 {{
     config(
         enabled=true,
+        materialized='incremental',
+        unique_key='solicitacao_id',
+        incremental_strategy='merge',
         schema="brutos_sisreg_api",
         alias="solicitacoes",
         partition_by={
-            "field": "particao_data",
+            "field": "particao_data", 
             "data_type": "date",
             "granularity": "month",
         },
+        cluster_by=['solicitacao_id'],
     )
 }}
+-- Obs: `particao_data` vem de `data_extracao`
 
 with
-    casted_partitions as (
-        select 
-            safe_cast(data_particao as date) as data_particao
-        from {{ source("brutos_sisreg_api_staging", "solicitacoes") }}
-    ),
-    
-    most_complete_partition as (
-        select 
-            data_particao, 
-            count(*) as registros
-        from casted_partitions
-        group by data_particao
-        order by registros desc
-        limit 1
+
+    correct_partition as (
+        select
+            format_date('%Y-%m-%d', max(data_particao)) as particao_str
+        from {{ ref('raw_sisreg_api_log__logs') }}
+        where bq_table = 'solicitacoes'
     ),
 
-    source as (
+    sisreg as (
+        select s.*
+        from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
+        where s.data_particao = (select particao_str from correct_partition)
+    ),
+
+    sisreg_transformed as (
         select
+            -- Metadados da extração
+            run_id,
+
             -- Identificação básica da solicitação
             {{ process_null("codigo_solicitacao") }} as solicitacao_id,
             safe_cast({{ process_null("data_solicitacao") }} as timestamp) as data_solicitacao,
@@ -68,17 +74,14 @@ with
                 else null
             end as vaga_solicitada_tp,
             upper({{ process_null("codigo_cid_solicitado") }}) as cid_id,
-            {{ clean_name_string(process_null("descricao_cid_solicitado")) }} as cid,
 
             -- Dados do procedimento
             json_value(proceds_json, '$.codigo_interno')     as procedimento_id,
             json_value(proceds_json, '$.descricao_interna')  as procedimento,
             json_value(proceds_json, '$.codigo_sigtap')      as procedimento_sigtap_id,
-            json_value(proceds_json, '$.descricao_sigtap')   as procedimento_sigtap,
 
             -- Dados do solicitante
             {{ process_null("codigo_uf_solicitante") }} as uf_solicitante_id,
-            {{ process_null("sigla_uf_solicitante") }} as uf_solicitante,
             lpad({{ process_null("codigo_cnes_central_solicitante") }}, 7, '0') as central_solicitante_id_cnes,
             {{ process_null("codigo_central_solicitante") }} as central_solicitante_id,
             {{ clean_name_string(process_null("nome_cnes_central_solicitante")) }} as central_solicitante_cnes,
@@ -88,6 +91,7 @@ with
             lpad({{ process_null("cpf_profissional_solicitante") }}, 11, '0') as profissional_solicitante_cpf,
             {{ clean_name_string(process_null("nome_medico_solicitante")) }} as medico_solicitante,
 
+
             -- Dados dos operadores
             {{ clean_name_string(process_null("nome_operador_solicitante")) }} as operador_solicitante_nome,
             {{ clean_name_string(process_null("nome_operador_cancelamento")) }} as operador_cancelamento_nome,
@@ -95,7 +99,6 @@ with
 
             -- Dados do regulador
             {{ process_null("codigo_uf_regulador") }} as uf_regulador_id,
-            {{ clean_name_string(process_null("sigla_uf_regulador")) }} as uf_regulador,
             {{ process_null("codigo_central_reguladora") }} as central_reguladora_id,
             {{ clean_name_string(process_null("nome_central_reguladora")) }} as central_reguladora,
             {{ process_null("nome_perfil_cancelamento") }} as perfil_cancelamento,
@@ -106,7 +109,6 @@ with
             -- Preferências da solicitação
             safe_cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
             lpad({{ process_null("codigo_unidade_desejada") }}, 7, '0') as unidade_desejada_id,
-            {{ clean_name_string(process_null("nome_unidade_desejada")) }} as unidade_desejada,
 
             -- Dados do paciente
             lpad({{ process_null("cpf_usuario") }}, 11, '0') as paciente_cpf,
@@ -139,26 +141,22 @@ with
             json_value(laudo_json, '$.observacao') as laudo_observacao,
             safe_cast(json_value(laudo_json, '$.data_observacao') as timestamp) as laudo_data_observacao,
 
-            -- Metadados Elasticsearch
-            type as elastic__type,
-            carga_epoch as elastic__carga_epoch,
-            timestamp as elastic__timestamp,
-            version as elastic__version,
-
             -- Metadado SMS 
             safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
 
             -- Partições
-            safe_cast(ano_particao as int) as particao_ano,
-            safe_cast(mes_particao as int) as particao_mes,
-            safe_cast(data_particao as date) as particao_data
+            cast(ano_particao as int) as particao_ano,
+            cast(mes_particao as int) as particao_mes,
+            parse_date('%Y-%m-%d', data_particao) as particao_data
 
-
-        from {{ source("brutos_sisreg_api_staging", "solicitacoes") }}
+        from sisreg
         left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
         left join unnest(json_extract_array(replace(procedimentos, "'", '"'))) as proceds_json
-        where safe_cast(data_particao as date) = (select data_particao from most_complete_partition)
-
     )
 
-select * from source
+select *
+from sisreg_transformed
+qualify row_number() over (
+  partition by solicitacao_id
+  order by data_atualizacao desc nulls last
+) = 1

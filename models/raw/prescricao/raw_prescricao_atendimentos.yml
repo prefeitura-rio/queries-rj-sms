@@ -1,0 +1,169 @@
+version: 2
+
+models:
+  - name: raw_prescricao_atendimentos
+    description: "Atendimentos registrados em hospitais e unidades de saúde municipais do Rio de Janeiro."
+    columns:
+      - name: id_atendimento
+        description: "Identificador único do atendimento. Chave primária."
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: raw_prescricao_atendimentos__id_atendimento__not_null
+              severity: error
+          - unique:
+              name: raw_prescricao_atendimentos__id_atendimento__unique
+              severity: error
+      - name: id_paciente
+        description: "Identificador único do paciente. Chave estrangeira referenciando fa_paciente."
+        data_type: int64
+      - name: conselho_regional_medicina
+        description: "CRM do médico responsável pelo atendimento. Chave estrangeira referenciando fa_medico."
+        data_type: int64
+      - name: numero_leito
+        description: "Número ou identificação do leito do paciente."
+        data_type: string
+      - name: nome_clinica
+        description: "Clínica onde o atendimento está ocorrendo."
+        data_type: string
+      - name: orientacao_medica
+        description: "Recomendações médicas ou observações gerais sobre o atendimento."
+        data_type: string
+      - name: data_hora_registro
+        description: "Data e hora exatas do atendimento ou de algum evento relevante no atendimento."
+        data_type: datetime
+      - name: data_internacao
+        description: "Data de internação do paciente."
+        data_type: date
+      - name: data_atendimento
+        description: "Data do atendimento (pode ser diferente da data_hora ou data_internação)."
+        data_type: date
+      - name: registro_ativo
+        description: "Indica se o registro de atendimento está ativo (1) ou inativo (0)."
+        data_type: int64
+      - name: descricao_status_atendimento
+        description: "Descrição do status do registro de atendimento (Ativo, Inativo, Não informado, etc.)."
+        data_type: string
+      - name: codigo_clinica
+        description: "Código da clínica (possivelmente um código interno ou padronizado)."
+        data_type: string
+      - name: nome_enfermaria
+        description: "Identificação da enfermaria."
+        data_type: string
+      - name: medicamento_parenteral
+        description: "Informações sobre nutrição parenteral."
+        data_type: string
+      - name: peso_paciente
+        description: "Peso do paciente (formato char(5) sugere texto, verificar necessidade de conversão para numérico)."
+        data_type: string
+      - name: status_parenteral
+        description: "Status da nutrição parenteral (exemplo 'A'tivo, 'S'uspenso, 'C'ancelado)."
+        data_type: string
+      - name: descricao_status_parenteral
+        description: "Descrição do status da nutrição parenteral (Ativo, Suspenso, Cancelado, etc.)."
+        data_type: string
+      - name: nutricao_parenteral
+        description: "Informações sobre nutrição parenteral neonatal."
+        data_type: string
+      - name: medicamento_venoso_parenteral
+        description: "Informações sobre nutrição parenteral administrada por via venosa."
+        data_type: string
+      - name: status_nutricao_parenteral_neonatal
+        description: "Status da nutrição parenteral neonatal."
+        data_type: string
+      - name: descricao_status_nutricao_parenteral_neonatal
+        description: "Descrição do status da nutrição parenteral neonatal (Ativo, Suspenso, Cancelado, etc.)."
+        data_type: string
+      - name: status_nutricao_parenteral_venosa
+        description: "Status da nutrição parenteral venosa."
+        data_type: string
+      - name: descricao_status_nutricao_parenteral_venosa
+        description: "Descrição do status da nutrição parenteral venosa (Ativo, Suspenso, Cancelado, etc.)."
+        data_type: string
+      - name: precisa_fono
+        description: "Indica se o paciente precisa de acompanhamento fonoaudiológico (1=Sim, 0=Não)."
+        data_type: int64
+      - name: descricao_precisa_fono
+        description: "Descrição se o paciente precisa de acompanhamento fonoaudiológico (Sim, Não, etc.)."
+        data_type: string
+      - name: precisa_fisio
+        description: "Indica se o paciente precisa de acompanhamento fisioterapeutico (1=Sim, 0=Não)."
+        data_type: int64
+      - name: descricao_precisa_fisio
+        description: "Descrição se o paciente precisa de acompanhamento fisioterapeutico (Sim, Não, etc.)."
+        data_type: string
+      - name: observacao_fisio
+        description: "Observações da fisioterapia."
+        data_type: string
+      - name: observacao_fono
+        description: "Observações da fonoaudiologia."
+        data_type: string
+      - name: fono_concluido
+        description: "Indica se o acompanhamento fonoaudiológico foi realizado/concluído. Padrão '0'."
+        data_type: int64
+      - name: descricao_fono_concluido
+        description: "Descrição se o acompanhamento fonoaudiológico foi concluído (Realizado/Concluído, Pendente, etc.)."
+        data_type: string
+      - name: fisio_concluido
+        description: "Indica se o acompanhamento fisioterapêutico foi realizado/concluído. Padrão '0'."
+        data_type: int64
+      - name: descricao_fisio_concluido
+        description: "Descrição se o acompanhamento fisioterapêutico foi concluído (Realizado/Concluído, Pendente, etc.)."
+        data_type: string
+      - name: fisio_motora
+        description: "Detalhes ou status da fisioterapia motora."
+        data_type: string
+      - name: fisio_respiratoria
+        description: "Detalhes ou status da fisioterapia respiratória."
+        data_type: string
+      - name: fisio_motora_concluida
+        description: "Indica se a fisioterapia motora foi realizada/concluída. Padrão '0'."
+        data_type: int64
+      - name: descricao_fisio_motora_concluida
+        description: "Descrição se a fisioterapia motora foi concluída (Realizada/Concluída, Pendente, etc.)."
+        data_type: string
+      - name: avisos_farmacia
+        description: "Avisos ou informações relevantes para a farmácia."
+        data_type: string
+      - name: altura_paciente
+        description: "Estatura do paciente (formato varchar sugere texto, verificar necessidade de conversão para numérico)."
+        data_type: string
+      - name: superficie_corporal
+        description: "Superfície corporal (geralmente calculada a partir de peso e altura)."
+        data_type: string
+      - name: terapia_hormonal_tireoide
+        description: "Abreviação não universalmente clara. Pode se referir a terapia hormonal da tireoide. (Não Utilizado)"
+        data_type: string
+      - name: medicacao_especifica
+        description: "Abreviação não universalmente clara. Pode se referir a alguma medicação específica ou condição. (Não Utilizado)"
+        data_type: string
+      - name: hidratacao_venosa
+        description: "Abreviação. Possivelmente 'Hidratação Venosa'. (Não Utilizado)."
+        data_type: string
+      - name: dieta_prescrita
+        description: "Descrição da dieta do paciente."
+        data_type: string
+      - name: ventilacao_mecanica
+        description: "Abreviação. Possivelmente 'Ventilação Mecânica'. (Não Utilizado)."
+        data_type: string
+      - name: sedacao_parental
+        description: "Informações sobre sedação relacionada a nutrição parenteral ou outras sedações."
+        data_type: string
+      - name: diagnostico_medico
+        description: "Diagnóstico principal ou relevante para o atendimento."
+        data_type: string
+      - name: idade_gestacional
+        description: "Idade gestacional."
+        data_type: string
+      - name: idade_gestacional_corrigida
+        description: "Idade gestacional corrigida."
+        data_type: string
+      - name: id_unidade_saude
+        description: "Identificador sequencial da unidade de saúde (US). Chave estrangeira referenciando fa_us."
+        data_type: int64
+      - name: loaded_at
+        description: "Timestamp de quando o dado foi extraído do banco de dados de origem do PCSM."
+        data_type: timestamp
+      - name: transformed_at
+        description: "Timestamp de quando o dado foi transformado no dbt."
+        data_type: timestamp

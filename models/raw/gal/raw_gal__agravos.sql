@@ -2,6 +2,7 @@
     config(
         alias="agravos",
         materialized="table",
+        enabled=false
     )
 }}
 

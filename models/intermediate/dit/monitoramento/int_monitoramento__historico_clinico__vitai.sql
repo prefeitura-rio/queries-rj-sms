@@ -29,15 +29,16 @@ with
         select 
             gid,
             cnes
-        from {{ source("brutos_prontuario_vitai_staging", "m_estabelecimento_eventos") }}
+        from {{ source("brutos_prontuario_vitai_staging", "basecentral__m_estabelecimento_eventos") }}
     ),
     vitai_paciente_sem_cnes as (
         select
             estabelecimento_gid,
             'vitai' as fonte,
             'paciente' as tipo,
-            safe_cast(safe_cast(datalake__imported_at as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitai_staging", "paciente_eventos") }}
+            safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_ingestao
+        from {{ source("brutos_prontuario_vitai_staging", "basecentral__paciente_eventos") }}
+
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}
@@ -50,8 +51,8 @@ with
             estabelecimento_gid,
             'vitai' as fonte,
             'episodio' as tipo,
-            safe_cast(safe_cast(datalake__imported_at as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitai_staging", "boletim_eventos") }}
+            safe_cast(safe_cast(datalake_loaded_at as timestamp) as date) as data_ingestao
+        from {{ source("brutos_prontuario_vitai_staging", "basecentral__boletim_eventos") }}
         {% if is_incremental() %} 
         where data_particao > '{{seven_days_ago}}' 
         {% endif %}

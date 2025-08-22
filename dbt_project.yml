@@ -116,7 +116,7 @@ models:
           dado_sensivel: nao
       gal:
         +schema: brutos_gal
-        +tags: ["weekly", "gal"]
+        +tags: ["daily", "gal"]
         +labels:
           dominio: subpav
           dado_publico: nao
@@ -253,7 +253,7 @@ models:
           dominio: historico_clinico
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
-        +tags: "vitai"
+        +tags: ["vitai","daily"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -307,6 +307,20 @@ models:
       sisreg_api:
         +schema: brutos_sisreg_api
         +tags: ["daily", "subgeral", "sisreg", "sisreg_reports"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      sisreg_api_log:
+        +schema: brutos_sisreg_api_log
+        +tags: ["daily", "subgeral", "sisreg", "sisreg_reports"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      siscan_web:
+        +schema: brutos_sisreg_api_log
+        +tags: ["daily", "subgeral", "siscan"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -392,6 +406,13 @@ models:
           +labels:
             dado_publico: nao
             dado_pessoal: sim
+            dado_sensivel: nao
+        hackathon_coppe:
+          +schema: hackathon_coppe
+          +tags: ["hackathon_coppe"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
             dado_sensivel: nao
       cie:
         alerta_doencas:

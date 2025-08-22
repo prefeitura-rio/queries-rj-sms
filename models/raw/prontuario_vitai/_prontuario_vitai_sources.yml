@@ -28,10 +28,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: paciente_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__paciente_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -40,10 +36,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: alergia_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__alergia_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -52,10 +44,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: exame_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__exame_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -64,10 +52,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: profissional_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
 
       - name: basecentral__profissional_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -98,10 +82,6 @@ sources:
 
 
       - name: relato_cirurgico_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__relato_cirurgico_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -110,10 +90,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: classificacao_risco_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__classificacao_risco_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -122,10 +98,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: boletim_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__boletim_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -134,10 +106,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: atendimento_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__atendimento_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -146,10 +114,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: diagnostico_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__diagnostico_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -160,11 +124,12 @@ sources:
       - name: cirurgia_eventos
       - name: basecentral__cirurgia_eventos
       - name: m_estabelecimento_eventos
-      - name: resumo_alta_eventos
+      - name: basecentral__m_estabelecimento_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
         freshness:
           warn_after: {count: 12, period: hour}
           error_after: {count: 24, period: hour}
+      - name: resumo_alta_eventos
 
       - name: basecentral__resumo_alta_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -173,10 +138,6 @@ sources:
           error_after: {count: 24, period: hour}
 
       - name: internacao_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: basecentral__internacao_eventos
         loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
@@ -185,7 +146,3 @@ sources:
           error_after: {count: 24, period: hour}
           
       - name: alta_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
