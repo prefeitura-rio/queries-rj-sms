@@ -8,6 +8,11 @@
             "dado_anonimizado": "nao",
             "dado_sensivel_saude": "nao",
         },
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
         tags=['daily','vitacare_estoque']
     )
 }}
@@ -37,7 +42,7 @@ with
             _data_carga as data_carga,
             ano_particao as ano_particao,
             mes_particao as mes_particao,
-            data_particao as data_particao
+            dtacrilote as data_particao
         from source
     ),
 
