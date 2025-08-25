@@ -342,6 +342,16 @@ models:
 
     intermediate:
       +materialized: ephemeral
+      iplanrio:
+        whatsapp:
+          +materialized: table
+          +tags: ["daily", "iplanrio", "whatsapp"]
+          +schema: intermediario_whatsapp
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: iplanrio
       dit:
         historico_clinico:
           +tags: ["hci", "daily"]
