@@ -431,6 +431,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: nao
             dominio: cie
+        vacinacao:
+          +schema: projeto_cie_vacinacao
+          +tags: ["cie", "daily"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: cie
       dit:
         dashboard_ingestao_vitacare:
           +schema: relatorio_ingestao_vitacare
