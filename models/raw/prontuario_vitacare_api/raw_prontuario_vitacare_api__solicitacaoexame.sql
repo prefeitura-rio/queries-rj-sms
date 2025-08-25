@@ -29,10 +29,12 @@ with
       )                                                                 as datahora_fim,
       data
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
-  {% if is_incremental() %}
-    WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
-  {% endif %}
-  qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
+    WHERE JSON_EXTRACT(data, '$.exames_solicitados') IS NOT NULL
+    AND JSON_EXTRACT(data, '$.exames_solicitados') != '[]'
+    {% if is_incremental() %}
+      AND DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    {% endif %}
+    qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
 ),
 
   exames_flat as (

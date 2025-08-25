@@ -22,8 +22,10 @@ with bruto_atendimento as (
         safe_cast(datalake_loaded_at as datetime)                         as loaded_at,
         data
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+    WHERE JSON_EXTRACT(data, '$.vacinas') IS NOT NULL
+    AND JSON_EXTRACT(data, '$.vacinas') != '[]'
     {% if is_incremental() %}
-      WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+      AND DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}
     qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
 ),

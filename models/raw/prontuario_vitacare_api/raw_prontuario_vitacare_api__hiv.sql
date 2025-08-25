@@ -21,8 +21,10 @@ WITH bruto_atendimento AS (
     SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME) AS datahora_fim_atendimento,
     data,
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+  WHERE JSON_EXTRACT(data, '$.hiv') IS NOT NULL
+  AND JSON_EXTRACT(data, '$.hiv') != '[]'
   {% if is_incremental() %}
-    WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    AND DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
   qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
 ),

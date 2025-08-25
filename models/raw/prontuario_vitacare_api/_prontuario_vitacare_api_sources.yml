@@ -14,8 +14,6 @@ sources:
       - name: curativo
       - name: encaminhamento
       - name: equipe
-      - name: estoque_movimento
-      - name: estoque_posicao
       - name: hanseniase
       - name: hiv
       - name: idoso

@@ -201,12 +201,13 @@ WITH bruto_atendimento AS (
 
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
     SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATE) AS data_particao,
-    data
     
   FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+  WHERE JSON_EXTRACT(data, '$.pre_natal') IS NOT NULL
+  AND JSON_EXTRACT(data, '$.pre_natal') != '[]'
 
   {% if is_incremental() %}
-    WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    AND DATE(SAFE_CAST(datalake_loaded_at AS TIMESTAMP), 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
   {% endif %}
 
   QUALIFY ROW_NUMBER() OVER (
