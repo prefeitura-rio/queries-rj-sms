@@ -1,0 +1,271 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__hiv
+    description: >
+      Tabela contendo registros clínicos de pacientes com HIV extraídos do prontuário
+      VitaCare (API) a partir de atendimentos contínuos. Inclui histórico epidemiológico,
+      sintomas, dados clínicos e de acompanhamento.
+
+    columns:
+      - name: id_prontuario_global
+        description: >
+          Identificador global do prontuário, composto pela concatenação de `payload_cnes`
+          e `source_id`.
+        data_type: string
+    
+      - name: id_prontuario_local
+        description: Identificador local do prontuário (source_id original).
+        data_type: string
+
+      - name: id_cnes
+        description: Código CNES da unidade onde ocorreu o atendimento.
+        data_type: string
+      
+      - name: aidstransfusao
+        description: Histórico de transfusão relacionada à AIDS.
+        data_type: string
+
+      - name: aidsdatatransfusao
+        description: Data da transfusão relacionada à AIDS.
+        data_type: string
+
+      - name: aidsidadetransfusao
+        description: Idade na transfusão relacionada à AIDS.
+        data_type: string
+
+      - name: aidstoxicodependente
+        description: Histórico de toxicomania associada à AIDS.
+        data_type: string
+
+      - name: aidsdatainiciotoxicodependente
+        description: Data de início da toxicomania (não informado pela API).
+        data_type: date
+
+      - name: aidsidadeiniciotoxicodependente
+        description: Idade de início da toxicomania (não informado pela API).
+        data_type: integer
+
+      - name: aidshomosexual
+        description: Histórico de contato homossexual.
+        data_type: string
+
+      - name: aidsdatainiciohomosexual
+        description: Data de início de contato homossexual.
+        data_type: string
+
+      - name: aidsidadeiniciohomosexual
+        description: Idade de início de contato homossexual.
+        data_type: string
+
+      - name: aidsheterosexual
+        description: Histórico de contato heterossexual.
+        data_type: string
+
+      - name: aidsdatainicioheterosexual
+        description: Data de início de contato heterossexual.
+        data_type: string
+
+      - name: aidsidadeinicioheterosexual
+        description: Idade de início de contato heterossexual.
+        data_type: string
+
+      - name: aidsbisexual
+        description: Histórico de contato bissexual.
+        data_type: string
+
+      - name: aidsdatainiciobisexual
+        description: Data de início de contato bissexual (não informado pela API).
+        data_type: date
+
+      - name: aidsidadeiniciobisexual
+        description: Idade de início de contato bissexual (não informado pela API).
+        data_type: integer
+
+      - name: aidsparceirovih
+        description: Histórico de parceiro com HIV.
+        data_type: string
+
+      - name: aidsdatainicioparceirovih
+        description: Data de início de relação com parceiro HIV positivo.
+        data_type: string
+
+      - name: aidsidadeinicioparceirovih
+        description: Idade de início de relação com parceiro HIV positivo.
+        data_type: string
+
+      - name: aidsobsepidm
+        description: Observações epidemiológicas.
+        data_type: string
+
+      - name: aidsdoencaatualano1teste
+        description: Ano do primeiro teste após doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualdtaprovavelinfec
+        description: Data provável de infecção.
+        data_type: string
+
+      - name: aidsdoencaatualfebre
+        description: Presença de febre na doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualastenia
+        description: Presença de astenia na doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualanorexia
+        description: Presença de anorexia na doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualemagrecimento
+        description: Presença de emagrecimento na doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualhipersudorese
+        description: Presença de hipersudorese na doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualerupcaocutanea
+        description: Presença de erupção cutânea na doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualaltpele
+        description: Alterações de pele na doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualaltmucosa
+        description: Alterações de mucosa na doença atual.
+        data_type: string
+
+      - name: aidsdoencaatualadenopatias
+        description: Adenopatias presentes.
+        data_type: string
+
+      - name: aidsdoencaatualadenotamanho
+        description: Tamanho das adenopatias.
+        data_type: string
+
+      - name: aidsdoencaatualadenodolorosas
+        description: Adenopatias dolorosas.
+        data_type: string
+
+      - name: aidsdoencaatualvomitos
+        description: Presença de vômitos.
+        data_type: string
+
+      - name: aidsdoencaatualdiarreia
+        description: Presença de diarreia.
+        data_type: string
+
+      - name: aidsdoencaatualdisfagia
+        description: Presença de disfagia.
+        data_type: string
+
+      - name: aidsdoencaatualdorabdominal
+        description: Presença de dor abdominal.
+        data_type: string
+
+      - name: aidsdoencaatualtosse
+        description: Presença de tosse.
+        data_type: string
+
+      - name: aidsdoencaatualexpectoracao
+        description: Presença de expectoração.
+        data_type: string
+
+      - name: aidsdoencaatualdispneia
+        description: Presença de dispneia.
+        data_type: string
+
+      - name: aidsdoencaatualdortoraxica
+        description: Presença de dor torácica.
+        data_type: string
+
+      - name: aidsdoencaatualcefaleias
+        description: Presença de cefaleias.
+        data_type: string
+
+      - name: aidsdoencaatualpertvisuais
+        description: Presença de perturbações visuais.
+        data_type: string
+
+      - name: aidsdoencaatualaltcomportamento
+        description: Alterações de comportamento presentes.
+        data_type: string
+
+      - name: aidsdoencaatualvertigens
+        description: Presença de vertigens.
+        data_type: string
+
+      - name: aidsdoencaatualaltesfincterianas
+        description: Alterações esfincterianas presentes.
+        data_type: string
+
+      - name: aidsdoencaatualaltsensibilidade
+        description: Alterações de sensibilidade presentes.
+        data_type: string
+
+      - name: aidsdoencaatualaltmotorassup
+        description: Alterações motoras em membros superiores.
+        data_type: string
+
+      - name: aidsdoencaatualaltmotorasinf
+        description: Alterações motoras em membros inferiores.
+        data_type: string
+
+      - name: aidsdoencaatualdtinicioqueixas
+        description: Data de início das queixas.
+        data_type: string
+
+      - name: aidsdoencaatualobs
+        description: Observações sobre a doença atual.
+        data_type: string
+
+      - name: aidstransfusao_vertical
+        description: Histórico de transmissão vertical.
+        data_type: string
+
+      - name: aidstransfusao_vertical_data
+        description: Data de transmissão vertical (não informado pela API).
+        data_type: date
+
+      - name: aidshemofilico
+        description: Histórico de hemofilia.
+        data_type: string
+
+      - name: aidshemofilicodata
+        description: Data relacionada à hemofilia (não informado pela API).
+        data_type: date
+
+      - name: aidsacidentetrabalho
+        description: Histórico de acidente de trabalho com exposição.
+        data_type: string
+
+      - name: aidsacidentetrabalhodata
+        description: Data do acidente de trabalho (não informado pela API).
+        data_type: date
+
+      - name: aidstempoemagrecimento
+        description: Tempo de emagrecimento informado.
+        data_type: string
+
+      - name: epidemiologiaignorado
+        description: Indicador de dados epidemiológicos ignorados.
+        data_type: string
+
+      - name: aidsobsnotas
+        description: Observações gerais relacionadas ao caso.
+        data_type: string
+
+      - name: aidsemterapiaantiretroviral
+        description: Indicador de terapia antirretroviral em uso.
+        data_type: string
+
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no Data Lake.
+        data_type: datetime
+
+      - name: data_particao
+        description: Data utilizada para particionamento (derivada de `datahora_fim_atendimento`).
+        data_type: date

@@ -1,0 +1,130 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__acto
+    description: >
+      Tabela contendo registros de atendimentos contínuos da linha de cuidado ACTO
+      extraídos do prontuário VitaCare (API). Inclui informações do paciente,
+      do profissional, da unidade de atendimento, tipo e horários do atendimento,
+      além de observações registradas no prontuário.
+
+    columns:
+      - name: id_prontuario_global
+        description: >
+          Identificador global do prontuário, composto pela concatenação de
+          `payload_cnes` e `source_id`.
+        data_type: string
+
+      - name: id_prontuario_local
+        description: Identificador local do prontuário (source_id original).
+        data_type: string
+
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde ocorreu o atendimento.
+        data_type: string
+
+      - name: unidade_ap
+        description: Nome ou identificador da unidade de atenção primária.
+        data_type: string
+
+      - name: patient_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+
+      - name: patient_code
+        description: Código interno do paciente no sistema fonte.
+        data_type: string
+
+      - name: profissional_cns
+        description: CNS do profissional de saúde.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+        data_type: string
+
+      - name: profissional_cpf
+        description: CPF do profissional de saúde.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+
+      - name: profissional_nome
+        description: Nome completo do profissional de saúde.
+        data_type: string
+
+      - name: profissional_cbo
+        description: Código da Classificação Brasileira de Ocupações (CBO) do profissional.
+        data_type: string
+
+      - name: profissional_cbo_descricao
+        description: Descrição do CBO do profissional.
+        data_type: string
+
+      - name: profissional_equipe_nome
+        description: Nome da equipe do profissional.
+        data_type: string
+
+      - name: profissional_equipe_cod_ine
+        description: Código INE da equipe do profissional.
+        data_type: string
+
+      - name: datahora_inicio_atendimento
+        description: Data e hora de início do atendimento.
+        data_type: datetime
+
+      - name: datahora_fim_atendimento
+        description: Data e hora de término do atendimento.
+        data_type: datetime
+
+      - name: datahora_marcacao_atendimento
+        description: Data e hora em que o atendimento foi marcado.
+        data_type: datetime
+
+      - name: tipo_consulta
+        description: Tipo de consulta registrada no atendimento.
+        data_type: string
+
+      - name: eh_coleta
+        description: Indica se o atendimento foi de coleta de material.
+        data_type: boolean
+
+      - name: subjetivo_motivo
+        description: Texto registrado no campo "Subjetivo - Motivo" (SOAP).
+        data_type: string
+
+      - name: plano_observacoes
+        description: Observações registradas no plano (SOAP).
+        data_type: string
+
+      - name: avaliacao_observacoes
+        description: Observações registradas na avaliação (SOAP).
+        data_type: string
+
+      - name: objetivo_descricao
+        description: Descrição registrada no objetivo (SOAP).
+        data_type: string
+
+      - name: notas_observacoes
+        description: Observações adicionais do atendimento.
+        data_type: string
+
+      - name: ut_id
+        description: Identificador da Unidade de Trabalho (UT) no sistema.
+        data_type: string
+
+      - name: realizado
+        description: Indica se o atendimento foi realizado (true/false).
+        data_type: boolean
+
+      - name: tipo_atendimento
+        description: Tipo do atendimento (consulta, retorno, visita domiciliar, etc.).
+        data_type: string
+
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no Data Lake.
+        data_type: datetime
+
+      - name: data_particao
+        description: Data de referência utilizada para particionamento (derivada de `datahora_fim_atendimento`).
+        data_type: date

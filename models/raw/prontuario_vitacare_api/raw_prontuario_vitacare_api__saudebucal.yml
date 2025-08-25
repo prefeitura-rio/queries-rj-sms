@@ -1,0 +1,123 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__saudebucal
+    description: >
+      Dados extraídos do campo `saude_bucal[0]` no JSON da tabela
+      `atendimento_continuo` do VitaCare, contendo informações clínicas
+      sobre saúde bucal dos pacientes.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: queixa_principal
+        description: Queixa principal registrada na avaliação odontológica.
+        data_type: string
+      - name: lesoes_na_mucosa
+        description: Indica se foram encontradas lesões na mucosa.
+        data_type: string
+      - name: lesoes_na_mucosa_descricao
+        description: Descrição das lesões na mucosa, se houver.
+        data_type: string
+      - name: fluorose
+        description: Presença de fluorose dentária.
+        data_type: string
+      - name: alteracoes_do_esmalte
+        description: Alterações no esmalte dentário.
+        data_type: string
+      - name: articulacao_temporomandibular
+        description: Observações sobre a articulação temporomandibular (ATM).
+        data_type: string
+      - name: oclusao
+        description: Situação da oclusão dentária.
+        data_type: string
+      - name: anomalia_congenita
+        description: Presença de anomalias congênitas relacionadas à saúde bucal.
+        data_type: string
+      - name: habitos_prejudiciais
+        description: Hábitos prejudiciais à saúde bucal.
+        data_type: string
+      - name: necessidade_de_protese
+        description: Necessidade de prótese dentária.
+        data_type: string
+      - name: atividade_de_carie
+        description: Situação da atividade de cárie.
+        data_type: string
+      - name: ultima_visita_ao_dentista
+        description: Data e hora da última visita ao dentista.
+        data_type: datetime
+      - name: observacoes_da_avaliacao_clinica
+        description: Observações gerais da avaliação clínica odontológica.
+        data_type: string
+      - name: tipo_de_demanda
+        description: Tipo de demanda do atendimento odontológico.
+        data_type: string
+      - name: vigilancia_em_saude_bucal
+        description: Indicador de vigilância em saúde bucal.
+        data_type: string
+      - name: tipo_de_tratamento
+        description: Tipo de tratamento odontológico realizado.
+        data_type: string
+      - name: suprimentos_individuais_fornecidos
+        description: Lista de suprimentos individuais fornecidos ao paciente.
+        data_type: string
+      - name: alta_do_tratamento
+        description: Indica se houve alta do tratamento.
+        data_type: string
+      - name: data_da_alta
+        description: Data da alta do tratamento odontológico.
+        data_type: datetime
+      - name: tipo_de_alta
+        description: Tipo de alta concedida ao paciente.
+        data_type: string
+      - name: numero_de_dentes_em_tratamento
+        description: Número de dentes em tratamento.
+        data_type: string
+      - name: atividade_de_doenca_periodontal
+        description: Situação da atividade de doença periodontal.
+        data_type: string
+      - name: avaliacao
+        description: Resultado geral da avaliação odontológica.
+        data_type: string
+      - name: observacoes_da_avaliacao
+        description: Descrição detalhada da avaliação odontológica.
+        data_type: string
+      - name: procedimentos_realizados
+        description: Procedimentos odontológicos realizados.
+        data_type: string
+      - name: avaliacao_seguinte_1716
+        description: Resultado de avaliação subsequente código 1716.
+        data_type: string
+      - name: avaliacao_seguinte_11
+        description: Resultado de avaliação subsequente código 11.
+        data_type: string
+      - name: avaliacao_seguinte_2627
+        description: Resultado de avaliação subsequente código 2627.
+        data_type: string
+      - name: avaliacao_seguinte_3637
+        description: Resultado de avaliação subsequente código 3637.
+        data_type: string
+      - name: avaliacao_seguinte_31
+        description: Resultado de avaliação subsequente código 31.
+        data_type: string
+      - name: avaliacao_seguinte_4746
+        description: Resultado de avaliação subsequente código 4746.
+        data_type: string
+      - name: uso_de_protese_dentaria
+        description: Indica se o paciente faz uso de prótese dentária.
+        data_type: string
+      - name: encaminhamento_especialidade
+        description: Encaminhamento para especialidade odontológica.
+        data_type: string
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

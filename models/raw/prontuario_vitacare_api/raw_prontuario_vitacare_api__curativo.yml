@@ -1,0 +1,98 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__curativo
+    description: >
+      Tabela contendo registros de procedimentos de curativo realizados em atendimentos
+      contínuos extraídos do prontuário VitaCare (API). Inclui identificadores do prontuário
+      e unidade, dados sobre a ferida, tratamentos aplicados, medições IPBT e observações
+      do enfermeiro.
+
+    columns:
+      - name: id_prontuario_global
+        description: >
+          Identificador global do prontuário, composto pela concatenação de `payload_cnes`
+          e `source_id`.
+        data_type: string
+
+      - name: id_prontuario_local
+        description: Identificador local do prontuário (source_id original).
+        data_type: string
+
+      - name: id_cnes
+        description: >
+          Código CNES da unidade de saúde onde foi realizado o procedimento.
+        data_type: string
+
+      - name: areaCircundanteItens
+        description: Itens observados na área circundante da ferida.
+        data_type: string
+
+      - name: posxy
+        description: Posição XY no diagrama de feridas.
+        data_type: string
+
+      - name: infeccao_associada
+        description: Indica se há infecção associada à ferida.
+        data_type: string
+
+      - name: identificacao_ferida
+        description: Identificação da ferida.
+        data_type: string
+
+      - name: tratamento
+        description: Tratamento aplicado ao curativo.
+        data_type: string
+
+      - name: ipt_bpas_braquial_esq
+        description: Pressão arterial sistólica braquial esquerda (IPTB).
+        data_type: string
+
+      - name: ipt_bpas_braquial_dir
+        description: Pressão arterial sistólica braquial direita (IPTB).
+        data_type: string
+
+      - name: ipt_bpas_pe_esq
+        description: Pressão arterial sistólica no pé esquerdo (IPTB).
+        data_type: string
+
+      - name: ipt_bpas_pe_dir
+        description: Pressão arterial sistólica no pé direito (IPTB).
+        data_type: string
+
+      - name: ipt_bpas_tibia_post_esq
+        description: Pressão arterial sistólica na tíbia posterior esquerda (IPTB).
+        data_type: string
+
+      - name: ipt_bpas_tibia_post_dir
+        description: Pressão arterial sistólica na tíbia posterior direita (IPTB).
+        data_type: string
+
+      - name: ipt_b_esq
+        description: Índice pressórico tornozelo-braquial esquerdo (IPTB).
+        data_type: string
+
+      - name: ipt_b_dir
+        description: Índice pressórico tornozelo-braquial direito (IPTB).
+        data_type: string
+
+      - name: ipt_b_orientacao_esq
+        description: Orientação para o lado esquerdo (IPTB).
+        data_type: string
+
+      - name: ipt_b_orientacao_dir
+        description: Orientação para o lado direito (IPTB).
+        data_type: string
+
+      - name: enfenf_curativa_obs
+        description: Observações registradas pelo profissional de enfermagem.
+        data_type: string
+
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no Data Lake.
+        data_type: datetime
+
+      - name: data_particao
+        description: >
+          Data utilizada para particionamento (derivada de `datahora_fim_atendimento`).
+        data_type: date

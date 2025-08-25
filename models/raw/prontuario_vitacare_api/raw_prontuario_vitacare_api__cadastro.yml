@@ -1,0 +1,328 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__cadastro
+    description: >
+      Cadastro de pacientes replicado via API do prontuário VitaCare. Reúne
+      identificadores do paciente e da unidade, dados demográficos e
+      socioeconômicos, flags de vulnerabilidade e metadados de carga.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [cpf, id_cnes]
+          where: "cpf is not null AND safe_cast(data_particao as date) = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: id_cnes
+        description: Código CNES da unidade do cadastro.
+        data_type: string
+
+      - name: ap
+        description: Área Programática (AP) da unidade.
+        data_type: string
+
+      - name: unidade
+        description: Nome da unidade.
+        data_type: string
+
+      - name: ut_id
+        description: Identificador da Unidade de Trabalho (UT) no sistema.
+        data_type: string
+
+      - name: nome
+        description: Nome do paciente (com capitalização aplicada).
+        data_type: string
+
+      - name: cns
+        description: Cartão Nacional de Saúde do paciente.
+        policy_tags: ['{{ var("TAG_CNS") }}']
+        data_type: string
+
+      - name: cpf
+        description: CPF do paciente (pode ser nulo em alguns cadastros).
+        policy_tags: ['{{ var("TAG_CPF") }}']
+        data_type: string
+
+      - name: nis
+        description: Número de Identificação Social (NIS).
+        data_type: string
+
+      - name: npront
+        description: Número do prontuário no sistema fonte.
+        data_type: string
+
+      - name: sexo
+        description: Sexo do paciente (Masculino/Feminino).
+        data_type: string
+
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+
+      - name: code
+        description: Código derivado (CPF + data de nascimento).
+        data_type: string
+
+      - name: cadastro_permanente
+        description: Indica se o cadastro é permanente.
+        data_type: boolean
+
+      - name: data_atualizacao_cadastro
+        description: Data/hora da última atualização do cadastro.
+        data_type: datetime
+
+      - name: data_atualizacao_vinculo_equipe
+        description: Data/hora da última atualização do vínculo com a equipe.
+        data_type: datetime
+
+      - name: data_cadastro
+        description: Data/hora de criação do cadastro.
+        data_type: datetime
+
+      - name: obito
+        description: Indicador de óbito.
+        data_type: boolean
+
+      - name: dnv
+        description: Declaração de Nascido Vivo (DNV), quando aplicável.
+        data_type: string
+
+      - name: email
+        description: E-mail do paciente.
+        data_type: string
+
+      - name: telefone
+        description: Telefone do paciente (formato como recebido da API).
+        data_type: string
+
+      - name: situacao_usuario
+        description: Situação do usuário no cadastro.
+        data_type: string
+
+      - name: situacao_familiar
+        description: Situação familiar do paciente.
+        data_type: string
+
+      - name: raca_cor
+        description: Raça/cor autorreferida.
+        data_type: string
+
+      - name: religiao
+        description: Religião informada.
+        data_type: string
+
+      - name: situacao_profissional
+        description: Situação profissional.
+        data_type: string
+
+      - name: nome_social
+        description: Nome social do paciente.
+        data_type: string
+
+      - name: frequenta_escola
+        description: Indicador se o paciente frequenta escola.
+        data_type: boolean
+
+      - name: nome_mae
+        description: Nome da mãe.
+        data_type: string
+
+      - name: nome_pai
+        description: Nome do pai.
+        data_type: string
+
+      - name: membro_comunidade_tradicional
+        description: Indicador de pertencimento a comunidade tradicional.
+        data_type: boolean
+
+      - name: ocupacao
+        description: Ocupação declarada.
+        data_type: string
+
+      - name: orientacao_sexual
+        description: Orientação sexual declarada.
+        data_type: string
+
+      - name: nacionalidade
+        description: Nacionalidade.
+        data_type: string
+
+      - name: pais_nascimento
+        description: País de nascimento.
+        data_type: string
+
+      - name: participa_grupo_comunitario
+        description: Indicador de participação em grupo comunitário.
+        data_type: boolean
+
+      - name: possui_plano_saude
+        description: Indicador de posse de plano de saúde.
+        data_type: boolean
+
+      - name: relacao_responsavel_familiar
+        description: Relação com o responsável familiar.
+        data_type: string
+
+      - name: territorio_social
+        description: Território social de referência.
+        data_type: string
+
+      - name: escolaridade
+        description: Escolaridade declarada.
+        data_type: string
+
+      - name: identidade_genero
+        description: Identidade de gênero declarada.
+        data_type: string
+
+      - name: crianca_matriculada_creche_pre_escola
+        description: Indicador de matrícula em creche/pré-escola (para crianças).
+        data_type: boolean
+
+      - name: em_situacao_de_rua
+        description: Indicador de situação de rua.
+        data_type: boolean
+
+      - name: doencas_condicoes
+        description: Doenças/condições referidas (lista concatenada).
+        data_type: string
+
+      - name: estado_nascimento
+        description: UF de nascimento.
+        data_type: string
+
+      - name: estado_residencia
+        description: UF de residência.
+        data_type: string
+
+      - name: municipio_nascimento
+        description: Município de nascimento.
+        data_type: string
+
+      - name: municipio_residencia
+        description: Município de residência.
+        data_type: string
+
+      - name: abastecimento_agua
+        description: Forma de abastecimento de água do domicílio.
+        data_type: string
+
+      - name: animais_no_domicilio
+        description: Indicador de presença de animais no domicílio.
+        data_type: boolean
+
+      - name: bairro
+        description: Bairro de residência.
+        data_type: string
+
+      - name: cep
+        description: CEP do endereço.
+        data_type: string
+
+      - name: comodos
+        description: Quantidade de cômodos do domicílio.
+        data_type: string
+
+      - name: destino_lixo
+        description: Destino do lixo domiciliar.
+        data_type: string
+
+      - name: esgotamento_sanitario
+        description: Indicador de esgotamento sanitário adequado.
+        data_type: boolean
+
+      - name: familia_beneficiaria_auxilio_brasil
+        description: Indicador de benefício Auxílio Brasil.
+        data_type: boolean
+
+      - name: familia_beneficiaria_cfc
+        description: Indicador de benefício CFC.
+        data_type: boolean
+
+      - name: logradouro
+        description: Logradouro do endereço.
+        data_type: string
+
+      - name: luz_eletrica
+        description: Indicador de disponibilidade de luz elétrica.
+        data_type: boolean
+
+      - name: meios_comunicacao
+        description: Meios de comunicação no domicílio (lista concatenada).
+        data_type: string
+
+      - name: meios_transporte
+        description: Meios de transporte usados (lista concatenada).
+        data_type: string
+
+      - name: possui_filtro_agua
+        description: Informação sobre posse/uso de filtro de água.
+        data_type: string
+
+      - name: renda_familiar
+        description: Faixa de renda familiar.
+        data_type: string
+
+      - name: responsavel_familiar
+        description: Nome do responsável familiar.
+        data_type: string
+
+      - name: situacao_moradia_posse
+        description: Situação de moradia/posse do imóvel.
+        data_type: string
+
+      - name: tipo_domicilio
+        description: Tipo de domicílio.
+        data_type: string
+
+      - name: tipo_logradouro
+        description: Tipo de logradouro.
+        data_type: string
+
+      - name: tratamento_agua
+        description: Tratamento da água para consumo.
+        data_type: string
+
+      - name: em_caso_doenca_procura
+        description: Locais onde procura atendimento em caso de doença (lista concatenada).
+        data_type: string
+
+      - name: tempo_moradia
+        description: Tempo de moradia no endereço atual.
+        data_type: string
+
+      - name: familia_localizacao
+        description: Localização familiar (campo de referência territorial).
+        data_type: string
+
+      - name: codigo_equipe
+        description: Código interno da equipe.
+        data_type: string
+
+      - name: equipe
+        description: Nome da equipe.
+        data_type: string
+
+      - name: ine_equipe
+        description: Código INE da equipe.
+        data_type: string
+
+      - name: microarea
+        description: Microárea de adscrição.
+        data_type: string
+
+      - name: vulnerabilidade_social
+        description: Indicador de vulnerabilidade social.
+        data_type: boolean
+
+      - name: updated_at
+        description: Data/hora de atualização na origem.
+        data_type: datetime
+
+      - name: loaded_at
+        description: Data/hora de carga no Data Lake.
+        data_type: datetime
+
+      - name: data_particao
+        description: Data de partição (derivada de datahora_fim_atendimento).
+        data_type: date

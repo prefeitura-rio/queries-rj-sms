@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__solicitacaoexame
+    description: >
+      Registros de exames solicitados, extraídos do campo
+      `exames_solicitados` no JSON da tabela `atendimento_continuo`
+      do VitaCare, contendo informações como nome, código, quantidade,
+      material e data de solicitação.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: nome_exame
+        description: Nome do exame solicitado.
+        data_type: string
+      - name: cod_exame
+        description: Código do exame solicitado.
+        data_type: string
+      - name: quantidade
+        description: Quantidade de exames solicitada.
+        data_type: numeric
+      - name: material
+        description: Material utilizado no exame.
+        data_type: string
+      - name: data_solicitacao
+        description: Data e hora da solicitação do exame.
+        data_type: datetime
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__equipe
+    description: >
+      Dados extraídos do campo `profissional.equipe` no JSON da tabela
+      `atendimento_continuo` do VitaCare, contendo informações sobre a
+      equipe de atendimento (código, nome e número INE).
+    columns:
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: id
+        description: Identificador reservado (atualmente nulo).
+        data_type: string
+      - name: codigo
+        description: Código da equipe.
+        data_type: string
+      - name: nome
+        description: Nome da equipe.
+        data_type: string
+      - name: n_ine
+        description: Número INE da equipe.
+        data_type: string
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

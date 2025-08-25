@@ -1,0 +1,117 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__tabagismo
+    description: >
+      Dados extraídos do campo `tabagismo[0]` no JSON da tabela
+      `atendimento_continuo` do VitaCare, contendo informações clínicas
+      e comportamentais relacionadas ao uso de tabaco.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: cdt_peso
+        description: Peso do paciente em quilogramas.
+        data_type: float64
+      - name: cdt_altura
+        description: Altura do paciente.
+        data_type: string
+      - name: cdt_imc
+        description: Índice de Massa Corporal (IMC) calculado.
+        data_type: float64
+      - name: cdt_tamax
+        description: Valor máximo da pressão arterial (TA máx.).
+        data_type: string
+      - name: cdt_tamin
+        description: Valor mínimo da pressão arterial (TA mín.).
+        data_type: string
+      - name: cdt_intervencoes
+        description: Intervenções realizadas no acompanhamento.
+        data_type: string
+      - name: cdt_intervencoesobs
+        description: Observações adicionais sobre as intervenções.
+        data_type: string
+      - name: cdt_perimabdominal
+        description: Medida do perímetro abdominal do paciente.
+        data_type: string
+      - name: monoxido_carbono
+        description: Medida de monóxido de carbono exalado.
+        data_type: string
+      - name: tempo_prim_cig
+        description: Tempo até fumar o primeiro cigarro do dia.
+        data_type: string
+      - name: fumar_locais_proib
+        description: Indica se o paciente fuma em locais proibidos.
+        data_type: boolean
+      - name: melhor_cig_dia
+        description: Horário ou momento considerado o melhor cigarro do dia.
+        data_type: string
+      - name: num_cig_dia
+        description: Número de cigarros fumados por dia.
+        data_type: string
+      - name: fuma_manha
+        description: Indica se o paciente fuma pela manhã.
+        data_type: boolean
+      - name: fuma_doente
+        description: Indica se o paciente fuma mesmo quando está doente.
+        data_type: boolean
+      - name: fagerstrom_grau_depend
+        description: Grau de dependência segundo o teste de Fagerström.
+        data_type: string
+      - name: fumante_fases_motivacionais
+        description: Fase motivacional do paciente fumante.
+        data_type: string
+      - name: fumante_notas_observacoes_txt
+        description: Notas ou observações adicionais sobre o paciente fumante.
+        data_type: string
+      - name: tabaco_tipo_utilizado
+        description: Tipo de tabaco utilizado.
+        data_type: string
+      - name: tabaco_tipo_utilizado_qual
+        description: Detalhe do tipo de tabaco utilizado.
+        data_type: string
+      - name: tabaco_participou_tratamento
+        description: Indica se o paciente já participou de tratamento contra o tabagismo.
+        data_type: string
+      - name: tabaco_encontro
+        description: Tipo ou número de encontro relacionado ao tratamento.
+        data_type: string
+      - name: tabaco_encontro_data
+        description: Data do encontro.
+        data_type: datetime
+      - name: tabaco_situacao_paciente_fase1
+        description: Situação do paciente na fase 1 do tratamento.
+        data_type: string
+      - name: tabaco_apoio_medicamento
+        description: Indica se houve apoio medicamentoso no tratamento.
+        data_type: boolean
+      - name: tabaco_apoio_medicamento_data
+        description: Data de início do apoio medicamentoso.
+        data_type: datetime
+      - name: tabaco_tipo_medicacao
+        description: Tipo de medicação utilizada no apoio medicamentoso.
+        data_type: string
+      - name: tabaco_manutencao
+        description: Tipo de manutenção no tratamento do tabagismo.
+        data_type: string
+      - name: tabaco_manutencao_data
+        description: Data de início da manutenção.
+        data_type: datetime
+      - name: tabaco_situacao_paciente_fase2
+        description: Situação do paciente na fase 2 do tratamento.
+        data_type: string
+      - name: tabaco_apoio_medicamento_data_fim
+        description: Data de término do apoio medicamentoso.
+        data_type: datetime
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

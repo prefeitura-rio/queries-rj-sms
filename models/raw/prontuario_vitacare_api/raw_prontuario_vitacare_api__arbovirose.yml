@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__arbovirose
+    description: >
+      Tabela contendo registros de atendimentos contínuos com informações
+      sobre casos de arboviroses extraídos do prontuário VitaCare (API).
+      Inclui dados clínicos, sinais e sintomas, comorbidades e classificação
+      do caso, além de identificadores e metadados de carga.
+
+    columns:
+      - name: id_prontuario_global
+        description: >
+          Identificador global do prontuário, composto pela concatenação de
+          `payload_cnes` e `source_id`.
+        data_type: string
+
+      - name: id_prontuario_local
+        description: Identificador local do prontuário (source_id original).
+        data_type: string
+
+      - name: id_cnes
+        description: >
+          Código CNES da unidade de saúde onde o atendimento foi realizado.
+        data_type: string
+
+      - name: data_inicio_sintomas
+        description: Data e hora de início dos sintomas.
+        data_type: datetime
+
+      - name: definicao_caso
+        description: Definição do caso conforme critérios clínicos.
+        data_type: string
+
+      - name: dias_com_febre
+        description: Quantidade de dias com febre relatada.
+        data_type: string
+
+      - name: episodios_de_vomito
+        description: Número de episódios de vômito relatados.
+        data_type: string
+
+      - name: vomito_persistente
+        description: Indica se houve vômito persistente.
+        data_type: string
+
+      - name: sintomas_de_alarme
+        description: Lista de sintomas de alarme observados.
+        data_type: string
+
+      - name: observacoes_sintomas
+        description: Observações adicionais sobre os sintomas.
+        data_type: string
+
+      - name: comorbidades_vulnerabilidade
+        description: Indica presença de comorbidades ou vulnerabilidade (1 = sim, 0 = não).
+        data_type: integer
+
+      - name: teste_do_torniquete
+        description: Resultado do teste do torniquete.
+        data_type: string
+
+      - name: sangramento_gengival
+        description: Indica se houve sangramento gengival (1 = sim, 0 = não).
+        data_type: integer
+
+      - name: dor_palpacao_abdominal
+        description: Indica se houve dor à palpação abdominal (1 = sim, 0 = não).
+        data_type: integer
+
+      - name: figado_aumentado
+        description: Indica se houve aumento do fígado (1 = sim, 0 = não).
+        data_type: integer
+
+      - name: acumulacao_liquido
+        description: Indica se houve acúmulo de líquido (1 = sim, 0 = não).
+        data_type: integer
+
+      - name: letargia_observada
+        description: Indica se foi observada letargia (1 = sim, 0 = não).
+        data_type: integer
+
+      - name: irritabilidade_observada
+        description: Indica se foi observada irritabilidade (1 = sim, 0 = não).
+        data_type: integer
+
+      - name: tipo_acumulacao_liquido
+        description: Tipo de acúmulo de líquido identificado.
+        data_type: string
+
+      - name: grupo_classificacao
+        description: Grupo de classificação do caso de arbovirose.
+        data_type: string
+
+      - name: sinan
+        description: Número do registro no SINAN.
+        data_type: string
+
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no Data Lake.
+        data_type: datetime
+
+      - name: data_particao
+        description: >
+          Data utilizada para particionamento (derivada de `datahora_fim_atendimento`
+          ou `loaded_at`).
+        data_type: date
