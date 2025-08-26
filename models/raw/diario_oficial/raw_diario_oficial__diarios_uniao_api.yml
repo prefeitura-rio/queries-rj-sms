@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: diario_uniao
-    description: "Tabela padronizada do Diário Oficial da União extraída da API."
+  - name: raw_diario_oficial__diarios_uniao_api
+    description: "Tabela padronizada do Diário Oficial da União extraída da API do INLABS."
     columns:
       - name: titulo
         description: "Título principal da publicação."
