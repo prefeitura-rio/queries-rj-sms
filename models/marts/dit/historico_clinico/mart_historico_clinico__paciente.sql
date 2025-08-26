@@ -80,20 +80,6 @@ with
     -- AND cpf = cpf_filter
     ),
 
-    saude_mental as (
-        SELECT 
-            paciente.numero_cpf_paciente as cpf,
-            paciente.numero_cartao_saude as cns,
-            struct( 
-                paciente.id_paciente as id_pcsm,
-                paciente.descricao_status_acompanhamento as status_acompanhamento,
-                unidade.descricao_local as unidade_caps
-            ) as saude_mental
-        FROM {{ ref("raw_pcsm_pacientes") }} as paciente 
-        LEFT JOIN {{ ref('raw_pcsm_local_unidade_saude') }} as unidade
-        ON paciente.id_unidade_caps_referencia = unidade.id_local
-    ),
-
     -- smsrio: Patient base table
     smsrio_tb as (
         select
@@ -117,6 +103,39 @@ with
             {{ ref("int_historico_clinico__paciente__smsrio") }}, unnest(dados) as dados
         where dados.rank = 1
     -- AND cpf = cpf_filter
+    ),
+
+    pcsm_unidades as (
+        select 
+            u.id_unidade_saude as id_unidade,
+            e.id_cnes as cnes,
+            e.nome_acentuado as nome_unidade
+        from {{ ref("dim_estabelecimento") }} as e
+        left join {{ ref("raw_pcsm_unidades_saude") }} as u
+            on e.id_cnes = u.codigo_nacional_estabelecimento_saude
+    ),
+
+    pcsm_pacientes as (
+        SELECT 
+            paciente.numero_cpf_paciente as cpf,
+            paciente.id_paciente as id_pcsm,
+            paciente.descricao_status_acompanhamento as status_acompanhamento,
+            paciente.id_unidade_caps_referencia as id_caps
+        FROM {{ ref("raw_pcsm_pacientes") }} as paciente 
+        QUALIFY row_number() over (partition by paciente.numero_cpf_paciente order by paciente.loaded_at desc ) = 1
+    ),
+
+    saude_mental as (
+        select 
+            p.cpf,
+            struct(
+                p.id_pcsm,
+                p.status_acompanhamento,
+                u.nome_unidade,
+                u.cnes
+            ) as saude_mental
+        from pcsm_pacientes p 
+        left join pcsm_unidades u on p.id_caps = u.id_unidade
     ),
 
     -- Paciente Dados: Merges patient data
