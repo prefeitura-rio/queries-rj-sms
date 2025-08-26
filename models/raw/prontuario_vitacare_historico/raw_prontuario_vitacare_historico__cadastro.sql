@@ -9,7 +9,7 @@
             "data_type": "date",
             "granularity": "day"
         },
-        unique_key=['cpf', 'id_cnes']
+        unique_key=['cpf', 'id_cnes'],
         cluster_by=['cpf','id_cnes']
     )
 }}
