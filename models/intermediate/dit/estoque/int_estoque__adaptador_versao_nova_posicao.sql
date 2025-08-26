@@ -22,9 +22,10 @@ with
             material_quantidade,
             armazem,
             cast(metadados.loaded_at as date) as data_particao,
-            cast(metadados.updated_at as date) as data_replicacao,
+            cast(metadados.updated_at as datetime) as data_replicacao,
             cast(metadados.loaded_at as date) as data_carga
         from estoque_posicao_formato_novo
+        where material_quantidade > 0
     )
 
 select * from final
