@@ -1,10 +1,12 @@
+-- Sintaxe para criar ou substituir uma consulta salva (procedimento)
+-- A consulta que você quer salvar e reutilizar
+
 {{
     config(
         enabled=true,
         alias="atendimentos_prenatal_aps",
     )
 }}
-
 WITH 
 
 marcadores_temporais AS (
@@ -20,8 +22,8 @@ marcadores_temporais AS (
    data_fim_efetiva,
    fase_atual
  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
+--  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
-
 
 -- Peso dentro de -180 a +84 dias da data_inicio
 peso_filtrado AS (
@@ -32,13 +34,13 @@ peso_filtrado AS (
    ea.medidas.peso,
    DATE_DIFF(ea.entrada_data, mt.data_inicio, DAY) AS dias_diferenca
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
  WHERE ea.medidas.peso IS NOT NULL
    AND ea.entrada_data BETWEEN DATE_SUB(mt.data_inicio, INTERVAL 180 DAY)
                            AND DATE_ADD(mt.data_inicio, INTERVAL 84 DAY)
 ),
-
 
 peso_proximo_inicio AS (
  SELECT *
@@ -53,7 +55,6 @@ peso_proximo_inicio AS (
  WHERE rn = 1
 ),
 
-
 -- Altura moda preferencial entre 1 ano antes e fim da gestação
 alturas_filtradas AS (
  SELECT
@@ -62,12 +63,12 @@ alturas_filtradas AS (
    ea.medidas.altura,
    DATE_DIFF(mt.data_inicio, ea.entrada_data, DAY) AS dias_antes_inicio,
    DATE_DIFF(ea.entrada_data, COALESCE(mt.data_fim_efetiva, CURRENT_DATE()), DAY) AS dias_apos_inicio
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
  WHERE ea.medidas.altura IS NOT NULL
 ),
-
 
 altura_preferencial AS (
  SELECT
@@ -84,7 +85,6 @@ altura_preferencial AS (
  GROUP BY id_gestacao, id_paciente, altura
 ),
 
-
 altura_fallback AS (
  SELECT
    id_gestacao,
@@ -99,14 +99,12 @@ altura_fallback AS (
  GROUP BY id_gestacao, id_paciente, altura
 ),
 
-
 altura_moda_completa AS (
  SELECT * FROM altura_preferencial WHERE rn = 1
  UNION ALL
  SELECT * FROM altura_fallback
  WHERE id_gestacao NOT IN (SELECT id_gestacao FROM altura_preferencial WHERE rn = 1)
 ),
-
 
 -- Junta peso + altura
 peso_altura_inicio AS (
@@ -126,7 +124,6 @@ peso_altura_inicio AS (
  JOIN altura_moda_completa a ON p.id_gestacao = a.id_gestacao
 ),
 
-
 -- Atendimentos de pré-natal APS
 atendimentos_filtrados AS (
  SELECT
@@ -144,14 +141,14 @@ atendimentos_filtrados AS (
    ea.medidas.pressao_diastolica,
    ea.motivo_atendimento,
    ea.desfecho_atendimento,
-   c.id AS cid,
-   -- STRING_AGG(DISTINCT c.id, '; ' ORDER BY c.id) AS cid_string
+  --  c.id AS cid,
+   STRING_AGG(DISTINCT c.id, '; ' ORDER BY c.id) AS cid_string
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea,
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
- --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
-    LEFT JOIN UNNEST(ea.condicoes) AS c
+ left join UNNEST(ea.condicoes) AS c
  WHERE ea.subtipo = 'Atendimento SOAP'
    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
-  --  AND c.situacao = 'ATIVO'
+   AND c.situacao = 'ATIVO'
   --  AND (c.id = 'Z321' OR c.id LIKE 'Z34%' OR c.id LIKE 'Z35%')
    AND ea.profissional_saude_responsavel.especialidade IN (
      'Médico da estratégia de saúde da família',
@@ -167,8 +164,8 @@ atendimentos_filtrados AS (
      'Médico Generalista',
      'Médico de Família e Comunidade'
    )
+   GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14
 ),
-
 
 -- Join com gestação
 atendimentos_gestacao AS (
@@ -190,20 +187,18 @@ atendimentos_gestacao AS (
   AND af.entrada_data BETWEEN mt.data_inicio AND COALESCE(mt.data_fim_efetiva, CURRENT_DATE())
 ),
 
-
 -- Prescrições
 prescricoes_aggregadas AS (
  SELECT
    ea.id_hci,
    STRING_AGG(p.nome, ', ') AS prescricoes
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea,
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
-  --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
-  LEFT JOIN UNNEST(ea.prescricoes) AS p
+left join UNNEST(ea.prescricoes) AS p
  WHERE ea.subtipo = 'Atendimento SOAP'
    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
  GROUP BY ea.id_hci
 ),
-
 
 -- Final com cálculos
 consultas_enriquecidas AS (
@@ -217,16 +212,13 @@ consultas_enriquecidas AS (
    pai.imc_inicio,
    pai.classificacao_imc_inicio,
 
-
    ag.peso - pai.peso AS ganho_peso_acumulado,
    ROUND(ag.peso / POW(pai.altura_m, 2), 1) AS imc_consulta
-
 
  FROM atendimentos_gestacao ag
  LEFT JOIN prescricoes_aggregadas presc ON ag.id_hci = presc.id_hci
  LEFT JOIN peso_altura_inicio pai ON ag.id_gestacao = pai.id_gestacao
 )
-
 
 -- Resultado final
 SELECT
@@ -238,35 +230,30 @@ SELECT
  trimestre_consulta,
  fase_atual,
 
-
  peso_inicio,
  altura_m AS altura_inicio,
  imc_inicio,
  classificacao_imc_inicio,
 
-
  peso,
  imc_consulta,
  ganho_peso_acumulado,
 
-
  pressao_sistolica,
  pressao_diastolica,
 
-
  motivo_atendimento AS descricao_s,
- cid,
+ cid_string,
  desfecho_atendimento AS desfecho,
  prescricoes,
-
 
  estabelecimento,
  profissional_nome,
  profissional_categoria
 
-
 FROM consultas_enriquecidas
+where fase_atual = 'Gestação'
 ORDER BY
- data_consulta DESC
+ data_consulta DESC;
 
-
+END

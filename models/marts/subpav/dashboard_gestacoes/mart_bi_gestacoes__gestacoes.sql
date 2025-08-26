@@ -1,9 +1,19 @@
+-- -- Sintaxe para criar ou substituir uma consulta salva (procedimento)
+-- CREATE OR REPLACE PROCEDURE `rj-sms-sandbox.sub_pav_us.proced_1_gestacoes`()
+
+-- BEGIN
+
+  -- A consulta que você quer salvar e reutilizar
+
+
 {{
     config(
         enabled=true,
         alias="gestacoes",
     )
 }}
+
+-- CREATE OR REPLACE TABLE `rj-sms-sandbox.sub_pav_us._gestacoes` AS
 
 WITH
 
@@ -20,6 +30,7 @@ WITH
                 YEAR
             ) AS idade_gestante,
         FROM {{ ref('mart_historico_clinico__paciente') }}
+        -- FROM `rj-sms.saude_historico_clinico.paciente`        
     ),
 
     -- ------------------------------------------------------------
@@ -51,6 +62,7 @@ WITH
             END AS tipo_evento
         FROM
             {{ ref('mart_historico_clinico__episodio') }}
+            -- `rj-sms.saude_historico_clinico.episodio_assistencial`
             --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
             LEFT JOIN UNNEST (condicoes) c -- Expande o array de condições para processar cada uma individualmente
             INNER JOIN cadastro_paciente cp ON paciente.id_paciente = cp.id_paciente
@@ -269,9 +281,9 @@ WITH
             eq.clinica_familia.nome AS clinica_nome
         FROM
             {{ ref('mart_historico_clinico__paciente') }} p
-            -- Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
-            LEFT JOIN UNNEST (p.equipe_saude_familia) AS eq -- Expande o array de equipes de saúde
-
+            -- `rj-sms.saude_historico_clinico.paciente` p
+            --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+            left join UNNEST (p.equipe_saude_familia) AS eq
     ),
     equipe_durante_gestacao AS (
         SELECT f.id_gestacao, -- Chave para JOIN posterior
@@ -321,4 +333,10 @@ SELECT
     edf.equipe_nome,
     edf.clinica_nome
 FROM filtrado
-    LEFT JOIN equipe_durante_final edf ON filtrado.id_gestacao = edf.id_gestacao
+    LEFT JOIN equipe_durante_final edf ON filtrado.id_gestacao = edf.id_gestacao;
+
+
+
+    
+
+END;

@@ -1,11 +1,12 @@
+-- Sintaxe para criar ou substituir uma consulta salva (procedimento)
+-- A consulta que você quer salvar e reutilizar
+
 {{
     config(
         enabled=true,
         alias="consultas_emergenciais",
     )
 }}
-
-
 WITH marcadores_temporais AS (
  SELECT
    id_gestacao,
@@ -20,24 +21,23 @@ WITH marcadores_temporais AS (
    fase_atual,
    clinica_nome AS unidade_APS_PN,
    equipe_nome AS equipe_PN_APS
+--  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
-
 
 cids_agrupados AS (
  SELECT
    ea.id_hci,
    STRING_AGG(DISTINCT c.id ORDER BY c.id) AS cids_emergencia,
    STRING_AGG(DISTINCT c.descricao ORDER BY c.descricao) AS descricoes_cids_emergencia
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea,
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
-   --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
-    LEFT JOIN UNNEST(ea.condicoes) AS c
+ left join UNNEST(ea.condicoes) AS c
  WHERE ea.prontuario.fornecedor = 'vitai'
    AND ea.subtipo = 'Emergência'
    AND c.id IS NOT NULL
  GROUP BY ea.id_hci
 ),
-
 
 atendimentos_ue_com_join AS (
  SELECT
@@ -57,11 +57,11 @@ atendimentos_ue_com_join AS (
    mt.data_fim,
    mt.data_fim_efetiva,
    cids.cids_emergencia
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
  ON ea.paciente.id_paciente = mt.id_paciente
  AND ea.entrada_data BETWEEN mt.data_inicio AND COALESCE(mt.data_fim_efetiva, CURRENT_DATE())
-
 
  LEFT JOIN cids_agrupados cids ON ea.id_hci = cids.id_hci
  WHERE ea.prontuario.fornecedor = 'vitai'
@@ -103,15 +103,14 @@ ea.profissional_saude_responsavel.nome AS nome_profissional,
  ea.profissional_saude_responsavel.especialidade AS especialidade_profissional,
  ea.estabelecimento.nome AS nome_estabelecimento
 
-
+-- FROM {{ ref('mart_historico_clinico__episodio') }} ea
 FROM {{ ref('mart_historico_clinico__episodio') }} ea
 JOIN marcadores_temporais mt
  ON ea.paciente.id_paciente = mt.id_paciente
  AND ea.entrada_data BETWEEN mt.data_inicio AND COALESCE(mt.data_fim_efetiva, CURRENT_DATE())
 
-
 LEFT JOIN cids_agrupados cids
  ON ea.id_hci = cids.id_hci
 WHERE ea.prontuario.fornecedor = 'vitai'
  AND ea.subtipo = 'Emergência'
-ORDER BY mt.id_gestacao, ea.entrada_data
+ORDER BY mt.id_gestacao, ea.entrada_data;
