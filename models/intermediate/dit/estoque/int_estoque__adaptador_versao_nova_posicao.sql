@@ -21,7 +21,7 @@ with
             material_descricao,
             material_quantidade,
             armazem,
-            particao_data_posicao as data_particao,
+            cast(metadados.loaded_at as date) as data_particao,
             cast(metadados.updated_at as date) as data_replicacao,
             cast(metadados.loaded_at as date) as data_carga
         from estoque_posicao_formato_novo
