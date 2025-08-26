@@ -26,7 +26,7 @@ with
     ),
     vitacare_posicao_historico as (
         select *
-        from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
+        from {{ ref("raw_prontuario_vitacare_api__estoque_posicao") }}
     ),
 
     vitacare_completa as (

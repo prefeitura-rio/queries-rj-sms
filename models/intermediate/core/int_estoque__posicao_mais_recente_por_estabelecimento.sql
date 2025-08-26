@@ -5,7 +5,7 @@ with
 
     vitacare_posicao_mais_recente_por_estabelecimento as (
         select id_cnes, max(data_particao) as data_particao
-        from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
+        from {{ ref("raw_prontuario_vitacare_api__estoque_posicao") }}
         where material_quantidade > 0
         group by id_cnes
     ),

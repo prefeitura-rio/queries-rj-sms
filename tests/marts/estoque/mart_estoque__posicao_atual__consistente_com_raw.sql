@@ -18,7 +18,7 @@ with
             "vitacare" as sistema_origem,
             sum(0) as raw__material_valor_total,
             sum(material_quantidade) as raw__material_quantidade
-        from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
+        from {{ ref("raw_prontuario_vitacare_api__estoque_posicao") }}
         inner join raw_posicao_mais_recente using (id_cnes, data_particao)
         group by 1, 2, 3
     ),

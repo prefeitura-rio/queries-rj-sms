@@ -41,7 +41,7 @@ with
 
     relacao_unidades_datas_com_dados as (
         select distinct id_cnes, data_particao
-        from {{ ref("raw_prontuario_vitacare__estoque_movimento") }}
+        from {{ ref("raw_prontuario_vitacare_api__estoque_movimento") }}
     )
 
 select

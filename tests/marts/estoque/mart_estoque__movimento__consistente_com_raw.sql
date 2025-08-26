@@ -28,7 +28,7 @@ with
             'vitacare' as sistema_origem,
             sum(0) as raw__material_valor_total,
             sum(material_quantidade) as raw__material_quantidade,
-        from {{ ref("raw_prontuario_vitacare__estoque_movimento") }}
+        from {{ ref("raw_prontuario_vitacare_api__estoque_movimento") }}
         group by 1, 2
     ),
 
