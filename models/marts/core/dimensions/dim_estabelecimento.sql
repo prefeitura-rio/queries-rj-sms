@@ -34,6 +34,7 @@ final as (
       tipo, -- trocar para tipo_cnes?
       tipo_sms,
       tipo_sms_simplificado,
+      tipo_disponibilidade,
       nome_limpo,
       {{add_accents_estabelecimento('nome_limpo')}} as nome_acentuado,
       nome_sigla,
