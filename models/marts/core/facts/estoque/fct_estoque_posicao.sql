@@ -95,9 +95,9 @@ with
                 0,
                 valor_unitario.material_valor_unitario_medio
             ) as material_valor_total,
-            estoque.data_particao,
+            estoque.particao_data_posicao as data_particao,
             safe_cast(estoque.data_particao as datetime) as data_snapshot,
-            estoque.data_carga,
+            cast(estoque.metadados.loaded_at as datetime) as data_carga,
             "vitacare" as sistema_origem,
             estabelecimento.tipo as estabelecimento_tipo,
             estabelecimento.tipo_sms as estabelecimento_tipo_sms,

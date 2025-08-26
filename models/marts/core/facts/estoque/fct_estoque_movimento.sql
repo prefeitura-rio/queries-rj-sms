@@ -227,8 +227,8 @@ with
             est.estoque_movimento_data_hora,
             est.material_quantidade,
             est.material_valor_total,
-            est.data_particao,
-            est.data_carga,
+            est.particao_data_movimento as data_particao,
+            safe_cast(est.metadados.loaded_at as datetime) as data_carga,
             est.estoque_movimento_entrada_saida,
             est.estoque_movimento_tipo_grupo,
             case
