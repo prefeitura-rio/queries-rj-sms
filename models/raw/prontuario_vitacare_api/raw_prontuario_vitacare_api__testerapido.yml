@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__testerapido
+    description: >
+      Dados extraídos do campo `teste_rapido[0]` no JSON da tabela
+      `atendimento_continuo` do VitaCare, contendo resultados de testes
+      rápidos realizados no paciente.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: pregnancytestresult
+        description: Resultado do teste rápido de gravidez.
+        data_type: string
+      - name: positivepregnancytestresult
+        description: Resultado positivo detalhado do teste de gravidez.
+        data_type: string
+      - name: fastingglucose
+        description: Resultado de glicemia em jejum.
+        data_type: string
+      - name: postprandialglucose
+        description: Resultado de glicemia pós-prandial.
+        data_type: string
+      - name: capillaryglucose
+        description: Resultado de glicemia capilar.
+        data_type: string
+      - name: syphilistestresult
+        description: Resultado do teste rápido de sífilis.
+        data_type: string
+      - name: positivesyphilistestresult
+        description: Resultado positivo detalhado do teste de sífilis.
+        data_type: string
+      - name: ppdresult
+        description: Resultado do teste tuberculínico (PPD).
+        data_type: string
+      - name: ppdtestdate
+        description: Data de realização do teste PPD.
+        data_type: string
+      - name: hepatitisctestresult
+        description: Resultado do teste rápido de hepatite C.
+        data_type: string
+      - name: positivehepatitisctestresult
+        description: Resultado positivo detalhado do teste de hepatite C.
+        data_type: string
+      - name: tuberculosismoleculartestresult
+        description: Resultado do teste molecular para tuberculose.
+        data_type: string
+      - name: hepatitisbtestresult
+        description: Resultado do teste rápido de hepatite B.
+        data_type: string
+      - name: positivehepatitisbtestresult
+        description: Resultado positivo detalhado do teste de hepatite B.
+        data_type: string
+      - name: sarscov2testresult
+        description: Resultado do teste rápido para SARS-CoV-2.
+        data_type: string
+      - name: positivesarscov2testresult
+        description: Resultado positivo detalhado do teste de SARS-CoV-2.
+        data_type: string
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date
