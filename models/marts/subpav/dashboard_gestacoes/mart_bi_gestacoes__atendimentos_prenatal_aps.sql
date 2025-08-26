@@ -148,7 +148,7 @@ atendimentos_filtrados AS (
  left join UNNEST(ea.condicoes) AS c
  WHERE ea.subtipo = 'Atendimento SOAP'
    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
-  --  AND c.situacao = 'ATIVO'
+  --   AND c.situacao = 'ATIVO'
   --  AND (c.id = 'Z321' OR c.id LIKE 'Z34%' OR c.id LIKE 'Z35%')
    AND ea.profissional_saude_responsavel.especialidade IN (
      'Médico da estratégia de saúde da família',
