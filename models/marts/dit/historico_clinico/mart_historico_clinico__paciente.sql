@@ -80,6 +80,20 @@ with
     -- AND cpf = cpf_filter
     ),
 
+    saude_mental as (
+        SELECT 
+            paciente.numero_cpf_paciente as cpf,
+            paciente.numero_cartao_saude as cns,
+            struct( 
+                paciente.id_paciente as id_pcsm,
+                paciente.descricao_status_acompanhamento as status_acompanhamento,
+                unidade.descricao_local as unidade_caps
+            ) as saude_mental
+        FROM {{ ref("raw_pcsm_pacientes") }} as paciente 
+        LEFT JOIN {{ ref('raw_pcsm_local_unidade_saude') }} as unidade
+        ON paciente.id_unidade_caps_referencia = unidade.id_local
+    ),
+
     -- smsrio: Patient base table
     smsrio_tb as (
         select
@@ -652,6 +666,7 @@ with
             cns.cns,
             pd.dados,
             esf.equipe_saude_familia,
+            sm.saude_mental,
             ct.contato,
             ed.endereco,
             pt.prontuario,
@@ -663,6 +678,7 @@ with
         left join contato_dados ct on pd.cpf = ct.cpf
         left join endereco_dados ed on pd.cpf = ed.cpf
         left join prontuario_dados pt on pd.cpf = pt.cpf
+        left join saude_mental sm on sm.cpf = pd.cpf
         where
             pd.dados.nome is not null
             -- AND pd.dados.data_nascimento IS NOT NULL
