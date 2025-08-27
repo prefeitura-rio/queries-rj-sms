@@ -639,12 +639,15 @@ with
             struct(
                 id_paciente,
                 nome,
-                -- Só queremos `nome_social` se não for igual a `nome`
-                -- ainda que falte um ou outro sobrenome
                 case
+                    -- Só queremos `nome_social` se não for igual a `nome`
+                    -- ainda que falte um ou outro sobrenome
                     when starts_with(nome, nome_social)
                     then null
                     when {{ is_same_name("nome", "nome_social") }}
+                    then null
+                    -- O campo de nome social às vezes é usado como nome da mãe
+                    when {{ is_same_name("mae_nome", "nome_social" )}}
                     then null
                     else nome_social
                 end as nome_social,

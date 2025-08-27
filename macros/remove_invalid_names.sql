@@ -240,45 +240,6 @@ case
     )
         then null
 
-
-    -- Lembra quando eu falei ali em cima sobre RegEx ilegível? Toma aqui um!
-    -- Aqui eliminamos entradas que só possuam as seguintes palavras:
-    -- - Começando com Homem / Mulher (incluindo 'home', 'homen')
-    -- - Pard@, Negr@, Branc@, Moren@, Pret@
-    -- - Jovem, Adult@
-    -- - Alt@, Median@, Medi@, Baix@, Magr@, Gord@, Barbud@
-    -- - "Alegad@"
-    -- - Desconhecid@, Balead@
-    -- - Morador(a) de rua
-    -- - "HOJE" (quando não tem nome, às vezes é "homem hoje" ou variantes)
-    -- - "ESTATURA" (ex. "baixa estatura")
-    -- - "SEM NOME"
-    -- - "UM", "DOIS" (ex. "homem pardo dois")
-    -- - "MAIS", "OU", "MENOS",
-    --   ("VINTE", "TRINTA", "QUARENTA", "CINQUENTA", "SESSENTA"
-    --   ("E __") "ANOS")
-    --   (ex. "mais ou menos trinta e cinco anos"; "vinte anos"; etc)
-    -- - Não identificado/sem identificação
-    -- Não é uma lógica infalível! Muito texto muito específico:
-    -- Datas, comentários sobre aparência, tatuagens, mas também nomes, apelidos, ...
-    when REGEXP_CONTAINS(
-        REGEXP_REPLACE(
-            TRIM(
-                UPPER(
-                    REGEXP_REPLACE(
-                        NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
-                        r'[^\p{Letter} ]', -- Substitui tudo que não for letra ou espaço
-                        ''                 -- por nada
-                    )
-                )
-            ),
-            r'\s{2,}', -- Substitui múltiplos whitespaces
-            ' '        -- por um espaço só
-        ),
-        r'^(HOME(M|N)?|MULHER)(\s|(PARD|NEGR|BRANC|MOREN|PRET|JOVEM|ADULT|ALT|MEDIAN|MEDI|BAIX|MAGR|GORD|BARBUD|ALEGAD|DESCONHECID|BALEAD)(O|A)?|MORADORA? DE RUA|HOJE|ESTATURA|SEM NOME|UM|DOIS|APARENTA(NDO)?|MAIS|OU|MENOS|(VINTE|TRINTA|QUARENTA|CINQUENTA|SESSENTA)?(\s*E\s+[A-Z]+)?\s*ANOS|NAO ID[^\s]+|SEM ID[^\s]+)*$'
-    )
-        then null
-
-    else {{ text }}
+    else {{ process_null(aux_remove_person_description(text)) }}
 end
 {% endmacro %}

@@ -425,6 +425,8 @@ with
             case
                 when {{ is_same_name("nome", "nome_social") }}
                 then null
+                when {{ is_same_name("mae_nome", "nome_social" )}}
+                then null
                 else nome_social
             end as nome_social
 
