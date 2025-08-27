@@ -807,11 +807,7 @@ models:
         description: Flag se os dados do estabelecimento foram preenchidos.
 
   - name: raw_projeto_c34__producoes_sia
-    description: >
-      Produções do SIA vinculadas a pacientes identificados via CNS (fuzzy-match),
-      enriquecidas com informações do SIM, CNES, CID-10 e áreas programáticas.
-      Abrange procedimento executado, estabelecimento executante e, quando aplicável,
-      dados do óbito do paciente.
+    description: Produções do SIA vinculadas a pacientes identificados via CNS (fuzzy-match), enriquecidas com informações do SIM, CNES, CID-10 e áreas programáticas. Abrange procedimento executado, estabelecimento executante e, quando aplicável, dados do óbito do paciente.
     columns:
       # ---------------------------------------------------------------------
       # Identificação e contexto temporal
@@ -820,6 +816,8 @@ models:
         description: Identificador anônimo/estável do paciente.
         data_type: string
         quote: true
+        data_tests:
+          - not_null
       - name: paciente_cpf_recuperado
         description: Indica se o CPF do paciente foi recuperado ('SIM' ou 'NAO').
         data_type: string
