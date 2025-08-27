@@ -108,10 +108,10 @@ with
     pcsm_unidades as (
         select 
             u.id_unidade_saude as id_unidade,
-            e.id_cnes as cnes,
-            e.nome_acentuado as nome_unidade
-        from {{ ref("dim_estabelecimento") }} as e
-        left join {{ ref("raw_pcsm_unidades_saude") }} as u
+            coalesce(e.id_cnes,u.codigo_nacional_estabelecimento_saude) as cnes,
+            coalesce(e.nome_acentuado,u.nome_unidade_saude) as nome_unidade
+        from {{ ref("raw_pcsm_unidades_saude") }} as u
+        left join {{ ref("dim_estabelecimento") }} as e
             on e.id_cnes = u.codigo_nacional_estabelecimento_saude
     ),
 
