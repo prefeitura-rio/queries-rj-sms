@@ -16,7 +16,7 @@ WITH bruto_atendimento AS (
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
     SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME) AS datahora_fim_atendimento,
     data,
-  FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+  FROM {{ source("brutos_prontuario_vitacare_staging_dev", "atendimento_continuo") }}
   WHERE JSON_EXTRACT(data, '$.arbovirose') IS NOT NULL
   AND JSON_EXTRACT(data, '$.arbovirose') != '[]'
   {% if is_incremental() %}
