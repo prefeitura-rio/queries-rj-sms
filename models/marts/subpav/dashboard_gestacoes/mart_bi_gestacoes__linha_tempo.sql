@@ -47,8 +47,8 @@ categorias_risco_gestacional AS (
         ) AS categorias_risco,
         --cat_risco_encaminhada
         STRING_AGG(DISTINCT c.id, '; ' ORDER BY c.id) AS cid_alto_risco,
-        STRING_AGG(DISTINCT r.Encaminhamento_Alto_Risco, '; ' ORDER BY r.Encaminhamento_Alto_Risco) AS encaminhamento_alto_risco,
-        STRING_AGG(DISTINCT r.Justificativa_Condicao, '; ' ORDER BY r.Justificativa_Condicao) AS justificativa_condicao,
+        STRING_AGG(DISTINCT r.encaminhamento_alto_risco, '; ' ORDER BY r.encaminhamento_alto_risco) AS encaminhamento_alto_risco,
+        STRING_AGG(DISTINCT r.justificativa___condicao, '; ' ORDER BY r.justificativa___condicao) AS justificativa_condicao,
     FROM
         filtrado f -- Usa 'filtrado' que já tem 'id_gestacao' e as datas corretas
         JOIN {{ ref('mart_historico_clinico__episodio') }} ea ON f.id_paciente = ea.paciente.id_paciente
@@ -61,7 +61,7 @@ categorias_risco_gestacional AS (
         left JOIN UNNEST (ea.condicoes) AS c
         -- JOIN {{ ref('raw_sheets__cids_risco_gestacional') }} r
         -- JOIN rj-sms-sandbox.sub_pav_us.cids_risco_gestacional r
-        JOIN rj-sms-sandbox.sub_pav_us._cids_risco_gestacional_cat_encam r
+        JOIN {{ ref('raw_sheets__cids_risco_gestacional') }} r
             ON c.id = r.cid
     WHERE
         c.id IS NOT NULL -- Redundante se r.cid não puder ser NULL, mas seguro
