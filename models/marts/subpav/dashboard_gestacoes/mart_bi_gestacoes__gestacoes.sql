@@ -113,7 +113,7 @@ WITH
                         ORDER BY data_evento
                     ),
                     DAY
-                ) >= 30 THEN 1 -- Nova gestação se > 30 dias
+                ) >= 60 THEN 1 -- Nova gestação se > 60 dias
                 ELSE 0 -- Continuação da mesma "janela" de início de gestação
             END AS nova_ocorrencia_flag
         FROM inicios_brutos
