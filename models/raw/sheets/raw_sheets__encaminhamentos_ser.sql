@@ -1,7 +1,7 @@
 {{
     config(
         schema="brutos_sheets",
-        alias="cids_risco_gestacional",
+        alias="encaminhamentos_ser",
     )
 }}
 
@@ -9,7 +9,7 @@ with
     source as (
         select
             *
-        from {{ source("brutos_sheets_staging", "cids_risco_gestacional") }}
+        from {{ source("brutos_sheets_staging", "encaminhamentos_ser") }}
     )
 
 select *
