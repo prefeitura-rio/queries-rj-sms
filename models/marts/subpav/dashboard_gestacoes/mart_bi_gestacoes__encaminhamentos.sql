@@ -113,14 +113,14 @@ encaminhamento_SER AS (
         s.Estado_Solicitacao,
         s.Codigo_cid,
         s.Descricao_cid,
-        CAST(s.Dt_agendamento AS DATE) AS Dt_agendamento, -- Adicionado alias
-        CAST(s.Dt_execucao AS DATE) AS Dt_execucao,       -- Adicionado alias
+        CAST({{ parse_datetime('s.Dt_agendamento') }} AS DATE) AS Dt_agendamento, -- Adicionado alias
+        CAST({{ parse_datetime('s.Dt_execucao') }} AS DATE) AS Dt_execucao,       -- Adicionado alias
         s.UnidadeExecutante, -- Corrigido para corresponder ao schema
         s.Unidade_Origem,
-        ROW_NUMBER() OVER (PARTITION BY g.id_gestacao ORDER BY CAST(s.Dt_Solicitacao AS DATE) ASC) as rn_solicitacao
+        ROW_NUMBER() OVER (PARTITION BY g.id_gestacao ORDER BY CAST({{ parse_datetime('s.Dt_Solicitacao') }} AS DATE) ASC) as rn_solicitacao
     FROM gestacoes_definidas g
     JOIN ser_pre_filtrado s ON g.id_paciente = s.id_paciente
-    WHERE CAST(s.Dt_Solicitacao AS DATE) BETWEEN g.data_inicio AND COALESCE(g.data_fim_efetiva, CURRENT_DATE())
+    WHERE CAST({{ parse_datetime('s.Dt_Solicitacao') }} AS DATE) BETWEEN g.data_inicio AND COALESCE(g.data_fim_efetiva, CURRENT_DATE())
 )
 
 -- =================================================================================================
