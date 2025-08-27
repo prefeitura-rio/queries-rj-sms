@@ -117,4 +117,4 @@ LEFT JOIN cids_agrupados cids
  ON ea.id_hci = cids.id_hci
 WHERE ea.prontuario.fornecedor = 'vitai'
  AND ea.subtipo = 'Emergência'
-ORDER BY mt.id_gestacao, ea.entrada_data;
+ORDER BY mt.id_gestacao, ea.entrada_data
