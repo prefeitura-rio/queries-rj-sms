@@ -402,6 +402,10 @@ models:
         description: Nome do paciente.
         policy_tags:
           - '{{ var ("TAG_NOME") }}'
+      - name: nome_social
+        description: Nome social do paciente.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
       - name: data_nascimento
         description: Data de nascimento.
         policy_tags:

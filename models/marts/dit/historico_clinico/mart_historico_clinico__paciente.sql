@@ -527,7 +527,7 @@ with
 
     -- merge priority:
     -- nome:             1. smsrio   | 2. Vitacare  | 3. Vitai
-    -- nome_social:      1. Vitai    
+    -- nome_social:      1. Vitacare | 2. Vitai
     -- data_nascimento:  1. smsrio   | 2. Vitacare  | 3. Vitai
     -- genero:           1. Vitacare | 2. smsrio    | 3. Vitai
     -- raca:             1. Vitacare | 2. smsrio    | 3. Vitai
@@ -538,110 +538,127 @@ with
     paciente_dados as (
         select
             cpfs.cpf,
-            struct(
-                {{
-                dbt_utils.generate_surrogate_key(
-                        [
-                            "cpfs.cpf",
-                        ]
-                    )
-                }} as id_paciente,
-                case
-                    when sm.cpf is not null
-                    then sm.nome
-                    when vc.cpf is not null
-                    then vc.nome
-                    when vi.cpf is not null
-                    then vi.nome
-                    else null
-                end as nome,
-                case
-                    when vc.cpf is not null
-                    then vc.nome_social
-                    -- WHEN sm.cpf THEN sm.nome_social  -- smsrio não possui nome social
-                    -- WHEN vi.cpf IS NOT NULL THEN vi.nome_social  -- vitai não
-                    -- possui nome social
-                    else null
-                end as nome_social,
-                case
-                    when sm.cpf is not null
-                    then sm.data_nascimento
-                    when vc.cpf is not null
-                    then vc.data_nascimento
-                    when vi.cpf is not null
-                    then vi.data_nascimento
-                    else null
-                end as data_nascimento,
-                coalesce(vc.genero, sm.genero, vi.genero) as genero,
-                coalesce(vc.raca, sm.raca, vi.raca) as raca,
-                case
-                    when
-                        (
-                            (
-                                coalesce(
-                                    vc.obito_indicador,
-                                    sm.obito_indicador,
-                                    vi.obito_indicador
-                                )
-                                is false
-                                or coalesce(
-                                    vc.obito_indicador,
-                                    sm.obito_indicador,
-                                    vi.obito_indicador
-                                )
-                                is null
-                            )
-                        )
-                        and (base_obitos_vitai.cpf is not null)
-                    then true
-                    else
+            {{
+            dbt_utils.generate_surrogate_key(
+                    [
+                        "cpfs.cpf",
+                    ]
+                )
+            }} as id_paciente,
+            case
+                when sm.cpf is not null
+                then sm.nome
+                when vc.cpf is not null
+                then vc.nome
+                when vi.cpf is not null
+                then vi.nome
+                else null
+            end as nome,
+            coalesce(vc.nome_social, vi.nome_social) as nome_social,
+            case
+                when sm.cpf is not null
+                then sm.data_nascimento
+                when vc.cpf is not null
+                then vc.data_nascimento
+                when vi.cpf is not null
+                then vi.data_nascimento
+                else null
+            end as data_nascimento,
+            coalesce(vc.genero, sm.genero, vi.genero) as genero,
+            coalesce(vc.raca, sm.raca, vi.raca) as raca,
+            case
+                when
+                    (
                         coalesce(
-                            vc.obito_indicador, sm.obito_indicador, vi.obito_indicador
+                            vc.obito_indicador,
+                            sm.obito_indicador,
+                            vi.obito_indicador
                         )
-                end as obito_indicador,
-                case
-                    when
-                        coalesce(vc.obito_data, sm.obito_data, vi.obito_data) is null
-                        and (base_obitos_vitai.obito_data is not null)
-                    then base_obitos_vitai.obito_data
-                    else coalesce(vc.obito_data, sm.obito_data, vi.obito_data)
-                end as obito_data,
-                case
-                    when sm.cpf is not null
-                    then sm.mae_nome
-                    when vc.cpf is not null
-                    then vc.mae_nome
-                    when vi.cpf is not null
-                    then vi.mae_nome
-                    else null
-                end as mae_nome,
-                case
-                    when sm.cpf is not null
-                    then sm.pai_nome
-                    when vc.cpf is not null
-                    then vc.pai_nome
-                    when vi.cpf is not null
-                    then vi.pai_nome
-                    else null
-                end as pai_nome,
-                case
-                    when sm.cpf is not null then true else false
-                end as identidade_validada_indicador,
-                case
-                    when sm.cpf is not null
-                    then sm.cpf_valido_indicador
-                    when vc.cpf is not null
-                    then vc.cpf_valido_indicador
-                    when vi.cpf is not null
-                    then vi.cpf_valido_indicador
-                    else null
-                end as cpf_valido_indicador
-            ) as dados
+                        is false
+                        or coalesce(
+                            vc.obito_indicador,
+                            sm.obito_indicador,
+                            vi.obito_indicador
+                        )
+                        is null
+                    )
+                    and (base_obitos_vitai.cpf is not null)
+                then true
+                else
+                    coalesce(
+                        vc.obito_indicador, sm.obito_indicador, vi.obito_indicador
+                    )
+            end as obito_indicador,
+            case
+                when
+                    coalesce(vc.obito_data, sm.obito_data, vi.obito_data) is null
+                    and (base_obitos_vitai.obito_data is not null)
+                then base_obitos_vitai.obito_data
+                else coalesce(vc.obito_data, sm.obito_data, vi.obito_data)
+            end as obito_data,
+            case
+                when sm.cpf is not null
+                then sm.mae_nome
+                when vc.cpf is not null
+                then vc.mae_nome
+                when vi.cpf is not null
+                then vi.mae_nome
+                else null
+            end as mae_nome,
+            case
+                when sm.cpf is not null
+                then sm.pai_nome
+                when vc.cpf is not null
+                then vc.pai_nome
+                when vi.cpf is not null
+                then vi.pai_nome
+                else null
+            end as pai_nome,
+            case
+                when sm.cpf is not null then true else false
+            end as identidade_validada_indicador,
+            case
+                when sm.cpf is not null
+                then sm.cpf_valido_indicador
+                when vc.cpf is not null
+                then vc.cpf_valido_indicador
+                when vi.cpf is not null
+                then vi.cpf_valido_indicador
+                else null
+            end as cpf_valido_indicador
         from all_cpfs cpfs
         left join vitacare_tb vc on cpfs.cpf = vc.cpf
         left join vitai_tb vi on cpfs.cpf = vi.cpf
         left join smsrio_tb sm on cpfs.cpf = sm.cpf
         left join base_obitos_vitai on cpfs.cpf = base_obitos_vitai.cpf
+    ),
+
+    paciente_dados_nomes_unicos as (
+        select
+            cpf,
+            struct(
+                id_paciente,
+                nome,
+                -- Só queremos `nome_social` se não for igual a `nome`
+                -- ainda que falte um ou outro sobrenome
+                case
+                    when starts_with(nome, nome_social)
+                    then null
+                    when {{ is_same_name("nome", "nome_social") }}
+                    then null
+                    else nome_social
+                end as nome_social,
+                data_nascimento,
+                genero,
+                raca,
+                obito_indicador,
+                obito_data,
+                mae_nome,
+                pai_nome,
+                identidade_validada_indicador,
+                cpf_valido_indicador
+            ) as dados
+        from paciente_dados
     ),
 
     -- -- FINAL JOIN: Joins all the data previously processed, creating the
@@ -657,7 +674,7 @@ with
             pt.prontuario,
             struct(current_timestamp() as processed_at) as metadados,
             safe_cast(pd.cpf as int64) as cpf_particao
-        from paciente_dados pd
+        from paciente_dados_nomes_unicos pd
         left join cns_dados cns on pd.cpf = cns.cpf
         left join equipe_saude_familia_dados esf on pd.cpf = esf.cpf
         left join contato_dados ct on pd.cpf = ct.cpf

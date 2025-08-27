@@ -65,6 +65,7 @@ with
             cns_lista,
 
             registration_name as nome,
+            social_name as nome_social,
             birth_date as data_nascimento,
             {{ calculate_age('cast(birth_date as date)') }} AS idade,
             gender as genero,
