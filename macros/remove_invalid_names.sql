@@ -5,24 +5,17 @@ case
         then null
 
 
-    -- Valores que são só o mesmo caractere, repetido 1 ou mais vezes
+    -- Valores que são só uma letra, repetida 1 ou mais vezes
+    -- ou só uma corrente de dígitos, sem letras (ex. CNS)
     -- Não, não tem como fazer mais bonitinho, o RegEx daqui não suporta backreference
     -- [Ref] https://github.com/google/re2/issues/512
-    when REGEXP_CONTAINS(
-        {{ remove_accents_upper(text) }},
-        r'^(A+|B+|C+|D+|E+|F+|G+|H+|I+|J+|K+|L+|M+|N+|O+|P+|Q+|R+|S+|T+|U+|V+|W+|X+|Y+|Z+)$'
-    )
-        then null
-
-
-    -- Valores que são só uma corrente de dígitos, sem letras
     when REGEXP_CONTAINS(
         REGEXP_REPLACE(
             NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
             r'[^\p{Letter}0-9]', -- Substitui tudo que não for letra ou dígito
             ''                   -- por nada
         ),
-        r'^[0-9]+$'
+        r'(?i)^(A+|B+|C+|D+|E+|F+|G+|H+|I+|J+|K+|L+|M+|N+|O+|P+|Q+|R+|S+|T+|U+|V+|W+|X+|Y+|Z+|[0-9]+)$'
     )
         then null
 
