@@ -889,7 +889,7 @@ encaminhamento_hipertensao_sisreg AS (
         filtrado f
         JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
         -- LEFT JOIN {{ ref('raw_sisreg_api__solicitacoes') }} s
-        LEFT JOIN {{ ref('raw_sisreg_api__solicitacoes') }} s
+        LEFT JOIN {{ ref('mart_bi_gestacoes__encaminhamentos') }} s
         -- LEFT JOIN rj-sms.brutos_sisreg_api.solicitacoes s
         ON pi.id_paciente = s.id_paciente
         AND s.sisreg_primeira_procedimento_id = '0703844' -- CONSULTA EM OBSTETRICIA - ALTO RISCO GERAL
@@ -943,7 +943,7 @@ encaminhamento_hipertensao_SER AS (
         filtrado f
         JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
         -- LEFT JOIN {{ ref('raw_sisreg_api__solicitacoes') }} s
-        LEFT JOIN {{ ref('raw_sisreg_api__solicitacoes') }} s
+        LEFT JOIN {{ ref('mart_bi_gestacoes__encaminhamentos') }} s
         -- LEFT JOIN rj-sms.brutos_sisreg_api.solicitacoes s
         ON pi.id_paciente = s.id_paciente
         AND (
@@ -1782,7 +1782,7 @@ final AS (
         LEFT JOIN Urgencia_e_emergencia ue ON f.id_gestacao = ue.id_gestacao
         LEFT JOIN (
             SELECT *
-            FROM {{ ref('raw_sheets__encaminhamentos_ser') }} enc_sreg_ser
+            FROM {{ ref('mart_bi_gestacoes__encaminhamentos') }} enc_sreg_ser
             -- WHERE
             --     rn_solicitacao = 1
         ) sis_sol ON f.id_gestacao = sis_sol.id_gestacao
