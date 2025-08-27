@@ -65,11 +65,20 @@ with
         from source
     ),
 
-    final as (
+    data_replicacao_sem_hora as (
+        select
+            *,
+            safe_cast(
+                safe_cast(data_replicacao as datetime)
+                as date
+            ) as particao_data_posicao
+        from renamed
+    ),
 
+    final as (
         select
             -- Primary Key
-            concat(id_cnes, '.', id, '.', safe_cast(safe_cast(data_replicacao as datetime) as date)) as id,
+            concat(id_cnes, '.', id, '.', particao_data_posicao) as id,
             {{
                 dbt_utils.generate_surrogate_key(
                     [
@@ -78,11 +87,11 @@ with
                         "id_lote",
                         "armazem",
                         "material_quantidade",
-                        "data_replicacao",
+                        "particao_data_posicao",
                     ]
                 )
             }} as id_surrogate,
-            
+
             -- Foreign Keys
             safe_cast(area_programatica as string) as area_programatica,
             safe_cast(id_cnes as string) as id_cnes,
@@ -100,17 +109,21 @@ with
             material_descricao,
             safe_cast(material_quantidade as int64) as material_quantidade,
             lower({{ clean_name_string("armazem") }}) as armazem,
-            
+
             struct(
                 safe_cast(data_replicacao as datetime) as updated_at,
                 safe_cast(loaded_at as timestamp) as loaded_at
             ) as metadados,
 
-            cast(safe_cast(data_replicacao as datetime) as date) as particao_data_posicao
+            particao_data_posicao
 
-        from renamed
+        from data_replicacao_sem_hora
     )
 
 select *
 from final
-qualify row_number() over(partition by id_surrogate order by metadados.updated_at desc) = 1
+-- de-duplicação de entradas iguais em um mesmo dia
+qualify row_number() over(
+    partition by id_surrogate
+    order by metadados.updated_at desc
+) = 1
