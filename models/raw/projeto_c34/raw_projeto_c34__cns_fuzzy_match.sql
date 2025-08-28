@@ -1,4 +1,4 @@
-{{ config(materialized="ephemeral", schema="projeto_c34", alias="cns_fuzzy_match") }}
+{{ config(materialized="ephemeral") }}
 
 with
     -- conjunto de pacientes para os quais queremos encontrar o cns
