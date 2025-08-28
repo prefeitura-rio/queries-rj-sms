@@ -1,12 +1,13 @@
 with
     -- sources
     estoque_posicao_formato_novo as (
-        select * from {{ ref("raw_prontuario_vitacare_api__estoque_posicao") }}
+        select *
+        from {{ ref("raw_prontuario_vitacare_api__estoque_posicao") }}
     ),
 
     -- transformations
     final as (
-        select 
+        select
             id,
             id_surrogate,
             area_programatica,
@@ -28,4 +29,5 @@ with
         where material_quantidade > 0
     )
 
-select * from final
+select *
+from final
