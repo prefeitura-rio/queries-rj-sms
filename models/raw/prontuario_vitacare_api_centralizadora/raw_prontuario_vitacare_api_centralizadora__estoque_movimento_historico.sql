@@ -25,8 +25,8 @@ with estoque_movimento_historico as (
         safe_cast(_target_date as string) as _target_date, 
         _endpoint,
         _loaded_at,
-        extract(year from safe_cast(_loaded_at as timestamp)) as ano_particao,
-        extract(month from safe_cast(_loaded_at as timestamp)) as mes_particao,
+        safe_cast(extract(year from safe_cast(_loaded_at as timestamp)) as string) as ano_particao,
+        safe_cast(extract(month from safe_cast(_loaded_at as timestamp)) as string) as mes_particao,
         safe_cast(safe_cast(_loaded_at as timestamp) as date) as data_particao
     from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_historico") }}
 )
