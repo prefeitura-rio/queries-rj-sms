@@ -40,7 +40,8 @@ with
             upper(left(causa_bas, 3)) as obito_causabas_cid,
             ocor_mun_cod as obito_mun_ocor_ibge,
             ocor_bairro as obito_bairro_ocor,
-            ocor_estab as obito_estab_ocor_cnes
+            ocor_estab as obito_estab_ocor_cnes,
+            declaracao_obito_num as declaracao_obito_sim
 
         from {{ source("sub_geral_prod", "c34_obitos_mrj") }} as sim
     ),
@@ -57,7 +58,16 @@ with
             on sim.paciente_nome = fuzzy.nome
             and sim.paciente_nome_mae = fuzzy.nome_mae
             and sim.paciente_data_nasc = fuzzy.data_nasc
+    ),
+
+    adicao_cns as (
+        select 
+            ob.* except(declaracao_obito_sim),
+            cns_fuzzy.cns_id
+        from obitos_desidentificados as ob
+        left join {{ref("raw_projeto_c34__cns_fuzzy_match")}} as cns_fuzzy
+        using (declaracao_obito_sim)
     )
 
 select distinct *
-from obitos_desidentificados
+from adicao_cns
