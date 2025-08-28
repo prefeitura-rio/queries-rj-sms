@@ -236,7 +236,7 @@ models:
           dado_sensivel: sim
           dominio: historico_clinico
       prontuario_vitacare_api:
-        +schema: brutos_prontuario_vitacare_api_centralizadora
+        +schema: brutos_prontuario_vitacare_api
         +tags: ["vitacare", "daily", "vitacare_api"]
         +labels:
           dado_publico: nao
