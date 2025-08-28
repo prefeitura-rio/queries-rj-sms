@@ -493,6 +493,18 @@ models:
           registrados nos sistemas SMS RIO, VITAI e VITACARE.
         data_type: record
         quote: true
+      - name: saude_mental
+        description: Informações sobre acompanhamento do paciente em unidade de saúde mental (caso possua).
+      - name: saude_mental.id_pcsm
+        description: Identificador do paciente no Prontuário Carioca de Saúde saude_mental
+      - name: saude_mental.status_acompanhamento
+        description: Status do acompanhamento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: saude_mental.nome_unidade
+        description: Nome da unidade de saúde que o paciente está vinculado.
+      - name: saude_mental.cnes
+        description: CNES da unidade de saúde que o paciente está vinculado.
       - name: contato.telefone
         description: "ARRAY contendo os números de telefone ordenados. O 
           critério de ordenação é pelos cadastros pelo ACS na atenção primária 
