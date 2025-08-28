@@ -1,7 +1,7 @@
 with
     -- sources
     estoque_posicao_formato_novo as (
-        select * from {{ ref("raw_prontuario_vitacare_api__estoque_posicao") }}
+        select * from {{ ref("raw_prontuario_vitacare_api_centralizadora__estoque_posicao") }}
     ),
 
     -- transformations

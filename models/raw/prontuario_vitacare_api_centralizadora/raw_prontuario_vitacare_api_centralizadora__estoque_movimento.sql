@@ -38,6 +38,11 @@ with
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_ap52") }}
         union all
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_ap53") }}
+        select *, 
+            null as data_particao,
+            null as mes_particao,
+            null as ano_particao
+        from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_historico") }}
     ),
 
     renamed as (

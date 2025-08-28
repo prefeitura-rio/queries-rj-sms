@@ -17,7 +17,8 @@
     )
 }}
 
-with
+with 
+
     source as (
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap10") }}
         union all
@@ -38,6 +39,8 @@ with
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap52") }}
         union all
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap53") }}
+        union all
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora", "estoque_posicao_historico") }}
     ),
 
     renamed as (

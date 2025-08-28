@@ -15,7 +15,11 @@
     )
 }}
 
-with
+with historico as (
+    select * except(_target_date)
+    from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_historico") }}
+),
+
     source as (
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap10") }}
         union all
@@ -25,8 +29,8 @@ with
         union all
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap31") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap32") }}
-        union all
+        --select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap32") }}
+        --union all
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap33") }}
         union all
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap40") }}
@@ -36,6 +40,13 @@ with
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap52") }}
         union all
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap53") }}
+        union all
+        select *, 
+            null as data_particao,
+            null as mes_particao,
+            null as ano_particao
+        from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_historico") }}
+
     ),
 
     renamed as (
