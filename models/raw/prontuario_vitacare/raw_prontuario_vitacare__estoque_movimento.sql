@@ -8,6 +8,11 @@
             "dado_anonimizado": "nao",
             "dado_sensivel_saude": "sim",
         },
+        partition_by={
+            "field": "particao_data_movimento",
+            "data_type": "date",
+            "granularity": "month",
+        },
         tags=['daily','vitacare_estoque']
     )
 }}
