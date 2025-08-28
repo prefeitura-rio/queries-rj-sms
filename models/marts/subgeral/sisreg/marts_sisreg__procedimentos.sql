@@ -18,6 +18,10 @@ procedimentos_sisreg as (
         procedimento_sigtap_id
     from {{ref("raw_sisreg_api__solicitacoes")}}
     where date(data_solicitacao) >= date_sub(current_date('America/Sao_Paulo'), interval 3 month)
+    qualify row_number() over (
+        partition by procedimento_id
+        order by data_atualizacao desc nulls last
+    ) = 1
 ),
 
 procedimentos_atributos_sheetss as (
