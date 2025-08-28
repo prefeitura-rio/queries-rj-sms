@@ -1,6 +1,7 @@
 {{
     config(
         alias="estoque_posicao",
+        schema="brutos_prontuario_vitacare_api_centralizadora",
         tags="vitacare_estoque",
         labels={
             "dominio": "estoque",

@@ -1,6 +1,7 @@
 {{
     config(
         alias="vacinacao",
+        schema="brutos_prontuario_vitacare_api_centralizadora",
         labels={
             "dado_publico": "nao",
             "dado_pessoal": "nao",
