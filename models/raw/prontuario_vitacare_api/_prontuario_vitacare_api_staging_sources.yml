@@ -1,10 +1,10 @@
 version: 2
 
 sources:
-  - name: brutos_prontuario_vitacare_api_staging
+  - name: brutos_prontuario_vitacare_api_centralizadora_staging
     description: Dados brutos da API Centralizadora do Vitacare
     database: rj-sms
-    schema: brutos_prontuario_vitacare_api_staging
+    schema: brutos_prontuario_vitacare_api_centralizadora_staging
     tables:
       # ESTOQUE_MOVIMENTO
       - name: estoque_movimento_ap10

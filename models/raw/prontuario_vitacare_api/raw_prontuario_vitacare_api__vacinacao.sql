@@ -17,25 +17,25 @@
 
 with
     source as (
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap10") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap10") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap21") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap21") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap22") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap22") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap31") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap31") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap32") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap32") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap33") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap33") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap40") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap40") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap51") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap51") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap52") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap52") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap53") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap53") }}
     ),
 
     renamed as (
