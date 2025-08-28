@@ -105,6 +105,39 @@ with
     -- AND cpf = cpf_filter
     ),
 
+    pcsm_unidades as (
+        select 
+            u.id_unidade_saude as id_unidade,
+            coalesce(e.id_cnes,u.codigo_nacional_estabelecimento_saude) as cnes,
+            coalesce(e.nome_acentuado,u.nome_unidade_saude) as nome_unidade
+        from {{ ref("raw_pcsm_unidades_saude") }} as u
+        left join {{ ref("dim_estabelecimento") }} as e
+            on e.id_cnes = u.codigo_nacional_estabelecimento_saude
+    ),
+
+    pcsm_pacientes as (
+        SELECT 
+            paciente.numero_cpf_paciente as cpf,
+            paciente.id_paciente as id_pcsm,
+            paciente.descricao_status_acompanhamento as status_acompanhamento,
+            paciente.id_unidade_caps_referencia as id_caps
+        FROM {{ ref("raw_pcsm_pacientes") }} as paciente 
+        QUALIFY row_number() over (partition by paciente.numero_cpf_paciente order by paciente.loaded_at desc ) = 1
+    ),
+
+    saude_mental as (
+        select 
+            p.cpf,
+            struct(
+                p.id_pcsm,
+                p.status_acompanhamento,
+                u.nome_unidade,
+                u.cnes
+            ) as saude_mental
+        from pcsm_pacientes p 
+        left join pcsm_unidades u on p.id_caps = u.id_unidade
+    ),
+
     -- Paciente Dados: Merges patient data
     all_cpfs as (
         select distinct cpf
@@ -652,6 +685,7 @@ with
             cns.cns,
             pd.dados,
             esf.equipe_saude_familia,
+            sm.saude_mental,
             ct.contato,
             ed.endereco,
             pt.prontuario,
@@ -663,6 +697,7 @@ with
         left join contato_dados ct on pd.cpf = ct.cpf
         left join endereco_dados ed on pd.cpf = ed.cpf
         left join prontuario_dados pt on pd.cpf = pt.cpf
+        left join saude_mental sm on sm.cpf = pd.cpf
         where
             pd.dados.nome is not null
             -- AND pd.dados.data_nascimento IS NOT NULL

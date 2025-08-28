@@ -6,7 +6,7 @@ with
 
     -- transformations
     final as (
-        select 
+        select
             id,
             id_surrogate,
             area_programatica,
@@ -28,4 +28,5 @@ with
         where material_quantidade > 0
     )
 
-select * from final
+select *
+from final
