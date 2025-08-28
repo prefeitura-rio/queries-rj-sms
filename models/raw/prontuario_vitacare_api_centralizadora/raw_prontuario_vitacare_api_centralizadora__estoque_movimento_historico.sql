@@ -9,11 +9,6 @@
             "dado_anonimizado": "nao",
             "dado_sensivel_saude": "nao",
         },
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "day",
-        },
     )
 }}
 
@@ -27,7 +22,7 @@ with estoque_movimento_historico as (
         _loaded_at,
         safe_cast(extract(year from safe_cast(_loaded_at as timestamp)) as string) as ano_particao,
         safe_cast(extract(month from safe_cast(_loaded_at as timestamp)) as string) as mes_particao,
-        safe_cast(safe_cast(_loaded_at as timestamp) as date) as data_particao
+        substr(_loaded_at, 1, 10) as data_particao
     from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_historico") }}
 )
 
