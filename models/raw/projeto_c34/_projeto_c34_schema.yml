@@ -1018,3 +1018,49 @@ models:
         description: Mês do óbito do paciente (1=janeiro, ..., 12=dezembro).
         data_type: int64
         quote: true
+
+  - name: raw_projeto_c34__cns_fuzzy_match
+    description: Tabela contendo os CNS recuperados através de técnicas de fuzzy matching (levenshtein & jaccard) contra as bases de pacientes do SISREG, SIH e HCI.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_nasc
+            - nome
+            - nome_mae
+    columns:
+      - name: declaracao_obito_sim
+        description: Número da Declaração de Óbito do Paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_OUTRO_DOC") }}'
+      - name: data_nasc
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_DATA_NASCIMENTO") }}'
+      - name: nome
+        description: Nome do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+      - name: nome_candidato
+        description: Nome no registro do paciente com maior score no fuzzy matching.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
+      - name: nome_mae_candidato
+        description: Nome da mãe no registro do paciente com maior score no fuzzy matching.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
+      - name: score_lev
+        description: Score do algoritmo Levenshtein para os nomes do paciente e da mãe.
+      - name: score_jac
+        description: Score do algoritmo Jaccard para os nomes do paciente e da mãe.
+      - name: score_final
+        description: Score final do fuzzy matching, calculado como a média dos scores Levenshtein e Jaccard, para o nome do paciente e da mãe.
+      - name: cns_id
+        description: Identificador anônimo do paciente.
+      - name: cns_array
+        description: Array com todos os CNS recuperados para o paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CNS") }}'
