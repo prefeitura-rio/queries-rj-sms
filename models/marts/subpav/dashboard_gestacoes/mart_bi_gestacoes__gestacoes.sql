@@ -19,7 +19,7 @@ WITH
                 dados.data_nascimento,
                 YEAR
             ) AS idade_gestante,
-        FROM {{ ref('mart_historico_clinico__paciente') }}
+        FROM {{ ref('mart_historico_clinico__paciente') }}       
     ),
 
     -- ------------------------------------------------------------
@@ -113,7 +113,7 @@ WITH
                         ORDER BY data_evento
                     ),
                     DAY
-                ) >= 30 THEN 1 -- Nova gestação se > 30 dias
+                ) >= 60 THEN 1 -- Nova gestação se > 60 dias
                 ELSE 0 -- Continuação da mesma "janela" de início de gestação
             END AS nova_ocorrencia_flag
         FROM inicios_brutos
@@ -268,10 +268,10 @@ WITH
             eq.nome AS equipe_nome,
             eq.clinica_familia.nome AS clinica_nome
         FROM
+            -- {{ ref('mart_historico_clinico__paciente') }} p,
             {{ ref('mart_historico_clinico__paciente') }} p
-            -- Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
-            LEFT JOIN UNNEST (p.equipe_saude_familia) AS eq -- Expande o array de equipes de saúde
-
+            --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+            left join UNNEST (p.equipe_saude_familia) AS eq
     ),
     equipe_durante_gestacao AS (
         SELECT f.id_gestacao, -- Chave para JOIN posterior
