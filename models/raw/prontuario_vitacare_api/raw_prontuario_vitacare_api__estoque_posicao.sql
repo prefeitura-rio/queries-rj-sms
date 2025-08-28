@@ -19,25 +19,25 @@
 
 with
     source as (
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap10") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap10") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap21") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap21") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap22") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap22") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap31") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap31") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap32") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap32") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap33") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap33") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap40") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap40") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap51") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap51") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap52") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap52") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap53") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap53") }}
     ),
 
     renamed as (
