@@ -15,11 +15,7 @@
     )
 }}
 
-with vacinacao_historico as (
-    select * except(data_particao),
-    safe_cast(safe_cast(safe_cast(_loaded_at as timestamp) as date) as string) as data_particao 
-    from {{ source("brutos_prontuario_vitacare_api_centralizadora", "vacinacao_historico") }}
-),
+with 
 
     source as (
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap10") }}
@@ -41,8 +37,6 @@ with vacinacao_historico as (
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap52") }}
         union all
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap53") }}
-        union all
-        select * from vacinacao_historico
     ),
 
     renamed as (

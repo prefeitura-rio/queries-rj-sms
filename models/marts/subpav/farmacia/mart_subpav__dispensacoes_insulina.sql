@@ -14,7 +14,7 @@ WITH
 
   datapoints AS (
     SELECT *
-    FROM {{ ref('raw_prontuario_vitacare__estoque_movimento') }}, ultimos_3_meses_completos
+    FROM {{ ref('raw_prontuario_vitacare_api_centralizadora__estoque_movimento') }}, ultimos_3_meses_completos
     WHERE 
       -- Insulina
       id_material IN ('65051101631','65051101712') AND
