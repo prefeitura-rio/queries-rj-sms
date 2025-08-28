@@ -48,3 +48,10 @@ sources:
       - name: vacinas_historico
 
       - name: paciente_historico_eventos
+  
+  # Desativar quando estiver tendo envio para o ambiente de prod
+  - name: brutos_prontuario_vitacare_staging_dev
+    database: rj-sms-dev
+    schema: brutos_prontuario_vitacare_staging
+    tables:
+      - name: atendimento_continuo

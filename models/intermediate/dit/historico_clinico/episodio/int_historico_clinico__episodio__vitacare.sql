@@ -5,6 +5,7 @@
         materialized="incremental",
         incremental_strategy='merge', 
         unique_key=['id_hci'],
+        cluster_by=['id_hci'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -25,6 +26,7 @@ with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     bruto_atendimento as (
         select * from {{ ref("raw_prontuario_vitacare__atendimento") }}
+        {% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}
     -- where data_particao = "2024-08-01"
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
@@ -359,8 +361,16 @@ with
             ) as subtipo,
 
             -- Entrada e Saída
-            safe_cast(datahora_inicio as date) as entrada_datahora,
-            safe_cast(datahora_fim as date) as saida_datahora,
+            safe_cast(
+                if(datahora_inicio > current_date(),
+                    null,
+                    datahora_inicio) 
+                as date) as entrada_datahora,
+            safe_cast(
+                if(datahora_fim > current_date(),
+                null,
+                datahora_fim)
+                as date) as saida_datahora,
 
             -- Motivo e Desfecho
             upper(trim(soap_subjetivo_motivo)) as motivo_atendimento,
@@ -430,4 +440,3 @@ with
 select *
 from episodios_validos
 
-{% if is_incremental() %} where data_particao >= {{ partitions_to_replace }} {% endif %}

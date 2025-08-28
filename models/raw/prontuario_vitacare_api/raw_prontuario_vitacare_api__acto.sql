@@ -10,8 +10,9 @@
   }
 ) }}
 
-with
+{% set last_partition = get_last_partition_date(this) %}
 
+with
   bruto_atendimento as (
     select
       cast(source_id as string) as id_prontuario_local,
@@ -19,12 +20,13 @@ with
       cast(payload_cnes as string) as id_cnes,
       cast(patient_cpf as string) as patient_cpf,
       safe_cast(datalake_loaded_at as datetime) as loaded_at,
+      safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim_atendimento,
       data
     from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
     {% if is_incremental() %}
-      where date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) >= date_sub(current_date('America/Sao_Paulo'), interval 30 day)
+      WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}
-    qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
+    qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
   ),
 
   acto_flat as (
@@ -43,20 +45,20 @@ with
       cast(json_extract_scalar(data,'$.profissional.equipe.nome') as string) as profissional_equipe_nome,
       cast(json_extract_scalar(data,'$.profissional.equipe.cod_ine') as string) as profissional_equipe_cod_ine,
       safe_cast(json_extract_scalar(data,'$.datahora_inicio_atendimento') as datetime) as datahora_inicio_atendimento,
-      safe_cast(json_extract_scalar(data,'$.datahora_fim_atendimento') as datetime) as datahora_fim_atendimento,
+      datahora_fim_atendimento,
       safe_cast(json_extract_scalar(data,'$.datahora_marcacao_atendimento') as datetime) as datahora_marcacao_atendimento,
       {{ process_null("json_extract_scalar(data,'$.tipo_consulta')") }} as tipo_consulta,
-      safe_cast({{ process_null("json_extract_scalar(data,'$.eh_coleta')") }} as BOOLEAN) as eh_coleta,
+      safe_cast({{ process_null("json_extract_scalar(data,'$.eh_coleta')") }} as boolean) as eh_coleta,
       {{ process_null("json_extract_scalar(data,'$.soap_subjetivo_motivo')") }} as subjetivo_motivo,
       {{ process_null("json_extract_scalar(data,'$.soap_plano_observacoes')") }} as plano_observacoes,
       {{ process_null("json_extract_scalar(data,'$.soap_avaliacao_observacoes')") }} as avaliacao_observacoes,
       {{ process_null("json_extract_scalar(data,'$.soap_objetivo_descricao')") }} as objetivo_descricao,
       {{ process_null("json_extract_scalar(data,'$.notas_observacoes')") }} as notas_observacoes,
       cast({{ process_null("json_extract_scalar(data,'$.ut_id')") }} as string) as ut_id,
-      safe_cast({{ process_null("json_extract_scalar(data,'$.realizado')") }} as BOOLEAN) as realizado,
+      safe_cast({{ process_null("json_extract_scalar(data,'$.realizado')") }} as boolean) as realizado,
       {{ process_null("json_extract_scalar(data,'$.tipo_atendimento')") }} as tipo_atendimento,
       loaded_at,
-      date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) as data_particao
+      date(datahora_fim_atendimento) as data_particao
     from bruto_atendimento
   )
 

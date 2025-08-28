@@ -79,6 +79,7 @@ with
 
             _loaded_at as loaded_at
         from source
+        where json_extract_scalar(data,'$.nCnesUnidade') is not null
     ),
 
     casted as (

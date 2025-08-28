@@ -8,3 +8,4 @@ sources:
       - name: diarios_municipio
       - name: diarios_municipio_html
       - name: diarios_uniao
+      - name: diarios_uniao_api

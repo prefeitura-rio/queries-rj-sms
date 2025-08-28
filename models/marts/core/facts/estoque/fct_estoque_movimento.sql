@@ -32,7 +32,7 @@ with
                 0,
                 valor_unitario.material_valor_unitario_medio
             ) as material_valor_total,
-        from {{ ref("raw_prontuario_vitacare__estoque_movimento") }} as est
+        from {{ ref("int_estoque__adaptador_versao_nova_movimento") }} as est
         left join
             {{ ref("int_estoque__material_valor_unitario_tpc") }} as valor_unitario
             on (est.id_material = valor_unitario.id_material)
