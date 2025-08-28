@@ -1,6 +1,6 @@
 {{
     config(
-        alias="estoque_posicao_historico",
+        alias="vacinacao_historico",
         tags="vitacare_estoque",
         labels={
             "dominio": "estoque",
@@ -12,7 +12,7 @@
     )
 }}
 
-with estoque_posicao_historico as (
+with vacinacao_historico as (
     select 
         data, 
         _source_cnes, 
@@ -23,7 +23,7 @@ with estoque_posicao_historico as (
         safe_cast(extract(year from safe_cast(_loaded_at as timestamp)) as string) as ano_particao,
         safe_cast(extract(month from safe_cast(_loaded_at as timestamp)) as string) as mes_particao,
         substr(_loaded_at, 1, 10) as data_particao
-    from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_historico") }}
+    from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_historico") }}
 )
 
-select * from estoque_posicao_historico
+select * from vacinacao_historico
