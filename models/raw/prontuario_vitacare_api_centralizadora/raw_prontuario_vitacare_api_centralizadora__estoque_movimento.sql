@@ -17,7 +17,12 @@
     )
 }}
 
-with
+with estoque_movimento_historico as (
+    select * except(data_particao),
+    safe_cast(safe_cast(safe_cast(_loaded_at as timestamp) as date) as string) as data_particao 
+    from {{ source("brutos_prontuario_vitacare_api_centralizadora", "estoque_movimento_historico") }}
+),
+
     source as (
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_ap10") }}
         union all
@@ -39,7 +44,7 @@ with
         union all
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_ap53") }}
         union all
-        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora", "estoque_movimento_historico") }}
+        select * from estoque_movimento_historico
     ),
 
     renamed as (
