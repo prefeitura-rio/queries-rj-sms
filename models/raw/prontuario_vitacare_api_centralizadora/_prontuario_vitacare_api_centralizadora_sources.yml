@@ -49,8 +49,8 @@ sources:
 
   - name: brutos_prontuario_vitacare_api_centralizadora
     description: Dados brutos da API Centralizadora do Vitacare
-    database: rj-sms-dev
-    schema: daniellira__brutos_prontuario_vitacare_api_centralizadora
+    database: rj-sms
+    schema: brutos_prontuario_vitacare_api_centralizadora
     tables:
       - name: estoque_posicao_historico
       - name: estoque_movimento_historico
