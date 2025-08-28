@@ -275,6 +275,8 @@ models:
         description: Nome da equipe de saúde da família.
       - name: family_health_team.phone
         description: Telefone para contato com a equipe de saúde da família.
+      - name: mental_health
+        description: Informações sobre acompanhamento do paciente em unidade de saúde mental (caso possua).
       - name: mental_health.id_pcsm
         description: Identificador do paciente no Prontuário Carioca de Saúde Mental.
       - name: mental_health.status_acompanhamento

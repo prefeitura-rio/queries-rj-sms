@@ -493,6 +493,8 @@ models:
           registrados nos sistemas SMS RIO, VITAI e VITACARE.
         data_type: record
         quote: true
+      - name: saude_mental
+        description: Informações sobre acompanhamento do paciente em unidade de saúde mental (caso possua).
       - name: saude_mental.id_pcsm
         description: Identificador do paciente no Prontuário Carioca de Saúde saude_mental
       - name: saude_mental.status_acompanhamento
