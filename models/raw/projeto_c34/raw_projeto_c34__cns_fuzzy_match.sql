@@ -1,4 +1,4 @@
-{{ config(materialized="ephemeral") }}
+{{ config(materialized="table", schema="projeto_c34", alias="cns_fuzzy_match") }}
 
 with
     -- conjunto de pacientes para os quais queremos encontrar o cns
@@ -256,7 +256,6 @@ select
     (candidatos_array[OFFSET(0)]).score_jac as score_jac,
     (candidatos_array[OFFSET(0)]).score_final as score_final,
     generate_uuid() as cns_id,
-    cns_array,
-    candidatos_array
+    cns_array
 
 from agg
