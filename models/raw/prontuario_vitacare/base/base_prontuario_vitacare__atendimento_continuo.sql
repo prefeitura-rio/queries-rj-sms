@@ -22,7 +22,7 @@ with
             *,
             source_id as id_prontuario_local,
             concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_prontuario_global
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+        from {{ source("brutos_prontuario_vitacare_api_staging", "atendimento_continuo") }}
         where {{process_null('payload_cnes')}} is not null
         {% if is_incremental() %}
         and

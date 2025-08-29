@@ -21,7 +21,7 @@ with
       json_extract_scalar(data, '$.profissional.equipe.nome') as nome,
       safe_cast(datalake_loaded_at as datetime) as loaded_at,
       safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim_atendimento
-    from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+    from {{ source("brutos_prontuario_vitacare_api_staging", "atendimento_continuo") }}
     WHERE JSON_EXTRACT(data, '$.profissional.equipe') IS NOT NULL
     AND JSON_EXTRACT(data, '$.profissional.equipe') != '[]'
     {% if is_incremental() %}

@@ -52,7 +52,7 @@ with
             json_extract_scalar(data, "$.soap_subjetivo_motivo") as soap_subjetivo_motivo,
             concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio,
             safe_cast(datalake_loaded_at as timestamp) as datalake_loaded_at
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+        from {{ source("brutos_prontuario_vitacare_api_staging", "atendimento_continuo") }}
     ),
 
     ocorrencias_deduplicadas as (
