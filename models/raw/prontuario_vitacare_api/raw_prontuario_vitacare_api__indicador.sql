@@ -61,6 +61,6 @@ select
   indicadores_nome,
   valor,
   loaded_at,
-  data_particao,
+  data_particao
 from indicadores_dedup
 where rn = 1

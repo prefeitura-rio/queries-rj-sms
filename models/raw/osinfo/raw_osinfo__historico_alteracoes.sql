@@ -24,6 +24,6 @@ select
     ha.tipo_alteracao as alteracao_tipo,
     ha.cod_usuario as usuario_cod,
     u.login as usuario_login,
-    u.nome as usuario_nome,
+    u.nome as usuario_nome
 from historico_alteracoes ha
 inner join usuario u on ha.cod_usuario = u.cod_usuario
