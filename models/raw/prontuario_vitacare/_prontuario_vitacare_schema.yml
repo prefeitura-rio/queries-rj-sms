@@ -12,7 +12,7 @@ models:
           - unique:
               name: raw_prontuario_vitacare__estoque_posicao__id__unique
               config:
-                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
+                where: safe_cast(particao_data_posicao as date) = current_date('America/Sao_Paulo')
           - not_null:
               name: raw_prontuario_vitacare__estoque_posicao__id__not_null
               config:
@@ -26,7 +26,7 @@ models:
           - unique:
               name: raw_prontuario_vitacare__estoque_posicao__id_surrogate__unique
               config:
-                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
+                where: safe_cast(particao_data_posicao as date) = current_date('America/Sao_Paulo')
           - not_null:
               name: raw_prontuario_vitacare__estoque_posicao__id_surrogate__not_null
               config:
@@ -107,7 +107,7 @@ models:
           - unique:
               name: raw_prontuario_vitacare__estoque_movimento__id_surrogate__unique
               config:
-                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
+                where: safe_cast(particao_data_movimento as date) = current_date('America/Sao_Paulo')
           - not_null:
               name: raw_prontuario_vitacare__estoque_movimento__id_surrogate__not_null
               config:

@@ -8,7 +8,7 @@
 
 with
     vacinas_bruto as (
-        select * except(updated_at_rank)
+        select *
         from {{ref('raw_prontuario_vitacare__vacina')}}
     ),
 
