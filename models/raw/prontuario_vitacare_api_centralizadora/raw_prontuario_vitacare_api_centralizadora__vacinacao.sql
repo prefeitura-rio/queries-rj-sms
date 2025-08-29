@@ -142,6 +142,7 @@ with
             id_microarea,
             paciente_id_prontuario,
             paciente_cns,
+            paciente_cpf,
 
             -- Common Fields
             estabelecimento_nome,
