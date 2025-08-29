@@ -6,7 +6,9 @@
     partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
-{% set last_partition = get_last_partition_date(this) %}
+{% set last_30_days = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
+) %}
 
 WITH bruto_atendimento AS (
   SELECT
@@ -207,7 +209,7 @@ WITH bruto_atendimento AS (
   AND JSON_EXTRACT(data, '$.pre_natal') != '[]'
 
   {% if is_incremental() %}
-    AND DATE(SAFE_CAST(datalake_loaded_at AS TIMESTAMP), 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    AND DATE(SAFE_CAST(datalake_loaded_at AS TIMESTAMP), 'America/Sao_Paulo') >= {{ last_30_days }}
   {% endif %}
 
   QUALIFY ROW_NUMBER() OVER (

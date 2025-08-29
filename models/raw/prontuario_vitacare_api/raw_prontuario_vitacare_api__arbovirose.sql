@@ -6,7 +6,9 @@
     partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
-{% set last_partition = get_last_partition_date(this) %}
+{% set last_30_days = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
+) %}
 
 WITH bruto_atendimento AS (
   SELECT
@@ -20,7 +22,7 @@ WITH bruto_atendimento AS (
   WHERE JSON_EXTRACT(data, '$.arbovirose') IS NOT NULL
   AND JSON_EXTRACT(data, '$.arbovirose') != '[]'
   {% if is_incremental() %}
-    AND DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    AND DATE(datalake_loaded_at, 'America/Sao_Paulo') >= {{ last_30_days }}
   {% endif %}
   QUALIFY ROW_NUMBER() OVER (PARTITION BY id_prontuario_global ORDER BY loaded_at DESC) = 1
 ),

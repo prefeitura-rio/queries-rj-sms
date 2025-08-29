@@ -1,7 +1,9 @@
 {{
     config(
         alias="procedimento_clinico", 
-        materialized="table",
+        materialized="incremental",
+        unique_key = ['id_prontuario_global','co_procedimento'],
+        cluster_by= ['id_prontuario_global','co_procedimento'],
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -10,6 +12,8 @@
         }
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 WITH
 
@@ -22,6 +26,9 @@ WITH
             ) AS id_prontuario_global,
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'procedimentos_clinicos') }} 
+        {% if is_incremental() %}
+            WHERE data_particao > '{{last_partition}}'
+        {% endif %}
     ),
 
 
