@@ -16,7 +16,7 @@ WITH
       source_updated_at,
       SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
       data
-    FROM {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} AS src
+    FROM {{ source('brutos_prontuario_vitacare_api_staging', 'paciente_continuo') }} AS src
     {% if is_incremental() %}
         WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}

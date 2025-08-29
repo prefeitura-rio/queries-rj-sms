@@ -11,7 +11,7 @@
 
 with
     source as (
-        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora", "vacinacao_historico") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_historico") }}
         union all
         select * from {{ ref("raw_prontuario_vitacare_api_centralizadora__vacinacao") }}
     )

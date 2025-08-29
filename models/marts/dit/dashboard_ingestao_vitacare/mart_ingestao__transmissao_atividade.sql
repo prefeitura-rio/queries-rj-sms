@@ -37,7 +37,7 @@ with
         TIMESTAMP(DATETIME(source_updated_at), "America/Sao_Paulo") as date
       ) as dia_ocorrencia,
       safe_cast(datalake_loaded_at as date) as dia_ingestao,
-    from {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} trans
+    from {{ source('brutos_prontuario_vitacare_api_staging', 'paciente_continuo') }} trans
     where DATE(datalake_loaded_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
   ),
   transmissoes_individuais_paciente as (
@@ -68,7 +68,7 @@ with
         TIMESTAMP(DATETIME(source_updated_at), "America/Sao_Paulo") as date
       ) as dia_ocorrencia,
       safe_cast(datalake_loaded_at as date) as dia_ingestao,
-    from {{ source('brutos_prontuario_vitacare_staging', 'atendimento_continuo') }} trans
+    from {{ source('brutos_prontuario_vitacare_api_staging', 'atendimento_continuo') }} trans
     where DATE(datalake_loaded_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
   ),
   transmissoes_individuais_atendimento as (
