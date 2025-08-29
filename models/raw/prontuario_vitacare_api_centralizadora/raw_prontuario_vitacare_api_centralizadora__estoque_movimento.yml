@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: raw_prontuario_vitacare_api__estoque_movimento
+  - name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento
     description: >
       Movimentação diária dos estoques de medicamentos e insumos das
       unidades de saúde que utilizam o prontuário Vitacare para gestão de
@@ -18,11 +18,11 @@ models:
         data_type: string
         data_tests:
           - unique:
-              name: raw_prontuario_vitacare_api__estoque_movimento__id_surrogate__unique
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__id_surrogate__unique
               config:
                 where: safe_cast(particao_data_movimento as date) = current_date('America/Sao_Paulo')
           - not_null:
-              name: raw_prontuario_vitacare_api__estoque_movimento__id_surrogate__not_null
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__id_surrogate__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
@@ -42,9 +42,9 @@ models:
         data_type: string
         data_tests:
           - not_null:
-              name: raw_prontuario_vitacare_api__estoque_movimento__id_cnes__not_null
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__id_cnes__not_null
           - relationships:
-              name: raw_prontuario_vitacare_api__estoque_movimento__id_cnes__relationship
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__id_cnes__relationship
               to: ref('dim_estabelecimento_sus_rio_historico')
               field: id_cnes
 
@@ -125,7 +125,7 @@ models:
         data_type: float64
         data_tests:
           - dbt_expectations.expect_column_values_to_be_between:
-              name: raw_prontuario_vitacare_api__estoque_movimento__material_quantidade__positive
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__material_quantidade__positive
               min_value: 0
 
       - name: requisicao_id_cnes

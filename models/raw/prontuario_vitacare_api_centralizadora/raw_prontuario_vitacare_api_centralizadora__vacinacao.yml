@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: raw_prontuario_vitacare_api__vacinacao
+  - name: raw_prontuario_vitacare_api_centralizadora__vacinacao
     description: >
       Esta tabela contém informações detalhadas sobre os registros de vacinação dos pacientes
       no sistema Vitacare. Inclui dados do paciente, da equipe e estabelecimento de saúde,
@@ -13,7 +13,7 @@ models:
         data_type: string
         data_tests:
           - not_null:
-              name: raw_prontuario_vitacare_api__vacinacao__id_vacinacao__not_null
+              name: raw_prontuario_vitacare_api_centralizadora__vacinacao__id_vacinacao__not_null
               config:
                 severity: warn
       - name: id_surrogate
@@ -23,9 +23,9 @@ models:
         data_type: string
         data_tests:
           - unique:
-              name: raw_prontuario_vitacare_api__vacinacao__id_surrogate__unique
+              name: raw_prontuario_vitacare_api_centralizadora__vacinacao__id_surrogate__unique
           - not_null:
-              name: raw_prontuario_vitacare_api__vacinacao__id_surrogate__not_null
+              name: raw_prontuario_vitacare_api_centralizadora__vacinacao__id_surrogate__not_null
               config:
                 severity: warn
 
@@ -122,7 +122,7 @@ models:
         data_type: datetime
         data_tests:
           - not_null:
-              name: raw_prontuario_vitacare_api__vacinacao__vacina_registro_data__not_null
+              name: raw_prontuario_vitacare_api_centralizadora__vacinacao__vacina_registro_data__not_null
               config:
                 severity: warn
 

@@ -15,7 +15,8 @@
     )
 }}
 
-with
+with 
+
     source as (
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_ap10") }}
         union all

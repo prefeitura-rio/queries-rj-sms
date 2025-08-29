@@ -18,6 +18,7 @@
 }}
 
 with
+
     source as (
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_ap10") }}
         union all
@@ -163,4 +164,7 @@ with
 
 select *
 from final
-qualify row_number() over(partition by id_surrogate order by metadados.updated_at desc) = 1
+qualify row_number() over(
+    partition by id_surrogate
+    order by metadados.updated_at desc
+) = 1

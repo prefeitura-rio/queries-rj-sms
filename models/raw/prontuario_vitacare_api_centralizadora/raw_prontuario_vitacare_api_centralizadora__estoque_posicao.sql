@@ -18,6 +18,7 @@
 }}
 
 with
+
     source as (
         select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_ap10") }}
         union all
@@ -122,7 +123,6 @@ with
 
 select *
 from final
--- de-duplicação de entradas iguais em um mesmo dia
 qualify row_number() over(
     partition by id_surrogate
     order by metadados.updated_at desc
