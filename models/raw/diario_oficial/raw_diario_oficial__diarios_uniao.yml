@@ -32,9 +32,6 @@ models:
       - name: texto        
         description: Conteúdo textual do ato oficial.
         data_type: string
-      - name: html
-        description: HTML cru extraído do ato oficial.
-        data_type: string
       - name: link
         description: Link para o ato oficial no DOU.
       - name: texto_titulo

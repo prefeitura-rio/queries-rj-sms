@@ -41,9 +41,6 @@ models:
       - name: voto
         description: Voto do relacionado, caso contenha
         data_type: string
-      - name: html 
-        description: HTML da matéria.
-        data_type: string
       - name: link
         description: Link para o ato oficial no DOU.
         data_type: string
@@ -89,9 +86,6 @@ models:
         data_type: string
       - name: texto        
         description: Conteúdo textual do ato oficial.
-        data_type: string
-      - name: html
-        description: HTML cru extraído do ato oficial.
         data_type: string
       - name: link
         description: Link para o ato oficial no DOU.

@@ -23,7 +23,7 @@ diario_uniao as (
         cast(null as string) as pasta,
         content_email,
         cast(null as string) as voto,
-        link 
+        link
     from {{ ref('int_cdi__diario_oficial_uniao_filtrado')}}
 )
 
