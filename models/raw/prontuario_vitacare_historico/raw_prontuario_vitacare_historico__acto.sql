@@ -1,15 +1,19 @@
 {{
     config(
         alias="acto", 
-        materialized="table",
+        materialized="incremental",
+        unique_key = 'id_prontuario_global',
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "day"
-        }
+        },
+        cluster_by= 'id_prontuario_global'
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 WITH
 
@@ -22,6 +26,9 @@ WITH
             ) AS id_prontuario_global,
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'acto') }} 
+        {% if is_incremental() %}
+        where data_particao > '{{ last_partition }}'
+        {% endif %}
     ),
 
 
