@@ -4,6 +4,8 @@ case
     when {{ process_null(text) }} is null
         then null
 
+    when upper({{text}}) like '%CMS%' then null
+
 
     -- Valores que são só uma letra, repetida 1 ou mais vezes
     -- ou só uma corrente de dígitos, sem letras (ex. CNS)
@@ -47,6 +49,7 @@ case
         'NC',
         'N C',
         'N CONSTA',
+        'NAO MORA',
         'NAO CONSTA',
         'NAO CONSTA NO RG',
         'NAO CONSTA NO DOC',
@@ -159,10 +162,12 @@ case
         'NAO IND',
         'NAO INDENT',
         'NAO INDENTIFICADO', 'NAO INDENTIFICADA',
+        'ATUALIZADO SMS'
         ----------------------
         'NAO HA',
         'N TEM', 'NAO TEM',
         'NAO POSSUI',
+        'NAOPOSSUI',
         'NAO TROUXE', 'NAO TROUXE DOC',
         ----------------------
         'NS',
@@ -218,14 +223,15 @@ case
         'DESCONHECIDO', 'DESCONHECIDA',
         'IGNORADO', 'IGNORADA',
         ----------------------
-        'NR', 'N/R',
+        'NR', 'N/R','OBITO',
         ----------------------
         'TESTE', 'TESTE TESTE', 'TESTE TESTE TESTE',
         'TESTE MAE',
         ----------------------
         'MUDOU SE', 'MUDOUSE',
         'VIVE COM C',
-        'FORA DO TERRITORIO',
+        'FORA DO TERRITORIO', 'NAO MORA',
+        'FORA DE AREA',
         ----------------------
         'PLANO EMPRESA',
         'PLANO INDIVIDUAL'
