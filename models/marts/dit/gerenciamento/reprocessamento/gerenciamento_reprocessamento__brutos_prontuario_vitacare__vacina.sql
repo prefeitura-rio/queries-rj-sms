@@ -43,7 +43,7 @@ with
     -- RELAÇÃO DE UNIDADES COM DADOS INGERIDOS
     relacao_unidades_datas_com_dados as (
         select distinct id_cnes, particao_data_vacinacao as data
-        from {{ ref("raw_prontuario_vitacare__vacina") }}
+        from {{ ref("raw_prontuario_vitacare__vacinacao") }}
     ),
 
     -- RELAÇÃO DE UNIDADES QUE JÁ FORAM REPROCESSADAS E NÃO RETORNARAM REGISTROS OU

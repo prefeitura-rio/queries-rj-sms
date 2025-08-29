@@ -725,7 +725,7 @@ models:
         data_type: date
         quote: true
 
-  - name: raw_prontuario_vitacare__vacina
+  - name: raw_prontuario_vitacare__vacinacao
     description: Esta tabela contém informações
       detalhadas sobre os registros de vacinação dos pacientes no sistema
       Vitacare. Inclui identificadores para o paciente, a equipe de saúde e o
@@ -745,7 +745,7 @@ models:
           exclusivamente cada registro de vacinação.
         data_tests:
           - not_null:
-              name: raw_prontuario_vitacare__vacina__id__not_null
+              name: raw_prontuario_vitacare__vacinacao__id__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
@@ -759,9 +759,9 @@ models:
         data_type: string
         data_tests:
           - unique:
-              name: raw_prontuario_vitacare__vacina__id_surrogate_unique
+              name: raw_prontuario_vitacare__vacinacao__id_surrogate_unique
           - not_null:
-              name: raw_prontuario_vitacare__vacina__id_surrogate__not_null
+              name: raw_prontuario_vitacare__vacinacao__id_surrogate__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
@@ -786,7 +786,7 @@ models:
         quote: true
         data_tests:
           - not_null:
-              name: raw_prontuario_vitacare__vacina__aplicacao_data__not_null
+              name: raw_prontuario_vitacare__vacinacao__aplicacao_data__not_null
               config:
                 severity: warn
                 warn_if: ">1"

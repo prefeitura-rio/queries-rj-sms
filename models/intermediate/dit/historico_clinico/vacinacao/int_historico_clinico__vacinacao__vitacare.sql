@@ -9,7 +9,7 @@
 with
     vacinas_bruto as (
         select *
-        from {{ref('raw_prontuario_vitacare__vacina')}}
+        from {{ref('raw_prontuario_vitacare__vacinacao')}}
     ),
 
     episodio as (
