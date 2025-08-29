@@ -1,14 +1,6 @@
 {{
     config(
         alias="estoque_movimento_historico",
-        tags="vitacare_estoque",
-        labels={
-            "dominio": "estoque",
-            "dado_publico": "nao",
-            "dado_pessoal": "nao",
-            "dado_anonimizado": "nao",
-            "dado_sensivel_saude": "nao",
-        },
         partition_by={
             "field": "particao_data_movimento",
             "data_type": "date",
