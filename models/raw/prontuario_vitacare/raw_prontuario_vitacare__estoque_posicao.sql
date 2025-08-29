@@ -19,7 +19,7 @@
 
 with
     source as (
-        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_historico") }}
+        select * from {{ source("brutos_prontuario_vitacare_api_centralizadora", "estoque_posicao_historico") }}
         union all
         select * from {{ ref("raw_prontuario_vitacare_api_centralizadora__estoque_posicao") }}
     )
