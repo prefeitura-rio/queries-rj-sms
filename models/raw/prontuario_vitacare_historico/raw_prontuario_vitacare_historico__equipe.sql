@@ -1,7 +1,9 @@
 {{
     config(
         alias="equipe", 
-        materialized="table",
+        materialized="incremental",
+        unique_key = 'n_ine',
+        cluster_by= 'n_ine',
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -11,12 +13,17 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 WITH
 
     source_equipes AS (
         SELECT 
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'equipes') }} 
+        {% if is_incremental() %}
+            WHERE data_particao > '{{last_partition}}'
+        {% endif %}
     ),
 
 

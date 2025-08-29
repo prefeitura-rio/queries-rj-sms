@@ -1,7 +1,9 @@
 {{
     config(
         alias="saude_crianca", 
-        materialized="table",
+        materialized="incremental",
+        unique_key = 'id_prontuario_global',
+        cluster_by= 'id_prontuario_global',
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -11,6 +13,7 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
 WITH
 
     source_saudecrianca AS (
@@ -22,6 +25,9 @@ WITH
             ) AS id_prontuario_global,
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'saudecrianca') }} 
+        {% if is_incremental() %}
+            WHERE data_particao > '{{last_partition}}'
+        {% endif %}
     ),
 
 
