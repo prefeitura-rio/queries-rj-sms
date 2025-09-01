@@ -20,8 +20,7 @@ SELECT
                 marcacoes.paciente_nome as nome,
                 format_date('%d/%m/%Y', cast(marcacoes.data_marcacao as date))        as data,
                 format_time('%H:%M', time(cast(marcacoes.data_marcacao as datetime))) as hora,
-                -- coalesce(marcacoes.procedimento_interno,marcacoes.procedimento_sigtap) as tipo_agendamento,
-                marcacoes.vaga_solicitada_tp as tipo_agendamento, 
+                proc.procedimento_padronizado as tipo_agendamento,
                  coalesce(
                   initcap(estab.tipo_sms) || ' - ' || initcap(estab.nome_complemento),
                   marcacoes.unidade_executante_nome
@@ -49,6 +48,8 @@ SELECT
 FROM {{ ref("raw_sisreg_api__marcacoes") }} marcacoes
 LEFT JOIN {{ ref('dim_estabelecimento') }} estab
   ON safe_cast(marcacoes.unidade_executante_id as string) = safe_cast(estab.id_cnes as string)
+LEFT JOIN {{ ref('int_sisreg__procedimentos') }} proc
+  ON safe_cast(marcacoes.procedimento_interno_id as string) = proc.procedimento_interno_id
 WHERE 
   marcacoes.solicitacao_status in (
         'SOLICITAÇÃO / AGENDADA / COORDENADOR',
