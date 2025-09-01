@@ -746,9 +746,6 @@ models:
         data_tests:
           - unique:
               name: raw_prontuario_vitacare__vacinacao__id__unique
-              config:
-                severity: warn
-                warn_if: ">1000"
           - not_null:
               name: raw_prontuario_vitacare__vacinacao__id__not_null
               config:
