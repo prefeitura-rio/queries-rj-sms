@@ -291,7 +291,6 @@ models:
           dado_sensivel: nao
       sheets:
         +schema: brutos_sheets
-        +tags: ["daily", "subgeral", "cnes_subgeral", "monitora_reg"]
         +labels:
           dado_publico: nao
           dado_pessoal: nao

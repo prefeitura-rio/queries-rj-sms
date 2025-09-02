@@ -2,6 +2,7 @@
     config(
         schema="brutos_sheets",
         alias="encaminhamentos_ser",
+        tag=["daily"],
     )
 }}
 

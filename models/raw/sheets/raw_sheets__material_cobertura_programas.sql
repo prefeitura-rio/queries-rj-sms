@@ -2,7 +2,9 @@
     config(
         schema="brutos_sheets",
         alias="material_cobertura_programas",
-        materialized="table"
+        materialized="table",
+        -- TODO: conferir tags
+        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
 

@@ -1,4 +1,11 @@
-{{ config(alias="bairros_aps", schema="brutos_sheets") }}
+{{
+    config(
+        alias="bairros_aps",
+        schema="brutos_sheets",
+        -- TODO: conferir tags
+        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
+    )
+}}
 
 with
     source as (

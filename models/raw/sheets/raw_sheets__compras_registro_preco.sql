@@ -2,6 +2,8 @@
     config(
         schema="brutos_sheets",
         alias="compras_registro_preco",
+        -- TODO: conferir tags
+        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
 

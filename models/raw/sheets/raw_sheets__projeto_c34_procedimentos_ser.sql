@@ -3,6 +3,8 @@
         schema="brutos_sheets",
         alias="projeto_c34_procedimentos_ser",
         materialized="table",
+        -- TODO: conferir tags
+        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
 

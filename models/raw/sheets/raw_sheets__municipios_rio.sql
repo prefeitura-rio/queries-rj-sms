@@ -1,4 +1,12 @@
-{{ config(schema="brutos_sheets", alias="municipios_rio", materialized="table") }}
+{{
+    config(
+        schema="brutos_sheets",
+        alias="municipios_rio",
+        materialized="table",
+        -- TODO: conferir tags
+        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
+    )
+}}
 
 with
     source as (

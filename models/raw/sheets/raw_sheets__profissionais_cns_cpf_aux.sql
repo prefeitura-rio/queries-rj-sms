@@ -2,6 +2,8 @@
     config(
         schema="brutos_sheets",
         alias="profissionais_cns_cpf_aux",
+        -- TODO: conferir tags
+        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
 

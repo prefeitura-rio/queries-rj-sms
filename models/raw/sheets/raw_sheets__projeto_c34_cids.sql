@@ -1,4 +1,12 @@
-{{ config(schema="brutos_sheets", alias="projeto_c34_cids", materialized="table") }}
+{{
+    config(
+        schema="brutos_sheets",
+        alias="projeto_c34_cids",
+        materialized="table",
+        -- TODO: conferir tags
+        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
+    )
+}}
 
 with
     source as (
