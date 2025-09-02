@@ -236,7 +236,7 @@ models:
           dominio: subpav
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
-        +tags: ["vitacare"]
+        +tags: ["vitacare", "daily"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
