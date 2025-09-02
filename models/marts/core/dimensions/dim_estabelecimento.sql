@@ -34,7 +34,6 @@ final as (
       tipo, -- trocar para tipo_cnes?
       tipo_sms,
       tipo_sms_simplificado,
-      tipo_disponibilidade,
       nome_limpo,
       {{add_accents_estabelecimento('nome_limpo')}} as nome_acentuado,
       nome_sigla,
@@ -54,7 +53,7 @@ final as (
       endereco_cep,
       endereco_latitude,
       endereco_longitude,
-      telefone,
+      (select array_agg({{padronize_telefone("t")}} ignore nulls) from unnest(telefone) as t where t != '') as telefone,
       email,
       facebook,
       instagram,
