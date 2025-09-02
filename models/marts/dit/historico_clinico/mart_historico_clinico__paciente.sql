@@ -2,7 +2,7 @@
     config(
         alias="paciente",
         schema="saude_historico_clinico",
-        tag=["hci", "paciente"],
+        tags=["hci", "paciente"],
         materialized="table",
         partition_by={
             "field": "cpf_particao",

@@ -2,13 +2,12 @@
     config(
         schema="brutos_sheets",
         alias="material_mestre",
-        materialized="table"
+        materialized="table",
+        tags=["daily"],
     )
 }}
 
-
 with
-
     source as (
         select * from {{ source("brutos_sheets_staging", "material_mestre") }}
     ),
