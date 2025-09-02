@@ -493,6 +493,18 @@ models:
           registrados nos sistemas SMS RIO, VITAI e VITACARE.
         data_type: record
         quote: true
+      - name: saude_mental
+        description: Informações sobre acompanhamento do paciente em unidade de saúde mental (caso possua).
+      - name: saude_mental.id_pcsm
+        description: Identificador do paciente no Prontuário Carioca de Saúde saude_mental
+      - name: saude_mental.status_acompanhamento
+        description: Status do acompanhamento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: saude_mental.nome_unidade
+        description: Nome da unidade de saúde que o paciente está vinculado.
+      - name: saude_mental.cnes
+        description: CNES da unidade de saúde que o paciente está vinculado.
       - name: contato.telefone
         description: "ARRAY contendo os números de telefone ordenados. O 
           critério de ordenação é pelos cadastros pelo ACS na atenção primária 
@@ -632,3 +644,109 @@ models:
           Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+  - name: mart_historico_clinico__vacinacao
+    description: >
+      Esta tabela contém informações detalhadas sobre os registros de vacinação dos 
+      pacientes no sistema Vitacare. Inclui identificador para o paciente, nome da vacina, 
+      data de aplicação, dose e lote.
+    columns:
+      - name: cpf
+        description: "CPF do paciente."
+        data_tests:
+          - unique:
+              name: mart_historico_clinico__vacinacao__cpf__unique
+      - name: vacinacao
+        description: > 
+          STRUCT contendo uma variedade de subcampos relacionados às informações da vacinação
+      - name: vacinacao.id
+        description: > 
+          Este é o identificador único para cada registro de vacinação. 
+          É uma combinação do id_cnes e do id original dos dados de origem, 
+          usado para identificar exclusivamente cada registro dentro do prontuário vitacare.
+        data_type: string
+        quote: true
+      - name: vacinacao.id_cnes
+        description: Identificador único para o estabelecimento de saúde onde a vacinação foi administrada
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: vacinacao.nome_vacina
+        description: "Nome da vacina que foi administrada ao paciente."
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacinacao.aplicacao_data
+        description: "Data em que a vacina foi aplicada ao paciente, formatada como AAAA-MM-DD."
+        data_type: date
+        quote: true
+      - name: vacinacao.registro_data
+        description: "Data e hora em que o registro de vacinação foi registrado no sistema"
+        data_type: datetime
+        quote: true
+      - name: vacinacao.dose
+        description: "Dose da vacina que foi administrada."
+        data_type: string
+        quote: true
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacinacao.lote
+        description: "Número do lote da vacina."
+        data_type: string
+        quote: true
+      - name: vacinacao.registro_tipo
+        description: "Tipo de registro, indicando se é um novo registro de vacinação ou um registro retroativo."
+        data_type: string
+        quote: true
+      - name: vacinacao.estrategia_imunizacao
+        description: "Estratégia usada para a vacinação."
+        data_type: string
+        quote: true
+      - name: vacinacao.diff
+        description: "Diferença, em dias, entre a data de aplicação da vacina e a data de registro."
+        data_type: string
+        quote: true
+      - name: cpf_particao
+        description: "Campo utilizado para particionamento de dados através do CPF, representado em inteiro."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: metadados
+        description: Metadados do registro
+      - name: metadados.processed_at
+        description: Marcação de data/hora de processamento do registro no formato UTC,
+          seguindo o padrão 'AAAA-MM-DD HH:MM:SS'.
+  - name: mart_historico_clinico__ficha_c
+    description: >
+      Modelo contendo dados de pacientes atendidos pela atenção primária, incluindo informações demográficas, de saúde, socioeconômicas do cadastro infantil.
+    columns:
+      - name: cpf
+        description: "CPF do paciente"
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: vacinas_em_dia
+        description: "Indicador de vacinas em dia (S/N)"
+      - name: primeira_cons_7_dias
+        description: "Indicador se primeira consulta foi realizada com 7 dias de nascido (S/N)"
+      - name: estado_nutricional
+        description: "Registro de estado nutricional atualizado"
+      - name: tipo_de_aleitamento
+        description: "Indicador do tipo de aleitamento infantil"
+      - name: atraso_desenvolvimento
+        description: "Indicador de atraso no desenvolvimento infantil (S/N)"
+      - name: sinais_risco
+        description: "Indicador de sinais de riscos à criança(S/N)"
+      - name: diarreia
+        description: "Indicador de sintomas de diarreia (S/N)"
+      - name: infeccao_respirat_aguda
+        description: "Indicador de sintomas de infecção respiratória aguda (S/N)"
+      - name: estatura_ao_nascer
+        description: "Registro de estatura ao nascer"
+      - name: per_cefalico
+        description: "Perímetro cefálico"
+      - name: data_acs_visita
+        description: "Data de realização da visita domiciliar realizada pelo agente comunitário de saúde"
+      - name: cpf_particao
+        description: "CPF do paciente convertido para inteiro para fins de partição"
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

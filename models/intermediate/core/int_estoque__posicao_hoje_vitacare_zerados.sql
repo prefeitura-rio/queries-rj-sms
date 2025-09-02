@@ -20,7 +20,7 @@ with
                 then "Ativo"
                 else "Ativo"
             end as lote_status_padronizado,
-        from {{ ref("raw_prontuario_vitacare__estoque_posicao") }} as raw
+        from {{ ref("int_estoque__adaptador_versao_nova_posicao") }} as raw
         inner join
             posicao_mais_recente_por_estabelecimento as recente
             on recente.id_cnes = raw.id_cnes

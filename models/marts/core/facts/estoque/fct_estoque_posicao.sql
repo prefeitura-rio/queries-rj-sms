@@ -22,11 +22,12 @@ with
     -- sources
     -- - Vitacare
     vitacare_atual_zerados as (
-        select * from {{ ref("int_estoque__posicao_hoje_vitacare_zerados") }}
+        select *
+        from {{ ref("int_estoque__posicao_hoje_vitacare_zerados") }}
     ),
     vitacare_posicao_historico as (
         select *
-        from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
+        from {{ ref("int_estoque__adaptador_versao_nova_posicao") }}
     ),
 
     vitacare_completa as (
@@ -39,7 +40,8 @@ with
 
     -- - Vitai
     vitai_atual_zerados as (
-        select * from {{ ref("int_estoque__posicao_hoje_vitai_zerados") }}
+        select *
+        from {{ ref("int_estoque__posicao_hoje_vitai_zerados") }}
     ),
     vitai_posicao_historico as (
         select *
@@ -56,7 +58,8 @@ with
 
     -- - TPC
     tpc_atual_zerados as (
-        select * from {{ ref("int_estoque__posicao_hoje_tpc_zerados") }}
+        select *
+        from {{ ref("int_estoque__posicao_hoje_tpc_zerados") }}
     ),
 
     tpc_posicao_historico as (
@@ -73,7 +76,7 @@ with
         from tpc_posicao_historico
     ),
 
-    -- constroi a posicação para cada source
+    -- constrói a posição para cada source
     posicao_vitacare as (
         select
             estoque.id_cnes,
@@ -82,7 +85,7 @@ with
             "nao" as estoque_reservado_para_abastecimento,
             estoque.armazem as estoque_secao,
             estoque.material_descricao,
-            "" as material_unidade,  -- payload da viticare não possui esta informação
+            "" as material_unidade,  -- vitacare não possui informação
             estoque.lote_data_vencimento,
             estoque.material_quantidade,
             if(
@@ -221,5 +224,5 @@ with
         from posicao_consolidada_com_remume
     )
 
-select * from final
-
+select *
+from final

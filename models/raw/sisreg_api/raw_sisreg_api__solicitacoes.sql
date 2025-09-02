@@ -3,7 +3,9 @@
 {{
     config(
         enabled=true,
-        materialized='table',
+        materialized='incremental',
+        unique_key='solicitacao_id',
+        incremental_strategy='merge',
         schema="brutos_sisreg_api",
         alias="solicitacoes",
         partition_by={
@@ -11,7 +13,7 @@
             "data_type": "date",
             "granularity": "month",
         },
-    cluster_by=['unidade_solicitante_id', 'procedimento_id'],
+        cluster_by=['solicitacao_id'],
     )
 }}
 -- Obs: `particao_data` vem de `data_extracao`
@@ -28,8 +30,7 @@ with
     sisreg as (
         select s.*
         from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
-        join correct_partition p
-        on s.data_particao = p.particao_str
+        where s.data_particao = (select particao_str from correct_partition)
     ),
 
     sisreg_transformed as (
@@ -64,7 +65,7 @@ with
 
             -- Informações da solicitação
             lpad({{ process_null("codigo_grupo_procedimento") }}, 7, '0') as procedimento_grupo_id,
-            {{ clean_name_string(process_null("nome_grupo_procedimento")) }} as procedimento_grupo,
+            upper(trim({{ process_null("nome_grupo_procedimento") }})) as procedimento_grupo,
             case
                 when {{ process_null("codigo_tipo_vaga_solicitada") }} = "1" then '1 VEZ'
                 when {{ process_null("codigo_tipo_vaga_solicitada") }} = "2" then 'RETORNO'
@@ -86,7 +87,7 @@ with
             {{ clean_name_string(process_null("nome_cnes_central_solicitante")) }} as central_solicitante_cnes,
             {{ clean_name_string(process_null("nome_central_solicitante")) }} as central_solicitante,
             lpad({{ process_null("codigo_unidade_solicitante") }}, 7, '0') as unidade_solicitante_id,
-            {{ clean_name_string(process_null("nome_unidade_solicitante")) }} as unidade_solicitante,
+            upper(trim({{ process_null("nome_unidade_solicitante") }})) as unidade_solicitante,
             lpad({{ process_null("cpf_profissional_solicitante") }}, 11, '0') as profissional_solicitante_cpf,
             {{ clean_name_string(process_null("nome_medico_solicitante")) }} as medico_solicitante,
 
@@ -153,4 +154,9 @@ with
         left join unnest(json_extract_array(replace(procedimentos, "'", '"'))) as proceds_json
     )
 
-select * from sisreg_transformed
+select *
+from sisreg_transformed
+qualify row_number() over (
+  partition by solicitacao_id
+  order by data_atualizacao desc nulls last
+) = 1

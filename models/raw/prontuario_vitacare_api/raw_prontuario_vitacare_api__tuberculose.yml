@@ -1,0 +1,186 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__tuberculose
+    description: >
+      Dados extraídos do campo `tuberculose[0]` no JSON da tabela
+      `atendimento_continuo` do VitaCare, contendo informações sobre
+      tratamento, acompanhamento e exames relacionados à tuberculose.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + source_id).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador do prontuário no sistema local.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+      - name: datainiciotrat
+        description: Data de início do tratamento.
+        data_type: datetime
+      - name: idadeiniciotrat
+        description: Idade do paciente no início do tratamento.
+        data_type: int64
+      - name: pesoiniciotrat
+        description: Peso do paciente no início do tratamento.
+        data_type: numeric
+      - name: contatotb
+        description: Indica se houve contato com paciente de tuberculose.
+        data_type: string
+      - name: tipoentrada
+        description: Tipo de entrada do paciente no programa.
+        data_type: string
+      - name: forma_json
+        description: Formas clínicas de tuberculose (em formato JSON).
+        data_type: string
+      - name: baciloescarro_raw
+        description: Resultado bruto do exame de baciloscopia de escarro.
+        data_type: string
+      - name: culturaescarro_raw
+        description: Resultado bruto do exame de cultura de escarro.
+        data_type: string
+      - name: formatratamento
+        description: Forma de tratamento adotada.
+        data_type: string
+      - name: drogasutilizadas
+        description: Drogas utilizadas no tratamento.
+        data_type: string
+      - name: tipoprograma
+        description: Tipo de programa de tratamento.
+        data_type: string
+      - name: numsinan
+        description: Número do SINAN associado ao caso.
+        data_type: numeric
+      - name: hiv
+        description: Resultado do teste de HIV (sim/não/ignorado).
+        data_type: string
+      - name: comunicatb
+        description: Indica se houve comunicação de TB.
+        data_type: string
+      - name: raioxtorax_raw
+        description: Resultado bruto de raio-X de tórax.
+        data_type: string
+      - name: datainicioregistro
+        description: Data de início do registro.
+        data_type: datetime
+      - name: resultadoraiox
+        description: Resultado interpretado do exame de raio-X.
+        data_type: string
+      - name: histbiopsiapleural_raw
+        description: Resultado bruto de biópsia pleural.
+        data_type: string
+      - name: histbiopsiaganglionar_raw
+        description: Resultado bruto de biópsia ganglionar.
+        data_type: string
+      - name: histoutrostecidos_raw
+        description: Resultado bruto de exames de outros tecidos.
+        data_type: string
+      - name: sintomatologiarespiratoriaprevia
+        description: Indica presença de sintomatologia respiratória prévia.
+        data_type: string
+      - name: sintomatologiarespiratoriadiagnosticos_json
+        description: Diagnósticos de sintomatologia respiratória (JSON).
+        data_type: string
+      - name: testesensibilidadecultura_raw
+        description: Resultado bruto de teste de sensibilidade de cultura.
+        data_type: string
+      - name: testemoleculartuberculose
+        description: Resultado de teste molecular para tuberculose.
+        data_type: string
+      - name: igra_raw
+        description: Resultado bruto do teste IGRA.
+        data_type: string
+      - name: lflam_raw
+        description: Resultado bruto do teste LF-LAM.
+        data_type: string
+      - name: lpa_raw
+        description: Resultado bruto do teste LPA.
+        data_type: string
+      - name: culturaoutros_raw
+        description: Resultado bruto de culturas de outros materiais.
+        data_type: string
+      - name: culturaoutrosresultado_raw
+        description: Resultado interpretado das culturas de outros materiais.
+        data_type: string
+      - name: outrosexames
+        description: Outros exames realizados.
+        data_type: string
+      - name: pesoacompanhamentomensal
+        description: Peso do paciente no acompanhamento mensal.
+        data_type: numeric
+      - name: resultadobaciloescarro
+        description: Resultado interpretado do exame de baciloscopia de escarro.
+        data_type: string
+      - name: fasetratamento
+        description: Fase do tratamento da tuberculose.
+        data_type: string
+      - name: acompanhamentomensalobs
+        description: Observações registradas no acompanhamento mensal.
+        data_type: string
+      - name: hivpositivonegativomensal_raw
+        description: Resultado bruto mensal do teste de HIV.
+        data_type: string
+      - name: raioxtoraxmensal_raw
+        description: Resultado bruto mensal de raio-X de tórax.
+        data_type: string
+      - name: resultadoraioxtoraxacompanhamentomensal
+        description: Resultado interpretado mensal de raio-X de tórax.
+        data_type: string
+      - name: idadeexcltrat
+        description: Idade do paciente na exclusão do tratamento.
+        data_type: int64
+      - name: dataexclusao
+        description: Data da exclusão do paciente do tratamento.
+        data_type: datetime
+      - name: pesoencerramento
+        description: Peso do paciente no encerramento do tratamento.
+        data_type: numeric
+      - name: resultadobaciloescarroencerramento
+        description: Resultado de baciloscopia de escarro no encerramento.
+        data_type: string
+      - name: motivoencerramento
+        description: Motivo do encerramento do tratamento.
+        data_type: string
+      - name: hivpositivonegativoencerramento
+        description: Resultado do teste de HIV no encerramento.
+        data_type: string
+      - name: raioxtoraxencerramento
+        description: Resultado bruto de raio-X de tórax no encerramento.
+        data_type: string
+      - name: resultadoraioxtoraxencerramento
+        description: Resultado interpretado de raio-X no encerramento.
+        data_type: string
+      - name: datainiciotratamentolatente
+        description: Data de início do tratamento para tuberculose latente.
+        data_type: datetime
+      - name: raioxtoraxtratamentolatente
+        description: Resultado bruto de raio-X no tratamento latente.
+        data_type: string
+      - name: ppdtratamentolatente
+        description: Resultado do teste PPD no tratamento latente.
+        data_type: string
+      - name: ppddatatratamentolatente
+        description: Data do teste PPD no tratamento latente.
+        data_type: datetime
+      - name: indicacaotratamentolatente
+        description: Indicação para o tratamento da tuberculose latente.
+        data_type: string
+      - name: dataencerramentotratamentolatente
+        description: Data de encerramento do tratamento latente.
+        data_type: datetime
+      - name: resultadoraioxtoraxtratamentolatente
+        description: Resultado interpretado de raio-X no tratamento latente.
+        data_type: string
+      - name: esquemailtb
+        description: Esquema de tratamento da infecção latente por tuberculose.
+        data_type: string
+      - name: observacoestuber
+        description: Observações gerais sobre o caso de tuberculose.
+        data_type: string
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de partição do dado para processamento incremental.
+        data_type: date

@@ -1,0 +1,26 @@
+version: 2
+models:
+  - name: mart_ipp__cadastro
+    description: Tabela com uma visão consolidada dos cadastros dos pacientes 
+    columns:
+      - name: cpf
+        description: Cadastro de Pessoas Físicas do paciente
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: nome
+        description: Nome do paciente
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: mae_nome
+        description: Nome da mãe paciente
+        policy_tags:
+          - '{{ var ("TAG_NOME_MAE") }}'
+      - name: data_nascimento
+        description: Data de nascimento do paciente
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+      - name: cpf_particao
+        description: Cadastro de Pessoas Físicas do paciente usado para particionar
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        

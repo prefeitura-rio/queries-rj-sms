@@ -12,80 +12,29 @@
 ).isoformat() %}
 
 with
-    -- ##################################################
-    -- VITAI
-    -- ##################################################
-    vitai_estoque as (
-        select distinct
-            cnes as unidade_cnes,
-            'vitai' as fonte,
-            'posicao' as tipo,
-            data_particao as data_atualizacao
-        from {{ source("brutos_prontuario_vitai_staging", "estoque_posicao") }}
-        {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
-        {% endif %}
-            union all
-        select distinct
-            cnes as unidade_cnes,
-            'vitai' as fonte,
-            'movimento' as tipo,
-            data_particao as data_atualizacao
-        from {{ source("brutos_prontuario_vitai_staging", "estoque_movimento") }}
-        {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
-        {% endif %}
-    ),
-    unidades_vitai as (
-        select 
-            area_programatica as unidade_ap,
-            id_cnes as unidade_cnes,
-            nome_limpo as unidade_nome
-        from {{ref('dim_estabelecimento')}}
-        where prontuario_versao = 'vitai' and prontuario_estoque_tem_dado = 'sim'
-    ),
-    vitai_agrupado as (
-        select 
-            fonte,
-            tipo,
-            data_atualizacao,
-            count(unidade_cnes) as quant_unidades_com_dado,
-            array_agg(unidade_cnes) as unidades_com_dado,
-        from vitai_estoque
-        group by 1, 2, 3
-    ),
-    vitai_agrupado_com_unidades as (
-        select 
-            * except(unidades_com_dado),
-            array(
-                select as struct *
-                from unidades_vitai where unidade_cnes not in unnest(unidades_com_dado)
-            ) as unidades_sem_dado
-        from vitai_agrupado
-    ),
 
     -- ##################################################
     -- VITACARE
     -- ##################################################
     vitacare_estoque as (
         select distinct
-            cnesUnidade as unidade_cnes,
+            id_cnes as unidade_cnes,
             'vitacare' as fonte,
             'posicao' as tipo,
-            data_particao as data_atualizacao
-        from {{ source("brutos_prontuario_vitacare_staging", "estoque_posicao") }}
+            particao_data_posicao as data_atualizacao
+        from {{ ref("raw_prontuario_vitacare__estoque_posicao") }}
         {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
+        where particao_data_posicao > '{{seven_days_ago}}' 
         {% endif %}
             union all
         select distinct
-            cnesUnidade as unidade_cnes,
+            id_cnes as unidade_cnes,
             'vitacare' as fonte,
             'movimento' as tipo,
-            data_particao as data_atualizacao
-        from {{ source("brutos_prontuario_vitacare_staging", "estoque_movimento") }}
+            particao_data_movimento as data_atualizacao
+        from {{ ref("raw_prontuario_vitacare__estoque_movimento") }}
         {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
+        where particao_data_movimento > '{{seven_days_ago}}' 
         {% endif %}
     ),
     unidades_vitacare as (
@@ -120,8 +69,6 @@ with
     -- JUNTANDO
     -- ##################################################
     unioned as (
-        select * from vitai_agrupado_com_unidades
-            union all
         select * from vitacare_agrupado_com_unidades
     ),
     with_key as (

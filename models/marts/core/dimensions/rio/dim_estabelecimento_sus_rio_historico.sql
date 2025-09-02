@@ -71,6 +71,7 @@ with
             tipo_sms_simplificado,
             nome_limpo,
             nome_sigla,
+            tipo_disponibilidade,
             prontuario_tem,
             prontuario_versao,
             responsavel_sms,
@@ -220,6 +221,7 @@ with
             estabelecimentos_atributos.tipo_sms_simplificado,
             estabelecimentos_atributos.nome_limpo,
             estabelecimentos_atributos.nome_sigla,
+            estabelecimentos_atributos.tipo_disponibilidade,
             estabelecimentos_atributos.prontuario_tem,
             estabelecimentos_atributos.prontuario_versao,
             estabelecimentos_atributos.responsavel_sms,
@@ -322,6 +324,7 @@ with
             tipo_sms,
             tipo_sms_simplificado,
             agrupador_sms as tipo_sms_agrupado,
+            tipo_disponibilidade,
 
             -- Tipagem dos Estabelecimentos (SUBGERAL)
             tipo_unidade_alternativo,

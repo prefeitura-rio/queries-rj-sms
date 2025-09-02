@@ -2,11 +2,11 @@
 {{
     config(
         materialized="view",
-        enabled=true,
-        schema="brutos_sisreg_api",
+        enabled=false,
+        schema="saude_sisreg",
         alias="agendados",
         partition_by={
-            "field": "particao_data",
+            "field": "data_solicitacao",
             "data_type": "date",
             "granularity": "month",
         },

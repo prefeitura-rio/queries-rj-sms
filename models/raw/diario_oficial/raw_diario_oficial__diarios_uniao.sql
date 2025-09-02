@@ -4,8 +4,9 @@
         materialized="table"
     )
 }}
+-- TODO: apagar esse modelo
 
-with 
+with
     source as (
         select *
         from {{ source("brutos_diario_oficial_staging", "diarios_uniao") }}
@@ -18,13 +19,12 @@ with
             {{ process_null('signatures') }} as assinaturas,
             {{ process_null('text_title') }} as cabecalho,
             {{ process_null('edition') }} as edicao,
-            {{ process_null('section') }} as secao, 
+            {{ process_null('section') }} as secao,
             {{ process_null('page') }} as pagina,
             {{ process_null('agency') }} as organizacao_principal,
             trim({{ process_null('text') }}) as texto,
             {{ process_null('url') }} as link,
             {{ process_null('text_title') }} as texto_titulo,
-            {{ process_null('html') }} as html, 
             safe_cast(_extracted_at as timestamp) as data_extracao,
             {{ process_null('ano_particao') }} as ano_particao,
             {{ process_null('mes_particao') }} as mes_particao,
@@ -32,6 +32,5 @@ with
         from source
     )
 
-
-select * 
+select *
 from diario_padronizado

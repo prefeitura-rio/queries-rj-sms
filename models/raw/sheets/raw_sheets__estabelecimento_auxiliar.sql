@@ -2,9 +2,10 @@
     config(
         schema="brutos_sheets",
         alias="estabelecimento_auxiliar",
+        tags=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
-
+-- TODO: conferir tags acima
 
 with
     source as (
@@ -25,6 +26,7 @@ select
     if(nome_limpo = "nan", null, nome_limpo) as nome_limpo,
     if(nome_sigla = "nan", null, nome_sigla) as nome_sigla,
     if(area_programatica = "nan", null, cast(area_programatica as string)) as area_programatica,
+    if(tipo_disponibilidade = "nan", null, cast(tipo_disponibilidade as string)) as tipo_disponibilidade,
     if(prontuario_tem = "nan", null, prontuario_tem) as prontuario_tem,
     if(prontuario_versao = "nan", null, prontuario_versao) as prontuario_versao,
     if(prontuario_estoque_tem_dado = "nan", null, prontuario_estoque_tem_dado) as prontuario_estoque_tem_dado,

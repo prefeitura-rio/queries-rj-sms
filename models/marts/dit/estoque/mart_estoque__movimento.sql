@@ -49,6 +49,6 @@ if (id_cnes in UNNEST( [
         "2291266", -- HOSPITAL MUNICIPAL FRANCISCO DA SILVA TELLES
         "2269341", -- HOSPITAL MUNICIPAL JESUS
         "2270269" -- HOSPITAL MUNICIPAL MIGUEL COUTO
-    ]), "nao", "sim") as dados_confiaveis,
+    ]), "nao", "sim") as dados_confiaveis
 from
     movimento_final

@@ -42,15 +42,15 @@ with
                 when regexp_contains(lower(cbo_datasus.descricao),'^cirurgiao[ |-|]dentista')
                     then 'DENTISTAS'
                 when regexp_contains(lower(cbo_datasus.descricao),'psic')
-                    then 'PSICÓLOGOS'  
+                    then 'PSICÓLOGOS'
                 when regexp_contains(lower(cbo_datasus.descricao),'fisioterap')
                     then 'FISIOTERAPEUTAS'
                 when regexp_contains(lower(cbo_datasus.descricao),'nutri[ç|c]')
                     then 'NUTRICIONISTAS'
                 when regexp_contains(lower(cbo_datasus.descricao),'fono')
-                    then 'FONOAUDIÓLOGOS'   
+                    then 'FONOAUDIÓLOGOS'
                 when regexp_contains(lower(cbo_datasus.descricao),'farm')
-                    then 'FARMACÊUTICOS'  
+                    then 'FARMACÊUTICOS'
                 when (
                         (regexp_contains(lower(cbo_datasus.descricao),'enferm')) and 
                         (lower(cbo_datasus.descricao) !='socorrista (exceto medicos e enfermeiros)') and
@@ -58,10 +58,14 @@ with
                         (not regexp_contains(lower(cbo_datasus.descricao),'auxiliar')) and
                         (not regexp_contains(lower(cbo_datasus.descricao),'atendente')) 
                     )
-                    then 'ENFERMEIROS' 
+                    then 'ENFERMEIROS'
                 when cbo_datasus.descricao in ('Dirigente do servico publico municipal',
                 'Diretor de servicos de saude','Gerente de servicos de saude')
-                    then 'DIRETORES DE SAUDE' 
+                    then 'DIRETORES DE SAUDE'
+                -- Ago/2025 - Personas de acesso:
+                -- * Assistentes administrativos do Complexo Regulador (CNES 7106513/3304557106513)
+                when id_cnes = '7106513' and id_cbo = '411010'
+                    then 'ADMINISTRATIVO'
                 else
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
@@ -70,13 +74,13 @@ with
         left join cbo_datasus using (id_cbo)
         inner join unidades_de_saude using (id_unidade)
     ),
-        -- -----------------------------------------
+    -- -----------------------------------------
     -- Lista profissionais alocados em consultórios de rua
     -- -----------------------------------------
     equipe_consultorio_rua as (
         select 
-            equipe_ine, 
-            equipe_sequencial, 
+            equipe_ine,
+            equipe_sequencial,
             id_equipe_tipo,
             equipe_descricao
         from {{ ref('raw_cnes_gdb__equipe')}}
@@ -87,7 +91,7 @@ with
         select 
             id_profissional_sus,
             id_equipe_tipo,
-            equipe_descricao 
+            equipe_descricao
         from {{ ref('raw_cnes_gdb__equipe_profissionais') }} 
         left join equipe_consultorio_rua
         using (equipe_sequencial)
@@ -108,7 +112,7 @@ with
             case 
                 when id_equipe_tipo = '73' then true
                 else false
-            end as eh_equipe_consultorio_rua, 
+            end as eh_equipe_consultorio_rua,
             cbo_nome as funcao_detalhada,
             {{ remove_accents_upper('cbo_agrupador') }} as funcao_grupo,
             data_ultima_atualizacao
@@ -119,7 +123,7 @@ with
     -- -----------------------------------------
     -- Filtrando funcionários com acesso autorizado
     -- -----------------------------------------
-    funcionarios_ativos_enriquecido_autorizados as (    
+    funcionarios_ativos_enriquecido_autorizados as (
         select
             cpf,
             upper(nome_completo) as nome_completo,
@@ -137,14 +141,15 @@ with
                 'MEDICOS',
                 'ENFERMEIROS',
                 'DENTISTAS',
-                'DIRETORES DE SAUDE'
+                'DIRETORES DE SAUDE',
+                'ADMINISTRATIVO'
             )
     ),
     -- -----------------------------------------
     -- Agrupando vinculos de profissionais
     -- -----------------------------------------
     funcionario_vinculos as (
-        select 
+        select
             cpf,
             nome_completo,
             array_agg(
@@ -169,15 +174,20 @@ with
                         then 'full_permission'
                         when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo != 'MEDICOS' 
                         then 'only_from_same_cnes'
-                        ELSE null
-                    end as nivel_acesso
+                        else null
+                    end as nivel_acesso,
+                    case
+                        when (unidade_cnes = '7106513' and funcao_grupo = 'ADMINISTRATIVO')
+                        then 'only_header'
+                        else 'full_permission'
+                    end as granularidade_acesso
                 )
-            ) as vinculos 
+            ) as vinculos
         from funcionarios_ativos_enriquecido_autorizados
         group by 1,2
     )
 
-    select 
+    select
         cpf,
         nome_completo,
         {{ dedup_array_of_struct('vinculos')}} as vinculos

@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: raw_diario_oficial__diarios_uniao_api
+    description: "Tabela padronizada do Diário Oficial da União extraída da API do INLABS."
+    columns:
+      - name: titulo
+        description: "Título principal da publicação."
+      - name: texto_titulo
+        description: "Texto do título da publicação."
+      - name: data_publicacao
+        description: "Data de publicação no formato dd/mm/yyyy."
+      - name: organizacao_principal
+        description: "Órgão ou entidade responsável."
+      - name: number_page
+        description: "Número da página no diário."
+      - name: edicao
+        description: "Número da edição do diário."
+      - name: secao
+        description: "Seção do diário."
+      - name: texto
+        description: "Conteúdo textual completo."
+      - name: assinaturas
+        description: "Assinaturas presentes na publicação."
+      - name: cargo
+        description: "Cargo do responsável pela publicação."
+      - name: link
+        description: "URL pública do documento."
+      - name: data_extracao
+        description: "Data e hora da extração do dado."
+      - name: ano_particao
+        description: "Ano de partição do dado."
+      - name: mes_particao
+        description: "Mês de partição do dado."
+      - name: data_particao
+        description: "Data completa de partição do dado."

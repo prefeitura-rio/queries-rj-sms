@@ -1,0 +1,561 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__idoso
+    description: >
+      Informações da linha de cuidado "Idoso" extraídas do bloco `idoso[0]` do JSON do
+      atendimento contínuo (VitaCare). Inclui escores/itens de Barthel, MEEM, Katz,
+      Pfeffer, Lawton, Tinetti, IVCF-20 e VES-13, além de metadados de carga e partição.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador único global do prontuário (CNES + ID local).
+        data_type: string
+      - name: id_prontuario_local
+        description: Identificador local do prontuário na unidade de saúde.
+        data_type: string
+      - name: id_cnes
+        description: Código CNES da unidade de saúde.
+        data_type: string
+
+      # Barthel
+      - name: dep_barthel_alimentacao
+        description: Índice de Barthel — Alimentação.
+        data_type: string
+      - name: dep_barthel_banho
+        description: Índice de Barthel — Tomar banho.
+        data_type: string
+      - name: dep_barthel_higiene_pessoal
+        description: Índice de Barthel — Higiene pessoal.
+        data_type: string
+      - name: dep_barthel_vestirse
+        description: Índice de Barthel — Vestir-se.
+        data_type: string
+      - name: dep_barthel_controlo_anal
+        description: Índice de Barthel — Controle anal.
+        data_type: string
+      - name: dep_barthel_controlo_vesical
+        description: Índice de Barthel — Controle vesical.
+        data_type: string
+      - name: dep_barthel_utilizacao_sanita
+        description: Índice de Barthel — Uso do sanitário.
+        data_type: string
+      - name: dep_barthel_transferencia
+        description: Índice de Barthel — Transferências.
+        data_type: string
+      - name: dep_barthel_mobilidade
+        description: Índice de Barthel — Mobilidade.
+        data_type: string
+      - name: dep_barthel_escadas
+        description: Índice de Barthel — Subir/descer escadas.
+        data_type: string
+      - name: dep_barthel_total
+        description: Índice de Barthel — Pontuação total.
+        data_type: string
+
+      # MEEM (Mini Exame do Estado Mental)
+      - name: dep_mms_orientacao_ano
+        description: MEEM — Orientação ano.
+        data_type: string
+      - name: dep_mms_orientacao_mes
+        description: MEEM — Orientação mês.
+        data_type: string
+      - name: dep_mms_orientacao_dia_mes
+        description: MEEM — Orientação dia do mês.
+        data_type: string
+      - name: dep_mms_orientacao_dia_seman
+        description: MEEM — Orientação dia da semana.
+        data_type: string
+      - name: dep_mms_linguagem_arelogio
+        description: MEEM — Linguagem acertar elogio.
+        data_type: string
+      - name: dep_mms_linguagem_c1
+        description: MEEM — Linguagem comando 1.
+        data_type: string
+      - name: dep_mms_linguagem_c2
+        description: MEEM — Linguagem comando 2.
+        data_type: string
+      - name: dep_mms_linguagem_c3
+        description: MEEM — Linguagem comando 3.
+        data_type: string
+      - name: dep_mms_linguagem_dolhos
+        description: MEEM — Linguagem “dos olhos” (conforme origem).
+        data_type: string
+      - name: dep_mms_linguagem_efrase
+        description: MEEM — Linguagem escrever frase.
+        data_type: string
+      - name: dep_mms_habilidade_desenho
+        description: MEEM — Habilidade de desenho.
+        data_type: string
+      - name: dep_mms_pontos_p
+        description: MEEM — Pontos (total/parcial).
+        data_type: string
+      - name: dep_observacoes
+        description: Observações gerais do bloco de dependência/MEEM.
+        data_type: string
+      - name: dep_mms_conclusao
+        description: MEEM — Conclusão/parecer.
+        data_type: string
+      - name: dep_mms_retencao_caneca
+        description: MEEM — Retenção da palavra “caneca”.
+        data_type: string
+      - name: dep_mms_retencao_tijolo
+        description: MEEM — Retenção da palavra “tijolo”.
+        data_type: string
+      - name: dep_mms_retencao_tapete
+        description: MEEM — Retenção da palavra “tapete”.
+        data_type: string
+      - name: dep_mms_orientacao_semestre
+        description: MEEM — Orientação semestre.
+        data_type: string
+      - name: dep_mms_orientacao_estado
+        description: MEEM — Orientação estado.
+        data_type: string
+      - name: dep_mms_orientacao_cidade
+        description: MEEM — Orientação cidade.
+        data_type: string
+      - name: dep_mms_orientacao_bairro
+        description: MEEM — Orientação bairro.
+        data_type: string
+      - name: dep_mms_orientacao_rua
+        description: MEEM — Orientação rua.
+        data_type: string
+      - name: dep_mms_orientacao_local
+        description: MEEM — Orientação local.
+        data_type: string
+      - name: dep_mms_calculo_aval
+        description: MEEM — Cálculo avaliação.
+        data_type: string
+      - name: dep_mms_calculo_93
+        description: MEEM — Cálculo 93.
+        data_type: string
+      - name: dep_mms_calculo_86
+        description: MEEM — Cálculo 86.
+        data_type: string
+      - name: dep_mms_calculo_79
+        description: MEEM — Cálculo 79.
+        data_type: string
+      - name: dep_mms_calculo_72
+        description: MEEM — Cálculo 72.
+        data_type: string
+      - name: dep_mms_calculo_65
+        description: MEEM — Cálculo 65.
+        data_type: string
+      - name: dep_mms_memorizacao_caneca
+        description: MEEM — Memorização “caneca”.
+        data_type: string
+      - name: dep_mms_memorizacao_tijolo
+        description: MEEM — Memorização “tijolo”.
+        data_type: string
+      - name: dep_mms_memorizacao_tapete
+        description: MEEM — Memorização “tapete”.
+        data_type: string
+      - name: dep_mms_linguagem_acaneca
+        description: MEEM — Linguagem (associação) “caneca”.
+        data_type: string
+      - name: dep_mms_linguagem_bfrase2
+        description: MEEM — Linguagem frase 2.
+        data_type: string
+      - name: dep_mms_escolaridade2
+        description: MEEM — Escolaridade (campo 2).
+        data_type: string
+
+      - name: dep_desenhar_elogio1
+        description: Teste do desenho do elogio — item 1 (nome conforme origem).
+        data_type: string
+      - name: dep_desenhar_elogio2
+        description: Teste do desenho do elogio — item 2 (nome conforme origem).
+        data_type: string
+      - name: dep_desenhar_elogio3
+        description: Teste do desenho do elogio — item 3 (nome conforme origem).
+        data_type: string
+
+      # Itens “idoso_depen_*”
+      - name: idoso_depen_nutricao_perdeu_peso
+        description: Triagem — perdeu peso recentemente.
+        data_type: string
+      - name: idoso_depen_dificuldade_visual
+        description: Dificuldade visual autorrelatada/observada.
+        data_type: string
+      - name: idoso_depen_dificuldade_visual_olho_dir
+        description: Dificuldade visual — olho direito.
+        data_type: string
+      - name: idoso_depen_dificuldade_visual_olho_esq
+        description: Dificuldade visual — olho esquerdo.
+        data_type: string
+      - name: idoso_depen_teste_sussurro
+        description: Teste do sussurro (audição).
+        data_type: string
+      - name: idoso_depen_cerume_od
+        description: Presença de cerume — OD.
+        data_type: string
+      - name: idoso_depen_cerume_oe
+        description: Presença de cerume — OE.
+        data_type: string
+      - name: idoso_depen_perde_urina
+        description: Perda urinária.
+        data_type: string
+      - name: idoso_depen_perde_urina_incomodo
+        description: Perda urinária traz incômodo.
+        data_type: string
+      - name: idoso_depen_triste_frequente
+        description: Humor deprimido/triste com frequência.
+        data_type: string
+      - name: idoso_depen_repetir_nomes_object
+        description: Dificuldade para repetir nomes/objetos.
+        data_type: string
+      - name: idoso_depen_tocar_num_camaos
+        description: Dificuldade para tocar nas mãos (coordenação).
+        data_type: string
+      - name: idoso_depen_apanhar_lapis_mesa
+        description: Capacidade de apanhar lápis na mesa.
+        data_type: string
+      - name: idoso_depen_levantar_da_cadeira
+        description: Capacidade de levantar da cadeira.
+        data_type: string
+      - name: idoso_depen_capaz_caminhar3m
+        description: Capaz de caminhar 3 metros.
+        data_type: string
+      - name: idoso_depen_voltar_sentar
+        description: Capaz de voltar a sentar-se.
+        data_type: string
+      - name: idoso_depen_sair_cama
+        description: Capaz de sair da cama sozinho.
+        data_type: string
+      - name: idoso_depen_capaz_vestir
+        description: Capaz de vestir-se sozinho.
+        data_type: string
+      - name: idoso_depen_pre_pre_feicoes
+        description: Reconhece/descrimina feições (conforme origem).
+        data_type: string
+      - name: idoso_depen_fazer_compras
+        description: Capaz de fazer compras.
+        data_type: string
+      - name: idoso_depen_ha_escadas
+        description: Domicílio tem escadas.
+        data_type: string
+      - name: idoso_depen_ha_tapetes_soltos
+        description: Domicílio tem tapetes soltos.
+        data_type: string
+      - name: idoso_depen_ha_corrimao_banh
+        description: Banheiro possui corrimão.
+        data_type: string
+      - name: idoso_depen_queda_qtd
+        description: Quantidade de quedas recentes.
+        data_type: string
+      - name: idoso_depen_alg_ajudar_incapc
+        description: Precisa de ajuda para incapacidades.
+        data_type: string
+      - name: idoso_depen_alg_ajudar_incapc_quem
+        description: Quem ajuda nas incapacidades.
+        data_type: string
+      - name: idoso_depen_alg_ajudar_incapc_quem_tomar_decis
+        description: Quem auxilia na tomada de decisões.
+        data_type: string
+
+      # Katz
+      - name: katz_tomar_banho
+        description: Katz — Tomar banho.
+        data_type: string
+      - name: katz_vestirse
+        description: Katz — Vestir-se.
+        data_type: string
+      - name: katz_irwc
+        description: Katz — Ir ao banheiro (WC).
+        data_type: string
+      - name: katz_transferencia
+        description: Katz — Transferência.
+        data_type: string
+      - name: katz_continencia
+        description: Katz — Continência.
+        data_type: string
+      - name: katz_alimentacao
+        description: Katz — Alimentação.
+        data_type: string
+      - name: katz_classificacao
+        description: Katz — Classificação final.
+        data_type: string
+
+      # Pfeffer (FAQ)
+      - name: dep_questionario_pfeffer1
+        description: Pfeffer — Item 1.
+        data_type: string
+      - name: dep_questionario_pfeffer2
+        description: Pfeffer — Item 2.
+        data_type: string
+      - name: dep_questionario_pfeffer3
+        description: Pfeffer — Item 3.
+        data_type: string
+      - name: dep_questionario_pfeffer4
+        description: Pfeffer — Item 4.
+        data_type: string
+      - name: dep_questionario_pfeffer5
+        description: Pfeffer — Item 5.
+        data_type: string
+      - name: dep_questionario_pfeffer6
+        description: Pfeffer — Item 6.
+        data_type: string
+      - name: dep_questionario_pfeffer7
+        description: Pfeffer — Item 7.
+        data_type: string
+      - name: dep_questionario_pfeffer8
+        description: Pfeffer — Item 8.
+        data_type: string
+      - name: dep_questionario_pfeffer9
+        description: Pfeffer — Item 9.
+        data_type: string
+      - name: dep_questionario_pfeffer10
+        description: Pfeffer — Item 10.
+        data_type: string
+      - name: dep_questionario_pfeffer11
+        description: Pfeffer — Item 11.
+        data_type: string
+      - name: dep_questionario_pfeffer_pontos
+        description: Pfeffer — Pontuação total.
+        data_type: string
+
+      # Lawton & Brody
+      - name: lawton_utilizar_telefone
+        description: Lawton — Utilizar telefone.
+        data_type: string
+      - name: lawton_plane_special
+        description: Lawton — Planejamento/“plane special” (conforme origem).
+        data_type: string
+      - name: lawton_ir_compras
+        description: Lawton — Ir às compras.
+        data_type: string
+      - name: lawton_ref_diarias
+        description: Lawton — Preparar refeições diárias.
+        data_type: string
+      - name: lawton_arru_casa
+        description: Lawton — Arrumar a casa.
+        data_type: string
+      - name: lawton_cuid_casa
+        description: Lawton — Cuidar da casa.
+        data_type: string
+      - name: lawton_cuid_roupa
+        description: Lawton — Cuidar da roupa.
+        data_type: string
+      - name: lawton_med_adequadamente
+        description: Lawton — Usar medicamentos adequadamente.
+        data_type: string
+      - name: lawton_gerir_dinheiro
+        description: Lawton — Gerir dinheiro.
+        data_type: string
+      - name: lawton_pontuacao
+        description: Lawton — Pontuação total.
+        data_type: string
+
+      - name: tinneti_equilibrio
+        description: Tinetti — Equilíbrio.
+        data_type: string
+      - name: tinneti_levantar
+        description: Tinetti — Levantar-se.
+        data_type: string
+      - name: tinneti_levantar_ten
+        description: Tinetti — Manter-se de pé (“ten”).
+        data_type: string
+      - name: tinneti_pos_levantar
+        description: Tinetti — Posição após levantar.
+        data_type: string
+      - name: tinneti_3_campos
+        description: Tinetti — Três campos (conforme origem).
+        data_type: string
+      - name: tinneti_olhos
+        description: Tinetti — Olhos.
+        data_type: string
+      - name: tinneti_girando360
+        description: Tinetti — Girar 360°.
+        data_type: string
+      - name: tinneti_sentado
+        description: Tinetti — Sentado.
+        data_type: string
+      - name: tinneti_ini_marcha
+        description: Tinetti — Início da marcha.
+        data_type: string
+      - name: tinneti_comp_passosd
+        description: Tinetti — Comprimento dos passos (direito).
+        data_type: string
+      - name: tinneti_comp_passose
+        description: Tinetti — Comprimento dos passos (esquerdo).
+        data_type: string
+      - name: tinneti_alt_passosd
+        description: Tinetti — Altura do passo (direito).
+        data_type: string
+      - name: tinneti_alt_passose
+        description: Tinetti — Altura do passo (esquerdo).
+        data_type: string
+      - name: tinneti_simetria
+        description: Tinetti — Simetria.
+        data_type: string
+      - name: tinneti_continuidade_passos
+        description: Tinetti — Continuidade dos passos.
+        data_type: string
+      - name: tinneti_direcao
+        description: Tinetti — Direção.
+        data_type: string
+      - name: tinneti_tronco
+        description: Tinetti — Tronco.
+        data_type: string
+      - name: tinneti_tornozelos
+        description: Tinetti — Tornozelos.
+        data_type: string
+      - name: tinneti_pontuacao
+        description: Tinetti — Pontuação total.
+        data_type: string
+
+      # IVCF-20
+      - name: ivcf20_plugin_idade_qual_sua_idade
+        description: IVCF-20 — Qual a sua idade?
+        data_type: string
+      - name: ivcf20_plugin_autopercepcao_saude_vcd_iria_da_sua_saude
+        description: IVCF-20 — Autopercepção de saúde.
+        data_type: string
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_fazer_compras
+        description: IVCF-20 — Deixou de fazer compras.
+        data_type: string
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_controlar_dinheiro
+        description: IVCF-20 — Deixou de controlar o dinheiro.
+        data_type: string
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_realizar_trabalhos
+        description: IVCF-20 — Deixou de realizar trabalhos habituais.
+        data_type: string
+      - name: ivcf20_plugin_atividades_vida_diaria_deixou_tomar_banho
+        description: IVCF-20 — Deixou de tomar banho sozinho.
+        data_type: string
+      - name: ivcf20_plugin_cognicao_familiar_falou_ficando_esquecido
+        description: IVCF-20 — Familiar refere esquecimento.
+        data_type: string
+      - name: ivcf20_plugin_cognicao_esquecimento_esta_piorando_ult_meses
+        description: IVCF-20 — Esquecimento piorando nos últimos meses.
+        data_type: string
+      - name: ivcf20_plugin_cognicao_esquecimento_impedindo_atividade_cotidiano
+        description: IVCF-20 — Esquecimento impede atividades cotidianas.
+        data_type: string
+      - name: ivcf20_plugin_humor_ult_mes_desanimo
+        description: IVCF-20 — Desânimo no último mês.
+        data_type: string
+      - name: ivcf20_plugin_humor_perdeu_interesse_atividade
+        description: IVCF-20 — Perda de interesse por atividades.
+        data_type: string
+      - name: ivcf20_plugin_mobilidade_incapaz_elevar_braco
+        description: IVCF-20 — Incapaz de elevar o braço.
+        data_type: string
+      - name: ivcf20_plugin_mobilidade_incapaz_segurar_peq_objetos
+        description: IVCF-20 — Incapaz de segurar pequenos objetos.
+        data_type: string
+      - name: ivcf20_plugin_mobilidade_tem_alguma_quatro_condicoes
+        description: IVCF-20 — Possui ≥1 de 4 condições de mobilidade.
+        data_type: string
+      - name: ivcf20_plugin_mobilidade_dificuldade_caminhar
+        description: IVCF-20 — Dificuldade para caminhar.
+        data_type: string
+      - name: ivcf20_plugin_mobilidade_teve_duas_mais_quedas
+        description: IVCF-20 — Teve duas ou mais quedas.
+        data_type: string
+      - name: ivcf20_plugin_mobilidade_perde_urina_fezes_sem_querer
+        description: IVCF-20 — Perde urina/fezes sem querer.
+        data_type: string
+      - name: ivcf20_plugin_comunicacao_visao
+        description: IVCF-20 — Comunicação visão.
+        data_type: string
+      - name: ivcf20_plugin_comunicacao_audicao
+        description: IVCF-20 — Comunicação audição.
+        data_type: string
+      - name: ivcf20_plugin_comorbidades_multiplas_tem_alguma_tres_condicoes
+        description: IVCF-20 — Comorbidades múltiplas (≥1 de 3).
+        data_type: string
+      - name: ivcf20_plugin_pontuacao_final
+        description: IVCF-20 — Pontuação final.
+        data_type: string
+      - name: ivcf20_plugin_correlacao
+        description: IVCF-20 — Correlação/parecer (conforme origem).
+        data_type: string
+
+      # VES-13
+      - name: ves13_plugin_idade_qual_sua_idade
+        description: VES-13 — Qual a sua idade?
+        data_type: string
+      - name: ves13_plugin_autopercepcao_saude_vcd_iria_da_sua_saude
+        description: VES-13 — Autopercepção de saúde.
+        data_type: string
+      - name: ves13_plugin_limitacao_fisica_curvar
+        description: VES-13 — Limitação curvar-se/ajoelhar-se.
+        data_type: string
+      - name: ves13_plugin_limitacao_fisica_levantar
+        description: VES-13 — Limitação levantar objetos.
+        data_type: string
+      - name: ves13_plugin_limitacao_fisica_elevar
+        description: VES-13 — Limitação elevar os braços.
+        data_type: string
+      - name: ves13_plugin_limitacao_fisica_escrever
+        description: VES-13 — Limitação escrever/manipular.
+        data_type: string
+      - name: ves13_plugin_limitacao_fisica_andar
+        description: VES-13 — Limitação andar.
+        data_type: string
+      - name: ves13_plugin_limitacao_fisica_fazer
+        description: VES-13 — Limitação fazer tarefas pesadas.
+        data_type: string
+      - name: ves13_plugin_incapacidades_deixou_fazer_compras
+        description: VES-13 — Deixou de fazer compras.
+        data_type: string
+      - name: ves13_plugin_incapacidades_deixou_controlar_dinheiro
+        description: VES-13 — Deixou de controlar o dinheiro.
+        data_type: string
+      - name: ves13_plugin_incapacidades_deixou_caminhar_casa
+        description: VES-13 — Deixou de caminhar dentro de casa.
+        data_type: string
+      - name: ves13_plugin_incapacidades_deixou_realizar_trabalhos
+        description: VES-13 — Deixou de realizar trabalhos habituais.
+        data_type: string
+      - name: ves13_plugin_incapacidades_deixou_tomar_banho
+        description: VES-13 — Deixou de tomar banho sozinho.
+        data_type: string
+      - name: ves13_plugin_pontuacao_final
+        description: VES-13 — Pontuação final.
+        data_type: string
+      - name: ves13_plugin_correlacao
+        description: VES-13 — Correlação/parecer (conforme origem).
+        data_type: string
+      - name: ves13_plugin_providencias
+        description: VES-13 — Providências/recomendações.
+        data_type: string
+
+      # Cálculo (MEEM) — campos adicionais
+      - name: dep_mms_calculo_o
+        description: MEEM — Cálculo letra O.
+        data_type: string
+      - name: dep_mms_calculo_d
+        description: MEEM — Cálculo letra D.
+        data_type: string
+      - name: dep_mms_calculo_n
+        description: MEEM — Cálculo letra N.
+        data_type: string
+      - name: dep_mms_calculo_u
+        description: MEEM — Cálculo letra U.
+        data_type: string
+      - name: dep_mms_calculo_m
+        description: MEEM — Cálculo letra M.
+        data_type: string
+
+      # Responsável
+      - name: ut_responsavel
+        description: Identificação do responsável pelo utente.
+        data_type: string
+      - name: utente_escolaridade_responsavel
+        description: Escolaridade do responsável.
+        data_type: string
+      - name: utente_data_nascimento_responsavel
+        description: Data de nascimento do responsável (texto, conforme origem).
+        data_type: string
+      - name: utente_grau_parentesco_responsavel
+        description: Grau de parentesco do responsável.
+        data_type: string
+
+      # Metadados
+      - name: loaded_at
+        description: Data/hora em que o registro foi carregado no datalake.
+        data_type: datetime
+      - name: data_particao
+        description: Data de referência do atendimento utilizada para particionamento.
+        data_type: date

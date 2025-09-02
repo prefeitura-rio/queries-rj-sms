@@ -1,0 +1,102 @@
+version: 2
+
+models:
+  - name: int_historico_clinico__vacinacao__vitacare
+    description: >
+      Esta tabela contém informações detalhadas sobre os registros de vacinação 
+      dos pacientes no sistema Vitacare. Inclui identificador para o paciente. 
+      O modelo também fornece informações sobre a vacina, incluindo seu nome, 
+      data de aplicação, dose e lote. 
+    columns:
+        - name: id
+          description: Este é o identificador único para cada registro no modelo
+            dentro do prontuário vitacare. É uma combinação do id_cnes e do id
+            original dos dados de origem. Este id é usado para identificar
+            exclusivamente cada registro de vacinação.
+          data_tests:
+            - not_null:
+                name: int_historico_clinico__vacina__id__not_null
+                config:
+                  severity: warn
+                  warn_if: ">10"
+          data_type: string
+          quote: true
+        - name: id_surrogate
+          description: Esta é uma chave substituta para cada registro. É um valor hash gerado a partir do
+            id_cnes, vacina, data da aplicacao e do id original dos dados de origem. Esta chave substituta 
+            é usada para fins de data warehousing para garantir a integridade dos dados e lidar com 
+            mudanças nos dados de origem ao longo do tempo
+          data_tests:
+            - unique:
+                name: int_historico_clinico__vacina__id_surrogate__unique
+                config:
+                  severity: warn
+                  warn_if: ">1000"
+        - name: cpf
+          description: CPF do paciente.
+          data_type: string
+          quote: true
+          policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+        - name: id_cnes
+          description: Este é o identificador único para o estabelecimento de saúde onde
+            a vacinação foi administrada. Este id é usado para vincular o registro de vacinação
+            ao estabelecimento de saúde específico no sistema de saúde.
+          data_type: string
+          quote: true
+        - name: nome_vacina
+          description: Esta coluna contém a descrição da vacina que foi administrada ao
+            paciente. 
+          data_type: string
+          quote: true
+          policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+        - name: aplicacao_data
+          description: Esta coluna representa a data em que a vacina foi aplicada ao
+            paciente. É um campo de data e está formatado como AAAA-MM-DD.
+          data_type: date
+          quote: true
+          data_tests:
+            - not_null:
+                name: int_historico_clinico__vacina__aplicacao_data__not_null
+                config:
+                  severity: warn
+                  warn_if: ">1"
+        - name: registro_data
+          description: Esta coluna representa a data e hora em que o registro de vacinação
+            foi registrado no sistema. É um campo de data e hora e está formatado
+            como AAAA-MM-DD HH:MM:SS.
+          data_type: datetime
+          quote: true
+        - name: dose
+          description: Este campo representa a dose da vacina que foi administrada ao
+            paciente. 
+          data_type: string
+          quote: true
+          policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+        - name: lote
+          description: Este campo representa o número do lote da vacina. 
+          data_type: string
+          quote: true
+        - name: registro_tipo
+          description: Este campo representa o tipo de registro. É um valor de string que
+            fornece informações sobre a natureza do registro, como se é um novo
+            registro de vacinação ou um registro retroativo.
+          data_type: string
+          quote: true
+        - name: estrategia_imunizacao
+          description: Este campo representa a estratégia usada para a vacinação.
+          data_type: string
+          quote: true
+        - name: diff
+          description: Diferença, em dias, entre a data de aplicação da vacina e a data de registro da vacina.
+          data_type: string
+          quote: true
+        - name: loaded_at
+          description: Esta coluna indica a data e hora em que os dados foram importados
+            para o datalake. Ajuda a rastrear as atualizações de dados e é
+            útil para auditoria de dados e controle de versão. A data e hora estão
+            no formato 'AAAA-MM-DD HH:MM:SS'.
+          data_type: datetime
+          quote: true

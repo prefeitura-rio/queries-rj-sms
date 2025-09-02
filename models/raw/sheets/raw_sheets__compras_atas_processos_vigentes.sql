@@ -2,9 +2,10 @@
     config(
         schema="brutos_sheets",
         alias="compras_atas_processos_vigentes",
+        tags=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
-
+-- TODO: conferir tags acima
 
 with
     source as (

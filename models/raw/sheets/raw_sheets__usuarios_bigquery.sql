@@ -2,8 +2,10 @@
     config(
         schema="brutos_sheets",
         alias="usuarios_bigquery",
+        tags=["daily"],
     )
 }}
+-- TODO: conferir tags acima
 
 with
     source as (
