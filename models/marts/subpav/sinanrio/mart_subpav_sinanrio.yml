@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: mart_subpav_sinanrio__familias
+    alias: sinanrio__familias
+    tags: [subpav, sinanrio, familias]
+    description: |
+      Base para busca rápida de coabitantes/“família” por CPF/CNS.
+      Regras principais:
+        • Exclusão de óbito; apenas prontuários com 13/14 dígitos e CNES/CPF válidos.
+        • Deduplicação por CPF usando o registro mais recente por `recency_ts`
+          = COALESCE(source_updated_at, data_ultima_atualizacao_cadastral, data_atualizacao_vinculo_equipe).
+        • `family_key` = prefixo do número do prontuário removendo os 2 últimos dígitos (ID_pessoa)
+          + ':' + CNES. Isso funciona para ESF (AP+AREA+MICRO+FAM+PESSOA) e para Modelo B
+          (CNES+incremental), reduzindo colisões ao incluir o CNES.
+        • Particionamento por `family_bucket` (hash de `family_key`) e cluster por `cpf_int`, `family_key_fp`
+          para lookup/fetch via BigQuery.
+      ```
+    columns:
+      - name: family_key
+        description: "Chave textual da família: prefixo do prontuário (sem os 2 últimos dígitos) + ':' + CNES."
+        tests:
+          - not_null
+      - name: family_key_fp
+        description: "Fingerprint INT64 de `family_key` (usado para filtros/joins eficientes)."
+        tests:
+          - not_null
+      - name: family_bucket
+        description: "Partição de `family_key`: MOD(ABS(FARM_FINGERPRINT(family_key)), 2048)."
+        tests:
+          - not_null
+      - name: cpf_int
+        description: "CPF numérico (INT64) após dedup por recency."
+        tests:
+          - not_null
+          - unique
+      - name: cnes
+        description: "CNES vigente no registro mais recente (não nulo pela regra de pré-filtro)."
+        tests:
+          - not_null
+      - name: ine
+        description: "INE vigente."
+      - name: cpf
+        description: "CPF em string, como recebido do PEP (para exibição)."
+      - name: cns
+        description: "CNS em string."
+      - name: nome
+        description: "Nome do paciente."
+      - name: dt_nascimento
+        description: "Data de nascimento (DATE)."
+      - name: id_sexo
+        description: "Sexo padronizado (macro): 1=M, 2=F, 3=Ignorado."
+        tests:
+          - accepted_values:
+              values: [1, 2, 3]
+              quote: false
+      - name: id_raca_cor
+        description: "Raça/cor padronizada (macro): 1=Branca, 2=Preta, 3=Parda, 4=Amarela, 5=Indígena, 9=Ignorado."
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 9]
+              quote: false
+      - name: telefone
+        description: "Telefone conforme PEP."
+      - name: cep
+        description: "CEP do endereço."
+      - name: logradouro
+        description: "Tipo + logradouro (concat)."
+      - name: numero
+        description: "Número do endereço."
+      - name: complemento
+        description: "Complemento do endereço."
+      - name: id_bairro
+        description: "ID do bairro (join por nome normalizado com `plataforma_subpav.principal__bairros`). Pode ser nulo."

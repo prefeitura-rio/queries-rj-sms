@@ -11,29 +11,53 @@
 
 with
 
+-- Diagnosticados ontem (condicoes.data_diagnostico)
 atendimentos_chegados_ontem as (
-    -- Utiliza data_particao para filtrar apenas os atendimentos do dia de ontem e diminuir custos de processamento
-    select 
-        cpf,
-        condicoes,
-        soap_subjetivo_motivo,
-        soap_objetivo_descricao,
-        soap_avaliacao_observacoes,
-        datahora_fim
-    from {{ ref('raw_prontuario_vitacare__atendimento') }}
-    where data_particao >= '{{ ontem }}'
+    SELECT DISTINCT
+        paciente_cpf AS cpf,
+        prontuario.fornecedor AS prontuario_fornecedor
+    FROM
+        {{ ref('mart_historico_clinico__episodio') }},
+        UNNEST(condicoes) c
+    WHERE
+        c.id IN UNNEST({{ sinanrio_lista_cids_sintomaticos() }})
+        AND paciente_cpf IS NOT NULL
+        AND data_particao = '{{ontem}}'
 ),
 
 cadastros_de_paciente as (
     select
-        cpf,
-        nome,
-        data_nascimento
-    from {{ ref('raw_prontuario_vitacare__paciente') }}
+        p.cpf,
+        p.cns[OFFSET(0)] AS cns,
+        p.dados.nome AS nome,
+        p.dados.data_nascimento AS dt_nascimento,
+        p.dados.genero AS sexo,
+        {{ sinanrio_padronize_sexo('p.dados.genero') }} AS id_sexo,
+        p.dados.raca AS raca,
+        {{ sinanrio_padronize_raca_cor('p.dados.raca') }} AS id_raca_cor,
+        p.dados.mae_nome AS nome_mae,
+        p.dados.pai_nome AS nome_pai,
+        p.dados.contato.telefone[OFFSET(0)].valor AS telefone,
+        p.dados.endereco[OFFSET(0)].cep AS endereco_cep,
+        p.dados.endereco[OFFSET(0)].tipo_logradouro AS endereco_tipo_logradouro,
+        p.dados.endereco[OFFSET(0)].logradouro AS endereco_logradouro,
+        CONCAT(
+            IFNULL(p.dados.endereco[OFFSET(0)].tipo_logradouro, ''), 
+            ' ', 
+            IFNULL(p.dados.endereco[OFFSET(0)].logradouro, '')
+        ) AS logradouro,
+        p.dados.endereco[OFFSET(0)].numero AS endereco_numero,
+        p.dados.endereco[OFFSET(0)].complemento AS endereco_complemento,
+        p.dados.endereco[OFFSET(0)].bairro AS endereco_bairro,
+        bairros.id AS id_bairro,
+        p.dados.prontuario[OFFSET(0)].id_cnes AS cnes,
+        p.dados.prontuario[OFFSET(0)].id_ine AS ine,
+        p.dados.prontuario[OFFSET(0)].id_paciente AS n_prontuario
+    from {{ ref('mart_historico_clinico__paciente') }} p
+    left join {{ref('raw_plataforma_subpav_principal__bairros')}} as bairros on {{ clean_name_string("p.endereco[OFFSET(0)].bairro") }} = {{ clean_name_string("bairros.descricao") }}
 ),
 
 atendimentos_com_cids as (
-
     select
         atendimentos_chegados_ontem.*,
         cadastros_de_paciente.* except(cpf),
@@ -53,8 +77,7 @@ atendimentos_com_cids as (
         ) as cids_extraidos
     from atendimentos_chegados_ontem
         left join cadastros_de_paciente using (cpf)
-    where cast(datahora_fim as date) >= '{{ ontem }}'
-
+    where cast(datahora_inicio as date) >= '{{ ontem }}'
 ),
 
 -- Filtra atendimentos que contêm ao menos 1 CID da lista macro
