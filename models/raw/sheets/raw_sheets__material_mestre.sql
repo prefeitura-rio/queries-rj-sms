@@ -3,7 +3,7 @@
         schema="brutos_sheets",
         alias="material_mestre",
         materialized="table",
-        tag=["daily"],
+        tags=["daily"],
     )
 }}
 

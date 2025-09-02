@@ -2,7 +2,7 @@
     config(
         schema="brutos_sheets",
         alias="estabelecimento_auxiliar",
-        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
+        tags=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
 -- TODO: conferir tags acima

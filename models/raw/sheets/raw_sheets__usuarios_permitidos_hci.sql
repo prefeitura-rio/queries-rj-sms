@@ -2,7 +2,7 @@
     config(
         schema="brutos_sheets",
         alias="usuarios_permitidos_hci",
-        tag=["daily", "hci"],
+        tags=["daily", "hci"],
     )
 }}
 

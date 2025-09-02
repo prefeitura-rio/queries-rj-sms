@@ -2,7 +2,7 @@
     config(
         schema="brutos_sheets",
         alias="cdi_destinatarios",
-        tag=["cdi"],
+        tags=["cdi"],
     )
 }}
 
