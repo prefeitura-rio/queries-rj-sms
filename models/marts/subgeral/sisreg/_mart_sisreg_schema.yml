@@ -70,3 +70,420 @@ models:
         data_type: string
         quote: true
 
+models:
+  - name: marts_sisreg__solicitacoes
+    description: Consolida as tabelas de solicitações e marcações provenientes da API do SISREG, unificando
+      o fluxo completo (solicitação → autorização → marcação/execução → confirmação/cancelamento)
+      e enriquecendo com atributos do histórico clínico (HCI). O modelo final retorna
+      uma linha por id_solicitacao (mais recente por data_atualizacao_registro).
+
+    columns:
+      # ---------------- Metadados de carga/partição ----------------
+      - name: id_extracao
+        description: Identificador da extração (run_id) que gerou o registro.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: data_extracao
+        description: Timestamp de extração no pipeline (quando o dado foi coletado da origem).
+        data_type: timestamp
+        quote: true
+        tests:
+          - not_null
+
+      # ---------------- Identificadores ----------------
+      - name: id_solicitacao
+        description: Identificador único da solicitação no SISREG.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+          - unique
+
+      - name: id_marcacao
+        description: Identificador da marcação (quando existir). Nulo para registros que não atingiram etapa de marcação.
+        data_type: string
+        quote: true
+
+      # ---------------- Datas / Timestamps do fluxo ----------------
+      - name: data_solicitacao
+        description: Data em que a solicitação foi registrada.
+        data_type: date
+        quote: true
+        tests:
+          - not_null
+
+      - name: data_desejada
+        description: Data desejada para a realização do procedimento (quando informada).
+        data_type: date
+        quote: true
+
+      - name: data_autorizacao
+        description: Momento em que a solicitação foi autorizada (quando aplicável).
+        data_type: timestamp
+        quote: true
+
+      - name: data_execucao
+        description: Momento de execução/realização do procedimento (quando aplicável).
+        data_type: timestamp
+        quote: true
+
+      - name: data_confirmacao
+        description: Momento de confirmação da marcação pelo paciente/unidade (quando aplicável).
+        data_type: timestamp
+        quote: true
+
+      - name: data_atualizacao_registro
+        description: Momento da última atualização do registro na origem (para ordenação e desduplicação).
+        data_type: timestamp
+        quote: true
+        tests:
+          - not_null
+
+      - name: data_cancelamento
+        description: Momento do cancelamento da solicitação/marcação (quando aplicável).
+        data_type: timestamp
+        quote: true
+
+      # ---------------- Status / Situação / Sinalizadores ----------------
+      - name: solicitacao_status
+        description: Indica em que etapa do fluxo do SISREG o registro está.
+        data_type: string
+        quote: true
+
+      - name: solicitacao_situacao
+        description: Similar ao status, porém com valores mais agregados.
+        data_type: string
+        quote: true
+
+      - name: solicitacao_visualizada_indicador
+        description: Indicador se a solicitação foi visualizada pelo regulador.
+        data_type: string
+        quote: true
+
+      - name: solicitacao_executada_indicador
+        description: Indicador se a marcação foi executada.
+        data_type: string
+        quote: true
+
+      - name: falta_registrada_indicador
+        description: Indicador de falta (no-show) registrada.
+        data_type: string
+        quote: true
+
+      - name: paciente_avisado_indicador
+        description: Indicador se o paciente foi avisado da marcação/alteração.
+        data_type: string
+        quote: true
+
+      - name: vaga_solicitada_tp
+        description: Tipo de vaga solicitada (1RA VEZ, RESERVA, RETORNO).
+        data_type: string
+        quote: true
+
+      - name: vaga_consumida_tp
+        description: Tipo de vaga consumida (1RA VEZ, RESERVA, RETORNO).
+        data_type: string
+        quote: true
+
+      - name: cancelamento_autor
+        description: Perfil/autor responsável pelo cancelamento (quando houver).
+        data_type: string
+        quote: true
+
+      - name: justificativa_cancelamento
+        description: Justificativa do cancelamento.
+        data_type: string
+        quote: true
+
+      - name: solicitacao_risco
+        description: Classificação de risco/urgência associada à solicitação (azul é o mais leve).
+        data_type: string
+        quote: true
+
+      # ---------------- CID ----------------
+      - name: cid_solicitacao
+        description: Código CID declarado na solicitação.
+        data_type: string
+        quote: true
+
+      - name: cid_marcacao
+        description: Código CID associado na marcação (quando existir).
+        data_type: string
+        quote: true
+
+      # ---------------- Procedimento ----------------
+      - name: id_procedimento_grupo
+        description: Identificador único da descrição agregada do procedimento.
+        data_type: string
+        quote: true
+
+      - name: procedimento_grupo
+        description: Descrição agregada do procedimento.
+        data_type: string
+        quote: true
+
+      - name: id_procedimento_sisreg
+        description: Identificador do procedimento no SISREG (interno).
+        data_type: string
+        quote: true
+
+      - name: procedimento
+        description: Nome/descrição do procedimento.
+        data_type: string
+        quote: true
+
+      - name: id_procedimento_sigtap
+        description: Código do procedimento conforme SIGTAP.
+        data_type: string
+        quote: true
+
+      # ---------------- Origem da solicitação (solicitante) ----------------
+      - name: id_uf_solicitante
+        description: UF (código) do solicitante.
+        data_type: string
+        quote: true
+
+      - name: uf_solicitante
+        description: UF (sigla) do solicitante.
+        data_type: string
+        quote: true
+
+      - name: id_cnes_central_solicitante
+        description: Código CNES da central solicitante.
+        data_type: string
+        quote: true
+
+      - name: id_central_solicitante
+        description: Identificador da central solicitante.
+        data_type: string
+        quote: true
+
+      - name: central_solicitante
+        description: Nome da central solicitante.
+        data_type: string
+        quote: true
+
+      - name: id_cnes_unidade_solicitante
+        description: Código CNES da unidade solicitante.
+        data_type: string
+        quote: true
+
+      # ---------------- Profissionais / Operadores ----------------
+      - name: profissional_solicitante_cpf
+        description: CPF do profissional solicitante (quando disponível).
+        data_type: string
+        quote: true
+
+      - name: profissional_solicitante_nome
+        description: Nome do profissional solicitante.
+        data_type: string
+        quote: true
+
+      - name: profissional_solicitante_crm
+        description: CRM do profissional solicitante (quando aplicável).
+        data_type: string
+        quote: true
+
+      - name: operador_solicitante_nome
+        description: Nome do operador que registrou/operou a solicitação.
+        data_type: string
+        quote: true
+
+      - name: operador_cancelamento_nome
+        description: Nome do operador que efetuou o cancelamento (se houver).
+        data_type: string
+        quote: true
+
+      # ---------------- Regulação / Centro regulador ----------------
+      - name: id_uf_reguladora
+        description: UF (código) da central reguladora.
+        data_type: string
+        quote: true
+
+      - name: uf_reguladora
+        description: UF (sigla) da central reguladora.
+        data_type: string
+        quote: true
+
+      - name: id_central_reguladora
+        description: Identificador da central reguladora (interno).
+        data_type: string
+        quote: true
+
+      - name: central_reguladora
+        description: Nome da central reguladora.
+        data_type: string
+        quote: true
+
+      # ---------------- Unidade desejada ----------------
+      - name: id_cnes_unidade_desejada
+        description: Código CNES da unidade desejada pelo paciente.
+        data_type: string
+        quote: true
+
+      # ---------------- Paciente (identificação e demografia) ----------------
+      - name: paciente_cpf
+        description: CPF do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_cns
+        description: CNS do paciente conforme SISREG.
+        data_type: string
+        quote: true
+
+      - name: paciente_cns_hci
+        description: CNS do paciente conforme base HCI (enriquecimento).
+        data_type: string
+        quote: true
+
+      - name: paciente_nome
+        description: Nome completo do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_data_nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+        quote: true
+
+      - name: paciente_sexo
+        description: Sexo do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_nome_mae
+        description: Nome da mãe do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_telefone
+        description: Telefone/contato informado no SISREG.
+        data_type: string
+        quote: true
+
+      - name: paciente_contato_hci
+        description: Contato do paciente conforme base do Histórico Clínico Integrado (enriquecimento).
+        data_type: string
+        quote: true
+
+      - name: paciente_uf_nascimento
+        description: UF de nascimento do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_municipio_nascimento
+        description: Município de nascimento do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_uf_residencia
+        description: UF de residência do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_municipio_residencia
+        description: Município de residência do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_bairro_residencia
+        description: Bairro de residência do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_cep_residencia
+        description: CEP de residência do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_endereco_residencia
+        description: Logradouro (endereço) de residência do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_complemento_residencia
+        description: Complemento do endereço de residência do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_numero_residencia
+        description: Número do endereço de residência do paciente.
+        data_type: string
+        quote: true
+
+      - name: paciente_tp_logradouro_residencia
+        description: Tipo de logradouro do endereço de residência.
+        data_type: string
+        quote: true
+
+      # ---------------- Laudo ----------------
+      - name: id_cnes_laudo_operador
+        description: CNES do operador responsável pelo laudo (quando houver).
+        data_type: string
+        quote: true
+
+      - name: laudo_operador
+        description: Nome/identificação do operador de laudo (quando disponível).
+        data_type: string
+        quote: true
+
+      - name: laudo_descricao_tp
+        description: Tipo/descrição do laudo.
+        data_type: string
+        quote: true
+
+      - name: laudo_situacao
+        description: Situação/estado do laudo.
+        data_type: string
+        quote: true
+
+      - name: laudo_observacao
+        description: Observação livre do laudo.
+        data_type: string
+        quote: true
+
+      - name: data_laudo_observacao
+        description: Timestamp da última observação/atualização do laudo.
+        data_type: timestamp
+        quote: true
+
+      # ---------------- Autorização do agendamento ----------------
+      - name: operador_autorizador_nome
+        description: Nome do operador autorizador do agendamento (quando aplicável).
+        data_type: string
+        quote: true
+
+      # ---------------- Marcação (executante) ----------------
+      - name: id_cnes_central_executante
+        description: CNES da central executante (quando houver).
+        data_type: string
+        quote: true
+
+      - name: central_executante
+        description: Nome da central executante.
+        data_type: string
+        quote: true
+
+      - name: id_cnes_unidade_executante
+        description: CNES da unidade executante (quando houver).
+        data_type: string
+        quote: true
+
+      - name: unidade_executante
+        description: Nome da unidade executante.
+        data_type: string
+        quote: true
+
+      - name: profissional_executante_cpf
+        description: CPF do profissional executante.
+        data_type: string
+        quote: true
+
+      - name: profissional_executante_nome
+        description: Nome do profissional executante.
+        data_type: string
+        quote: true
