@@ -1,4 +1,11 @@
-{{ config(schema="brutos_sheets", alias="aps_farmacias") }}
+{{
+    config(
+        schema="brutos_sheets",
+        alias="aps_farmacias",
+        tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
+    )
+}}
+-- TODO: conferir tags acima
 
 with
     source as (select * from {{ source("brutos_sheets_staging", "aps_farmacias") }}),

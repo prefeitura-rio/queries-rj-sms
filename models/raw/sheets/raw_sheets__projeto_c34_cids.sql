@@ -3,10 +3,10 @@
         schema="brutos_sheets",
         alias="projeto_c34_cids",
         materialized="table",
-        -- TODO: conferir tags
         tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
+-- TODO: conferir tags acima
 
 with
     source as (

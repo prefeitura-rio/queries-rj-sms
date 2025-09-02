@@ -3,10 +3,10 @@
         schema="brutos_sheets",
         alias="material_cobertura_programas",
         materialized="table",
-        -- TODO: conferir tags
         tag=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
+-- TODO: conferir tags acima
 
 with source as (
       select * from {{ source('brutos_sheets_staging', 'material_cobertura_programas') }}

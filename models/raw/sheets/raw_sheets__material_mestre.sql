@@ -7,7 +7,6 @@
     )
 }}
 
-
 with
     source as (
         select * from {{ source("brutos_sheets_staging", "material_mestre") }}

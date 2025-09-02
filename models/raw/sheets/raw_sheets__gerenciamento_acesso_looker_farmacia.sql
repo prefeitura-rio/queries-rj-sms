@@ -5,6 +5,7 @@
         tag=["daily"],
     )
 }}
+
 with
     source as (
         select *
