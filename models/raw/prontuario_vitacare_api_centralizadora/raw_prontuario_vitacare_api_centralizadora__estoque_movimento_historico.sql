@@ -1,45 +1,29 @@
 {{
     config(
-        alias="estoque_movimento",
-        tags="vitacare_estoque",
-        labels={
-            "dominio": "estoque",
-            "dado_publico": "nao",
-            "dado_pessoal": "nao",
-            "dado_anonimizado": "nao",
-            "dado_sensivel_saude": "nao",
-        },
+        alias="estoque_movimento_historico",
         partition_by={
             "field": "particao_data_movimento",
             "data_type": "date",
-            "granularity": "day",
-        },
+            "granularity": "day"
+        }
     )
 }}
 
-with
-    source as (
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap10") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap21") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap22") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap31") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap32") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap33") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap40") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap51") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap52") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_movimento_ap53") }}
-    ),
+with 
 
+    source as (
+        select 
+            data, 
+            _source_cnes, 
+            _source_ap, 
+            safe_cast(_target_date as string) as _target_date, 
+            _endpoint,
+            _loaded_at,
+            safe_cast(extract(year from safe_cast(_loaded_at as timestamp)) as string) as ano_particao,
+            safe_cast(extract(month from safe_cast(_loaded_at as timestamp)) as string) as mes_particao,
+            safe_cast(safe_cast(_loaded_at as timestamp) as date) as data_particao
+        from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_historico") }}
+    ),
     renamed as (
         select 
             json_extract_scalar(data, '$.id') as id_estoque_movimento_local,
@@ -163,4 +147,7 @@ with
 
 select *
 from final
-qualify row_number() over(partition by id_surrogate order by metadados.updated_at desc) = 1
+qualify row_number() over(
+    partition by id_surrogate
+    order by metadados.updated_at desc
+) = 1

@@ -2,7 +2,7 @@
 {{
     config(
         materialized="view",
-        enabled=true,
+        enabled=false,
         schema="brutos_sisreg_api",
         alias="executados",
         partition_by={

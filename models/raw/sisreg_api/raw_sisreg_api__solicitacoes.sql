@@ -65,7 +65,7 @@ with
 
             -- Informações da solicitação
             lpad({{ process_null("codigo_grupo_procedimento") }}, 7, '0') as procedimento_grupo_id,
-            {{ clean_name_string(process_null("nome_grupo_procedimento")) }} as procedimento_grupo,
+            upper(trim({{ process_null("nome_grupo_procedimento") }})) as procedimento_grupo,
             case
                 when {{ process_null("codigo_tipo_vaga_solicitada") }} = "1" then '1 VEZ'
                 when {{ process_null("codigo_tipo_vaga_solicitada") }} = "2" then 'RETORNO'
@@ -87,7 +87,7 @@ with
             {{ clean_name_string(process_null("nome_cnes_central_solicitante")) }} as central_solicitante_cnes,
             {{ clean_name_string(process_null("nome_central_solicitante")) }} as central_solicitante,
             lpad({{ process_null("codigo_unidade_solicitante") }}, 7, '0') as unidade_solicitante_id,
-            {{ clean_name_string(process_null("nome_unidade_solicitante")) }} as unidade_solicitante,
+            upper(trim({{ process_null("nome_unidade_solicitante") }})) as unidade_solicitante,
             lpad({{ process_null("cpf_profissional_solicitante") }}, 11, '0') as profissional_solicitante_cpf,
             {{ clean_name_string(process_null("nome_medico_solicitante")) }} as medico_solicitante,
 

@@ -2,8 +2,10 @@
     config(
         schema="brutos_sheets",
         alias="cids_risco_gestacional",
+        tags=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
+-- TODO: conferir tags acima
 
 with
     source as (

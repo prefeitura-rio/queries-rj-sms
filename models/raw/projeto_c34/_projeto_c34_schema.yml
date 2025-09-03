@@ -805,3 +805,262 @@ models:
         description: Indicador MRJ-SUS do estabelecimento.
       - name: obito_estab_ocor_preenchido
         description: Flag se os dados do estabelecimento foram preenchidos.
+
+  - name: raw_projeto_c34__producoes_sia
+    description: Produções do SIA vinculadas a pacientes identificados via CNS (fuzzy-match), enriquecidas com informações do SIM, CNES, CID-10 e áreas programáticas. Abrange procedimento executado, estabelecimento executante e, quando aplicável, dados do óbito do paciente.
+    columns:
+      # ---------------------------------------------------------------------
+      # Identificação e contexto temporal
+      # ---------------------------------------------------------------------
+      - name: paciente_id
+        description: Identificador anônimo/estável do paciente.
+        data_type: string
+        quote: true
+        data_tests:
+          - not_null
+      - name: paciente_cpf_recuperado
+        description: Indica se o CPF do paciente foi recuperado ('SIM' ou 'NAO').
+        data_type: string
+        quote: true
+      - name: sistema
+        description: Sistema de origem do registro (valor fixo "SIA").
+        data_type: string
+        quote: true
+      - name: competencia_realizacao_proced
+        description: Competência (AAAAMM) de realização do procedimento.
+        data_type: string
+        quote: true
+      - name: data_realizacao
+        description: Data de realização do procedimento no SIA.
+        data_type: date
+        quote: true
+      - name: data_inicial_apac
+        description: Data inicial da APAC associada (quando houver).
+        data_type: date
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Procedimento executado (SIGTAP)
+      # ---------------------------------------------------------------------
+      - name: procedimento_id
+        description: Código do procedimento no SIGTAP.
+        data_type: string
+        quote: true
+      - name: procedimento
+        description: Descrição do procedimento no SIGTAP.
+        data_type: string
+        quote: true
+      - name: procedimento_qtd
+        description: Quantidade produzida do procedimento no atendimento.
+        data_type: int64
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # CID do procedimento executado
+      # ---------------------------------------------------------------------
+      - name: cid_execucao_procedimento
+        description: CID-10 (3 caracteres) associado ao procedimento executado.
+        data_type: string
+        quote: true
+      - name: cid_execucao_procedimento_descr
+        description: Descrição do CID-10 do procedimento executado.
+        data_type: string
+        quote: true
+      - name: cid_execucao_procedimento_indicador_ca
+        description: Indicador se o CID está relacionado a neoplasia ('SIM'/'NAO').
+        data_type: string
+        quote: true
+      - name: indicador_cancer_pulmao
+        description: Indicador se o CID está relacionado a Câncer de Pulmão ('SIM'/'NAO').
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Unidade executante do procedimento
+      # ---------------------------------------------------------------------
+      - name: unidade_executante_cnes
+        description: Código CNES (7 dígitos) da unidade executante do procedimento.
+        data_type: int64
+        quote: true
+      - name: unidade_executante_mrj_sus
+        description: Indica se a unidade executante pertence ao MRJ e é vinculada ao SUS ('SIM'/'NAO').
+        data_type: string
+        quote: true
+      - name: unidade_executante
+        description: Nome fantasia do estabelecimento executante.
+        data_type: string
+        quote: true
+      - name: unidade_executante_esfera
+        description: Esfera administrativa do estabelecimento executante.
+        data_type: string
+        quote: true
+      - name: unidade_executante_tp
+        description: Tipo/agrupamento da unidade executante.
+        data_type: string
+        quote: true
+      - name: unidade_executante_ap
+        description: Área Programática (AP) do estabelecimento executante.
+        data_type: string
+        quote: true
+      - name: unidade_executante_ap_descr
+        description: Descrição da Área Programática do estabelecimento executante.
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Causa básica do óbito (CID) – quando aplicável
+      # ---------------------------------------------------------------------
+      - name: obito_causabas_cid
+        description: CID-10 (3 caracteres) da causa básica do óbito.
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid_descr
+        description: Descrição da causa básica do óbito conforme CID-10.
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid_indicador_ca
+        description: Indicador se o CID de óbito está relacionado a neoplasia ('SIM'/'NAO').
+        data_type: string
+        quote: true
+      - name: obito_causabas_cid_indicador_cp
+        description: Indicador se o CID de óbito está relacionado a Câncer de Pulmão ('SIM'/'NAO').
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Estabelecimento de ocorrência do óbito – quando aplicável
+      # ---------------------------------------------------------------------
+      - name: obito_estab_ocor_cnes
+        description: CNES do estabelecimento onde ocorreu o óbito.
+        data_type: int64
+        quote: true
+      - name: obito_estab_ocor_preenchido
+        description: Flag indicando presença de estabelecimento de óbito no SIM ('SIM'/'NAO').
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_mrj_sus
+        description: Indica se o estabelecimento de óbito pertence ao MRJ-SUS ('SIM'/'NAO').
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor
+        description: Nome fantasia do estabelecimento onde ocorreu o óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_esfera
+        description: Esfera administrativa do estabelecimento de óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_tp
+        description: Tipo/agrupamento do estabelecimento de óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_ap
+        description: Área Programática (AP) do estabelecimento de óbito.
+        data_type: string
+        quote: true
+      - name: obito_estab_ocor_ap_descr
+        description: Descrição da Área Programática do estabelecimento de óbito.
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Localização do paciente e do óbito
+      # ---------------------------------------------------------------------
+      - name: paciente_mun_res_obito_ibge
+        description: Código IBGE (6 dígitos) do município de residência no óbito.
+        data_type: int64
+        quote: true
+      - name: paciente_mun_res_obito
+        description: Nome do município de residência no óbito.
+        data_type: string
+        quote: true
+      - name: paciente_bairro_res_obito
+        description: Bairro de residência no óbito.
+        data_type: string
+        quote: true
+      - name: obito_mun_ocor_ibge
+        description: Código IBGE (6 dígitos) do município de ocorrência do óbito.
+        data_type: int64
+        quote: true
+      - name: obito_mun_ocor
+        description: Nome do município de ocorrência do óbito.
+        data_type: string
+        quote: true
+      - name: obito_bairro_ocor
+        description: Bairro de ocorrência do óbito.
+        data_type: string
+        quote: true
+
+      # ---------------------------------------------------------------------
+      # Características demográficas do paciente no óbito
+      # ---------------------------------------------------------------------
+      - name: paciente_sexo
+        description: Sexo do paciente registrado no SIM.
+        data_type: string
+        quote: true
+      - name: paciente_raca_cor
+        description: Raça/cor do paciente registrada no SIM.
+        data_type: string
+        quote: true
+      - name: paciente_escolaridade_obito
+        description: Escolaridade do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_estado_civil_obito
+        description: Estado civil do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_faixa_etaria_obito
+        description: Faixa etária do paciente no momento do óbito.
+        data_type: string
+        quote: true
+      - name: paciente_mes_obito
+        description: Mês do óbito do paciente (1=janeiro, ..., 12=dezembro).
+        data_type: int64
+        quote: true
+
+  - name: raw_projeto_c34__cns_fuzzy_match
+    description: Tabela contendo os CNS recuperados através de técnicas de fuzzy matching (levenshtein & jaccard) contra as bases de pacientes do SISREG, SIH e HCI.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - data_nasc
+            - nome
+            - nome_mae
+    columns:
+      - name: declaracao_obito_sim
+        description: Número da Declaração de Óbito do Paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_OUTRO_DOC") }}'
+      - name: data_nasc
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_DATA_NASCIMENTO") }}'
+      - name: nome
+        description: Nome do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+      - name: nome_candidato
+        description: Nome no registro do paciente com maior score no fuzzy matching.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+      - name: nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
+      - name: nome_mae_candidato
+        description: Nome da mãe no registro do paciente com maior score no fuzzy matching.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME_MAE") }}'
+      - name: score_lev
+        description: Score do algoritmo Levenshtein para os nomes do paciente e da mãe.
+      - name: score_jac
+        description: Score do algoritmo Jaccard para os nomes do paciente e da mãe.
+      - name: score_final
+        description: Score final do fuzzy matching, calculado como a média dos scores Levenshtein e Jaccard, para o nome do paciente e da mãe.
+      - name: cns_id
+        description: Identificador anônimo do paciente.
+      - name: cns_array
+        description: Array com todos os CNS recuperados para o paciente.
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CNS") }}'

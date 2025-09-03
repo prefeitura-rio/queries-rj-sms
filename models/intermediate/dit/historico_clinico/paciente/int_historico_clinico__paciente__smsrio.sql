@@ -394,8 +394,8 @@ with
         select
             cpf,
             cpf_valido_indicador,
-            {{ proper_br("nome") }} as nome,
-            {{ proper_br("nome_social") }} as nome_social,
+            {{ proper_br(remove_invalid_names("nome")) }} as nome,
+            {{ proper_br(remove_invalid_names(eliminate_babies("nome_social"))) }} as nome_social,
             data_nascimento,
             case
                 when genero = "1"
@@ -405,7 +405,7 @@ with
                 else null
             end as genero,
             case
-                when raca in ("NONE", "None", "NAO INFORMADO", "SEM INFORMACAO")
+                when raca in ("NONE", "NAO INFORMADO", "SEM INFORMACAO")
                 then null
                 else initcap(raca)
             end as raca,
@@ -417,8 +417,8 @@ with
                 else false
             end as obito_indicador,
             obito_data,
-            case when mae_nome in ("NONE") then null else mae_nome end as mae_nome,
-            pai_nome,
+            {{ proper_br(remove_invalid_names("mae_nome")) }} as mae_nome,
+            {{ proper_br(remove_invalid_names("pai_nome")) }} as pai_nome,
             row_number() over (partition by cpf order by updated_at) as rank
         from smsrio_tb
         group by
@@ -435,10 +435,25 @@ with
             updated_at,
             cpf_valido_indicador,
             case
-                when raca in ("NONE", "None", "NAO INFORMADO", "SEM INFORMACAO")
+                when raca in ("NONE", "NAO INFORMADO", "SEM INFORMACAO")
                 then null
                 else initcap(raca)
             end
+    ),
+
+    smsrio_pacientes_nomes_unicos as (
+        select
+            * except (nome_social),
+
+            case
+                when {{ is_same_name("nome", "nome_social") }}
+                then null
+                when {{ is_same_name("mae_nome", "nome_social" )}}
+                then null
+                else nome_social
+            end as nome_social
+
+        from smsrio_paciente
     ),
 
     paciente_metadados as (
@@ -458,7 +473,7 @@ with
                 count(distinct cpf_valido_indicador) as qtd_cpfs_validos,
                 "smsrio" as sistema
             ) as metadados
-        from smsrio_paciente
+        from smsrio_pacientes_nomes_unicos
         group by cpf
     ),
 
@@ -468,20 +483,20 @@ with
             array_agg(
                 struct(
                     cpf_valido_indicador,
-                    {{ proper_br("nome") }} as nome,
-                    {{ proper_br("nome_social") }} as nome_social,
+                    nome,
+                    nome_social,
                     data_nascimento,
                     lower(genero) as genero,
                     lower(raca) as raca,
                     obito_indicador,
                     obito_data,
-                    {{ proper_br("mae_nome") }} as mae_nome,
-                    {{ proper_br("pai_nome") }} as pai_nome,
+                    mae_nome,
+                    pai_nome,
                     rank,
                     pm.metadados
                 )
             ) as dados
-        from smsrio_paciente pc
+        from smsrio_pacientes_nomes_unicos pc
         join paciente_metadados as pm on pc.cpf = pm.cpf
         group by cpf
     ),

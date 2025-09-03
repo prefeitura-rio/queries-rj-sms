@@ -1,7 +1,9 @@
 {{
     config(
         alias="agendamento", 
-        materialized="table",
+        materialized="incremental",
+        unique_key = ['source_id', 'id_cnes'],
+        cluster_by= ['id_cnes', 'source_id'],
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -11,11 +13,16 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with
 
     source_agendamento as (
         select *
         from {{ source('brutos_prontuario_vitacare_historico_staging', 'agendamentos') }} 
+        {% if is_incremental() %}
+        where data_particao > '{{ last_partition }}'
+        {% endif %}
     ),
 
 
