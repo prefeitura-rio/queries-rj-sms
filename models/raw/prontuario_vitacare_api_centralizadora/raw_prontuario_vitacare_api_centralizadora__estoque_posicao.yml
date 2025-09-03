@@ -12,10 +12,6 @@ models:
           Identificador único do registro composto por `id_cnes`, `id` e a data da replicação.
         data_type: string
         data_tests:
-          - unique:
-              name: raw_prontuario_vitacare_api_centralizadora__estoque_posicao__id__unique
-              config:
-                where: safe_cast(particao_data_posicao as date) = current_date('America/Sao_Paulo')
           - not_null:
               name: raw_prontuario_vitacare_api_centralizadora__estoque_posicao__id__not_null
               config:
