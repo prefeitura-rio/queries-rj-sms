@@ -4,8 +4,8 @@ case
     when {{ process_null(text) }} is null
         then null
 
-    when upper({{text}}) like '%CMS%' then null
-
+    when upper({{text}}) like '%CMS%'
+        then null
 
     -- Valores que são só uma letra, repetida 1 ou mais vezes
     -- ou só uma corrente de dígitos, sem letras (ex. CNS)
@@ -44,12 +44,13 @@ case
         -- Porque tem muita variação e complexidade, e eu tenho medo de apagar
         -- nomes de pessoas reais sem querer!!! Fora que um RegEx ficaria ilegível
         ----------------------
-        'NAO', 'SIM',
+        '',
+        'SIM', 'NAO',
+        'TRUE', 'FALSE',
         ----------------------
         'NC',
         'N C',
         'N CONSTA',
-        'NAO MORA',
         'NAO CONSTA',
         'NAO CONSTA NO RG',
         'NAO CONSTA NO DOC',
@@ -162,13 +163,14 @@ case
         'NAO IND',
         'NAO INDENT',
         'NAO INDENTIFICADO', 'NAO INDENTIFICADA',
-        'ATUALIZADO SMS'
         ----------------------
+        'NP',
         'NAO HA',
         'N TEM', 'NAO TEM',
         'NAO POSSUI',
-        'NAOPOSSUI',
         'NAO TROUXE', 'NAO TROUXE DOC',
+        -- Typos
+        'NAOPOSSUI',
         ----------------------
         'NS',
         'N S',
@@ -223,18 +225,33 @@ case
         'DESCONHECIDO', 'DESCONHECIDA',
         'IGNORADO', 'IGNORADA',
         ----------------------
-        'NR', 'N/R','OBITO',
-        ----------------------
         'TESTE', 'TESTE TESTE', 'TESTE TESTE TESTE',
         'TESTE MAE',
+        'TESTE NOME SOCIAL',
         ----------------------
-        'MUDOU SE', 'MUDOUSE',
+        'NR',
+        'MUDOU',
+        'MUDOU SE', 'MUDOUSE', 'SE MUDOU',
+        'MUDOU NITEROI',
+        'NAO RESIDE', 'NAO MORA',
         'VIVE COM C',
-        'FORA DO TERRITORIO', 'NAO MORA',
+        'FORA DO TERRITORIO',
         'FORA DE AREA',
         ----------------------
         'PLANO EMPRESA',
-        'PLANO INDIVIDUAL'
+        'PLANO INDIVIDUAL',
+        ----------------------
+        'INATIVADO', 'INATIVADA',
+        'FALECEU',
+        'FALECIDO', 'FALECIDA',
+        'PACIENTEFALECEU', 'PACIENTE FALECEU',
+        'OBITO',
+        'SEM FUTURO', 'PROVISORIO',
+        ----------------------
+        'CADEIRANTE',
+        'NENEM',
+        'PROFESSOR', 'PROFESSORA',
+        'ATUALIZADO SMS'
         ----------------------
     )
         then null
