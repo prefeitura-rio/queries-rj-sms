@@ -9,8 +9,7 @@
 
 with filtros_diario_uniao as (
     select
-        * except(texto_titulo),
-        upper(texto_titulo) as content_email
+        * 
     from {{ref('raw_diario_oficial__diarios_uniao_api')}}
     where (
         lower(texto)  like "%município do rio de janeiro%"
@@ -32,6 +31,15 @@ with filtros_diario_uniao as (
         or texto like "%Rodrigo Sousa Prado%"
         or texto like "%Rodrigo Prado%"
     )
+),
+titulos_diario_uniao as (
+    select distinct id_oficio, texto_titulo
+    from {{ref('raw_diario_oficial__diarios_uniao_api')}}
+    where texto_titulo is not null
 )
-select distinct *
+
+select distinct * except(texto_titulo),
+        upper(titulos_diario_uniao.texto_titulo) as content_email
 from filtros_diario_uniao
+left join titulos_diario_uniao
+using (id_oficio)
