@@ -82,8 +82,8 @@ with
             internacao_data,
             b.imported_at,
             b.updated_at,
-            b.data_entrada as entrada_datahora,
-            b.alta_data as saida_datahora,
+            if(b.data_entrada > current_date(),null, b.data_entrada) as entrada_datahora,
+            if(b.alta_data > current_date(),null, b.alta_data) as saida_datahora,
             if(
                 {{ clean_numeric("b.cpf") }} is null,
                 paciente_mrg.cpf,

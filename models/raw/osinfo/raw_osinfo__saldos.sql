@@ -21,7 +21,7 @@ select
     c.numero_contrato as contrato_numero,
     c.cod_organizacao as id_organizacao,
     s.id_conta_bancaria,
-    s.arq_img_ext as extrato_imagem,
+    s.arq_img_ext as extrato_imagem
 from saldo_dados s
 inner join saldo_item si on s.id_saldo_item = si.id_saldo_item
 inner join contrato c on s.id_instrumento_contratual = c.id_contrato

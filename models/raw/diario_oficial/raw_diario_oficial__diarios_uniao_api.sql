@@ -5,14 +5,14 @@
     )
 }}
 
-with 
+with
     source as (
         select *
         from {{ source("brutos_diario_oficial_staging", "diarios_uniao_api") }}
     ),
 
     diario_padronizado as (
-        select 
+        select
             {{ process_null('title') }} as titulo,
             {{ process_null('id') }} as id,
             {{ process_null('act_id') }} as id_oficio,
@@ -23,7 +23,6 @@ with
             {{ process_null('edition') }} as edicao,
             {{ process_null('section') }} as secao,
             {{ process_null('text') }} as texto,
-            {{ process_null('html') }} as html,
             {{ process_null('signatures') }} as assinaturas,
             {{ process_null('role') }} as cargo,
             {{ process_null('url') }} as link,
@@ -34,4 +33,5 @@ with
         from source
     )
 
-select * from diario_padronizado
+select *
+from diario_padronizado

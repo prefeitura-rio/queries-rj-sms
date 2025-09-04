@@ -14,7 +14,7 @@ with
     source as (
         select *, 
                 concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
-            from {{ source("brutos_prontuario_vitacare_staging", "paciente_continuo") }}
+            from {{ source("brutos_prontuario_vitacare_api_staging", "paciente_continuo") }}
             where {{process_null('payload_cnes')}} is not null
             {% if is_incremental() %} 
             and

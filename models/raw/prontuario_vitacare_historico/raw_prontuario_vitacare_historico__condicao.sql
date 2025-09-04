@@ -1,7 +1,8 @@
 {{
     config(
         alias="condicao", 
-        materialized="table",
+        materialized="incremental",
+        unique_key = ['id_prontuario_global', 'cod_cid10'],
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -10,6 +11,8 @@
         }
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 WITH
 
@@ -22,6 +25,9 @@ WITH
             ) AS id_prontuario_global,
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'condicoes') }} 
+        {% if is_incremental() %}
+            WHERE data_particao > '{{last_partition}}'
+        {% endif %}
     ),
 
 

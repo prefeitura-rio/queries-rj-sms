@@ -31,7 +31,7 @@ select
     cb.digito_cc as digito,
     cb.cod_instituicao as id_instituicao,
     cb.flg_ativo as ativo_indicador,
-    cbt.tipo as tipo,
+    cbt.tipo as tipo
 from banco b
 inner join agencia a on b.id_banco = a.id_banco
 inner join conta_bancaria cb on a.id_agencia = cb.id_agencia

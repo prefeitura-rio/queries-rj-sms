@@ -6,7 +6,7 @@
     )
 }}
 with source as (
-    select * 
+    select *except(cpf), lpad(cpf,11,'0') as cpf
     from {{ source("intermediario_historico_clinico_staging", "paciente_restrito") }}
 ),
 source_deduped as (

@@ -2,8 +2,10 @@
     config(
         schema="brutos_sheets",
         alias="compras_registro_preco",
+        tags=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
+-- TODO: conferir tags acima
 
 with source as (
       select * from {{ source('brutos_sheets_staging', 'compras_registro_preco') }}

@@ -24,8 +24,6 @@ models:
         description: "Seção do diário."
       - name: texto
         description: "Conteúdo textual completo."
-      - name: html
-        description: "Versão HTML da publicação."
       - name: assinaturas
         description: "Assinaturas presentes na publicação."
       - name: cargo

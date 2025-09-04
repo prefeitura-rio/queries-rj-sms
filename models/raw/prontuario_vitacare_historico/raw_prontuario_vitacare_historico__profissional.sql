@@ -1,7 +1,9 @@
 {{
     config(
         alias="profissional", 
-        materialized="table",
+        materialized="incremental",
+        unique_key = 'id_prof',
+        cluster_by= 'id_prof',
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -11,12 +13,17 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 WITH
 
     source_profissionais AS (
         SELECT 
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'profissionais') }} 
+        {% if is_incremental() %}
+            WHERE data_particao > '{{last_partition}}'
+        {% endif %}
     ),
 
 

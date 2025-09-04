@@ -83,7 +83,7 @@ with
             lpad(
                 {{ process_null("codigo_grupo_procedimento") }}, 7, '0'
             ) as procedimento_grupo_id,
-            {{ clean_name_string(process_null("nome_grupo_procedimento")) }}
+            upper(trim({{ process_null("nome_grupo_procedimento") }}))
             as procedimento_grupo,
             case
                 when {{ process_null("codigo_tipo_vaga_solicitada") }} = "1"
@@ -103,7 +103,7 @@ with
             lpad(
                 {{ process_null("codigo_interno_procedimento") }}, 7, '0'
             ) as procedimento_interno_id,
-            {{ clean_name_string(process_null("descricao_interna_procedimento")) }}
+            upper(trim({{ process_null("descricao_interna_procedimento") }}))
             as procedimento_interno,
             lpad(
                 {{ process_null("codigo_sigtap_procedimento") }}, 10, '0'
@@ -125,7 +125,7 @@ with
             lpad(
                 {{ process_null("codigo_unidade_solicitante") }}, 7, '0'
             ) as unidade_solicitante_id,
-            {{ clean_name_string(process_null("nome_unidade_solicitante")) }}
+            upper(trim({{ process_null("nome_unidade_solicitante") }}))
             as unidade_solicitante,
             lpad(
                 {{ process_null("cpf_profissional_solicitante") }}, 11, '0'
@@ -218,7 +218,7 @@ with
             as central_executante_cnes,
 
             -- Dados da unidade executante
-            {{ clean_name_string(process_null("nome_unidade_executante")) }}
+            upper(trim({{ process_null("nome_unidade_executante") }}))
             as unidade_executante_nome,
             lpad(
                 {{ process_null("codigo_unidade_executante") }}, 7, '0'

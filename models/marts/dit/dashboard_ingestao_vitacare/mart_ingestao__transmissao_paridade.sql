@@ -61,7 +61,7 @@ with
       nullif(json_extract_scalar(tab.data,'$.cnes'), '') as id_cnes,
       'continuo' as origem,
       format_datetime('%Y-%m', datetime(source_updated_at)) as mes
-    from {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} as tab
+    from {{ source('brutos_prontuario_vitacare_api_staging', 'paciente_continuo') }} as tab
     where nullif(json_extract_scalar(tab.data,'$.cnes'), '') is not null
       and current_datetime("America/Sao_Paulo") >= datetime(source_updated_at)
       and datetime(source_updated_at) >
