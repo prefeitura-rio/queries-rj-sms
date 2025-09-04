@@ -111,11 +111,23 @@ with
             particao_data_posicao
 
         from data_replicacao_sem_hora
+    ),
+
+    deduplica_id as (
+        select *
+        from final
+        qualify row_number() over(
+        partition by id
+        order by metadados.updated_at desc) = 1
+    ),
+
+    deduplica_id_surrogate as (
+        select *
+        from deduplica_id
+        qualify row_number() over(
+        partition by id_surrogate
+        order by metadados.updated_at desc) = 1
     )
 
 select *
-from final
-qualify row_number() over(
-    partition by id_surrogate
-    order by metadados.updated_at desc
-) = 1
+from deduplica_id_surrogate
