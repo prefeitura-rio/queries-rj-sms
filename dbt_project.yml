@@ -530,6 +530,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: gestacoes
+        projeto_linhas_cuidado:
+          +schema: projeto_linhas_cuidado
+          +tags: ["daily", "subpav", "linhas_cuidado"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
         farmacia:
           +schema: projeto_subpav
           +tags: ["daily", "subpav"]
