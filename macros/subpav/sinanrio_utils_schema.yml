@@ -9,11 +9,6 @@ macros:
       Essa lista é usada para filtrar
       pacientes com suspeita clínica compatível com tuberculose ou condições respiratórias afins.
     arguments: []
-    meta:
-      returns: "ARRAY<STRING>"
-      uso_exemplo: |
-        -- Ex.: filtrar atendimentos
-        where cid_principal in ({{ sinanrio_lista_cids_sintomaticos() | join(",") }})
 
   - name: sinanrio_padronize_sexo
     description: |
@@ -26,11 +21,6 @@ macros:
       - name: coluna
         type: string
         description: "Expressão/coluna de origem (STRING)."
-    meta:
-      returns: "INT64 (1/2/3)"
-      nulos: "Retorna NULL quando o valor não for reconhecido."
-      uso_exemplo: |
-        select {{ sinanrio_padronize_sexo('sexo') }} as id_sexo from tabela
 
   - name: sinanrio_padronize_raca_cor
     description: |
@@ -46,8 +36,3 @@ macros:
       - name: coluna
         type: string
         description: "Expressão/coluna de origem (STRING)."
-    meta:
-      returns: "INT64 (1/2/3/4/5/9)"
-      nulos: "Retorna NULL quando o valor não for reconhecido."
-      uso_exemplo: |
-        select {{ sinanrio_padronize_raca_cor('raca') }} as id_raca_cor from tabela

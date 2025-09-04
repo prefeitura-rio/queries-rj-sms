@@ -72,3 +72,69 @@ models:
         description: "Complemento do endereço."
       - name: id_bairro
         description: "ID do bairro (join por nome normalizado com `plataforma_subpav.principal__bairros`). Pode ser nulo."
+
+  - name: mart_subpav_sinanrio__sintomaticos_respiratorios
+    alias: sintomaticos_respiratorios_dia
+    tags: [subpav, sinanrio, sintomaticos]
+    description: |
+      Extração diária de atendimentos com suspeita/queixa respiratória (sintomáticos),
+      limitada a episódios com `data_particao = ontem` e filtrada por lista de CIDs
+      respiratórios (macro `sinanrio_lista_cids_sintomaticos()`).
+      Enriquecimento com cadastro do paciente (CNS, contato, endereço, mapeamento de bairro),
+      e definição de preferências:
+        • CNES final: estabelecimento do atendimento > CNES do cadastro
+        • INE final: equipe do atendimento (quando disponível no profissional) > INE do cadastro
+      Regras:
+        • `nao_municipe`: 0 se (cidade nula) OU cidade = "RIO DE JANEIRO"; senão 1.
+        • `id_tb_situacao`: fixo em 1 (Flag SUBPAV : Quando migrado de outras fontes).
+        • Dedupl. por CPF do dia: mantém o último atendimento (maior `saida_datahora`).
+    columns:
+      - name: cpf
+        description: "CPF do paciente (string, sem máscara). Um por CPF ao dia."
+        tests:
+          - not_null
+          - unique
+      - name: cns
+        description: "CNS priorizado (15 dígitos válidos quando disponível)."
+      - name: nome
+        description: "Nome do paciente."
+      - name: dt_nascimento
+        description: "Data de nascimento (DATE)."
+      - name: id_raca_cor
+        description: "Raça/cor padronizada."
+      - name: id_sexo
+        description: "Sexo padronizado."
+      - name: id_escolaridade
+        description: "Escolaridade (reservado; atualmente NULL)."
+      - name: telefone
+        description: "Telefone mais prioritário do cadastro."
+      - name: cep
+        description: "CEP do endereço do cadastro."
+      - name: logradouro
+        description: "Tipo + logradouro (concat normalizada)."
+      - name: numero
+        description: "Número do endereço (string)."
+      - name: complemento
+        description: "Complemento do endereço."
+      - name: id_bairro
+        description: "ID do bairro (join por nome normalizado)."
+      - name: cidade
+        description: "Cidade do endereço (texto do cadastro)."
+      - name: cnes
+        description: "CNES final do atendimento."
+      - name: ine
+        description: "INE final da equipe (quando houver)."
+      - name: nao_municipe
+        description: "Flag 0/1 conforme regra de cidade."
+      - name: n_prontuario
+        description: "Número do prontuário (do cadastro)."
+      - name: cnes_cadastrante
+        description: "CNES do estabelecimento do profissional que lançou o atendimento."
+      - name: cpf_cadastrante
+        description: "CPF do profissional (quando informado)."
+      - name: cns_cadastrante
+        description: "CNS do profissional (quando informado)."
+      - name: id_tb_situacao
+        description: "Situação do caso TB no SINANRIO (fixo 1: Quando migrado de outras fontes)."
+      - name: origem
+        description: "Fornecedor do prontuário no episódio (origem do dado)."
