@@ -13,7 +13,7 @@
 with
     particao_mais_recente as (
         select max(data_particao) as data_maxima
-        from {{ ref("raw_sisreg__oferta_programada") }}
+        from {{ ref("raw_sisreg_web__oferta_programada") }}
     ),
 
     escalas as (
@@ -31,7 +31,7 @@ with
             procedimento_hora_inicial as inicio_time,
             procedimento_hora_final as fim_time
 
-        from {{ ref("raw_sisreg__oferta_programada") }}
+        from {{ ref("raw_sisreg_web__oferta_programada") }}
 
         where
             data_particao = (select data_maxima from particao_mais_recente)

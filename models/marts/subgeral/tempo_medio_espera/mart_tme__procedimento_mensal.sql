@@ -78,7 +78,7 @@ with
     fato as (
         select
             timestamp_trunc(
-                data_marcacao, month, 'America/Sao_Paulo'
+                data_execucao, month, 'America/Sao_Paulo'
             ) as mes_competencia_ts,
             procedimento_descricao as procedimento,
             tempo_espera

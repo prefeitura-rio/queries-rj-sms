@@ -1,6 +1,6 @@
 {{
     config(
-        schema="brutos_sisreg",
+        schema="brutos_sisreg_web",
         alias="oferta_programada",
         materialized="incremental",
         strategy = 'merge',

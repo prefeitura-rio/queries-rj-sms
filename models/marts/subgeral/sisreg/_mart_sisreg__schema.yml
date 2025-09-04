@@ -1,11 +1,196 @@
 version: 2
 models:
-  - name: marts_sisreg__unidades
+  - name: mart_sisreg__oferta_programada_serie_historica
+    description: Tabela contendo o histórico de escalas programadas no SISREG. Atenção, usar a coluna data_particao para filtrar o histórico mais recente.
+    columns:
+      - name: id_escala_ambulatorial
+        description: Este é o identificador único para a escala ambulatorial. É usado para rastrear e gerenciar cada escala ambulatorial individual dentro do sistema.
+        data_type: string
+        quote: true
+      - name: id_central_executante
+        data_type: string
+        quote: true
+        description: Este é o identificador único para a central executante. É usado para identificar cada central executante dentro do sistema.
+      - name: id_estabelecimento_executante
+        data_type: string
+        quote: true
+        description: ID CNES do estabelecimento executante.
+      - name: id_procedimento_interno
+        data_type: string
+        quote: true
+        description: Este é o identificador único para o procedimento sendo realizado. É usado para rastrear e gerenciar procedimentos em diferentes sistemas e bancos de dados.
+      - name: id_procedimento_unificado
+        data_type: string
+        quote: true
+        description: Este é o identificador único alternativo para o procedimento sendo realizado.
+      - name: id_cbo2002
+        data_type: string
+        quote: true
+        description: Este é o identificador único para o código da Classificação Brasileira de Ocupações (CBO). É usado para categorizar o tipo de trabalho realizado pelo profissional.
+      - name: profissional_executante_cpf
+        data_type: string
+        quote: true
+        description: Este é o número do CPF (Cadastro de Pessoas Físicas) do profissional que realiza o procedimento. O CPF é um identificador único para indivíduos no Brasil.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: procedimento_vigencia_inicial_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de início do período de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_final_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de fim do período de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_ano
+        data_type: int64
+        quote: true
+        description: Esta coluna contém o ano da data de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_mes
+        data_type: int64
+        quote: true
+        description: Esta coluna contém o mês da data de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_dia_semana
+        description: Esta coluna contém o dia da semana da escala do profissional para determinado procedimento.
+        data_type: string
+        quote: true
+      - name: vagas_primeira_vez_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna representa a quantidade de vagas disponíveis para procedimentos de primeira vez.
+      - name: vagas_reserva_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna representa a quantidade de vagas disponíveis para procedimentos do tipo reserva.
+      - name: vagas_retorno_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna indica a quantidade de vagas de retorno disponíveis para procedimentos.
+      - name: vagas_todas_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna indica a quantidade de todos os tipo de vagas disponíveis para procedimentos.
+      - name: data_particao
+        data_type: date
+        quote: true
+        description: Esta coluna representa a data da partição. É usado para organizar os dados de forma cronológica, facilitando a filtragem e análise de dados para uma data específica.
+      - name: estabelecimento
+        data_type: string
+        quote: true
+        description: Nome do estabelecimento onde o procedimento será realizado.
+      - name: procedimento
+        data_type: string
+        quote: true
+        description: Nome do procedimento que será realizado.
+      - name: profissional_executante_nome
+        data_type: string
+        quote: true
+        description: Nome do profissional que realizará o procedimento.
+
+  - name: mart_sisreg__oferta_programada
+    description: Tabela contendo as escalas programadas atuais no SISREG.
+    columns:
+      - name: id_escala_ambulatorial
+        description: Este é o identificador único para a escala ambulatorial. É usado para rastrear e gerenciar cada escala ambulatorial individual dentro do sistema.
+        data_type: string
+        quote: true
+      - name: id_central_executante
+        data_type: string
+        quote: true
+        description: Este é o identificador único para a central executante. É usado para identificar cada central executante dentro do sistema.
+      - name: id_estabelecimento_executante
+        data_type: string
+        quote: true
+        description: ID CNES do estabelecimento executante.
+      - name: id_procedimento_interno
+        data_type: string
+        quote: true
+        description: Este é o identificador único para o procedimento sendo realizado. É usado para rastrear e gerenciar procedimentos em diferentes sistemas e bancos de dados.
+      - name: id_procedimento_unificado
+        data_type: string
+        quote: true
+        description: Este é o identificador único alternativo para o procedimento sendo realizado.
+      - name: id_cbo2002
+        data_type: string
+        quote: true
+        description: Este é o identificador único para o código da Classificação Brasileira de Ocupações (CBO). É usado para categorizar o tipo de trabalho realizado pelo profissional.
+      - name: profissional_executante_cpf
+        data_type: string
+        quote: true
+        description: Este é o número do CPF (Cadastro de Pessoas Físicas) do profissional que realiza o procedimento. O CPF é um identificador único para indivíduos no Brasil.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: procedimento_vigencia_inicial_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de início do período de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_final_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de fim do período de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_data
+        data_type: date
+        quote: true
+        description: Esta coluna contém a data de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_ano
+        data_type: int64
+        quote: true
+        description: Esta coluna contém o ano da data de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_mes
+        data_type: int64
+        quote: true
+        description: Esta coluna contém o mês da data de vigência da escala do profissional para determinado procedimento.
+      - name: procedimento_vigencia_dia_semana
+        description: Esta coluna contém o dia da semana da escala do profissional para determinado procedimento.
+        data_type: string
+        quote: true
+      - name: vagas_primeira_vez_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna representa a quantidade de vagas disponíveis para procedimentos de primeira vez.
+      - name: vagas_reserva_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna representa a quantidade de vagas disponíveis para procedimentos do tipo reserva.
+      - name: vagas_retorno_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna indica a quantidade de vagas de retorno disponíveis para procedimentos.
+      - name: vagas_todas_qtd
+        data_type: int64
+        quote: true
+        description: Esta coluna indica a quantidade de todos os tipo de vagas disponíveis para procedimentos.
+      - name: data_particao
+        data_type: date
+        quote: true
+        description: Esta coluna representa a data da partição. É usado para organizar os dados de forma cronológica, facilitando a filtragem e análise de dados para uma data específica.
+      - name: profissional_executante_nome
+        data_type: string
+        quote: true
+        description: Nome do profissional que realizará o procedimento.
+      - name: estabelecimento
+        data_type: string
+        quote: true
+        description: Nome do estabelecimento onde o procedimento será realizado.
+      - name: procedimento
+        data_type: string
+        quote: true
+        description: Nome do procedimento que será realizado.
+      - name: ocupacao
+        data_type: string
+        quote: true
+        description: Ocupação do profissional que realizará o procedimento, segundo CBO.
+      - name: ocupacao_familia
+        data_type: string
+        quote: true
+        description: Família da ocupação do profissional que realizará o procedimento, segundo CBO.
+
+  - name: mart_sisreg__unidades
     description: >
-      Consolida dados provenientes da API do SISREG sobre TODAS as unidades,
-      tanto SOLICITANTES quanto EXECUTANTES, nos últimos três meses. Para cada unidade, traz a data de
-      referência, o tipo de atividade ("SOLICITANTE", "EXECUTANTE") um indicador de atividade no período,
-      o código CNES, a lista de procedimentos, nome, esfera e tipo da unidade.
+      Consolida dados provenientes da API do SISREG sobre TODAS as unidades, tanto SOLICITANTES quanto EXECUTANTES, nos últimos três meses. Para cada unidade, traz a data de referência, o tipo de atividade ("SOLICITANTE", "EXECUTANTE") um indicador de atividade no período, o código CNES, a lista de procedimentos, nome, esfera e tipo da unidade.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -23,13 +208,12 @@ models:
 
       - name: unidade_ativa_ultimos_3m
         description: >
-          Indicador de atividade da unidade nos últimos três meses:
-          1 = ativa; 0 = inativa.
+          Indicador de atividade da unidade nos últimos três meses: 1 = ativa; 0 = inativa.
         data_type: int64
         quote: true
         tests:
           - accepted_values:
-              values: [0, 1]
+              values: [ 0, 1 ]
               quote: false
 
       - name: unidade_id_cnes
@@ -41,8 +225,7 @@ models:
 
       - name: procedimentos
         description: >
-          Array com os identificadores internos de procedimentos distintos
-          executados pela unidade nos últimos 90 dias.
+          Array com os identificadores internos de procedimentos distintos executados pela unidade nos últimos 90 dias.
         data_type: string
         quote: true
 
@@ -52,7 +235,7 @@ models:
         quote: true
         tests:
           - accepted_values:
-              values: ["SOLICITANTE", "EXECUTANTE"]
+              values: [ "SOLICITANTE", "EXECUTANTE" ]
               quote: true
 
       - name: unidade_nome
@@ -70,58 +253,56 @@ models:
         data_type: string
         quote: true
 
-  - name: procedimentos
-    description: Tabela de referência de procedimentos do SISREG, construída a partir de solicitações recentes no SISREG (últimos 3 meses) e atributos parametrizados via internamente pela nossa equipe. A junção é um full outer join por procedimento_sisreg_id, permitindo identificar gaps entre o que existe no SISREG e o que está parametrizado nas planilhas.
+  - name: mart_sisreg__procedimentos
+    description: Tabela contendo os procedimentos oferecidos no SISREG, bem como diversos atributos que os caracterizam.
     columns:
-      - name: procedimento_sisreg_id
-        description: Identificador do procedimento no SISREG (chave para junção entre as duas fontes).
-        quote: true
-        data_tests:
+      - name: id_procedimento_sisreg
+        description: Identificador único do procedimento no SISREG.
+        data_type: string
+        tests:
           - not_null
           - unique
+          - relationships:
+              to: ref('raw_sheets__assistencial_procedimento')
+              field: id_procedimento
+              config:
+                severity: warn
 
-      - name: sheets_procedimento_sisreg_nome
-        description: Nome/descrição do procedimento conforme planilha.
+      - name: id_procedimento_sigtap
+        description: Identificador do procedimento no SIGTAP.
         data_type: string
         quote: true
-      - name: sheets_parametro_consultas_por_hora
-        description: Parâmetro operacional (consultas esperadas por hora) definido na planilha.
+      - name: procedimento_grupo
+        description: Grupo do procedimento segundo o SISREG.
+        data_type: string
         quote: true
-      - name: sheets_parametro_reservas
-        description: Proporcao esperada de vagas de reserva ou primeira vez.
+      - name: especialidade
+        description: Especialidade do procedimento.
+        data_type: string
         quote: true
-      - name: sheets_parametro_retornos
-        description: Proporcao esperada de vagas de retorno.
+      - name: tipo_procedimento
+        description: Tipo do procedimento.
+        data_type: string
         quote: true
-      - name: sheets_especialidade
-        description: Especialidade associada ao procedimento conforme a planilha.
+      - name: procedimento
+        description: Nome / Descrição do procedimento.
+        data_type: string
         quote: true
-      - name: sheets_tipo_procedimento
-        description: Tipo/categoria do procedimento conforme a planilha.
+      - name: parametro_consultas_por_hora
+        description: Quantas consultas são esperadas por hora deste determinado procedimento.
+        data_type: float64
+        quote: true
+      - name: parametro_reservas
+        description: Qual  proporção de vagas de reserva/1ra vez é esperada em relação aos retornos.
+        data_type: float64
+        quote: true
+      - name: parametro_retornos
+        description: Qual  proporção de vagas de retornos é esperada em relação as vagas de reserva/1ra vez.
+        data_type: float64
         quote: true
 
-      - name: procedimento_sisreg_grupo
-        description: Grupo do procedimento no SISREG (agrupador funcional).
-        quote: true
-      - name: procedimento_sisreg_nome
-        description: Nome/descrição do procedimento conforme o SISREG.
-        quote: true
-      - name: procedimento_sigtap_id
-        description: Código do procedimento correspondente no SIGTAP.
-        quote: true
-
-      - name: parametrizado_indicador
-        description: Indicador booleano se o procedimento consta parametrizado na planilha (Sheets).
-        data_type: bool
-      - name: presente_sisreg_indicador
-        description: Indicador booleano se o procedimento aparece nas solicitações do SISREG (janela de 3 meses).
-        data_type: bool
-models:
-  - name: marts_sisreg__solicitacoes
-    description: Consolida as tabelas de solicitações e marcações provenientes da API do SISREG, unificando
-      o fluxo completo (solicitação → autorização → marcação/execução → confirmação/cancelamento)
-      e enriquecendo com atributos do histórico clínico (HCI). O modelo final retorna
-      uma linha por id_solicitacao (mais recente por data_atualizacao_registro).
+  - name: mart_sisreg__solicitacoes
+    description: Consolida as tabelas de solicitações e marcações provenientes da API do SISREG, unificando o fluxo completo (solicitação → autorização → marcação/execução → confirmação/cancelamento) e enriquecendo com atributos do histórico clínico (HCI). O modelo final retorna uma linha por id_solicitacao (mais recente por data_atualizacao_registro).
 
     columns:
       # ---------------- Metadados de carga/partição ----------------
