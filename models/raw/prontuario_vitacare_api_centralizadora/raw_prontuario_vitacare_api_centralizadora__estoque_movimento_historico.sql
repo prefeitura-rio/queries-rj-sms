@@ -1,6 +1,8 @@
 {{
     config(
         alias="estoque_movimento_historico",
+        materialized="incremental",
+        incremental_strategy= "insert_overwrite",
         partition_by={
             "field": "particao_data_movimento",
             "data_type": "date",
@@ -23,6 +25,9 @@ with
             safe_cast(extract(month from safe_cast(_loaded_at as timestamp)) as string) as mes_particao,
             safe_cast(safe_cast(_loaded_at as timestamp) as date) as data_particao
         from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_movimento_historico") }}
+        {%if is_incremental()%}
+        where safe_cast(safe_cast(_loaded_at as timestamp) as date) > (select cast(max(metadados.loaded_at) as date) from {{this}})
+        {%endif%}
     ),
     renamed as (
         select 
