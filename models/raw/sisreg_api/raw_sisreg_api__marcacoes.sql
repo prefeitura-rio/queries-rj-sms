@@ -2,7 +2,9 @@
 {{
   config(
     enabled=true,
-    materialized='table',
+    materialized='incremental',
+    unique_key='solicitacao_id',
+    incremental_strategy='merge',
     schema="brutos_sisreg_api",
     alias="marcacoes",
     partition_by={
@@ -10,7 +12,7 @@
       "data_type": "date",
       "granularity": "month",
     },
-    cluster_by=['unidade_executante_id', 'unidade_solicitante_id', 'procedimento_interno_id'],
+    cluster_by=['solicitacao_id'],
   )
 }}
 
@@ -27,8 +29,7 @@ with
     sisreg as (
         select s.*
         from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
-        join correct_partition p
-        on s.data_particao = p.particao_str
+        where s.data_particao = (select particao_str from correct_partition)
     ),
         
     sisreg_transformed as (
@@ -82,7 +83,7 @@ with
             lpad(
                 {{ process_null("codigo_grupo_procedimento") }}, 7, '0'
             ) as procedimento_grupo_id,
-            {{ clean_name_string(process_null("nome_grupo_procedimento")) }}
+            upper(trim({{ process_null("nome_grupo_procedimento") }}))
             as procedimento_grupo,
             case
                 when {{ process_null("codigo_tipo_vaga_solicitada") }} = "1"
@@ -102,7 +103,7 @@ with
             lpad(
                 {{ process_null("codigo_interno_procedimento") }}, 7, '0'
             ) as procedimento_interno_id,
-            {{ clean_name_string(process_null("descricao_interna_procedimento")) }}
+            upper(trim({{ process_null("descricao_interna_procedimento") }}))
             as procedimento_interno,
             lpad(
                 {{ process_null("codigo_sigtap_procedimento") }}, 10, '0'
@@ -124,7 +125,7 @@ with
             lpad(
                 {{ process_null("codigo_unidade_solicitante") }}, 7, '0'
             ) as unidade_solicitante_id,
-            {{ clean_name_string(process_null("nome_unidade_solicitante")) }}
+            upper(trim({{ process_null("nome_unidade_solicitante") }}))
             as unidade_solicitante,
             lpad(
                 {{ process_null("cpf_profissional_solicitante") }}, 11, '0'
@@ -217,7 +218,7 @@ with
             as central_executante_cnes,
 
             -- Dados da unidade executante
-            {{ clean_name_string(process_null("nome_unidade_executante")) }}
+            upper(trim({{ process_null("nome_unidade_executante") }}))
             as unidade_executante_nome,
             lpad(
                 {{ process_null("codigo_unidade_executante") }}, 7, '0'
@@ -299,3 +300,7 @@ with
 
 select *
 from sisreg_transformed
+qualify row_number() over (
+  partition by solicitacao_id
+  order by data_atualizacao desc nulls last
+) = 1

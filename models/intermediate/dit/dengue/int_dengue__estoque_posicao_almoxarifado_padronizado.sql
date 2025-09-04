@@ -76,7 +76,7 @@ select
     e.nome_limpo as estabelecimento_nome_limpo,
     e.nome_sigla as estabelecimento_nome_sigla,
     m.material_nome_padronizado as material_descricao,
-    estoque.material_quantidade,
+    estoque.material_quantidade
 from estoque_mais_recentes as estoque
 left join dim_estabelecimento as e on estoque.id_cnes = e.id_cnes
 left join materiais_padronizados as m on estoque.id_material = m.id_material

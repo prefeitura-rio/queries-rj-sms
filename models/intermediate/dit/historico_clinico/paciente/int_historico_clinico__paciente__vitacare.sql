@@ -500,6 +500,44 @@ with
         group by cpf
     ),
 
+    paciente_tratado as (
+        select
+
+            cpf,
+            cpf_valido_indicador,
+            {{ proper_br(remove_invalid_names("nome")) }} as nome,
+            {{ proper_br(remove_invalid_names(eliminate_babies("nome_social"))) }} as nome_social,
+            data_nascimento,
+            case
+                when lower(sexo) = 'female' then 'feminino'
+                when lower(sexo) = 'male' then 'masculino'
+                else null
+            end as genero,
+            lower(raca) as raca,
+            obito_indicador,
+            safe_cast(null as date) as obito_data,
+            {{ proper_br(remove_invalid_names("mae_nome")) }} as mae_nome,
+            {{ proper_br(remove_invalid_names("pai_nome")) }} as pai_nome,
+            rank
+
+        from paciente
+    ),
+
+    paciente_nomes_unicos as (
+        select
+            * except (nome_social),
+
+            case
+                when {{ is_same_name("nome", "nome_social") }}
+                then null
+                when {{ is_same_name("mae_nome", "nome_social" )}}
+                then null
+                else nome_social
+            end as nome_social
+
+        from paciente_tratado
+    ),
+
     -- PACIENTE DADOS
     paciente_metadados as (
         select
@@ -509,7 +547,7 @@ with
                 count(distinct nome) as qtd_nomes,
                 count(distinct nome_social) as qtd_nomes_sociais,
                 count(distinct data_nascimento) as qtd_datas_nascimento,
-                count(distinct sexo) as qtd_sexos,
+                count(distinct genero) as qtd_sexos,
                 count(distinct raca) as qtd_racas,
                 count(distinct obito_indicador) as qtd_obitos_indicadores,
                 count(distinct mae_nome) as qtd_maes_nomes,
@@ -517,7 +555,7 @@ with
                 count(distinct cpf_valido_indicador) as qtd_cpfs_validos,
                 "vitacare" as sistema
             ) as metadados
-        from paciente
+        from paciente_nomes_unicos
         group by cpf
     ),
 
@@ -527,24 +565,20 @@ with
             array_agg(
                 struct(
                     cpf_valido_indicador,
-                    {{ proper_br("nome") }} as nome,
-                    {{ proper_br("nome_social") }} as nome_social,
+                    nome,
+                    nome_social,
                     data_nascimento,
-                    CASE 
-                        WHEN lower(sexo) = 'female' THEN 'feminino'
-                        WHEN lower(sexo) = 'male' THEN 'masculino'
-                        ELSE null
-                    END  as genero,
-                    lower(raca) as raca,
+                    genero,
+                    raca,
                     obito_indicador,
-                    safe_cast(null as date) as obito_data,
-                    {{ proper_br("mae_nome") }} as mae_nome,
-                    {{ proper_br("pai_nome") }} as pai_nome,
+                    obito_data,
+                    mae_nome,
+                    pai_nome,
                     rank,
                     pm.metadados
                 )
             ) as dados
-        from paciente pc
+        from paciente_nomes_unicos pc
         join paciente_metadados as pm on pc.cpf = pm.cpf
         group by pc.cpf
     ),

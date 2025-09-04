@@ -44,5 +44,5 @@ select
     safe_cast(_data_carga as date format 'DD/MM/YYYY') as data_carga,
     safe_cast(_data_snapshot as date format 'DD/MM/YYYY') as data_snapshot,
     safe_cast(ano_particao as string) ano_particao,
-    concat(ano_particao, '-', mes_particao, '-', '01') as data_particao,
+    concat(ano_particao, '-', mes_particao, '-', '01') as data_particao
 from source

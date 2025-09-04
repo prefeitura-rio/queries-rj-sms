@@ -1,7 +1,7 @@
 {{
     config(
         materialized="view",
-        enabled=true,
+        enabled=false,
         schema="brutos_sisreg_api",
         alias="autorizados",
         partition_by={

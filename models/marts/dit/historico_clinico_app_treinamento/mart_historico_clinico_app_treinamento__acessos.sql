@@ -27,9 +27,9 @@ with
     from acessos_manual
   ),
   remove_vinculos_sem_acesso as (
-      select 
-        cpf, 
-        nome_completo, 
+      select
+        cpf,
+        nome_completo,
         prioridade,
         array_agg(
           struct(
@@ -39,7 +39,8 @@ with
             unidade_ap,
             funcao_detalhada,
             funcao_grupo,
-            'full_permission' as nivel_acesso
+            'full_permission' as nivel_acesso,
+            'full_permission' as granularidade_acesso
           )
         ) as vinculos
       from uniao as p, unnest(p.vinculos) as v
@@ -56,11 +57,6 @@ with
     qualify row_number() over (partition by cpf order by prioridade desc) = 1
   ),
 
-  removendo_treinamento as (
-    select busca_maior_prioridade.*
-    from busca_maior_prioridade, unnest(vinculos) as v
-  ),
-  
   -- -----------------------------------------
   -- Removendo Duplicados
   -- -----------------------------------------
@@ -68,7 +64,7 @@ with
     select
       *,
       row_number() over (partition by cpf order by prioridade desc) as rn
-    from removendo_treinamento
+    from busca_maior_prioridade
   ),
   deduped as (
     select * except(rn, prioridade)
@@ -80,7 +76,7 @@ with
   -- Partição
   -- -----------------------------------------
   particionado as (
-    select 
+    select
       safe_cast(cpf as int64) as cpf_particao,
       *
     from deduped
@@ -88,5 +84,3 @@ with
 
 select *
 from particionado
-
-

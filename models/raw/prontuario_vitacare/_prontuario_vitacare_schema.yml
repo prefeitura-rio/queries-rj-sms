@@ -12,7 +12,7 @@ models:
           - unique:
               name: raw_prontuario_vitacare__estoque_posicao__id__unique
               config:
-                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
+                where: safe_cast(particao_data_posicao as date) = current_date('America/Sao_Paulo')
           - not_null:
               name: raw_prontuario_vitacare__estoque_posicao__id__not_null
               config:
@@ -26,7 +26,7 @@ models:
           - unique:
               name: raw_prontuario_vitacare__estoque_posicao__id_surrogate__unique
               config:
-                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
+                where: safe_cast(particao_data_posicao as date) = current_date('America/Sao_Paulo')
           - not_null:
               name: raw_prontuario_vitacare__estoque_posicao__id_surrogate__not_null
               config:
@@ -107,7 +107,7 @@ models:
           - unique:
               name: raw_prontuario_vitacare__estoque_movimento__id_surrogate__unique
               config:
-                where: safe_cast(data_particao as date) = current_date('America/Sao_Paulo')
+                where: safe_cast(particao_data_movimento as date) = current_date('America/Sao_Paulo')
           - not_null:
               name: raw_prontuario_vitacare__estoque_movimento__id_surrogate__not_null
               config:
@@ -725,7 +725,7 @@ models:
         data_type: date
         quote: true
 
-  - name: raw_prontuario_vitacare__vacina
+  - name: raw_prontuario_vitacare__vacinacao
     description: Esta tabela contém informações
       detalhadas sobre os registros de vacinação dos pacientes no sistema
       Vitacare. Inclui identificadores para o paciente, a equipe de saúde e o
@@ -738,19 +738,14 @@ models:
       eficiente de dados e um timestamp 'imported_at' indicando quando os dados
       foram carregados no sistema.
     columns:
-      - name: id
+      - name: id_vacinacao
         description: Este é o identificador único para cada registro no modelo
           dentro do prontuário vitacare. É uma combinação do id_cnes e do id
           original dos dados de origem. Este id é usado para identificar
           exclusivamente cada registro de vacinação.
         data_tests:
-          - unique:
-              name: raw_prontuario_vitacare__vacina__id__unique
-              config:
-                severity: warn
-                warn_if: ">1000"
           - not_null:
-              name: raw_prontuario_vitacare__vacina__id__not_null
+              name: raw_prontuario_vitacare__vacinacao__id__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
@@ -764,9 +759,9 @@ models:
         data_type: string
         data_tests:
           - unique:
-              name: raw_prontuario_vitacare__vacina__id_surrogate_unique
+              name: raw_prontuario_vitacare__vacinacao__id_surrogate_unique
           - not_null:
-              name: raw_prontuario_vitacare__vacina__id_surrogate__not_null
+              name: raw_prontuario_vitacare__vacinacao__id_surrogate__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
@@ -795,12 +790,12 @@ models:
           para fins oficiais de relatórios e rastreamento.
         data_type: string
         quote: true
-      - name: area_programatica
+      - name: requisicao_area_programatica
         description: Este campo representa a área programática do estabelecimento de
           saúde onde o paciente recebeu a vacina.
         data_type: string
         quote: true
-      - name: id_vitacare_paciente
+      - name: paciente_id_prontuario
         description: Este é o identificador único para cada paciente no sistema
           Vitacare dentro da unidade de saúde onde está cadastrado. Este valor
           somente está preenchido para pacientes que posuem uma equipe da família
@@ -843,13 +838,13 @@ models:
         quote: true
         policy_tags:
         - '{{ var("TAG_DATA_NASCIMENTO") }}'
-      - name: nome_mae
+      - name: paciente_nome_mae
         description: Este campo contém o nome completo da mãe do paciente.
         data_type: string
         quote: true
         policy_tags:
         - '{{ var("TAG_NOME_MAE") }}'
-      - name: mae_nascimento_data
+      - name: paciente_mae_nascimento_data
         description: Este campo representa a data de nascimento da mãe do paciente. É
           armazenado no formato AAAA-MM-DD. 
         data_type: date
@@ -871,19 +866,19 @@ models:
         description: Este campo indica se o paciente é falecido.
         data_type: string
         quote: true
-      - name: descricao
+      - name: vacina_descricao
         description: Esta coluna contém a descrição da vacina que foi administrada ao
           paciente. 
         data_type: string
         quote: true
         policy_tags:
         - '{{ var("TAG_DADO_CLINICO") }}'
-      - name: aplicacao_data
+      - name: vacina_aplicacao_data
         description: Esta coluna representa a data em que a vacina foi aplicada ao
           paciente. É um campo de data e está formatado como AAAA-MM-DD.
         data_type: date
         quote: true
-      - name: registro_data
+      - name: vacina_registro_data
         description: Esta coluna representa a data e hora em que o registro de vacinação
           foi registrado no sistema. É um campo de data e hora e está formatado
           como AAAA-MM-DD HH:MM:SS.
@@ -891,32 +886,32 @@ models:
         quote: true
         data_tests:
           - not_null:
-              name: raw_prontuario_vitacare__vacina__data_registro__not_null
+              name: raw_prontuario_vitacare__vacinacao__data_registro__not_null
               config:
                 severity: warn
                 warn_if: ">1"
-      - name: dose
+      - name: vacina_dose
         description: Este campo representa a dose da vacina que foi administrada ao
           paciente. 
         data_type: string
         quote: true
         policy_tags:
         - '{{ var("TAG_DADO_CLINICO") }}'
-      - name: lote
+      - name: vacina_lote
         description: Este campo representa o número do lote da vacina. 
         data_type: string
         quote: true
-      - name: registro_tipo
+      - name: vacina_registro_tipo
         description: Este campo representa o tipo de registro. É um valor de string que
           fornece informações sobre a natureza do registro, como se é um novo
           registro de vacinação ou um registro retroativo.
         data_type: string
         quote: true
-      - name: estrategia
+      - name: vacina_estrategia
         description: Este campo representa a estratégia usada para a vacinação.
         data_type: string
         quote: true
-      - name: diff
+      - name: vacina_diff
         description: Diferença, em dias, entre a data de aplicação da vacina e a data de registro da vacina.
         data_type: string
         quote: true
@@ -949,7 +944,19 @@ models:
         quote: true
         policy_tags:
         - '{{ var("TAG_NOME") }}'
-      - name: ano_particao
+      - name: requisicao_endpoint
+        description: Este campo representa o endpoint utilizado na requisição que 
+          originou o registro de vacinação. Ele indica a fonte requisitada dentro 
+          do sistema de saúde.
+        data_type: string
+        quote: true
+      - name: requisicao_id_cnes
+        description: Este é o identificador único para o estabelecimento de saúde que 
+          foi utilizado na requisição. Este id representa o CNES requisitado, 
+          associado ao registro de vacinação no sistema de saúde.
+        data_type: string
+        quote: true
+      - name: particao_data_vacinacao
         description: Esta coluna representa o ano da partição. É usada para
           particionamento de dados e ajuda na recuperação eficiente de dados. Os
           dados são armazenados no formato de uma string.
@@ -975,6 +982,8 @@ models:
           no formato 'AAAA-MM-DD HH:MM:SS'.
         data_type: string
         quote: true
+      - name: metadados
+        description: Metadados do registro      
   - name: raw_prontuario_vitacare__ficha_a
     description: >
       Tabela contendo informações processadas a partir de eventos de pacientes,

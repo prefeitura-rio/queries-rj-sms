@@ -1,0 +1,158 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento
+    description: >
+      Movimentação diária dos estoques de medicamentos e insumos das
+      unidades de saúde que utilizam o prontuário Vitacare para gestão de
+      estoque de farmácia e almoxarifado.
+    columns:
+      - name: id_estoque_movimento
+        description: Identificador único do registro, composto por id_cnes e id_estoque_movimento_local.
+        data_type: string
+
+      - name: id_surrogate
+        description: >
+          Chave surrogada composta pelo id do material, lote, localização de origem,
+          localização de destino, quantidade e data hora da movimentação.
+        data_type: string
+        data_tests:
+          - unique:
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__id_surrogate__unique
+              config:
+                where: safe_cast(particao_data_movimento as date) = current_date('America/Sao_Paulo')
+          - not_null:
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__id_surrogate__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: area_programatica
+        description: Área programática da unidade de saúde onde o item está localizado.
+        data_type: string
+
+      - name: id_lote
+        description: Identificador do lote do medicamento/insumo.
+        data_type: string
+
+      - name: id_cnes
+        description: >
+          Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da unidade de
+          saúde onde o item está localizado.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__id_cnes__not_null
+          - relationships:
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__id_cnes__relationship
+              to: ref('dim_estabelecimento_sus_rio_historico')
+              field: id_cnes
+
+      - name: id_pedido_wms
+        description: Identificador do pedido na TPC que gerou o evento de entrada de medicamentos.
+        data_type: string
+        quote: true
+
+      - name: id_material
+        description: Código de identificação do material cadastrado no prontuário.
+        data_type: string
+
+      - name: id_atc
+        description: Código de identificação do material cadastrado no prontuário no padrão ATC.
+        data_type: string
+
+      - name: estabelecimento_nome
+        description: Nome da unidade de saúde onde o item está localizado.
+        data_type: string
+
+      - name: material_descricao
+        description: Descrição do medicamento/insumo.
+        data_type: string
+
+      - name: estoque_movimento_data_hora
+        description: Data e hora da movimentação do estoque.
+        data_type: datetime
+
+      - name: estoque_movimento_tipo
+        description: Tipo de movimentação do estoque (entrada, saída, ajuste, etc.).
+        data_type: string
+
+      - name: estoque_movimento_correcao_tipo
+        description: Tipo de correção associada à movimentação, se aplicável.
+        data_type: string
+
+      - name: estoque_movimento_justificativa
+        description: Justificativa para a movimentação do estoque.
+        data_type: string
+
+      - name: estoque_armazem_origem
+        description: Subestoque de origem do medicamento/insumo.
+        data_type: string
+        quote: true
+
+      - name: estoque_armazem_destino
+        description: Subestoque de destino do medicamento/insumo.
+        data_type: string
+        quote: true
+
+      - name: dispensacao_prescritor_cpf
+        description: CPF do prescritor no caso de dispensação para paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+        quote: true
+
+      - name: dispensacao_prescritor_cns
+        description: CNS do prescritor no caso de dispensação para paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+        data_type: string
+
+      - name: dispensacao_paciente_cpf
+        description: CPF do paciente no caso de dispensação para usuário.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+
+      - name: dispensacao_paciente_cns
+        description: CNS do paciente no caso de dispensação para usuário.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+        data_type: string
+
+      - name: material_quantidade
+        description: Quantidade movimentada do medicamento/insumo.
+        data_type: float64
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              name: raw_prontuario_vitacare_api_centralizadora__estoque_movimento__material_quantidade__positive
+              min_value: 0
+
+      - name: requisicao_id_cnes
+        description: ID CNES da unidade requisitante.
+        data_type: string
+
+      - name: requisicao_area_programatica
+        description: Área programática da requisição.
+        data_type: string
+
+      - name: requisicao_endpoint
+        description: Endpoint de onde o dado foi extraído.
+        data_type: string
+
+      - name: metadados
+        description: >
+          Campo estruturado com informações de atualização, extração e carga dos dados.
+      - name: metadados.updated_at
+        description: Data/hora da última atualização na origem (baseado em estoque_movimento_data_hora).
+        data_type: datetime
+      - name: metadados.extracted_at
+        description: Data/hora em que os dados foram extraídos do sistema fonte.
+        data_type: datetime
+      - name: metadados.loaded_at
+        description: Data/hora em que os dados foram carregados no Data Lake.
+        data_type: timestamp
+
+      - name: particao_data_movimento
+        description: Data de referência (sem hora) da movimentação do estoque. Usada para particionamento.
+        data_type: date

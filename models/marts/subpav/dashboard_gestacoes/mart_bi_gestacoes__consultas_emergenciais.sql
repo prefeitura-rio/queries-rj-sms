@@ -20,6 +20,7 @@ WITH marcadores_temporais AS (
    fase_atual,
    clinica_nome AS unidade_APS_PN,
    equipe_nome AS equipe_PN_APS
+--  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
 
@@ -29,9 +30,10 @@ cids_agrupados AS (
    ea.id_hci,
    STRING_AGG(DISTINCT c.id ORDER BY c.id) AS cids_emergencia,
    STRING_AGG(DISTINCT c.descricao ORDER BY c.descricao) AS descricoes_cids_emergencia
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea,
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
-   --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
-    LEFT JOIN UNNEST(ea.condicoes) AS c
+ --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
+    left join UNNEST(ea.condicoes) AS c
  WHERE ea.prontuario.fornecedor = 'vitai'
    AND ea.subtipo = 'Emergência'
    AND c.id IS NOT NULL
@@ -57,6 +59,7 @@ atendimentos_ue_com_join AS (
    mt.data_fim,
    mt.data_fim_efetiva,
    cids.cids_emergencia
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
  ON ea.paciente.id_paciente = mt.id_paciente

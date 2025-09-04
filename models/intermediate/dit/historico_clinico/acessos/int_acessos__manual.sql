@@ -15,18 +15,18 @@ with
 
     categorizados as (
         select 
-            * except(unidade),
+            * except(telefone, email, unidade, descricao, observacoes),
             unidade as unidade_cnes,
-            funcao as funcao_detalhada,            
-            CASE
-                WHEN {{ remove_accents_upper('funcao') }} like '%ENFERM%' THEN 'ENFERMEIROS'
-                WHEN {{ remove_accents_upper('funcao') }} like '%MEDICO%' THEN 'MEDICOS'
-                WHEN {{ remove_accents_upper('funcao') }} like '%CONVENIO%' THEN 'MEDICOS'
-                WHEN {{ remove_accents_upper('funcao') }} like '%CIENTI%' THEN 'DESENVOLVEDOR'
-                WHEN {{ remove_accents_upper('funcao') }} like '%DESENV%' THEN 'DESENVOLVEDOR'
-                WHEN {{ remove_accents_upper('funcao') }} like '%ANALISTA DE VIGIL%' THEN 'ANALISTA DE VIGILANCIA'
-                ELSE 'OUTROS'
-            END as funcao_grupo,
+            funcao as funcao_detalhada,
+            case
+                when {{ remove_accents_upper('funcao') }} like '%ENFERM%' then 'ENFERMEIROS'
+                when {{ remove_accents_upper('funcao') }} like '%MEDICO%' then 'MEDICOS'
+                when {{ remove_accents_upper('funcao') }} like '%CONVENIO%' then 'MEDICOS'
+                when {{ remove_accents_upper('funcao') }} like '%CIENTI%' then 'DESENVOLVEDOR'
+                when {{ remove_accents_upper('funcao') }} like '%DESENV%' then 'DESENVOLVEDOR'
+                when {{ remove_accents_upper('funcao') }} like '%ANALISTA DE VIGIL%' then 'ANALISTA DE VIGILANCIA'
+                else 'OUTROS'
+            end as funcao_grupo,
         from usuarios_permitidos_sheets
     ),
 
@@ -52,7 +52,8 @@ with
             unidades_de_saude.unidade_nome,
             funcao_detalhada,
             funcao_grupo,
-            nivel_de_acesso as nivel_acesso
+            nivel_de_acesso as nivel_acesso,
+            granularidade_de_acesso as granularidade_acesso
         from categorizados
         left join unidades_de_saude
             on categorizados.unidade_cnes = unidades_de_saude.cnes
@@ -63,20 +64,21 @@ with
             nome_completo,
             array_agg(
                 struct(
-                        unidade_nome,
-                        unidade_tipo,
-                        unidade_cnes,
-                        unidade_ap,
-                        false as eh_equipe_consultorio_rua,
-                        funcao_detalhada,
-                        funcao_grupo,
-                        nivel_acesso
+                    unidade_nome,
+                    unidade_tipo,
+                    unidade_cnes,
+                    unidade_ap,
+                    false as eh_equipe_consultorio_rua,
+                    funcao_detalhada,
+                    funcao_grupo,
+                    nivel_acesso,
+                    granularidade_acesso
                 )
             ) as vinculos
         from categorizados_enriquecidos
         group by 1,2
     )
-select 
+select
     cpf,
     nome_completo,
     vinculos

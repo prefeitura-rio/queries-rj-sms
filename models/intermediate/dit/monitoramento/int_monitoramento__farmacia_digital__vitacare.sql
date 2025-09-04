@@ -27,44 +27,44 @@ with
     ),
     vitacare_estoque_posicao as (
         select
-            cnesUnidade as unidade_cnes,
+            id_cnes as unidade_cnes,
             'vitacare' as fonte,
             'posicao' as tipo,
-            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitacare_staging", "estoque_posicao") }}
+            safe_cast(metadados.loaded_at as date) as data_ingestao
+        from {{ ref('raw_prontuario_vitacare_api_centralizadora__estoque_posicao') }}
         {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
+        where particao_data_posicao > '{{seven_days_ago}}' 
         {% endif %}
         {% if not is_incremental() %}
-        where data_particao >= '{{min_date}}' 
+        where particao_data_posicao >= '{{min_date}}' 
         {% endif %}
     ),
     vitacare_estoque_movimento as (
         select
-            cnesUnidade as unidade_cnes,
+            id_cnes as unidade_cnes,
             'vitacare' as fonte,
             'movimento' as tipo,
-            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitacare_staging", "estoque_movimento") }}
+            safe_cast(metadados.loaded_at as date) as data_ingestao
+        from {{ ref('raw_prontuario_vitacare_api_centralizadora__estoque_movimento') }}
         {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
+        where particao_data_movimento > '{{seven_days_ago}}' 
         {% endif %}
         {% if not is_incremental() %}
-        where data_particao >= '{{min_date}}' 
+        where particao_data_movimento >= '{{min_date}}' 
         {% endif %}
     ),
     vitacare_vacina as (
         select
-            nCnesUnidade as unidade_cnes,
+            id_cnes as unidade_cnes,
             'vitacare' as fonte,
             'vacina' as tipo,
-            safe_cast(safe_cast(_data_carga as timestamp) as date) as data_ingestao
-        from {{ source("brutos_prontuario_vitacare_staging", "vacina") }}
+            safe_cast(metadados.loaded_at as date) as data_ingestao
+        from {{ ref('raw_prontuario_vitacare_api_centralizadora__vacinacao') }}
         {% if is_incremental() %} 
-        where data_particao > '{{seven_days_ago}}' 
+        where particao_data_vacinacao > '{{seven_days_ago}}' 
         {% endif %}
         {% if not is_incremental() %}
-        where data_particao >= '{{min_date}}' 
+        where particao_data_vacinacao >= '{{min_date}}' 
         {% endif %}
     ),
     datas as (

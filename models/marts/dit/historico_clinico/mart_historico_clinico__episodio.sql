@@ -2,7 +2,10 @@
     config(
         schema="saude_historico_clinico",
         alias="episodio_assistencial",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy='merge', 
+        unique_key=['id_hci'],
+        cluster_by=['id_hci'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",

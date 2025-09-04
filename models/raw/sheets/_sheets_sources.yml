@@ -23,6 +23,7 @@ sources:
       - name: bairros_rio
       - name: usuarios_bigquery
       - name: cids_risco_gestacional
+      - name: encaminhamentos_ser
       - name: cdi_destinatarios
       
   - name: brutos_sheets

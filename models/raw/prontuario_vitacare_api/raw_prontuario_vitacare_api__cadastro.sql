@@ -1,28 +1,29 @@
 {{ config(
-    alias='cadastro',
-    materialized='incremental',
-    schema='brutos_prontuario_vitacare_api',
-    partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "day"
-    },
-    incremental_strategy='merge',
-    unique_key=['cpf', 'id_cnes']
+    alias="cadastro",
+    materialized="incremental",
+    schema="brutos_prontuario_vitacare_api",
+    incremental_strategy="insert_overwrite",
+    partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
-{% set seven_days_ago = (modules.datetime.date.today() - modules.datetime.timedelta(days=7)).isoformat() %}
+{% set last_partition = get_last_partition_date(this) %}
 
 WITH
-  source_raw AS (
+  bruto_atendimento AS (
     SELECT
-      data,
+      CAST(CONCAT(NULLIF(payload_cnes,''), '.', NULLIF(source_id,'')) AS STRING) AS id_prontuario_global,
+      patient_cpf AS cpf,
       source_updated_at,
-      datalake_loaded_at
-    FROM {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} AS src
+      SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
+      data
+    FROM {{ source('brutos_prontuario_vitacare_api_staging', 'paciente_continuo') }} AS src
     {% if is_incremental() %}
-      WHERE DATE(src.datalake_loaded_at) > (SELECT MAX(data_particao) FROM {{ this }})
+        WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
     {% endif %}
+    QUALIFY ROW_NUMBER() OVER (
+      PARTITION BY id_prontuario_global
+      ORDER BY loaded_at DESC
+    ) = 1
   ),
 
   fato_api AS (
@@ -33,7 +34,7 @@ WITH
       {{ process_null("JSON_EXTRACT_SCALAR(data, '$.id')") }}                              AS ut_id,
       {{ process_null("INITCAP(JSON_EXTRACT_SCALAR(data, '$.nome'))") }}                   AS nome,
       {{ process_null("JSON_EXTRACT_SCALAR(data, '$.cns')") }}                            AS cns,
-      {{ process_null("JSON_EXTRACT_SCALAR(data, '$.cpf')") }}                            AS cpf,
+      cpf,
       {{ process_null("NULLIF(JSON_EXTRACT_SCALAR(data, '$.nis'), '')") }}               AS nis,
       {{ process_null("JSON_EXTRACT_SCALAR(data, '$.nPront')") }}                        AS npront,
       CASE
@@ -178,9 +179,9 @@ WITH
         ELSE NULL
       END                                                                                 AS vulnerabilidade_social,
       SAFE_CAST(source_updated_at    AS DATETIME)                                         AS updated_at,
-      SAFE_CAST(datalake_loaded_at   AS DATETIME)                                         AS loaded_at,
-      safe_cast(safe_cast(json_extract_scalar(data, "$.datahora_fim_atendimento")as datetime) as date) as data_particao
-    FROM source_raw
+      loaded_at,
+      date(loaded_at) as data_particao
+    FROM bruto_atendimento
   ),
 
   pacientes_deduplicados AS (

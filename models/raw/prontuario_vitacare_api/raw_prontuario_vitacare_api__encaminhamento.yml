@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__encaminhamento
+    description: >
+      Tabela contendo registros de encaminhamentos realizados durante atendimentos
+      contínuos extraídos do prontuário VitaCare (API). Inclui identificadores do
+      prontuário e unidade, especialidade do encaminhamento e metadados de carga.
+
+    columns:
+      - name: id_prontuario_global
+        description: >
+          Identificador global do prontuário, composto pela concatenação de `payload_cnes`
+          e `source_id`.
+        data_type: string
+
+      - name: id_prontuario_local
+        description: Identificador local do prontuário (source_id original).
+        data_type: string
+
+      - name: id_cnes
+        description: >
+          Código CNES da unidade de saúde onde foi gerado o encaminhamento.
+        data_type: string
+
+      - name: encaminhamento_especialidade
+        description: Especialidade ou serviço para o qual o paciente foi encaminhado.
+        data_type: string
+
+      - name: loaded_at
+        description: Data e hora de carregamento do registro no Data Lake.
+        data_type: datetime
+
+      - name: data_particao
+        description: >
+          Data utilizada para particionamento (derivada de `datahora_fim_atendimento`).
+        data_type: date

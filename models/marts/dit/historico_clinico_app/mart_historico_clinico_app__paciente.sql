@@ -88,6 +88,12 @@ with
                 )
                 from unnest(equipe_saude_familia[safe_offset(0)].enfermeiros)
             ) as nursing_responsible,
+            struct (
+                saude_mental.id_pcsm,
+                saude_mental.status_acompanhamento,
+                saude_mental.nome_unidade,
+                saude_mental.cnes
+            ) as mental_health,
             dados.identidade_validada_indicador as validated,
             safe_cast(todos_pacientes.cpf as int64) as cpf_particao
         from todos_pacientes

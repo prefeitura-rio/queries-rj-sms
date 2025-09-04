@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name : raw_diario_oficial__diarios_uniao
+    description: >  
+        Conteúdo textual de artigos do Diário Oficial da União
+    columns:
+      - name: titulo
+        description: Título do ato oficial.
+        data_type: string
+      - name: data_publicacao
+        description: Data de publicação do ato oficial.
+        data_type: date
+      - name: assinaturas
+        description: Assinaturas do ato oficial.
+        data_type: string
+      - name: cabecalho
+        description: Primeiro paragrafo do texto.
+        data_type: string
+      - name: edicao
+        description: Edição do ato oficial.
+        data_type: string
+      - name: secao
+        description: Seção do ato oficial.
+        data_type: string
+      - name: pagina
+        description: Página do ato oficial no DOU.
+        data_type: string
+      - name: organizacao_principal
+        description: Organização principal do ato oficial.
+        data_type: string
+      - name: texto        
+        description: Conteúdo textual do ato oficial.
+        data_type: string
+      - name: link
+        description: Link para o ato oficial no DOU.
+      - name: texto_titulo
+        description: Título do texto
+        data_type: string
+      - name: data_extracao
+        description: A data e hora em que os dados foram extraídos
+        data_type: datetime
+      - name: ano_particao
+        description: Ano da partição
+        data_type: int64
+      - name: mes_particao
+        description: Mês da partição
+        data_type: int64
+      - name: data_particao
+        description: Data da partição (YYYY-MM-DD)
+        data_type: date
