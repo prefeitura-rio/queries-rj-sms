@@ -6,6 +6,10 @@ models:
     columns:
       - name: titulo
         description: "Título principal da publicação."
+      - name: id
+        description: "Identificador único da publicação."
+      - name: id_oficio
+        description: "Identificador único do ofício."
       - name: texto_titulo
         description: "Texto do título da publicação."
       - name: data_publicacao
