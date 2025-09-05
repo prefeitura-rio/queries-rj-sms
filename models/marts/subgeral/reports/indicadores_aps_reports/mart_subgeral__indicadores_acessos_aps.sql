@@ -1,7 +1,7 @@
 {{ config(
     materialized = "incremental",
-    schema = "projeto_subgeral_indicadores",
-    alias = "indicadores_aps",
+    schema = "projeto_aps_reports",
+    alias = "indicadores_acesso_aps",
     unique_key = "data_referencia"
 ) }}
 

@@ -14,7 +14,7 @@ models:
         description: Timestamp que indica quando a solicitação foi realizada.
         data_type: timestamp
         quote: true
-      - name: data_marcacao
+      - name: data_execucao
         description: Timestamp que indica quando a solicitação foi marcada.
         data_type: timestamp
         quote: true

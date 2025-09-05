@@ -147,7 +147,7 @@ models:
           dominio: subgeral
       ser_metabase:
         +schema: brutos_ser_metabase
-        +tags: ["daily", "ser", subgeral]
+        +tags: ["daily", "ser", "subgeral"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -298,7 +298,7 @@ models:
           dominio: subgeral
       centralderegulacao_mysql:
         +schema: brutos_centralderegulacao_mysql
-        +tags: ["daily", "subgeral", "minha_saude"]
+        +tags: ["daily", "subgeral", "minhasaude"]
         +labels:
           dado_publico: nao
           dado_pessoal: nao
@@ -408,14 +408,6 @@ models:
               dado_sensivel: nao
               dominio: subgeral
         facts:
-          sisreg:
-            +schema: saude_sisreg
-            +tags: ["daily", "cnes", "sisreg", "subgeral", "monitora_reg"]
-            +labels:
-              dado_publico: nao
-              dado_pessoal: nao
-              dado_sensivel: nao
-              dominio: subgeral
           estoque:
             +schema: saude_estoque
             +tags: "daily"
@@ -573,28 +565,31 @@ models:
       subgeral:
         cnes_subgeral:
           +schema: projeto_cnes_subgeral
-          +tags: ["weekly", "subgeral", "cnes_subgeral"]
+          +tags: ["weekly", "subgeral", "cnes"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subgeral
+
         monitora_reg:
           +schema: projeto_monitora_reg
           +tags: ["weekly", "subgeral", "monitora_reg"]
-          +labels:
-            dado_publico: naos
-            dado_pessoal: sim
-            dado_sensivel: nao
-            dominio: subgeral
-        sisreg_reports:
-          +schema: projeto_sisreg_reports
-          +tags: ["weekly", "subgeral", "sisreg", "sisreg_reports"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: nao
             dominio: subgeral
+
+        sisreg:
+            +schema: saude_sisreg
+            +tags: ["daily", "cnes", "sisreg", "subgeral", "monitora_reg"]
+            +labels:
+              dado_publico: nao
+              dado_pessoal: sim
+              dado_sensivel: sim
+              dominio: subgeral
+
         nps:
           +schema: projeto_nps
           +tags: ["weekly", "subgeral", "nps"]
@@ -603,13 +598,34 @@ models:
             dado_pessoal: sim
             dado_sensivel: nao
             dominio: subgeral
-        prontuarios_reports:
-          +schema: projeto_prontuarios_reports
-          +tags: ["daily", "subgeral", "prontuarios_reports"]
-          +labels:
-            dado_publico: nao
-            dado_pessoal: sim
-            dado_sensivel: nao
+
+        reports:
+          sisreg_reports:
+            +schema: projeto_sisreg_reports
+            +tags: ["weekly", "subgeral", "sisreg", "subgeral_reports"]
+            +labels:
+              dado_publico: nao
+              dado_pessoal: sim
+              dado_sensivel: nao
+              dominio: subgeral
+
+          prontuarios_reports:
+            +schema: projeto_prontuarios_reports
+            +tags: ["daily", "subgeral", "prontuarios_reports"]
+            +labels:
+              dado_publico: nao
+              dado_pessoal: sim
+              dado_sensivel: nao
+
+          indicadores_aps_reports:
+            +schema: projeto_aps_reports
+            +tags: ["weekly", "subgeral", "indicadores_aps"]
+            +labels:
+              dado_publico: nao
+              dado_pessoal: sim
+              dado_sensivel: nao
+              dominio: subgeral
+
         tempo_medio_espera:
           +schema: projeto_sisreg_tme
           +tags: ["weekly", "subgeral", "sisreg", "sisreg_tme"]
@@ -617,14 +633,7 @@ models:
             dado_publico: sim
             dado_pessoal: nao
             dado_sensivel: nao
-        indicadores_aps:
-          +schema: projeto_subgeral_indicadores
-          +tags: ["weekly"]                
-          +labels:
-            dado_publico: nao
-            dado_pessoal: nao
-            dado_sensivel: nao
-            dominio: subgeral
+
             
 data_tests:
   rj_sms:

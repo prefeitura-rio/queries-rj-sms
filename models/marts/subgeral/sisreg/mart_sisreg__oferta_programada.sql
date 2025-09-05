@@ -1,6 +1,7 @@
 {{
     config(
         schema="saude_sisreg",
+        enabled=false,
         alias="oferta_programada",
         materialized="table",
         partition_by={
@@ -14,5 +15,5 @@
 {% set last_partition = get_last_partition_date( this ) %}
 
 select *
-from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
+from {{ ref("mart_sisreg__oferta_programada_serie_historica") }}
 where data_particao >= '{{ last_partition }}'

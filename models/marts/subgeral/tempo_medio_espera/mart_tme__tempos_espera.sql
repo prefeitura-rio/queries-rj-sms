@@ -5,7 +5,7 @@
         schema="projeto_sisreg_tme",
         alias="tempos_espera_individuais",
         partition_by={
-            "field": "data_marcacao",
+            "field": "data_execucao",
             "data_type": "date",
             "granularity": "month",
         },
@@ -45,19 +45,22 @@ with
 
     tempos_espera as (
         select
-            solicitacao_id,
+            id_solicitacao,
             data_solicitacao,
-            data_marcacao,
-            unidade_solicitante_id as solicitante_id_cnes,
-            unidade_executante_id as executante_id_cnes,
-            procedimento_interno_id as procedimento_id,
-            date_diff(data_marcacao, data_solicitacao, day) as tempo_espera
+            data_execucao,
+            id_cnes_unidade_solicitante as solicitante_id_cnes,
+            id_cnes_unidade_executante as executante_id_cnes,
+            id_procedimento_sisreg as procedimento_id,
+            date_diff(data_execucao, data_solicitacao, day) as tempo_espera
 
-        from {{ ref("raw_sisreg_api__marcacoes") }}
+        from {{ ref("mart_sisreg__solicitacoes") }}
         where
             1 = 1
+            and data_solicitacao is not null
+            and data_execucao is not null
+            and data_execucao >= data_solicitacao
             and vaga_consumida_tp in ("1 VEZ", "RESERVA TECNICA")
-            and procedimento_interno_id not like "%PPI%"
+            and id_procedimento_sisreg not like "%PPI%"
             and solicitacao_status not in (
                 "AGENDAMENTO / CANCELADO / SOLICITANTE",
                 "AGENDAMENTO / CANCELADO / REGULADOR",
@@ -68,9 +71,9 @@ with
 
     final as (
         select
-            t.solicitacao_id,
+            t.id_solicitacao,
             t.data_solicitacao,
-            t.data_marcacao,
+            t.data_execucao,
             t.solicitante_id_cnes,
             s.nome_fantasia as nome_fantasia_sol,
             s.id_ap as id_ap_sol,

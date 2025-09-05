@@ -56,9 +56,9 @@ with
 
             -- Procedimento 
             procedimento_grupo_id as id_procedimento_grupo,
-            procedimento_grupo,
+            upper(trim(procedimento_grupo)) as procedimento_grupo,
             procedimento_id as id_procedimento_sisreg,
-            procedimento,
+            upper(trim(procedimento)) as procedimento,
             procedimento_sigtap_id as id_procedimento_sigtap,
 
             -- Origem da solicitação (solicitante)
@@ -168,9 +168,9 @@ with
 
             -- Procedimento 
             procedimento_grupo_id as id_procedimento_grupo,
-            procedimento_grupo,
+            upper(trim(procedimento_grupo)) as procedimento_grupo,
             procedimento_interno_id as id_procedimento_sisreg,
-            procedimento_interno as procedimento, -- só marcacoes (fazer equivalente para solicitacoes)
+            upper(trim(procedimento_interno)) as procedimento,
             procedimento_sigtap_id as id_procedimento_sigtap,
 
             -- Origem da solicitação (solicitante)
