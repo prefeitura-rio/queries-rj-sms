@@ -6,7 +6,7 @@
         alias="report_medicamentos_controlados__relacao_relatorios",
         schema="projeto_estoque",
         materialized="table",
-        tag=["report", "weekly"],
+        tags=["report", "weekly"],
     )
 }}
 

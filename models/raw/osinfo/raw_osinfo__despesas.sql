@@ -65,7 +65,7 @@ select
     d.parcela_mes,
     d.parcelamento_total as parcela_total,
     d.nf_validada_sigma as nota_fiscal_validada_sigma,
-    d.data_validacao as validacao_data,
+    d.data_validacao as validacao_data
 from despesas d
 inner join contrato c on d.id_contrato = c.id_contrato
 inner join plano_contas pc on d.id_despesa = pc.id_item_plano_de_contas

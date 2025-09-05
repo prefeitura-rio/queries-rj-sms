@@ -160,6 +160,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      prefect:
+        +schema: brutos_prefect
+        +tags: ["daily", "prefect"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_sensivel: nao
       datasus:
         +schema: brutos_datasus
         +tags: ["weekly", "subgeral"]
@@ -229,7 +236,7 @@ models:
           dominio: subpav
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
-        +tags: ["vitacare"]
+        +tags: ["vitacare", "daily"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -238,6 +245,14 @@ models:
       prontuario_vitacare_api:
         +schema: brutos_prontuario_vitacare_api
         +tags: ["vitacare", "daily", "vitacare_api"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+      prontuario_vitacare_api_centralizadora:
+        +schema: brutos_prontuario_vitacare_api_centralizadora
+        +tags: ["vitacare", "daily", "vitacare_api_centralizadora"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -276,7 +291,6 @@ models:
           dado_sensivel: nao
       sheets:
         +schema: brutos_sheets
-        +tags: ["daily", "subgeral", "cnes_subgeral", "monitora_reg"]
         +labels:
           dado_publico: nao
           dado_pessoal: nao
@@ -342,6 +356,16 @@ models:
 
     intermediate:
       +materialized: ephemeral
+      iplanrio:
+        whatsapp:
+          +materialized: table
+          +tags: ["daily", "iplanrio", "whatsapp"]
+          +schema: intermediario_whatsapp
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: iplanrio
       dit:
         historico_clinico:
           +tags: ["hci", "daily"]
@@ -514,6 +538,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: gestacoes
+        projeto_linhas_cuidado:
+          +schema: projeto_linhas_cuidado
+          +tags: ["daily", "subpav", "linhas_cuidado"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
         farmacia:
           +schema: projeto_subpav
           +tags: ["daily", "subpav"]

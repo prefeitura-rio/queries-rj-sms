@@ -1,10 +1,10 @@
 version: 2
 
 sources:
-  - name: brutos_prontuario_vitacare_api_staging
+  - name: brutos_prontuario_vitacare_api_centralizadora_staging
     description: Dados brutos da API Centralizadora do Vitacare
     database: rj-sms
-    schema: brutos_prontuario_vitacare_api_staging
+    schema: brutos_prontuario_vitacare_api_centralizadora_staging
     tables:
       # ESTOQUE_MOVIMENTO
       - name: estoque_movimento_ap10
@@ -41,3 +41,16 @@ sources:
       - name: vacinacao_ap51
       - name: vacinacao_ap52
       - name: vacinacao_ap53
+
+      # HISTORICO
+      - name: estoque_movimento_historico
+      - name: estoque_posicao_historico
+      - name: vacinacao_historico
+  - name: brutos_prontuario_vitacare_api_centralizadora
+    description: Consumo da Versão em Tabela Nativa para baratear custos.
+    database: rj-sms
+    schema: brutos_prontuario_vitacare_api_centralizadora
+    tables:
+      - name: estoque_movimento_historico
+      - name: estoque_posicao_historico
+      - name: vacinacao_historico

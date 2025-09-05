@@ -13,6 +13,6 @@ with
 select
     cast(TP_EQUIPE as string) as id_equipe_tipo,
     cast(DS_EQUIPE as string) as equipe_descricao,
-    cast(CO_GRUPO_EQUIPE as string) as id_equipe_grupo,
+    cast(CO_GRUPO_EQUIPE as string) as id_equipe_grupo
     
 from source

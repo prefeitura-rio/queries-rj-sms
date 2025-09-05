@@ -1,45 +1,28 @@
 {{
     config(
-        alias="estoque_posicao",
-        tags="vitacare_estoque",
-        labels={
-            "dominio": "estoque",
-            "dado_publico": "nao",
-            "dado_pessoal": "nao",
-            "dado_anonimizado": "nao",
-            "dado_sensivel_saude": "nao",
-        },
+        alias="estoque_posicao_historico",
         partition_by={
             "field": "particao_data_posicao",
             "data_type": "date",
-            "granularity": "day",
-        },
+            "granularity": "day"
+        }
     )
 }}
 
-with
+with 
     source as (
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap10") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap21") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap22") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap31") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap32") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap33") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap40") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap51") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap52") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "estoque_posicao_ap53") }}
+        select 
+            data, 
+            _source_cnes, 
+            _source_ap, 
+            safe_cast(_target_date as string) as _target_date, 
+            _endpoint,
+            _loaded_at,
+            safe_cast(extract(year from safe_cast(_loaded_at as timestamp)) as string) as ano_particao,
+            safe_cast(extract(month from safe_cast(_loaded_at as timestamp)) as string) as mes_particao,
+            safe_cast(safe_cast(_loaded_at as timestamp) as date)  as data_particao
+        from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "estoque_posicao_historico") }}
     ),
-
     renamed as (
         select 
             json_extract_scalar(data, '$.id') as id,
@@ -65,11 +48,20 @@ with
         from source
     ),
 
-    final as (
+    data_replicacao_sem_hora as (
+        select
+            *,
+            safe_cast(
+                safe_cast(data_replicacao as datetime)
+                as date
+            ) as particao_data_posicao
+        from renamed
+    ),
 
+    final as (
         select
             -- Primary Key
-            concat(id_cnes, '.', id, '.', safe_cast(safe_cast(data_replicacao as datetime) as date)) as id,
+            concat(id_cnes, '.', id, '.', particao_data_posicao) as id,
             {{
                 dbt_utils.generate_surrogate_key(
                     [
@@ -78,11 +70,11 @@ with
                         "id_lote",
                         "armazem",
                         "material_quantidade",
-                        "data_replicacao",
+                        "particao_data_posicao",
                     ]
                 )
             }} as id_surrogate,
-            
+
             -- Foreign Keys
             safe_cast(area_programatica as string) as area_programatica,
             safe_cast(id_cnes as string) as id_cnes,
@@ -100,17 +92,20 @@ with
             material_descricao,
             safe_cast(material_quantidade as int64) as material_quantidade,
             lower({{ clean_name_string("armazem") }}) as armazem,
-            
+
             struct(
                 safe_cast(data_replicacao as datetime) as updated_at,
                 safe_cast(loaded_at as timestamp) as loaded_at
             ) as metadados,
 
-            cast(safe_cast(data_replicacao as datetime) as date) as particao_data_posicao
+            particao_data_posicao
 
-        from renamed
+        from data_replicacao_sem_hora
     )
 
 select *
 from final
-qualify row_number() over(partition by id_surrogate order by metadados.updated_at desc) = 1
+qualify row_number() over(
+    partition by id_surrogate
+    order by metadados.updated_at desc
+) = 1

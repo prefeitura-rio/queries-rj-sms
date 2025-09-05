@@ -38,5 +38,5 @@ select
     SAFE_CAST(loaded_at as timestamp) as loaded_at,
     ano_particao,
     mes_particao,
-    data_particao,
+    data_particao
 from source

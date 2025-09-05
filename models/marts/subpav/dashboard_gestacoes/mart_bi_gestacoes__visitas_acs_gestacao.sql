@@ -5,7 +5,6 @@
     )
 }}
 
-
 WITH 
 
 marcadores_temporais AS (
@@ -21,6 +20,7 @@ marcadores_temporais AS (
    data_fim_efetiva,
    clinica_nome AS unidade_APS_PN,
    equipe_nome AS equipe_PN_APS
+--  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
 
@@ -40,6 +40,8 @@ visitas_com_join AS (
    mt.data_inicio,
    mt.data_fim,
    mt.data_fim_efetiva
+--  FROM {{ ref('mart_historico_clinico__episodio') }} ea
+--  FROM `rj-sms-sandbox.sub_pav_us._episodio` ea
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente

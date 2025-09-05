@@ -9,10 +9,12 @@
             "data_type": "date",
             "granularity": "day"
         },
-        unique_key=['cpf', 'id_cnes']
+        unique_key=['cpf', 'id_cnes'],
         cluster_by=['cpf','id_cnes']
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 WITH
 
@@ -21,7 +23,7 @@ WITH
             *
         FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'cadastro') }}
         {% if is_incremental() %}
-            WHERE DATE(extracted_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            WHERE data_particao > '{{last_partition}}'
         {% endif %}
     ),
 

@@ -1,41 +1,27 @@
 {{
     config(
-        alias="vacinacao",
-        labels={
-            "dado_publico": "nao",
-            "dado_pessoal": "nao",
-            "dado_anonimizado": "nao",
-            "dado_sensivel_saude": "nao",
-        },
+        alias="vacinacao_historico",
         partition_by={
             "field": "particao_data_vacinacao",
             "data_type": "date",
-            "granularity": "month",
-        },
+            "granularity": "month"
+        }
     )
 }}
 
-with
+with 
     source as (
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap10") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap21") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap22") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap31") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap32") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap33") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap40") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap51") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap52") }}
-        union all
-        select * from {{ source("brutos_prontuario_vitacare_api_staging", "vacinacao_ap53") }}
+        select 
+            data, 
+            _source_cnes, 
+            _source_ap, 
+            safe_cast(_target_date as string) as _target_date, 
+            _endpoint,
+            _loaded_at,
+            safe_cast(extract(year from safe_cast(_loaded_at as timestamp)) as string) as ano_particao,
+            safe_cast(extract(month from safe_cast(_loaded_at as timestamp)) as string) as mes_particao,
+            safe_cast(safe_cast(_loaded_at as timestamp) as date)  as data_particao   
+        from {{ source("brutos_prontuario_vitacare_api_centralizadora_staging", "vacinacao_historico") }}
     ),
 
     renamed as (
@@ -147,6 +133,7 @@ with
             id_microarea,
             paciente_id_prontuario,
             paciente_cns,
+            paciente_cpf,
 
             -- Common Fields
             estabelecimento_nome,
@@ -193,3 +180,4 @@ with
 select *
 from final
 qualify row_number() over(partition by id_surrogate order by metadados.updated_at desc) = 1
+

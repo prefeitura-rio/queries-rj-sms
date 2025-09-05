@@ -5,7 +5,7 @@
         materialized="incremental",
         incremental_strategy='merge', 
         unique_key=['id_prontuario_global'],
-        cluster_by="cpf",
+        cluster_by=['id_prontuario_global'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -71,7 +71,7 @@ with
         left join
             dim_equipe on atendimentos.profissional_equipe_cod_ine = dim_equipe.n_ine
         {% if is_incremental() %} 
-        where data_particao >=  {{ partitions_to_replace }}
+        where atendimentos.data_particao >=  {{ partitions_to_replace }}
         {% endif %}
             
     ),

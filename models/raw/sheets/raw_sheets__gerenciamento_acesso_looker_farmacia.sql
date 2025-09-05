@@ -2,8 +2,10 @@
     config(
         schema="brutos_sheets",
         alias="gerenciamento_acesso_looker_farmacia",
+        tags=["daily"],
     )
 }}
+
 with
     source as (
         select *

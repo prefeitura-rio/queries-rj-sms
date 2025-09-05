@@ -38,7 +38,7 @@ with
       datalake_loaded_at as momento_ingestao,
 
       'paciente' as tipo_registro
-    from {{ source('brutos_prontuario_vitacare_staging', 'paciente_continuo') }} trans
+    from {{ source('brutos_prontuario_vitacare_api_staging', 'paciente_continuo') }} trans
 
     union all
 
@@ -54,7 +54,7 @@ with
       datalake_loaded_at as momento_ingestao,
 
       'atendimento' as tipo_registro
-    from {{ source('brutos_prontuario_vitacare_staging', 'atendimento_continuo') }} trans
+    from {{ source('brutos_prontuario_vitacare_api_staging', 'atendimento_continuo') }} trans
   ),
   transmissoes_individuais as (
     select *

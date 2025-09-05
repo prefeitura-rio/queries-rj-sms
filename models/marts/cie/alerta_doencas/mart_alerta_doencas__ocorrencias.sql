@@ -13,24 +13,6 @@
 
 
 with
-    -- Ocorrencias (episódios)
-    ocorrencias_legado as (
-        select
-            patient_cpf as cpf,
-            payload_cnes as cnes,
-            data__unidade_ap as ap,
-            safe_cast(data__datahora_inicio_atendimento as datetime) as datahora_inicio,
-            safe_cast(data__datahora_fim_atendimento as datetime) as datahora_fim,
-            data__profissional__equipe__cod_equipe as cod_equipe_profissional,
-            data__profissional__equipe__cod_ine as cod_ine_equipe_profissional,
-            data__profissional__equipe__nome as nome_equipe_profissional,
-            data__tipo_consulta as tipo,
-            data__condicoes as condicoes,
-            data__soap_subjetivo_motivo as soap_subjetivo_motivo,
-            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio,
-            safe_cast(datalake_loaded_at as timestamp) as datalake_loaded_at
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_eventos_cloned") }}
-    ),
 
     ocorrencias_continuo as (
         select
@@ -52,15 +34,12 @@ with
             json_extract_scalar(data, "$.soap_subjetivo_motivo") as soap_subjetivo_motivo,
             concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id_episodio,
             safe_cast(datalake_loaded_at as timestamp) as datalake_loaded_at
-        from {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+        from {{ source("brutos_prontuario_vitacare_api_staging", "atendimento_continuo") }}
     ),
 
     ocorrencias_deduplicadas as (
         select *
         from ocorrencias_continuo
-        union all
-        select *
-        from ocorrencias_legado
         qualify
             row_number() over (
                 partition by id_episodio order by datalake_loaded_at desc

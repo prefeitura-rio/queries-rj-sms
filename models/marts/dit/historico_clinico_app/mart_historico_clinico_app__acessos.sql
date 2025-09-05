@@ -90,7 +90,7 @@ with
   -- Partição
   -- -----------------------------------------
   particionado as (
-    select 
+    select
       safe_cast(cpf as int64) as cpf_particao,
       *
     from deduped

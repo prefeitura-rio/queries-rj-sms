@@ -6,7 +6,9 @@
     partition_by={"field": "data_particao", "data_type": "date", "granularity": "day"}
 ) }}
 
-{% set last_partition = get_last_partition_date(this) %}
+{% set last_30_days = (
+    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
+) %}
 
 WITH bruto_atendimento AS (
   SELECT
@@ -16,11 +18,11 @@ WITH bruto_atendimento AS (
     SAFE_CAST(datalake_loaded_at AS DATETIME) AS loaded_at,
     DATE(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.datahora_fim_atendimento') AS DATETIME)) AS data_particao,
     data,
-  FROM {{ source("brutos_prontuario_vitacare_staging", "atendimento_continuo") }}
+  FROM {{ source("brutos_prontuario_vitacare_staging_dev", "atendimento_continuo") }}
   WHERE JSON_EXTRACT(data, '$.saude_crianca') IS NOT NULL
   AND JSON_EXTRACT(data, '$.saude_crianca') != '[]'
   {% if is_incremental() %}
-    AND DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+    AND DATE(datalake_loaded_at, 'America/Sao_Paulo') >={{ last_30_days }}
   {% endif %}
   qualify row_number() over(partition by id_prontuario_global order by datalake_loaded_at desc) = 1
 ),

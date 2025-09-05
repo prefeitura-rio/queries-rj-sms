@@ -1,30 +1,18 @@
 {% macro process_null(texto) %}
-    nullif(
-        nullif(
-            nullif(
-                nullif(
-                    nullif(
-                        nullif(
-                            nullif(
-                                nullif(
-                                    nullif(
-                                        nullif(nullif(nullif({{ texto }}, 'null'), 'None'), ''),
-                                        'NaT'
-                                    ),
-                                    'nan'
-                                ),
-                                'Null'
-                            ),
-                            'NULL'
-                        ),
-                        'NONE'
-                    ),
-                    'none'
-                ),
-                'nat'
-            ),
-            'NA'
+    if(
+        lower(
+            trim({{ texto }})
+        ) in (
+            '',
+            '-',
+            'null',
+            'none',
+            'n/a',
+            'na',
+            'nan',
+            'nat'
         ),
-        'na'
+        null,
+        {{ texto }}
     )
 {% endmacro %}

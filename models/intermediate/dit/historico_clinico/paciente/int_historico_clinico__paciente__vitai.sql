@@ -370,8 +370,8 @@ with
         select
             cpf,
             cpf_valido_indicador,
-            {{ proper_br("nome") }} as nome,
-            {{ proper_br("nome_social") }} as nome_social,
+            {{ proper_br(remove_invalid_names("nome")) }} as nome,
+            {{ proper_br(remove_invalid_names(eliminate_babies("nome_social"))) }} as nome_social,
             data_nascimento,
             case
                 when genero = "M"
@@ -387,10 +387,14 @@ with
                 then initcap("PRETA")
                 else initcap(raca)
             end as raca,
-            case when obito_data is not null then true else false end as obito_indicador,
+            case
+                when obito_data is not null
+                then true
+                else false
+            end as obito_indicador,
             obito_data,
-            case when mae_nome in ("NONE") then null else mae_nome end as mae_nome,
-            pai_nome,
+            {{ proper_br(remove_invalid_names("mae_nome")) }} as mae_nome,
+            {{ proper_br(remove_invalid_names("pai_nome")) }} as pai_nome,
             row_number() over (partition by cpf order by updated_at) as rank
         from vitai_tb
         group by
@@ -414,6 +418,21 @@ with
             end
     ),
 
+    vitai_paciente_nomes_unicos as (
+        select
+            * except (nome_social),
+
+            case
+                when {{ is_same_name("nome", "nome_social") }}
+                then null
+                when {{ is_same_name("mae_nome", "nome_social" )}}
+                then null
+                else nome_social
+            end as nome_social
+
+        from vitai_paciente
+    ),
+
     paciente_metadados as (
         select
             cpf,
@@ -431,7 +450,7 @@ with
                 count(distinct cpf_valido_indicador) as qtd_cpfs_validos,
                 "vitai" as sistema
             ) as metadados
-        from vitai_paciente
+        from vitai_paciente_nomes_unicos
         group by cpf
     ),
 
@@ -441,20 +460,20 @@ with
             array_agg(
                 struct(
                     cpf_valido_indicador,
-                    {{ proper_br("nome") }} as nome,
-                    {{ proper_br("nome_social") }} as nome_social,
+                    nome,
+                    nome_social,
                     data_nascimento,
                     lower(genero) as genero,
                     lower(raca) as raca,
                     obito_indicador,
                     obito_data,
-                    {{ proper_br("mae_nome") }} as mae_nome,
-                    {{ proper_br("pai_nome") }} as pai_nome,
+                    mae_nome,
+                    pai_nome,
                     rank,
                     pm.metadados
                 )
             ) as dados
-        from vitai_paciente pc
+        from vitai_paciente_nomes_unicos pc
         join paciente_metadados as pm on pc.cpf = pm.cpf
         group by cpf
     ),
