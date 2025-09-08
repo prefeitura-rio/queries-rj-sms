@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: raw_plataforma_smsrio__paciente_cadastro
+    description: "Tabela bruta com informações cadastrais de pacientes da plataforma SMS-Rio. Cada linha representa um paciente único com seus dados demográficos e de vínculo com a unidade de saúde."
+    columns:
+      - name: id
+        description: "Identificador único para cada paciente na plataforma. Chave primária da tabela."
+        tests:
+          - unique
+          - not_null
+      - name: cpf
+        description: "CPF (Cadastro de Pessoas Físicas) do paciente. Utilizado para identificação unívoca."
+      - name: cns
+        description: "Cartão Nacional de Saúde (CNS) definitivo do paciente."
+      - name: nome
+        description: "Nome completo do paciente."
+      - name: nome_mae
+        description: "Nome completo da mãe do paciente."
+      - name: nome_pai
+        description: "Nome completo do pai do paciente."
+      - name: data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: sexo
+        description: "Sexo do paciente (ex: Masculino, Feminino)."
+      - name: obito
+        description: "Indicação se o paciente está obito."
+      - name: data_obito
+        description: "Data de óbito do paciente."
+      - name: email
+        description: "Endereço de e-mail do paciente."
+      - name: telefone
+        description: "Número de telefone do paciente."
+      - name: nacionalidade
+        description: "Nacionalidade do paciente."
+      - name: codigo_municipio_nascimento
+        description: "Código do município de nascimento do paciente."
+      - name: uf_nascimento
+        description: "Unidade Federativa de nascimento do paciente."
+      - name: codigo_pais_nascimento
+        description: "Código do país de nascimento do paciente."
+      - name: endereco_tipo_logradouro
+        description: "Tipo de logradouro do endereço do paciente."
+      - name: endereco_cep
+        description: "CEP do endereço do paciente."
+      - name: endereco_logradouro
+        description: "Logradouro do endereço do paciente."
+      - name: endereco_numero
+        description: "Número do endereço do paciente."
+      - name: endereco_comunidade
+        description: "Comunidade onde o paciente reside."
+      - name: endereco_complemento
+        description: "Complemento do endereço do paciente."
+      - name: endereco_bairro
+        description: "Bairro do endereço do paciente."
+      - name: endereco_municipio_codigo
+        description: "Código do município de residência do paciente."
+      - name: endereco_uf
+        description: "Unidade Federativa de residência do paciente."
+      - name: raca_cor
+        description: "Raça ou cor autodeclarada pelo paciente."
+      - name: id_cnes_unidade_cadastro
+        description: "Identificador CNES da unidade de saúde onde o cadastro do paciente foi realizado ou está vinculado."
+        tests:
+          - relationships:
+              to: ref('raw_plataforma_smsrio__estabelecimento')
+              field: id_cnes
+      - name: updated_at
+        description: "Data e hora da última atualização do registro na origem."
+      - name: loaded_at
+        description: "Data e hora do carregamento do registro no datalake."
+      - name: telefone_lista
+        description: "Lista de telefones associados ao paciente."
+      - name: cns_lista
+        description: "Lista de Cartões Nacionais de Saúde (CNS) associados ao paciente."

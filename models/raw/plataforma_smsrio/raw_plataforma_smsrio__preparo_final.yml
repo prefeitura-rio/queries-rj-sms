@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: raw_plataforma_smsrio__preparo_final
+    description: "Tabela bruta com as instruções de preparo final para pacientes antes da realização de procedimentos agendados. Cada linha representa um conjunto de instruções para um procedimento específico."
+    columns:
+      - name: id
+        description: "Identificador único para cada conjunto de instruções de preparo. Chave primária da tabela."
+        tests:
+          - unique
+          - not_null
+      - name: id_cnes
+        description: "Identificador CNES da unidade de saúde que fornece as instruções de preparo. Chave estrangeira para a tabela `raw_plataforma_smsrio__estabelecimento`."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('raw_plataforma_smsrio__estabelecimento')
+              field: id
+      - name: id_procedimento_unificado
+        description: "Identificador do procedimento ao qual as instruções de preparo se aplicam. Pode ser uma chave estrangeira para uma tabela de procedimentos."
+        tests:
+          - not_null
+      - name: codigo_procedimento_interno
+        description: "Código interno do procedimento."
+      - name: nome_procedimento
+        description: "Nome do procedimento."
+      - name: preparo_procedimento
+        description: 'Preparo do procedimento.'
+      - name: preparo_procedimento_tags_html
+      - name: ativo
+        description: 'Status do procedimento.'
+      - name: data_extracao
+        description: 'Data da extração do registro.'
+      - name: loaded_at
+        description: 'Data do carregamento do registro no datalake.'
