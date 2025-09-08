@@ -54,9 +54,8 @@ with
       {{ process_null("json_extract_scalar(data,'$.soap_avaliacao_observacoes')") }} as avaliacao_observacoes,
       {{ process_null("json_extract_scalar(data,'$.soap_objetivo_descricao')") }} as objetivo_descricao,
       {{ process_null("json_extract_scalar(data,'$.notas_observacoes')") }} as notas_observacoes,
-      cast({{ process_null("json_extract_scalar(data,'$.ut_id')") }} as string) as ut_id,
-      safe_cast({{ process_null("json_extract_scalar(data,'$.realizado')") }} as boolean) as realizado,
-      {{ process_null("json_extract_scalar(data,'$.tipo_atendimento')") }} as tipo_atendimento,
+      safe_cast({{ process_null("json_extract_scalar(data,'$.consulta_realizada')") }} as boolean) as realizado,
+      {{ process_null("json_extract_scalar(data,'$.saude_bucal[0].tipo_atendimento')") }} as tipo_atendimento,
       loaded_at,
       date(datahora_fim_atendimento) as data_particao
     from bruto_atendimento

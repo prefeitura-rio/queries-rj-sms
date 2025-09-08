@@ -14,6 +14,8 @@ with
     diario_padronizado as (
         select
             {{ process_null('title') }} as titulo,
+            {{ process_null('id') }} as id,
+            {{ process_null('act_id') }} as id_oficio,
             {{ process_null('text_title') }} as texto_titulo,
             parse_date('%d/%m/%Y', published_at) as data_publicacao,
             {{ process_null('agency') }} as organizacao_principal, 
