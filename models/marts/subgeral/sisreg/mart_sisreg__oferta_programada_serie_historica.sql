@@ -18,7 +18,7 @@ with
     -- sources
     sisreg as (
         select *
-        from {{ ref("raw_sisreg__oferta_programada") }}
+        from {{ ref("raw_sisreg_web__oferta_programada") }}
         where escala_status != "EXCLUIDA"
         {% if is_incremental() %}
         and data_particao >= '{{ last_partition }}'

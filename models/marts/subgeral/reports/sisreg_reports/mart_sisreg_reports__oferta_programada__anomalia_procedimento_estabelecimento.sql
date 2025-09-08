@@ -16,11 +16,11 @@
 {% set data_atual = run_started_at.strftime("%Y-%m-%d") %}
 
 -- Passo 1: Identificar a data de partição mais recente em
--- 'fct_sisreg_oferta_programada_serie_historica'
+-- 'mart_sisreg__oferta_programada_serie_historica'
 with
     latest_partition_date as (
         select max(data_particao) as max_partition_date
-        from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
+        from {{ ref("mart_sisreg__oferta_programada_serie_historica") }}
     ),
 
     -- Passo 2: Definir os intervalos de tempo relevantes
@@ -66,7 +66,7 @@ with
             string_agg(distinct estabelecimento) as estabelecimento,
             date_trunc(procedimento_vigencia_data, month) as competencia,
             sum(vagas_todas_qtd) as total_vacancies_next_month
-        from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
+        from {{ ref("mart_sisreg__oferta_programada_serie_historica") }}
         where
             data_particao = (select max_partition_date from latest_partition_date)
             and procedimento_vigencia_data

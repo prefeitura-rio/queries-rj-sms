@@ -10,13 +10,8 @@
     )
 }}
 
-{% set last_partition = get_last_partition_date(this) %}
 
 with
-    last_partition as (
-        select max(data_extracao) as max_partition from {{ source("brutos_minhasaude_mongodb_staging", "perfil_acessos") }}
-
-    ),
     source as (
         select
             _id,
@@ -40,7 +35,6 @@ with
             safe_cast(mes_particao as int64) as mes_particao,
             safe_cast(data_particao as date) as data_particao
         from {{ source("brutos_minhasaude_mongodb_staging", "perfil_acessos") }}
-        where data_extracao = (select max_partition from last_partition)
     )
 
 select distinct *

@@ -14,21 +14,21 @@
 with
     marcacoes as (
         select
-            date(data_marcacao) as data_marcacao,
-            procedimento_interno_id,
+            date(data_execucao) as data_execucao,
+            id_procedimento_sisreg,
             paciente_cpf,
-            unidade_executante_id,
+            id_cnes_unidade_executante,
             vaga_consumida_tp
-        from {{ ref("raw_sisreg_api__marcacoes") }}
+        from {{ ref("mart_sisreg__solicitacoes") }}
         where
-            data_marcacao is not null
-            and procedimento_interno_id is not null
+            data_execucao is not null
+            and id_procedimento_sisreg is not null
             and paciente_cpf is not null
-            and unidade_executante_id is not null
+            and id_cnes_unidade_executante is not null
             and vaga_consumida_tp is not null
 
             {% if is_incremental() %}
-                and date(data_marcacao) >= (
+                and date(data_execucao) >= (
                     select
                         coalesce(
                             max(date(data_retorno)),
@@ -41,20 +41,20 @@ with
 
     retornos as (
         select
-            data_marcacao as data_retorno,
-            procedimento_interno_id,
+            data_execucao as data_retorno,
+            id_procedimento_sisreg,
             paciente_cpf,
-            unidade_executante_id
+            id_cnes_unidade_executante
         from marcacoes
         where vaga_consumida_tp = "RETORNO"
     ),
 
     primeira_vez as (
         select
-            data_marcacao as data_primeira_vez,
-            procedimento_interno_id,
+            data_execucao as data_primeira_vez,
+            id_procedimento_sisreg,
             paciente_cpf,
-            unidade_executante_id,
+            id_cnes_unidade_executante,
             vaga_consumida_tp
         from marcacoes
         where vaga_consumida_tp in ('1 VEZ', 'RESERVA TECNICA')
@@ -65,9 +65,9 @@ with
             r.data_retorno,
             p.data_primeira_vez,
             p.vaga_consumida_tp,
-            r.procedimento_interno_id as proced_sisreg_id,
+            r.id_procedimento_sisreg as proced_sisreg_id,
             r.paciente_cpf,
-            r.unidade_executante_id as unidade_exec_cnes,
+            r.id_cnes_unidade_executante as unidade_exec_cnes,
 
             date_diff(
                 r.data_retorno, p.data_primeira_vez, day
@@ -84,17 +84,17 @@ with
         left join
             primeira_vez p
             on p.paciente_cpf = r.paciente_cpf
-            and p.procedimento_interno_id = r.procedimento_interno_id
-            and p.unidade_executante_id = r.unidade_executante_id
+            and p.id_procedimento_sisreg = r.id_procedimento_sisreg
+            and p.id_cnes_unidade_executante = r.id_cnes_unidade_executante
             and p.data_primeira_vez <= r.data_retorno
 
         qualify
             row_number() over (
                 partition by
                     r.data_retorno,
-                    r.procedimento_interno_id,
+                    r.id_procedimento_sisreg,
                     r.paciente_cpf,
-                    r.unidade_executante_id
+                    r.id_cnes_unidade_executante
                 order by
                     p.data_primeira_vez desc,
                     case
