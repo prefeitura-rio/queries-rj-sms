@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__paciente
+    description: Tabela de pacientes, sincronizada com Vitai.
+    columns:
+      - name: gid
+        description: Identificador global do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__paciente__id__not_null
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento na base da Vitai
+        data_type: string
+      - name: cbo_ocupacao
+        description: Código Brasileiro de Ocupações.
+        data_type: string
+      - name: id_cidadao
+        description: Identificador do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: cpf
+        description: CPF do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: raca_cor
+        description: Raça ou cor do cidadão.
+        data_type: string
+      - name: nome_alternativo
+        description: Nome alternativo do cidadão.
+        data_type: string
+      - name: complemento
+        description: Complemento do endereço do cidadão.
+        data_type: string
+      - name: data_nascimento
+        description: Data de nascimento do cidadão.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: transex
+        description: Identificação de transexualidade.
+        data_type: string
+      - name: tipo_logradouro
+        description: Tipo de logradouro do endereço do cidadão.
+        data_type: string
+      - name: nome_logradouro
+        description: Nome do logradouro do endereço do cidadão.
+        data_type: string
+      - name: uf
+        description: Unidade Federativa do endereço do cidadão.
+        data_type: string
+      - name: nacionalidade
+        description: Nacionalidade do cidadão.
+        data_type: string
+      - name: municipio
+        description: Município do endereço do cidadão.
+        data_type: string
+      - name: telefone
+        description: Telefone de contato do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+      - name: nome_mae
+        description: Nome da mãe do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: sexo
+        description: Sexo do cidadão.
+        data_type: string
+      - name: naturalidade
+        description: Naturalidade do cidadão.
+        data_type: string
+      - name: updated_at
+        description: Campo descrevendo a última atualização do registro.
+        data_type: timestamp
+      - name: pais_nascimento
+        description: País de nascimento do cidadão.
+        data_type: string
+      - name: bairro
+        description: Bairro do endereço do cidadão.
+        data_type: string
+      - name: data_obito
+        description: Data de óbito do cidadão, se aplicável.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: numero
+        description: Número do endereço do cidadão.
+        data_type: string
+      - name: numero_prontuario
+        description: Número do prontuário do cidadão.
+        data_type: string
+      - name: nome
+        description: Nome completo do cidadão.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__paciente__imported_at__not_null

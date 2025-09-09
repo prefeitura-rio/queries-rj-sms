@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__basecentral__prescricao
+    description: "Tabela de eventos de prescrição e atendimento, sincronizada com Vitai."
+    columns:
+      - name: gid
+        description: "Identificador global da prescrição na base da Vitai."
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: gid_paciente
+        description: "Identificador global do paciente na base da Vitai."
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: gid_boletim
+        description: "Identificador global do boletim de atendimento na base da Vitai."
+        data_type: string
+
+      - name: gid_estabelecimento
+        description: "Identificador global do estabelecimento na base da Vitai."
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: gid_profissional
+        description: "Identificador global do profissional de saúde responsável na base da Vitai."
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: data_prescricao
+        description: "Data e hora da prescrição."
+        data_type: timestamp
+
+      - name: tipo_prescricao
+        description: "Tipo de prescrição registrada."
+        data_type: string
+
+      - name: urgencia
+        description: "Indica se a prescrição é urgente."
+        data_type: string
+
+      - name: rotina_enfermagem
+        description: "Indica se a prescrição faz parte da rotina de enfermagem."
+        data_type: string
+
+      - name: sigla_estabelecimento
+        description: "Sigla do estabelecimento de atendimento."
+        data_type: string
+
+      - name: nome_estabelecimento
+        description: "Nome do estabelecimento de atendimento."
+        data_type: string
+
+      - name: url_estabelecimento
+        description: "URL base do evento de prescrição."
+        data_type: string
+
+      - name: updated_at
+        description: "Data e hora do último evento de atualização do item prescrito."
+        data_type: timestamp
+
+      - name: centralized_at
+        description: "Data e hora de centralização do evento no sistema."
+        data_type: timestamp
+
+      - name: imported_at
+        description: "Data e hora de importação para o Data Lake."
+        data_type: timestamp
+
+      - name: data_particao
+        description: "Data de particionamento do evento."
+        data_type: date

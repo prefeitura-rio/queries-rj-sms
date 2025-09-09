@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__relato_cirurgico
+    description: >
+      Tabela contendo informações detalhadas sobre os relatos cirúrgicos realizados nos estabelecimentos de saúde.
+    columns:
+      - name: gid
+        description: Identificador único do relato cirúrgico.
+      - name: boletim_gid
+        description: Identificador único do boletim associado ao relato cirúrgico.
+      - name: paciente_gid
+        description: Identificador único do paciente associado ao relato cirúrgico.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: estabelecimento_gid
+        description: Identificador único do estabelecimento de saúde onde ocorreu a cirurgia.
+      - name: cir_data
+        description: Data da cirurgia.
+      - name: nome_especialidade
+        description: Nome da especialidade médica responsável pela cirurgia.
+      - name: status
+        description: Status atual do relato cirúrgico.
+      - name: checkin_sala
+        description: Horário de check-in na sala de cirurgia.
+      - name: cirurgia_inicio
+        description: Horário de início da cirurgia.
+      - name: cirurgia_fim
+        description: Horário de término da cirurgia.
+      - name: checkout_sala
+        description: Horário de check-out da sala de cirurgia.
+      - name: tempo_sala
+        description: Tempo total na sala de cirurgia.
+      - name: anestesia
+        description: Tipo de anestesia utilizada na cirurgia.
+      - name: contaminacao
+        description: Nível de contaminação observado durante a cirurgia.
+      - name: codigo_procedimento
+        description: Código do procedimento cirúrgico realizado.
+      - name: descricao_procedimento
+        description: Descrição do procedimento cirúrgico realizado.
+      - name: codigo_diagnostico
+        description: Código do diagnóstico relacionado à cirurgia.
+      - name: descricao_diagnostico
+        description: Descrição do diagnóstico relacionado à cirurgia.
+      - name: leito_paciente
+        description: Identificação do leito do paciente.
+      - name: equipe
+        description: Equipe médica responsável pela cirurgia.
+      - name: cir_datafinalizado
+        description: Data de finalização do relato cirúrgico.
+      - name: cliente
+        description: Nome ou identificação do cliente associado ao relato cirúrgico.
+      - name: baseurl
+        description: URL base relacionada ao sistema do relato cirúrgico.
+      - name: estabelecimento_sigla
+        description: Sigla do estabelecimento de saúde onde ocorreu a cirurgia.
+      - name: codigo_interno
+        description: Código interno do relato cirúrgico.
+      - name: updated_at
+        description: Data e hora da última atualização do relato cirúrgico.
+      - name: imported_at
+        description: Data e hora da importação dos dados para o data lake.
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp

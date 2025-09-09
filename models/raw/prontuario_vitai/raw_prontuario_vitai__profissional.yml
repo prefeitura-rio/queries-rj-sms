@@ -1,0 +1,63 @@
+version: 2
+
+models: 
+  - name: raw_prontuario_vitai__profissional
+    description: Tabela de profissionais, sincronizada com Vitai.
+    columns:
+      - name: gid
+        description: Identificador global do profissional na base da Vitai.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__profissional__id__not_null
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento na base da Vitai.
+        data_type: string
+      - name: numero_conselho
+        description: Número do conselho do profissional.
+        data_type: string
+      - name: conselho_regional
+        description: Conselho regional do profissional.
+        data_type: string
+      - name: codigo_interno
+        description: Código interno do profissional.
+        data_type: string
+      - name: nome
+        description: Nome do profissional.
+        data_type: string
+      - name: cpf
+        description: CPF do profissional.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do profissional.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: sigla_conselho
+        description: Sigla do conselho do profissional.
+        data_type: string
+      - name: uf_conselho
+        description: Unidade Federativa do conselho do profissional.
+        data_type: string
+      - name: cbo_descricao
+        description: Descrição do Código Brasileiro de Ocupações.
+        data_type: string
+      - name: cbo
+        description: Código Brasileiro de Ocupações.
+        data_type: string
+      - name: situacao
+        description: Situação do profissional.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
