@@ -282,6 +282,13 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      bcadastro:
+        +schema: brutos_bcadastro
+        +tags: ["daily", "bcadastro"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       osinfo:
         +schema: brutos_osinfo
         +tags: "daily"
@@ -516,6 +523,14 @@ models:
         whatsapp:
           +tags: ["daily", "iplanrio", "whatsapp"]
           +schema: projeto_whatsapp
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: iplanrio
+        pic:
+          +schema: projeto_pic
+          +tags: ["daily", "iplanrio", "pic"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
