@@ -39,6 +39,7 @@ with
             'Infancia' as tipo_publico
         FROM {{ ref("raw_prontuario_vitacare__paciente") }}
         WHERE data_nascimento > DATE_SUB(CURRENT_DATE(), INTERVAL 6 YEAR) and cpf <> 'NAO TEM'
+        qualify row_number() over (partition by cpf order by source_updated_at desc) = 1
     ),
 
     -- ------------------------------------------------------------
