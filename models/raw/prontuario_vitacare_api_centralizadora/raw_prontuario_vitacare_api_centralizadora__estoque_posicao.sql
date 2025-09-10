@@ -71,11 +71,11 @@ with
     final as (
         select
             -- Primary Key
-            concat(id_cnes, '.', id, '.', particao_data_posicao) as id,
+            concat(requisicao_id_cnes, '.', id, '.', particao_data_posicao) as id,
             {{
                 dbt_utils.generate_surrogate_key(
                     [
-                        "id_cnes",
+                        "requisicao_id_cnes",
                         "id_material",
                         "id_lote",
                         "armazem",
@@ -87,7 +87,7 @@ with
 
             -- Foreign Keys
             safe_cast(area_programatica as string) as area_programatica,
-            safe_cast(id_cnes as string) as id_cnes,
+            safe_cast(requisicao_id_cnes as string) as id_cnes,
             safe_cast(id_lote as string) as id_lote,
             regexp_replace(
                 safe_cast(id_material as string), r'[^a-zA-Z0-9]', ''
