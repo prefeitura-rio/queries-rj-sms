@@ -16,7 +16,7 @@
   )
 }}
 
-{%- set months_lookback = var('months_lookback', 2) -%}
+{%- set months_lookback = var('months_lookback', 1) -%}
 {%- set min_build_date = "DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL " ~ months_lookback ~ " MONTH), MONTH)" -%}
 
 with
