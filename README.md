@@ -105,4 +105,4 @@ Não esqueça de checar se você está logado no seu ambiente com a sua conta ce
 ---
 
 ## Qualquer dúvida, erro, crítica ou sugestão:
-### Basta entrar em contato com o [Administrador](@TanookiVerde) ❤️
+### Basta entrar em contato com o [Administrador](https://github.com/TanookiVerde) ❤️
