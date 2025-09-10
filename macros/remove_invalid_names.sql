@@ -31,6 +31,34 @@ case
     )
         then null
 
+    when REGEXP_CONTAINS(
+        REGEXP_REPLACE(
+            NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
+            r'[^\p{Letter} ]', -- Substitui tudo que não for letra ou espaço
+            ''                 -- por nada
+        ),
+        r'(?i)^\s*T\s*E\s*S\s*T\s*E\s'
+    )
+        then null
+
+    -- Uma quantidade absurda de "IGNORADO"s escrito errado
+    -- Aqui queremos pegar:
+    -- * Basicamente todas as escritas incorretas de 'ignorado' encontradas
+    -- * pai/mãe ignorad@
+    -- * foi ignorado
+    -- * "IGN.. M" ou "IGN.. F" (descrevendo sexo no nome desconhecido)
+    -- Mas precisamos ter cuidado pra não apagar nomes reais
+    -- ex.: Ignacio, Igor, etc
+    when REGEXP_CONTAINS(
+        REGEXP_REPLACE(
+            NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
+            r'[^\p{Letter}]', -- Substitui tudo que não for letra ou espaço
+            ''                 -- por nada
+        ),
+        r'(?i)^(PAI|E|OU|MAE|FOI)*((IN?G(N|M)?)+(X|M|F)*$|(GNO|IGBNO|IGINO|IGN|IGNA|IGNBO|IGNO|IGNOA|IGNOI|IGNOP|IGNRO|IGONA|IGONO|IGORA|IGTNO|IGUNO|INGNO|INO|UGNO)R*A?N?D?(O|A|AO|OA|OS|R|FO|OU)?$)'
+    )
+        then null
+
     -- Descrições de falta de dados
     when REGEXP_REPLACE(
         TRIM(
@@ -58,10 +86,16 @@ case
         'TRUE', 'FALSE',
         -- Typos
         'NAP', 'NAAO', 'N A O',
+        'NAO N',
         ----------------------
         -- Não consta
         ----------------------
-        'CONSTA', 'N CONSTA',
+        'NAO C',
+        'NAO CO',
+        'CONSTA',
+        'N CONST',
+        'N CONSTA',
+        'NAO CONST',
         'NAO CONSTA',
         'NAO CONSTA NO RG',
         'NAO CONSTA NO DOC',
@@ -69,9 +103,13 @@ case
         'FALTA',
         'NAO DIZ',
         -- Typos
+        'N COSTA',
+        'N COSNTA',
         'NAO CONTA',
+        'NAO CONSA',
         'NAO COSTA',
         'NAO COSNTA',
+        'N C E',
         ----------------------
         'NDO', 'NDA',
         'N DEC',
@@ -87,6 +125,7 @@ case
         'NAO DECLAROU',
         'NAO DECLARANTE',
         -- Typos
+        'NADECLA',
         'N AO DECLARADO',
         'NAO DE CLARADO',
         'NAO DECALARADO',
@@ -102,6 +141,12 @@ case
         ----------------------
         -- Não informa
         ----------------------
+        'INFO',
+        'INFOR',
+        'INFORM',
+        'INFORMA',
+        'INFORMAR',
+        'INFORMADO',
         'NI', 'IN',
         'NIF', 'INF',
         'N I',
@@ -115,6 +160,7 @@ case
         'N INFORMADO', 'N INFORMADA',
         'NINF',
         'NINFO',
+        'NAOINFO',
         'NAO I',
         'NAO IN',
         'NAO INF',
@@ -133,15 +179,22 @@ case
         'NAO QUIS INFORMAR',
         'NAO FOI INFORMADO',
         'NAO DISSE',
+        'NAO DITO',
+        'NAO DEU',
         -- Typos
+        'INFORN',
+        'INFOPR',
         'M INF',
         'N FOR',
         'N AO INFORMADO',
         'N IFORMADO',
         'N NIFORMADO',
         'N UNF',
+        'N INDF',
+        'N INFOT',
         'NAI INF',
         'NAO ,INF',
+        'NAO ENF',
         'NAO IF',
         'NAO IFN',
         'NAO IFORMADO',
@@ -149,6 +202,7 @@ case
         'NAO IMF',
         'NAO IMFORMADO',
         'NAO IN F',
+        'NAO INFR',
         'NAO INDORMADO',
         'NAO INFIRMADO',
         'NAO INFOEMADO',
@@ -177,6 +231,8 @@ case
         'NAO NINFORMADO',
         'NAOIN',
         'NAOINF',
+        'NAOIMF',
+        'NAOINFF',
         'NAOINFORMA',
         'NAOINFORMADO',
         'NAONF',
@@ -195,6 +251,9 @@ case
         'NAO IDENTI',
         'NAO IDENTIFICADO', 'NAO IDENTIFICADA',
         -- Typos
+        'N IDENT',
+        'N IDENF',
+        'NAI ID',
         'NAO IDENFICADO',
         'NAO IND',
         'NAO INDENT',
@@ -202,28 +261,53 @@ case
         ----------------------
         -- Não possui/tem/há/trouxe
         ----------------------
+        'POSSUI',
         'NAOP',
+        'N POSSUI',
         'NAO POSSUI', 'NAOPOSSUI',
 
         'TEM',
         'NTEM', 'N TEM',
+        'NAO T',
         'NAOTEM', 'NAO TEM',
+        'TEM NAUM',
 
         'N HA', 'HA',
         'NAOHA', 'NAO HA',
 
         'NAO TROUXE', 'NAO TROUXE DOC',
+
+        'N FEZ',
+        'NAO FEZ',
+
+        'EXISTE',
+        'N EXISTE',
+        'NAO EXISTE',
+        'INEXISTE',
         -- Typos
+        'N ATEM',
+        'NAA TEM',
+        'NAAO TEM',
         'NAO TE',
         'NAO TM',
         'NAI TEM',
         'NOA TEM',
+        'ANO TEM',
+        'NAO TEN',
+        'NAO TEMN',
         'NA', 'N A',
+        'NAO JA',
+        'NAI HA',
+        'NAP TEM',
+        'NAT TEM',
+        'NAO TWM',
+        'INESISTE',
         ----------------------
         -- Não sabe
         ----------------------
         'NSA',
         'SABE',
+        'N SEI',
         'N SABE',
         'NAO SEI',
         'NAO SABE',
@@ -233,16 +317,22 @@ case
         'NAO SOUBE',
         'NAO SOUBE INFORMAR',
         'NAO LEMBRA',
+        'SEI LA',
         -- Typos
         'SOUBE',
+        'NAO SBE',
+        'NAO SBAE',
         ----------------------
         -- Sem informação
         ----------------------
-        'SI', 'S I', 'S IN', 'SIN',
+        'SI', 'S I', 'S IN',
+        'SIN',
         'SINF',
+        'SINFO',
         'S INF',
         'S INFO',
         'S INFOR',
+        'S INFORM',
         'SEM', 'S E M',
         'SEM I',
         'SEM IN',
@@ -254,11 +344,11 @@ case
         'SEM INFORMACA',
         'SEM INFORMACAO',
         'SEM INFORMACOES',
-        'INFO',
-        'INFOR',
-        'INFORMA',
         'INFORMACAO',
         -- Typos
+        'DEM INF',
+        'INF SEM',
+        'S EM',
         'SE',
         'SE INF',
         'SEN',
@@ -276,7 +366,11 @@ case
         'SEM IM',
         'SEM IMFORMACAO',
         'SEMIF',
+        'SEMIN',
+        'SEMINFOR',
+        'SEMM',
         'SEM IMF',
+        'SEM IND',
         'SRM INF',
         'SM IN',
         'SM INF',
@@ -284,12 +378,17 @@ case
         ----------------------
         -- Sem nome
         ----------------------
-        'SEMM',
+        'SNOME',
         'S NOME',
         'SEM N',
+        'SEM NOM',
         'SEM NOME',
+        'NOME SEM',
         'S ID',
+        'S IDENT',
         'SEM ID',
+        'SEM IDEN',
+        'SEM IDENT',
         'SEM IDENTIFICACAO',
         'SEM R',
         'SEM RG',
@@ -301,6 +400,13 @@ case
         'SEM DOCUMENTACAO',
         'SEM DADOS',
         -- Typos
+        'SE NOME',
+        'SM NOME',
+        'SEN NOME',
+        'SEM NME',
+        'SME NOME',
+        'SE IDE',
+        'SE IDEN',
         'SEN RG',
         'SEMR',
         'SEM IDENTIFICAO',
@@ -313,16 +419,37 @@ case
         ----------------------
         -- Sem filiação/pai/mãe
         ----------------------
+        'SEM F',
         'SEM FILIACAO',
-        'SMAE', 'S MAE',
+        'SMAE', 'S MAE', 'SS MAE',
+        'SM MAE',
+        'SO MAE', 'SO A MAE',
         'SEM MAE', 'TEM MAE',
         'MAE', 'MAE DE',
         'MAE IG',
-        'SPAI', 'S PAI',
+        'MAENAO',
+        'NOME MAE',
+        'MAE VIVA',
+        'FALTA MAE',
+
+        'SPAI', 'S PAI', 'SS PAI',
+        'SM PAI',
+        'SO PAI', 'SO O PAI',
         'SEM PAI', 'TEM PAI',
         'PAI', 'PAI DE',
         'PAI IG',
+        'PAINAO',
+        'NOME PAI',
+        'PAI VIVO',
+        'FALTA PAI',
+
+        'SEM NADA',
+
         'ORFA', 'ORFAO',
+        -- Typos
+        'SEEM MAE', 'SEEM PAI',
+        'SEMM MAE', 'SEMM PAI',
+        'SEM PAIO', 'SEM PAOI',
         ----------------------
         -- Desconhecido
         ----------------------
@@ -332,31 +459,34 @@ case
         'C DESC', 'D DESC',
         'DESCO',
         'DESCON',
+        'DESCONH',
+        'DESCONHE',
+        'DESCONHEC',
         'DESCONHECIDO', 'DESCONHECIDA',
+        'CONHECIDO', 'CONHECIDA',
+        'PAI DESC',
 
         'NOME', 'NADA', 'NXX',
         'NE', 'NEM', 'NENHUM',
-        'NAO C',
+        'NINGUEM',
 
-        'IG', 'I G',
-        'IGN',
-        'IGNO',
-        'IGNORA', 'IGNORO',
-        'IGNORADO', 'IGNORADA',
-        'IGNOROU',
+        'ANONIMO',
         -- Typos
         'DEC',
         'DSEC',
         'DES C',
+        'DESCX',
+        'DESXC',
+        'DESWC',
+        'DEWSC',
+        'DESCOHECE',
+        'DESCONHCE',
+        'DESOCNHCE',
+        'DESONHECE',
         'NEHUM',
         'NENHM',
-        'IGM',
-        'ING',
-        'IGORADO', 'IGORADA',
-        'IGNORDO',
-        'GNORADO',
         ----------------------
-        -- Mudança
+        -- Mudança/ausência
         ----------------------
         'NAO MORA',
         'MUDOU',
@@ -368,16 +498,31 @@ case
         'FORA DO TERRITORIO',
         'FORA DE AREA',
         'AUSENTE',
+        'INDISP',
+        'INDISPONIVEL',
+        'NAO ESTA',
+        -- Typo
+        'OUSENTE',
+        'AUSENE',
+        'AUSENT',
+        'AUSETE',
+        'AUDENTE',
+        'AUSNETE',
+        'AUXENTE',
+        'AUJSENTE',
         ----------------------
         -- Óbito
         ----------------------
         'INATIVADO', 'INATIVADA',
         'FALECEU',
         'FALECIDO', 'FALECIDA',
+        'FALECIDOS',
         'PACIENTEFALECEU', 'PACIENTE FALECEU',
         'OBITO',
         'MORTO',
-        'SEM FUTURO', 'PROVISORIO',
+        'NAO VIVO',
+        -- Typos
+        'FELECIDO', 'FELECIDA',
         ----------------------
         -- Descrições
         ----------------------
@@ -385,19 +530,52 @@ case
         'CADEIRANTE',
         'PROFESSOR', 'PROFESSORA',
         'ATUALIZADO SMS',
+        'CASADO', 'CASADA',
+        'MASCULINO', 'FEMININO',
+        'PACIENTE',
+        'PRESENTE',
+        ----------------------
+        -- Outros
+        ----------------------
         'OUTRO', 'OUTROS',
         'OUTRA', 'OUTRAS',
         'MESMO', 'MESMA',
-        'CASADO', 'CASADA',
-        ----------------------
-        'TESTE', 'TESTE TESTE', 'TESTE TESTE TESTE',
-        'TESTE MAE',
-        'TESTE NOME SOCIAL',
+
+        'INSERIR',
+        'PREENCHER',
+        'COMPLETAR',
+        'CONFERIR',
+        'PENDENTE',
+        'PROVISORIO',
+        'CADASTRAR',
+        'CONFIRMAR',
+        'DECLARADO', 'DECLARADA',
+
+        'OCULTO', 'OCULTA',
+        'OMITIDO', 'OMITIDA',
+        'ILEGIVEL',
+        'INVALIDO',
+
+        'PROCESSO',
+        'REGISTRO',
+
+        'IS NOT',
+        'PROPRIO',
+        'RELATOU',
+        'INDICADO', 'INDICADA',
+        'DEFINIDO',
+        'NAO PODE',
+        'NAO RESP',
+        'SEM FUTURO',
+        -- Typos
+        'OMITISO',
+        'OMOTIDO',
+        'DECALRADO',
         ----------------------
         'PLANO EMPRESA',
         'PLANO INDIVIDUAL',
         ----------------------
-        'ABC', 'ASD'
+        'ABC', 'ASD', 'AAA BBB'
         ----------------------
     )
         then null
