@@ -1,5 +1,6 @@
--- models/brutos_sisreg_api/marcacoes.sql
 -- noqa: disable=LT08
+
+-- Obs: `particao_data` vem de `data_extracao`
 {{
   config(
     enabled = true,
@@ -11,29 +12,34 @@
     partition_by = {
       "field": "data_atualizacao",
       "data_type": "date",
-      "granularity": "month"
+      "granularity": "day"
     },
 
-    cluster_by = ['unidade_solicitante_id','unidade_executante_id','procedimento_interno_id'],
+    cluster_by = ['solicitacao_id'],
     on_schema_change = 'sync_all_columns'
   )
 }}
--- Obs: `particao_data` vem de `data_extracao`
+
 
 {% set months_lookback = var('months_lookback', 3) %}
 
 with
-  latest_src_partition as (
-    select max(cast(data_particao as date)) as latest_load_dt
-    from {{ ref('raw_sisreg_api_log__logs') }}
-    where bq_table = 'marcacoes'
-  ),
+    latest_src_partition as (
+        select max(cast(data_particao as date)) as latest_load_dt
+        from {{ ref('raw_sisreg_api_log__logs') }}
+        where bq_table = 'marcacoes'
+    ),
 
-  sisreg as (
-    select s.*
-    from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
-    where cast(s.data_particao as date) = (select latest_load_dt from latest_src_partition)
-  ),
+    sisreg as (
+        select
+            s.*,
+            safe.parse_json(replace(s.laudo, "'", '"')) as laudo_json_transformed
+
+        from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
+        where cast(s.data_particao as date) = (select latest_load_dt from latest_src_partition)
+            and safe_cast(s.data_atualizacao as timestamp) >= timestamp(date_sub(current_date(), interval {{ months_lookback }} month))
+            and safe_cast(s.data_atualizacao as timestamp) <  timestamp(date_add(current_date(), interval 1 day))
+    ),
 
     sisreg_transformed as (
         select
@@ -45,9 +51,9 @@ with
             safe_cast(
                 {{ process_null("data_solicitacao") }} as timestamp
             ) as data_solicitacao,
-            safe_cast(
+            safe_cast(safe_cast(
                 {{ process_null("data_atualizacao") }} as timestamp
-            ) as data_atualizacao,
+            ) as date) as data_atualizacao,
             safe_cast(
                 {{ process_null("data_cancelamento") }} as timestamp
             ) as data_cancelamento,
@@ -197,13 +203,11 @@ with
             as paciente_tp_logradouro_res,
 
             -- Laudo
-            json_value(laudo_json, '$.codigo_cnes_operador') as laudo_operador_cnes_id,
-            json_value(laudo_json, '$.tipo_descricao') as laudo_descricao_tp,
-            json_value(laudo_json, '$.situacao') as laudo_situacao,
-            json_value(laudo_json, '$.observacao') as laudo_observacao,
-            safe_cast(
-                json_value(laudo_json, '$.data_observacao') as timestamp
-            ) as laudo_data_observacao,
+            json_value(laudo_json_transformed, '$[0].codigo_cnes_operador') as laudo_operador_cnes_id,
+            json_value(laudo_json_transformed, '$[0].tipo_descricao') as laudo_descricao_tp,
+            json_value(laudo_json_transformed, '$[0].situacao') as laudo_situacao,
+            json_value(laudo_json_transformed, '$[0].observacao') as laudo_observacao,
+            safe_cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
 
             -- Dados do operador autorizador
             {{ clean_name_string(process_null("nome_operador_autorizador")) }}
@@ -293,19 +297,10 @@ with
             safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao
 
         from sisreg
-        left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
-),
-
-  windowed as (
-    select *
-    from sisreg_transformed
-    where cast(data_atualizacao as date) between 
-        date_sub(current_date(), interval {{ months_lookback }} month)
-        and date_add(current_date(), interval 1 day)
 )
 
 select *
-from windowed
+from sisreg_transformed
 qualify row_number() over (
   partition by solicitacao_id
   order by data_atualizacao desc nulls last
