@@ -1,37 +1,40 @@
 -- noqa: disable=LT08
 
 {{
-    config(
-        enabled=true,
-        materialized='incremental',
-        unique_key='solicitacao_id',
-        incremental_strategy='merge',
-        schema="brutos_sisreg_api",
-        alias="solicitacoes",
-        partition_by={
-            "field": "particao_data", 
-            "data_type": "date",
-            "granularity": "month",
-        },
-        cluster_by=['solicitacao_id'],
-    )
+  config(
+    enabled = true,
+    materialized = 'incremental',
+    schema = "brutos_sisreg_api",
+    alias  = "solicitacoes",
+
+    incremental_strategy = 'insert_overwrite',
+    partition_by = {
+      "field": "data_atualizacao",
+      "data_type": "date",
+      "granularity": "month"
+    },
+
+    cluster_by = ['unidade_solicitante_id','procedimento_id'],
+    on_schema_change = 'sync_all_columns'
+  )
 }}
 -- Obs: `particao_data` vem de `data_extracao`
 
+{% set months_lookback = var('months_lookback', 3) %}
+
+
 with
+  latest_src_partition as (
+    select max(cast(data_particao as date)) as latest_load_dt
+    from {{ ref('raw_sisreg_api_log__logs') }}
+    where bq_table = 'solicitacoes'
+  ),
 
-    correct_partition as (
-        select
-            format_date('%Y-%m-%d', max(data_particao)) as particao_str
-        from {{ ref('raw_sisreg_api_log__logs') }}
-        where bq_table = 'solicitacoes'
-    ),
-
-    sisreg as (
-        select s.*
-        from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
-        where s.data_particao = (select particao_str from correct_partition)
-    ),
+  sisreg as (
+    select s.*
+    from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
+    where cast(s.data_particao as date) = (select latest_load_dt from latest_src_partition)
+  ),
 
     sisreg_transformed as (
         select
@@ -142,20 +145,23 @@ with
             safe_cast(json_value(laudo_json, '$.data_observacao') as timestamp) as laudo_data_observacao,
 
             -- Metadado SMS 
-            safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
-
-            -- Partições
-            cast(ano_particao as int) as particao_ano,
-            cast(mes_particao as int) as particao_mes,
-            parse_date('%Y-%m-%d', data_particao) as particao_data
+            safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao
 
         from sisreg
         left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
         left join unnest(json_extract_array(replace(procedimentos, "'", '"'))) as proceds_json
-    )
+    ),
+
+  windowed as (
+    select *
+    from sisreg_transformed
+    where cast(data_atualizacao as date) between 
+        date_sub(current_date(), interval {{ months_lookback }} month)
+        and date_add(current_date(), interval 1 day)
+)
 
 select *
-from sisreg_transformed
+from windowed
 qualify row_number() over (
   partition by solicitacao_id
   order by data_atualizacao desc nulls last

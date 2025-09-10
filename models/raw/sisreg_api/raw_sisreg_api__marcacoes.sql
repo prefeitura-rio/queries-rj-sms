@@ -18,6 +18,7 @@
     on_schema_change = 'sync_all_columns'
   )
 }}
+-- Obs: `particao_data` vem de `data_extracao`
 
 {% set months_lookback = var('months_lookback', 3) %}
 
@@ -289,12 +290,7 @@ with
             as cid_agendado,
 
             -- Metadado SMS 
-            safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
-
-            -- Partições
-            cast(ano_particao as int) as particao_ano,
-            cast(mes_particao as int) as particao_mes,            
-            parse_date('%Y-%m-%d', data_particao) as particao_data
+            safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao
 
         from sisreg
         left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
