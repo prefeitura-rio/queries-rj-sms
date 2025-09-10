@@ -43,8 +43,6 @@ with
         from criancas publico_alvo left join eventos_criancas on 
             (publico_alvo.cpf = eventos_criancas.cpf) and 
             (eventos_criancas.tipo_evento in (
-                'Vacina - DTP/HB/Hib - 1ª Dose',
-                'Vacina - DTP/HB/Hib - 2ª Dose',
                 'Vacina - DTP/HB/Hib - 3ª Dose'
             ))
         group by 1,2
@@ -54,8 +52,8 @@ with
             cpf,
 
             case
-                when array_length(eventos) = 3 and ultima_atualizacao < 365 then 'Aprovado por Mérito'
-                when array_length(eventos) = 3 then 'Aprovado por Correção'
+                when array_length(eventos) = 1 and ultima_atualizacao < 365 then 'Aprovado por Mérito'
+                when array_length(eventos) = 1 then 'Aprovado por Correção'
                 when dias_de_nascimento < 365 then 'Atenção'
                 else 'Reprovado'
             end as status
