@@ -126,10 +126,11 @@ with
             cast(NULL as string) as profissional_executante_cpf,
             cast(NULL as string) as profissional_executante_nome
     from {{ ref("raw_sisreg_api__solicitacoes") }}
-    where 
-        1=1
-        and date(data_atualizacao) >= date_sub(current_date(), interval {{ months_lookback }} month)
-        and date(data_atualizacao) < date_add(current_date(), interval 1 day)
+    {% if is_incremental() %}
+        where 1=1
+            and date(data_atualizacao) >= date_sub(current_date(), interval {{ months_lookback }} month)
+            and date(data_atualizacao) < date_add(current_date(), interval 1 day)
+    {% endif %}
     ),
 
     marcacoes as (
@@ -237,10 +238,11 @@ with
             profissional_executante_cpf as profissional_executante_cpf,
             profissional_executante_nome as profissional_executante_nome
     from {{ ref("raw_sisreg_api__marcacoes") }}
-    where 
-        1=1
-        and date(data_atualizacao) >= date_sub(current_date(), interval {{ months_lookback }} month)
-        and date(data_atualizacao) < date_add(current_date(), interval 1 day)
+    {% if is_incremental() %}
+        where 1=1
+            and date(data_atualizacao) >= date_sub(current_date(), interval {{ months_lookback }} month)
+            and date(data_atualizacao) < date_add(current_date(), interval 1 day)
+    {% endif %}
     ),
 
     consolidados as (

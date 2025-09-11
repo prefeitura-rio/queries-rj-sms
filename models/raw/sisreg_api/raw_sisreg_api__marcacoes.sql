@@ -36,9 +36,13 @@ with
             safe.parse_json(replace(s.laudo, "'", '"')) as laudo_json_transformed
 
         from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
-        where cast(s.data_particao as date) = (select latest_load_dt from latest_src_partition)
-            and safe_cast(s.data_atualizacao as timestamp) >= timestamp(date_sub(current_date(), interval {{ months_lookback }} month))
-            and safe_cast(s.data_atualizacao as timestamp) <  timestamp(date_add(current_date(), interval 1 day))
+        {% if is_incremental() %}
+            where 1=1
+                and cast(s.data_particao as date) >= date_sub(current_date(), interval {{ months_lookback }} month)
+                and cast(s.data_particao as date) < date_add(current_date(), interval 1 day)
+                and safe_cast(s.data_atualizacao as timestamp) >= timestamp(date_sub(current_date(), interval {{ months_lookback }} month))
+                and safe_cast(s.data_atualizacao as timestamp) <  timestamp(date_add(current_date(), interval 1 day))  
+        {% endif %}
     ),
 
     sisreg_transformed as (

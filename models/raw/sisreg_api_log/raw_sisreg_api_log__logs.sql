@@ -37,7 +37,9 @@ extracoes as (
   from {{ source("brutos_sisreg_api_log_staging", "marcacoes") }}
   where 1=1
     and safe.parse_date('%Y-%m-%d', data_particao) is not null
-    and safe.parse_date('%Y-%m-%d', data_particao) >= {{ min_build_date }}
+    {% if is_incremental() %}
+      and safe.parse_date('%Y-%m-%d', data_particao) >= {{ min_build_date }}
+    {% endif %}
 
   union all
 
@@ -57,7 +59,9 @@ extracoes as (
   from {{ source("brutos_sisreg_api_log_staging", "solicitacoes") }}
   where 1=1
     and safe.parse_date('%Y-%m-%d', data_particao) is not null
-    and safe.parse_date('%Y-%m-%d', data_particao) >= {{ min_build_date }}
+    {% if is_incremental() %}
+      and safe.parse_date('%Y-%m-%d', data_particao) >= {{ min_build_date }}
+    {% endif %}
 ),
 
 n_rows as (
@@ -67,7 +71,9 @@ n_rows as (
       s.run_id,
       count(*) as nrows
   from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
-  where safe.parse_date('%Y-%m-%d', s.data_particao) >= {{ min_build_date }}
+  {% if is_incremental() %}
+    where safe.parse_date('%Y-%m-%d', s.data_particao) >= {{ min_build_date }}
+  {% endif %}
   group by 1,2,3
 
   union all
@@ -78,7 +84,9 @@ n_rows as (
       m.run_id,
       count(*) as nrows
   from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} m
-  where safe.parse_date('%Y-%m-%d', m.data_particao) >= {{ min_build_date }}
+  {% if is_incremental() %}
+    where safe.parse_date('%Y-%m-%d', m.data_particao) >= {{ min_build_date }}
+  {% endif %}
   group by 1,2,3
 ),
 
