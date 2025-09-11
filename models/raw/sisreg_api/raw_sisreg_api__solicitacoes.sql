@@ -33,7 +33,7 @@ with
   sisreg as (
     select
       s.*,
-      safe.parse_json(replace(s.laudo, "'", '"')) as laudo_json_transformed
+      safe.parse_json(replace(s.laudo, "'", '"')) as laudo_json_transformed,
       safe.parse_json(replace(s.procedimentos, "'", '"')) as proceds_json_transformed
 
     from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
