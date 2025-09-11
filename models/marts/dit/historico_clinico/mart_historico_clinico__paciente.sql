@@ -106,22 +106,29 @@ with
     ),
 
     pcsm_unidades as (
-        select 
+        select
             u.id_unidade_saude as id_unidade,
-            coalesce(e.id_cnes,u.codigo_nacional_estabelecimento_saude) as cnes,
-            coalesce(e.nome_acentuado,u.nome_unidade_saude) as nome_unidade
+            u.codigo_nacional_estabelecimento_saude as cnes,
+            coalesce(
+                e.nome_acentuado,
+                u.nome_unidade_saude,
+                contatos.nome
+            ) as nome_unidade,
+            contatos.tel[safe_offset(0)] as telefone
         from {{ ref("raw_pcsm_unidades_saude") }} as u
         left join {{ ref("dim_estabelecimento") }} as e
             on e.id_cnes = u.codigo_nacional_estabelecimento_saude
+        left join {{ ref("raw_sheets__contatos_caps") }} as contatos
+            on contatos.cnes = u.codigo_nacional_estabelecimento_saude
     ),
 
     pcsm_pacientes as (
-        SELECT 
+        SELECT
             paciente.numero_cpf_paciente as cpf,
             paciente.id_paciente as id_pcsm,
             paciente.descricao_status_acompanhamento as status_acompanhamento,
             paciente.id_unidade_caps_referencia as id_caps
-        FROM {{ ref("raw_pcsm_pacientes") }} as paciente 
+        FROM {{ ref("raw_pcsm_pacientes") }} as paciente
         QUALIFY row_number() over (partition by paciente.numero_cpf_paciente order by paciente.loaded_at desc ) = 1
     ),
 
@@ -132,10 +139,12 @@ with
                 p.id_pcsm,
                 p.status_acompanhamento,
                 u.nome_unidade,
-                u.cnes
+                u.cnes,
+                u.telefone
             ) as saude_mental
-        from pcsm_pacientes p 
-        left join pcsm_unidades u on p.id_caps = u.id_unidade
+        from pcsm_pacientes p
+        left join pcsm_unidades u
+            on p.id_caps = u.id_unidade
     ),
 
     -- Paciente Dados: Merges patient data
