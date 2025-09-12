@@ -1,0 +1,78 @@
+version: 2
+
+models:
+
+  - name: raw_prontuario_vitai__alergia
+    description: Tabela de eventos de alergia, sincronizada com Vitai.
+    columns:
+      - name: gid
+        description: Identificador global da ocorrência de alergia na base da Vitai.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__alergia__id__not_null
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: gid_boletim
+        description: Identificador do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: gid_paciente
+        description: Identificador global do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: severidade
+        description: Severidade da alergia.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento de alergia.
+        data_type: timestamp
+      - name: tipo
+        description: Tipo de alergia.
+        data_type: string
+      - name: descricao
+        description: Descrição da alergia.
+        data_type: string
+      - name: alg_ativo
+        description: Indicação se a alergia está ativa.
+        data_type: string
+      - name: data_registro
+        description: Data de registro da alergia.
+        data_type: string
+      - name: reacao
+        description: Reação alérgica.
+        data_type: string
+      - name: inicio_sintomas
+        description: Data de início dos sintomas.
+        data_type: string
+      - name: observacao
+        description: Observações sobre a alergia.
+        data_type: string
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de atendimento.
+        data_type: string
+      - name: base_url
+        description: URL base do evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp

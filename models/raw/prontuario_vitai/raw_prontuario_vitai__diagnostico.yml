@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__diagnostico
+    description: Tabela de eventos de diagnóstico, sincronizada com Vitai.
+    columns:
+      - name: gid
+        description: Identificador global do diagnóstico na base da Vitai.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__diagnostico__id__not_null
+      - name: id_boletim
+        description: Identificador do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: gid_boletim
+        description: Identificador global do boletim na base da Vitai.
+        data_type: string
+      - name: gid_paciente
+        description: Identificador global do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento na base da Vitai.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento de diagnóstico.
+        data_type: timestamp
+      - name: tipo
+        description: Tipo de diagnóstico.
+        data_type: string
+      - name: codigo
+        description: Código do diagnóstico.
+        data_type: string
+      - name: data
+        description: Data do diagnóstico.
+        data_type: string
+      - name: descricao
+        description: Descrição do diagnóstico.
+        data_type: string
+      - name: sk_data
+        description: Chave de data do evento.
+        data_type: string
+      - name: situacao
+        description: Situação do diagnóstico.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: base_url
+        description: URL base do evento.
+        data_type: string
+      - name: sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp

@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__dtw__internacao
+    description: Tabela que armazena dados de internações hospitalares, incluindo informações sobre boletins, procedimentos, especialidades e timestamps relevantes.
+    columns:
+      - name: gid
+        description: Identificador global da internação.
+        data_type: string
+
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento onde a internação foi realizada.
+        data_type: string
+
+      - name: gid_boletim
+        description: Identificador do boletim vinculado à internação.
+        data_type: string
+
+      - name: id_paciente_rede
+        description: Identificador do paciente na rede de atendimento.
+        data_type: integer
+
+      - name: data_entrada
+        description: Data e hora de entrada do paciente na internação.
+        data_type: timestamp
+
+      - name: data_saida
+        description: Data e hora de saída do paciente da internação.
+        data_type: timestamp
+
+      - name: id_tipo_internacao
+        description: Identificador do tipo de internação realizada.
+        data_type: integer
+
+      - name: id_cid_internacao
+        description: Identificador do CID (Classificação Internacional de Doenças) associado à internação.
+        data_type: integer
+
+      - name: id_procedimento
+        description: Identificador do procedimento realizado durante a internação.
+        data_type: integer
+
+      - name: id_especialidade
+        description: Identificador da especialidade médica associada à internação.
+        data_type: integer
+
+      - name: id_profissional
+        description: Identificador do profissional responsável pela internação.
+        data_type: integer
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+        data_type: timestamp
+
+      - name: centralized_at
+        description: Data e hora em que o dado foi centralizado.
+        data_type: timestamp
+
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__dtw__internacao__imported_at__not_null

@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__estoque_movimento
+    description: Movimentação diária dos estoques de medicamentos e insumos das
+      unidades de saúde que utilizam o prontuário Timed (Vitai) para gestão de
+      estoque de farmácia e almoxarifado
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          name: raw_prontuario_vitai__estoque_movimento__unique_combination_of_columns
+          combination_of_columns:
+            - id_cnes
+            - id_material
+            - estoque_secao_origem
+            - estoque_secao_destino
+            - estoque_movimento_tipo
+            - estoque_movimento_justificativa
+            - material_quantidade
+            - dispensacao_paciente_cpf
+            - dispensacao_prescritor_cpf
+            - estoque_movimento_data_hora
+          config:
+            where: data_particao = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
+            error_if: ">1000"
+    columns:
+      - name: id_cnes
+        description: Número do CNES (Cadastro Nacional de Estabelecimentos de Saúde) da
+          unidade de saúde onde o item está localizado
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__estoque_movimento__id_cnes__not_null
+          - relationships:
+              name: raw_prontuario_vitai__estoque_movimento__id_cnes__relationship
+              to: ref('dim_estabelecimento')
+              field: id_cnes
+      - name: id_material
+        description: Código de identificação do material cadastrado no prontuário
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__estoque_movimento__id_material__not_null
+              config:
+                where: "estoque_movimento_data > '2023-01-01'"
+      - name: material_descricao
+        description: Descrição do material (medicamento/insumo)
+
+      - name: material_unidade
+        description: Unidade de estocagem do material (medicamento/insumo)
+      - name: estoque_secao_origem
+        description: Local onde o material se encontrava antes de ser movimentado.
+      - name: estoque_secao_destino
+        description: Local para onde o material foi destinado após movimento.
+      - name: estoque_movimento_tipo
+        description: Tipo de movimentação do estoque.
+      - name: estoque_movimento_justificativa
+        description: Justificativa da movimentação do estoque
+      - name: estoque_movimento_data_hora
+        description: Data e hora da movimentação do estoque.
+      - name: estoque_movimento_data
+        description: Data da movimentação do estoque.
+      - name: dispensacao_paciente_cpf
+        description: CPF do paciente no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: dispensacao_paciente_cns
+        description: CNS do paciente no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: dispensacao_prescritor_cpf
+        description: CPF do prescritor no caso de dispensação para usuário
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: material_quantidade
+        description: Quantidade do material movida
+      - name: material_valor_total
+        description: Valor monetário (em reais) do material movimentado
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              name: raw_prontuario_vitai__estoque_movimento__material_valor_total__between
+              min_value: 0
+              max_value: 10000000
+              config:
+                where: data_particao = date_sub(current_date('America/Sao_Paulo'), INTERVAL 1 DAY)
+      - name: data_atualizacao
+        description: Data e hora de atualização do registro no sistema de origem
+      - name: data_particao
+        description: Data de referência da posição do estoque
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset

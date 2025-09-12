@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__dtw__boletim
+    description: Tabela que armazena informações detalhadas dos boletins de atendimento, incluindo dados de pacientes, estabelecimentos e timestamps relevantes.
+    columns:
+      - name: gid
+        description: Identificador global do boletim.
+        data_type: string
+
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento onde o atendimento foi realizado.
+        data_type: string
+
+      - name: id_fat_paciente_rede
+        description: Identificador do paciente na rede de faturamento.
+        data_type: integer
+
+      - name: id_tpa
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_tpu
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_tpe
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_especialidade
+        description: Identificador da especialidade médica vinculada ao atendimento.
+        data_type: integer
+
+      - name: id_ris
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_cbo
+        description: Identificador do Código Brasileiro de Ocupações (CBO).
+        data_type: integer
+
+      - name: paciente_interno
+        description: Indica se o paciente está em regime interno.
+        data_type: string
+
+      - name: boletim_numero
+        description: Número do boletim de atendimento.
+        data_type: string
+
+      - name: data_entrada
+        description: Data e hora da entrada do paciente.
+        data_type: timestamp
+
+      - name: data_internacao
+        description: Data e hora de internação do paciente.
+        data_type: timestamp
+
+      - name: data_alta
+        description: Data e hora da alta hospitalar do paciente.
+        data_type: timestamp
+
+      - name: data_hora_evento
+        description: Data e hora do evento registrado no boletim.
+        data_type: timestamp
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+        data_type: timestamp
+
+      - name: centralized_at
+        description: Data e hora em que o dado foi centralizado.
+        data_type: timestamp
+
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__dtw__boletim__imported_at__not_null

@@ -1,0 +1,101 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__exame
+    description: Tabela de eventos de exame, sincronizada com Vitai.
+    columns:
+      - name: gid
+        description: Identificador global do exame na base da Vitai.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__exame__id__not_null
+      - name: gid_paciente
+        description: Identificador global do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: gid_boletim
+        description: Identificador global do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento na base da Vitai.
+        data_type: string
+      - name: gid_medico_solicitante
+        description: Identificador global do médico solicitante na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_exame_item
+        description: Identificador do item de exame na base da Vitai.
+        data_type: string
+      - name: status_pedido
+        description: Status do pedido de exame.
+        data_type: string
+      - name: liberacao_data
+        description: Data de liberação do exame.
+        data_type: string
+      - name: pedido_data
+        description: Data do pedido de exame.
+        data_type: string
+      - name: realizacao_data
+        description: Data de realização do exame.
+        data_type: string
+      - name: indicacao_clinica
+        description: Indicação clínica para o exame.
+        data_type: string
+      - name: mnemonico
+        description: Mnemonico do exame.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento de exame.
+        data_type: timestamp
+      - name: tipo
+        description: Tipo de exame.
+        data_type: string
+      - name: exame
+        description: Nome do exame.
+        data_type: string
+      - name: medico_solicitante_nome
+        description: Nome do médico solicitante.
+        data_type: string
+      - name: id_pedido
+        description: Identificador do pedido de exame.
+        data_type: string
+      - name: status_item
+        description: Status do item de exame.
+        data_type: string
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: Cartão Nacional de Saúde do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: base_url
+        description: URL base do evento.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: sigla
+        description: Sigla do estabelecimento de atendimento.
+        data_type: string
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de atendimento.
+        data_type: string
+      - name: procedimento_codigo
+        description: Código do procedimento realizado.
+        data_type: string
+      - name: procedimento_nome
+        description: Nome do procedimento realizado.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
