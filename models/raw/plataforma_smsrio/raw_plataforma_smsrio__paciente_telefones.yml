@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: raw_plataforma_smsrio__paciente_telefones
+    description: "Tabela bruta que relaciona pacientes aos seus números de telefone. Cada linha representa um vínculo único entre um paciente e um número de telefone."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id_paciente
+            - telefone
+    columns:
+      - name: id
+        description: "ID do paciente. Chave estrangeira para a tabela `raw_plataforma_smsrio__paciente_cadastro`."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('raw_plataforma_smsrio__paciente_cadastro')
+              field: id_paciente
+      - name: cns
+        description: "Número do Cartão Nacional de Saúde (CNS) associado ao paciente."
+      - name: telefone
+        description: "Número de telefone do paciente."
+        tests:
+          - not_null
+      - name: tipo_telefone
+        description: "Tipo do telefone."
+      - name: updated_at
+        description: "Data e hora da última atualização do registro na origem."
+      - name: loaded_at
+        description: "Data e hora do carregamento do registro no datalake."
+  
+

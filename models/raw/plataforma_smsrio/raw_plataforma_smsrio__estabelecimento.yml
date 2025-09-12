@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: raw_plataforma_smsrio__estabelecimento  # Substitua pelo nome real do seu modelo
+    description: >
+      Modelo que contém informações de estabelecimentos de saúde, com dados provenientes do Cadastro Nacional de Estabelecimentos de Saúde (CNES).
+    columns:
+      - name: id
+        description: ''
+        tests:
+          - unique
+          - not_null
+      - name: id_cnes
+        description: >
+          Identificador único do estabelecimento de saúde no Cadastro Nacional de Estabelecimentos de Saúde (CNES). Chave primária da tabela.
+        tests:
+          - not_null
+      - name: area_programatica
+        description: 'Área programática da unidade de saúde.'
+
+      - name: nome_fantasia
+        description: Nome fantasia da unidade de saúde.
+
+      - name: razao_social
+        description: Razão social da unidade de saúde.
+
+      - name: data_atualizacao
+        description: Data de atualização do cadastro da unidade de saúde.
+
+      - name: tipo_gestao
+        description: Tipo de gestão da unidade de saúde.
+
+      - name: sempre_aberto_indicador
+        description: Indicador se a unidade de saúde sempre está aberta.
+
+      - name: data_inauguracao
+        description: Data de inauguração da unidade de saúde.
+
+      - name: tipo_unidade_id
+        description: Tipo de unidade de saúde.
+
+      - name: cod_turnat_id
+        description: ''
+
+      - name: motivo_desativacao_unidade_id
+        description: ID do tipo de motivo da desativação da unidade de saúde.
+
+      - name: natureza_juridica_id
+        description: ID do tipo de Natureza jurídica da unidade de saúde.
+
+      - name: tipo_estabelecimento_id
+        description: ID do tipo de unidade de estabelecimento.
+
+      - name: atividade_principal_id
+        description: ID do tipo de atividade principal da unidade de saúde.
+
+      - name: prof_diretor_id
+        description: ID do tipo de Prof. Diretor da unidade de saúde.
+
+      - name: datalake_loaded_at
+        description: Data do carregamento do registro no datalake.
+
+      - name: created_at
+        description: Data de criação do registro.
+
+      - name: updated_at
+        description: Data de atualização do registro.

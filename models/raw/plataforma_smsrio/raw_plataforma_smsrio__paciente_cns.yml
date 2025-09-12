@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: raw_plataforma_smsrio__paciente_cns
+    description: "Tabela bruta que relaciona pacientes aos seus Cartões Nacionais de Saúde (CNS). Inclui tanto CNS definitivos quanto provisórios, servindo como uma tabela de associação. Cada linha é um vínculo único paciente-CNS."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id_paciente
+            - cns
+    columns:
+      - name: id
+        description: "ID do paciente. Chave estrangeira para a tabela `raw_plataforma_smsrio__paciente_cadastro`."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('raw_plataforma_smsrio__paciente_cadastro')
+              field: id_paciente
+      - name: cns
+        description: "Número do Cartão Nacional de Saúde (CNS)."
+        tests:
+          - not_null
+      - name: cns_provisorio
+        description: "CNS provisório(s) associado(s) ao paciente"
+      - name: updated_at 
+        description: "Data e hora da última atualização do registro na origem."
+      - name: loaded_at
+        description: "Data e hora do carregamento do registro no datalake."
+  
