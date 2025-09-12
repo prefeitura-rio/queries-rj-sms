@@ -505,3 +505,26 @@ models:
         description: Indica se o procedimento possui relação com Câncer ("SIM" ou "NAO").
         data_type: string
         quote: true
+
+  - name: raw_sheets__contatos_caps
+    description: >
+      Contatos institucionais de CAPS (Centros de Atenção Psicossocial)
+    columns:
+      - name: ap
+        description: Área Programática
+        data_type: string
+      - name: cnes
+        description: Código da unidade
+        data_type: string
+      - name: nome
+        description: Nome da unidade
+        data_type: string
+      - name: tipo
+        description: Tipo da unidade (ex. "CAPS II", "CAPS AD II", "CAPSi II", ...)
+        data_type: string
+      - name: tel
+        description: Telefones de contato institucional
+        data_type: string[]
+      - name: email
+        description: Emails de contato institucional
+        data_type: string[]

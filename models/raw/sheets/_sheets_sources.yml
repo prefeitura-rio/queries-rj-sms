@@ -25,7 +25,8 @@ sources:
       - name: cids_risco_gestacional
       - name: encaminhamentos_ser
       - name: cdi_destinatarios
-      
+      - name: contatos_caps
+
   - name: brutos_sheets
     database: rj-sms
     schema: brutos_sheets
