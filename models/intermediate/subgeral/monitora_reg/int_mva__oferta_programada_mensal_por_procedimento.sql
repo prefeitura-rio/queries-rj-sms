@@ -2,11 +2,11 @@
 with
     versao_atual as (
         select *
-        from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
+        from {{ ref("mart_sisreg__oferta_programada_serie_historica") }}
         where
             data_particao = (
                 select max(data_particao)
-                from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
+                from {{ ref("mart_sisreg__oferta_programada_serie_historica") }}
             )
     )
 

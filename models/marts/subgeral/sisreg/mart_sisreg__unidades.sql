@@ -16,6 +16,7 @@ unidades as (
         id_cnes,
         procedimentos
     from {{ref("int_sisreg__unidades_solicitantes")}}
+    where id_cnes is not null
 
 UNION ALL
 
@@ -26,6 +27,7 @@ UNION ALL
         id_cnes,
         procedimentos 
     from {{ref("int_sisreg__unidades_executantes")}}
+    where id_cnes is not null
 )
 
 select

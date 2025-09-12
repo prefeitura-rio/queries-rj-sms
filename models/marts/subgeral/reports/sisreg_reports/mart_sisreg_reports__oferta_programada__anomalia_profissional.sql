@@ -17,7 +17,7 @@ with
     -- Esta etapa encontra a data máxima de partição na tabela histórica
     particao_mais_recente as (
         select max(data_particao) as data_maxima
-        from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
+        from {{ ref("mart_sisreg__oferta_programada_serie_historica") }}
     ),
 
     -- Etapa 2: Definir intervalos de tempo relevantes
@@ -44,7 +44,7 @@ with
             id_estabelecimento_executante,
             date_trunc(procedimento_vigencia_data, month) as data_mes,
             sum(vagas_todas_qtd) as vagas_totais
-        from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
+        from {{ ref("mart_sisreg__oferta_programada_serie_historica") }}
         where
             data_particao = (select data_maxima from particao_mais_recente)
             and procedimento_vigencia_data
@@ -70,7 +70,7 @@ with
             string_agg(distinct profissional_executante_nome) as profissional_nome,
             date_trunc(procedimento_vigencia_data, month) as data_mes,
             sum(vagas_todas_qtd) as vagas_proximo_mes
-        from {{ ref("fct_sisreg_oferta_programada_serie_historica") }}
+        from {{ ref("mart_sisreg__oferta_programada_serie_historica") }}
         where
             data_particao = (select data_maxima from particao_mais_recente)
             and procedimento_vigencia_data

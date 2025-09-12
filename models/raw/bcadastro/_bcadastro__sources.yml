@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_bcadastro
+    database: rj-iplanrio
+    schema: brutos_bcadastro
+    tables:
+      - name: cnpj

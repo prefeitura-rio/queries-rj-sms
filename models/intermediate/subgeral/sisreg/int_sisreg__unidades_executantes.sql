@@ -2,20 +2,20 @@ with
     sisreg_unidades_executantes as (
         select
             current_date() as data_referencia,
-            unidade_executante_id as id_cnes,
-            date(data_marcacao) as data_marcacao,
-            procedimento_interno_id
-        from {{ref("raw_sisreg_api__marcacoes")}}
+            id_cnes_unidade_executante as id_cnes,
+            date(data_execucao) as data_execucao,
+            id_procedimento_sisreg
+        from {{ref("mart_sisreg__solicitacoes")}}
     ),
 
     sisreg_unidades_executantes_ativas as (
         select distinct
             data_referencia,
             id_cnes,
-            procedimento_interno_id
+            id_procedimento_sisreg
         from sisreg_unidades_executantes 
         where  
-            data_marcacao between
+            data_execucao between
                 date_sub(data_referencia, interval 90 day)
                 and data_referencia
     ),
@@ -28,7 +28,7 @@ with
                 when ativas.id_cnes is not null then 1
                 else 0
             end as unidade_ativa_ultimos_3m,
-            ativas.procedimento_interno_id 
+            ativas.id_procedimento_sisreg 
 
         from sisreg_unidades_executantes as todas
         left join sisreg_unidades_executantes_ativas as ativas
@@ -40,7 +40,7 @@ with
             data_referencia,
             unidade_ativa_ultimos_3m,    
             id_cnes,
-            array_agg(distinct procedimento_interno_id ignore nulls) as procedimentos
+            array_agg(distinct id_procedimento_sisreg ignore nulls) as procedimentos
 
         from consolidando
         group by 1, 2, 3
