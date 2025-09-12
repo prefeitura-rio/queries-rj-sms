@@ -42,8 +42,8 @@ with
             regexp_replace(ap_cadastro,r'\.0','') as ap_cadastro,
             {{ proper_br('nome') }} as nome,
             case 
-                when sexo = 'male' then 'masculino'
-                when sexo = 'female' then 'feminino'
+                when lower(trim(sexo)) in ('male', 'masculino') then 'masculino'
+                when lower(trim(sexo)) in ('female', 'feminino') then 'feminino'
                 else null
             end as sexo,
             obito as obito,
@@ -176,10 +176,14 @@ with
             ) as doencas_condicoes,
             nullif({{clean_name_string('estado_nascimento')}},'') as estado_nascimento, 
             nullif({{clean_name_string('estado_residencia')}},'') as estado_residencia,
-            case 
-                when lower(identidade_genero) not in ('cis','mulher transexual',
-                'homem transexual','outro') then null
-                else identidade_genero
+            case
+                when regexp_contains(normalize_and_casefold(identidade_genero), r'bin') then 'Nao binario'
+                when regexp_contains(normalize_and_casefold(identidade_genero), r'travesti') then 'Travesti'
+                when regexp_contains(normalize_and_casefold(identidade_genero), r'mulher.*trans') then 'Mulher transexual'
+                when regexp_contains(normalize_and_casefold(identidade_genero), r'homem.*trans') then 'Homem transexual'
+                when regexp_contains(normalize_and_casefold(identidade_genero), r'(mulher.*cis|homem.*cis|\bcis\b)') then 'Cisgenero'
+                when regexp_contains(normalize_and_casefold(identidade_genero), r'outro') then 'Outro'
+                else null
             end as identidade_genero,
             split(
                 regexp_replace(
