@@ -25,4 +25,3 @@ SELECT
   endereco,
   cast(cnpj.cnpj as int64) as cnpj_particao
 FROM {{ source("brutos_bcadastro", "cnpj") }}
-WHERE endereco.municipio_nome = 'Rio de Janeiro'
