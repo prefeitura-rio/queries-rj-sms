@@ -1,37 +1,50 @@
 -- noqa: disable=LT08
+
+-- Obs: `particao_data` vem de `data_extracao`
 {{
   config(
-    enabled=true,
-    materialized='incremental',
-    unique_key='solicitacao_id',
-    incremental_strategy='merge',
-    schema="brutos_sisreg_api",
-    alias="marcacoes",
-    partition_by={
-      "field": "particao_data",
+    enabled = true,
+    materialized = 'incremental',
+    schema = "brutos_sisreg_api",
+    alias  = "marcacoes",
+
+    incremental_strategy = 'insert_overwrite',
+    partition_by = {
+      "field": "data_atualizacao",
       "data_type": "date",
-      "granularity": "month",
+      "granularity": "day"
     },
-    cluster_by=['solicitacao_id'],
+
+    cluster_by = ['solicitacao_id'],
+    on_schema_change = 'sync_all_columns'
   )
 }}
 
 
-with
+{% set months_lookback = var('months_lookback', 3) %}
 
-    correct_partition as (
-        select
-            format_date('%Y-%m-%d', max(data_particao)) as particao_str
+with
+    latest_src_partition as (
+        select max(cast(data_particao as date)) as latest_load_dt
         from {{ ref('raw_sisreg_api_log__logs') }}
         where bq_table = 'marcacoes'
     ),
 
     sisreg as (
-        select s.*
+        select
+            s.*,
+            safe.parse_json(replace(s.laudo, "'", '"')) as laudo_json_transformed
+
         from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
-        where s.data_particao = (select particao_str from correct_partition)
+        {% if is_incremental() %}
+            where 1=1
+                and cast(s.data_particao as date) >= date_sub(current_date(), interval {{ months_lookback }} month)
+                and cast(s.data_particao as date) < date_add(current_date(), interval 1 day)
+                and safe_cast(s.data_atualizacao as timestamp) >= timestamp(date_sub(current_date(), interval {{ months_lookback }} month))
+                and safe_cast(s.data_atualizacao as timestamp) <  timestamp(date_add(current_date(), interval 1 day))  
+        {% endif %}
     ),
-        
+
     sisreg_transformed as (
         select
             -- Metadados da extração
@@ -42,9 +55,9 @@ with
             safe_cast(
                 {{ process_null("data_solicitacao") }} as timestamp
             ) as data_solicitacao,
-            safe_cast(
+            safe_cast(safe_cast(
                 {{ process_null("data_atualizacao") }} as timestamp
-            ) as data_atualizacao,
+            ) as date) as data_atualizacao,
             safe_cast(
                 {{ process_null("data_cancelamento") }} as timestamp
             ) as data_cancelamento,
@@ -194,13 +207,11 @@ with
             as paciente_tp_logradouro_res,
 
             -- Laudo
-            json_value(laudo_json, '$.codigo_cnes_operador') as laudo_operador_cnes_id,
-            json_value(laudo_json, '$.tipo_descricao') as laudo_descricao_tp,
-            json_value(laudo_json, '$.situacao') as laudo_situacao,
-            json_value(laudo_json, '$.observacao') as laudo_observacao,
-            safe_cast(
-                json_value(laudo_json, '$.data_observacao') as timestamp
-            ) as laudo_data_observacao,
+            json_value(laudo_json_transformed, '$[0].codigo_cnes_operador') as laudo_operador_cnes_id,
+            json_value(laudo_json_transformed, '$[0].tipo_descricao') as laudo_descricao_tp,
+            json_value(laudo_json_transformed, '$[0].situacao') as laudo_situacao,
+            json_value(laudo_json_transformed, '$[0].observacao') as laudo_observacao,
+            safe_cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
 
             -- Dados do operador autorizador
             {{ clean_name_string(process_null("nome_operador_autorizador")) }}
@@ -287,16 +298,10 @@ with
             as cid_agendado,
 
             -- Metadado SMS 
-            safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao,
-
-            -- Partições
-            cast(ano_particao as int) as particao_ano,
-            cast(mes_particao as int) as particao_mes,            
-            parse_date('%Y-%m-%d', data_particao) as particao_data
+            safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao
 
         from sisreg
-        left join unnest(json_extract_array(replace(laudo, "'", '"'))) as laudo_json
-    )
+)
 
 select *
 from sisreg_transformed

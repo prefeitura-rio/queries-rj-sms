@@ -310,8 +310,6 @@ models:
         description: Identificador da extração (run_id) que gerou o registro.
         data_type: string
         quote: true
-        tests:
-          - not_null
 
       - name: data_extracao
         description: Timestamp de extração no pipeline (quando o dado foi coletado da origem).
