@@ -505,8 +505,9 @@ models:
         description: Nome da unidade de saúde em que o paciente está vinculado.
       - name: saude_mental.cnes
         description: CNES da unidade de saúde em que o paciente está vinculado.
-      - name: saude_mental.telefone
-        description: Contato institucional da unidade de saúde em que o paciente está vinculado.
+      - name: saude_mental.telefones
+        data_type: string[]
+        description: Contatos institucionais da unidade de saúde em que o paciente está vinculado.
       - name: contato.telefone
         description: "ARRAY contendo os números de telefone ordenados. O 
           critério de ordenação é pelos cadastros pelo ACS na atenção primária 

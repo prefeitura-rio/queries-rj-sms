@@ -114,7 +114,10 @@ with
                 u.nome_unidade_saude,
                 contatos.nome
             ) as nome_unidade,
-            contatos.tel[safe_offset(0)] as telefone
+            array(
+                select {{ padronize_telefone("tel") }}
+                from unnest(contatos.tel) as tel
+            ) as telefones
         from {{ ref("raw_pcsm_unidades_saude") }} as u
         left join {{ ref("dim_estabelecimento") }} as e
             on e.id_cnes = u.codigo_nacional_estabelecimento_saude
@@ -140,7 +143,7 @@ with
                 p.status_acompanhamento,
                 u.nome_unidade,
                 u.cnes,
-                u.telefone
+                u.telefones
             ) as saude_mental
         from pcsm_pacientes p
         left join pcsm_unidades u

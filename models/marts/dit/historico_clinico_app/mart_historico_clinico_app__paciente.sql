@@ -93,7 +93,7 @@ with
                 saude_mental.status_acompanhamento,
                 saude_mental.nome_unidade,
                 saude_mental.cnes,
-                {{ padronize_telefone("saude_mental.telefone") }} as telefone
+                saude_mental.telefones
             ) as mental_health,
             dados.identidade_validada_indicador as validated,
             safe_cast(todos_pacientes.cpf as int64) as cpf_particao
