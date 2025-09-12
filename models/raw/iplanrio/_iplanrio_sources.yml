@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_iplanrio
+    database: rj-sms
+    schema: brutos_iplanrio
+    tables:
+      - name: registro_municipal_integrado
