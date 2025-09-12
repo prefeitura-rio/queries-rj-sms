@@ -234,6 +234,9 @@ models:
       - name: aberto_sempre
         description: "Funcionamento do estabelecimento. Indica se fica sempre aberto / Ininterrupto: S - SIM N - NÃO"
         data_type: string
+      - name: esfera
+        description: "Classificação administrativa da esfera governamental (federal, estadual, municipal)."
+        data_type: string
       - name: turno_atendimento
         description: Descrição do Turno de Atendimento
         data_type: string
