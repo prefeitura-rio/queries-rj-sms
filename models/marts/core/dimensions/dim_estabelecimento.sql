@@ -60,7 +60,6 @@ final as (
       instagram,
       twitter,
       aberto_sempre,
-      esfera,
       turno_atendimento,
       diretor_clinico_cpf,
       diretor_clinico_conselho,
