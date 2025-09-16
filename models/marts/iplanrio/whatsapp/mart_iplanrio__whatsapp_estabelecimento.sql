@@ -1,4 +1,10 @@
-{{ config(materialized='table', alias='estabelecimento', tags=['daily']) }}
+{{ config(
+    materialized = 'table',
+    schema = 'projeto_whatsapp',
+    alias = 'estabelecimento',
+    tags = ['daily']
+) }}
+
 
 with source as (
   select * from {{ ref('dim_estabelecimento_sus_rio_historico') }}
@@ -19,19 +25,16 @@ current_period as (
 
 final as (
   select
-      -- primary key
       id_unidade,
 
-      -- foreign keys
       id_cnes,
       safe_cast(id_tipo_unidade as string) as id_tipo_unidade,
       safe_cast(id_ap as string) as area_programatica,
       cnpj_mantenedora,
 
-      -- common fields
       ativa,
       tipo_sms_agrupado,
-      tipo, -- trocar para tipo_cnes?
+      tipo,
       tipo_sms,
       tipo_sms_simplificado,
       tipo_disponibilidade,
@@ -60,11 +63,11 @@ final as (
       instagram,
       twitter,
       aberto_sempre,
+      esfera,
       turno_atendimento,
       diretor_clinico_cpf,
       diretor_clinico_conselho,
 
-      -- metadata
       data_atualizao_registro,
       usuario_atualizador_registro,
       data_particao,
@@ -74,8 +77,6 @@ final as (
   from
       source
       join current_period on source.ano_competencia = current_period.ano_atual and source.mes_competencia = current_period.competencia_atual
-  where
-      estabelecimento_sms_indicador = 1
 
   order by
       ativa desc,
