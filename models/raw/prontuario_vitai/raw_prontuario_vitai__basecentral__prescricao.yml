@@ -73,6 +73,10 @@ models:
         description: "Data e hora de importação para o Data Lake."
         data_type: timestamp
 
+      - name: loaded_at
+        description: "Data e hora de carremento para o Data Lake."
+        data_type: timestamp
+
       - name: data_particao
         description: "Data de particionamento do evento."
         data_type: date

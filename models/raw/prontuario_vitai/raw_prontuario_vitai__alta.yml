@@ -43,3 +43,5 @@ models:
         description: "Data e hora de importação do registro para o Data Lake."
       - name: data_particao
         description: "Data de partição da tabela de origem, usada para otimizar queries."
+        data_type: date
+

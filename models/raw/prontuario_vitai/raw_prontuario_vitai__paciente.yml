@@ -118,3 +118,6 @@ models:
         data_tests:
           - not_null:
               name: raw_prontuario_vitai__paciente__imported_at__not_null
+      - name: data_particao
+        description: "Data de particionamento do evento."
+        data_type: date

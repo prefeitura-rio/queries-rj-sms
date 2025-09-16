@@ -53,3 +53,6 @@ models:
         description: Data e hora da importação dos dados para o data lake.
       - name: created_at
         description: Data e hora da criação do registro de internação.
+      - name: data_particao
+        description: "Data de particionamento do evento."
+        data_type: date

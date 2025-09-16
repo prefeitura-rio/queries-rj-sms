@@ -29,3 +29,6 @@ models:
         description: Data e hora da última atualização das informações do estabelecimento.
       - name: imported_at
         description: Data e hora da importação dos dados para o data lake.
+      - name: data_particao
+        description: "Data de particionamento do evento."
+        data_type: date

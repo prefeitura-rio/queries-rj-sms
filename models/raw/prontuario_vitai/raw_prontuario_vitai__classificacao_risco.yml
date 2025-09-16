@@ -59,3 +59,6 @@ models:
       - name: created_at
         description: Data e hora de criação do registro no ETL Vitai
         data_type: timestamp
+      - name: data_particao
+        description: "Data de particionamento do evento."
+        data_type: date

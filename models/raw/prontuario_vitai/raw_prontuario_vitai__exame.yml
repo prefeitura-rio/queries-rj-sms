@@ -99,3 +99,6 @@ models:
       - name: created_at
         description: Data e hora de criação do registro no ETL Vitai
         data_type: timestamp
+      - name: exame_descricao
+        description: Descrição do exame.
+        data_type: string
