@@ -6,7 +6,7 @@ models:
     tests:
       - elementary.volume_anomalies:
           timestamp_column: data_particao
-          where_expression: "tabela = 'solicitacoes'"
+          where_expression: "bq_table = 'solicitacoes'"
           time_bucket: { period: day, count: 1 }
           training_period: { period: day, count: 14 }
           detection_period: { period: day, count: 1 }
@@ -14,7 +14,7 @@ models:
           severity: warn
       - elementary.volume_anomalies:
           timestamp_column: data_particao
-          where_expression: "tabela = 'marcacoes'"
+          where_expression: "bq_table = 'marcacoes'"
           time_bucket: { period: day, count: 1 }
           training_period: { period: day, count: 14 }
           detection_period: { period: day, count: 1 }
