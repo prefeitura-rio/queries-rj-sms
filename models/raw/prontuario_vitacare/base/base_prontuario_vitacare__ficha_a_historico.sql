@@ -106,6 +106,12 @@ with
             updated_at,
             loaded_at
         from source
+        qualify row_number() over (
+            partition by id_cnes, ut_id
+            order by
+                safe_cast(data_atualizacao_cadastro as timestamp) desc,
+                safe_cast(loaded_at as timestamp) desc
+        ) = 1
     )
 
 select *

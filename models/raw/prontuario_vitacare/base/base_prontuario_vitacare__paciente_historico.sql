@@ -102,6 +102,12 @@ WITH
             ) as updated_at_rank
 
         FROM source_cadastro
+        QUALIFY row_number() OVER (
+            PARTITION BY id_cnes, ut_id
+            ORDER BY 
+                    safe_cast(data_atualizacao_cadastro as timestamp) DESC,
+                    safe_cast(loaded_at as timestamp) DESC
+        ) = 1
     )
 
 SELECT
