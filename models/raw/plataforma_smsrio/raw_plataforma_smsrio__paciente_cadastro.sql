@@ -47,7 +47,7 @@ with
         select
             cns,
             telefone,
-            tp_telefone,
+            tipo_telefone as tp_telefone,
             cast(updated_at as datetime)
         from paciente_telefones
     ),
@@ -83,5 +83,8 @@ with
             left join telefone_lista using (cns)
             left join cns_lista using (cns)
     )
-select * 
+select 
+    tp_telefone as tipo_telefone,
+    tp_email as tipo_email,
+    * except(tp_telefone, tp_email)
 from joining
