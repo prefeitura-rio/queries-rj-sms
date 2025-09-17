@@ -6,4 +6,13 @@ sources:
     schema: brutos_sisreg_api_staging
     tables:
       - name: solicitacoes
+        loaded_at_field: data_particao
+        freshness:
+          warn_after:  {count: 2, period: day}
+          error_after: {count: 7, period: day}
+
       - name: marcacoes
+        loaded_at_field: ingestion_ts
+        freshness:
+          warn_after:  {count: 2, period: day}
+          error_after: {count: 7, period: day}

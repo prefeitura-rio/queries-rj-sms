@@ -17,6 +17,9 @@
   )
 }}
 
+
+{% set months_lookback = var('months_lookback', 3) %}
+
 with
     solicitacoes as (
         select 
@@ -34,7 +37,7 @@ with
             cast(NULL as timestamp) as data_autorizacao,
             cast(NULL as timestamp) as data_execucao,
             cast(NULL as timestamp) as data_confirmacao,
-            data_atualizacao as data_atualizacao_registro,        
+            date(data_atualizacao) as data_atualizacao_registro,        
             data_cancelamento,
 
             -- Status / situação e sinalizadores
@@ -123,11 +126,11 @@ with
             cast(NULL as string) as profissional_executante_cpf,
             cast(NULL as string) as profissional_executante_nome
     from {{ ref("raw_sisreg_api__solicitacoes") }}
-    where 
-        1=1
-        {% if is_incremental() %}
-            and particao_data = (select max(particao_data) from {{ this }})
-        {% endif %}
+    {% if is_incremental() %}
+        where 1=1
+            and date(data_atualizacao) >= date_sub(current_date(), interval {{ months_lookback }} month)
+            and date(data_atualizacao) < date_add(current_date(), interval 1 day)
+    {% endif %}
     ),
 
     marcacoes as (
@@ -235,11 +238,11 @@ with
             profissional_executante_cpf as profissional_executante_cpf,
             profissional_executante_nome as profissional_executante_nome
     from {{ ref("raw_sisreg_api__marcacoes") }}
-    where 
-        1=1
-        {% if is_incremental() %}
-            and particao_data = (select max(particao_data) from {{ this }})
-        {% endif %}
+    {% if is_incremental() %}
+        where 1=1
+            and date(data_atualizacao) >= date_sub(current_date(), interval {{ months_lookback }} month)
+            and date(data_atualizacao) < date_add(current_date(), interval 1 day)
+    {% endif %}
     ),
 
     consolidados as (

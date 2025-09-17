@@ -11,14 +11,17 @@
 
 with 
 procedimentos_sisreg as (
-    select
-        id_procedimento_sisreg,
-        array_agg(distinct id_procedimento_sigtap ignore nulls) as id_procedimento_sigtap,
-        array_agg(distinct procedimento_grupo ignore nulls) as procedimento_grupo,
-        array_agg(distinct procedimento ignore nulls) as procedimento
-    from {{ref("mart_sisreg__solicitacoes")}}
-    where id_procedimento_sisreg is not null
-    group by 1
+  select
+    id_procedimento_sisreg,
+    id_procedimento_sigtap,
+    procedimento_grupo,
+    procedimento
+  from {{ ref("mart_sisreg__solicitacoes") }}
+  where id_procedimento_sisreg is not null
+  qualify row_number() over (
+            partition by id_procedimento_sisreg
+            order by data_atualizacao_registro desc
+          ) = 1
 ),
 
 procedimentos_parametrizados as (
@@ -38,7 +41,10 @@ final as (
         sisreg.procedimento_grupo,
         sheets.especialidade,
         sheets.tipo_procedimento,
-        sisreg.procedimento,
+        case 
+            when sisreg.procedimento_grupo is not null then concat(sisreg.procedimento_grupo, ' - ', sisreg.procedimento)
+            else sisreg.procedimento
+        end as procedimento,
         sheets.parametro_consultas_por_hora,
         sheets.parametro_reservas,
         sheets.parametro_retornos

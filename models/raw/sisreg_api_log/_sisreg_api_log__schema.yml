@@ -3,6 +3,24 @@ version: 2
 models:
   - name: raw_sisreg_api_log__logs
     description: "Consolida logs de duas fontes — 'marcacoes' e 'solicitacoes' do dataset 'brutos_sisreg_api_log_staging' — transformando e combinando-os para oferecer uma visão unificada da atividade da API, incluindo metadados de execução, detalhes de ambiente e informações de partição. As principais transformações incluem o parsing de datas e a conversão de carimbos de tempo (timestamps) para o tipo DATETIME."
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: data_particao
+          where_expression: "bq_table = 'solicitacoes'"
+          time_bucket: { period: day, count: 1 }
+          training_period: { period: day, count: 14 }
+          detection_period: { period: day, count: 1 }
+          anomaly_direction: drop
+          severity: warn
+      - elementary.volume_anomalies:
+          timestamp_column: data_particao
+          where_expression: "bq_table = 'marcacoes'"
+          time_bucket: { period: day, count: 1 }
+          training_period: { period: day, count: 14 }
+          detection_period: { period: day, count: 1 }
+          anomaly_direction: drop
+          severity: warn
+          
     columns:
       - name: run_id
         description: "Identificador único de cada execução (run) do processo."
@@ -11,7 +29,6 @@ models:
         tests:
           - not_null
           - unique
-          
       - name: run_inicio
         description: "Timestamp de início da execução do processo, convertido para DATETIME."
         data_type: datetime

@@ -73,7 +73,7 @@ with
                 {{ padronize_telefone("equipe_saude_familia[safe_offset(0)].telefone") }} as phone
             ) as family_health_team,
             array(
-                select 
+                select
                 struct(
                     id_profissional_sus as registry,
                     nome as name
@@ -81,7 +81,7 @@ with
                 from unnest(equipe_saude_familia[safe_offset(0)].medicos)
             ) as medical_responsible,
             array(
-                select 
+                select
                 struct(
                     id_profissional_sus as registry,
                     nome as name
@@ -92,7 +92,8 @@ with
                 saude_mental.id_pcsm,
                 saude_mental.status_acompanhamento,
                 saude_mental.nome_unidade,
-                saude_mental.cnes
+                saude_mental.cnes,
+                saude_mental.telefones
             ) as mental_health,
             dados.identidade_validada_indicador as validated,
             safe_cast(todos_pacientes.cpf as int64) as cpf_particao
