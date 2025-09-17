@@ -102,3 +102,6 @@ models:
       - name: exame_descricao
         description: Descrição do exame.
         data_type: string
+      - name: data_particao
+        description: "Data de partição da tabela de origem, usada para otimizar queries."
+        data_type: date
