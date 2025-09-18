@@ -1,9 +1,13 @@
 version: 2
 
 models:
-  - name: raw_medilab__exames
+  - name: int_historico_clinico__exames__medilab
     description: Tabela contendo informações detalhadas sobre os exames de imagem realizados
     columns:
+      - name: id_cnes
+        description: Código CNES da unidade em que o exame foi realizado.
+      - name: unidade_nome
+        description: Nome da unidade em que o exame foi realizado.
       - name: id_laudo
         description: Código único que identifica o laudo.
       - name: laudo_bucket
@@ -38,8 +42,6 @@ models:
         description: Data de Nascimento do Paciente
         policy_tags:
           - '{{ var ("TAG_DATA_NASCIMENTO") }}'
-      - name: id_cnes
-        description: Código CNES da unidade em que o exame foi realizado.
       - name: exame_data
         description: Data e Hora da Realização do Exame
       - name: exame_nome

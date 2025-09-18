@@ -1,7 +1,6 @@
 {{
     config(
         alias="exames",
-        schema="brutos_laudos_medilab",
         materialized="table",
         partition_by={
             "field": "exame_data_particao",
