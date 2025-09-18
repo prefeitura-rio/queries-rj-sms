@@ -1,0 +1,159 @@
+version: 2
+
+models:
+  - name: mart_iplanrio_paciente
+    description: >
+      Versão da tabela de pacientes para consumo pela IplanRio,
+      derivada de `mart_historico_clinico__paciente`
+    columns:
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: cns
+        description: ARRAY contendo os números do Cartão Nacional de Saúde (CNS) associados ao paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: dados
+        description: STRUCT contendo subcampos reduzidos relacionados a dados do paciente.
+        data_type: record
+
+      - name: dados.obito_indicador
+        description: Indica se o paciente é falecido ou não.
+        data_type: boolean
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      - name: dados.obito_data
+        description: Indica a data de falecimento do paciente.
+        data_type: timestamp
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      - name: dados.raca
+        description: Raça do paciente, conforme registros disponíveis.
+        data_type: string
+
+      - name: equipe_saude_familia
+        description: Array contendo as equipes de saúde da família às quais o paciente está associado.
+        data_type: record
+
+      - name: contato
+        description: STRUCT contendo informações de contato do paciente (apenas telefones e e-mails).
+        data_type: record
+
+      - name: contato.telefone
+        description: ARRAY/STRUCT contendo os números de telefone ordenados.
+        data_type: record
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: contato.telefone.valor
+        description: Número de telefone.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: contato.telefone.sistema
+        description: Sistema de origem do número de telefone.
+        data_type: string
+
+      - name: contato.telefone.rank
+        description: Ranking do telefone.
+        data_type: integer
+
+      - name: contato.email
+        description: ARRAY/STRUCT contendo os e-mails ordenados.
+        data_type: record
+        policy_tags:
+          - '{{ var("TAG_EMAIL") }}'
+
+      - name: contato.email.valor
+        description: Endereço de e-mail.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_EMAIL") }}'
+
+      - name: contato.email.sistema
+        description: Sistema de origem do e-mail.
+        data_type: string
+
+      - name: contato.email.rank
+        description: Ranking do e-mail.
+        data_type: integer
+
+      - name: endereco
+        description: Estrutura contendo informações de endereços associados ao paciente.
+        data_type: record
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.cep
+        description: Código postal (CEP) do endereço.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.tipo_logradouro
+        description: Tipo de logradouro.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.logradouro
+        description: Nome da rua/avenida/etc.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.numero
+        description: Número do endereço.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.complemento
+        description: Complemento do endereço.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.bairro
+        description: Bairro do endereço.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.cidade
+        description: Município do endereço.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.estado
+        description: Unidade federativa (estado) do endereço.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: endereco.datahora_ultima_atualizacao
+        description: Data e hora da última atualização do endereço.
+        data_type: timestamp
+
+      - name: endereco.sistema
+        description: Sistema de origem do endereço.
+        data_type: string
+
+      - name: endereco.rank
+        description: Rank do endereço.
+        data_type: integer
+
+      - name: cpf_particao
+        description: Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        data_type: integer
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
