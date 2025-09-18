@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_laudos_medilab_staging
+    database: rj-sms
+    schema: brutos_laudos_medilab_staging
+    tables:
+    - name: laudo_continuo

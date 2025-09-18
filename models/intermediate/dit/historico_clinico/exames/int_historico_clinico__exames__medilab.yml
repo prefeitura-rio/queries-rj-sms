@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: int_historico_clinico__exames__medilab
+    description: Tabela contendo informações detalhadas sobre os exames de imagem realizados
+    columns:
+      - name: id_cnes
+        description: Código CNES da unidade em que o exame foi realizado.
+      - name: unidade_nome
+        description: Nome da unidade em que o exame foi realizado.
+      - name: id_laudo
+        description: Código único que identifica o laudo.
+      - name: laudo_bucket
+        description: endereço do arquivo pdf armazenado no gcs
+      - name: id_exame
+        description: Código único da solicitação de exame, que permite integrar com SISREG
+      - name: laudo_data_atualizacao
+        description: Data e hora que o laudo é finalizado ou atualizado (incluindo atualizações referentes a inclusão de adendo)
+      - name: medico_requisitante
+        description: Nome do(a) médico(a) que prescreveu o exame ao paciente
+      - name: medico_responsavel
+        description: Nome do(a) médico(a) que realizou o laudo.
+      - name: medico_revisor
+        description: Nome do(a) médico(a) revisor(a), quando houver.
+      - name: paciente_cpf
+        description: CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_cns
+        description: CNS do paciente
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_nome
+        description: Nome Completo do Paciente
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_mae_nome
+        description: Nome Completo da Mãe do Paciente
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_data_nascimento
+        description: Data de Nascimento do Paciente
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+      - name: exame_data
+        description: Data e Hora da Realização do Exame
+      - name: exame_nome
+        description: Nome Detalhado do Exame
+      - name: exame_codigo_sigtap
+        description: Código SIGTAP do Exame
+      - name: exame_data_particao
+        description: Particionamento pela data de exame

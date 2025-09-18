@@ -483,3 +483,38 @@ models:
         description: >
           Permissão de acesso a nível de dados. Por exemplo, acesso
           somente a informações gerais do paciente; a informações de atendimentos; etc.
+  - name: mart_historico_clinico_app__medilab_exames
+    description: Tabela contendo informações detalhadas sobre os exames de imagem realizados
+    columns:
+      - name: unidade_cnes
+        description: Código CNES da unidade em que o exame foi realizado.
+      - name: unidade_nome
+        description: Nome da unidade em que o exame foi realizado.
+      - name: id_laudo
+        description: Código único que identifica o laudo.
+      - name: laudo_bucket
+        description: endereço do arquivo pdf armazenado no gcs
+      - name: id_exame
+        description: Código único da solicitação de exame, que permite integrar com SISREG
+      - name: laudo_data_atualizacao
+        description: Data e hora que o laudo é finalizado ou atualizado (incluindo atualizações referentes a inclusão de adendo)
+      - name: medico_requisitante
+        description: Nome do(a) médico(a) que prescreveu o exame ao paciente
+      - name: medico_responsavel
+        description: Nome do(a) médico(a) que realizou o laudo.
+      - name: medico_revisor
+        description: Nome do(a) médico(a) revisor(a), quando houver.
+      - name: paciente_cpf
+        description: CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: exame_data
+        description: Data e Hora da Realização do Exame
+      - name: exame_nome
+        description: Nome Detalhado do Exame
+      - name: exame_codigo_sigtap
+        description: Código SIGTAP do Exame
+      - name: cpf_particao
+        description: Particionamento pelo cpf do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
