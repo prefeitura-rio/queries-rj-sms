@@ -97,11 +97,15 @@ WITH
             greatest(
                 safe_cast(data_atualizacao_cadastro as timestamp),
                 safe_cast(data_cadastro as timestamp),
-                safe_cast(data_atualizacao_vinculo_equipe as timestamp),
-                safe_cast(data_atualizacao_cadastro as timestamp)
+                safe_cast(data_atualizacao_vinculo_equipe as timestamp)
             ) as updated_at_rank
 
         FROM source_cadastro
+
+        qualify row_number() over (
+            partition by id
+            order by updated_at_rank desc
+        ) = 1
     )
 
 SELECT
