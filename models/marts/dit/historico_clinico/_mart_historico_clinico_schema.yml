@@ -753,7 +753,7 @@ models:
         description: "CPF do paciente convertido para inteiro para fins de partição"
         policy_tags:
           - '{{ var("TAG_CPF") }}'
-  - name: mart_historico_clinico__medilab_exames
+  - name: mart_historico_clinico__exame_imagem
     description: Tabela contendo informações detalhadas sobre os exames de imagem realizados
     columns:
       - name: unidade_cnes
