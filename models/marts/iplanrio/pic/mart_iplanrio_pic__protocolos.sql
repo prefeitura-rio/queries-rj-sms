@@ -153,7 +153,9 @@ with
                 coalesce(p3_avaliacao_eventos.teve_vd_entre_48_54_meses, 'Não Aplicável') as entre_48_54_meses,
                 coalesce(p3_avaliacao_eventos.teve_vd_entre_54_60_meses, 'Não Aplicável') as entre_54_60_meses
             ) as protocolo_visitas_domiciliares_puericultura,
-            current_date() as ultima_atualizacao
+            struct(
+                current_timestamp() as ultima_atualizacao
+            ) as metadados
         from publico_alvo
             left join p1_avaliacao_eventos using (cpf)
             left join p2_avaliacao_eventos using (cpf)

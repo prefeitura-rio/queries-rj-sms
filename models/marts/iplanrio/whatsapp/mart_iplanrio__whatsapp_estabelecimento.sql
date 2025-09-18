@@ -86,4 +86,9 @@ final as (
       nome_fantasia asc
 )
 
-select * from final
+select 
+  *,
+  struct(
+      current_timestamp() as ultima_atualizacao
+  ) as metadados
+  from final

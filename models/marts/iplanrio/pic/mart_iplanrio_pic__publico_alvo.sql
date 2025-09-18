@@ -52,5 +52,9 @@ with
         union all
         select * from criancas
     )
-select *
+select 
+    *,
+    struct(
+        current_timestamp() as ultima_atualizacao
+    ) as metadados
 from juncao_casos

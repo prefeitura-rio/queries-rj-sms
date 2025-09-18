@@ -52,6 +52,9 @@ SELECT
   struct(
     atendimentos.unidade_nome as nome,
     atendimentos.unidade_telefone as telefone
-  ) as unidade
+  ) as unidade,
+  struct(
+    current_timestamp() as ultima_atualizacao
+  ) as metadados
 FROM atendimentos
   inner join {{ ref('mart_historico_clinico__paciente') }} paciente on paciente.cpf = atendimentos.cpf

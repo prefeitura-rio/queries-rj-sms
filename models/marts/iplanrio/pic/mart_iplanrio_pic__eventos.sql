@@ -54,7 +54,10 @@ with
     eventos_publico_alvo as (
         SELECT 
             *,
-            date_diff(eventos.dthr, publico_alvo.data_referencia, day) as distancia_dias
+            date_diff(eventos.dthr, publico_alvo.data_referencia, day) as distancia_dias,
+            struct(
+                current_timestamp() as ultima_atualizacao
+            ) as metadados
         FROM eventos
             INNER JOIN publico_alvo using (cpf)
     )

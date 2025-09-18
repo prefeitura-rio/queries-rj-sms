@@ -31,6 +31,10 @@ SELECT
     unidade_executante_municipio as municipio,
     {{ padronize_telefone('unidade_executante_telefone') }} as telefone
   ) as unidade,
+  
+  struct(
+      current_timestamp() as ultima_atualizacao
+  ) as metadados,
   safe_cast(data_marcacao as date) as data_particao
 FROM {{ ref("raw_sisreg_api__marcacoes") }} marcacoes
 WHERE 

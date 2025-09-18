@@ -38,4 +38,8 @@ select
 
     cpf_particao,
 
+    struct(
+        current_timestamp() as ultima_atualizacao
+    ) as metadados
+
 from base

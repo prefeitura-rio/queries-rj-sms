@@ -183,7 +183,7 @@ avaliacoes AS (
   FROM frequencia
 ),
 
-final AS (
+final_avaliacoes AS (
   SELECT
     a.*,
     EXISTS (
@@ -209,32 +209,39 @@ final AS (
       )
     ) AS flag_numero_invalidado
   FROM avaliacoes a
+),
+final as (
+  SELECT
+    cpf,
+    ARRAY_AGG(STRUCT(
+      telefone AS telefone_raw,
+      telefone_limpo,
+      if(flag_numero_invalidado is true, null, telefone_formatado) as telefone_formatado,
+      data_ultima_atualizacao_cadastral,
+      STRUCT(
+        flag_numero_invalidado,
+        flag_telefone_formatado_nulo,
+        total_cpfs_com_mesmo_telefone,
+        flag_numero_compartilhado,
+        flag_texto_indefinido,
+        flag_poucos_digitos,
+        flag_todos_digitos_iguais,
+        flag_repetidos_5_ou_mais,
+        flag_ddd_invalido,
+        flag_celular_9d_digito_invalido,
+        flag_numero_institucional,
+        flag_telefone_clinica
+      ) AS status
+    ) ORDER BY data_ultima_atualizacao_cadastral DESC) AS telefones
+  FROM final_avaliacoes
+  WHERE cpf IS NOT NULL
+    AND cpf != ''
+    AND UPPER(cpf) NOT IN ('00000000000', 'NONE', 'NAO TEM', 'NAO INFORMADO')
+  GROUP BY cpf
 )
-
-SELECT
-  cpf,
-  ARRAY_AGG(STRUCT(
-    telefone AS telefone_raw,
-    telefone_limpo,
-    if(flag_numero_invalidado is true, null, telefone_formatado) as telefone_formatado,
-    data_ultima_atualizacao_cadastral,
-    STRUCT(
-      flag_numero_invalidado,
-      flag_telefone_formatado_nulo,
-      total_cpfs_com_mesmo_telefone,
-      flag_numero_compartilhado,
-      flag_texto_indefinido,
-      flag_poucos_digitos,
-      flag_todos_digitos_iguais,
-      flag_repetidos_5_ou_mais,
-      flag_ddd_invalido,
-      flag_celular_9d_digito_invalido,
-      flag_numero_institucional,
-      flag_telefone_clinica
-    ) AS status
-  ) ORDER BY data_ultima_atualizacao_cadastral DESC) AS telefones
-FROM final
-WHERE cpf IS NOT NULL
-  AND cpf != ''
-  AND UPPER(cpf) NOT IN ('00000000000', 'NONE', 'NAO TEM', 'NAO INFORMADO')
-GROUP BY cpf
+select
+  *,
+  struct(
+      current_timestamp() as ultima_atualizacao
+  ) as metadados
+from final

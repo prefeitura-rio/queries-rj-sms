@@ -536,6 +536,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: iplanrio
+        paciente:
+          +schema: projeto_paciente
+          +tags: ["daily", "iplanrio", "paciente"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: iplanrio
       subpav:
         dashboard_gestacoes:
           +schema: projeto_gestacoes
