@@ -1,8 +1,7 @@
 {{
     config(
-        alias="cnpj",
+        alias="cpf",
         materialized="table",
-        cluster_by="situacao",
         partition_by={
             "field": "cpf_particao",
             "data_type": "int64",
@@ -10,6 +9,5 @@
         }
     )
 }}
-
 
 select * from {{ source("brutos_bcadastro", 'cpf') }}
