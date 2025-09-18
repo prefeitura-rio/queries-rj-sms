@@ -16,14 +16,30 @@ with
         from {{ ref("base_prontuario_vitacare__ficha_a_continuo") }}
     ),
 
-    -- -----------------------------------------------------
-    -- Padronização
-    -- -----------------------------------------------------
-    ficha_a_deduplicado as (
-        select *
-        from ficha_a
-        qualify row_number() over (partition by id order by updated_at desc) = 1 
+    ficha_a_com_rank as (
+        select
+            f.*,
+            greatest(
+                safe_cast(data_atualizacao_cadastro as timestamp),
+                safe_cast(data_cadastro as timestamp),
+                safe_cast(data_atualizacao_vinculo_equipe as timestamp)
+            ) as updated_at_rank
+        from ficha_a f
     ),
+
+    ficha_a_deduplicado AS (
+        SELECT
+            f.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY id
+                ORDER BY 
+                    updated_at_rank DESC,
+                    loaded_at DESC
+            ) AS rn
+        FROM ficha_a_com_rank f
+        QUALIFY rn = 1
+    ),
+
 
     ficha_a_padronizada as (
         select 
