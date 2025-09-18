@@ -9,27 +9,32 @@
 
 with filtros_diario_uniao as (
     select
-        * 
+        *
     from {{ref('raw_diario_oficial__diarios_uniao_api')}}
     where (
-        lower(texto)  like "%município do rio de janeiro%"
-        or lower(organizacao_principal) like "%município do rio de janeiro%"
+        -- Município do Rio de Janeiro
+        REGEXP_CONTAINS({{ remove_accents_upper("texto") }}, r'\bMUNICIPIO\s+DO\s+RIO\s+DE\s+JANEIRO\b')
+        or REGEXP_CONTAINS({{ remove_accents_upper("organizacao_principal") }}, r'\bMUNICIPIO\s+DO\s+RIO\s+DE\s+JANEIRO\b')
+    )
+    and not (
+        starts_with(organizacao_principal, "Ministério da Cultura")
+        or starts_with(organizacao_principal, "Ministério do Esporte")
     )
     and (
-        lower(texto) like "hospital municipal%"
-        or texto like "CER %"
-        or texto like "UPA %"
-        or texto like "CF %"
-        or texto like "CMS %"
-        or texto like "Policlínica %"
-        or lower(texto)  like "clínica% da família%"
-        or texto like "%Hospital Federal Cardoso Fontes%"
-        or texto like "%Hospital Federal de Andaraí%"
+        -- Hospital municipal
+        REGEXP_CONTAINS(upper(texto), r'\bHOSPITA(L|IS)\s+MUNICIPA(L|IS)\b')
+        -- CER, UPA, CF, CMS, Policlínica
+        or REGEXP_CONTAINS({{ remove_accents_upper("texto") }}, r'\b(CER|UPA|CF|CMS|POLICLINICA)\b')
+        -- Clínica da família
+        or REGEXP_CONTAINS({{ remove_accents_upper("texto") }}, r'\bCLINICAS?\s+(DE|DA)\s+FAMILIA\b')
+        -- Hospitais federais Cardoso Fontes e de Andaraí
+        or REGEXP_CONTAINS({{ remove_accents_upper("texto") }}, r'\bHOSPITAL\s+FEDERAL\s+(CARDO(S|Z)O\s+FONTES|(DE|DO)?\s*ANDARAI)\b')
+        -- Daniel Soranz
+        or REGEXP_CONTAINS(upper(texto), r'\bDANIEL\s+(RICARDO)?\s*SORANZ\b')
+        -- Rodrigo Prado
+        or REGEXP_CONTAINS(upper(texto), r'\bRODRIGO\s+(SOU(S|Z)A)?\s*PRADO\b')
+        -- Menciona 'saúde'
         or lower(texto)  like "%saúde%"
-        or texto like "%Daniel Ricardo Soranz Pinto%"
-        or texto like "%Daniel Soranz%"
-        or texto like "%Rodrigo Sousa Prado%"
-        or texto like "%Rodrigo Prado%"
     )
 ),
 titulos_diario_uniao as (

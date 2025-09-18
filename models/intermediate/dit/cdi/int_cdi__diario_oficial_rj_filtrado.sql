@@ -23,18 +23,24 @@ filtro_palavras_chave as (
     concat(id_diario,id_materia,secao_indice,bloco_indice,conteudo_indice) as id,
     *
   from diarios_municipio
-  where conteudo like "%Secretaria Municipal%Saúde%"
-    or conteudo like "%SMS%"
-    or lower(conteudo) like "%clínica da família%"
-    or lower(conteudo) like "%policlínica%"
-    or lower(conteudo) like "%centros de saúde%"
-    or conteudo like "%CAPS %"
-    or conteudo like "%UPA %"
-    or conteudo like "%CER %"
-    or lower(conteudo) like "%hospita%municipa%"
-    or lower(conteudo) like "%unidade%saúde%"
-    or lower(conteudo) like "%rio%saúde%"
-    or conteudo like "%Sistema de Controle de Bens Patrimoniais (SISBENS)%"
+  where
+    -- Secretaria Municipal de Saúde
+    REGEXP_CONTAINS({{ remove_accents_upper("conteudo") }}, r'\bSECRETARIA\s+MUNICIPAL\s+(DE|DA)?\s*SAUDE\b')
+    -- SMS, Policlínica, CAPS, UPA, CER
+    or REGEXP_CONTAINS({{ remove_accents_upper("conteudo") }}, r'\b(SMS|POLICLINICA|CAPS|UPA|CER)\b')
+    -- HMMC - Hospital Municipal Miguel Couto
+    or REGEXP_CONTAINS(upper(conteudo), r'\bHMMC\b')
+    -- Clínica da Família
+    or REGEXP_CONTAINS({{ remove_accents_upper("conteudo") }}, r'\bCLINICAS?\s+(MUNICIPAL\s+)?(DE|DA)\s+FAMILIA\b')
+    -- Centro de Saúde, Unidade de Saúde, ...
+    or REGEXP_CONTAINS({{ remove_accents_upper("conteudo") }}, r'\b(CLINICA|CENTRO|UNIDADE)S?\s+(MUNICIPAL\s+)?(DE|DA)\s+SAUDE\b')
+    -- Hospitais municipais
+    or REGEXP_CONTAINS(upper(conteudo), r'\bHOSPITA(L|IS)\s+MUNICIPA(L|IS)\b')
+    -- SISBENS
+    or REGEXP_CONTAINS(upper(conteudo), r'\bSISTEMA\s+(DE|DO)\s+CONTROLE\s+(DE|DOS?)\s+BE(M|NS)\s+PATRIMONIA(L|IS)')
+    or REGEXP_CONTAINS(upper(conteudo), r'\bSISBENS\b')
+    -- Viva Rio, Rio Saúde
+    or REGEXP_CONTAINS({{ remove_accents_upper("conteudo") }}, r'\b(VIVA[\-\s]*RIO|RIO[\-\s]*SAUDE|EMPRESA\s+PUBLICA\s+DE\s+SAUDE)\b')
 ),
 -- filtro que busca todas as resoluções da secretaria de saúde
 secretaria_saude_add as (
@@ -68,10 +74,8 @@ atos_prefeito_add as (
   where
     pasta = 'ATOS DO PREFEITO/DECRETOS N'
     and (
-      conteudo like "%CGM%"
-      or conteudo like "%TCMRJ%"
-      or cabecalho like "%CGM%"
-      or cabecalho like "%TCMRJ%"
+      REGEXP_CONTAINS(upper(conteudo), r'\b(CGM|TCMRJ)\b')
+      or REGEXP_CONTAINS(upper(cabecalho), r'\b(CGM|TCMRJ)\b')
     )
 ),
 -- filtro especifico de retirar exonerações e designações em secretaria municipal
@@ -85,7 +89,7 @@ secretaria_saude_del as (
     pasta = 'SECRETARIA MUNICIPAL DE SAÚDE/RESOLUÇÕES/RESOLUÇÃO N'
     and (
       lower(conteudo) like "%exoneração%"
-      or lower(conteudo) like "%designa%servidores%"
+      or REGEXP_CONTAINS(upper(conteudo), r'\bDESIGNA(R|M)?\s+SERVIDOR(ES)?\b')
     )
 ),
 -- filtro especifico de retirar plantoes de funeraria
@@ -113,8 +117,8 @@ tribunal_contas_controladoria_del as (
     )
     and (
       lower(conteudo) like "%despacho%"
-      or lower(conteudo) like "%legalidade%para fins de registro%"
       or lower(cabecalho) like '%despacho%'
+      or lower(conteudo) like "%legalidade%para fins de registro%"
     )
 ),
 -- constroi tabelas com todos as palavras chaves
@@ -178,7 +182,7 @@ final_tcm as (
           tcm.conteudo
         )
     end as content_email,
-    regexp_extract(tcm.conteudo,r'^[0-9\/]+ ') as voto
+    regexp_extract(tcm.conteudo,r'^[0-9\s,\.]+/[0-9\s,\.]+/[0-9\s,\.]+\b') as voto
   from (
     select *
     from conteudos_para_email 
@@ -215,7 +219,7 @@ final_secretaria_saude as (
       concat(id_diario,id_materia,secao_indice)  as id_materia_secao_do,
       pasta,
       arquivo,
-      regexp_replace(regexp_replace(cabecalho,'DANIEL SORANZ\n',''),r'\*','') as cabecalho,
+      regexp_replace(regexp_replace(cabecalho,r'DANIEL\s+SORANZ[\r\n]+',''),r'\*','') as cabecalho,
       string_agg(conteudo,'\n') as conteudo
     from diarios_municipio
     where bloco_indice = 0
