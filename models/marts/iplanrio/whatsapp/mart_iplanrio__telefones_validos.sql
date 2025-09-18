@@ -25,7 +25,7 @@ base_telefones AS (
     TRIM(telefone) AS telefone,
     data_ultima_atualizacao_cadastral,
     'vitacare' AS origem
-  FROM `rj-sms.brutos_prontuario_vitacare.paciente`
+  FROM {{ ref("raw_prontuario_vitacare__paciente") }}
   WHERE telefone IS NOT NULL AND telefone != ''
 
   UNION ALL
@@ -35,7 +35,7 @@ base_telefones AS (
     TRIM(celular),
     updated_at,
     'vitai'
-  FROM `rj-sms.brutos_prontuario_vitai_api.paciente`
+  FROM {{ ref("raw_prontuario_vitai_api__paciente") }}
   WHERE celular IS NOT NULL AND celular != ''
 
   UNION ALL
@@ -47,7 +47,7 @@ base_telefones AS (
     'vitai'
   FROM (
     SELECT cpf, updated_at, telefone_extra_um, telefone_extra_dois
-    FROM `rj-sms.brutos_prontuario_vitai_api.paciente`
+    FROM {{ ref("raw_prontuario_vitai_api__paciente") }}
   ), UNNEST([telefone_extra_um, telefone_extra_dois]) AS tel
   WHERE tel IS NOT NULL AND tel != ''
 
@@ -58,7 +58,7 @@ base_telefones AS (
     TRIM(telefone),
     updated_at,
     'smsrio'
-  FROM `rj-sms.brutos_plataforma_smsrio.paciente`
+  FROM {{ ref("raw_plataforma_smsrio__paciente") }}
   WHERE telefone IS NOT NULL AND telefone != ''
 ),
 
@@ -140,7 +140,7 @@ telefones_clinicas AS (
   FROM (
     SELECT
       REGEXP_REPLACE(telefone_elemento, r'[^0-9]', '') AS telefone_limpo
-    FROM `rj-sms-dev.saude_dados_mestres.estabelecimento`,
+    FROM {{ ref("dim_estabelecimento") }},
     UNNEST(telefone) AS telefone_elemento
   )
   WHERE telefone_limpo IS NOT NULL AND telefone_limpo != ''
