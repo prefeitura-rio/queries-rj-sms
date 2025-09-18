@@ -16,7 +16,7 @@ with
         select 
             SAFE_CAST(id as string) as id,
             safe_cast(cns as string) as cns,
-            safe_cast(tp_telefone as string) as tp_telefone,
+            safe_cast(tp_telefone as string) as tipo_telefone,
             safe_cast(telefone as string) as telefone,
             timestamp_add(datetime(timestamp({{process_null('timestamp')}}), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
             datetime(timestamp(datalake_loaded_at), 'America/Sao_Paulo') as loaded_at

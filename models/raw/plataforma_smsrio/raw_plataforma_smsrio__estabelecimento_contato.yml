@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: raw_plataforma_smsrio__estabelecimento_contato
+    description: "O modelo 'estabelecimento_contato' é uma tabela que contém
+      informações de contato de vários estabelecimentos da Atenção Primária. O
+      modelo inclui as seguintes colunas: 'id_cnes', que é um identificador
+      único para cada estabelecimento, 'telefone', que contém os números de
+      telefone, 'email', que contém os endereços de e-mail, 'facebook',
+      'instagram' e 'twitter', que contêm os respectivos perfis de mídia social
+      dos estabelecimentos."
+    columns:
+      - name: unidade_id
+        description: Identificador único para cada estabelecimento de saúde (CNES).
+        data_type: string
+        quote: true
+      - name: telefone
+        description: Telefone de contato do stabelecimento de saúde.
+        data_type: string
+        quote: true
+      - name: email
+        description: Endereço de e-mail do estabelecimento de saúde.
+        data_type: string
+        quote: true
+      - name: facebook
+        description: Perfil do Facebook do estabelecimento de saúde.
+        data_type: string
+        quote: true
+      - name: instagram
+        description: Perfil do Instagram do estabelecimento de saúde. 
+        data_type: string
+        quote: true
+      - name: twitter
+        description: Perfil do Twitter do estabelecimento de saúde.
+        data_type: string
+        quote: true
+      - name: created_at
+        description: Data e hora em que as informações de contato do estabelecimento foram criadas pela primeira vez no sistema.
+        data_type: string
+        quote: true
+      - name: updated_at
+        description: Data e hora em que as informações de contato do estabelecimento foram atualizadas pela última vez no
+          sistema.
+        data_type: string
+        quote: true

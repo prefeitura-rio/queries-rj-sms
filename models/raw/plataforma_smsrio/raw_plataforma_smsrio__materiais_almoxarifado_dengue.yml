@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: raw_plataforma_smsrio__materiais_almoxarifado_dengue
+    description: "Tabela bruta com o cadastro de materiais e insumos de combate à Dengue, utilizados nos almoxarifados da Atenção Primária à Saúde (APS). Cada linha representa um tipo de material único."
+    columns:
+      - name: id
+        description: Identificador do registro.
+        tests:
+          - unique
+          - not_null
+      - name: id_material
+        description: "Identificador único para cada tipo de material ou insumo. Chave primária da tabela."
+        tests:
+          - unique
+          - not_null
+      - name: descricao
+        description: "Nome ou descrição do material ou insumo."
+        tests:
+          - not_null
+      - name: created_at
+        description: "Data e hora da criação dos dados do material na origem."
+      - name: updated_at
+        description: "Data e hora da última atualização dos dados do material na origem."
