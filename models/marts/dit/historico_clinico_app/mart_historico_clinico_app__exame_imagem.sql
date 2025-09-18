@@ -1,6 +1,6 @@
 {{
     config(
-        alias="medilab_exames",
+        alias="exame_imagem",
         schema="app_historico_clinico",
         materialized="table",
         partition_by={
@@ -14,7 +14,7 @@
 with medilab_exames as (
     select 
         * 
-    from {{ ref('mart_historico_clinico__medilab_exames') }}
+    from {{ ref('mart_historico_clinico__exame_imagem') }}
 )
 
 select * from medilab_exames
