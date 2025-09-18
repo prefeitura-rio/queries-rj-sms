@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__alta
+    description: "Tabela de altas médicas do prontuário Vitai. Contém informações sobre a finalização do atendimento de um paciente, seja por alta, óbito ou transferência. Os dados são dedupicados pela chave `gid`, mantendo sempre o registro mais recente."
+    columns:
+      - name: gid
+        description: "Identificador único da alta."
+        tests:
+          - unique
+          - not_null
+      - name: gid_boletim
+        description: "Identificador único do boletim de atendimento ao qual a alta está associada."
+      - name: gid_estabelecimento
+        description: "Identificador único do estabelecimento de saúde onde ocorreu a alta."
+      - name: alta_tipo_detalhado
+        description: "Tipo detalhado da alta (ex: alta curado, alta melhorado)."
+      - name: alta_tipo
+        description: "Tipo da alta (ex: alta, óbito, transferência)."
+      - name: obito_data
+        description: "Data do óbito, caso aplicável."
+      - name: alta_data
+        description: "Data da alta do paciente."
+      - name: saida_motivo
+        description: "Motivo da saída do paciente do estabelecimento."
+      - name: alta_medica
+        description: "Indicador se a alta foi uma decisão médica."
+      - name: alta_administrativa_data
+        description: "Data e hora em que a alta administrativa foi registrada."
+      - name: abe_obs
+        description: "Observações relacionadas ao Atestado de Baixa por Encerramento (ABE)."
+      - name: alta_status
+        description: "Status atual do processo de alta."
+      - name: datahora
+        description: "Data e hora do evento de alta no sistema de origem."
+      - name: base_url
+        description: "URL base da API de origem dos dados."
+      - name: cliente
+        description: "Nome do cliente ou sistema de origem dos dados (ex: Vitai)."
+      - name: created_at
+        description: "Data e hora de criação do registro no sistema de origem."
+      - name: imported_at
+        description: "Data e hora de importação do registro para o Data Lake."
+      - name: data_particao
+        description: "Data de partição da tabela de origem, usada para otimizar queries."
+        data_type: date
+

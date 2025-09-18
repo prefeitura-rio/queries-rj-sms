@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__atendimento
+    description: Tabela de eventos de atendimento, sincronizada com Vitai.
+    columns:
+      - name: gid
+        description: Identificador global do atendimento na base da Vitai.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_vitai__atendimento__id__not_null
+      - name: gid_paciente
+        description: Identificador global do paciente na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: gid_boletim
+        description: Identificador global do boletim de atendimento na base da Vitai.
+        data_type: string
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento na base da Vitai.
+        data_type: string
+      - name: gid_profissional
+        description: Identificador global do profissional na base da Vitai.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: atendimento_tipo
+        description: Tipo de atendimento realizado.
+        data_type: string
+      - name: especialidade
+        description: Especialidade do atendimento.
+        data_type: string
+      - name: inicio_datahora
+        description: Data e hora de início do atendimento.
+        data_type: string
+      - name: fim_datahora
+        description: Data e hora de fim do atendimento.
+        data_type: string
+      - name: cid_codigo
+        description: Código do CID.
+        data_type: string
+      - name: updated_at
+        description: Data e hora do evento.
+        data_type: timestamp
+      - name: codigo
+        description: Código do evento de atendimento.
+        data_type: string
+      - name: queixa
+        description: Queixa principal do paciente.
+        data_type: string
+      - name: cid_nome
+        description: Descrição do CID.
+        data_type: string
+      - name: cliente
+        description: Cliente associado ao evento.
+        data_type: string
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+      - name: created_at
+        description: Data e hora de criação do registro no ETL Vitai
+        data_type: timestamp
+      - name: data_particao
+        description: "Data de partição da tabela de origem, usada para otimizar queries."
+        data_type: date

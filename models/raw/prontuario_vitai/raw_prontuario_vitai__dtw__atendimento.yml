@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__dtw__atendimento
+    columns:
+      - name: gid
+        description: Identificador global do atendimento.
+        data_type: string
+
+      - name: gid_estabelecimento
+        description: Identificador global do estabelecimento onde o atendimento foi realizado.
+        data_type: string
+
+      - name: gid_boletim
+        description: Identificador do boletim vinculado ao atendimento.
+        data_type: string
+
+      - name: id_matd
+        description: Desconhecido.
+        data_type: integer
+
+      - name: id_cid
+        description: Identificador do CID (Classificação Internacional de Doenças) relacionado ao atendimento.
+        data_type: integer
+
+      - name: id_especialidade
+        description: Identificador da especialidade médica associada ao atendimento.
+        data_type: integer
+
+      - name: id_paciente_rede
+        description: Identificador do paciente na rede de atendimento.
+        data_type: integer
+
+      - name: id_prf
+        description: Identificador do profissional responsável pelo atendimento.
+        data_type: integer
+
+      - name: queixa_principal
+        description: Descrição da queixa principal do paciente.
+        data_type: string
+
+      - name: primeiro_atendimento
+        description: Indica se é o primeiro atendimento do paciente.
+        data_type: string
+
+      - name: ultimo_atendimento
+        description: Indica se é o último atendimento do paciente.
+        data_type: string
+
+      - name: atendimento_inicio
+        description: Data e hora de início do atendimento.
+        data_type: timestamp
+
+      - name: atendimento_fim
+        description: Data e hora de término do atendimento.
+        data_type: timestamp
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro.
+        data_type: timestamp
+
+      - name: centralized_at
+        description: Data e hora em que o dado foi centralizado.
+        data_type: timestamp
+
+      - name: imported_at
+        description: Data e hora de importação para o Data Lake.
+        data_type: timestamp
+        data_tests:
+          - not_null:
+              name: latest_events__imported_at__not_null
