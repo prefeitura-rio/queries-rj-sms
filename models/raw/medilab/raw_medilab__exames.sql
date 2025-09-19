@@ -18,11 +18,13 @@ with
     exams as (
         select
             {{ process_null("json_extract_scalar(data, '$.numReport')") }} as id_laudo,
-            case 
-                when {{ process_null("json_extract_scalar(data, '$.report_pdf')") }} like 'gs://%' 
-                then {{ process_null("json_extract_scalar(data, '$.report_pdf')") }}
+            case
+                when {{ process_null("json_extract_scalar(data, '$.reportPDF')") }} like 'gs://%'
+                then {{ process_null("json_extract_scalar(data, '$.reportPDF')") }}
                 else null
             end as laudo_bucket,
+
+            {{ process_null("json_extract_scalar(data, '$.reportText')") }} as laudo_texto,
 
             {{ process_null("json_extract_scalar(data, '$.numExam')") }} as id_exame,
 
