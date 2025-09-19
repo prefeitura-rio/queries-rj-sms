@@ -22,17 +22,21 @@ with
         select
             id_cnes as unidade_cnes,
             unidade_nome as unidade_nome,
-            id_laudo as id_laudo,
-            laudo_bucket as laudo_bucket,
+
+            paciente_cpf as paciente_cpf,
+
             id_exame as id_exame,
+            id_laudo as id_laudo,
+            exame_nome as exame_nome,
+            exame_codigo_sigtap as exame_codigo_sigtap,
+            exame_data as exame_data,
+            laudo_bucket as laudo_bucket,
             laudo_data_atualizacao as laudo_data_atualizacao,
+
             medico_requisitante as medico_requisitante,
             medico_responsavel as medico_responsavel,
             medico_revisor as medico_revisor,
-            paciente_cpf as paciente_cpf,
-            exame_data as exame_data,
-            exame_nome as exame_nome,
-            exame_codigo_sigtap as exame_codigo_sigtap,
+
             safe_cast(paciente_cpf as int) as cpf_particao 
         from medilab_exames
     )
