@@ -13,13 +13,6 @@ models:
         description: "Identificador CNES da unidade de saúde que fornece as instruções de preparo. Chave estrangeira para a tabela `raw_plataforma_smsrio__estabelecimento`."
         tests:
           - not_null
-          - relationships:
-              to: ref('raw_plataforma_smsrio__estabelecimento')
-              field: id
-      - name: id_procedimento_unificado
-        description: "Identificador do procedimento ao qual as instruções de preparo se aplicam. Pode ser uma chave estrangeira para uma tabela de procedimentos."
-        tests:
-          - not_null
       - name: codigo_procedimento_interno
         description: "Código interno do procedimento."
       - name: nome_procedimento

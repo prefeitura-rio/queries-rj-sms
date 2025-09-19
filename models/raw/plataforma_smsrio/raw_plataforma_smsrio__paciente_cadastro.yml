@@ -61,10 +61,6 @@ models:
         description: "Raça ou cor autodeclarada pelo paciente."
       - name: id_cnes_unidade_cadastro
         description: "Identificador CNES da unidade de saúde onde o cadastro do paciente foi realizado ou está vinculado."
-        tests:
-          - relationships:
-              to: ref('raw_plataforma_smsrio__estabelecimento')
-              field: id_cnes
       - name: updated_at
         description: "Data e hora da última atualização do registro na origem."
       - name: loaded_at

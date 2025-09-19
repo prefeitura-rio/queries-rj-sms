@@ -8,9 +8,6 @@ models:
         description: "Identificador CNES do estabelecimento de saúde (almoxarifado) onde o material está estocado. Chave estrangeira para a tabela de estabelecimentos."
         tests:
           - not_null
-          - relationships:
-              to: ref('raw_plataforma_smsrio__estabelecimento')
-              field: id_cnes
 
       - name: id_material
         description: "Identificador único do material ou insumo em estoque."

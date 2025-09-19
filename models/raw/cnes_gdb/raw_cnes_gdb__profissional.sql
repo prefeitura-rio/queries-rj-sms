@@ -15,7 +15,7 @@ select
     cast(CPF_PROF as string) as cpf,
     cast(COD_CNS as string) as cns,
     cast(NOME_PROF as string) as nome,
-    cast(DATA_NASC as date) as data_nascimento,	
+    safe_cast(DATA_NASC as date) as data_nascimento,	
     case 
         when SEXO='F' then 'Feminino'
         when SEXO='M' then 'Masculino'
