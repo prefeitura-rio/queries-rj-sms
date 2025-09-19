@@ -1,7 +1,8 @@
 {{ 
     config(
         materialized="table",
-        alias="sim"
+        alias="sim",
+        enabled=false
     )
 }}
 
