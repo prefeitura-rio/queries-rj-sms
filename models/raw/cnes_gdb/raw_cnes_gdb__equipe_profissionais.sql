@@ -11,6 +11,7 @@ with
     )
 
 select
+    cast(id_profissional_sus as string) as id_profissional_sus,
     cast(PROF_ID as string) as id_profissional_cnes,
     cast(COD_CBO as string) as id_cbo,
     cast(SEQ_EQUIPE as string) as equipe_sequencial,
