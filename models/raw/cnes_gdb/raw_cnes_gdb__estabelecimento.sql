@@ -68,13 +68,13 @@ select
         else null
     end as possui_conexao_internet,
     cast(NUM_ALVARA as string) as alvara_numero,
-    cast(DATA_EXPED as date) as alvara_data_expedicao,
+    safe_cast(DATA_EXPED as date) as alvara_data_expedicao,
     case 
         when IND_ORGEXP='1' then 'SES'
         when IND_ORGEXP='2' then 'SMS'
         else null
     end as alvara_orgao_expedidor,
-    cast(DT_VAL_LIC_SANI as date) as licenca_sanitaria_data_validade,
+    safe_cast(DT_VAL_LIC_SANI as date) as licenca_sanitaria_data_validade,
     case 
         when TP_LIC_SANI='1' then 'Total'
         when TP_LIC_SANI='2' then 'Parcial/Restrições'
@@ -87,9 +87,9 @@ select
         when FL_ADESAO_FILANTROP = '2' then false
         else null
     end as adesao_hospital_filantropico,
-    cast(DATA_ATU as date) as data_atualizacao_registro,
+    safe_cast(DATA_ATU as date) as data_atualizacao_registro,
     cast(USUARIO as string) as usuario_atualizador_registro,
-    cast(DT_ATU_GEO as date) as data_atualizacao_geolocalizacao,
+    safe_cast(DT_ATU_GEO as date) as data_atualizacao_geolocalizacao,
     cast(NO_USUARIO_GEO as string) as usuario_atualizador_geolocalizacao,
     case 
         when ST_GERACREDITO_GERENTE_SGIF='S' then true
