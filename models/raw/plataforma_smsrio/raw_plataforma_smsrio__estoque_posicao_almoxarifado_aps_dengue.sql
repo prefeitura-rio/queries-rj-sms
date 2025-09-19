@@ -16,6 +16,10 @@ with
                 )
             }}
     ),
+    most_recent as (
+        select * from source
+        qualify row_number() over (partition by id order by updated_at desc) = 1
+    ),
     casted as (
         select
             {{ adapter.quote("id") }},
@@ -27,7 +31,7 @@ with
             safe_cast({{ adapter.quote("created_at") }} as datetime) as created_at,
             safe_cast({{ adapter.quote("updated_at") }} as datetime) as updated_at
 
-        from source
+        from most_recent
     )
 select
     -- Primary key

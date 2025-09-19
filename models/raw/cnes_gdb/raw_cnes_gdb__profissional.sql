@@ -11,11 +11,11 @@ with source as (
 renamed as (
 select 
     cast(id_profissional_sus as string) as id_profissional_sus,
-    cast(PROF_ID as string) as id_profissional_cnes,
-    cast(CPF_PROF as string) as cpf,
-    cast(COD_CNS as string) as cns,
-    cast(NOME_PROF as string) as nome,
-    cast(DATA_NASC as date) as data_nascimento,	
+    cast({{process_null('PROF_ID')}} as string) as id_profissional_cnes,
+    cast({{process_null('CPF_PROF')}} as string) as cpf,
+    cast({{process_null('COD_CNS')}} as string) as cns,
+    cast({{process_null('NOME_PROF')}} as string) as nome,
+    safe_cast({{process_null('DATA_NASC')}} as date) as data_nascimento,	
     case 
         when SEXO='F' then 'Feminino'
         when SEXO='M' then 'Masculino'

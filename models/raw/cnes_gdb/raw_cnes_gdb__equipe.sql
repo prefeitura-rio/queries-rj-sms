@@ -19,8 +19,8 @@ select
     cast(UNIDADE_ID as string) as id_unidade,
     cast(COD_MUN as string) as id_municipio,
     cast(COD_AREA as string) as id_area,
-    cast(DT_ATIVACAO as date) as data_ativacao,
-    cast(DT_DESATIVACAO as date) as data_desativacao,
+    safe_cast(DT_ATIVACAO as date) as data_ativacao,
+    safe_cast(DT_DESATIVACAO as date) as data_desativacao,
     cast(TP_POP_ASSIST_QUILOMB as string) as atende_pop_quilombola,
     cast(TP_POP_ASSIST_ASSENT as string) as atende_pop_assentados,
     cast(TP_POP_ASSIST_GERAL as string) as atende_pop_geral,
@@ -39,6 +39,6 @@ select
     cast(CD_TP_DESATIV as string) as id_tipo_desativacao_equipe,
     cast(CO_PROF_SUS_PRECEPTOR as string) as id_profissional_preceptor,
     cast(CO_CNES_PRECEPTOR as string) as id_cnes_preceptor,
-    cast(DATA_ATU as date) as data_atualizacao,
+    safe_cast(DATA_ATU as date) as data_atualizacao,
     cast(USUARIO as string) as usuario
 from source
