@@ -19,7 +19,7 @@ with
 select *
 from source
 qualify row_number() over(
-    partition by id_surrogate
-    order by metadados.updated_at desc
+    partition by id_vacinacao
+    order by metadados.updated_at, metadados.loaded_at desc
 ) = 1
 
