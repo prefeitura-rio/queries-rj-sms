@@ -1,0 +1,138 @@
+version: 2
+
+models:
+  - name: raw_bcadastro__cpf
+    description: "Este modelo contém informações cadastrais detalhadas de pessoas físicas, enriquecidas com dados de endereço, contato e ocupação."
+    columns:
+      - name: cpf
+        description: "Número do Cadastro de Pessoas Físicas (CPF) do titular."
+        data_tests:
+          - not_null
+      - name: nome
+        description: "Nome de registro completo do titular."
+
+      - name: nome_social
+        description: "Nome social do titular, se aplicável."
+
+      - name: mae_nome
+        description: "Nome completo da mãe do titular."
+
+      - name: nascimento_data
+        description: "Data de nascimento do titular."
+
+      - name: inscricao_data
+        description: "Data em que o CPF foi inscrito."
+
+      - name: atualizacao_data
+        description: "Data da última atualização realizada no cadastro do titular."
+
+      - name: situacao_cadastral_tipo
+        description: "Descrição da situação cadastral do CPF (ex: Regular, Titular Falecido)."
+
+      - name: sexo
+        description: "Sexo biológico registrado do titular."
+
+      - name: obito_ano
+        description: "Ano de óbito do titular, caso a situação cadastral seja 'Titular Falecido'."
+
+      - name: estrangeiro_indicador
+        description: "Indicador booleano (TRUE/FALSE) que informa se o titular é estrangeiro."
+
+      - name: residente_exterior_indicador
+        description: "Indicador booleano (TRUE/FALSE) que informa se o titular reside no exterior."
+
+      - name: contato 
+        description: "Informações de contato do titular, incluindo telefone e e-mail."
+
+      - name: contato.telefone
+        description: "Dados de telefone do titular."
+
+      - name: contato.telefone.ddi
+        description: "Código de Discagem Direta Internacional (DDI) do telefone de contato."
+      
+      - name: contato.telefone.ddd
+        description: "Código de Discagem Direta (DDD) do telefone de contato."
+
+      - name: contato.telefone.numero
+        description: "Número do telefone de contato."
+
+      - name: contato.email
+        description: "Endereço de e-mail do titular."
+      
+      - name: endereco
+        description: "Informações de endereço do titular, incluindo logradouro, número, complemento, bairro, município, UF e CEP."
+
+      - name: endereco.cep
+        description: "Código de Endereçamento Postal (CEP) do endereço de residência."
+
+      - name: endereco.id_pais
+        description: "Identificador único do país de residência."
+
+      - name: endereco.pais
+        description: "Nome do país de residência."
+
+      - name: endereco.uf
+        description: "Unidade Federativa (Estado) de residência."
+
+      - name: endereco.id_municipio
+        description: "Identificador único do município de residência."
+
+      - name: endereco.municipio
+        description: "Nome do município de residência."
+
+      - name: endereco.bairro
+        description: "Bairro de residência."
+
+      - name: endereco.tipo_logradouro
+        description: "Tipo do logradouro do endereço (ex: Rua, Avenida, Praça)."
+
+      - name: endereco.logradouro
+        description: "Nome do logradouro do endereço."
+
+      - name: endereco.numero
+        description: "Número do imóvel na residência."
+
+      - name: endereco.complemento
+        description: "Complemento do endereço residencial (ex: apartamento, bloco)."
+
+      - name: nascimento_local
+        description: "Informações sobre o local de nascimento do titular."
+
+      - name: nascimento_local.id_pais
+        description: "Identificador do país de nascimento do titular."
+
+      - name: nascimento_local.pais
+        description: "Nome do país de nascimento do titular."
+
+      - name: nascimento_local.id_municipio
+        description: "Identificador do município de nascimento do titular."
+
+      - name: nascimento_local.municipio
+        description: "Nome do município de nascimento do titular."
+
+      - name: nascimento_local.uf
+        description: "Unidade Federativa (Estado) de nascimento do titular."
+
+      - name: ocupacao
+        description: "Informações sobre a ocupação profissional do titular."
+
+      - name: ocupacao.id 
+        description: "Identificador da ocupação profissional do titular."
+
+      - name: ocupacao.nome
+        description: "Nome da ocupação profissional do titular."
+
+      - name: ocupacao.id_natureza
+        description: "Identificador da natureza da ocupação profissional do titular." 
+      
+      - name: ocupacao.ua
+
+      - name: metadados
+        description: "Metadados do registro, incluindo informações sobre a fonte dos dados e datas de importação."
+
+      - name: ano_exercicio
+        description: "Ano de exercício do cadastro."
+
+      - name: cpf_particao
+        description: "Número utilizado para particionar a tabela, derivado dos três primeiros dígitos do CPF."
+        data_type: int64
