@@ -8,7 +8,7 @@
           "data_type": "int64",
           "range": {"start": 0, "end": 99999999999, "interval": 2499999999975},
           },
-        tags=["daily"]
+        tags=["monthly"]
     )
 }}
 
