@@ -11,9 +11,11 @@ with
     ficha_a as (
         select *, 'historico' as tipo,
         from {{ ref("base_prontuario_vitacare__ficha_a_historico") }}
+        where cpf is not null
         union all 
         select *, 'continuo' as tipo,
         from {{ ref("base_prontuario_vitacare__ficha_a_continuo") }}
+        where cpf is not null
     ),
 
     ficha_a_com_rank as (
