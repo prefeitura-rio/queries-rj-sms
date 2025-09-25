@@ -4,6 +4,14 @@ with source as (
   select * from {{ ref('dim_estabelecimento_sus_rio_historico') }}
 ),
 
+  -- Estabelecimentos com atendimento odontologico
+estabelecimentos_odonto as (
+  select distinct
+    id_cnes
+    from {{ ref('raw_prontuario_vitacare_historico__saudebucal') }}
+  ),
+
+
 current_year as (
   select max(ano_competencia) as ano_atual from source
 ),
@@ -63,6 +71,11 @@ final as (
       turno_atendimento,
       diretor_clinico_cpf,
       diretor_clinico_conselho,
+      if(
+        id_cnes in (select id_cnes from estabelecimentos_odonto),
+        true,
+        false
+      ) as atendimento_odonto_indicador,
 
       -- metadata
       data_atualizao_registro,
