@@ -6,7 +6,7 @@
     alias="solicitacoes",
     materialized='incremental',
     incremental_strategy='merge',
-    unique_key='solicitacao_id',
+    unique_key='id_solicitacao',
     partition_by={
       "field": "data_solicitacao",
       "data_type": "date",
