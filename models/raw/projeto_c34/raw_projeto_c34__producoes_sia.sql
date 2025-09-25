@@ -30,7 +30,7 @@ with
             procedimento_qtd,
             parse_date('%Y%m%d', safe_cast(data_inicial_apac as string)) as data_inicial_apac,
             competencia_realizacao_proced,
-            left(cid_princinpal, 3) as cid_execucao_procedimento
+            left(cid_principal, 3) as cid_execucao_procedimento
         from {{ source("sub_geral_prod", "c34_sia_2024") }}
         where paciente_cns in (select cns_item from cns)
     ),
