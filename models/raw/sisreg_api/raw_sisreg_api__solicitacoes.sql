@@ -8,7 +8,8 @@
     schema = "brutos_sisreg_api",
     alias  = "solicitacoes",
 
-    incremental_strategy = 'insert_overwrite',
+    incremental_strategy = 'merge',
+    unique_key='solicitacao_id',
     partition_by = {
       "field": "data_atualizacao",
       "data_type": "date",
@@ -38,13 +39,20 @@ with
 
     from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
     {% if is_incremental() %}
-      where 1=1
-        and cast(s.data_particao as date) >= date_sub(current_date(), interval {{ months_lookback }} month)
-        and cast(s.data_particao as date) < date_add(current_date(), interval 1 day)
-        and safe_cast(s.data_atualizacao as timestamp) >= timestamp(date_sub(current_date(), interval {{ months_lookback }} month))
-        and safe_cast(s.data_atualizacao as timestamp) <  timestamp(date_add(current_date(), interval 1 day))  
+        where 1=1
+            and cast(s.data_particao as date) = (select latest_load_dt from latest_src_partition)
     {% endif %}
   ),
+
+    dedup_batch as (
+      select *
+      from sisreg
+      qualify row_number() over (
+          partition by codigo_solicitacao
+          order by
+              date(safe_cast(data_atualizacao as timestamp), 'America/Sao_Paulo') desc nulls last
+      ) = 1
+    ),
 
   sisreg_transformed as (
     select
@@ -54,7 +62,9 @@ with
       -- Identificação básica da solicitação
       {{ process_null("codigo_solicitacao") }} as solicitacao_id,
       safe_cast({{ process_null("data_solicitacao") }} as timestamp) as data_solicitacao,
-      cast(safe_cast({{ process_null("data_atualizacao") }} as timestamp) as date) as data_atualizacao,
+            date(safe_cast(
+                {{ process_null("data_atualizacao") }} as timestamp), 'America/Sao_Paulo'
+            ) as data_atualizacao,
       safe_cast({{ process_null("data_cancelamento") }} as timestamp) as data_cancelamento,
 
       -- Status e classificação
@@ -155,14 +165,10 @@ with
       safe_cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
 
       -- Metadado SMS 
-      safe_cast(safe_cast({{ process_null("data_extracao")}}  as timestamp) as date) as data_extracao
+      date(safe_cast({{ process_null("data_extracao") }} as timestamp), 'America/Sao_Paulo') as data_extracao
 
-    from sisreg
+    from dedup_batch
   )
 
 select *
 from sisreg_transformed
-qualify row_number() over (
-  partition by solicitacao_id
-  order by data_atualizacao desc nulls last
-) = 1
