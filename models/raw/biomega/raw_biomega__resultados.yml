@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: raw_biomega__resultados
+    description: Tabela contendo os resultados dos exames .
+    columns:
+      - name: id_resultado
+        description: Identificador único do resultado de um exame
+      - name: id_exame
+        description: Chave estrangeira que vincula o resultado ao registro de exame correspondente
+      - name: codigo_lis
+        description: Retorno do código do parâmetro do exame no sistema terceiro
+      - name: codigo_apoio
+        description: Retorno do código do parâmetro do exame no sistema LIS
+      - name: descricao_apoio
+        description: Descrição do código do parâmetro do exame no sistema LIS
+      - name: decimal
+        description: Quantidade de casas decimais do parâmetro do sistema LIS
+      - name: tipo
+        description: Tipo do resultado (e.g., numérico, texto livre).
+      - name: resultado
+        description: O valor numérico do resultado do exame.
+      - name: unidade
+        description: Unidade de medida do resultado (e.g., mg/dL, g/L).
+      - name: alterado
+        description: Sinaliza que o parâmetro está com resultado fora da normalidade
+      - name: valor_referencia_texto
+        description: Valor de referência em formato de texto, se aplicável.
+      - name: valor_referencia_minimo
+        description: Valor mínimo aceitável para a faixa de referência do exame.
+      - name: valor_referencia_maximo
+        description: Valor máximo aceitável para a faixa de referência do exame.
+      - name: loaded_at
+        description: Data e hora em que o registro foi carregado no datalake.
