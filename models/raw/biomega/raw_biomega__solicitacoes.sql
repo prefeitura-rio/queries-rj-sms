@@ -23,6 +23,7 @@ with
     renamed as (	
         select
             {{ process_null('id') }} as id_solicitacao,
+            {{ process_null('link') }} as laudo_link,
 
             {{ process_null('codigoLis') }} as codigo_lis,
             {{ process_null('codigoApoio') }} as codigo_apoio,
@@ -34,6 +35,7 @@ with
             {{ process_null('status') }} as status,
             {{ process_null('mensagem') }} as mensagem,
             {{ process_null('alterado') }} as alterado,
+            {{ process_null('autorizacao') }} as autorizacao,
             {{ process_null('responsaveltecnico_crm') }} as responsavel_tecnico_crm,
             {{ process_null('responsaveltecnico_nome') }} as responsavel_tecnico_nome,
             {{ process_null('paciente_codigoLis') }} as paciente_codigo_lis,
