@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: raw_biomega__exames
+    description: Tabela contendo informações detalhadas sobre os exames realizados
+    columns:
+      - name: id_exame
+        description: Identificador único do registro de exame
+        data_tests:
+          - unique:
+              name: raw_biomega__exames__id_exame__unique
+          - not_null:
+              name: raw_biomega__exames__id_exame__not_null
+      - name: id_solicitacao
+        description: Identificador da solicitação à qual o exame está vinculado.
+      - name: codigo_lis
+        description: Identificador do exame
+      - name: codigo_apoio
+        description: Código do exame no sistema 
+      - name: codigo_exame
+        description: Código do exame
+      - name: amostra_lis
+        description: Identificação do exame
+      - name: amostra_apoio
+        description: Identificação da amostra do sistema LIS
+      - name: material_lis
+        description: Material colhido do paciente
+      - name: sequencia_lis
+        description: Sequência do exame dentro do LIS.
+      - name: exame_dependente_lis
+        description: Código de exame dependente no LIS, se houver.
+      - name: parcial
+        description: Sinaliza que o resultado foi liberado parcialmente
+      - name: retificado
+        description: Sinaliza que o resultado teve alteração
+      - name: usuario_assinatura
+        description: Código do usuário de liberação
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: usuario_assinatura_cpf
+        description: CPF do usuário de liberação
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: assinatura_datahora
+        description: Data de assinatura de liberação
+      - name: alterado
+        description: Sinaliza exame com resultado fora da normalidade do pedido
+      - name: status
+        description: Código status do exame (501 - Cadastrado) (507 - Em andamento) (511 - Liberado)  (513 - Cancelado) (520 - Nova coleta)
+      - name: mensagem
+        description: Status do exame
+      - name: impresso
+        description: Indica se foi impresso
+      - name: codigo_versao_data
+        description: Data da versão
+      - name: descricao_metodo
+        description: Método utilizado no exame
+      - name: solicitante_nome
+        description: Nome completo do solicitante do exame
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: solicitante_numero
+        description: Número do conselho do solicitante (e.g., CRM, CRO)
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: solicitante_conselho
+        description: Conselho profissional do solicitante
+      - name: solicitante_uf
+        description: UF do solicitante
+      - name: loaded_at
+        description: Data e hora em que o registro foi carregado no datalake.
+      - name: assinatura_data_particao
+        description: Coluna particionado pela data da assinatura do laudo

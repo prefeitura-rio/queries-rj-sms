@@ -42,7 +42,7 @@ with
             {{ process_null('status') }} as status,
             {{ process_null('mensagem') }} as mensagem,
             {{ process_null('impresso') }} as impresso,
-            {{ process_null('codigoVersao') }} as codigo_versao,
+            safe_cast({{parse_datetime(process_null("codigoVersao"))}} as datetime) as codigo_versao_data,
             {{ process_null('descricaoMetodo') }} as descricao_metodo,
             {{ process_null('solicitante_nome') }} as solicitante_nome,
             {{ process_null('solicitante_numero') }} as solicitante_numero,
