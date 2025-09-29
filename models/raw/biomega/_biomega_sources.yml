@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: brutos_biomega_staging
+    database: rj-sms-dev
+    schema: brutos_biomega_staging
+    tables:
+    - name: solicitacoes
+    - name: exames
+    - name: resultados

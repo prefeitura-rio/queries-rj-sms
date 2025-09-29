@@ -353,6 +353,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      biomega:
+        +schema: brutos_biomega
+        +tags: ["daily", "biomega"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       medilab:
         +schema: brutos_medilab
         +tags: ["daily", "medilab"]
