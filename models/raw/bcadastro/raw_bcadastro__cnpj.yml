@@ -1,0 +1,239 @@
+version: 2
+
+models:
+  - name: raw_bcadastro__cnpj
+    description: "Este modelo contém dados cadastrais detalhados de Pessoas Jurídicas (CNPJ), incluindo informações sobre sócios, atividades econômicas e situação cadastral."
+    columns:
+      
+      - name: cnpj 
+        description: "Informações do Cadastro Nacional da Pessoa Jurídica (CNPJ)."
+      - name: cnpj.cnpj
+        description: "Número do Cadastro Nacional da Pessoa Jurídica (CNPJ) da empresa."
+
+      - name: cnpj.razao_social
+        description: "Razão Social da empresa, conforme registrada oficialmente."
+
+      - name: cnpj.nome_fantasia
+        description: "Nome fantasia ou nome comercial da empresa."
+
+      - name: cnpj.capital_social
+        description: "Valor do capital social da empresa declarado em moeda local."
+
+      - name: cnpj.cnae_fiscal
+        description: "Código da Classificação Nacional de Atividades Econômicas (CNAE) principal da empresa."
+
+      - name: cnpj.cnae_secundarias
+        description: "Lista de códigos CNAE secundários associados à empresa."
+
+      - name: cnpj.nire
+        description: "Número de Identificação do Registro de Empresas (NIRE)."
+
+      - name: cnpj.natureza_juridica
+        description: "Informações sobre a natureza jurídica da empresa."
+
+      - name: cnpj.natureza_juridica.id
+        description: "Código da natureza jurídica da empresa."
+
+      - name: cnpj.natureza_juridica.descricao
+        description: "Descrição da natureza jurídica (ex: Sociedade Empresária Limitada)."
+
+      - name: cnpj.porte
+        description: "Informações sobre o porte da empresa."
+
+      - name: cnpj.porte.id
+        description: "Código que identifica o porte da empresa."
+
+      - name: cnpj.porte.descricao
+        description: "Descrição do porte da empresa."
+
+      - name: cnpj.matriz_filial
+        description: "Indicação se o estabelecimento é matriz ou filial."
+
+      - name: cnpj.matriz_filial.id
+        description: "Código identificador se o estabelecimento é matriz ou filial."
+
+      - name: cnpj.matriz_filial.descricao
+        description: "Descrição se o estabelecimento é 'Matriz' ou 'Filial'."
+
+      - name: cnpj.orgao_registro
+        description: "Órgão de registro da empresa."
+
+      - name: cnpj.orgao_registro.id
+        description: "Código identificador do órgão de registro."
+      
+      - name: cnpj.orgao_registro.descricao
+        description: "Descrição do órgão de registro."
+
+      - name: cnpj.inicio_atividade_data
+        description: "Data de início das atividades da empresa."
+
+      - name: cnpj.situacao_cadastral
+        description: "Informações sobre a situação cadastral da empresa."
+
+      - name: cnpj.situacao_cadastral.id
+        description: "Código da situação cadastral (ex: 02 - Ativa)."
+
+      - name: cnpj.situacao_cadastral.descricao
+        description: "Descrição da situação cadastral da empresa (ex: Ativa, Baixada)."
+
+      - name: cnpj.situacao_cadastral.data
+        description: "Data em que a situação cadastral foi alterada pela última vez."
+
+      - name: cnpj_situacao_cadastral_motivo_id
+        description: "Código do motivo da alteração da situação cadastral."
+
+      - name: cnpj.situacao_cadastral.motivo.descricao
+        description: "Descrição do motivo da alteração da situação cadastral."
+
+      - name: cnpj.situacao_especial
+        description: "Informações sobre qualquer situação especial da empresa."
+
+      - name: cnpj.situacao_especial.descricao
+        description: "Descrição de qualquer situação especial da empresa (ex: Recuperação Judicial)."
+
+      - name: cnpj.situacao_especial.data
+        description: "Data de início da situação especial."
+
+      - name: cnpj.ente_federativo
+        description: 'Informações sobre o ente federativo onde a empresa está registrada.'
+
+      - name: cnpj.ente_federativo.id
+        description: "Código do ente federativo."
+
+      - name: cnpj.ente_federativo.descricao  
+        description: "Descrição do ente federativo (ex: Município, Estado)."
+
+      - name: cnpj.telefone
+        description: "Dados de telefone de contato da empresa."
+
+      - name: cnpj.telefone.ddd 
+        description: "Código de Discagem Direta (DDD) do telefone de contato."
+
+      - name: cnpj.telefone.numero 
+        description: "Número do telefone de contato da empresa."  
+
+      - name: cnpj.contato.email
+        description: "Endereço de e-mail de contato da empresa."
+
+      - name: cnpj.endereco.cep
+        description: "Código de Endereçamento Postal (CEP) do endereço da empresa."
+
+      - name: cnpj.endereco.id_pais
+        description: "Identificador único do país onde a empresa está localizada." 
+
+      - name: cnpj.endereco.uf
+        description: "Unidade Federativa (Estado) onde a empresa está localizada."
+
+      - name: cnpj.endereco.id_municipio
+        description: "Código do IBGE para o município de localização da empresa."
+
+      - name: cnpj.endereco.municipio_nome
+        description: "Nome do município de localização da empresa."
+
+      - name: cnpj.endereco.municipio_exterior_nome
+        description: "-"
+
+      - name: cnpj.endereco.bairro
+        description: "Bairro do endereço da empresa."
+
+      - name: cnpj.endereco.tipo_logradouro
+        description: "Tipo de logradouro do endereço da empresa."
+
+      - name: cnpj.endereco.logradouro
+        description: "Nome do logradouro (rua, avenida) do endereço da empresa."
+
+      - name: cnpj.endereco.numero
+        description: "Número do imóvel no endereço da empresa."
+
+      - name: cnpj.endereco.complemento
+        description: "Complemento do endereço (sala, andar, etc.)."
+
+      - name: cnpj.contador
+        description: "Informações sobre o contador responsável pela empresa."
+
+      - name: cnpj.contador.pf
+        description: "Informações da pessoa física do contador."
+      
+      - name: cnpj.contador.pf.tipo_crc
+        description: "Carece de descrição"
+
+      - name: cnpj.contador.pf.classificacao_crc
+        description: "Carece de descrição"
+
+      - name: cnpj.contador.pf.sequencial_crc
+        description: "Carece de descrição"  
+
+      - name: cnpj.contador.pf.id
+        description: "Carece de descrição"
+
+      - name: cnpj.contador.pj
+        description: "Informações da pessoa jurídica do contador."
+
+      - name: cnpj.contador.pj.tipo_crc
+        description: "Carece de descrição"
+
+      - name: cnpj.contador.pj.classificacao_crc
+        description: "Carece de descrição"
+
+      - name: cnpj.contador.pj.sequencial_crc
+        description: "Carece de descrição"  
+
+      - name: cnpj.contador.pj.id
+        description: "Carece de descrição"
+
+      - name: cnpj.responsavel
+        description: "Informações sobre o responsável legal da empresa."
+
+      - name: cnpj.responsavel.cpf
+        description: "CPF da pessoa física responsável pela empresa perante o CNPJ."
+
+      - name: cnpj.responsavel.qualificacao_descricao
+        description: "Descrição da qualificação do responsável (ex: Sócio-Administrador)."
+
+      - name: cnpj.socios_quantidade
+        description: "Número total de sócios no quadro societário da empresa."
+
+      - name: cnpj.tipos_unidade
+        description: "Tipo de unidade do estabelecimento."
+
+      - name: cnpj.socios.cpf_socio
+        description: "CPF do sócio (um por linha após UNNEST)."
+
+      - name: cnpj.socios.cnpj_socio
+        description: "CNPJ do sócio, caso seja uma pessoa jurídica (um por linha após UNNEST)."
+
+      - name: cnpj.socios.qualificacao_socio
+        description: "Descrição da qualificação do sócio (ex: Sócio, Administrador)."
+      
+      - name: cnpj.socios.tipo
+        description: "Tipo de sócio (Pessoa Física, Pessoa Jurídica, Sócio Estrangeiro)."
+      
+      - name: cnpj_particao
+        description: "Campo técnico para particionamento da tabela, visando otimização de consultas."
+
+      - name: razao_social
+        description: "Razão Social da empresa, conforme registrada oficialmente."
+
+      - name: nome_fantasia
+        description: "Nome fantasia ou nome comercial da empresa."
+
+      - name: cnae_fiscal
+        description: "Código da Classificação Nacional de Atividades Econômicas (CNAE) principal da empresa."
+
+      - name: cnae_secundarias
+        description: "Lista de códigos CNAE secundários associados à empresa."
+
+      - name: inicio_atividade_data
+        description: "Data de início das atividades da empresa."
+
+      - name: situacao_cadastral
+        description: "Descrição da situação cadastral da empresa (ex: Ativa, Baixada)."
+
+      - name: cpf
+        description: "CPF de um responsável ou contato associado ao registro da empresa."
+
+      - name: endereco
+        description: "Informações do endereço da empresa."
+
+      - name: situacao
+        description: "Campo de status simplificado do registro."
