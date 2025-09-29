@@ -26,6 +26,9 @@ sources:
       - name: encaminhamentos_ser
       - name: cdi_destinatarios
       - name: contatos_caps
+      - name: projeto_odontologia_historico
+      - name: projeto_odontologia_historico_ap
+      - name: projeto_odontologia_sigtap_odo
 
   - name: brutos_sheets
     database: rj-sms
