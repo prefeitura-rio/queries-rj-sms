@@ -33,7 +33,7 @@ with
             safe_cast(safe_cast(logingovbr as int64) as bool) as logingovbr,
             origem,
 
-            safe_cast(createdat as date) as createdat,
+            date(safe_cast(createdat as timestamp), 'America/Sao_Paulo') as createdat,
             safe_cast(updatedat as datetime) as updatedat,
 
             __v,
