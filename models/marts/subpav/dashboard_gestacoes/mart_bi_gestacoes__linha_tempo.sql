@@ -232,10 +232,10 @@ eventos_parto AS (
         ea.motivo_atendimento AS motivo_atencimento_parto, -- "atencimento" parece um typo, mas mantendo como na original
         ea.desfecho_atendimento AS desfecho_atendimento_parto,
         CASE
-            WHEN c.id LIKE 'O8[0-4]%'
+            WHEN REGEXP_CONTAINS(c.id, r'\bO8[0-4]\b')
             OR c.id LIKE 'Z37%'
             OR c.id LIKE 'Z39%' THEN 'Parto' -- Ajustado para O80-O84
-            WHEN c.id LIKE 'O0[0-4]%' THEN 'Aborto' -- Ajustado para O00-O04
+            WHEN REGEXP_CONTAINS(c.id, r'\bO0[0-4]\b') THEN 'Aborto' -- Ajustado para O00-O04
             ELSE 'Outro' -- Pode ser Z38 (Nascido vivo) se não coberto por Z37 (Resultado do parto)
         END AS tipo_parto,
         c.id as cid_parto -- Para depuração ou análise mais fina
@@ -248,9 +248,9 @@ eventos_parto AS (
         ea.entrada_data >= DATE '2021-01-01' -- Filtro de data para relevância
         AND LOWER(ea.prontuario.fornecedor) = 'vitai' -- Filtro específico de fornecedor
         AND (
-            c.id LIKE 'O0[0-4]%'
+            REGEXP_CONTAINS(c.id, r'\bO0[0-4]\b')
             OR -- Aborto
-            c.id LIKE 'O8[0-4]%'
+            REGEXP_CONTAINS(c.id, r'\bO8[0-4]\b')
             OR -- Parto
             c.id LIKE 'Z37%'
             OR -- Resultado do parto
@@ -386,8 +386,8 @@ condicoes_flags AS (
         MAX(
             CASE
                 WHEN (
-                    cg.cid LIKE 'E1[0-4]%'
-                    OR cg.cid LIKE 'O24[0-3]%'
+                    REGEXP_CONTAINS(cg.cid, r'\bE1[0-4]\b')
+                    OR REGEXP_CONTAINS(cg.cid, r'\bO24[0-3]\b')
                 )
                 AND cg.data_diagnostico < COALESCE(
                     f.data_fim_efetiva,
@@ -425,7 +425,7 @@ condicoes_flags AS (
         MAX(
             CASE
                 WHEN (
-                    cg.cid LIKE 'I1[0-5]%'
+                    REGEXP_CONTAINS(cg.cid, r'\bI1[0-5]\b')
                     OR cg.cid LIKE 'O10%'
                 )
                 AND cg.data_diagnostico < COALESCE(
@@ -467,7 +467,7 @@ condicoes_flags AS (
         MAX(
             CASE
                 WHEN (
-                    cg.cid LIKE 'B2[0-4]%'
+                    REGEXP_CONTAINS(cg.cid, r'\bB2[0-4]\b')
                     OR cg.cid = 'Z21'
                 )
                 AND cg.data_diagnostico <= COALESCE(
@@ -481,7 +481,7 @@ condicoes_flags AS (
         -- Sífilis: CID A51-A53 (considerar A50 para congênita se relevante) um pouco antes ou DURANTE a gestação
         MAX(
             CASE
-                WHEN cg.cid LIKE 'A5[1-3]%'
+                WHEN REGEXP_CONTAINS(cg.cid, r'\bA5[1-3]\b')
                 AND cg.data_diagnostico BETWEEN DATE_SUB(
                     f.data_inicio,
                     INTERVAL 30 DAY
@@ -496,7 +496,7 @@ condicoes_flags AS (
         -- Tuberculose: CID A15-A19 um pouco antes ou DURANTE a gestação
         MAX(
             CASE
-                WHEN cg.cid LIKE 'A1[5-9]%'
+                WHEN REGEXP_CONTAINS(cg.cid, r'\bA1[5-9]\b')
                 AND cg.data_diagnostico BETWEEN DATE_SUB(
                     f.data_inicio,
                     INTERVAL 6 MONTH
@@ -894,7 +894,7 @@ encaminhamento_hipertensao_sisreg AS (
         AND (
             s.sisreg_primeira_cid LIKE 'O10%'
             OR -- Hipertensão prévia
-            s.sisreg_primeira_cid LIKE 'I1[0-5]'
+            REGEXP_CONTAINS(s.sisreg_primeira_cid, r'\bI1[0-5]\b')
             OR -- Hipertensão essencial
             s.sisreg_primeira_cid = 'O11'
             OR -- Pré-eclâmpsia superposta
@@ -946,7 +946,7 @@ encaminhamento_hipertensao_SER AS (
         AND (
             s.ser_descricao_cid LIKE 'O10%'
             OR -- Hipertensão prévia
-            s.ser_descricao_cid LIKE 'I1[0-5]'
+            REGEXP_CONTAINS(s.ser_descricao_cid, r'\bI1[0-5]\b')
             OR -- Hipertensão essencial
             s.ser_descricao_cid = 'O11'
             OR -- Pré-eclâmpsia superposta
