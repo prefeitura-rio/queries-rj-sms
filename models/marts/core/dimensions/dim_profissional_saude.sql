@@ -63,7 +63,7 @@ with
             case 
                 when regexp_contains(lower(cbo),'^medic')
                     then 'MÉDICOS'
-                when regexp_contains(lower(cbo),'^cirurgiao[ |-|]dentista')
+                when regexp_contains(lower(cbo), r'^cirurgiao[- ]?dentista')
                     then 'DENTISTAS'
                 when regexp_contains(lower(cbo),'psic')
                     then 'PSICÓLOGOS'  
