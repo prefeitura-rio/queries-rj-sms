@@ -166,13 +166,13 @@ with
                         then 'full_permission'
                         when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO','CASS')
                         then 'full_permission'
-                        when (unidade_tipo in ('CGS','CAPS') and funcao_grupo = 'MEDICOS' )
+                        when unidade_tipo in ('CGS','CAPS') and funcao_grupo in ('MEDICOS','DENTISTAS')
                         then 'full_permission'
-                        when (unidade_tipo in ('CGS','CAPS') and funcao_grupo != 'MEDICOS' )
+                        when unidade_tipo in ('CGS','CAPS') and funcao_grupo not in ('MEDICOS','DENTISTAS')
                         then 'only_from_same_ap'
-                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo = 'MEDICOS' 
+                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo in ('MEDICOS','DENTISTAS')
                         then 'full_permission'
-                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo != 'MEDICOS' 
+                        when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo not in ('MEDICOS','DENTISTAS')
                         then 'only_from_same_cnes'
                         else null
                     end as nivel_acesso,
