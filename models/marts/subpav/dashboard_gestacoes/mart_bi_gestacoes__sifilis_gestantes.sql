@@ -445,4 +445,4 @@ FROM
     LEFT JOIN vdrl_raw AS acomp_vdrl ON ct.cpf = acomp_vdrl.cpf
     AND vdrl.vdrl_acompanhamento_data = acomp_vdrl.data_exame
     LEFT JOIN dados_parceiro_raw AS parceiro ON ct.cpf = parceiro.cpf
-ORDER BY ct.id_paciente, ct.data_dispensacao_dose_1;
+ORDER BY ct.id_paciente, ct.data_dispensacao_dose_1
