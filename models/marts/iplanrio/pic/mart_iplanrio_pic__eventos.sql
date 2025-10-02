@@ -77,13 +77,46 @@ with
         AND TRIM(a.patient_cpf) <> ''
     ),
 
-    vacinacoes as (
+    vacinacoes_dirty as (
         SELECT 
-            a.patient_cpf as cpf, 
-            concat('Vacina - ', ifnull(cod_vacina, '<vacina sem cod>'), ' - ', ifnull(dose, '<vacina sem dose>')) as tipo_evento,
+            a.patient_cpf as cpf,
+
+            -- IMUNO
+            cod_vacina,
+            CASE 
+                WHEN cod_vacina = 'COV19-PFZ' or cod_vacina = 'COVID-19 MODERNA - SPIKEVAX' THEN  'COVID-19'
+                WHEN cod_vacina = 'DTP / Hib' then 'DTP' -- Revisar isso. Ideia é facilitar a contagem do reforço de DTP
+                ELSE cod_vacina
+            END as imuno,
+
+            -- DOSAGEM
+            CASE 
+                WHEN 'eforço' in dose THEN 'R'
+                WHEN 'nica' in dose THEN 'U'
+                ELSE  'D'
+            END as tipo,
+            CASE 
+                WHEN '1' in dose THEN '1'
+                WHEN '2' in dose THEN '2'
+                WHEN '3' in dose THEN '3'
+                WHEN '4' in dose THEN '4'
+                ELSE ''
+            END as ordem,
+
+            -- DATA
             cast(v.data_aplicacao as datetime) as dthr
         FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v 
             INNER JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a using(id_prontuario_global)
+        WHERE 
+            cod_vacina is not null and 
+            dose is not null -- Revisar isso. Seria ela uma dose única?
+    ),
+    vacinacoes as (
+        SELECT 
+            a.patient_cpf as cpf, 
+            concat('Vacina - ', imuno, ' - ', tipo, ordem) as tipo_evento,
+            dthr
+        FROM vacinacoes_dirty
     ),
     eventos as (
         SELECT * FROM visitas_domiciliares
