@@ -34,13 +34,22 @@ select
     ) as family_health_team,
 
     [struct(
-        '9C04A670661146E2' as registry,
-        'Naya Bernasconi Nunes Avenia Puertas' as name
-    )] as nursing_responsible,
-    [struct(
         '612769D381064B82' as registry,
         'Tuany de Paula Ferreira' as name
     )] as medical_responsible,
+    [struct(
+        '9C04A670661146E2' as registry,
+        'Naya Bernasconi Nunes Avenia Puertas' as name
+    )] as nursing_responsible,
+
+    struct(
+        '01234' as id_pcsm,
+        'Ativo' as status_acompanhamento,
+        'CAPS Neusa Santos Souza' as nome_unidade,
+        '7926103' as cnes,
+        ['2136138285', '21970114479'] as telefones
+    ) as mental_health,
+
     struct(
         true as indicador,
         [] as motivos,
