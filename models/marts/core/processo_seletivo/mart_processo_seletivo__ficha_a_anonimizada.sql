@@ -20,6 +20,9 @@ select
     data_nascimento,
     logradouro,
     tipo_logradouro,
-    microarea
+    microarea,
+    tipo,
+    updated_at,
+    loaded_at
   )
 from {{ ref('raw_prontuario_vitacare__ficha_a') }}

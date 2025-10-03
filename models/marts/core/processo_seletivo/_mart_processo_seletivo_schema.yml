@@ -120,9 +120,3 @@ models:
         description: Indicação se a família do paciente é beneficiária do Auxílio Brasil.
       - name: crianca_matriculada_creche_pre_escola
         description: Indicação se a criança está matriculada em creche ou pré-escola.
-      - name: updated_at
-        description: Data e hora da última atualização dos dados.
-      - name: loaded_at
-        description: Data e hora de carregamento dos dados no sistema.
-      - name: tipo
-        description: Tipo de origem da ficha A historico ou rotineiro.
