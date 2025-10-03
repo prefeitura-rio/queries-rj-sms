@@ -120,8 +120,7 @@ with
                 dbt_utils.generate_surrogate_key(
                     [
                         "id_cnes",
-                        "id_vacinacao_local",
-                        "paciente_cns"
+                        "id_vacinacao_local"
                     ]
                 )
             }} as id_surrogate,
