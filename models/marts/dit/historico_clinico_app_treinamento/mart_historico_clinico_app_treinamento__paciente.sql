@@ -34,12 +34,12 @@ select
     ) as family_health_team,
 
     [struct(
-        '612769D381064B82' as registry,
-        'Tuany de Paula Ferreira' as name
+        'F0078A1101234567' as registry,
+        'Francisco Cândido Xavier' as name
     )] as medical_responsible,
     [struct(
-        '9C04A670661146E2' as registry,
-        'Naya Bernasconi Nunes Avenia Puertas' as name
+        'BEEF012345678900' as registry,
+        'Pedro de Alcântara João Carlos Leopoldo' as name
     )] as nursing_responsible,
 
     struct(
