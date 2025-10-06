@@ -53,15 +53,15 @@ with
             -- com tamanho 3, preenchidos com strings vazias; aqui filtramos isso
             array(
                 select
-                    num_tel
+                    trim(num_tel)
                 from unnest(tel) as num_tel
-                where num_tel != ''
+                where trim(num_tel) != ''
             ) as tel,
             array(
                 select
-                    email_addr
+                    trim(email_addr)
                 from unnest(email) as email_addr
-                where email_addr != ''
+                where trim(email_addr) != ''
             ) as email
         from source
     )
