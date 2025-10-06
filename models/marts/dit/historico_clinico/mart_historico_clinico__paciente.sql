@@ -117,6 +117,8 @@ with
             array(
                 select {{ padronize_telefone("tel") }}
                 from unnest(contatos.tel) as tel
+                -- TODO: passar para camada intermediária
+                where ({{ padronize_telefone("tel") }}) is not null
             ) as telefones
         from {{ ref("raw_pcsm_unidades_saude") }} as u
         left join {{ ref("dim_estabelecimento") }} as e
