@@ -17,7 +17,7 @@ select
     '42298037299' as cpf,
     ['700000000000000'] as cns_lista,
     'Paciente Fake I' as nome,
-    null as nome_social,
+    cast(null as string) as nome_social,
     '1989-01-01' as data_nascimento,
     80 as idade,
     'masculino' as genero,
