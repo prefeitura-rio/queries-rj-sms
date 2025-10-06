@@ -10,6 +10,13 @@
 
 select
     safe_cast(seqatend as int64) as id_atendimento,
+    {{
+        dbt_utils.generate_surrogate_key(
+                [
+                    "seqatend",
+                ]
+            )
+        }} as id_hci,
     safe_cast(dtentrada as date) as data_entrada_atendimento,
     safe_cast(horaent as string) as hora_entrada_atendimento,
     safe_cast(dtsaida as date) as data_saida_atendimento,
