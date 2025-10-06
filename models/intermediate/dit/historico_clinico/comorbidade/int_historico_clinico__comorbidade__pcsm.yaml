@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: int_historico_clinico__comorbidade__pcsm
+    description: "Modelo intermediário que une informações de pacientes do sistema PCSM com suas comorbidades registradas, padronizando os nomes das comorbidades para análise."
+    columns:
+      - name: id_paciente
+        description: "Identificador único do paciente no sistema de origem (PCSM)."
+      - name: cns
+        description: "Número do Cartão Nacional de Saúde (CNS) do paciente."
+      - name: cpf
+        description: "Número do Cadastro de Pessoas Físicas (CPF) do paciente."
+      - name: comorbidade
+        description: "Nome da comorbidade do paciente, após limpeza e padronização. Valores nulos indicam que nenhuma comorbidade foi relatada."

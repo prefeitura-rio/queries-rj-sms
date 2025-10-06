@@ -18,7 +18,7 @@ select
         when '' then 'Não informado'
         when null then 'Não informado'
         else 'Não classificado'
-    end as descricao_cadastro_ativo,                                         -- Descrição do status do cadastro do médico
+    end as descricao_cadastro_ativo,                                 -- Descrição do status do cadastro do médico
     safe_cast(cpf as string) as cpf_medico,                          -- CPF do médico
     safe_cast(crm_uf as string) as unidade_federativa_crm,           -- UF de registro do CRM do médico
     _airbyte_extracted_at as loaded_at,

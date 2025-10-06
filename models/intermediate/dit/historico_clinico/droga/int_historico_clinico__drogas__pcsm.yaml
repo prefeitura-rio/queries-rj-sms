@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: int_historico_clinico__drogas__pcsm
+    description: "Modelo intermediário que relaciona os pacientes do sistema PCSM com o histórico de uso de drogas, apresentando os nomes das substâncias de forma padronizada."
+    columns:
+      - name: id_paciente
+        description: "Identificador único do paciente no sistema de origem (PCSM)."
+      - name: cpf
+        description: "Número do Cadastro de Pessoas Físicas (CPF) do paciente."
+      - name: cns
+        description: "Número do Cartão Nacional de Saúde (CNS) do paciente."
+      - name: droga
+        description: "Nome da droga utilizada pelo paciente, após limpeza e padronização. Valores nulos indicam que a informação não foi fornecida ou não era aplicável."

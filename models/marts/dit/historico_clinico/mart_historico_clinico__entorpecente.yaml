@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: mart_historico_clinico__entorpecente
+    description: "Modelo de mart que apresenta o histórico de uso de entorpecentes (drogas) por paciente, identificado pelo CPF. Este modelo é particionado para otimizar consultas."
+    columns:
+      - name: paciente_cpf
+        description: "Número do Cadastro de Pessoas Físicas (CPF) do paciente."
+      - name: entorpecentes
+        description: "Nome do entorpecente (droga) utilizado pelo paciente. Os valores são padronizados a partir da fonte de dados."
+      - name: metadados
+        description: "Estrutura (struct) contendo metadados sobre a execução do modelo. Inclui o campo `processed_at` que registra o carimbo de data/hora do processamento."
+      - name: cpf_particao
+        description: "Campo técnico derivado do CPF do paciente, utilizado para particionar a tabela no BigQuery e otimizar a performance das consultas."
