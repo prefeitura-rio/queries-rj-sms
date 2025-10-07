@@ -44,7 +44,27 @@ with
             ) as email
 
         from {{ source("brutos_sheets_staging", "contatos_caps") }}
+    ),
+
+    no_empty_values as (
+        select
+            * except (tel, email),
+            -- O truque acima de array -> string -> array deixa todos os arrays
+            -- com tamanho 3, preenchidos com strings vazias; aqui filtramos isso
+            array(
+                select
+                    trim(num_tel)
+                from unnest(tel) as num_tel
+                where trim(num_tel) != ''
+            ) as tel,
+            array(
+                select
+                    trim(email_addr)
+                from unnest(email) as email_addr
+                where trim(email_addr) != ''
+            ) as email
+        from source
     )
 
 select *
-from source
+from no_empty_values
