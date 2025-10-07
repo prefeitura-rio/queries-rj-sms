@@ -5,10 +5,13 @@ case
         then null
 
     when
-        trim({{ telefone_column }}) like "0000%"  -- Remove números iniciando com 4 zeros
-        or regexp_contains(trim({{ telefone_column }}), r"^9*0*$") -- Números somente com 9's e 0's
+        regexp_replace({{ telefone_column }}, r'[^0-9]', '') like "0000%"  -- Remove números iniciando com 4 zeros
+        or regexp_contains(
+            regexp_replace({{ telefone_column }}, r'[^0-9]', ''),
+            r"^0*9*0*$"   -- Números somente com 9's seguidos de 0's
+        )
         -- Remove (alguns) placeholders
-        or trim({{ telefone_column }}) in (
+        or regexp_replace({{ telefone_column }}, r'[^0-9]', '') in (
             "999999998",
             "998989898",
             "989898989",
@@ -20,11 +23,15 @@ case
             "22222222",
             "21212121",
             "21000000",
-            "20000000",
+            "20000000"
         )
         or regexp_contains({{ telefone_column }}, r'[a-zA-Z]')  -- Remove strings contendo letras
         or length(
-            safe.regexp_replace(trim( {{ telefone_column }} ), substr({{ telefone_column }}, 1, 1), '')
+            safe.regexp_replace(
+                regexp_replace({{ telefone_column }}, r'[^0-9]', ''),
+                substr({{ telefone_column }}, 1, 1),
+                ''
+            )
         ) = 0  -- Remove strings com 1 caractere repetido
         then null
 
