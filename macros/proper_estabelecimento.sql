@@ -35,9 +35,13 @@
                             'xvi',
                             'xvii',
                             'xviii',
-                            'xix'
+                            'xix',
+                            'ad',
+                            'eat'
                         )
                     then upper(word)
+                    when lower(word) = 'capsi' -- Condição específica para retornar "CAPSi"
+                    then 'CAPSi'
                     else {{ proper_br("word") }}
                 end,
                 ' '
