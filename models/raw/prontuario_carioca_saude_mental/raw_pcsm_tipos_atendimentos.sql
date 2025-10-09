@@ -21,7 +21,7 @@ select
         else 'Não classificado'
     end as descricao_classificacao_atendimento,
     safe_cast(descatend as string) as descricao_tipo_atendimento,
-    safe_cast(indacaosave as string) as acao_pos_atentimento,
+    safe_cast(indacaosave as string) as acao_pos_atendimento,
     case trim(safe_cast(indacaosave as string))
         when 'S' then 'Sim'
         when 'N' then 'Não'

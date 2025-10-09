@@ -3,7 +3,7 @@
         schema="brutos_prontuario_carioca_saude_mental",
         alias="atendimentos",
         materialized="table",
-        tags=["raw", "pcsm", "atendimentos"],
+        tags=["raw", "pcsm", "atendimentos", "daily"],
         description="Atendimentos simplificados realizados pela Prefeitura do Rio de Janeiro. O atendimento simplificado é um tipo de atendimento, não se encaixando em ambulatorial etc."
     )
 }}
