@@ -25,6 +25,7 @@ sources:
       - name: cids_risco_gestacional
       - name: encaminhamentos_ser
       - name: cdi_destinatarios
+      - name: seguranca_destinatarios
       - name: contatos_caps
       - name: projeto_odontologia_historico
       - name: projeto_odontologia_historico_ap
