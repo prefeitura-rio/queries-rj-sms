@@ -41,14 +41,13 @@ select
     p.cpf,
     p.cns,
     struct(
-        c.id_ciclo,
-        c.tipo_ciclo,
-        c.data_inicio,
-        c.data_termino,
-        u.nome_unidade,
-        u.id_cnes,
+        c.id_ciclo as id_evento,
+        c.tipo_ciclo as tipo,
         c.situacao,
-        c.data_carga    
+        c.data_inicio as data_inicio,
+        c.data_termino as data_termino,
+        {{ proper_estabelecimento('nome_unidade') }} as unidade_nome,
+        u.id_cnes
     ) as ciclos_tratamento
 from ciclos as c
 left join pacientes as p on c.id_paciente = p.id_paciente
