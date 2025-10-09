@@ -11,7 +11,7 @@ with
         select 
             m.id_matriciamento,
             mp.id_paciente,
-            initcap(nome_matriciamento) as nome_matriciamento,
+            upper(nome_matriciamento) as nome_matriciamento,
             id_unidade_saude as id_unidade,
             datetime(data_inicio_matriciamento, parse_time('%H%M', hora_inicio_matriciamento)) as data_inicio,
             descricao_tipo_matriciamento as tipo,

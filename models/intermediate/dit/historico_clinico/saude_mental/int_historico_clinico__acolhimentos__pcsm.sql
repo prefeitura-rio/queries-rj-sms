@@ -28,6 +28,9 @@ with
             descricao_tipo_leito as tipo_leito,
             loaded_at
         from {{ref('raw_pcsm_acolhimento')}}
+        -- Há a presença de registros duplicados (acolhimentos de pacientes no mesmo dia e mesmo horário com id_acolhimento diferente)
+        qualify row_number() over(partition by id_paciente, data_entrada_acolhimento order by id_acolhimento desc) = 1
+
     ),
 
     pacientes as (
@@ -51,13 +54,13 @@ select
     p.cpf,
     p.cns,
     struct(
-        a.id_acolhimento,
-        a.datahora_entrada,
-        a.datahora_saida,
-        u.nome_unidade,
-        u.id_cnes,
+        a.id_acolhimento as id_evento,
+        a.datahora_entrada as data_inicio,
+        a.datahora_saida as data_termino,
         a.leito_ocupado
+        {{ proper_estabelecimento('nome_unidade') }} as unidade_nome,
+        u.id_cnes
     ) as acolhimentos
 from acolhimentos as a
 left join pacientes as p on a.id_paciente = p.id_paciente
-left join unidade as u on a.id_unidade = u.id_unidade   
+left join unidade as u on a.id_unidade = u.id_unidade
