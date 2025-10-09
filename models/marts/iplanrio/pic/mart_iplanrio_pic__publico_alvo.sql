@@ -3,30 +3,43 @@
     materialized = "table"
 ) }}
 
-with
 
-    -- ------------------------------------------------------------
-    -- Gestantes em Andamento
-    -- ------------------------------------------------------------
-    gestacoes_em_andamento as (
-        select
-            cpf,
-            data_diagnostico as data_referencia,
-            'Gestacao' as tipo_publico
-        from {{ ref('mart_linhas_cuidado__gestacoes') }}
-        where tipo_transicao = 'Em Andamento'
+WITH
+
+    gestacoes_encerradas AS (
+    SELECT
+        cpf,
+        data_diagnostico                        AS inicio,
+        data_diagnostico_seguinte               AS fim,
+        'Gestacao'                              AS tipo_publico
+    FROM {{ ref('mart_linhas_cuidado__gestacoes') }}
+    WHERE tipo_transicao = 'Encerramento Comprovado'
+        AND data_diagnostico IS NOT NULL
+        AND data_diagnostico_seguinte IS NOT NULL
     ),
 
-    -- ------------------------------------------------------------
-    -- Gestantes em Puerpério
-    -- ------------------------------------------------------------
-    gestacoes_encerradas_em_puerperio as (
-        select
-            cpf,
-            data_diagnostico_seguinte  as data_referencia,
-            'Puerperio' as tipo_publico
-        from {{ ref('mart_linhas_cuidado__gestacoes') }}
-        where tipo_transicao = 'Encerramento Comprovado' and date_diff(current_date(), data_diagnostico_seguinte, day) <= 42
+    -- delimita a gestacao quando nao ha encerramento ou registro de parto
+    gestacoes_em_andamento AS (
+    SELECT
+        cpf,
+        data_diagnostico AS inicio,
+        LEAST(DATE_ADD(data_diagnostico, INTERVAL 365 DAY), CURRENT_DATE()) AS fim, -- 12 meses, duração máxima esperada de uma gravidez considerando margem
+        'Gestacao' AS tipo_publico
+    FROM {{ ref('mart_linhas_cuidado__gestacoes') }}
+    WHERE tipo_transicao = 'Em Andamento'
+        AND data_diagnostico IS NOT NULL
+    ),
+
+    -- Puerpério: 42 dias após encerramento/parto
+    puerperio AS (
+    SELECT
+        cpf,
+        data_diagnostico_seguinte  AS inicio,
+        DATE_ADD(data_diagnostico_seguinte, INTERVAL 42 DAY) AS fim,
+        'Puerperio' AS tipo_publico
+    FROM {{ ref('mart_linhas_cuidado__gestacoes') }}
+    WHERE tipo_transicao = 'Encerramento Comprovado'
+        AND data_diagnostico_seguinte IS NOT NULL
     ),
 
     -- ------------------------------------------------------------
@@ -35,7 +48,8 @@ with
     criancas as (
         SELECT
             cpf,
-            data_nascimento,
+            data_nascimento AS inicio,
+            DATE_ADD(data_nascimento, INTERVAL 6 YEAR) AS fim,
             'Infancia' as tipo_publico
         FROM {{ ref("raw_prontuario_vitacare__paciente") }}
         WHERE data_nascimento > DATE_SUB(CURRENT_DATE(), INTERVAL 6 YEAR) and cpf <> 'NAO TEM'
@@ -45,16 +59,18 @@ with
     -- ------------------------------------------------------------
     -- Junção dos casos
     -- ------------------------------------------------------------
-    juncao_casos as (
-        select * from gestacoes_em_andamento
-        union all
-        select * from gestacoes_encerradas_em_puerperio
-        union all
-        select * from criancas
-    )
-select 
-    *,
-    struct(
-        current_timestamp() as ultima_atualizacao
-    ) as metadados
-from juncao_casos
+    juncao_casos AS (
+    SELECT * FROM gestacoes_encerradas
+    UNION ALL SELECT * FROM gestacoes_em_andamento
+    UNION ALL SELECT * FROM puerperio
+    UNION ALL SELECT * FROM criancas
+)
+
+SELECT
+  cpf,
+  DATE(inicio) AS inicio,
+  DATE(fim) AS fim,
+  tipo_publico,
+  STRUCT(CURRENT_TIMESTAMP() AS ultima_atualizacao) AS metadados
+FROM juncao_casos
+WHERE inicio <= fim
