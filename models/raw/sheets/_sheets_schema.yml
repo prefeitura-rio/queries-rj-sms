@@ -537,7 +537,7 @@ models:
       - name: email
         description: Endereço de email do recipiente
         data_type: string
-      - name: Tipo
+      - name: tipo
         description: |
           De que forma o endereço será incluído. Pode ter os valores:
           TO, CC, BCC e SKIP (neste último caso, o endereço não é incluído).
@@ -554,7 +554,7 @@ models:
       - name: email
         description: Endereço de email do recipiente
         data_type: string
-      - name: Tipo
+      - name: tipo
         description: |
           De que forma o endereço será incluído. Pode ter os valores:
           TO, CC, BCC e SKIP (neste último caso, o endereço não é incluído).
