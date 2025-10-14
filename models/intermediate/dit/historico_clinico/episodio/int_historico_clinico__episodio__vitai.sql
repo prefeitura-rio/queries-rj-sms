@@ -128,6 +128,8 @@ with
             data_prescricao 
         from {{ ref("raw_prontuario_vitai__basecentral__prescricao") }}
     ),
+
+    --- Referencia 
     prescricoes_agg as (
         select 
             gid_boletim, 
@@ -404,31 +406,20 @@ with
         from exame
     ),
     -- Monta estrura array aninhada de CIDs do episódio
-    cid_distinct as (
-        select distinct
-            episodios.gid as id,
-            IF(episodios.cid_codigo is null, c.id, episodios.cid_codigo) as cid_id,
-            episodios.cid_nome as cid_nome,
-        from episodios
-        left join (
-            select id, descricao
-            from {{ ref('dim_condicao_cid10') }} 
-        ) as c
-        on c.descricao = episodios.cid_nome
-        where (cid_codigo is not null or cid_nome is not null)
-    ),
-    cid_grouped as (
-        select
-            id,
+    cdi_agg as (
+        select distinct 
+            diagnostico.gid_boletim, 
             array_agg(
                 struct(
-                    cid_id as id,
-                    cid_nome as descricao,
-                    "ATIVO" as situacao,
-                    "" as data_diagnostico
-                ) ignore nulls
-            ) as condicoes,
-        from cid_distinct
+                    regexp_replace(diagnostico.codigo, r'\.', '') as id,
+                    cid.descricao as descricao,
+                    'ATIVO' as situacao,
+                    null as data_diagnostico
+                )
+            ) as condicoes
+        from {{ ref('raw_prontuario_vitai__diagnostico')}} diagnostico
+        left join {{ ref('dim_condicao_cid10')}} as cid
+            on cid.id = regexp_replace(diagnostico.codigo, r'\.', '')
         group by 1
     ),
     -- Monta base do episódio para ser enriquecida
@@ -517,7 +508,7 @@ with
             safe_cast(trim(desfecho_atendimento) as string) as desfecho_atendimento,
 
             -- Condições
-            cid_grouped.condicoes,
+            cdi_agg.condicoes, 
 
             -- Medicamentos administrados
             prescricoes_agg.medicamentos_administrados,
@@ -541,6 +532,7 @@ with
             safe_cast(atendimento_struct.paciente.cpf as int64) as cpf_particao
         from atendimento_struct
         left join cid_grouped on atendimento_struct.id = cid_grouped.id
+        left join cdi_agg on atendimento_struct.id = cdi_agg.gid_boletim
         left join prescricoes_agg on atendimento_struct.id = prescricoes_agg.gid_boletim
 
     )
