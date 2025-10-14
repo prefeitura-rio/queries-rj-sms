@@ -530,7 +530,6 @@ with
             safe_cast(entrada_datahora as date) as data_particao,
             safe_cast(atendimento_struct.paciente.cpf as int64) as cpf_particao
         from atendimento_struct
-        left join cid_grouped on atendimento_struct.id = cid_grouped.id
         left join cdi_agg on atendimento_struct.id = cdi_agg.gid_boletim
         left join prescricoes_agg on atendimento_struct.id = prescricoes_agg.gid_boletim
 
