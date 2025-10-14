@@ -129,7 +129,6 @@ with
         from {{ ref("raw_prontuario_vitai__basecentral__prescricao") }}
     ),
 
-    --- Referencia 
     prescricoes_agg as (
         select 
             gid_boletim, 
