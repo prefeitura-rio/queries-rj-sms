@@ -22,13 +22,13 @@ select
 
     '000001-001' as id_exame,
     '1' as id_laudo,
-    'gs://falta-mock-pdf' as laudo_bucket,  -- FIXME
+    'gs://medilab_laudos/mock/tc-sela-turcica.pdf' as laudo_bucket,
 
     cast('2025-10-01' as DATE) as exame_data,
     cast('2025-10-05T12:34:56.0000' as DATETIME) as laudo_data_atualizacao,
 
-    'Pedro M.' as medico_requisitante,
-    'Daniel S.' as medico_responsavel,
-    'Rodrigo P.' as medico_revisor,
+    'Pedro Marques' as medico_requisitante,
+    'Alberto Einstein' as medico_responsavel,
+    'Isaque Newton' as medico_revisor,
 
     42298037299 as cpf_particao
