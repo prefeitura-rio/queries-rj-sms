@@ -73,10 +73,11 @@ with
     boletim as (
         select
             b.gid,
+            {{ process_null("b.numero_be") }} as id_prontuario_local,
             b.id_hci,
             b.gid_paciente,
             b.gid_estabelecimento,
-            {{add_accents_estabelecimento('estabelecimento_nome')}} as estabelecimento_nome,
+            {{ add_accents_estabelecimento("estabelecimento_nome") }} as estabelecimento_nome,
             b.atendimento_tipo,
             b.especialidade_nome,
             internacao_data,
@@ -85,11 +86,11 @@ with
             if(b.data_entrada > current_date(),null, b.data_entrada) as entrada_datahora,
             if(b.alta_data > current_date(),null, b.alta_data) as saida_datahora,
             if(
-                {{ clean_numeric("b.cpf") }} is null,
-                paciente_mrg.cpf,
-                {{ clean_numeric("b.cpf") }}
+                {{ process_null(clean_numeric("b.cpf")) }} is null,
+                {{ process_null(clean_numeric("paciente_mrg.cpf")) }},
+                {{ process_null(clean_numeric("b.cpf")) }}
             ) as cpf,
-            paciente_mrg.cns as cns,
+            {{ process_null(clean_numeric("paciente_mrg.cns")) }} as cns,
             paciente_mrg.data_nascimento
         from {{ ref("raw_prontuario_vitai__boletim") }} as b
         left join paciente_mrg on b.gid_paciente = paciente_mrg.id_paciente
@@ -360,6 +361,7 @@ with
         select
             gid,
             id_hci,
+            id_prontuario_local,
             gid_paciente,
             gid_estabelecimento,
             estabelecimento_nome,
@@ -388,7 +390,7 @@ with
                 )
             ) as exames_realizados
         from exame_dupl
-        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,19
+        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
     ),
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Montagem do episódio e enriquecimento
@@ -456,7 +458,9 @@ with
                 estabelecimentos.tipo_sms_simplificado as estabelecimento_tipo
             ) as estabelecimento,
             struct(
-                episodios_distinct.gid as id_prontuario_global, "vitai" as fornecedor
+                episodios_distinct.gid as id_prontuario_global,
+                episodios_distinct.id_prontuario_local,
+                "vitai" as fornecedor
             ) as prontuario,
             episodios_distinct.imported_at,
             episodios_distinct.updated_at,
@@ -473,6 +477,7 @@ with
                 select distinct
                     id_hci,
                     gid,
+                    id_prontuario_local,
                     gid_estabelecimento,
                     estabelecimento_nome,
                     tipo,
