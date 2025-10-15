@@ -5,6 +5,8 @@
         materialized="table",
     )
 }}
+-- TODO: incremental?
+
 with
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabelas uteis para o episodio
@@ -12,10 +14,10 @@ with
     -- Desfecho do atendimento
 
     alta_adm as ( -- Alta administrativa (consultas)
-        select 
+        select
             gid_boletim,
             CASE
-                WHEN 
+                WHEN
                     {{ process_null("alta_tipo_detalhado") }} is null and {{clean_abe_obs('abe_obs')}} is null THEN null 
                 ELSE
                     CONCAT(
