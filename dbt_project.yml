@@ -122,6 +122,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      sipni:
+        +schema: brutos_sipni
+        +tags: ["sipni"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       cnes_gdb:
         +schema: brutos_cnes_gdb
         +tags: ["weekly",'cnes_gdb']
