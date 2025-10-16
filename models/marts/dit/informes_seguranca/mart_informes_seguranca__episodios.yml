@@ -1,6 +1,56 @@
-# version: 2
+version: 2
 
-# models:
-#   - name: abc
-#     description: abc
-#     columns:
+models:
+  - name: mart_informes_seguranca__episodios
+    description: Tabela para uso pelo projeto de Informes de Segurança diários
+    columns:
+      - name: id_hci
+        description: TODO
+      - name: paciente
+        description: TODO
+      - name: paciente.cpf
+        description: TODO
+      - name: paciente.cns
+        description: TODO
+      - name: paciente.nome
+        description: TODO
+      - name: paciente.nome_social
+        description: TODO
+      - name: paciente.data_nascimento
+        description: TODO
+      - name: paciente.id_paciente
+        description: TODO
+      - name: entrada_datahora
+        description: TODO
+      - name: saida_datahora
+        description: TODO
+      - name: estabelecimento
+        description: TODO
+      - name: estabelecimento.id_cnes
+        description: TODO
+      - name: estabelecimento.nome
+        description: TODO
+      - name: prontuario
+        description: TODO
+      - name: prontuario.id_prontuario_global
+        description: TODO
+      - name: prontuario.id_prontuario_local
+        description: TODO
+      - name: prontuario.fornecedor
+        description: TODO
+      - name: cid
+        description: TODO
+      - name: cid_descricao
+        description: TODO
+      - name: cid_situacao
+        description: TODO
+      - name: metadados
+        description: TODO
+      - name: metadados.updated_at
+        description: TODO
+      - name: metadados.imported_at
+        description: TODO
+      - name: metadados.processed_at
+        description: TODO
+      - name: data_particao
+        description: TODO

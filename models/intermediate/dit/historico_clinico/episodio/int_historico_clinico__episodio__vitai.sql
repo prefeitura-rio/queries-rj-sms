@@ -5,7 +5,10 @@
         materialized="table",
     )
 }}
--- TODO: incremental?
+-- TODO: partition, cluster, incremental?
+-- Partição não pode ser por data_particao porque
+-- a coluna tem >4700 valores distintos
+-- Talvez por mês?
 
 with
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -132,8 +135,8 @@ with
         from {{ ref("raw_prontuario_vitai__basecentral__prescricao") }}
     ),
     prescricoes_agg as (
-        select 
-            gid_boletim, 
+        select
+            gid_boletim,
             array_agg(
                 struct(
                     nome,
@@ -450,7 +453,8 @@ with
             struct(
                 episodios_distinct.cpf,
                 episodios_distinct.cns,
-                episodios_distinct.data_nascimento
+                episodios_distinct.data_nascimento,
+                episodios_distinct.gid_paciente as gid
             ) as paciente,
             profissional_saude_responsavel,
             struct(
@@ -490,6 +494,7 @@ with
                     saida_datahora,
                     imported_at,
                     updated_at,
+                    gid_paciente,
                     cpf,
                     cns,
                     data_nascimento,
@@ -505,8 +510,10 @@ with
     final as (
         select
             id_hci,
+
             -- Paciente
             atendimento_struct.paciente.cpf as cpf,
+            atendimento_struct.paciente.gid as gid_paciente,
 
             -- Tipo e Subtipo
             safe_cast(atendimento_struct.tipo as string) as tipo,
@@ -549,7 +556,6 @@ with
         from atendimento_struct
         left join cid_grouped on atendimento_struct.id = cid_grouped.id
         left join prescricoes_agg on atendimento_struct.id = prescricoes_agg.gid_boletim
-
     )
 
 select *

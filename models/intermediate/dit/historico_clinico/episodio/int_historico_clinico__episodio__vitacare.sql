@@ -334,6 +334,7 @@ with
 
             -- Paciente
             {{ process_null("atendimento.cpf") }} as cpf,
+            cast(null as string) as gid_paciente,
 
             -- Tipo e Subtipo
             safe_cast(

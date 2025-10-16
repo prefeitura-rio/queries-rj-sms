@@ -17,7 +17,7 @@ with
 
   -- Dados de episódios assistenciais da Vitai e Vitacare
   -- Aqui só estamos interessados em alguns poucos campos
-  -- - CPF do paciente
+  -- - CPF do paciente / identificador do paciente (Vitai)
   -- - Data/hora de entrada e saída
   -- - CIDs
   -- - Unidade de saúde
@@ -26,6 +26,7 @@ with
     select
       id_hci,
       cpf,
+      gid_paciente,
       entrada_datahora,
       saida_datahora,
       condicoes,
@@ -43,6 +44,7 @@ with
     select
       id_hci,
       cpf,
+      gid_paciente,
       entrada_datahora,
       saida_datahora,
       condicoes,
@@ -71,18 +73,21 @@ with
   -- por não preenchimento de CPF
   merged_data_patient as (
     select
-      merged_data.* except (cpf),
+      merged_data.* except (cpf, gid_paciente),
       struct(
-        coalesce(merged_data.cpf, merged_patient.cpf),
-        merged_patient.cns,
-        merged_patient.nome,
-        merged_patient.nome_social,
-        merged_patient.data_nascimento,
-        {{
-          dbt_utils.generate_surrogate_key([
-            "merged_patient.cpf"
-          ])
-        }} as id_paciente
+        coalesce(merged_data.cpf, merged_patient.cpf) as cpf,
+        merged_patient.cns as cns,
+        merged_patient.nome as nome,
+        merged_patient.nome_social as nome_social,
+        merged_patient.data_nascimento as data_nascimento,
+        coalesce(
+          merged_data.gid_paciente,  -- Se tivermos um GID (Vitai), é preferível
+          {{
+            dbt_utils.generate_surrogate_key([
+              "coalesce(merged_data.cpf, merged_patient.cpf)"
+            ])
+          }}
+        ) as id_paciente
       ) as paciente,
     from merged_data
     left join merged_patient
@@ -113,7 +118,7 @@ with
     from {{ ref("raw_sheets__seguranca_cids") }}
   ),
 
-  -- Somente episódios com CIDs relevantes
+  -- Separa somente episódios com CIDs relevantes
   relevant_eps as (
     select
       deduped_unnested.prontuario.id_prontuario_global,
@@ -166,7 +171,7 @@ with
       on agg_3_dig.id_categoria = regexp_replace(cid.id, r'\.', '')
     where char_length(regexp_replace(cid.id, r'\.', '')) = 3
   ),
-  all_cids as (
+  relevant_cids_with_description as (
     select
       id_prontuario_global,
       array_agg(
@@ -193,35 +198,98 @@ with
       deduped.paciente,
       deduped.entrada_datahora,
       deduped.saida_datahora,
-      all_cids.condicoes,
-      deduped.estabelecimento,
+      relevant_cids_with_description.condicoes,
+      struct(
+        deduped.estabelecimento.id_cnes,
+        deduped.estabelecimento.nome
+      ) as estabelecimento,
       deduped.prontuario,
       deduped.metadados,
       cast(deduped.entrada_datahora as date) as data_particao
-    from deduped
-    left join all_cids
-      on all_cids.id_prontuario_global = deduped.prontuario.id_prontuario_global
+    from relevant_cids_with_description
+    left join deduped
+      on relevant_cids_with_description.id_prontuario_global = deduped.prontuario.id_prontuario_global
   ),
+
+  -- Queremos agrupar diferentes atendimentos em um só se tiverem:
+  -- - mesmo paciente (via GID se Vitai, CPF se Vitacare);
+  -- - mesma data de entrada;
+  -- - mesmo CNES;
+  -- - e mesmos CIDs
+  -- Primeiro, juntamos todos os CIDs de cada atendimento em uma string
+  grouped_cids as (
+    select
+      prontuario.id_prontuario_global,
+      array_to_string(
+        array(
+          select cid.id
+          from unnest(condicoes) as cid
+          order by cid.id
+        ), ";"
+      ) as cids
+    from with_cids
+  ),
+  -- Em seguida, criamos uma chave usando os campos descritos acima
+  similar as (
+    select
+      with_cids.*,
+      {{
+        dbt_utils.generate_surrogate_key([
+          "with_cids.paciente.id_paciente",
+          "with_cids.data_particao",
+          "with_cids.estabelecimento.id_cnes",
+          "grouped_cids.cids",
+        ])
+      }} as id_similar,
+    from with_cids
+    left join grouped_cids
+      on grouped_cids.id_prontuario_global = with_cids.prontuario.id_prontuario_global
+  ),
+  -- /!\  Existem casos em que o CPF é nulo! Diferentes pacientes atendidos em
+  --      uma mesma unidade pra tratar um mesmo CID no mesmo dia podem então ser
+  --      considerados um só.
+  --      Meu plano aqui era verificar sobreposições no horário de entrada/saída
+  --      (ex.: entrada1 <= saida2 && entrada2 <= saida1)
+  --      Mas o CPF, o identificador que pode ser nulo, só é usado pela Vitacare,
+  --      que não informa horários, só datas :|
+  --         (* informa horários, mas às vezes sem entrada, então usamos só data)
+
+  -- Numeramos cada linha com mesmo ID
+  similar_numbered as (
+    select
+      *,
+      row_number() over (
+        partition by id_similar
+        order by
+          -- Prioridade para fins de atendimentos mais tardes, mas saída pode ser nulo
+          saida_datahora desc,
+          -- Prioridade secundária para IDs maiores, em teoria = atendimentos posteriores
+          prontuario.id_prontuario_local desc
+      ) as similar_row_number
+    from similar
+  ),
+  deduped_similar as (
+    select
+      * except(id_similar, similar_row_number)
+    from similar_numbered
+    where similar_row_number = 1
+  ),
+  -- TODO: preservar número de prontuários de cada atendimento "duplicado"?
 
   final as (
     select
       ep.* except (condicoes, metadados, data_particao),
+
+      -- Expande CIDs
       condicao.id as cid,
       condicao.descricao as cid_descricao,
       condicao.situacao as cid_situacao,
+
+      -- Empurra metadados, data_particao para o final
       ep.metadados,
       ep.data_particao
-    from with_cids as ep,
+    from deduped_similar as ep,
       unnest(ep.condicoes) as condicao
-    qualify row_number() over (
-      -- TODO: descobrir como deduplicar entradas parecidas
-      partition by
-        entrada_datahora,
-        estabelecimento.id_cnes,
-        paciente.cpf,
-        cid
-      order by saida_datahora desc
-    ) = 1
     order by
       cid asc,
       coalesce(paciente.nome_social, paciente.nome) asc nulls last
@@ -229,10 +297,3 @@ with
 
 select *
 from final
-
-
-
--- TODO:
--- - CNES não está sendo populado corretamente
--- - Conferir se os CIDs estão filtrando certinho
--- - Aglutinar atendimentos simultâneos
