@@ -131,8 +131,8 @@ with
         FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v 
             INNER JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a using(id_prontuario_global)
         WHERE
-            dose is not null AND -- Revisar isso. Seria ela uma dose única?
-            cod_vacina in (
+            LOWER(normalize_and_casefold(v.dose, NFKD)) NOT IN ('dose unica', 'outro')
+            AND v.cod_vacina IN (
                 'DTP/HB/Hib',
                 'Hexa'
             )
@@ -169,9 +169,8 @@ with
             nu_cpf_paciente IS NOT NULL AND
             ds_vacina in (
                 'Vacina penta (DTP/HepB/Hib)',
-                'Vacina penta acelular (DTPa/VIP/Hib)'
-                'Vacina hexa (DTPa/HepB/VIP/Hib)',
-                'Vacina rotavírus pentavalente'
+                'Vacina penta acelular (DTPa/VIP/Hib)',
+                'Vacina hexa (DTPa/HepB/VIP/Hib)'
             )
     ),
 
@@ -184,7 +183,7 @@ with
 
     vacinacoes as (
         SELECT
-            a.patient_cpf as cpf, 
+            cpf, 
             concat('Vacina - ', imuno, ' - ', tipo, ordem) as tipo_evento,
             dthr
         FROM vacinacoes_merge
