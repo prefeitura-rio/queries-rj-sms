@@ -100,13 +100,93 @@ with
         )
     ),
 
-    vacinacoes as (
+    -- ------------------------------------------------------------
+    -- Vacinacoes
+    -- ------------------------------------------------------------
+
+    -- VITACARE
+    vacinacoes_vitacare_std as (
         SELECT 
-            a.patient_cpf as cpf, 
-            concat('Vacina - ', ifnull(cod_vacina, '<vacina sem cod>'), ' - ', ifnull(dose, '<vacina sem dose>')) as tipo_evento,
+            a.patient_cpf as cpf,
+
+            -- IMUNO
+            'Pentavalente' as imuno,
+
+            -- DOSAGEM
+            CASE 
+                WHEN dose like '%eforço%' THEN 'R'
+                WHEN dose like '%nica%' THEN 'U'
+                ELSE  'D'
+            END as tipo,
+            CASE 
+                WHEN dose like '%1%' THEN '1'
+                WHEN dose like '%2%' THEN '2'
+                WHEN dose like '%3%' THEN '3'
+                WHEN dose like '%4%' THEN '4'
+                ELSE ''
+            END as ordem,
+
+            -- DATA
             cast(v.data_aplicacao as datetime) as dthr
         FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v 
             INNER JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a using(id_prontuario_global)
+        WHERE
+            LOWER(normalize_and_casefold(v.dose, NFKD)) NOT IN ('dose unica', 'outro')
+            AND v.cod_vacina IN (
+                'DTP/HB/Hib',
+                'Hexa'
+            )
+    ),
+
+    -- SIPNI
+    vacinacoes_sipni_std as (
+        SELECT
+            nu_cpf_paciente as cpf,
+
+            -- IMUNO: Por enquanto, SI-PNI só tem Pentavalente e relacionados. Padronizando:
+            'Pentavalente' as imuno,
+
+            -- DOSAGEM
+            CASE 
+                WHEN ds_dose_vacina like '%eforço%' THEN 'R'
+                WHEN ds_dose_vacina like '%nica%' THEN 'U'
+                ELSE  'D'
+            END as tipo,
+            CASE 
+                WHEN ds_dose_vacina like '%1%' THEN '1'
+                WHEN ds_dose_vacina like '%2%' THEN '2'
+                WHEN ds_dose_vacina like '%3%' THEN '3'
+                WHEN ds_dose_vacina like '%4%' THEN '4'
+                WHEN ds_dose_vacina like '%5%' THEN '5'
+                WHEN ds_dose_vacina like '%6%' THEN '6'
+                ELSE ''
+            END as ordem,
+
+            -- DATA
+            cast(dt_vacina as datetime) as dthr
+        FROM {{ ref("raw_sipni__vacinacao") }}
+        WHERE 
+            nu_cpf_paciente IS NOT NULL AND
+            ds_vacina in (
+                'Vacina penta (DTP/HepB/Hib)',
+                'Vacina penta acelular (DTPa/VIP/Hib)',
+                'Vacina hexa (DTPa/HepB/VIP/Hib)'
+            )
+    ),
+
+    -- MERGE
+    vacinacoes_merge as (
+        SELECT * FROM vacinacoes_vitacare_std
+        UNION ALL
+        SELECT * FROM vacinacoes_sipni_std
+    ),
+
+    vacinacoes as (
+        SELECT
+            cpf, 
+            concat('Vacina - ', imuno, ' - ', tipo, ordem) as tipo_evento,
+            dthr
+        FROM vacinacoes_merge
     ),
 
     eventos as (
