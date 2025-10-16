@@ -114,15 +114,15 @@ with
 
             -- DOSAGEM
             CASE 
-                WHEN 'eforço' in dose THEN 'R'
-                WHEN 'nica' in dose THEN 'U'
+                WHEN dose like '%eforço%' THEN 'R'
+                WHEN dose like '%nica%' THEN 'U'
                 ELSE  'D'
             END as tipo,
             CASE 
-                WHEN '1' in dose THEN '1'
-                WHEN '2' in dose THEN '2'
-                WHEN '3' in dose THEN '3'
-                WHEN '4' in dose THEN '4'
+                WHEN dose like '%1%' THEN '1'
+                WHEN dose like '%2%' THEN '2'
+                WHEN dose like '%3%' THEN '3'
+                WHEN dose like '%4%' THEN '4'
                 ELSE ''
             END as ordem,
 
@@ -148,17 +148,17 @@ with
 
             -- DOSAGEM
             CASE 
-                WHEN 'eforço' in ds_dose_vacina THEN 'R'
-                WHEN 'nica' in ds_dose_vacina THEN 'U'
+                WHEN ds_dose_vacina like '%eforço%' THEN 'R'
+                WHEN ds_dose_vacina like '%nica%' THEN 'U'
                 ELSE  'D'
             END as tipo,
             CASE 
-                WHEN '1' in ds_dose_vacina THEN '1'
-                WHEN '2' in ds_dose_vacina THEN '2'
-                WHEN '3' in ds_dose_vacina THEN '3'
-                WHEN '4' in ds_dose_vacina THEN '4'
-                WHEN '5' in ds_dose_vacina THEN '5'
-                WHEN '6' in ds_dose_vacina THEN '6'
+                WHEN ds_dose_vacina like '%1%' THEN '1'
+                WHEN ds_dose_vacina like '%2%' THEN '2'
+                WHEN ds_dose_vacina like '%3%' THEN '3'
+                WHEN ds_dose_vacina like '%4%' THEN '4'
+                WHEN ds_dose_vacina like '%5%' THEN '5'
+                WHEN ds_dose_vacina like '%6%' THEN '6'
                 ELSE ''
             END as ordem,
 
