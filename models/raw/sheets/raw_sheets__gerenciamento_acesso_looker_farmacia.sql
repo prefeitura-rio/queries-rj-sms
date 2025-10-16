@@ -44,7 +44,7 @@ with
                 substr(
                     acesso_relacao_estabelecimentos,
                     1,
-                    length(acesso_relacao_estabelecimentos) - 1 
+                    length({{ process_null('acesso_relacao_estabelecimentos') }}) - 1
                 ),
                 ';'
             ) as acesso_relacao_estabelecimentos,
