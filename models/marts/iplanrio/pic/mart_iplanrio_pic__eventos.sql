@@ -100,17 +100,17 @@ with
         )
     ),
 
-    vacinacoes_dirty as (
+    -- ------------------------------------------------------------
+    -- Vacinacoes
+    -- ------------------------------------------------------------
+
+    -- VITACARE
+    vacinacoes_vitacare_std as (
         SELECT 
             a.patient_cpf as cpf,
 
             -- IMUNO
-            cod_vacina,
-            CASE 
-                WHEN cod_vacina = 'COV19-PFZ' or cod_vacina = 'COVID-19 MODERNA - SPIKEVAX' THEN  'COVID-19'
-                WHEN cod_vacina = 'DTP / Hib' then 'DTP' -- Revisar isso. Ideia é facilitar a contagem do reforço de DTP
-                ELSE cod_vacina
-            END as imuno,
+            'Pentavalente' as imuno,
 
             -- DOSAGEM
             CASE 
@@ -130,16 +130,64 @@ with
             cast(v.data_aplicacao as datetime) as dthr
         FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v 
             INNER JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a using(id_prontuario_global)
-        WHERE 
-            cod_vacina is not null and 
-            dose is not null -- Revisar isso. Seria ela uma dose única?
+        WHERE
+            dose is not null AND -- Revisar isso. Seria ela uma dose única?
+            cod_vacina in (
+                'DTP/HB/Hib',
+                'Hexa'
+            )
     ),
+
+    -- SIPNI
+    vacinacoes_sipni_std as (
+        SELECT
+            nu_cpf_paciente as cpf,
+
+            -- IMUNO: Por enquanto, SI-PNI só tem Pentavalente e relacionados. Padronizando:
+            'Pentavalente' as imuno,
+
+            -- DOSAGEM
+            CASE 
+                WHEN 'eforço' in ds_dose_vacina THEN 'R'
+                WHEN 'nica' in ds_dose_vacina THEN 'U'
+                ELSE  'D'
+            END as tipo,
+            CASE 
+                WHEN '1' in ds_dose_vacina THEN '1'
+                WHEN '2' in ds_dose_vacina THEN '2'
+                WHEN '3' in ds_dose_vacina THEN '3'
+                WHEN '4' in ds_dose_vacina THEN '4'
+                WHEN '5' in ds_dose_vacina THEN '5'
+                WHEN '6' in ds_dose_vacina THEN '6'
+                ELSE ''
+            END as ordem,
+
+            -- DATA
+            cast(dt_vacina as datetime) as dthr
+        FROM {{ ref("raw_sipni__vacinacao") }}
+        WHERE 
+            nu_cpf_paciente IS NOT NULL AND
+            ds_vacina in (
+                'Vacina penta (DTP/HepB/Hib)',
+                'Vacina penta acelular (DTPa/VIP/Hib)'
+                'Vacina hexa (DTPa/HepB/VIP/Hib)',
+                'Vacina rotavírus pentavalente'
+            )
+    ),
+
+    -- MERGE
+    vacinacoes_merge as (
+        SELECT * FROM vacinacoes_vitacare_std
+        UNION ALL
+        SELECT * FROM vacinacoes_sipni_std
+    ),
+
     vacinacoes as (
-        SELECT 
+        SELECT
             a.patient_cpf as cpf, 
             concat('Vacina - ', imuno, ' - ', tipo, ordem) as tipo_evento,
             dthr
-        FROM vacinacoes_dirty
+        FROM vacinacoes_merge
     ),
 
     eventos as (
