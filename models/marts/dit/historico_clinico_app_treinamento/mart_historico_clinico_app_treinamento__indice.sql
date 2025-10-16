@@ -16,4 +16,3 @@ select
     42298037299 as cns_particao,
     '42298037299' as cpf,
     'Paciente Fake I' as nome
-

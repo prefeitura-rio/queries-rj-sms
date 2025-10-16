@@ -17,10 +17,11 @@ select
     '42298037299' as cpf,
     ['700000000000000'] as cns_lista,
     'Paciente Fake I' as nome,
+    cast(null as string) as nome_social,
     '1989-01-01' as data_nascimento,
     80 as idade,
     'masculino' as genero,
-    'Mãe Fake 1' as nome_mae,
+    'Mãe Fake I' as nome_mae,
     10 as quantidade_episodios,
     struct(
         true as indicador,

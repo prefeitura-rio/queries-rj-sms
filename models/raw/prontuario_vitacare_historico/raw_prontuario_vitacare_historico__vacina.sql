@@ -46,7 +46,7 @@ WITH
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
             id_cnes, 
-
+            concat(id_cnes, '.', id) as id_vacinacao,
             {{ process_null('nome_vacina') }} AS nome_vacina,
             cod_vacina AS cod_vacina,
             {{ process_null('dose') }} AS dose,

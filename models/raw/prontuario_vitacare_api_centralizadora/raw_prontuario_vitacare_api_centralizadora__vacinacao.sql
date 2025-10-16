@@ -129,8 +129,7 @@ with
                 dbt_utils.generate_surrogate_key(
                     [
                         "id_cnes",
-                        "id_vacinacao_local",
-                        "paciente_cns"
+                        "id_vacinacao_local"
                     ]
                 )
             }} as id_surrogate,
@@ -188,4 +187,4 @@ with
 
 select *
 from final
-qualify row_number() over(partition by id_surrogate order by metadados.updated_at desc) = 1
+qualify row_number() over(partition by id_surrogate order by metadados.updated_at, metadados.loaded_at desc) = 1

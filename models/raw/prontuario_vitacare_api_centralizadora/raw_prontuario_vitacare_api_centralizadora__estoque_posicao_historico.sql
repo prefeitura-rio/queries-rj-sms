@@ -52,9 +52,11 @@ with
         select
             *,
             safe_cast(
-                safe_cast(data_replicacao as datetime)
-                as date
-            ) as particao_data_posicao
+                safe_cast(
+                    -- FIX: There are cases where the data_replicacao is null, so we need to use the loaded_at to approximate
+                    coalesce(data_replicacao, loaded_at) 
+                as datetime) 
+            as date) as particao_data_posicao
         from renamed
     ),
 

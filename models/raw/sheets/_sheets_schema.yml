@@ -528,3 +528,39 @@ models:
       - name: email
         description: Emails de contato institucional
         data_type: string[]
+
+  # Planilha de destinatários
+  - name: raw_sheets__cdi_destinatarios
+    description: >
+      Destinatários dos relatórios dos Diários Oficiais enviados regularmente.
+    columns:
+      - name: email
+        description: Endereço de email do recipiente
+        data_type: string
+      - name: tipo
+        description: |
+          De que forma o endereço será incluído. Pode ter os valores:
+          TO, CC, BCC e SKIP (neste último caso, o endereço não é incluído).
+        data_type: string
+      - name: recebe_erro
+        description: |
+          Flag que indica se o recipiente deve receber emails indicando erros
+          no flow (TRUE), ou não (FALSE).
+        data_type: string
+  - name: raw_sheets__seguranca_destinatarios
+    description: >
+      Destinatários dos informes de segurança enviados regularmente.
+    columns:
+      - name: email
+        description: Endereço de email do recipiente
+        data_type: string
+      - name: tipo
+        description: |
+          De que forma o endereço será incluído. Pode ter os valores:
+          TO, CC, BCC e SKIP (neste último caso, o endereço não é incluído).
+        data_type: string
+      - name: recebe_erro
+        description: |
+          Flag que indica se o recipiente deve receber emails indicando erros
+          no flow (TRUE), ou não (FALSE).
+        data_type: string

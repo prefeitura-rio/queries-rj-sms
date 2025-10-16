@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_sipni_staging
+    database: rj-sms
+    schema: brutos_sipni_staging
+    tables:
+      - name: vacinacao_pentavalente_rotina
