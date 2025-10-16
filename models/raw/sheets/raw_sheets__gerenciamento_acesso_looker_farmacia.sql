@@ -44,7 +44,7 @@ with
                 substr(
                     acesso_relacao_estabelecimentos,
                     1,
-                    greatest(length(acesso_relacao_estabelecimentos) - 1, 0)
+                    length(acesso_relacao_estabelecimentos) - 1 
                 ),
                 ';'
             ) as acesso_relacao_estabelecimentos,
