@@ -22,6 +22,10 @@ with
   -- - CIDs
   -- - Unidade de saúde
   -- - ID do prontuário
+  -- Só pegamos dados >=2025 pois o particionamento é
+  -- limitado a 4000 partições (~11 anos) e a Vitai tem
+  -- dados desde 2012; para este projeto, só nos interessa
+  -- atendimentos recentes, então podemos ignorar o resto
   merged_data as (
     select
       id_hci,
@@ -35,8 +39,9 @@ with
       metadados,
       cpf_particao,
     from {{ ref("int_historico_clinico__episodio__vitai") }}
+    where data_particao >= '2025-01-01'
     {% if is_incremental() %}
-      where date(metadados.imported_at) > (select max(data_particao) from {{ this }})
+      and date(metadados.imported_at) > (select max(data_particao) from {{ this }})
     {% endif %}
 
     union all
@@ -53,8 +58,9 @@ with
       metadados,
       cpf_particao,
     from {{ ref("int_historico_clinico__episodio__vitacare") }}
+    where data_particao >= '2025-01-01'
     {% if is_incremental() %}
-      where date(metadados.imported_at) > (select max(data_particao) from {{ this }})
+      and date(metadados.imported_at) > (select max(data_particao) from {{ this }})
     {% endif %}
   ),
 
@@ -62,7 +68,6 @@ with
   merged_patient as (
     select
       cpf,
-      cns,
       dados.nome,
       dados.nome_social,
       dados.data_nascimento,
@@ -76,7 +81,6 @@ with
       merged_data.* except (cpf, gid_paciente),
       struct(
         coalesce(merged_data.cpf, merged_patient.cpf) as cpf,
-        merged_patient.cns as cns,
         merged_patient.nome as nome,
         merged_patient.nome_social as nome_social,
         merged_patient.data_nascimento as data_nascimento,
@@ -104,12 +108,11 @@ with
   deduped_unnested as (
     select
       deduped.* except(condicoes),
-      ep_cid.id,
-      ep_cid.descricao,
-      ep_cid.situacao,
-      ep_cid.data_diagnostico
+      cid.id,
+      cid.descricao,
+      cid.situacao
     from deduped,
-      unnest(deduped.condicoes) as ep_cid
+      unnest(deduped.condicoes) as cid
   ),
 
   -- Pega CIDs relevantes, especificados na planilha
@@ -126,11 +129,9 @@ with
         struct(
           deduped_unnested.id,
           deduped_unnested.descricao,
-          deduped_unnested.situacao,
-          deduped_unnested.data_diagnostico
+          deduped_unnested.situacao
         )
         order by
-          deduped_unnested.data_diagnostico desc,
           deduped_unnested.descricao asc
       ) as condicoes
     from relevant_cids
@@ -141,64 +142,15 @@ with
       )
     group by 1
   ),
-
-  -- Popula descrições de CIDs
-  eps_cid_subcat as (
-    select
-      relevant_eps.id_prontuario_global,
-      cid.id,
-      cid.descricao,
-      cid.situacao,
-      cid.data_diagnostico,
-      best_agrupador as descricao_agg
-    from relevant_eps,
-      unnest(condicoes) as cid
-    left join {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
-      on agg_4_dig.id = regexp_replace(cid.id, r'\.', '')
-    where char_length(regexp_replace(cid.id, r'\.', '')) = 4
-  ),
-  eps_cid_cat as (
-    select
-      relevant_eps.id_prontuario_global,
-      cid.id,
-      cid.descricao,
-      cid.situacao,
-      cid.data_diagnostico,
-      best_agrupador as descricao_agg
-    from relevant_eps,
-      unnest(condicoes) as cid
-    left join {{ ref("int_historico_clinico__cid_categoria") }} as agg_3_dig
-      on agg_3_dig.id_categoria = regexp_replace(cid.id, r'\.', '')
-    where char_length(regexp_replace(cid.id, r'\.', '')) = 3
-  ),
-  relevant_cids_with_description as (
-    select
-      id_prontuario_global,
-      array_agg(
-        struct(
-          id,
-          descricao,
-          situacao,
-          data_diagnostico,
-          descricao_agg as resumo
-        )
-        order by data_diagnostico desc, descricao
-      ) as condicoes
-    from (
-      select * from eps_cid_subcat
-      union all
-      select * from eps_cid_cat
-    )
-    group by 1
-  ),
-
+  -- acho que daria pra mesclar esses dois passos em um só.....
+  -- mas é que antes tinham mais passos e acabou sobrando só esses
   with_cids as (
     select
       deduped.id_hci,
       deduped.paciente,
       deduped.entrada_datahora,
       deduped.saida_datahora,
-      relevant_cids_with_description.condicoes,
+      relevant_eps.condicoes,
       struct(
         deduped.estabelecimento.id_cnes,
         deduped.estabelecimento.nome
@@ -206,9 +158,9 @@ with
       deduped.prontuario,
       deduped.metadados,
       cast(deduped.entrada_datahora as date) as data_particao
-    from relevant_cids_with_description
+    from relevant_eps
     left join deduped
-      on relevant_cids_with_description.id_prontuario_global = deduped.prontuario.id_prontuario_global
+      on relevant_eps.id_prontuario_global = deduped.prontuario.id_prontuario_global
   ),
 
   -- Queremos agrupar diferentes atendimentos em um só se tiverem:
@@ -280,10 +232,8 @@ with
     select
       ep.* except (condicoes, metadados, data_particao),
 
-      -- Expande CIDs
-      condicao.id as cid,
-      condicao.descricao as cid_descricao,
-      condicao.situacao as cid_situacao,
+      -- CID
+      condicao as cid,
 
       -- Empurra metadados, data_particao para o final
       ep.metadados,
@@ -291,7 +241,7 @@ with
     from deduped_similar as ep,
       unnest(ep.condicoes) as condicao
     order by
-      cid asc,
+      cid.id asc,
       coalesce(paciente.nome_social, paciente.nome) asc nulls last
   )
 
