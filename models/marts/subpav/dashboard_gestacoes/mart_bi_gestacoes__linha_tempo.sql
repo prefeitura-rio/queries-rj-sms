@@ -1105,18 +1105,18 @@ dispensacao_aparelho_pa AS (
         pi.cpf,
         MAX(
             CASE
-                WHEN m.id_material = '65159513221' THEN 1
+                WHEN m.id_material IN ('65159513221', '65159506608') THEN 1
                 ELSE 0
             END
         ) AS tem_aparelho_pa_dispensado,
         MIN(
             CASE
-                WHEN m.id_material = '65159513221' THEN DATE(m.data_hora_evento) -- Corrigido: data_hora_movimento → data_hora_evento
+                WHEN m.id_material IN ('65159513221', '65159506608') THEN DATE(m.data_hora_evento) -- Corrigido: data_hora_movimento → data_hora_evento
             END
         ) AS data_primeira_dispensacao_pa,
         COUNT(
             CASE
-                WHEN m.id_material = '65159513221' THEN 1
+                WHEN m.id_material IN ('65159513221', '65159506608') THEN 1
             END
         ) AS qtd_aparelhos_pa_dispensados
     FROM
@@ -1125,7 +1125,7 @@ dispensacao_aparelho_pa AS (
         -- LEFT JOIN {{ ref('mart_estoque__movimento') }} m
         LEFT JOIN {{ ref('mart_estoque__movimento') }} m
             ON pi.cpf = m.consumo_paciente_cpf -- Campo correto confirmado
-        AND m.id_material = '65159513221'
+        AND m.id_material IN ('65159513221', '65159506608')
         AND DATE(m.data_hora_evento) BETWEEN f.data_inicio AND COALESCE(
             f.data_fim_efetiva,
             CURRENT_DATE()
