@@ -1,0 +1,117 @@
+version: 2
+
+models:
+  - name: mart_informes_seguranca__episodios
+    description: >
+      Tabela para uso pelo projeto de Informes de Segurança diários.
+      Cada linha representa um CID oriundo de um atendimento na rede pública
+      de saúde, filtrado por CIDs considerados relevantes.
+    columns:
+      - name: id_hci
+        description: Fingerprint determinístico para o atendimento.
+        data_type: string
+
+      - name: paciente
+        description: Informações sobre o paciente do atendimento.
+      - name: paciente.cpf
+        description: Cadastro de Pessoas Físicas do paciente. Pode ser nulo.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: paciente.nome
+        description: Nome do paciente. Pode ser nulo.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: paciente.nome_social
+        description: Nome social do paciente, se existir. Pode ser nulo.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: paciente.data_nascimento
+        description: Data de nascimento do paciente. Pode ser nulo.
+        data_type: date
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente.id_paciente
+        description: >
+          Chave de identificação de cada paciente, com ressalvas.
+          No caso da Vitai, é a chave estrangeira única para a tabela de pacientes.
+          No caso da Vitacare, é uma hash gerada a partir do CPF – se este for
+          nulo, a chave pode representar múltiplas pessoas distintas.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: entrada_datahora
+        description: >
+          Data e hora de início do atendimento. Representa o momento em que o
+          atendimento começou. Pode possuir somente data, sem horário.
+        data_type: datetime
+      - name: saida_datahora
+        description: >
+          Data e hora de término do atendimento. Representa o momento em que o
+          atendimento terminou. Pode possuir somente data, sem horário.
+        data_type: datetime
+
+      - name: estabelecimento
+        description: >
+          Informações sobre o estabelecimento em que o atendimento foi realizado.
+      - name: estabelecimento.id_cnes
+        description: Identificador do CNES (Cadastro Nacional de Estabelecimentos de Saúde).
+        data_type: string
+      - name: estabelecimento.nome
+        description: Nome do estabelecimento.
+        data_type: string
+
+      - name: prontuario
+        description: >
+          Informações sobre o prontuário preenchido sobre o atendimento.
+      - name: prontuario.id_prontuario_global
+        description: >
+          Identificador global do prontuário.
+          No caso da Vitai, é a chave estrangeira para a tabela de boletins (GID).
+          No caso da Vitacare, é `<ID do prontuário>.<CNES>`.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: prontuario.id_prontuario_local
+        description: >
+          Identificador local (i.e. no estabelecimento) do prontuário.
+        data_type: string
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: prontuario.fornecedor
+        description: "Fonte do atendimento: `vitai` ou `vitacare`."
+        data_type: string
+
+      - name: cid
+        description: >
+          Informações sobre o CID-10 (Classificação [...] Internacional de Doenças
+          [...], 10ª edição) do atendimento.
+      - name: cid.id
+        description: Identificador do CID, no formato r'[A-Z][0-9]+'.
+        data_type: string
+      - name: cid.descricao
+        description: Descrição, em texto plano, do significado do CID.
+        data_type: string
+      - name: cid.situacao
+        description: >
+          Situação do CID no atendimento: `ATIVO`, `RESOLVIDO` ou `NAO ESPECIFICADO`.
+        data_type: string
+
+      - name: metadados
+        description: Metadados sobre o processo de compilação e extração dos dados.
+      - name: metadados.updated_at
+        description: Data de atualização dos dados na fonte.
+        data_type: datetime
+      - name: metadados.imported_at
+        description: Data de importação dos dados para o datalake.
+        data_type: datetime
+      - name: metadados.processed_at
+        description: Data de processamento mais recente dos dados no datalake.
+        data_type: datetime
+
+      - name: data_particao
+        description: Chave para particionamento da tabela; data do atendimento.
+        data_type: date

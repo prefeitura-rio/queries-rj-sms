@@ -4,7 +4,7 @@ models:
     description: >
       Tabela com uma visão consolidada dos atendimentos realizados em
       estabelecimentos de saúde.
-    columns:      
+    columns:
       - name: id_hci
         description: >
           Identificador único para o atendimento
@@ -16,9 +16,7 @@ models:
       - name: paciente
         description: >
           Informações sobre os pacientes envolvidos no atendimento, incluindo
-          CPF e CNS. 
-
-          Agrupados por identificador de prontuário.
+          CPF e CNS. Agrupados por identificador de prontuário.
       - name: paciente.id_prontuario
         description: |
           Prontuário relacionado ao atendimento.
@@ -172,12 +170,15 @@ models:
           identificador do atendimento.
       - name: prontuario.id_prontuario_global
         description: |
-          ID do atendimento utilizado no prontuário do qual ele vem.
+          Identificador único do atendimento, usado como chave estrangeira
         data_tests:
           - not_null:
               name: int_historico_clinico__episodio__vitai__id_episodio__not_null
           - unique:
               name: int_historico_clinico__episodio__vitai__id_episodio__unique
+      - name: prontuario.id_prontuario_local
+        description: |
+          ID do boletim de atendimento, utilizado no prontuário do qual ele vem
       - name: prontuario.fornecedor
         description: |
           Fornecedor do prontuário.
@@ -204,6 +205,7 @@ models:
           Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+
   - name: int_historico_clinico__episodio__vitacare
     description: >
       Tabela com uma visão consolidada dos atendimentos realizados em
@@ -456,10 +458,12 @@ models:
           identificador do atendimento.
       - name: prontuario.id_prontuario_global
         description: |
-          ID do atendimento do prontuário do qual ele vem. 
-          Composto pelo CNES do estabelecimento e pelo identificador do atendimento (`gid`). 
-          Utilizado para diferenciar atendimentos entre diferentes
-          estabelecimentos.
+          Identificador único do atendimento. Composto pelo CNES do estabelecimento e
+          pelo identificador do atendimento no estabelecimento (`gid`). Utilizado para
+          diferenciar atendimentos entre diferentes estabelecimentos.
+      - name: prontuario.id_prontuario_local
+        description: |
+          Identificador local do atendimento, utilizado no prontuário do qual ele vem
       - name: prontuario.fornecedor
         description: |
           Fornecedor do prontuário.
