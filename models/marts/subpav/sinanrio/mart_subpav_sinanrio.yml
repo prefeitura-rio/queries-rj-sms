@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: mart_subpav_sinanrio__familias
-    alias: sinanrio__familias
+    alias: familias_contatos
     tags: [subpav, sinanrio, familias]
     description: |
       Base para busca rápida de coabitantes/“família” por CPF/CNS.
@@ -138,3 +138,56 @@ models:
         description: "Situação do caso TB no SINANRIO (fixo 1: Quando migrado de outras fontes)."
       - name: origem
         description: "Fornecedor do prontuário no episódio (origem do dado)."
+
+  - name: mart_subpav_sinanrio__resultado_exame
+    alias: resultado_exame
+    tags: [subpav, sinanrio, exames]
+    description: |
+      Mart de resultados de exames do GAL, consolidando:
+        • Fonte: `rj-sms.brutos_gal.exames_laboratoriais`
+        • Escopo: PCR GeneXpert MTB/RIF (`tugexp-pcrtr`) e Baciloscopia Ziehl-Neelsen (`tubb-colzn`)
+      Normalizações:
+        • `paciente_cpf`: extrai CPF dos campos de documento e mantém apenas dígitos
+        • `paciente_cns`: somente dígitos
+        • `codigo_amostra`: TRIM (vazio → NULL)
+        • `cnes`: primeiro não vazio entre solicitante → notificação SINAN → lab execução → lab responsável → lab cadastro
+        • `dt_resultado`: primeira data válida entre `data_liberacao`, `data_processamento`,
+          `data_inicio_processamento`, `data_recebimento`, `data_solicitacao`
+        • `id_tipo_exame`: 1 = PCR (tugexp-pcrtr); 2 = Ziehl (tubb-colzn)
+      Classificação (`id_resultado`):
+        • PCR (`dna_para_complexo_mycobacterium_tuberculosis` + `rifampicina`):
+          - “Não Detectado” → 3
+          - “Não Testado” → 5
+          - “Inconclusivo”/“Indeterminado” → 4
+          - “Detectado traços” → 4
+          - “Detectado” → usar `rifampicina`:
+            ▸ “Resistente” → 2
+            ▸ “Sensivel”/“Suscetivel”/“Indeterminado”/vazio → 1
+        • Ziehl (`resultado`):
+          - “Ausência de B.A.A.R. …” → 2
+          - “Positiva … +++” → 1
+          - “Positiva … ++” → 5
+          - “Positiva … +” → 4
+          - “Encontrado(s) N B.A.A.R.” (N ≥ 1) → 4
+          - “Positiva …” sem “+” → 4
+      Deduplicação:
+        • Chave natural por dia/tipo: (`paciente_cns`, `id_tipo_exame`, `dt_resultado`)
+        • Mantém o último registro por `loaded_at` (mais recente)
+      Filtros finais:
+        • `dt_resultado`, `id_tipo_exame`, `id_resultado` não nulos
+        • `paciente_cns` com 15 dígitos
+    columns:
+      - name: codigo_amostra
+        description: "Código da amostra do GAL (TRIM)."
+      - name: paciente_cpf
+        description: "CPF numérico (quando informado nos documentos do paciente)."
+      - name: paciente_cns
+        description: "CNS (15 dígitos)."
+      - name: cnes
+        description: "CNES consolidado pela ordem de preferência (solicitante → notificação → execução → responsável → cadastro)."
+      - name: id_tipo_exame
+        description: "Tipo do exame: 1=PCR (GeneXpert), 2=Ziehl (Baciloscopia)."
+      - name: id_resultado
+        description: "Classificação do resultado conforme regras de mapeamento SUBPAV (1 a 5)."
+      - name: dt_resultado
+        description: "Data do resultado consolidada a partir dos campos de data do GAL."

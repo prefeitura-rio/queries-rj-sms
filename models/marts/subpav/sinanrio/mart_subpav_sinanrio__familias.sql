@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    alias = 'sinanrio__familias',
+    alias = 'familias_contatos',
     partition_by = {
         "field": "family_bucket",
         "data_type": "int64",
