@@ -83,8 +83,24 @@ with
             a.profissional_cbo,
             a.profissional_cns,
             a.profissional_cpf,
-            v.nome_vacina as vacina_descricao,
-            v.dose as vacina_dose,
+            lower(v.nome_vacina) as vacina_descricao,
+            case when v.dose = '1ª Dose' then '1 dose'
+                 when v.dose = '2ª Dose' then '2 dose'
+                 when v.dose = '3ª Dose' then '3 dose'
+                 when v.dose = '4ª Dose' then '4 dose'
+                 when v.dose = '5ª Dose' then '5 dose'
+                 when v.dose = '1ª Reforçp' then '1 reforco'
+                 when v.dose = '2ª Reforço' then '2 reforço'
+                 when v.dose = '3ª Reforço' then '3 reforço'
+                 when v.dose = 'Dose D' then 'dose d'
+                 when v.dose = 'Dose adicional' then 'dose adicional'
+                 when v.dose = 'Dose inicial' then 'dose inicial'
+                 when v.dose = 'Dose única' then 'dose unica'
+                 when v.dose = 'Reforço' then 'reforco'
+                 when v.dose = 'Revacinação' then 'revacinacao'
+                 when v.dose = 'Outro' then 'outra'
+                else lower(v.dose) 
+            end as vacina_dose,
             v.lote as vacina_lote,
             v.tipo_registro as vacina_registro_tipo,
             v.estrategia_imunizacao as vacina_estrategia,
