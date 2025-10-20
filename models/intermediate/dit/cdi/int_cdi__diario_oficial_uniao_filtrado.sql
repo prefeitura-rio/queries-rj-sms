@@ -47,9 +47,16 @@ filtros_diario_uniao_final as (
         *
     from diario_uniao_completo
     where (
-        -- Município do Rio de Janeiro
-        REGEXP_CONTAINS({{ remove_accents_upper("texto") }}, r'\bMUNICIPIO\s+DO\s+RIO\s+DE\s+JANEIRO\b')
-        or REGEXP_CONTAINS({{ remove_accents_upper("organizacao_principal") }}, r'\bMUNICIPIO\s+DO\s+RIO\s+DE\s+JANEIRO\b')
+        -- "Município do Rio de Janeiro"
+        -- Tivemos também um caso de "MUNICÍPIO/UF: Rio de Janeiro"
+        REGEXP_CONTAINS(
+            {{ remove_accents_upper("texto") }},
+            r'\bMUNICIPIO[\s\-:]*\/?[\s\-:]*(UF)?[\s\-:]*\b(DO)?\s*RIO\s+DE\s+JANEIRO\b'
+        )
+        or REGEXP_CONTAINS(
+            {{ remove_accents_upper("organizacao_principal") }},
+            r'\bMUNICIPIO[\s\-:]*\/?[\s\-:]*(UF)?[\s\-:]*\b(DO)?\s*RIO\s+DE\s+JANEIRO\b'
+        )
     )
     and (
         -- Hospital municipal
