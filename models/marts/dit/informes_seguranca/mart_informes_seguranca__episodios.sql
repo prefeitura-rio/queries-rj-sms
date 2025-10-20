@@ -240,9 +240,6 @@ with
       ep.data_particao
     from deduped_similar as ep,
       unnest(ep.condicoes) as condicao
-    order by
-      cid.id asc,
-      coalesce(paciente.nome_social, paciente.nome) asc nulls last
   )
 
 select *
