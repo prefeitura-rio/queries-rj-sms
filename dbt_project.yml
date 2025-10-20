@@ -484,6 +484,13 @@ models:
             dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
+        dashboard_transmissao_ministerio_da_saude:
+          +schema: dashboard_transmissao_ministerio_da_saude
+          +tags: ["ms"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
         dashboard_infraestrutura:
           +schema: dashboard_infraestrutura
           +tags: ["daily", "infraestrutura"]
