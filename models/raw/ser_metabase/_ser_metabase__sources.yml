@@ -7,4 +7,3 @@ sources:
     tables:
       - name: FATO_AMBULATORIO
       - name: FATO_INTERNACAO
-      - name: FATO_HISTORICO_SOLICITACAO
