@@ -27,50 +27,50 @@ with
 
 source as (
     select 
-        solicitacao_id, -- ok
-        dt_solicitacao, -- ok
-        nome_paciente, -- ok
-        municipio_paciente, -- ok
-        cns, --ok 
-        prioridade,  ------------------------------------------------------------------ como funciona?
-        nacaojudicial, -- ok
-        juiz, -- ok
-        decisaojuiz, -- ok
-        pena, -- ok
-        reu, -- ok
-        prazo,  -------------------------------------------------------------- prazo p responder a judicializacao??
+        solicitacao_id, 
+        dt_solicitacao, 
+        nome_paciente, 
+        municipio_paciente, 
+        cns,  
+        prioridade,  
+        nacaojudicial, 
+        juiz, 
+        decisaojuiz, 
+        pena, 
+        reu, 
+        prazo, 
         classificacao_risco,
-        data_nascimento, -- ok
-        unidade_origem_id, -- ok
-        hospital_origem_nao_identificado, -- ok
-        unidadeidentificada, --ok
-        codigo_cid, -- ok
-        recurso_solicitado, -- ok
-        tipo_recurso_solicitado, -- ok
-        cod_recurso_solicitado, -- ok
-        recurso_regulado, -- ok
-        tipo_recurso_regulado, -- ok
-        cod_recurso_regulado, -- ok
-        estado_solicitacao, -- ok
-        mandado_judicial, -- ok
-        data, -- ok
-        apto_ao_tratamento, -- ok
-        classificacao_risco_alterada, --  ok
-        unidade_executante_id, --ok
-        dt_agendamento, -- ok
-        dt_execucao, -- ok
-        data_prevista_tratamento, --ok
-        dt_inicio_efetiva_tratamento, -- ok
-        recurso_solicitado_sisreg, -- ok
-        recurso_regulado_sisreg,  -- ok
-        motivo_cancelamento_solicitacao, -- ok
-        datanascimento, --ok
-        sexo_paciente, -- ok
-        especialidade_solicitante, -- ok
-        especialidade_regulado, -- ok
-        unidade_origem_cnes, -- ok
-        unidade_executante_cnes, -- ok
-        data_extracao --ok
+        data_nascimento, 
+        unidade_origem_id, 
+        hospital_origem_nao_identificado, 
+        unidadeidentificada, 
+        codigo_cid, 
+        recurso_solicitado, 
+        tipo_recurso_solicitado, 
+        cod_recurso_solicitado, 
+        recurso_regulado, 
+        tipo_recurso_regulado, 
+        cod_recurso_regulado, 
+        estado_solicitacao, 
+        mandado_judicial, 
+        data, 
+        apto_ao_tratamento, 
+        classificacao_risco_alterada, 
+        unidade_executante_id, 
+        dt_agendamento, 
+        dt_execucao, 
+        data_prevista_tratamento, 
+        dt_inicio_efetiva_tratamento, 
+        recurso_solicitado_sisreg, 
+        recurso_regulado_sisreg,  
+        motivo_cancelamento_solicitacao, 
+        datanascimento, 
+        sexo_paciente, 
+        especialidade_solicitante, 
+        especialidade_regulado, 
+        unidade_origem_cnes, 
+        unidade_executante_cnes, 
+        data_extracao 
 
     from {{ source('brutos_ser_metabase_staging', 'FATO_AMBULATORIO') }} 
     {% if is_incremental() %}
@@ -132,6 +132,7 @@ transform as (
 
         -- estado da solicitacao
         classificacao_risco,
+        prioridade,
         estado_solicitacao,
         classificacao_risco_alterada,
         motivo_cancelamento_solicitacao,
@@ -154,6 +155,7 @@ transform as (
         pena,
         reu,
         mandado_judicial,
+        prazo,
 
         -- metadados 
         safe_cast({{ process_null("data_extracao")}} as timestamp) as data_extracao
