@@ -5,6 +5,11 @@
         materialized="table",
     )
 }}
+-- TODO: partition, cluster, incremental?
+-- Partição não pode ser por data_particao porque
+-- a coluna tem >4700 valores distintos
+-- Talvez por mês?
+
 with
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Tabelas uteis para o episodio
@@ -12,10 +17,10 @@ with
     -- Desfecho do atendimento
 
     alta_adm as ( -- Alta administrativa (consultas)
-        select 
+        select
             gid_boletim,
             CASE
-                WHEN 
+                WHEN
                     {{ process_null("alta_tipo_detalhado") }} is null and {{clean_abe_obs('abe_obs')}} is null THEN null 
                 ELSE
                     CONCAT(
@@ -73,10 +78,11 @@ with
     boletim as (
         select
             b.gid,
+            {{ process_null("b.numero_be") }} as id_prontuario_local,
             b.id_hci,
             b.gid_paciente,
             b.gid_estabelecimento,
-            {{add_accents_estabelecimento('estabelecimento_nome')}} as estabelecimento_nome,
+            {{ add_accents_estabelecimento("estabelecimento_nome") }} as estabelecimento_nome,
             b.atendimento_tipo,
             b.especialidade_nome,
             internacao_data,
@@ -85,11 +91,11 @@ with
             if(b.data_entrada > current_date(),null, b.data_entrada) as entrada_datahora,
             if(b.alta_data > current_date(),null, b.alta_data) as saida_datahora,
             if(
-                {{ clean_numeric("b.cpf") }} is null,
-                paciente_mrg.cpf,
-                {{ clean_numeric("b.cpf") }}
+                {{ process_null(clean_numeric("b.cpf")) }} is null,
+                {{ process_null(clean_numeric("paciente_mrg.cpf")) }},
+                {{ process_null(clean_numeric("b.cpf")) }}
             ) as cpf,
-            paciente_mrg.cns as cns,
+            {{ process_null(clean_numeric("paciente_mrg.cns")) }} as cns,
             paciente_mrg.data_nascimento
         from {{ ref("raw_prontuario_vitai__boletim") }} as b
         left join paciente_mrg on b.gid_paciente = paciente_mrg.id_paciente
@@ -129,8 +135,8 @@ with
         from {{ ref("raw_prontuario_vitai__basecentral__prescricao") }}
     ),
     prescricoes_agg as (
-        select 
-            gid_boletim, 
+        select
+            gid_boletim,
             array_agg(
                 struct(
                     nome,
@@ -360,6 +366,7 @@ with
         select
             gid,
             id_hci,
+            id_prontuario_local,
             gid_paciente,
             gid_estabelecimento,
             estabelecimento_nome,
@@ -388,7 +395,7 @@ with
                 )
             ) as exames_realizados
         from exame_dupl
-        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,19
+        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
     ),
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     -- Montagem do episódio e enriquecimento
@@ -446,7 +453,8 @@ with
             struct(
                 episodios_distinct.cpf,
                 episodios_distinct.cns,
-                episodios_distinct.data_nascimento
+                episodios_distinct.data_nascimento,
+                episodios_distinct.gid_paciente as gid
             ) as paciente,
             profissional_saude_responsavel,
             struct(
@@ -456,7 +464,9 @@ with
                 estabelecimentos.tipo_sms_simplificado as estabelecimento_tipo
             ) as estabelecimento,
             struct(
-                episodios_distinct.gid as id_prontuario_global, "vitai" as fornecedor
+                episodios_distinct.gid as id_prontuario_global,
+                episodios_distinct.id_prontuario_local,
+                "vitai" as fornecedor
             ) as prontuario,
             episodios_distinct.imported_at,
             episodios_distinct.updated_at,
@@ -473,6 +483,7 @@ with
                 select distinct
                     id_hci,
                     gid,
+                    id_prontuario_local,
                     gid_estabelecimento,
                     estabelecimento_nome,
                     tipo,
@@ -483,6 +494,7 @@ with
                     saida_datahora,
                     imported_at,
                     updated_at,
+                    gid_paciente,
                     cpf,
                     cns,
                     data_nascimento,
@@ -498,8 +510,10 @@ with
     final as (
         select
             id_hci,
+
             -- Paciente
             atendimento_struct.paciente.cpf as cpf,
+            atendimento_struct.paciente.gid as gid_paciente,
 
             -- Tipo e Subtipo
             safe_cast(atendimento_struct.tipo as string) as tipo,
@@ -542,7 +556,6 @@ with
         from atendimento_struct
         left join cid_grouped on atendimento_struct.id = cid_grouped.id
         left join prescricoes_agg on atendimento_struct.id = prescricoes_agg.gid_boletim
-
     )
 
 select *

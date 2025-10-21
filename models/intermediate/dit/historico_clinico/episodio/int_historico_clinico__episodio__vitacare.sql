@@ -3,7 +3,7 @@
         schema="intermediario_historico_clinico",
         alias="episodio_assistencial_vitacare",
         materialized="incremental",
-        incremental_strategy='merge', 
+        incremental_strategy='merge',
         unique_key=['id_hci'],
         cluster_by=['id_hci'],
         partition_by={
@@ -333,7 +333,8 @@ with
             atendimento.id_hci,
 
             -- Paciente
-            atendimento.cpf,
+            {{ process_null("atendimento.cpf") }} as cpf,
+            cast(null as string) as gid_paciente,
 
             -- Tipo e Subtipo
             safe_cast(
@@ -404,8 +405,15 @@ with
             ) as profissional_saude_responsavel,
 
             -- Prontuário
+            -- - `id_prontuario_global` é, em teoria, <CNES>.<ID local>
+            -- - Extraímos o ID local com split('.')[1]
             struct(
-                atendimento.id_prontuario_global, 'vitacare' as fornecedor
+                atendimento.id_prontuario_global,
+                safe_cast(
+                    split(atendimento.id_prontuario_global, ".")[safe_offset(1)]
+                    as string
+                ) as id_prontuario_local,
+                'vitacare' as fornecedor
             ) as prontuario,
 
             -- Metadados
@@ -414,7 +422,7 @@ with
             ) as metadados,
 
             atendimento.data_particao,
-            safe_cast(atendimento.cpf as int64) as cpf_particao,
+            safe_cast({{ process_null("atendimento.cpf") }} as int64) as cpf_particao,
 
         from bruto_atendimento as atendimento
         left join
