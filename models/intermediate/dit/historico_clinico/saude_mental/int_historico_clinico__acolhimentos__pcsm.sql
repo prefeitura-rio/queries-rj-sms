@@ -24,11 +24,11 @@ with
             id_funcionario_cadastramento,
             id_tipo_saida_acolhimento,
             if(leito_ocupado = 'S', true, false) as leito_ocupado,
-            descricao_turno_acolhimento,
+            descricao_turno_acolhimento as turno,
             descricao_tipo_leito as tipo_leito,
             loaded_at
         from {{ref('raw_pcsm_acolhimento')}}
-        -- Há a presença de registros duplicados (acolhimentos de pacientes no mesmo dia e mesmo horário com id_acolhimento diferente)
+        -- Há a presença de registros duplicados (acolhimentos de pacientes no mesmo dia e mesmo horário com id_acolhimento diferente e sequencial)
         qualify row_number() over(partition by id_paciente, data_entrada_acolhimento order by id_acolhimento desc) = 1
 
     ),
@@ -53,14 +53,20 @@ select
     a.id_paciente,
     p.cpf,
     p.cns,
+
     struct(
-        a.id_acolhimento as id_evento,
+        a.id_acolhimento as id_acolhimento,
         a.datahora_entrada as data_inicio,
         a.datahora_saida as data_termino,
-        a.leito_ocupado
+        a.leito_ocupado,
+        a.tipo_leito,
+        a.turno,
         {{ proper_estabelecimento('nome_unidade') }} as unidade_nome,
         u.id_cnes
-    ) as acolhimentos
+    ) as acolhimentos,
+    a.loaded_at
+    
+
 from acolhimentos as a
 left join pacientes as p on a.id_paciente = p.id_paciente
 left join unidade as u on a.id_unidade = u.id_unidade

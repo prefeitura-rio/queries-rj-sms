@@ -16,7 +16,8 @@ with
             datetime(data_inicio_matriciamento, parse_time('%H%M', hora_inicio_matriciamento)) as data_inicio,
             descricao_tipo_matriciamento as tipo,
             descricao_forma_matriciamento as forma,
-            descricao_evolucao_matriciamento as evolucao
+            descricao_evolucao_matriciamento as evolucao,
+            mp.loaded_at,
         from {{ ref('raw_pcsm_matriciamentos')}} m
         join {{ ref('raw_pcsm_matriciamento_pacientes') }} mp  on m.id_matriciamento = mp.id_matriciamento
     ),
@@ -44,13 +45,15 @@ select
     p.cns,
     struct(
         m.id_matriciamento,
+        m.nome_matriciamento,
         m.data_inicio,
         m.tipo,
         m.forma,
         m.evolucao,
         u.nome_unidade,
         u.id_cnes
-    ) as matriciamentos
+    ) as matriciamentos,
+    m.loaded_at
 from matriciamento_tb as m
 left join paciente as p on m.id_paciente = p.id_paciente
 left join unidade as u on m.id_unidade = u.id_unidade

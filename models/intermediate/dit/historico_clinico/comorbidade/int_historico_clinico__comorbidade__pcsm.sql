@@ -11,7 +11,7 @@ with
         select
             id_comorbidade,
             case
-                when lower(descricao_comorbidade) in ('não relatou nenhuma')
+                when trim(lower(descricao_comorbidade)) in ('não relatou nenhuma ')
                     then null
                 when lower(descricao_comorbidade) in ('hiv','hpv')
                     then upper(descricao_comorbidade)

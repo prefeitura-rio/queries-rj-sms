@@ -41,7 +41,7 @@ select
     p.cpf,
     p.cns,
     struct(
-        c.id_ciclo as id_evento,
+        c.id_ciclo as id_ciclo,
         c.tipo_ciclo as tipo,
         c.situacao,
         c.data_inicio as data_inicio,
