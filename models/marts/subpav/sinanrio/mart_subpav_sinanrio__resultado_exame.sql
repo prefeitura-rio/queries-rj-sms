@@ -16,6 +16,7 @@ WITH base AS (
         ) AS paciente_cpf,
 
         REGEXP_REPLACE(cns_paciente, r'\D', '') AS paciente_cns,
+        UPPER(paciente) as nome,
         NULLIF(TRIM(codigo_amostra), '') AS codigo_amostra,
 
         COALESCE(
@@ -52,6 +53,7 @@ classificado AS (
         codigo_amostra,
         paciente_cpf,
         paciente_cns,
+        nome,
         cnes,
         id_tipo_exame,
         dt_resultado,
@@ -101,6 +103,7 @@ dedup AS (
         codigo_amostra,
         paciente_cpf,
         paciente_cns,
+        nome,
         cnes,
         id_tipo_exame,
         id_resultado,
@@ -115,6 +118,7 @@ SELECT
     codigo_amostra,
     paciente_cpf,
     paciente_cns,
+    nome,
     cnes,
     id_tipo_exame,
     id_resultado,
