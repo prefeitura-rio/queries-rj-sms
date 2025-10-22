@@ -238,7 +238,7 @@ siscan as (
     select
         -- pk
         "SISCAN" as sistema_origem, 
-        protocolo_id as id_sistema_origem, 
+        cast(protocolo_id as int) as id_sistema_origem, 
 
         -- paciente
         paciente_cns,
@@ -332,7 +332,27 @@ fatos as (
         data_atualizacao_registro,
         mama_esquerda_classif_radiologica,
         mama_direita_classif_radiologica
-    from ser_ambulatorial    
+    from ser_ambulatorial
+
+    union all
+
+    select 
+        sistema_origem,
+        id_sistema_origem,
+        paciente_cns,
+        id_cnes_unidade_origem,
+        id_cnes_unidade_executante,
+        carater,
+        cid,
+        procedimento_especialidade,
+        procedimento_tipo,
+        procedimento,
+        data_solicitacao,
+        data_execucao,
+        data_atualizacao_registro,
+        mama_esquerda_classif_radiologica,
+        mama_direita_classif_radiologica
+    from siscan       
 )
 
 select
