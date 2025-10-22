@@ -308,7 +308,7 @@ models:
         quote: true
 
       - name: justificativa_alta
-        description: "Motivo da alta (ex.: OBITO, ALTA_MELHORADO, ALTA_PREVISAO_RETORNO, ALTA_HOSPITALAR)."
+        description: Motivo da alta (ex. OBITO, ALTA_MELHORADO, ALTA_PREVISAO_RETORNO, ALTA_HOSPITALAR).
         data_type: string
         quote: true
 
