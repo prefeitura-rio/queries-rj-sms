@@ -34,11 +34,15 @@ vacinacoes_bkp as (
   FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v
     LEFT JOIN {{ ref("dim_estabelecimento") }} e on v.id_cnes = e.id_cnes
   WHERE
-    v.data_registro > '2025-06-15' and 
-    v.data_registro < '2025-09-25' and 
-    e.area_programatica in ('10', '21', '22', '31', '32', '33') and
-    v.tipo_registro != 'Não aplicavel' and
-    v.tipo_registro != 'Não aplicada'
+    v.tipo_registro not in ('Não aplicavel', 'Não aplicada') and
+    (
+      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '10') or
+      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '21') or
+      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '22') or
+      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '31') or
+      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '32') or
+      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '33')
+    )
 ),
 vacinacoes_merge as (
   select * from vacinacoes_api
