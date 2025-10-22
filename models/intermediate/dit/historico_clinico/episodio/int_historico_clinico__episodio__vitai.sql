@@ -78,8 +78,8 @@ with
     boletim as (
         select
             b.gid,
-            {{ process_null("b.numero_be") }} as id_prontuario_local,
             b.id_hci,
+            {{ process_null("b.numero_be") }} as id_prontuario_local,
             b.gid_paciente,
             b.gid_estabelecimento,
             {{ add_accents_estabelecimento("estabelecimento_nome") }} as estabelecimento_nome,
