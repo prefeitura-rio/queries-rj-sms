@@ -547,6 +547,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+        informes_seguranca:
+          +tags: ["informes-seguranca", "daily"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+
       iplanrio:
         whatsapp:
           +tags: ["daily", "iplanrio", "whatsapp"]
@@ -685,7 +692,6 @@ models:
             dado_pessoal: nao
             dado_sensivel: nao
 
-            
 data_tests:
   rj_sms:
     +severity: error
