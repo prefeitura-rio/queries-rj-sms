@@ -15,11 +15,15 @@ vacinacoes_api as (
   FROM {{ ref("raw_prontuario_vitacare__vacinacao") }} v
     LEFT JOIN {{ ref("dim_estabelecimento") }} e on v.id_cnes = e.id_cnes
   WHERE
-    v.vacina_registro_data > '2025-06-15' and 
-    v.vacina_registro_data < '2025-09-25' and 
-    e.area_programatica = '22' and
-    v.vacina_registro_tipo != 'nao aplicavel' and
-    v.vacina_registro_tipo != 'nao aplicada'
+    v.vacina_registro_tipo not in ('nao aplicavel', 'nao aplicada') and
+    (
+      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '10') or
+      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '21') or
+      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '22') or
+      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '31') or
+      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '32') or
+      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '33')
+    )
 ),
 vacinacoes_bkp as (
   SELECT 
@@ -32,7 +36,7 @@ vacinacoes_bkp as (
   WHERE
     v.data_registro > '2025-06-15' and 
     v.data_registro < '2025-09-25' and 
-    e.area_programatica = '22' and
+    e.area_programatica in ('10', '21', '22', '31', '32', '33') and
     v.tipo_registro != 'Não aplicavel' and
     v.tipo_registro != 'Não aplicada'
 ),
