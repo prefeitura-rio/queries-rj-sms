@@ -16,8 +16,9 @@ vacinacoes_api as (
     LEFT JOIN {{ ref("dim_estabelecimento") }} e on v.id_cnes = e.id_cnes
   WHERE
     v.vacina_registro_data > '2025-06-15' and 
-    v.vacina_registro_data < '2025-10-05' and 
+    v.vacina_registro_data < '2025-09-25' and 
     e.area_programatica = '22' and
+    v.vacina_registro_tipo != 'nao aplicavel' and
     v.vacina_registro_tipo != 'nao aplicada'
 ),
 vacinacoes_bkp as (
@@ -30,8 +31,9 @@ vacinacoes_bkp as (
     LEFT JOIN {{ ref("dim_estabelecimento") }} e on v.id_cnes = e.id_cnes
   WHERE
     v.data_registro > '2025-06-15' and 
-    v.data_registro < '2025-10-05' and 
+    v.data_registro < '2025-09-25' and 
     e.area_programatica = '22' and
+    v.tipo_registro != 'Não aplicavel' and
     v.tipo_registro != 'Não aplicada'
 ),
 vacinacoes_merge as (
