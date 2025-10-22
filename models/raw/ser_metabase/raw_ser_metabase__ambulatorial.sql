@@ -12,6 +12,7 @@
       "data_type": "date",
       "granularity": "month",
     },
+    cluster_by=['id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'procedimento_regulado', 'paciente_cns'],
     on_schema_change='sync_all_columns'
   )
 }}
@@ -110,57 +111,62 @@ transform as (
         ) as data_atualizacao_registro,
 
         -- unidades envolvidas
-        unidade_origem_id,
-        unidade_origem_cnes,
-        hospital_origem_nao_identificado,
-        unidadeidentificada,
-        unidade_executante_id,
-        unidade_executante_cnes,
+        lpad(cast(safe_cast(split({{ process_null("unidade_origem_cnes") }}, '.')[0] as int) as string), 7, '0') as id_cnes_unidade_origem,
+        lpad(cast(safe_cast(split({{ process_null("unidade_executante_cnes") }}, '.')[0] as int) as string), 7, '0') as id_cnes_unidade_executante,
 
         -- qualificacao do procedimento
-        recurso_solicitado,
-        tipo_recurso_solicitado,
-        cod_recurso_solicitado,
-        recurso_regulado,
-        cod_recurso_regulado,
-        tipo_recurso_regulado,
-        codigo_cid,
-        especialidade_solicitante,
-        especialidade_regulado,
-        recurso_solicitado_sisreg,
-        recurso_regulado_sisreg,  
+        {{ process_null("classificacao_risco") }} as carater,
+        upper(trim({{process_null("tipo_recurso_solicitado")}})) as procedimento_solicitado_tipo,
+        upper(trim({{process_null("especialidade_solicitante")}})) as especialidade_solicitado,
+        upper(trim({{process_null("recurso_solicitado")}})) as procedimento_solicitado,
+        upper(trim({{process_null("tipo_recurso_regulado")}})) as procedimento_regulado_tipo,
+        upper(trim({{process_null("especialidade_regulado")}})) as especialidade_regulado,
+        upper(trim({{process_null("recurso_regulado")}})) as procedimento_regulado,
+        upper(trim({{ process_null("codigo_cid") }})) as cid,
+        cod_recurso_solicitado, --- cod procedimento no ser??
+        cod_recurso_regulado, --- cod procedimento no ser??
 
         -- estado da solicitacao
-        classificacao_risco,
-        prioridade,
-        estado_solicitacao,
-        classificacao_risco_alterada,
-        motivo_cancelamento_solicitacao,
+        estado_solicitacao as solicitacao_estado,
+        prioridade, -- 1.0, 2.0, etc.. qual o significado / mappinng? qual é a maior prioridade (maior ou menor)?
+        motivo_cancelamento_solicitacao as justificativa_cancelamento,
 
-        -- paciente 
-        nome_paciente, 
-        municipio_paciente,
-        cns,
-        sexo_paciente,
-        safe_cast({{ process_null("data_nascimento") }} as date) as paciente_data_nascimento,
-        safe_cast({{ process_null("datanascimento") }} as date) as paciente_data_nascimento_2,
+        -- paciente
+        lpad(cast(safe_cast(split(cns, '.')[0] as int) as string), 15, '0') as paciente_cns,
+        {{clean_name_string(process_null("nome_paciente"))}} as paciente_nome,
+        upper(trim({{ process_null("municipio_paciente") }})) as paciente_municipio,
+        if(sexo_paciente = 'M','MASCULINO', if(sexo_paciente = 'F','FEMININO', NULL)) as paciente_sexo,
+        coalesce(
+            safe_cast({{ process_null("data_nascimento") }} as date),
+            safe_cast({{ process_null("datanascimento") }} as date)
+        ) as paciente_data_nascimento,
 
         -- indicadores
-        apto_ao_tratamento,
+        if(apto_ao_tratamento = 'False','NAO', if(apto_ao_tratamento = 'True','SIM', NULL)) as indicador_apto_tratamento, -- entender melhor a semantica disto
 
         -- judicializacao
-        nacaojudicial,
-        juiz,
-        decisaojuiz,
-        pena,
-        reu,
+        nacaojudicial as jud_acao_judicial_id,
+        {{ process_null(clean_name_string("juiz")) }} as jud_juiz_nome,
+        decisaoJuiz as jud_decisao_juiz,
+        pena as jud_pena,
+        reu as jud_reu,
         mandado_judicial,
-        prazo,
+        prazo as jud_prazo,
 
         -- metadados 
         safe_cast({{ process_null("data_extracao")}} as timestamp) as data_extracao
-
     from source
+),
+
+final as (
+    select
+        *,    
+        row_number() over (partition by id_solicitacao order by data_atualizacao_registro desc) as row_num
+    from transform
+    qualify row_num = 1
 )
 
-select * from transform
+select
+    * except (row_num)
+from final 
+

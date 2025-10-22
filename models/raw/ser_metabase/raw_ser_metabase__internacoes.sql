@@ -12,7 +12,7 @@
       "data_type": "date",
       "granularity": "month",
     },
-    cluster_by=['id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'procedimento'],
+    cluster_by=['id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'procedimento', 'paciente_cns'],
     on_schema_change='sync_all_columns'
   )
 }}
@@ -67,6 +67,7 @@ source as (
         Infarto_agudo_supraST,
         Infarto_agudo_trombolizado,
         data_extracao
+
     from {{ source('brutos_ser_metabase_staging', 'FATO_INTERNACAO') }}
     {% if is_incremental() %}
         where 1=1
@@ -107,12 +108,13 @@ transform as (
         lpad(cast(safe_cast(split({{ process_null("cnes_unidade_executante") }}, '.')[0] as int) as string), 7, '0') as id_cnes_unidade_executante,
 
         -- qualificacao do procedimento
-        carater_internacao as internacao_carater,
-        upper(trim({{ process_null("tipo_de_leito") }})) as leito_tipo,
-        upper(trim({{ process_null("tipo_leito_regulado") }})) as leito_regulado_tipo,
-        upper(trim({{process_null("especialidade")}})) as especialidade,
+        carater_internacao as carater,
+        "INTERNACAO" as procedimento_tipo,
+        upper(trim({{process_null("especialidade")}})) as procedimento_especialidade,
         upper(trim({{process_null("procedimento")}})) as procedimento,
-        {{ process_null("codigo_cid") }} as cid,
+        upper(trim({{ process_null("tipo_de_leito") }})) as procedimento_leito_solicitado_tipo,
+        upper(trim({{ process_null("tipo_leito_regulado") }})) as procedimento_leito_regulado_tipo,
+        upper(trim({{ process_null("codigo_cid") }})) as cid,
         tipointernacao as internacao_tipo,
 
         -- estado da solicitacao
@@ -149,10 +151,17 @@ transform as (
         -- metadado
         safe_cast({{ process_null("data_extracao")}} as timestamp) as data_extracao
     from source
+),
+
+final as (
+    select
+        *,    
+        row_number() over (partition by id_solicitacao order by data_atualizacao_registro desc) as row_num
+    from transform
+    qualify row_num = 1
 )
 
 select
-    *,
-    row_number() over (partition by id_solicitacao order by data_atualizacao_registro desc) as row_num
-from transform
-qualify row_num = 1
+    * except (row_num)
+from final 
+
