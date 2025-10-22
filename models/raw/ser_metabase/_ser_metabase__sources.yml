@@ -6,4 +6,4 @@ sources:
     schema: brutos_ser_metabase_staging
     tables:
       - name: FATO_AMBULATORIO
-      - name: TB_SOLICITACOES
+      - name: FATO_INTERNACAO
