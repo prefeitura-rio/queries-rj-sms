@@ -61,6 +61,7 @@ select
   id_prontuario_global,
   id_prontuario_local,
   id_cnes,
+  concat(nullif(id_cnes, ''), '.', json_extract_scalar(vac, '$.id')) AS id_vacinacao,
   {{ process_null("json_extract_scalar(vac, '$.nome_vacina')") }}                          as nome_vacina,
   {{ process_null("json_extract_scalar(vac, '$.cod_vacina')") }}                           as cod_vacina,
   {{ process_null("json_extract_scalar(vac, '$.dose')") }}                                 as dose,

@@ -99,6 +99,10 @@ models:
         description: >
           Situação do CID no atendimento: `ATIVO`, `RESOLVIDO` ou `NAO ESPECIFICADO`.
         data_type: string
+      - name: cid.diagnostico_datahora
+        description: >
+          Data e hora de diagnóstico do CID. Em dados oriundos da Vitai, é sempre nulo.
+        data_type: datetime
 
       - name: metadados
         description: Metadados sobre o processo de compilação e extração dos dados.
