@@ -98,7 +98,7 @@ with
       on merged_patient.cpf = merged_data.cpf
   ),
 
-  -- Deduplica dados com mesmo ID
+  -- Deduplica episódios com mesmo ID
   deduped as (
     select *
     from merged_data_patient
@@ -110,9 +110,28 @@ with
       deduped.* except(condicoes),
       cid.id,
       cid.descricao,
-      cid.situacao
+      cid.situacao,
+      {{ process_null("cid.data_diagnostico") }} as data_diagnostico
     from deduped,
       unnest(deduped.condicoes) as cid
+    where
+      -- Às vezes, CIDs ativos ficam na Vitacare por anos após
+      -- o diagnóstico, aparecendo em quase todos os episódios
+      -- subsequentes do paciente. A Vitai não envia data ou
+      -- estado (ativo etc) dos CIDs. Portanto:
+      -- - Se não houver data de diagnóstico, deve ser Vitai,
+      --   então mantém;
+      -- - Se houver data de diagnóstico, confere se aconteceu
+      --   pouco antes do episódio e, se não, elimina
+      (
+        {{ process_null("cid.data_diagnostico") }} is null
+      ) or (
+        safe_cast(cid.data_diagnostico as DATETIME) >=
+          DATETIME_SUB(
+            coalesce(deduped.entrada_datahora, deduped.saida_datahora),
+            INTERVAL 2 DAY
+          )
+      )
   ),
 
   -- Pega CIDs relevantes, especificados na planilha
@@ -129,10 +148,14 @@ with
         struct(
           deduped_unnested.id,
           deduped_unnested.descricao,
-          deduped_unnested.situacao
+          deduped_unnested.situacao,
+          safe_cast(
+            deduped_unnested.data_diagnostico
+            as DATETIME
+          ) as diagnostico_datahora
         )
         order by
-          deduped_unnested.descricao asc
+          deduped_unnested.id asc
       ) as condicoes
     from relevant_cids
     inner join deduped_unnested
