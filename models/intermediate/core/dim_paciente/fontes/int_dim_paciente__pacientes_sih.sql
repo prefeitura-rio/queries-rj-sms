@@ -1,0 +1,20 @@
+select distinct 
+    cast(paciente_cpf as string)                             as paciente_cpf,
+    cast(paciente_cns as string)                             as paciente_cns,
+    cast(paciente_nome as string)                            as paciente_nome, 
+    cast(paciente_data_nascimento as date)                   as paciente_data_nascimento,
+    cast(paciente_sexo as string)                            as paciente_sexo,
+    cast(paciente_raca_cor as string)                        as paciente_racacor,
+    cast(paciente_mun_origem as string)                      as paciente_mun_origem,
+    cast(paciente_tipo_logradouro as string)                 as paciente_tipo_logradouro,
+    cast(paciente_logradouro as string)                      as paciente_logradouro,
+    cast(paciente_numero as string)                          as paciente_numero,
+    cast(paciente_complemento as string)                     as paciente_complemento,
+    cast(paciente_bairro as string)                          as paciente_bairro,
+    cast(paciente_municipio as string)                       as paciente_municipio,
+    cast(paciente_uf as string)                              as paciente_uf,
+    cast(paciente_cep as string)                             as paciente_cep,
+    cast(paciente_etnia as string)                           as paciente_etnia,
+    cast(paciente_tel_ddd as string)                         as paciente_tel_ddd,
+    cast(paciente_tel_num as string)                         as paciente_tel_num
+from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}

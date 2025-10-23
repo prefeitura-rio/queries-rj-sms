@@ -692,6 +692,15 @@ models:
             dado_pessoal: nao
             dado_sensivel: nao
 
+        vigilancia_cancer:
+          +schema: projeto_vigilancia_cancer
+          +tags: ["daily", "subgeral", "vigilancia_cancer"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subgeral          
+
 data_tests:
   rj_sms:
     +severity: error
