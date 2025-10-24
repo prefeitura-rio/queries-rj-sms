@@ -44,12 +44,12 @@ vacinacoes_bkp as (
   WHERE
     v.tipo_registro not in ('Não aplicavel', 'Não aplicada') and
     (
-      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '10') or
-      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '21') or
+      (v.data_registro between '2025-08-04' and '2025-10-10' and e.area_programatica = '10') or
+      (v.data_registro between '2025-08-04' and '2025-10-10' and e.area_programatica = '21') or
       (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '22') or
-      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '31') or
-      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '32') or
-      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '33')
+      (v.data_registro between '2025-06-30' and '2025-10-11' and e.area_programatica = '31') or
+      (v.data_registro between '2025-08-11' and '2025-10-11' and e.area_programatica = '32') or
+      (v.data_registro between '2025-08-11' and '2025-10-14' and e.area_programatica = '33')
     )
 ),
 vacinacoes_merge as (
