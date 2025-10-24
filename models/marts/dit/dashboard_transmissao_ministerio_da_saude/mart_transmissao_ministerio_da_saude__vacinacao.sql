@@ -7,7 +7,9 @@
 WITH
 
 vacinacoes_api as (
-  SELECT 
+  SELECT
+    e.area_programatica,
+    e.id_cnes,
     v.id_vacinacao, 
     v.vacina_registro_data, 
     v.vacina_aplicacao_data,
@@ -17,16 +19,22 @@ vacinacoes_api as (
   WHERE
     v.vacina_registro_tipo not in ('nao aplicavel', 'nao aplicada') and
     (
-      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '10') or
-      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '21') or
+      (v.vacina_registro_data between '2025-08-04' and '2025-10-10' and e.area_programatica = '10') or
+      (v.vacina_registro_data between '2025-08-04' and '2025-10-10' and e.area_programatica = '21') or
       (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '22') or
-      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '31') or
-      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '32') or
-      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '33')
+      (v.vacina_registro_data between '2025-06-30' and '2025-10-11' and e.area_programatica = '31') or
+      (v.vacina_registro_data between '2025-08-11' and '2025-10-11' and e.area_programatica = '32') or
+      (v.vacina_registro_data between '2025-08-11' and '2025-10-14' and e.area_programatica = '33') --or
+      -- (v.vacina_registro_data between '2025-08-18' and '2025-10-17' and e.area_programatica = '40') or
+      -- (v.vacina_registro_data between '2025-08-18' and '2025-10-18' and e.area_programatica = '51') or
+      -- (v.vacina_registro_data between '2025-08-25' and '2025-10-18' and e.area_programatica = '52') or
+      -- (v.vacina_registro_data between '2025-08-25' and '2025-10-18' and e.area_programatica = '53')
     )
 ),
 vacinacoes_bkp as (
   SELECT 
+    e.area_programatica,
+    e.id_cnes,
     v.id_vacinacao, 
     cast(v.data_registro as date) as vacina_registro_data, 
     v.data_aplicacao as vacina_aplicacao_data,
@@ -55,6 +63,8 @@ vacinacoes as (
 
 formatted as (
   SELECT 
+    v.area_programatica,
+    v.id_cnes,
     coalesce(v.id_vacinacao, id_vacinacao_global) as id_vacinacao, 
     v.vacina_registro_data, 
     v.vacina_aplicacao_data,
