@@ -491,6 +491,13 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+        dashboard_datalake:
+          +schema: dashboard_datalake
+          +tags: ["daily", "datalake"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
         dashboard_qualidade_dados:
           +schema: dashboard_qualidade_dados
           +tags: ["daily", "qualidade_dados"]
