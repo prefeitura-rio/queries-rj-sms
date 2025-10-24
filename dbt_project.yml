@@ -491,6 +491,20 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+        dashboard_datalake:
+          +schema: dashboard_datalake
+          +tags: ["daily", "datalake"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
+        dashboard_qualidade_dados:
+          +schema: dashboard_qualidade_dados
+          +tags: ["daily", "qualidade_dados"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: nao
+            dado_sensivel: nao
         dashboard_infraestrutura:
           +schema: dashboard_infraestrutura
           +tags: ["daily", "infraestrutura"]
@@ -540,6 +554,13 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: historico_clinico_app
+        informes_seguranca:
+          +tags: ["informes-seguranca", "daily"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+
       iplanrio:
         whatsapp:
           +tags: ["daily", "iplanrio", "whatsapp"]
@@ -678,7 +699,15 @@ models:
             dado_pessoal: nao
             dado_sensivel: nao
 
-            
+        vigilancia_cancer:
+          +schema: projeto_vigilancia_cancer
+          +tags: ["daily", "subgeral", "vigilancia_cancer"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subgeral          
+
 data_tests:
   rj_sms:
     +severity: error

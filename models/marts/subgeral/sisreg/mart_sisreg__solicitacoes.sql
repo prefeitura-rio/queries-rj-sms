@@ -18,7 +18,7 @@
 }}
 
 
-{% set months_lookback = var('months_lookback', 3) %}
+{% set months_lookback = var('months_lookback', 6) %}
 
 with
     solicitacoes as (
