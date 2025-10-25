@@ -17,4 +17,4 @@ select distinct
     cast(paciente_tp_logradouro_residencia as string)        as paciente_tp_logradouro_residencia
   
 from {{ ref("mart_sisreg__solicitacoes") }}
-where date(data_solicitacao) >= date '2025-01-01'
+where date(data_solicitacao) >= date '2024-01-01'

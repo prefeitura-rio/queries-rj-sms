@@ -1,4 +1,5 @@
 -- noqa: disable=LT08
+/*
 {{
   config(
     enabled=true,
@@ -14,7 +15,7 @@
     on_schema_change='sync_all_columns'
   )
 }}
-
+*/
 with
 sisreg as (
     select 
@@ -353,8 +354,9 @@ fatos as (
         mama_esquerda_classif_radiologica,
         mama_direita_classif_radiologica
     from siscan       
-)
+),
 
+fatos_final as (
 select
     sistema_origem,
     id_sistema_origem,
@@ -372,3 +374,63 @@ select
     mama_esquerda_classif_radiologica,
     mama_direita_classif_radiologica
 from fatos
+),
+
+enriquece_cpf as (
+    select 
+        cns_cpf.cpf as paciente_cpf,
+        fatos_final.*
+        
+    from fatos_final 
+    left join {{ref("int_dim_paciente__relacao_cns_cpf")}} as cns_cpf
+    on fatos_final.paciente_cns = cns_cpf.cns
+),
+
+enriquece_paciente as (
+    select
+        enriquece_cpf.*,
+        dim_paciente.nomes[SAFE_OFFSET(0)] as paciente_nome,
+        dim_paciente.sexos[SAFE_OFFSET(0)] as paciente_sexo,
+        dim_paciente.racas_cores[SAFE_OFFSET(0)] as paciente_racacor,
+        dim_paciente.datas_nascimento[SAFE_OFFSET(0)] as paciente_data_nascimento,
+        dim_paciente.idades[SAFE_OFFSET(0)] as paciente_idade,
+        dim_paciente.municipios_residencia[SAFE_OFFSET(0)] as paciente_municipio_residencia,
+        dim_paciente.bairros_residencia[SAFE_OFFSET(0)] as paciente_bairro_residencia
+        
+    from enriquece_cpf
+    left join {{ ref("dim_paciente") }} as dim_paciente
+    on cast(enriquece_cpf.paciente_cpf as int) = dim_paciente.cpf_particao
+),
+
+enriquece_estabelecimento as (
+    select
+        enriquece_paciente.*,
+        estabs_origem.nome_fantasia as estabelecimento_origem_nome,
+        estabs_origem.esfera as estabelecimento_origem_esfera,
+        estabs_origem.id_ap as estabelecimento_origem_ap,
+        estabs_origem.endereco_bairro as estabelecimento_origem_bairro,
+        estabs_origem.tipo_unidade_alternativo as estabelecimento_origem_tipo,
+        estabs_origem.tipo_unidade_agrupado as estabelecimento_origem_tipo_agrupado,
+        estabs_origem.estabelecimento_sms_indicador as estabelecimento_origem_sms_indicador,
+
+        estabs_exec.nome_fantasia as estabelecimento_executante_nome,
+        estabs_exec.esfera as estabelecimento_executante_esfera,
+        estabs_exec.id_ap as estabelecimento_executante_ap,
+        estabs_exec.endereco_bairro as estabelecimento_executante_bairro,
+        estabs_exec.tipo_unidade_alternativo as estabelecimento_executante_tipo,
+        estabs_exec.tipo_unidade_agrupado as estabelecimento_executante_tipo_agrupado,
+        estabs_exec.estabelecimento_sms_indicador as estabelecimento_sms_indicador
+    from enriquece_paciente
+
+    left join {{ref("dim_estabelecimento_sus_rio_historico")}} as estabs_origem
+    on id_cnes_unidade_origem = estabs_origem.id_cnes
+
+    left join {{ref("dim_estabelecimento_sus_rio_historico")}} as estabs_exec
+    on id_cnes_unidade_origem = estabs_exec.id_cnes
+
+    where 1 = 1
+        and estabs_origem.ano_competencia = 2025 and estabs_origem.mes_competencia = 6
+        and estabs_exec.ano_competencia = 2025 and estabs_exec.mes_competencia = 6
+)
+
+select * from enriquece_estabelecimento

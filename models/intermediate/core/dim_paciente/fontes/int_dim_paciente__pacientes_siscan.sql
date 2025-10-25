@@ -15,4 +15,4 @@ select distinct
     cast(paciente_endereco_complemento as string)            as paciente_complemento_residencia,
     cast(paciente_endereco_numero as string)                 as paciente_numero_residencia
 from {{ ref("raw_siscan_web__laudos") }}
-where date(data_solicitacao) >= date '2025-01-01'
+where date(data_solicitacao) >= date '2024-01-01'
