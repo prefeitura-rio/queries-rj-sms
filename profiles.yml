@@ -8,7 +8,7 @@ sms:
       dataset: gerenciamento__dbt
       location: US
       threads: 10
-      keyfile: /home/miloski/Documentos/bkp/oldcode/Notebooks/sisreg/credentials/rj-sms-dev-dbt.json
+      keyfile: /tmp/credentials.json
     prod:
       type: bigquery
       method: service-account
@@ -33,5 +33,4 @@ sms:
       location: US
       threads: 10
       keyfile: /tmp/credentials.json
-
 
