@@ -12,4 +12,4 @@ select distinct
     cast(no_uf_paciente as string)                           as paciente_uf_residencia,
     cast(no_pais_paciente as string)                         as paciente_pais_residencia
 from {{ ref("raw_sipni__vacinacao") }}
-where date(dt_vacina) >= date '2025-01-01'
+where date(dt_vacina) >= date '2024-01-01'
