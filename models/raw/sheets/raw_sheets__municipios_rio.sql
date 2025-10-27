@@ -3,7 +3,7 @@
         schema="brutos_sheets",
         alias="municipios_rio",
         materialized="table",
-        tags=["daily", "subgeral", "cnes_subgeral", "monitora_reg"],
+        tags=["monthly", "subgeral", "cnes_subgeral", "monitora_reg"],
     )
 }}
 -- TODO: conferir tags acima
