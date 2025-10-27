@@ -417,12 +417,21 @@ with
             array_agg(
                 struct(
                     regexp_replace(diagnostico.codigo, r'\.', '') as id,
-                    cid.descricao as descricao,
+                    -- Em alguns casos, não encontramos par na tabela de
+                    -- CIDs, porque usaram um código de categoria.
+                    -- Ex.: W34 não existe como ID na tabela de CIDs,
+                    -- pois é categoria de W340, W341, ..., mas existe
+                    -- episódio com código W34. Portanto, damos prioridade
+                    -- à descrição da Vitai, e a outra vira fallback.
+                    coalesce(
+                        {{ process_null("diagnostico.descricao") }},
+                        cid.descricao
+                     ) as descricao,
                     'ATIVO' as situacao,
                     cast(null as string) as data_diagnostico
                 )
             ) as condicoes
-        from {{ ref('raw_prontuario_vitai__diagnostico')}} diagnostico
+        from {{ ref('raw_prontuario_vitai__diagnostico')}} as diagnostico
         left join {{ ref('dim_condicao_cid10')}} as cid
             on cid.id = regexp_replace(diagnostico.codigo, r'\.', '')
         group by 1
