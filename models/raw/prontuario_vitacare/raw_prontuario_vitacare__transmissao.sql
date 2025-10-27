@@ -23,14 +23,8 @@ final as (
         SEND_STATUS as status_envio,
         safe_cast(DATE_SEND_STATUS as date) as data_envio,
         SERVER_CODE_RESPONSE as codigo_resposta_servidor,
-        CASE 
-            WHEN SERVER_CODE_RESPONSE = 422 THEN  concat(ifnull(SERVER_RESPONSE, ''), ',', ifnull(Column1, ''), ',', ifnull(cast(_1 as string), ''))
-            ELSE SERVER_RESPONSE
-        END as resposta_servidor,
-        CASE 
-            WHEN SERVER_CODE_RESPONSE = 422 THEN  safe_cast(_2 as date)
-            ELSE safe_cast(DATE_PROC_REFERENCE as date)
-        END as data_referencia_processamento
+        SERVER_RESPONSE as resposta_servidor,
+        DATE_PROC_REFERENCE as data_referencia_processamento
     from source
 ),
 

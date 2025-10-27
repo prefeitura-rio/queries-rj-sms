@@ -25,43 +25,12 @@ WITH
     -- ------------------------------------------------------------
     -- Vacinacoes
     -- ------------------------------------------------------------
-    vacinacoes_historico as (
+    vacinacoes as (
         SELECT
-            case
-                when vacina.data_aplicacao != '1900-01-01'
-                    then vacina.data_aplicacao
-                when vacina.data_aplicacao = '1900-01-01' and vacina.tipo_registro = 'Vaccine administration'
-                    then cast(acto.datahora_fim_atendimento as date)
-                else null
-            end as date,
-            vacina.id_cnes,
-            id_vacinacao
-        FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} vacina
-            INNER JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} acto using (id_prontuario_global)
-    ),
-    vacinacoes_api as (
-        SELECT
-            case
-                when vacina.data_aplicacao != '1900-01-01'
-                    then vacina.data_aplicacao
-                when vacina.data_aplicacao = '1900-01-01' and vacina.tipo_registro = 'Vaccine administration'
-                    then cast(acto.datahora_fim_atendimento as date)
-                else null
-            end as date,
-            vacina.id_cnes,
-            id_vacinacao
-        FROM {{ ref("raw_prontuario_vitacare_api__vacina") }} vacina
-            INNER JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} acto using (id_prontuario_global)
-    ),
-
-    juncao_vacinacoes as (
-        SELECT * FROM vacinacoes_historico
-        UNION ALL
-        SELECT * FROM vacinacoes_api
-    ),
-
-    deduplicacao_vacinacoes as (
-        SELECT DISTINCT * FROM juncao_vacinacoes
+            id_vacinacao,
+            id_cnes,
+            particao_data_vacinacao as date
+        FROM {{ ref("mart_cie__vacinacao") }}
     ),
 
     agrupamento_por_dia_e_cnes as (
@@ -69,7 +38,7 @@ WITH
             date,
             id_cnes,
             COUNT(*) as qtd_vacinacoes
-        FROM deduplicacao_vacinacoes
+        FROM vacinacoes
         GROUP BY 1, 2
     ),
 

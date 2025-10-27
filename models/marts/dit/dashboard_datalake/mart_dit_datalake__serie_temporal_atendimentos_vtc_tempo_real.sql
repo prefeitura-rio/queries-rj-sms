@@ -1,6 +1,6 @@
 {{
     config(
-        alias='vtc_serie_temporal_atendimentos',
+        alias='serie_temporal_atendimentos_vtc_tempo_real',
         materialized='table',
     )
 }}
