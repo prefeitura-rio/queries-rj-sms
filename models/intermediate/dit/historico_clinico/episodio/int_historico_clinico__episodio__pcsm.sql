@@ -38,7 +38,9 @@ with
             a.loaded_at as imported_at,
             a.transformed_at as updated_at,
             current_timestamp() as processed_at
-        ) as metadados
+        ) as metadados,
+        cast(numero_cpf_paciente as int64) as cpf_particao,
+        cast(data_entrada_atendimento as date) as data_particao
 
     from {{ref('raw_pcsm_atendimentos')}} a 
     left join {{ref('raw_pcsm_pacientes')}} p on a.id_paciente = p.id_paciente
