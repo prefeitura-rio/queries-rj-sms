@@ -29,10 +29,12 @@ with
             id_prontuario_global,
             ut_id,
             profissional_nome,
+            profissional_equipe_nome,
+            profissional_equipe_cod_ine,
             profissional_cbo,
             profissional_cns,
             profissional_cpf,
-            patient_cpf
+            patient_cpf,
         from {{ ref('raw_prontuario_vitacare_historico__acto') }}
     ),
     pacientes_historico as (
@@ -72,35 +74,19 @@ with
             }} as id_surrogate,
             v.id_cnes,
             p.codigo_equipe as id_equipe,
-            p.ine_equipe as id_equipe_ine,
+            a.profissional_equipe_cod_ine as id_equipe_ine,
             p.microarea as id_microarea,
             p.npront as paciente_id_prontuario,
             p.cns as paciente_cns,
-            p.cpf as paciente_cpf,
+            a.patient_cpf as paciente_cpf,
             e.estabelecimento_nome,
-            p.equipe as equipe_nome,
+            a.profissional_equipe_nome as equipe_nome,
             a.profissional_nome,
             a.profissional_cbo,
             a.profissional_cns,
             a.profissional_cpf,
             lower(v.nome_vacina) as vacina_descricao,
-            case when v.dose = '1ª Dose' then '1 dose'
-                 when v.dose = '2ª Dose' then '2 dose'
-                 when v.dose = '3ª Dose' then '3 dose'
-                 when v.dose = '4ª Dose' then '4 dose'
-                 when v.dose = '5ª Dose' then '5 dose'
-                 when v.dose = '1ª Reforçp' then '1 reforco'
-                 when v.dose = '2ª Reforço' then '2 reforço'
-                 when v.dose = '3ª Reforço' then '3 reforço'
-                 when v.dose = 'Dose D' then 'dose d'
-                 when v.dose = 'Dose adicional' then 'dose adicional'
-                 when v.dose = 'Dose inicial' then 'dose inicial'
-                 when v.dose = 'Dose única' then 'dose unica'
-                 when v.dose = 'Reforço' then 'reforco'
-                 when v.dose = 'Revacinação' then 'revacinacao'
-                 when v.dose = 'Outro' then 'outra'
-                else lower(v.dose) 
-            end as vacina_dose,
+            lower(replace(replace(v.dose, 'ª', ''),'º', '')) as vacina_dose,
             v.lote as vacina_lote,
             v.tipo_registro as vacina_registro_tipo,
             v.estrategia_imunizacao as vacina_estrategia,

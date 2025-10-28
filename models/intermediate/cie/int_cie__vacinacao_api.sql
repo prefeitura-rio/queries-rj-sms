@@ -16,7 +16,7 @@ with
         select * from {{ ref("raw_prontuario_vitacare__vacinacao") }}
     ),
 
-    pacientes as (
+    vacinacao as (
         select
             id_vacinacao,
             id_surrogate,
@@ -58,4 +58,4 @@ with
     )
 
 select * 
-from pacientes
+from vacinacao
