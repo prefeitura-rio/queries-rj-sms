@@ -12,9 +12,11 @@
 
 with
     vacinacoes_agg as (
-        select *, 'api' as origem  from {{ ref('intermediate_cie__vacinacao_api') }}
+        select *, 'api' as origem  from {{ ref('int_cie__vacinacao_api') }}
         union all
-        select *, 'historico' as origem from {{ ref('intermediate_cie__vacinacao_historico') }}
+        select *, 'historico' as origem from {{ ref('int_cie__vacinacao_historico') }}
+        union all
+        select *, 'continuo' as origem from {{ ref('int_cie__vacinacao_continuo') }}
     ),
 
     vacinacoes_dedup as (
@@ -24,7 +26,11 @@ with
         qualify row_number() over (
             partition by id_vacinacao
             order by 
-                case when origem = 'api' then 1 else 2 end 
+                case 
+                    when origem = 'api' then 1 
+                    when origem = 'historico' then 2 
+                    else 3 
+                end 
             desc
         ) = 1
     )
