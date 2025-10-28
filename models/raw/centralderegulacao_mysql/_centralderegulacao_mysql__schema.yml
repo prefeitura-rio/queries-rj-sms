@@ -73,7 +73,7 @@ models:
         quote: true
 
       - name: cap
-        description: CEP (Código de Endereçamento Postal) da residência.
+        description: Area programatica.
         data_type: int64
         quote: true
 
