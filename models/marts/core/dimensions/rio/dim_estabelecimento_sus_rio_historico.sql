@@ -387,11 +387,4 @@ with
         from estabelecimentos_final
     )
 
-select
-    safe_cast(id_cnes as int) as id_cnes2,
-    count(*) as qtd
-from final
-where final.ano_competencia = 2025
-  and final.mes_competencia = 6
-group by id_cnes2
-having qtd > 1
+select * from final
