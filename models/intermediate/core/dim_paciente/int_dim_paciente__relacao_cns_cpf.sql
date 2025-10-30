@@ -7,6 +7,8 @@ pares_cpf_cns as (
     union all select paciente_cpf, paciente_cns from {{ref("int_dim_paciente__pacientes_tea")}} where paciente_cpf is not null and paciente_cns is not null
     union all select paciente_cpf, paciente_cns from {{ref("int_dim_paciente__pacientes_fibromialgia")}} where paciente_cpf is not null and paciente_cns is not null
     union all select paciente_cpf, paciente_cns from {{ref("int_dim_paciente__pacientes_sipni")}} where paciente_cpf is not null and paciente_cns is not null
+    union all select paciente_cpf, paciente_cns from {{ref("int_dim_paciente__pacientes_hci")}} where paciente_cpf is not null and paciente_cns is not null
+
 ),
 
 -- pega apenas cns que estao associados a um unico cpf

@@ -12,9 +12,9 @@ todos_registros as (
     paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     paciente_data_nascimento,
+    cast(null as string) as paciente_nome_social,
     
     -- sociodemograficos
-    cast(null as int64) as paciente_idade,
     paciente_sexo,
     cast(null as string) as paciente_racacor,
 
@@ -42,8 +42,8 @@ todos_registros as (
     paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     paciente_data_nascimento,
+    cast(null as string) as paciente_nome_social,
 
-    paciente_idade,
     paciente_sexo,
     cast(null as string) as paciente_racacor,
 
@@ -70,8 +70,8 @@ todos_registros as (
     cast(null as string) as paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     paciente_data_nascimento,
+    cast(null as string) as paciente_nome_social,
 
-    cast(null as int64) as paciente_idade,
     cast(null as string) as paciente_sexo,
     cast(null as string) as paciente_racacor,
 
@@ -98,8 +98,8 @@ todos_registros as (
     cast(null as string) as paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     paciente_data_nascimento,
+    cast(null as string) as paciente_nome_social,
 
-    cast(null as int64) as paciente_idade,
     paciente_sexo,
     cast(null as string) as paciente_racacor,
 
@@ -126,8 +126,8 @@ todos_registros as (
     cast(null as string) as paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     paciente_data_nascimento,
+    cast(null as string) as paciente_nome_social,
 
-    cast(null as int64) as paciente_idade,
     paciente_sexo,
     paciente_racacor,
 
@@ -154,8 +154,8 @@ todos_registros as (
     cast(null as string) as paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     cast(null as date) as paciente_data_nascimento,
-    
-    cast(null as int64) as paciente_idade,
+    cast(null as string) as paciente_nome_social,
+
     cast(null as string) as paciente_sexo,
     cast(null as string) as paciente_racacor,
 
@@ -182,8 +182,8 @@ todos_registros as (
     cast(null as string) as paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     paciente_data_nascimento,
+    cast(null as string) as paciente_nome_social,
 
-    cast(null as int64) as paciente_idade,
     paciente_sexo,
     paciente_racacor,
 
@@ -210,8 +210,8 @@ todos_registros as (
     cast(null as string) as paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     cast(null as date) as paciente_data_nascimento,
-    
-    cast(null as int64) as paciente_idade,
+    cast(null as string) as paciente_nome_social,
+
     cast(null as string) as paciente_sexo,
     cast(null as string) as paciente_racacor,
 
@@ -238,8 +238,8 @@ todos_registros as (
     cast(null as string) as paciente_nome_mae,
     cast(null as string) as paciente_nome_pai,
     cast(null as date) as paciente_data_nascimento,
-    
-    cast(null as int64) as paciente_idade,
+    cast(null as string) as paciente_nome_social,
+
     cast(null as string) as paciente_sexo,
     cast(null as string) as paciente_racacor,
 
@@ -266,8 +266,8 @@ todos_registros as (
     paciente_nome_mae,
     paciente_nome_pai,
     paciente_data_nascimento,
+    cast(null as string) as paciente_nome_social,
 
-    cast(null as int64) as paciente_idade,
     cast(null as string) as paciente_sexo,
     cast(null as string) as paciente_racacor,
 
@@ -282,6 +282,34 @@ todos_registros as (
     cast(null as string) as paciente_numero_residencia,
     cast(null as string) as paciente_tp_logradouro_residencia
   from {{ref("int_dim_paciente__pacientes_sipni")}}
+
+  union all 
+
+  select
+    'hci' as sistema_origem,
+
+    paciente_cpf,
+    paciente_cns,
+    paciente_nome,
+    paciente_nome_mae,
+    paciente_nome_pai,
+    paciente_data_nascimento,
+    paciente_nome_social,
+
+    paciente_sexo,
+    paciente_racacor,
+
+    cast(null as string) as paciente_uf_nascimento,
+    cast(null as string) as paciente_municipio_nascimento,
+    cast(null as string) as paciente_uf_residencia,
+    cast(null as string) as paciente_municipio_residencia,
+    cast(null as string) as paciente_bairro_residencia,
+    cast(null as string) as paciente_cep_residencia,
+    cast(null as string) as paciente_endereco_residencia,
+    cast(null as string) as paciente_complemento_residencia,
+    cast(null as string) as paciente_numero_residencia,
+    cast(null as string) as paciente_tp_logradouro_residencia
+  from {{ref("int_dim_paciente__pacientes_hci")}}
 ),
 
 -- backfill cpf 
@@ -290,13 +318,14 @@ todos_registros_enriquecido as (
     ar.sistema_origem,
 
     coalesce(ar.paciente_cpf, m.cpf) as paciente_cpf,  -- backfill
+    safe_cast(coalesce(ar.paciente_cpf, m.cpf) as int) as cpf_particao,
     ar.paciente_cns,
     ar.paciente_nome,
     ar.paciente_nome_mae,
     ar.paciente_nome_pai,
+    ar.paciente_nome_social,
 
     ar.paciente_data_nascimento,
-    ar.paciente_idade,
     ar.paciente_sexo,
     ar.paciente_racacor,
 
@@ -312,7 +341,7 @@ todos_registros_enriquecido as (
     ar.paciente_tp_logradouro_residencia
   from todos_registros ar
   left join {{ref("int_dim_paciente__relacao_cns_cpf")}} m
-  on ar.paciente_cns = m.cns
+  on safe_cast(ar.paciente_cns as int) = safe_cast(m.cns as int)
 )
 
 select * from todos_registros_enriquecido
