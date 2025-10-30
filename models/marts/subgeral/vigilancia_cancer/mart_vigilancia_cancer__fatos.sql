@@ -53,7 +53,7 @@ sisreg as (
 
     from {{ref("mart_sisreg__solicitacoes")}} as fcts
     left join {{ ref("raw_sheets__assistencial_procedimento") }} as sheets
-    on fcts.id_procedimento_sisreg = sheets.id_procedimento
+    on safe_cast(fcts.id_procedimento_sisreg as int) = safe_cast(sheets.id_procedimento as int)
     where 1 = 1
         and data_solicitacao >= "2021-01-01"
         and fcts.procedimento in (
@@ -184,7 +184,6 @@ ser_ambulatorial as (
         )
 ),
 
-
 ser_internacoes as (
     select
         -- pk
@@ -233,7 +232,6 @@ ser_internacoes as (
         )
 ),
 
-
 -- repensar toda modelagem e decisoes deste cte do siscan
 siscan as ( 
     select
@@ -274,7 +272,6 @@ siscan as (
     where 1 = 1
         and data_solicitacao >= "2025-01-01"
 ),
-
 
 fatos as (
     select 
@@ -333,7 +330,7 @@ fatos as (
         data_atualizacao_registro,
         mama_esquerda_classif_radiologica,
         mama_direita_classif_radiologica
-    from ser_ambulatorial
+    from ser_internacoes
 
     union all
 
@@ -367,9 +364,10 @@ select
     left(cid, 3) as cid,
     procedimento_especialidade,
     procedimento_tipo,
-    {{ clean_name_string("procedimento") }} as procedimento,
+    {{ clean_proced_name("procedimento") }} as procedimento,
     data_solicitacao,
     data_execucao,
+    date_diff(data_execucao, data_solicitacao, day) as tempo_espera,
     data_atualizacao_registro,
     mama_esquerda_classif_radiologica,
     mama_direita_classif_radiologica
@@ -383,23 +381,28 @@ enriquece_cpf as (
         
     from fatos_final 
     left join {{ref("int_dim_paciente__relacao_cns_cpf")}} as cns_cpf
-    on fatos_final.paciente_cns = cns_cpf.cns
+    on safe_cast(fatos_final.paciente_cns as int) = safe_cast(cns_cpf.cns as int)
 ),
 
 enriquece_paciente as (
     select
         enriquece_cpf.*,
+        dim_paciente.cpf_particao as paciente_cpf_particao,
         dim_paciente.nomes[SAFE_OFFSET(0)] as paciente_nome,
         dim_paciente.sexos[SAFE_OFFSET(0)] as paciente_sexo,
         dim_paciente.racas_cores[SAFE_OFFSET(0)] as paciente_racacor,
         dim_paciente.datas_nascimento[SAFE_OFFSET(0)] as paciente_data_nascimento,
-        dim_paciente.idades[SAFE_OFFSET(0)] as paciente_idade,
+        date_diff(
+            data_solicitacao,
+            date(dim_paciente.datas_nascimento[SAFE_OFFSET(0)]),
+            year
+        ) as paciente_idade,
         dim_paciente.municipios_residencia[SAFE_OFFSET(0)] as paciente_municipio_residencia,
         dim_paciente.bairros_residencia[SAFE_OFFSET(0)] as paciente_bairro_residencia
         
     from enriquece_cpf
     left join {{ ref("dim_paciente") }} as dim_paciente
-    on cast(enriquece_cpf.paciente_cpf as int) = dim_paciente.cpf_particao
+    on safe_cast(enriquece_cpf.paciente_cpf as int) = dim_paciente.cpf_particao
 ),
 
 enriquece_estabelecimento as (
@@ -420,17 +423,35 @@ enriquece_estabelecimento as (
         estabs_exec.tipo_unidade_alternativo as estabelecimento_executante_tipo,
         estabs_exec.tipo_unidade_agrupado as estabelecimento_executante_tipo_agrupado,
         estabs_exec.estabelecimento_sms_indicador as estabelecimento_sms_indicador
+
     from enriquece_paciente
 
     left join {{ref("dim_estabelecimento_sus_rio_historico")}} as estabs_origem
-    on id_cnes_unidade_origem = estabs_origem.id_cnes
+    on safe_cast(id_cnes_unidade_origem as int) = safe_cast(estabs_origem.id_cnes as int)
 
     left join {{ref("dim_estabelecimento_sus_rio_historico")}} as estabs_exec
-    on id_cnes_unidade_origem = estabs_exec.id_cnes
+    on safe_cast(id_cnes_unidade_origem as int) = safe_cast(estabs_exec.id_cnes as int)
 
     where 1 = 1
         and estabs_origem.ano_competencia = 2025 and estabs_origem.mes_competencia = 6
         and estabs_exec.ano_competencia = 2025 and estabs_exec.mes_competencia = 6
+),
+
+enriquece_cid as (
+    select 
+        ec.*,
+        dim_cid.cid_descricao,
+        dim_cid.cid_capitulo_descricao 
+
+    from enriquece_estabelecimento ec
+    left join (
+        select distinct
+            categoria.id as cid,
+            categoria.descricao as cid_descricao,
+            capitulo.descricao as cid_capitulo_descricao
+        from {{ref("dim_condicao_cid10")}}
+    ) as dim_cid
+    using (cid)
 )
 
-select * from enriquece_estabelecimento
+select * from enriquece_cid
