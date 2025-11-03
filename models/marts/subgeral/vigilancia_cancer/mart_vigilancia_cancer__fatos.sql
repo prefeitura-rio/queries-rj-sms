@@ -1,5 +1,5 @@
 -- noqa: disable=LT08
-/*
+
 {{
   config(
     enabled=true,
@@ -15,7 +15,7 @@
     on_schema_change='sync_all_columns'
   )
 }}
-*/
+
 with
 sisreg as (
     select 
@@ -401,7 +401,7 @@ enriquece_paciente as (
         dim_paciente.bairros_residencia[SAFE_OFFSET(0)] as paciente_bairro_residencia
         
     from enriquece_cpf
-    left join {{ ref("dim_paciente") }} as dim_paciente
+    left join {{ ref("mart_vigilancia_cancer__dim_paciente") }} as dim_paciente
     on safe_cast(enriquece_cpf.paciente_cpf as int) = dim_paciente.cpf_particao
 ),
 

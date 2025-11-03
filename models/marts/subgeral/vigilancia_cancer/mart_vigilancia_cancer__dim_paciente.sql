@@ -3,7 +3,7 @@
 {{
   config(
     enabled=true,
-    schema="saude_dados_mestres",
+    schema="projeto_vigilancia_cancer",
     alias="paciente",
     unique_key='cpf',
     partition_by={
