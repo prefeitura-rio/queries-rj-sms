@@ -387,5 +387,4 @@ with
         from estabelecimentos_final
     )
 
-select *
-from final
+select * from final
