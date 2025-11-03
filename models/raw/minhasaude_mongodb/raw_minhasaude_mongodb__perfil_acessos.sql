@@ -44,19 +44,19 @@ with
         {% if is_incremental() %}
             where date(data_particao) >= (select data_extracao from particao)
         {% endif %}
+    ),
+
+    final as (
+        select
+            s.*,
+            row_number() over (
+                    partition by _id 
+                    order by updatedat desc, data_extracao desc
+                ) as rn
+
+        from source as s
+        qualify rn = 1
     )
 
-select
-    s.*,
-    (
-        {% if is_incremental() %}
-            1
-        {% else %}
-            row_number() over (partition by _id order by updatedat desc)
-        {% endif %}
-    ) as rn
-
-from source as s
-{% if not is_incremental() %}
-    qualify rn = 1
-{% endif %}
+select *
+from final
