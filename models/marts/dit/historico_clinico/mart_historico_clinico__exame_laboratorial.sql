@@ -13,35 +13,24 @@
 
 
 with
-    exame as (
+    source as (
         select * from {{ ref("int_historico_clinico__exame__cientificalab") }}
     ),
 
-    selecao_exames as (
-        select
+    exames as (
+        select 
             paciente_cpf,
-            array_agg(
-                struct(
-                    id_cnes,
-                    cod_apoio as codigo_do_exame,
-                    data_assinatura as data_do_exame,
-                    resultado,
-                    unidade,
-                    valor_referencia_minimo,
-                    valor_referencia_maximo,
-                    valor_referencia_texto
-                )
-            ) as exames,
-            struct(datetime(current_timestamp(), 'America/Sao_Paulo') as processed_at) as metadados,
+            codigo_apoio,
+            laudo_url,
+            data_assinatura,
             safe_cast(paciente_cpf as int64) as cpf_particao
-        from exame
-        group by
-            paciente_cpf
+        from source
     )
 
 select 
     paciente_cpf, 
-    exames, 
-    metadados, 
+    codigo_apoio, 
+    laudo_url, 
+    data_assinatura,
     cpf_particao
-from selecao_exames
+from exames
