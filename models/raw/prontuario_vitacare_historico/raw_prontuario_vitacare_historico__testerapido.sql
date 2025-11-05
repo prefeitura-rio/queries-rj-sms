@@ -68,6 +68,10 @@ WITH
             {{ process_null('positivehepatitisbtestresult') }} AS resultado_teste_hepatite_b_positivo,
             {{ process_null('sarscov2testresult') }} AS resultado_teste_sarscov2,
             {{ process_null('positivesarscov2testresult') }} AS resultado_teste_sarscov2_positivo,
+            {{ process_null('hiv01TestResult') }} AS resultado_teste_hiv1,
+            {{ process_null('positiveHiv01TestResult') }} AS resultado_teste_hiv1_positivo,
+            {{ process_null('hiv02TestResult') }} AS resultado_teste_hiv2,
+            {{ process_null('positiveHiv02TestResult') }} AS resultado_teste_hiv2_positivo,
 
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao

@@ -95,6 +95,8 @@ WITH
         SELECT
             a.patient_cpf AS cpf,
             CASE
+                WHEN COALESCE(t.resultado_teste_hiv1, t.resultado_teste_hiv1_positivo) IS NOT NULL THEN 'Teste rápido - HIV 1'
+                WHEN COALESCE(t.resultado_teste_hiv2, t.resultado_teste_hiv2_positivo) IS NOT NULL THEN 'Teste rápido - HIV 2'
                 WHEN COALESCE(t.resultado_teste_sifilis, t.resultado_teste_sifilis_positivo) IS NOT NULL THEN 'Teste rápido - Sífilis'
                 WHEN COALESCE(t.resultado_teste_hepatite_b, t.resultado_teste_hepatite_b_positivo) IS NOT NULL THEN 'Teste rápido - Hepatite B'
                 WHEN COALESCE(t.resultado_teste_hepatite_c, t.resultado_teste_hepatite_c_positivo) IS NOT NULL THEN 'Teste rápido - Hepatite C'
@@ -105,6 +107,8 @@ WITH
         WHERE a.patient_cpf IS NOT NULL
         AND TRIM(a.patient_cpf) <> ''
         AND (
+                COALESCE(t.resultado_teste_hiv1, t.resultado_teste_hiv1_positivo) IS NOT NULL OR
+                COALESCE(t.resultado_teste_hiv2, t.resultado_teste_hiv2_positivo) IS NOT NULL OR
                 COALESCE(t.resultado_teste_sifilis, t.resultado_teste_sifilis_positivo) IS NOT NULL OR
                 COALESCE(t.resultado_teste_hepatite_b, t.resultado_teste_hepatite_b_positivo) IS NOT NULL OR
                 COALESCE(t.resultado_teste_hepatite_c, t.resultado_teste_hepatite_c_positivo) IS NOT NULL
