@@ -21,6 +21,8 @@ with
         select 
             paciente_cpf,
             codigo_apoio,
+            medico_solicitante,
+            unidade_nome,
             laudo_url,
             data_assinatura,
             safe_cast(paciente_cpf as int64) as cpf_particao
@@ -30,6 +32,8 @@ with
 select 
     paciente_cpf, 
     codigo_apoio, 
+    medico_solicitante, 
+    unidade_nome,
     laudo_url, 
     data_assinatura,
     cpf_particao

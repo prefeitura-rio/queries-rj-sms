@@ -20,6 +20,7 @@ with
         select
             solicitacao_id,
             cod_apoio as codigo_apoio,
+            solicitante_nome as medico_solicitante,
             data_assinatura
         from {{ ref('raw_cientificalab__exames') }}
     ),
@@ -30,6 +31,7 @@ with
             s.unidade_nome,
             e.codigo_apoio,
             s.laudo_url,
+            e.medico_solicitante,
             e.data_assinatura,
         from solicitacoes as s
         inner join exame as e on s.id = e.solicitacao_id
