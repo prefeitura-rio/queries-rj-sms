@@ -88,7 +88,7 @@ with
             lower(v.nome_vacina) as vacina_descricao,
             lower(replace(replace(v.dose, 'ª', ''),'º', '')) as vacina_dose,
             v.lote as vacina_lote,
-            v.tipo_registro as vacina_registro_tipo,
+            lower(v.tipo_registro) as vacina_registro_tipo,
             v.estrategia_imunizacao as vacina_estrategia,
             v.diff as vacina_diff,
             v.data_aplicacao as vacina_aplicacao_data,

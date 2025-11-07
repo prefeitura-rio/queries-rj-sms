@@ -128,10 +128,12 @@ with
         left join atendimentos_historico a 
             on v.id_prontuario_global = a.id_prontuario_global
         left join pacientes_historico p
-            on a.patient_cpf = p.cpf
+            on a.ut_id = p.ut_id
+            and a.id_cnes = p.id_cnes
         left join estabelecimento e
             on v.id_cnes = e.id_cnes
     )
+
 
 select * 
 from agg_renamed

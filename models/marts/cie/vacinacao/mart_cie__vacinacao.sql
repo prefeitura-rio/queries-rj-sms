@@ -11,18 +11,32 @@
 }}
 
 with
-    vacinacoes_agg as (
-        select *, 'api' as origem  from {{ ref('int_cie__vacinacao_api') }}
-        union all
+    continuo_e_historico as (
         select *, 'historico' as origem from {{ ref('int_cie__vacinacao_historico') }}
         union all
         select *, 'continuo' as origem from {{ ref('int_cie__vacinacao_continuo') }}
     ),
 
+    api as (
+        select *, 'api' as origem
+        from {{ ref('int_cie__vacinacao_api') }}
+        where id_vacinacao not in (
+            select id_vacinacao
+            from continuo_e_historico
+        )
+    ),
+
+    vacinacoes as (
+        select * from continuo_e_historico
+        union all
+        select * from api
+    ),
+
+
     vacinacoes_dedup as (
         select 
             *
-        from vacinacoes_agg
+        from vacinacoes
         qualify row_number() over (
             partition by id_vacinacao
             order by 
@@ -30,8 +44,7 @@ with
                     when origem = 'api' then 1 
                     when origem = 'historico' then 2 
                     else 3 
-                end 
-            desc
+                end
         ) = 1
     )
 
