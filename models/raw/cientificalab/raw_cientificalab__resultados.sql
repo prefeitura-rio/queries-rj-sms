@@ -1,6 +1,7 @@
 {{
     config(
         alias="resultados",
+        enabled=false
     )
 }}
 

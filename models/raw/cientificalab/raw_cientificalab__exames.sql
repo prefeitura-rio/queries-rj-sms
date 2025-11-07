@@ -1,6 +1,7 @@
 {{
     config(
         alias="exames",
+        enabled=false
     )
 }}
 

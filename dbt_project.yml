@@ -355,7 +355,7 @@ models:
           dado_sensivel: sim
       cientificalab:
         +schema: brutos_cientificalab
-        +tags: ["daily", "cientificalab"]
+        +tags: ["cientificalab"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
