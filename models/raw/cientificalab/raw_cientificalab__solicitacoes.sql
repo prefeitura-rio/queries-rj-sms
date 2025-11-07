@@ -1,6 +1,7 @@
 {{
     config(
         alias="solicitacoes",
+        enabled=false
     )
 }}
 
