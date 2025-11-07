@@ -17,14 +17,7 @@
 {% set first_day_of_month = "date_trunc(current_date('America/Sao_Paulo'), month)" %}
 
 with
-    query_params as (
-        select
-            date '2024-08-01' as start_date,  -- inclusive
-            current_date() as end_date,  -- inclusive
-    ),
-
     -- SOURCES
-
     usage_rj_sms as (
         select * from `rj-sms`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
     ),
