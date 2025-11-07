@@ -124,7 +124,10 @@ with
             cast(NULL as string) as id_cnes_unidade_executante,
             cast(NULL as string) as unidade_executante,            
             cast(NULL as string) as profissional_executante_cpf,
-            cast(NULL as string) as profissional_executante_nome
+            cast(NULL as string) as profissional_executante_nome,
+
+            -- Meta
+            2 as prioridade_nivel
     from {{ ref("raw_sisreg_api__solicitacoes") }}
     {% if is_incremental() %}
         where 1=1
@@ -236,7 +239,10 @@ with
             unidade_executante_id as id_cnes_unidade_executante,
             unidade_executante_nome as unidade_executante,
             profissional_executante_cpf as profissional_executante_cpf,
-            profissional_executante_nome as profissional_executante_nome
+            profissional_executante_nome as profissional_executante_nome,
+
+            -- Meta
+            1 as prioridade_nivel
     from {{ ref("raw_sisreg_api__marcacoes") }}
     {% if is_incremental() %}
         where 1=1
@@ -366,12 +372,15 @@ with
             id_cnes_unidade_executante,
             unidade_executante,
             profissional_executante_cpf,
-            profissional_executante_nome
+            profissional_executante_nome,
+
+            -- Meta
+            prioridade_nivel
         from enriquecimento
     )
 
-select *
+select * except (prioridade_nivel)
 from final
 qualify row_number() over (
     partition by id_solicitacao
-    order by data_atualizacao_registro desc) = 1
+    order by data_atualizacao_registro desc, prioridade_nivel asc) = 1
