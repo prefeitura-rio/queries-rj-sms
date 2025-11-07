@@ -11,7 +11,7 @@ with
         select
             id,
             paciente_cpf,
-            unidade as unidade_nome,
+            origem as unidade_nome,
             laudo_url
         from {{ ref('raw_cientificalab__solicitacoes') }}
     ),
