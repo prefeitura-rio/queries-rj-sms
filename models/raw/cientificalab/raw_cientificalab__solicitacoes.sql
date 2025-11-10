@@ -16,7 +16,7 @@ with
     renamed as (	
         select
             safe_cast({{process_null("id")}} as string) as id,
-
+            safe_cast({{process_null("link")}} as string) as laudo_url,
             safe_cast({{process_null("codigoLis")}} as string) as cod_lis,
             safe_cast({{process_null("codigoApoio")}} as string) as cod_apoio,
             safe_cast({{process_null("codunidade")}} as string) as cod_unidade,
