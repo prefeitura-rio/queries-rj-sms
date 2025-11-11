@@ -1,49 +1,94 @@
 {{
     config(
-        schema="intermediario_historico_clinico",
-        alias="vacinacao_vitacare",
+        alias="vacinacao_historico",
         materialized="table",
+        schema="intermediario_historico_clinico",
+        partition_by={
+            "field": "registro_data_particao",
+            "data_type": "date",
+            "granularity": "day"
+        }
     )
 }}
 
-with
-    vacinas_bruto as (
-        select *
-        from {{ref('raw_prontuario_vitacare__vacinacao')}}
-    ),
-
-    episodio as (
-        select 
-            id_prontuario_global as id,
-            cpf
-        from {{ref('raw_prontuario_vitacare__atendimento')}}
-    ),
-    agregado as (
-        select 
-            v.*,
-            e.cpf 
-        from vacinas_bruto v
-        left join episodio e on rtrim(v.id_vacinacao, concat('.', v.vacina_descricao)) = e.id
-
-    ),
-    vacinacoes as (
+with 
+    estabelecimento as (
         select
-            id_vacinacao as id, 
-            id_surrogate,
             id_cnes,
-            cpf,
-            vacina_descricao as nome_vacina,
-            vacina_dose as dose,
-            vacina_aplicacao_data as aplicacao_data,
-            vacina_registro_data as registro_data,
-            vacina_diff as diff,
-            vacina_lote as lote,
-            vacina_registro_tipo as registro_tipo,
-            vacina_estrategia as estrategia_imunizacao,
-            metadados.loaded_at as loaded_at
-        from agregado
+            nome_limpo
+        from {{ ref('dim_estabelecimento') }}
+    ),
+
+    vacina as (
+        select 
+            * 
+        from {{ ref('raw_prontuario_vitacare_historico__vacina') }}
+    ),
+
+    atendimento as (
+        select 
+            * 
+        from {{ ref('raw_prontuario_vitacare_historico__acto') }}
+    ),
+
+    paciente as (
+        select 
+            * 
+        from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
+        qualify row_number() over( partition by ut_id, id_cnes order by greatest(data_cadastro, data_atualizacao_cadastro, updated_at) desc
+        ) = 1
+    ),
+
+    casted_normalized as (
+        select 
+            v.id_vacinacao,
+            v.id_cnes,
+            p.codigo_equipe as id_equipe,
+            p.ine_equipe as id_ine_equipe,
+            p.microarea as id_microarea,
+            p.npront as paciente_id_prontuario,
+            p.cns as paciente_cns,
+            p.cpf as paciente_cpf,
+            e.nome_limpo as estabelecimento_nome,
+            lower(p.equipe) as equipe_nome,
+            {{ proper_br('a.profissional_nome')}} as profissional_nome,
+            a.profissional_cbo,
+            a.profissional_cns,
+            a.profissional_cpf,
+            lower(v.nome_vacina) as vacina_descricao,
+            lower(replace(replace(v.dose, 'º', ''), 'ª', '')) as vacina_dose, 
+            v.lote as vacina_lote,
+            lower(v.tipo_registro) as vacina_registro_tipo,
+            lower(v.estrategia_imunizacao) as vacina_estrategia,
+            v.diff as vacina_diff,
+            v.data_aplicacao  as vacina_aplicacao_data,
+            safe_cast(v.data_registro as date) as vacina_registro_data,
+            {{ proper_br('p.nome')}} as paciente_nome,
+            lower(p.sexo) as paciente_sexo,
+            p.data_nascimento as paciente_nascimento_data,
+            p.nome_mae as paciente_nome_mae,
+            null as paciente_mae_nascimento_data,
+            p.situacao_usuario as paciente_situacao,
+            safe_cast(p.data_cadastro as date) as paciente_cadastro_data,
+            p.obito as paciente_obito,
+            v.loaded_at,
+            safe_cast(v.data_registro as date) as registro_data_particao
+        from vacina v
+        left join atendimento a
+            on v.id_prontuario_global = a.id_prontuario_global
+        left join paciente p
+            on a.ut_id = p.ut_id
+            and a.id_cnes = p.id_cnes
+        left join estabelecimento e
+            on v.id_cnes = e.id_cnes
     )
+
 select 
     *
-from vacinacoes
+from casted_normalized
+
+
+
+
+
 
