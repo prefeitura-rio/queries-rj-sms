@@ -20,6 +20,7 @@ with
     exames as (
         select
             paciente_cpf,
+            exame_nome,
             codigo_apoio as exame_codigo,
             medico_solicitante,
             unidade_nome,
@@ -32,6 +33,7 @@ with
 select
     unidade_nome,
     paciente_cpf,
+    exame_nome,
     exame_codigo,
     exame_data_assinatura,
     laudo_url,

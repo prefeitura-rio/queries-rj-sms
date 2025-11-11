@@ -63,6 +63,20 @@ with
             row_number() over (
                 partition by paciente_cpf, codigo_apoio, data_assinatura order by data_assinatura desc
             ) = 1
+    ),
+
+    codigos_exames as (
+        select codigo, exame
+        from {{ ref("raw_sheets__codigos_exames") }}
+    ),
+
+    exames_descritos as (
+        select
+            ex.*,
+            cod.exame as exame_nome,
+        from exame_deduplicado as ex
+        left join codigos_exames as cod
+            on ex.codigo_apoio = cod.codigo
     )
 
-select * from exame_deduplicado
+select * from exames_descritos
