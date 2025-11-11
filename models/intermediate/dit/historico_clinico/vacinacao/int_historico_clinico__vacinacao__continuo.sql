@@ -1,10 +1,10 @@
 {{
     config(
-        alias="vacinacao_historico",
+        alias="vacinacao_continuo",
         materialized="table",
         schema="intermediario_historico_clinico",
         partition_by={
-            "field": "registro_data_particao",
+            "field": "particao_registro_vacinacao",
             "data_type": "date",
             "granularity": "day"
         }
@@ -22,19 +22,19 @@ with
     vacina as (
         select 
             * 
-        from {{ ref('raw_prontuario_vitacare_historico__vacina') }}
+        from {{ ref('raw_prontuario_vitacare_api__vacina') }}
     ),
 
     atendimento as (
         select 
             * 
-        from {{ ref('raw_prontuario_vitacare_historico__acto') }}
+        from {{ ref('raw_prontuario_vitacare_api__acto') }}
     ),
 
     paciente as (
         select 
             * 
-        from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
+        from {{ ref('raw_prontuario_vitacare_api__cadastro') }}
         qualify row_number() over( partition by ut_id, id_cnes order by greatest(data_cadastro, data_atualizacao_cadastro, updated_at) desc
         ) = 1
     ),
@@ -56,9 +56,28 @@ with
             a.profissional_cns,
             a.profissional_cpf,
             lower(v.nome_vacina) as vacina_descricao,
-            lower(replace(replace(v.dose, 'º', ''), 'ª', '')) as vacina_dose, 
+            case 
+                when v.dose = '1st Dose' then '1 dose'
+                when v.dose = '2nd Dose' then '2 dose'
+                when v.dose = '3rd Dose' then '3 dose'
+                when v.dose = '4th Dose' then '4 dose'
+                when v.dose = '5th Dose' then '5 dose'
+                when v.dose = '1st Booster' then '1 reforco'
+                when v.dose = '2nd Booster' then '2 reforco'
+                when v.dose = '3rd Booster' then '3 reforco'
+                when v.dose = 'Dose D' then 'dose d'
+                when v.dose = 'Single Dose' then 'dose unica'
+                when v.dose = 'Booster' then 'reforco'
+                when v.dose = 'Re-Vaccination' then 'revacinacao'
+                else lower(v.dose) 
+            end as vacina_dose,
             v.lote as vacina_lote,
-            lower(v.tipo_registro) as vacina_registro_tipo,
+            case 
+                when v.tipo_registro = 'Register of a past vaccine administration (Resgate)' then 'registro de vacinacao anterior'
+                when v.tipo_registro = 'Vaccine administration' then 'administracao'
+                when v.tipo_registro = 'Non Applicable' then 'nao aplicada'
+                else lower(v.tipo_registro) 
+            end as vacina_registro_tipo,
             lower(v.estrategia_imunizacao) as vacina_estrategia,
             v.diff as vacina_diff,
             v.data_aplicacao  as vacina_aplicacao_data,
@@ -67,12 +86,12 @@ with
             lower(p.sexo) as paciente_sexo,
             p.data_nascimento as paciente_nascimento_data,
             p.nome_mae as paciente_nome_mae,
-            null as paciente_mae_nascimento_data,
+            safe_cast(null as date) as paciente_mae_nascimento_data,
             p.situacao_usuario as paciente_situacao,
             safe_cast(p.data_cadastro as date) as paciente_cadastro_data,
             p.obito as paciente_obito,
-            v.loaded_at,
-            safe_cast(v.data_registro as date) as registro_data_particao
+            safe_cast(v.loaded_at as datetime) as loaded_at,
+            safe_cast(v.data_registro as date) as particao_registro_vacinacao
         from vacina v
         left join atendimento a
             on v.id_prontuario_global = a.id_prontuario_global
