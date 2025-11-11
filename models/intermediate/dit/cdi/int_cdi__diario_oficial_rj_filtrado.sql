@@ -117,8 +117,9 @@ tribunal_contas_controladoria_del as (
     )
     and (
       lower(conteudo) like "%despacho%"
-      or lower(cabecalho) like '%despacho%'
+      or lower(cabecalho) like "%despacho%"
       or lower(conteudo) like "%legalidade%para fins de registro%"
+      or REGEXP_CONTAINS(upper(conteudo), r"\bAPENSADO AO\b")
     )
 ),
 -- constroi tabelas com todos as palavras chaves
