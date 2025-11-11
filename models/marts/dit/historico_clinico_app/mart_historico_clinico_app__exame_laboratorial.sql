@@ -12,8 +12,8 @@
 }}
 
 with exame_laboratorial as (
-    select 
-        * 
+    select
+        *
     from {{ ref('mart_historico_clinico__exame_laboratorial') }}
 )
 

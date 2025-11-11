@@ -18,23 +18,23 @@ with
     ),
 
     exames as (
-        select 
+        select
             paciente_cpf,
-            codigo_apoio,
+            codigo_apoio as exame_codigo,
             medico_solicitante,
             unidade_nome,
             laudo_url,
-            data_assinatura,
+            data_assinatura as exame_data_assinatura,
             safe_cast(paciente_cpf as int64) as cpf_particao
         from source
     )
 
-select 
-    paciente_cpf, 
-    codigo_apoio, 
-    medico_solicitante, 
+select
     unidade_nome,
-    laudo_url, 
-    data_assinatura,
+    paciente_cpf,
+    exame_codigo,
+    exame_data_assinatura,
+    laudo_url,
+    medico_solicitante,
     cpf_particao
 from exames
