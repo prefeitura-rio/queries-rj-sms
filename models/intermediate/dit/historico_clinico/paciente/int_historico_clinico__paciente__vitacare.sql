@@ -509,7 +509,7 @@ with
             {{ proper_br(remove_invalid_names(eliminate_babies("nome_social"))) }} as nome_social,
             data_nascimento,
             case
-                when lower(sexo) in  ('female', 'feminino') then 'feminino'
+                when lower(sexo) in ('female', 'feminino') then 'feminino'
                 when lower(sexo) in ('male', 'masculino') then 'masculino'
                 else null
             end as genero,
