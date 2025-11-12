@@ -28,15 +28,27 @@ with
             data_assinatura as exame_data_assinatura,
             safe_cast(paciente_cpf as int64) as cpf_particao
         from source
+    ),
+
+    exames_agg as (
+        select
+            paciente_cpf,
+            array_agg(exame_nome) as exame_nome,
+            array_agg(exame_codigo) as exame_codigo,
+            array_agg(exame_data_assinatura) as exame_data_assinatura,
+            medico_solicitante,
+            unidade_nome,
+            laudo_url,
+            cpf_particao
+        from exames
+        group by
+            paciente_cpf,
+            medico_solicitante,
+            unidade_nome,
+            laudo_url,
+            cpf_particao
     )
 
 select
-    unidade_nome,
-    paciente_cpf,
-    exame_nome,
-    exame_codigo,
-    exame_data_assinatura,
-    laudo_url,
-    medico_solicitante,
-    cpf_particao
-from exames
+    *
+from exames_agg

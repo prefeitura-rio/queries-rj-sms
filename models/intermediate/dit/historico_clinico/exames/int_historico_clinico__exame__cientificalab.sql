@@ -66,7 +66,9 @@ with
     ),
 
     codigos_exames as (
-        select codigo, exame
+        select
+            {{ process_null(codigo) }},
+            {{ process_null(exame) }}
         from {{ ref("raw_sheets__codigos_exames") }}
     ),
 
