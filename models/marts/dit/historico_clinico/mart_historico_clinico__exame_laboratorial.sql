@@ -18,8 +18,9 @@ with
     ),
 
     exames as (
-        select 
+        select
             paciente_cpf,
+            exame_nome,
             codigo_apoio,
             medico_solicitante,
             unidade_nome,
@@ -27,14 +28,32 @@ with
             data_assinatura,
             safe_cast(paciente_cpf as int64) as cpf_particao
         from source
+    ),
+
+    exames_agg as (
+        select
+            paciente_cpf,
+            array_agg(
+                struct(
+                    exame_nome as descricao,
+                    codigo_apoio as codigo,
+                    data_assinatura
+                )
+            ) as exames,
+            medico_solicitante,
+            unidade_nome,
+            laudo_url,
+            max(data_assinatura) as _ultima_data_assinatura,
+            cpf_particao
+        from exames
+        group by
+            paciente_cpf,
+            medico_solicitante,
+            unidade_nome,
+            laudo_url,
+            cpf_particao
     )
 
-select 
-    paciente_cpf, 
-    codigo_apoio, 
-    medico_solicitante, 
-    unidade_nome,
-    laudo_url, 
-    data_assinatura,
-    cpf_particao
-from exames
+select
+    *
+from exames_agg
