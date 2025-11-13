@@ -39,10 +39,11 @@ with
                     codigo_apoio as codigo,
                     data_assinatura
                 )
-            ) as exame,
+            ) as exames,
             medico_solicitante,
             unidade_nome,
             laudo_url,
+            max(data_assinatura) as _ultima_data_assinatura,
             cpf_particao
         from exames
         group by

@@ -798,20 +798,24 @@ models:
         description: CPF do paciente
         policy_tags:
           - '{{ var("TAG_CPF") }}'
-      - name: exame
+      - name: exames
         description: Informações sobre os exames em um mesmo laudo
-      - name: exame.descricao
+      - name: exames.descricao
         description: >
           Descrição do exame (ex.: "HEMOGLOBINA GLICADA")
-      - name: exame.codigo
+      - name: exames.codigo
         description: >
           Código descritivo do exame (ex.: "HGL" → exame de hemoglobina glicada)
-      - name: exame.data_assinatura
+      - name: exames.data_assinatura
         description: Data em que o exame foi assinado pelo médico
       - name: laudo_url
         description: URL do laudo em PDF
       - name: medico_solicitante
         description: Nome do(a) médico(a) que solicitou o exame ao paciente
+      - name: _ultima_data_assinatura
+        description: >
+          Data mais recente de assinatura de exame; usado para ordenar laudos
+          de um paciente por atividade mais recente.
       - name: cpf_particao
         description: Particionamento pelo CPF do paciente
         policy_tags:
