@@ -16,8 +16,6 @@ with
         p.numero_cpf_paciente as cpf,
         p.numero_cartao_saude as cns,
         p.nome_paciente as nome,
-
-        'Simplificado' as tipo,
         --ta.descricao_classificacao_atendimento as tipo,
         ta.descricao_tipo_atendimento as subtipo,
         datetime(a.data_entrada_atendimento, parse_time('%H%M', a.hora_entrada_atendimento)) as entrada_datahora, 
@@ -76,7 +74,7 @@ with
 
     cid_3_digitos as (
         select distinct 
-            id_paciente as id, 
+            id_paciente, 
             upper(codigo_cid10_primario) as id_cid,
             c.categoria.descricao as cid_nome,
             data_cid10_secundario as data_diagnostico
@@ -87,7 +85,7 @@ with
         union all
 
         select distinct 
-            id_paciente as id, 
+            id_paciente, 
             upper(codigo_cid10_secundario) as id_cid,
             c.categoria.descricao as cid_nome,
             data_cid10_secundario as data_diagnostico
@@ -105,7 +103,7 @@ with
 
     cid_grouped as (
         select
-            id,
+            id_paciente,
             array_agg(
                 struct(
                     id_cid as id,
@@ -120,11 +118,10 @@ with
 
     simplificado_final as (
         select
-            id_hci,
-            id_paciente,
             cpf,
+            a.id_paciente,
             cns,
-            tipo, 
+            'Simplificado' as tipo,
             subtipo,
             entrada_datahora,
             saida_datahora,
@@ -135,7 +132,7 @@ with
             data_particao,
             cpf_particao
         from atendimento_simplificado a
-        left join cid_grouped cg on a.id_paciente = cg.id
+        left join cid_grouped cg on a.id_paciente = cg.id_paciente
         
     ),
 
@@ -150,13 +147,19 @@ with
             p.registro_prontuario as id_paciente_global,
             a.data_atendimento as entrada_datahora,
             a.id_unidade_saude,
-            p.altura_paciente as altura,
-            p.peso_paciente as peso,
-            
-
+            u.cnes_unidade_saude as cnes, 
+            u.nome_unidade_saude as estabelecimento_nome,
+            e.tipo_sms as estabelecimento_tipo,
+            m.numero_crm as crm,
+            m.nome_medico, 
+            m.cpf_medico as medico_cpf,
+            a.loaded_at,
+            a.transformed_at
         from {{ref('raw_prescricao_atendimentos')}} a 
         left join {{ref('raw_prescricao_pacientes')}} p on a.id_paciente = p.id_paciente
-    
+        left join {{ref('raw_prescricao_unidades_saude')}} u on a.id_unidade_saude = u.id_unidade_saude
+        left join {{ref('dim_estabelecimento')}} e on u.cnes_unidade_saude = e.id_cnes
+        left join {{ref('raw_prescricao_medicos')}} m on a.conselho_regional_medicina = m.numero_crm
     ),
 
     prescricoes_ambulatorial as (
@@ -191,44 +194,18 @@ with
     ),
 
 
+
     episodio_ambulatorial as (
         select 
-            id_hci,
-            null as id_paciente
+            a.id_paciente_global as id_paciente,
             'Ambulatorial' as tipo,
             '' as subtipo,
             a.entrada_datahora,
             null as saida_datahora,
-            
-            -- medidas
-            struct(
-                p.altura as altura,
-                null as circunferencia_abdominal,
-                null as frequencia_cardiaca,
-                null as frequencia_respiratoria,
-                null as glicemia,
-                null as hemoglobina_glicada,
-                null as imc,
-                p.peso as peso_paciente,
-                null as pressao_sistolica,
-                null as pressao_diastolica,
-                null as pulso_ritmo,
-                null as saturacao_oxigenio,
-                null as temperatura
-            ) as medidas,
             null as motivo_atendimento, -- Tabela de evoluções
-            null as desfecho_atendimento
-            -- condicoes
-                -- cid
-                -- descricao
-                -- situacao 'ativo' 
-                -- data_diagnostico
-                -- resumo
-            -- prescricoes 
-                -- id 
-                -- nome
-                -- concentracao
-                -- uso continuo
+            null as desfecho_atendimento,
+            cg.condicoes,
+            pa.prescricoes,
             -- medicamentos_administrados
                 -- nome
                 -- quantidade
@@ -236,25 +213,35 @@ with
                 -- uso
                 -- via_administracao
                 -- prescricao_data
-            -- estabelecimento
-                -- id_cnes
-                -- nome
-                -- estabelecimento_tipo
+            struct(
+                a.cnes,
+                a.estabelecimento_nome as nome,
+                a.estabelecimento_tipo as tipo 
+            ) as estabelecimento,
             -- profissional
-                -- id
-                -- cpf
-                -- cns
-                -- nome
-                -- especialidade
+            struct(
+                a.crm as id,
+                a.medico_cpf as cpf,
+                a.nome_medico as nome,
+                null as cns,
+                null as especialidade
+            ) as profissional,
             -- prontuario
-                -- id_prontuario_global
-                -- id_prontuario_local
-                -- fornecedor
-            -- metadados
-        
-        from atendimento_ambulatorial a
-    )
+            struct(
+                a.id_atendimento as id_prontuario_global,
+                null as id_prontuario_local,
+                'pcsm' as fornecedor
+            ) as prontuario,
 
-select * from simplificado_final
+            struct(
+                a.loaded_at as imported_at,
+                a.transformed_at as updated_at,
+                current_timestamp() as processed_at
+            ) as metadados
+        from atendimento_ambulatorial a
+        left join cid_grouped cg on a.id_paciente_global = cg.id_paciente
+        left join prescricoes_ambulatorial_agg pa on a.id_atendimento = pa.id_atendimento
+    ) 
+select * from episodio_ambulatorial
 
 
