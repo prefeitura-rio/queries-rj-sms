@@ -1,9 +1,0 @@
-##  CNES  ##
-GDB -> legível
----
-LFCES004 -> estabelecimento
-LFCES018 -> profissional
-LFCES021 -> vinculo
-LFCES037 -> equipe
-LFCES038 -> equipe_vinculo
-NFCES046 -> equipe_tipo

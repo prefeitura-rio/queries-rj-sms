@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: brutos_gdb_cnes_staging
+    database: rj-sms
+    schema: brutos_gdb_cnes_staging
+    tables:
+
+    - name: LFCES004
+      # LFCES004 -> estabelecimento
+
+    - name: LFCES018
+      # LFCES018 -> profissional
+
+    - name: LFCES021
+      # LFCES021 -> vinculo
+
+    - name: LFCES038
+      # LFCES038 -> equipe_profissionais
+
+    - name: equipe
+      # LFCES037 -> equipe
+
+    - name: NFCES046
+      # NFCES046 -> equipe_tipo

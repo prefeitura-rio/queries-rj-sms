@@ -129,9 +129,9 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      cnes_gdb:
-        +schema: brutos_cnes_gdb
-        +tags: ["weekly",'cnes_gdb']
+      gdb_cnes:
+        +schema: brutos_gdb_cnes
+        +tags: ["weekly", "gdb_cnes"]
         +labels:
           dado_publico: sim
           dado_pessoal: sim
