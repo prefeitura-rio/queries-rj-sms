@@ -21,11 +21,11 @@ with
         select
             paciente_cpf,
             exame_nome,
-            codigo_apoio as exame_codigo,
+            codigo_apoio,
             medico_solicitante,
             unidade_nome,
             laudo_url,
-            data_assinatura as exame_data_assinatura,
+            data_assinatura,
             safe_cast(paciente_cpf as int64) as cpf_particao
         from source
     ),
@@ -33,9 +33,13 @@ with
     exames_agg as (
         select
             paciente_cpf,
-            array_agg(exame_nome) as exame_nome,
-            array_agg(exame_codigo) as exame_codigo,
-            array_agg(exame_data_assinatura) as exame_data_assinatura,
+            array_agg(
+                struct(
+                    exame_nome as descricao,
+                    codigo_apoio as codigo,
+                    data_assinatura
+                )
+            ) as exame,
             medico_solicitante,
             unidade_nome,
             laudo_url,
