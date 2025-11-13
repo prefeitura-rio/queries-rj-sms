@@ -3,7 +3,7 @@ case
     when {{ value }} is null then null
     when (
         lower(trim(cast({{ value }} as string)))
-    ) in ('null', 'none', 'na', 'n/a', 'nan', 'nat', '', '-')
+    ) in ('null', 'none', 'na', 'n/a', 'nan', 'nat', '', '-', 'x', 'X')
     then null
     else {{ value }}
 end
