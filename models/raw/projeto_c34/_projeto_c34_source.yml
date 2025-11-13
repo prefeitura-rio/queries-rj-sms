@@ -9,5 +9,6 @@ sources:
     - name: c34_ser_ambulatorial
     - name: c34_sigtap
     - name: c34_sia_2024
+    - name: c34_sia_2023
     - name: c34_cns_cpf
     
