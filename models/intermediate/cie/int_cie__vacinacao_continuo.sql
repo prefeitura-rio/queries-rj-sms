@@ -31,7 +31,8 @@ with
             profissional_cbo,
             profissional_cns,
             profissional_cpf,
-            patient_cpf
+            patient_cpf,
+            ut_id
         from {{ ref('raw_prontuario_vitacare_api__acto') }}
     ),
     pacientes_historico as (
