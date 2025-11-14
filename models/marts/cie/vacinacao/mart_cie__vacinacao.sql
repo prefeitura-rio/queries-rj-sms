@@ -2,54 +2,52 @@
     config(
         alias="vacinacao",
         materialized="table",
+        partition_by={
+            "field": "particao_data_vacinacao",
+            "data_type": "date",
+            "granularity": "month"
+        }
     )
 }}
 
 with
-    source as (
-        select * from {{ ref("raw_prontuario_vitacare__vacinacao") }}
+    continuo_e_historico as (
+        select *, 'historico' as origem from {{ ref('int_cie__vacinacao_historico') }}
+        union all
+        select *, 'continuo' as origem from {{ ref('int_cie__vacinacao_continuo') }}
     ),
 
-    pacientes as (
-        select
-            id_vacinacao,
-            id_surrogate,
-            id_cnes,
-            id_equipe,
-            id_equipe_ine,
-            id_microarea,
-            paciente_id_prontuario,
-            paciente_cns,
-            paciente_cpf,
-            estabelecimento_nome,
-            equipe_nome,
-            profissional_nome,
-            profissional_cbo,
-            profissional_cns,
-            profissional_cpf,
-            vacina_descricao,
-            vacina_dose,
-            vacina_lote,
-            vacina_registro_tipo,
-            vacina_estrategia,
-            vacina_diff,
-            vacina_aplicacao_data,
-            vacina_registro_data,
-            paciente_nome,
-            paciente_sexo,
-            paciente_nascimento_data,
-            paciente_nome_mae,
-            paciente_mae_nascimento_data,
-            paciente_situacao,
-            paciente_cadastro_data,
-            paciente_obito,
-            requisicao_id_cnes,
-            requisicao_area_programatica,
-            requisicao_endpoint,
-            metadados,
-            particao_data_vacinacao
-        from source
+    api as (
+        select *, 'api' as origem
+        from {{ ref('int_cie__vacinacao_api') }}
+        where id_vacinacao not in (
+            select id_vacinacao
+            from continuo_e_historico
+        )
+    ),
+
+    vacinacoes as (
+        select * from continuo_e_historico
+        union all
+        select * from api
+    ),
+
+
+    vacinacoes_dedup as (
+        select 
+            *
+        from vacinacoes
+        qualify row_number() over (
+            partition by id_vacinacao
+            order by 
+                case 
+                    when origem = 'api' then 1 
+                    when origem = 'historico' then 2 
+                    else 3 
+                end
+        ) = 1
     )
 
-select * 
-from source
+select *
+from vacinacoes_dedup
+   
