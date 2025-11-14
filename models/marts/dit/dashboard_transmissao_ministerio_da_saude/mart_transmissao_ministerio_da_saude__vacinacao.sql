@@ -24,11 +24,11 @@ vacinacoes_api as (
       (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '22') or
       (v.vacina_registro_data between '2025-06-30' and '2025-10-11' and e.area_programatica = '31') or
       (v.vacina_registro_data between '2025-08-11' and '2025-10-11' and e.area_programatica = '32') or
-      (v.vacina_registro_data between '2025-08-11' and '2025-10-14' and e.area_programatica = '33') --or
-      -- (v.vacina_registro_data between '2025-08-18' and '2025-10-17' and e.area_programatica = '40') or
-      -- (v.vacina_registro_data between '2025-08-18' and '2025-10-18' and e.area_programatica = '51') or
-      -- (v.vacina_registro_data between '2025-08-25' and '2025-10-18' and e.area_programatica = '52') or
-      -- (v.vacina_registro_data between '2025-08-25' and '2025-10-18' and e.area_programatica = '53')
+      (v.vacina_registro_data between '2025-08-11' and '2025-10-14' and e.area_programatica = '33') or
+      (v.vacina_registro_data between '2025-08-18' and '2025-10-17' and e.area_programatica = '40') or
+      (v.vacina_registro_data between '2025-08-18' and '2025-10-18' and e.area_programatica = '51') or
+      (v.vacina_registro_data between '2025-08-25' and '2025-10-18' and e.area_programatica = '52') or
+      (v.vacina_registro_data between '2025-08-25' and '2025-10-18' and e.area_programatica = '53')
     )
 ),
 vacinacoes_bkp as (
@@ -49,16 +49,31 @@ vacinacoes_bkp as (
       (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '22') or
       (v.data_registro between '2025-06-30' and '2025-10-11' and e.area_programatica = '31') or
       (v.data_registro between '2025-08-11' and '2025-10-11' and e.area_programatica = '32') or
-      (v.data_registro between '2025-08-11' and '2025-10-14' and e.area_programatica = '33')
+      (v.data_registro between '2025-08-11' and '2025-10-14' and e.area_programatica = '33') or
+      (v.data_registro between '2025-08-18' and '2025-10-17' and e.area_programatica = '40') or
+      (v.data_registro between '2025-08-18' and '2025-10-18' and e.area_programatica = '51') or
+      (v.data_registro between '2025-08-25' and '2025-10-18' and e.area_programatica = '52') or
+      (v.data_registro between '2025-08-25' and '2025-10-18' and e.area_programatica = '53')
     )
 ),
+
 vacinacoes_merge as (
   select * from vacinacoes_api
   union all
   select * from vacinacoes_bkp
 ),
+
 vacinacoes as (
   select distinct * from vacinacoes_merge
+),
+
+rnds_transmissao as (
+  select 
+    e.area_programatica,
+    e.id_cnes,
+    transmissao.* except (id_cnes)
+  from {{ ref("raw_prontuario_vitacare__transmissao") }} as transmissao
+    left join {{ ref("dim_estabelecimento") }} as e on transmissao.id_cnes = e.id_cnes
 ),
 
 formatted as (
@@ -73,9 +88,10 @@ formatted as (
     t.uuid_local, 
     t.uuid_rnds
   FROM vacinacoes v
-    FULL OUTER JOIN {{ ref("raw_prontuario_vitacare__transmissao") }} t on id_vacinacao = id_vacinacao_global
+    FULL OUTER JOIN rnds_transmissao t on id_vacinacao = id_vacinacao_global
   ORDER BY v.vacina_aplicacao_data
 ),
+
 
 final as (
   select 
