@@ -13,7 +13,7 @@ with
             nome,
             cns,
             cpf
-        from {{ ref("raw_gdb_cnes__profissional") }}
+        from {{ ref("raw_cnes_gdb__profissional") }}
     ),
     unidades_de_saude as (
         select
@@ -70,7 +70,7 @@ with
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
             data_ultima_atualizacao,
-        from {{ ref("raw_gdb_cnes__vinculo") }} as gdb_profissional
+        from {{ ref("raw_cnes_gdb__vinculo") }} as gdb_profissional
         left join cbo_datasus using (id_cbo)
         inner join unidades_de_saude using (id_unidade)
     ),
@@ -83,8 +83,8 @@ with
             equipe_sequencial,
             id_equipe_tipo,
             equipe_descricao
-        from {{ ref('raw_gdb_cnes__equipe')}}
-        left join {{ ref('raw_gdb_cnes__equipe_tipo')}}
+        from {{ ref('raw_cnes_gdb__equipe')}}
+        left join {{ ref('raw_cnes_gdb__equipe_tipo')}}
         using (id_equipe_tipo)
     ),
     profissionais_consultorio_rua as (
@@ -92,7 +92,7 @@ with
             id_profissional_sus,
             id_equipe_tipo,
             equipe_descricao
-        from {{ ref('raw_gdb_cnes__equipe_profissionais') }} 
+        from {{ ref('raw_cnes_gdb__equipe_profissionais') }} 
         left join equipe_consultorio_rua
         using (equipe_sequencial)
         where id_equipe_tipo = '73'

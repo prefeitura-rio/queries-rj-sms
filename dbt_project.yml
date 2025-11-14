@@ -129,6 +129,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      cnes_gdb:  # TODO: remover quando a transição para gdb_cnes terminar
+        +schema: brutos_cnes_gdb
+        +tags: ["weekly",'cnes_gdb']
+        +labels:
+          dado_publico: sim
+          dado_pessoal: sim
+          dado_sensivel: sim
       gdb_cnes:
         +schema: brutos_gdb_cnes
         +tags: ["weekly", "gdb_cnes"]

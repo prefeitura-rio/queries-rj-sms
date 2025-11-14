@@ -115,7 +115,7 @@ with
             cpf,
             cns,
             upper(nome) as nome,
-        from {{ ref('raw_gdb_cnes__profissional') }}
+        from {{ ref('raw_cnes_gdb__profissional') }}
     ),
 
     -- Cópia de mart_historico_clinico__paciente na parte de cns

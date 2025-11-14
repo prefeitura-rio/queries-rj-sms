@@ -1,0 +1,472 @@
+version: 2
+models:
+  - name: raw_cnes_gdb__estabelecimento
+    description: |-
+      Tabela com a relação dos estabelecimentos de saúde
+      Tabela CNES: LFCES004
+      Granularidade: estabelecimento de saúde
+      Atualização: mensal
+    columns:
+      - name: id_unidade
+        description: Código da unidade de saúde
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: id_tipo_unidade
+        description: Tipo de Estabelecimento
+      - name: id_tipo_estabelecimento
+        description: Código do Tipo de Estabelecimento
+      - name: id_atividade_principal
+        description: Código da Atividade Principal
+      - name: id_municipio_gestor
+        description: Código do Município
+      - name: estado_gestor_sigla
+        description: Sigla do Estado
+      - name: id_regiao_saude
+        description: Código da Região de Saúde
+      - name: id_micro_regiao
+        description: Código da Microregião de Saúde
+      - name: id_distrito_sanitario
+        description: Código do Distrito Sanitário
+      - name: id_distrito_administrativo
+        description: Código do Módulo Assistencial (Conforme o plano Diretor de
+          Regionalização do Estado/Município)
+      - name: id_atividade
+        description: Código da Atividade de Ensino / Pesquisa
+      - name: id_cliente
+        description: Código de Fluxo da Clientela
+      - name: id_turno_atendimento
+        description: Código do Turno de Atendimento
+      - name: id_motivo_desabilitacao
+        description: Código do Motivo de Desativação do Estabelecimento
+      - name: id_natureza_juridica
+        description: Código da Natureza Jurídica do Estabelecimento
+      - name: cnpj_mantenedora
+        description: CNPJ da Mantenedora
+      - name: tipo_gestao
+        description: |-
+          Tipo de Gestão:
+          M - Municipal
+          E - Estadual
+          D - Dupla
+          S - Sem Gestão
+      - name: tipo_pessoa
+        description: |
+          Indica se é Pessoa Física ou Jurídica:
+          1 - Pessoa Física
+          3 - Pessoa Jurídica
+      - name: dependencia_nivel
+        description: |
+          Nivel de dependência do estabelecimento de saúde:
+          1 - Individual
+          3 - Mantido
+      - name: contrato_formalizado_sus
+        description: |
+          Indica se o Estabelecimento possui Contrato formalizado com o SUS
+          S - Sim 
+          N - Não
+      - name: nome_razao_social
+        description: Razão Social
+      - name: nome_fantasia
+        description: Nome fantasia
+      - name: endereco_logradouro
+        description: Logradouro
+      - name: endereco_numero
+        description: Número
+      - name: endereco_complemento
+        description: Complemento
+      - name: endereco_bairro
+        description: Bairro
+      - name: endereco_cep
+        description: Código de endereçamento postal (CEP)
+      - name: endereco_latitude
+        description: Latitude
+      - name: endereco_longitude
+        description: Longitude
+      - name: telefone
+        description: Telefone para contato
+      - name: fax
+        description: Fax para contato
+      - name: email
+        description: Email para contato
+      - name: url
+        description: "URL "
+      - name: cpf
+        description: |
+          CPF do Estabelecimento
+          Esse campo só é preenchido no caso do campo tipo_pfpj = 1
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
+      - name: cnpj
+        description: |-
+          CNPJ do Estabelecimento
+          Esse campo só é preenchido no caso do campo tipo_pfpj = 3
+      - name: aberto_sempre
+        description: "Funcionamento do estabelecimento. Indica se fica sempre aberto /
+          Ininterrupto: S - SIM N - NÃO"
+      - name: possui_conexao_internet
+        description: |
+          Possui Conexão Internet
+          S - Sim 
+          N - Não
+      - name: alvara_numero
+        description: Número do Alvará (Vigilância Sanitária)
+      - name: alvara_data_expedicao
+        description: Data de Expedição do Alvará (Vigilância Sanitária)
+      - name: alvara_orgao_expedidor
+        description: |-
+          Órgão Expedidor (Vigilância Sanitária)
+          1 - SES
+          2 - SMS
+      - name: licenca_sanitaria_data_validade
+        description: Data de Validade do Licenciamento Sanitário
+      - name: licenca_sanitaria_tipo
+        description: |
+          Tipo do Licenciamento Sanitário
+          1 - Total  
+          2 - Parcial/Restrições
+      - name: diretor_clinico_cpf
+        description: CPF do Diretor Clínico ou  Gerente / Administrador
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
+      - name: diretor_clinico_conselho
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+        description: Registro no Conselho de Classe do Diretor Clinico
+      - name: adesao_hospital_filantropico
+        description: Indica se o hospital fez adesão ao Programa de Reestruturação de
+          Hospital Filantrópico 1 - Sim 2 - Não
+      - name: gera_credito_gerente_sgif
+        description: Indica se o crédito gerado pelo estab. será direcionado para o
+          Gerente/Administrador(Terceiro)/Interveniente no SGIF (Sistema de
+          Gestão de Informações Financeiras do SUS). S - SIM N - NÃO
+      - name: data_entrada_sistema
+        description: Data da Primeira entrada no Banco de Produção Federal
+      - name: usuario_atualizador_registro
+        description: Último Usuário que atualizou o Registro
+      - name: data_atualizacao_registro
+        description: Data da Última Atualização do Registro
+      - name: usuario_atualizador_geolocalizacao
+        description: Nome do Usuário que atualizou as Coordenadas
+      - name: data_atualizacao_geolocalizacao
+        description: Data de atualização das Coordenadas
+      - name: mes_particao
+        description: Data de referência da partição formato (YYYY-MM)
+      - name: data_snapshot
+        description: Momento no qual foi feito o snapshot do registro
+      - name: data_carga
+        description: Data e hora (GMT-3) no qual foi feito o download do dataset
+  - name: raw_cnes_gdb__profissional
+    description: |-
+        Relação de profissionais do SUS.
+        Tabela original do CNES: LFCES018
+    columns:
+      - name: id_profissional_sus
+        description: Este é um identificador único para cada profissional no banco de
+          dados do SUS (Sistema Único de Saúde). É um valor de string que é
+          convertido do campo 'co_profissional_sus' nos dados de origem.
+      - name: id_profissional_cnes
+        description: Código raw do profissional de saúde
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: cns
+        description: Este é o número do CNS (Cartão Nacional de Saúde) do profissional.
+          É um identificador único fornecido a cada profissional de saúde no
+          Brasil. É um valor de string que é convertido do campo 'co_cns' nos
+          dados de origem.
+      - name: cpf
+        description: Este é o número do CPF do profissional.
+          É um identificador único fornecido a cada profissional de saúde no
+          Brasil. É um valor de string que é convertido do campo 'co_cns' nos
+          dados de origem.        
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: nome
+        description: Este é o nome do profissional. É um valor de string que é
+          convertido do campo 'no_profissional' nos dados de origem. Este campo
+          é usado para identificar o profissional de uma forma mais legível em
+          comparação com os campos 'id_profissional_sus' ou 'cns'.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: data_nascimento
+        description: Este é a data de nascimento do profissional. É um valor de string que é
+          convertido do campo 'data_nasc' nos dados de origem. 
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+      - name: sexo
+        description: Este é o sexo do profissional. É um valor de string que é
+          convertido do campo 'sexo' nos dados de origem.
+      - name: data_atualizacao
+        description: Esta coluna representa a data em que as informações do profissional
+          foram atualizadas pela última vez no banco de dados do SUS (Sistema
+          Único de Saúde). A data é formatada como AAAA-MM-DD.
+      - name: usuario_atualizador_registro
+        description: Esta coluna contém o identificador do usuário que atualizou pela
+          última vez o registro do profissional no banco de dados do SUS. Essas
+          informações são úteis para rastrear alterações e manter a
+          responsabilidade.
+      - name: data_atualizacao_origem
+        description: Esta é a data em que os dados originais foram atualizados pela
+          última vez. É importante para entender a atualidade dos dados e pode
+          ser usado para rastrear alterações ao longo do tempo.
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.time
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.time
+  - name: raw_cnes_gdb__equipe_profissionais
+    description: |-
+      Tabelas contendo os profissonais pertencentes as equipes nas unidades de saúde
+      Arquivo CNES: LFCES038
+      Granularidade: profissional / unidade de saúde
+    columns:
+      - name: id_profissional_sus
+        description: Código do profissional de saúde
+      - name: id_cbo
+        description: Código CBO do profissional
+      - name: equipe_sequencial
+        description: Código sequencial da equipe
+      - name: id_unidade
+        description: Código da unidade de saúde da equipe
+      - name: id_municipio
+        description: Código do município
+      - name: id_area
+        description: Código da área da equipe
+      - name: id_microarea
+        description: Código da microarea da equipe
+      - name: tipo_sus_nao_sus
+        description: Indica se o profissional faz atendimento SUS
+      - name:  id_vinculo_profissional
+        description: Indica a vinculação, o tipo e o sub tipo  de vinculo do Profissional com o Estabelecimento de Saúde
+      - name: data_entrada_profissional
+        description: Data de entrada do profissional na equipe
+      - name: data_desligamento_profissional
+        description: Data de desligamento do profissional na equipe
+      - name: id_cnes_outra_equipe
+        description: CNES no qual o Profissional completa a Carga Horária
+      - name: id_municipio_outra_equipe
+        description: Código do Município no qual o Profissional completa a Carga Horária
+      - name: id_area_outra_equipe
+        description: Código da Área na qual o Profissional completa a Carga Horária
+      - name: id_profissional_complementar
+        description: Profissional de Carga Horária Complementar
+      - name: cbo_profissional_complementar
+        description: CBO do Profissional de Carga Horária Complementar
+      - name: pertence_equipe_minima
+        description: Indica se o Profissional pertence a Equipe Mínima
+      - name: id_municipio_atuacao
+        description: Código do Municipio de atuação da microárea  do Profissional na Equipe
+      - name: data_atualizacao
+        description: Data de atualização do registro
+      - name: nome_usuario
+        description: Último Usuário que atualizou o Registro
+      - name: data_atualizacao_origem
+        description: Data da primeira entrada no Banco de Produção Federal
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.time
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.time
+  - name: raw_cnes_gdb__equipe
+    description: |-
+      Tabelas contendo o cadastro des equipes das unidades de saúde
+      Arquivo CNES: LFCES037
+      Granularidade: unidade de saude / equipe
+    columns:
+      - name: equipe_ine
+        description: Código INE da equipe
+      - name: equipe_sequencial
+        description: Código sequencial da equipe
+      - name: equipe_nome
+        description: Nome de referência da equipe
+      - name: id_tipo_equipe
+        description: Id do tipo de equipe
+      - name: id_subtipo_equipe
+        description: Id do tipo de equipe
+      - name: id_unidade
+        description: Código da unidade de saúde da equipe
+      - name: id_municipio
+        description: Código do município
+      - name: id_area
+        description: Código da área da equipe
+      - name: data_ativacao
+        description: Data de ativacao da equipe
+      - name: data_desativacao
+        description: Data de desativacao da equipe
+      - name: atende_pop_quilombola
+        description: Atende População Assistida Quilombolas
+      - name: atende_pop_assentados
+        description: Atende População Assistida Assentados
+      - name: atende_pop_geral
+        description: Atende População Assistida Geral
+      - name: atende_pop_escola
+        description: Atende População Assistida Escola
+      - name: atende_pop_pronasci
+        description: Atende População Assistida Pronasci
+      - name: atende_pop_indigena
+        description: Atende População Assistida Indígena
+      - name: atende_pop_ribeirinha
+        description: Atende População Assistida Ribeirinha
+      - name: atende_pop_situacao_rua
+        description: Atende População Assistida em Situação de Rua
+      - name: atende_pop_privada_liberdade
+        description: Atende População Assistida Privada de Liberdade
+      - name: atende_pop_conflito_lei
+        description: Atende População Assistida Com Transtorno Mental em Conflito com a Lei
+      - name: atende_pop_adolescente_conflito_lei
+        description: Atende População Assistida Adolescente em Conflito com a Lei
+      - name: id_cnes_uom
+        description: CNES da UOM (Unidade Odontológica Móvel)
+      - name: carga_horaria_uom
+        description: Carga horária da UOM (Unidade Odontológica Móvel)
+      - name: id_motivacao_desativacao_equipe
+        description: Código do Motivo de Desativação da Equipe
+      - name: id_tipo_desativacao_equipe
+        description: Código do Tipo de Desativação da Equipe
+      - name: id_profissional_preceptor
+        description: Código do profissional Preceptor na equipe
+      - name: id_cnes_preceptor
+        description: CNES no qual o Profissional está vinculado como Preceptor
+      - name: data_atualizacao
+        description: Data da Última Atualização do Registro
+      - name: data_atualizacao_origem
+        description: Data da primeira entrada no Banco de Produção Federal
+      - name: usuario
+        description: Último Usuário que atualizou o Registro
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.time
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.time
+  - name: raw_cnes_gdb__equipe_tipo
+    description: |-
+      Relação dos tipos de equipes das unidades de saúde
+      Arquivo CNES: NFCES046
+      Granularidade: Tipo de equipe
+    columns:
+      - name: id_equipe_tipo
+        description: Código de tipo da equipe
+      - name: equipe_descricao
+        description: Descrição do tipo da equipe
+      - name: id_equipe_grupo
+        description: Código de tipo de grupo da equipe
+      - name: mes_particao
+        description: Isso representa o mês da partição de dados. É usado para organizar
+          os dados por períodos de tempo para consultas e análises eficientes. O
+          valor está no formato de string.
+      - name: ano_particao
+        description: Esta coluna representa o ano da partição. É um valor de string que
+          corresponde ao ano em que os dados foram particionados. Essa
+          informação é crucial para entender o contexto temporal dos dados.
+      - name: data_particao
+        description: Esta coluna representa a data da partição. É um valor de string que
+          combina o ano e o mês da partição em uma única data (no formato
+          'AAAA-MM-01'). Essa data é importante para entender quando os dados
+          foram particionados e pode ser usada para análise baseada em tempo.
+      - name: data_carga
+        description: Esta coluna representa a data e hora em que os dados foram
+          carregados no banco de dados. É um valor de data e hora que fornece
+          informações precisas sobre quando os dados foram disponibilizados no
+          banco de dados. Essas informações são úteis para rastrear atualizações
+          de dados e garantir a atualidade dos dados.time
+      - name: data_snapshot
+        description: Esta coluna representa a data e hora em que o snapshot dos dados
+          foi tirado. É útil para rastrear as alterações históricas nos dados ao
+          longo do tempo. O tipo de dados dessa coluna é datetime.time
+  - name: raw_cnes_gdb__vinculo
+    description: |-
+      Tabelas contendo o vinculo do profissional no estabelecimento
+      Arquivo CNES: LFCES021
+      Granularidade: profissional / unidade de saude
+    columns:
+      - name: id_profissional_sus
+        description: Identificador do profissional no SUS
+      - name: id_unidade
+        description: >
+          Código da unidade de saúde. Pode ser cruzado com a tabela de `estabelecimento`
+          para obter o `id_cnes`, que é o que você quer.
+      - name: id_profissional_cnes
+        description: Identificador interno do profissional no CNES.
+      - name: id_cbo
+        description: Código Brasileiro de Ocupação (CBO) relacionado ao vínculo.
+      - name: atende_sus
+        description: Indica se o vínculo atende pelo SUS (S = true, N = false).
+      - name: id_vinculo
+        description: Código do vínculo funcional.
+      - name: empregador_cnpj
+        description: CNPJ do empregador responsável pelo vínculo.
+      - name: carga_horaria_outros
+        description: Carga horária em outros tipos de atendimento.
+      - name: carga_horaria_ambulatorial
+        description: Carga horária destinada ao atendimento ambulatorial.
+      - name: carga_horaria_hospitalar
+        description: Carga horária destinada ao atendimento hospitalar.
+      - name: id_conselho
+        description: Código do conselho profissional do profissional.
+      - name: conselho_numero_registro
+        description: Número de registro no conselho profissional.
+      - name: uf_crm
+        description: Unidade federativa do registro do conselho (CRM, por exemplo).
+      - name: eh_preceptor
+        description: Indica se o profissional é preceptor.
+      - name: eh_residente
+        description: Indica se o profissional é residente.
+      - name: status_vinculo
+        description: Status do vínculo ('Não aprovado', 'Consistido', 'Exportado').
+      - name: data_ultima_atualizacao
+        description: Data da última atualização do registro.
+      - name: usuario_atualizador
+        description: Usuário que realizou a última atualização no registro.
