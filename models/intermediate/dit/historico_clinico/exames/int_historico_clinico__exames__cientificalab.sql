@@ -17,7 +17,9 @@ with
                 r"(?i)^SMS\s+(RIO)?\s*",
                 ""
             ) as unidade_nome,
-            laudo_url
+            laudo_url,
+            -- datahora_pedido é TIMESTAMP; converte pra DATETIME
+            DATETIME(datahora_pedido, "America/Sao_Paulo") as datahora_pedido
         from {{ ref('raw_cientificalab__solicitacoes') }}
     ),
 
@@ -37,7 +39,7 @@ with
                 ),
                 " (SMS"
             )[safe_offset(0)] as medico_solicitante,
-            SAFE.PARSE_DATETIME("%d/%m/%Y %H:%M:%S", data_assinatura) as data_assinatura
+            SAFE.PARSE_DATETIME("%d/%m/%Y %H:%M:%S", data_assinatura) as datahora_assinatura
         from {{ ref('raw_cientificalab__exames') }}
     ),
 
@@ -49,7 +51,8 @@ with
             e.codigo_apoio,
             s.laudo_url,
             {{ proper_br("e.medico_solicitante") }} as medico_solicitante,
-            e.data_assinatura,
+            e.datahora_assinatura,
+            s.datahora_pedido
         from solicitacoes as s
         inner join exame as e on s.id = e.solicitacao_id
         where laudo_url is not null
@@ -61,14 +64,16 @@ with
         from exames_com_resultados
         qualify
             row_number() over (
-                partition by paciente_cpf, codigo_apoio, data_assinatura order by data_assinatura desc
+                partition by paciente_cpf, codigo_apoio, datahora_assinatura
+                order by datahora_assinatura desc
             ) = 1
     ),
 
+    -- Descrições de códigos de exames a partir de planilha
     codigos_exames as (
         select
-            {{ process_null(codigo) }},
-            {{ process_null(exame) }}
+            {{ process_null("codigo") }} as codigo,
+            {{ process_null("exame") }} as exame
         from {{ ref("raw_sheets__codigos_exames") }}
     ),
 

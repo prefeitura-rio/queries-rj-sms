@@ -14,7 +14,8 @@
 
 with
     source as (
-        select * from {{ ref("int_historico_clinico__exame__cientificalab") }}
+        select *
+        from {{ ref("int_historico_clinico__exames__cientificalab") }}
     ),
 
     exames as (
@@ -25,7 +26,8 @@ with
             medico_solicitante,
             unidade_nome,
             laudo_url,
-            data_assinatura,
+            datahora_pedido,
+            datahora_assinatura,
             safe_cast(paciente_cpf as int64) as cpf_particao
         from source
     ),
@@ -37,13 +39,14 @@ with
                 struct(
                     exame_nome as descricao,
                     codigo_apoio as codigo,
-                    data_assinatura
+                    datahora_assinatura
                 )
             ) as exames,
             medico_solicitante,
             unidade_nome,
             laudo_url,
-            max(data_assinatura) as _ultima_data_assinatura,
+            datahora_pedido,
+            max(datahora_assinatura) as _ultima_datahora_assinatura,
             cpf_particao
         from exames
         group by
@@ -51,6 +54,7 @@ with
             medico_solicitante,
             unidade_nome,
             laudo_url,
+            datahora_pedido,
             cpf_particao
     )
 

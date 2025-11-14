@@ -1,6 +1,6 @@
 {{
     config(
-        alias="medilab_exames",
+        alias="exames_medilab",
         schema="intermediario_historico_clinico",
         materialized="table",
         partition_by={
