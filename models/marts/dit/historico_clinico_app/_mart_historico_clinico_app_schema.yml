@@ -553,3 +553,170 @@ models:
         description: Particionamento pelo CPF do paciente
         policy_tags:
           - '{{ var("TAG_CPF") }}'
+  - name: mart_historico_clinico_app__vacinacao
+    columns:
+      - name: id_vacinacao
+        description: Identificador único da vacinação, composto por id_cnes e id local.
+        data_type: string
+        data_tests:
+          - unique:
+              name: mart_historico_clinico_app__vacinacao__id_vacinacao__unique
+              config:
+                severity: warn
+      - name: id_cnes
+        description: Identificador CNES do estabelecimento de saúde onde a vacina foi administrada.
+        data_type: string
+
+      - name: id_equipe
+        description: Identificador da equipe de saúde responsável pelo paciente.
+        data_type: string
+
+      - name: id_ine_equipe
+        description: Identificador INE da equipe de saúde conforme o CNES.
+        data_type: string
+
+      - name: id_microarea
+        description: Identificador da microárea de atuação da equipe de saúde.
+        data_type: string
+
+      - name: paciente_id_prontuario
+        description: Identificador do prontuário do paciente na unidade.
+        data_type: string
+
+      - name: paciente_cns
+        description: CNS (Cartão Nacional de Saúde) do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: paciente_cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de saúde.
+        data_type: string
+
+      - name: equipe_nome
+        description: Nome da equipe de saúde vinculada.
+        data_type: string
+
+      - name: profissional_nome
+        description: Nome do profissional de saúde que registrou a vacina.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: profissional_cbo
+        description: Código CBO do profissional.
+        data_type: string
+
+      - name: profissional_cns
+        description: CNS do profissional.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: profissional_cpf
+        description: CPF do profissional.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: vacina_descricao
+        description: Descrição da vacina administrada.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      - name: vacina_dose
+        description: Dose da vacina (exemplo 1ª, 2ª, reforço).
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      - name: vacina_lote
+        description: Número do lote da vacina.
+        data_type: string
+
+      - name: vacina_registro_tipo
+        description: Tipo de registro da vacina (exemplo normal, retroativo).
+        data_type: string
+
+      - name: vacina_estrategia
+        description: Estratégia de vacinação utilizada.
+        data_type: string
+
+      - name: vacina_diff
+        description: Diferença (em dias) entre data de aplicação e registro.
+        data_type: string
+
+      - name: vacina_aplicacao_data
+        description: Data de aplicação da vacina.
+        data_type: date
+
+      - name: vacina_registro_data
+        description: Data/hora em que o registro da vacina foi efetivado no sistema.
+        data_type: date
+        data_tests:
+          - not_null:
+              name: mart_historico_clinico_app__vacinacao__vacina_registro_data__not_null
+              config:
+                severity: warn
+
+      - name: paciente_nome
+        description: Nome do paciente vacinado.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: paciente_sexo
+        description: Sexo do paciente.
+        data_type: string
+
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: paciente_nome_mae
+        description: Nome da mãe do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+
+      - name: paciente_mae_nascimento_data
+        description: Data de nascimento da mãe do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: paciente_situacao
+        description: Situação atual do paciente no sistema (ativo, inativo, etc.).
+        data_type: string
+
+      - name: paciente_cadastro_data
+        description: Data de cadastro do paciente no sistema.
+        data_type: date
+
+      - name: paciente_obito
+        description: Indicador de óbito do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      - name: loaded_at
+        description: Data/hora de carga no Data Lake.
+        data_type: datetime
+
+      - name: origem
+        description: Fonte dos dados.
+        data_type: string
+
+      - name: cpf_particao
+        description: CPF do paciente convertido para inteiro para fins de partição.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

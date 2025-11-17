@@ -410,6 +410,13 @@ models:
             dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
+        cie:
+          +tags: ["cie", "daily"]
+          +schema: intermediario_cie
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
     marts:
       +materialized: table
       core:

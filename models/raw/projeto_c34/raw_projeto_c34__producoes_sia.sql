@@ -33,6 +33,27 @@ with
             left(cid_principal, 3) as cid_execucao_procedimento
         from {{ source("sub_geral_prod", "c34_sia_2024") }}
         where paciente_cns in (select cns_item from cns)
+
+        union all
+
+        select distinct
+            to_hex(
+                sha256(cast(safe_cast(paciente_cpf as int64) as string))
+            ) as paciente_id,
+            safe_cast(paciente_cpf as int64) as paciente_cpf,
+            safe_cast(paciente_cns as int64) as paciente_cns,
+
+            "SIA" as sistema,
+
+            procedimento_id,
+            parse_date('%Y%m%d', safe_cast(data_realizacao as string)) as data_realizacao,
+            unidade_executante_cnes,
+            procedimento_qtd,
+            parse_date('%Y%m%d', safe_cast(data_inicial_apac as string)) as data_inicial_apac,
+            competencia_realizacao_proced,
+            left(cid_principal, 3) as cid_execucao_procedimento
+        from {{ source("sub_geral_prod", "c34_sia_2023") }}
+        where paciente_cns in (select cns_item from cns)
     ),
 
     sia_cns as (
