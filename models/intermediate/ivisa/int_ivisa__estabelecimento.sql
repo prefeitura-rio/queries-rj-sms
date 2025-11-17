@@ -1,15 +1,16 @@
-{{
-    config(
-        alias="empreendimentos",
-        schema="projeto_empreendimentos_cariocas",
-        materialized="table",
-        partition_by={
-          "field": "particao_cnpj",
-          "data_type": "int64",
-          "range": {"start": 0, "end": 99999999999, "interval": 2499999999975},
-        }
-    )
-}}
+-- {{
+--     config(
+--         alias="empreendimentos",
+--         schema="projeto_empreendimentos_cariocas",
+--         materialized="",
+--         partition_by={
+--           "field": "particao_cnpj",
+--           "data_type": "int64",
+--           "range": {"start": 0, "end": 99999999999, "interval": 2499999999975},
+--         }
+--     )
+-- }}
+
 
 with 
 
@@ -61,22 +62,45 @@ estabelecimentos_receita_federal as (
     from {{ ref('raw_bcadastro__cnpj') }} as cadastros
 ),
 
+-- Identificação
+-- - Tipo (Estabelecimento, Feirante, etc)
+-- - ID SISVISA
+-- - CPF
+-- - CNPJ
+-- - Inscrição Municipal
+
+-- Cadastro
+-- - Nome do Empreendimento (Razão Social ou Nome do Titular)
+-- - Titular
+-- - Titular com Óbito
+
+-- Situação
+-- - Situação
+
+-- Operação
+-- - Tipos de Operação
+-- - Atividades
+-- - Endereço
+
 estabelecimentos_no_sisvisa_atualizados as (
     select
         cast(estabelecimentos_no_sisvisa.cnpj as int64) as particao_cnpj,
 
         struct(
+            'Estabelecimento' as tipo,
             id as id_sisvisa,
-            inscricao_municipal,
+            null as cpf,
             estabelecimentos_no_sisvisa.cnpj
-        ) as chaves,
+            inscricao_municipal,
+        ) as identificacao,
 
-        estabelecimentos_no_sisvisa.razao_social,
-        estabelecimentos_no_sisvisa.nome_fantasia,
-
-        estabelecimentos_receita_federal.natureza_juridica,
-        formas_atuacao,
-        porte,
+        struct(
+            estabelecimentos_no_sisvisa.razao_social as nome_empreendimento,
+            estabelecimentos_receita_federal.natureza_juridica,
+            porte,
+            cast(null as string) as titular,
+            cast(null as string) as titular_com_obito
+        ) as cadastro,
 
         struct(
             ativo as sisvisa,
@@ -84,24 +108,11 @@ estabelecimentos_no_sisvisa_atualizados as (
         ) as atividade,
 
         struct(
-            estabelecimentos_no_sisvisa.endereco_logradouro_tipo,
-            estabelecimentos_no_sisvisa.endereco_logradouro,
-            estabelecimentos_no_sisvisa.endereco_numero,
-            estabelecimentos_no_sisvisa.endereco_complemento,
-            estabelecimentos_no_sisvisa.endereco_cep,
+            null as atividades,
+            formas_atuacao as tipos_operacoes,
             estabelecimentos_no_sisvisa.endereco_bairro,
             estabelecimentos_no_sisvisa.endereco_cidade
-        ) as endereco_sisvisa,
-
-        struct(
-            estabelecimentos_receita_federal.endereco_logradouro_tipo,
-            estabelecimentos_receita_federal.endereco_logradouro,
-            estabelecimentos_receita_federal.endereco_numero,
-            estabelecimentos_receita_federal.endereco_complemento,
-            estabelecimentos_receita_federal.endereco_cep,
-            estabelecimentos_receita_federal.endereco_bairro,
-            estabelecimentos_receita_federal.endereco_cidade
-        ) as endereco_receita_federal,
+        ) as operacao,
 
         struct(
             cast(situacao_do_alvara as string) as alvara,
