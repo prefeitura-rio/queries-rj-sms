@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: brutos_sisvisa_staging
+    database: rj-sms
+    schema: brutos_sisvisa_staging
+    tables:
+      - name: Ambulante
+      - name: Atividade
+      - name: AtividadeAmbulante
+      - name: AtividadeFeirante
+      - name: AtividadesDoEstabelecimento
+      - name: BancaJornal
+      - name: Creche
+      - name: EscolaMunicipal
+      - name: Estabelecimento
+      - name: EstacaoTransportePublico
+      - name: Feirante
+      - name: GrupoAtividade
+      - name: GrupoAtividadeClassificada
+      - name: Hotel
+      - name: OutroLocal
+      - name: Piscina
+      - name: UnidadePublicaSaude

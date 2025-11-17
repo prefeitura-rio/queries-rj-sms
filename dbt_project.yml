@@ -204,6 +204,13 @@ models:
           dado_pessoal: nao
           dado_sensivel: nao
           dominio: estoque
+      sisvisa:
+        +schema: brutos_sisvisa
+        +tags: ["daily", "sisvisa"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       historico_clinico_integrado:
         +schema: brutos_historico_clinico_integrado
         +tags: "daily"
