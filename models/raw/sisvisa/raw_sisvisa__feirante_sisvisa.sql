@@ -1,7 +1,7 @@
 {{
     config(
         schema="brutos_sisvisa",
-        alias="feirante",
+        alias="feirante_sisvisa",
     )
 }}
 

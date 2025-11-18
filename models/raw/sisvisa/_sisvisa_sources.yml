@@ -22,3 +22,4 @@ sources:
       - name: OutroLocal
       - name: Piscina
       - name: UnidadePublicaSaude
+      - name: Vw_Feirante_Datalake
