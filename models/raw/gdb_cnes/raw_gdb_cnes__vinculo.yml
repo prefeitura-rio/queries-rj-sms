@@ -17,7 +17,8 @@ models:
       - name: id_cbo
         description: Código Brasileiro de Ocupação (CBO) relacionado ao vínculo.
       - name: atende_sus
-        description: Indica se o vínculo atende pelo SUS (S = true, N = false).
+        description: Indica se o vínculo atende pelo SUS.
+        data_type: bool
       - name: id_vinculo
         description: Código do vínculo funcional.
       - name: empregador_cnpj
@@ -36,11 +37,19 @@ models:
         description: Unidade federativa do registro do conselho (CRM, por exemplo).
       - name: eh_preceptor
         description: Indica se o profissional é preceptor.
+        data_type: bool
       - name: eh_residente
         description: Indica se o profissional é residente.
+        data_type: bool
       - name: status_vinculo
         description: Status do vínculo ('Não aprovado', 'Consistido', 'Exportado').
       - name: data_ultima_atualizacao
         description: Data da última atualização do registro.
       - name: usuario_atualizador
         description: Usuário que realizou a última atualização no registro.
+      - name: data_carga
+        description: Data e hora em que os dados foram carregados no banco de dados
+        data_type: string
+      - name: data_particao
+        description: Data e hora de particionamento da tabela crua
+        data_type: string

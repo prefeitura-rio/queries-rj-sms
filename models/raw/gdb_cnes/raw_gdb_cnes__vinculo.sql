@@ -23,23 +23,27 @@ renamed as (
         -- CONSELHOID: FK NFCES033
         cast(CONSELHOID as string) as id_conselho,
 
-        if(TP_SUS_NAO_SUS='S',true,false) as atende_sus,
+        if(lower(trim(TP_SUS_NAO_SUS))='s',true,false) as atende_sus,
         cast(NU_CNPJ_DET_VINC as string) as empregador_cnpj,
         cast(CGHORAOUTR as integer) as carga_horaria_outros,
         cast(CG_HORAAMB as integer) as carga_horaria_ambulatorial,
         cast(CGHORAHOSP as integer) as carga_horaria_hospitalar,
         cast(N_REGISTRO as string) as conselho_numero_registro,
         cast(SG_UF_CRM as string) as uf_crm,
-        if(TP_PRECEPTOR='1',true,false) as eh_preceptor,
-        if(TP_RESIDENTE='1',true,false) as eh_residente,
-        case 
-            when STATUSMOV='1' then 'Não aprovado'
-            when STATUSMOV='2' then 'Consistido'
-            when STATUSMOV='3' then 'Exportado'
+        if(trim(TP_PRECEPTOR)='1',true,false) as eh_preceptor,
+        if(trim(TP_RESIDENTE)='1',true,false) as eh_residente,
+        case
+            when trim(STATUSMOV)='1' then 'Não aprovado'
+            when trim(STATUSMOV)='2' then 'Consistido'
+            when trim(STATUSMOV)='3' then 'Exportado'
             else null
         end as status_vinculo,
         cast(DATA_ATU as date) as data_ultima_atualizacao,
-        cast(USUARIO as string) as usuario_atualizador
+        cast(USUARIO as string) as usuario_atualizador,
+
+        -- Podem ser usados posteriormente para deduplicação
+        data_particao,
+        _loaded_at as data_carga,
     from source
 )
 select *

@@ -7,7 +7,11 @@
 
 with
     source as (
-        select * from {{ source("brutos_gdb_cnes_staging", "LFCES038") }}
+        select *
+        from {{ source("brutos_gdb_cnes_staging", "LFCES038") }}
+        -- TODO: filtrar por mais recentes?
+        --       algo como `where data_particao = (... max(data_particao))
+        --       ou então transformar a tabela em incremental?
     ),
     renamed as (
         select
@@ -41,7 +45,11 @@ with
             cast(FL_EQUIPEMINIMA as string) as pertence_equipe_minima,
             cast(CO_MUN_ATUACAO as string) as id_municipio_atuacao,
             cast(DATA_ATU as string) as data_atualizacao,
-            cast(USUARIO as string) as nome_usuario
+            cast(USUARIO as string) as nome_usuario,
+
+            -- Podem ser usados posteriormente para deduplicação
+            data_particao,
+            _loaded_at as data_carga,
         from source
     )
 

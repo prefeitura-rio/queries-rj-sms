@@ -12,7 +12,7 @@ renamed as (
     select
         -- TP_UNID_ID: FK NFCES010
         cast(TP_UNID_ID as string) as id_tipo_unidade,
-        -- CO_TIPO_ESTABELECIMENTO: FK NFCES119 
+        -- CO_TIPO_ESTABELECIMENTO: FK NFCES119
         cast(CO_TIPO_ESTABELECIMENTO as string) as id_tipo_estabelecimento,
         -- CO_ATIVIDADE_PRINCIPAL: FK NFCES118
         cast(CO_ATIVIDADE_PRINCIPAL as string) as id_atividade_principal,
@@ -40,18 +40,18 @@ renamed as (
         cast(DIST_ADMIN as string) as id_distrito_administrativo,
         cast(CNPJ_MANT as string) as cnpj_mantenedora,
         case
-            when PFPJ_IND='1' then 'Pessoa física'
-            when PFPJ_IND='3' then 'Pessoa jurídica'
+            when trim(PFPJ_IND)='1' then 'Pessoa física'
+            when trim(PFPJ_IND)='3' then 'Pessoa jurídica'
             else null
         end as tipo_pessoa,
         case
-            when NIVEL_DEP='1' then 'Individual'
-            when NIVEL_DEP='3' then 'Mantido'
+            when trim(NIVEL_DEP)='1' then 'Individual'
+            when trim(NIVEL_DEP)='3' then 'Mantido'
             else null
         end as dependencia_nivel,
         case 
-            when ST_CONTRATO_FORMALIZADO='S' then true
-            when ST_CONTRATO_FORMALIZADO='N' then false
+            when lower(trim(ST_CONTRATO_FORMALIZADO))='s' then true
+            when lower(trim(ST_CONTRATO_FORMALIZADO))='n' then false
             else null
         end as contrato_formalizado_sus,
         cast(R_SOCIAL as string) as nome_razao_social,
@@ -70,33 +70,33 @@ renamed as (
         cast(CPF as string) as cpf,
         cast(CNPJ as string) as cnpj,
         case 
-            when TP_ESTAB_SEMPRE_ABERTO='S' then true
-            when TP_ESTAB_SEMPRE_ABERTO='N' then false
+            when lower(trim(TP_ESTAB_SEMPRE_ABERTO))='s' then true
+            when lower(trim(TP_ESTAB_SEMPRE_ABERTO))='n' then false
             else null
         end as aberto_sempre,
         case
-            when ST_CONEXAOINTERNET='S' then true
-            when ST_CONEXAOINTERNET='N' then false
+            when lower(trim(ST_CONEXAOINTERNET))='s' then true
+            when lower(trim(ST_CONEXAOINTERNET))='n' then false
             else null
         end as possui_conexao_internet,
         cast(NUM_ALVARA as string) as alvara_numero,
         safe_cast(DATA_EXPED as date) as alvara_data_expedicao,
         case
-            when IND_ORGEXP='1' then 'SES'
-            when IND_ORGEXP='2' then 'SMS'
+            when trim(IND_ORGEXP)='1' then 'SES'
+            when trim(IND_ORGEXP)='2' then 'SMS'
             else null
         end as alvara_orgao_expedidor,
         safe_cast(DT_VAL_LIC_SANI as date) as licenca_sanitaria_data_validade,
         case
-            when TP_LIC_SANI='1' then 'Total'
-            when TP_LIC_SANI='2' then 'Parcial/Restrições'
+            when trim(TP_LIC_SANI)='1' then 'Total'
+            when trim(TP_LIC_SANI)='2' then 'Parcial/Restrições'
             else null
         end as licenca_sanitaria_tipo,
         cast(CPFDIRETORCLINICO as string) as diretor_clinico_cpf,
         cast(REGDIRETORCLINICO as string) as diretor_clinico_conselho,
         case
-            when FL_ADESAO_FILANTROP = '1' then true
-            when FL_ADESAO_FILANTROP = '2' then false
+            when trim(FL_ADESAO_FILANTROP) = '1' then true
+            when trim(FL_ADESAO_FILANTROP) = '2' then false
             else null
         end as adesao_hospital_filantropico,
         safe_cast(DATA_ATU as date) as data_atualizacao_registro,
@@ -104,11 +104,14 @@ renamed as (
         safe_cast(DT_ATU_GEO as date) as data_atualizacao_geolocalizacao,
         cast(NO_USUARIO_GEO as string) as usuario_atualizador_geolocalizacao,
         case 
-            when ST_GERACREDITO_GERENTE_SGIF='S' then true
-            when ST_GERACREDITO_GERENTE_SGIF='N' then false
+            when lower(trim(ST_GERACREDITO_GERENTE_SGIF))='s' then true
+            when lower(trim(ST_GERACREDITO_GERENTE_SGIF))='n' then false
             else null
         end as gera_credito_gerente_sgif,
 
+        -- Podem ser usados posteriormente para deduplicação
+        data_particao,
+        _loaded_at as data_carga,
     from source
 )
 

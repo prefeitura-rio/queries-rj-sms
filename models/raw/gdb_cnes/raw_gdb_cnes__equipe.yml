@@ -56,6 +56,9 @@ models:
         description: Código do Motivo de Desativação da Equipe
       - name: id_tipo_desativacao_equipe
         description: Código do Tipo de Desativação da Equipe
+      - name: tipo_desativacao_equipe
+        description: >
+          Conversão hardcoded do `id_tipo_desativacao_equipe`: "01"=Temporária; "02"=Definitiva.
       - name: id_profissional_preceptor
         description: Código do profissional Preceptor na equipe
       - name: id_cnes_preceptor
@@ -66,26 +69,9 @@ models:
         description: Data da primeira entrada no Banco de Produção Federal
       - name: usuario
         description: Último Usuário que atualizou o Registro
-      - name: mes_particao
-        description: Isso representa o mês da partição de dados. É usado para organizar
-          os dados por períodos de tempo para consultas e análises eficientes. O
-          valor está no formato de string.
-      - name: ano_particao
-        description: Esta coluna representa o ano da partição. É um valor de string que
-          corresponde ao ano em que os dados foram particionados. Essa
-          informação é crucial para entender o contexto temporal dos dados.
-      - name: data_particao
-        description: Esta coluna representa a data da partição. É um valor de string que
-          combina o ano e o mês da partição em uma única data (no formato
-          'AAAA-MM-01'). Essa data é importante para entender quando os dados
-          foram particionados e pode ser usada para análise baseada em tempo.
       - name: data_carga
-        description: Esta coluna representa a data e hora em que os dados foram
-          carregados no banco de dados. É um valor de data e hora que fornece
-          informações precisas sobre quando os dados foram disponibilizados no
-          banco de dados. Essas informações são úteis para rastrear atualizações
-          de dados e garantir a atualidade dos dados.time
-      - name: data_snapshot
-        description: Esta coluna representa a data e hora em que o snapshot dos dados
-          foi tirado. É útil para rastrear as alterações históricas nos dados ao
-          longo do tempo. O tipo de dados dessa coluna é datetime.time
+        description: Data e hora em que os dados foram carregados no banco de dados
+        data_type: string
+      - name: data_particao
+        description: Data e hora de particionamento da tabela crua
+        data_type: string

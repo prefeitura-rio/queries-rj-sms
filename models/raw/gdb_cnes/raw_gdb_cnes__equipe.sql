@@ -15,7 +15,7 @@ with
             cast(TP_EQUIPE as string) as id_equipe_tipo,
             -- UNIDADE_ID: FK LFCES004
             cast(UNIDADE_ID as string) as id_unidade,
-            -- COD_MUN: FKLFCES041
+            -- COD_MUN: FK LFCES041
             cast(COD_MUN as string) as id_municipio,
             -- COD_AREA: FK LFCES041
             cast(COD_AREA as string) as id_area,
@@ -23,6 +23,11 @@ with
             cast(CD_MOTIVO_DESATIV as string) as id_motivacao_desativacao_equipe,
             -- CD_TP_DESATIV: FK NFCES050
             cast(CD_TP_DESATIV as string) as id_tipo_desativacao_equipe,
+            case
+                when trim(CD_TP_DESATIV)="01" then "Temporária"
+                when trim(CD_TP_DESATIV)="02" then "Definitiva"
+                else null
+            end as tipo_desativacao_equipe,
 
             cast(CO_EQUIPE as string) as equipe_ine,
             cast(SEQ_EQUIPE as string) as equipe_sequencial,
@@ -40,14 +45,17 @@ with
             cast(TP_POP_ASSIST_SITUACAO_RUA as string) as atende_pop_situacao_rua,
             cast(TP_POP_ASSIST_PRIV_LIBERDADE as string) as atende_pop_privada_liberdade,
             cast(TP_POP_ASSIST_CONFLITO_LEI as string) as atende_pop_conflito_lei,
-            cast(TP_POP_ASSIST_ADOL_CONF_LEI as string
-            ) as atende_pop_adolescente_conflito_lei,
+            cast(TP_POP_ASSIST_ADOL_CONF_LEI as string) as atende_pop_adolescente_conflito_lei,
             cast(CO_CNES_UOM as string) as id_cnes_uom,
             cast(NU_CH_AMB_UOM as string) as carga_horaria_uom,
             cast(CO_PROF_SUS_PRECEPTOR as string) as id_profissional_preceptor,
             cast(CO_CNES_PRECEPTOR as string) as id_cnes_preceptor,
             safe_cast(DATA_ATU as date) as data_atualizacao,
-            cast(USUARIO as string) as usuario
+            cast(USUARIO as string) as usuario,
+
+            -- Podem ser usados posteriormente para deduplicação
+            data_particao,
+            _loaded_at as data_carga,
         from source
     )
 select *
