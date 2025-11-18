@@ -1,17 +1,3 @@
--- {{
---     config(
---         alias="empreendimentos",
---         schema="projeto_empreendimentos_cariocas",
---         materialized="",
---         partition_by={
---           "field": "particao_cnpj",
---           "data_type": "int64",
---           "range": {"start": 0, "end": 99999999999, "interval": 2499999999975},
---         }
---     )
--- }}
-
-
 with 
 
 estabelecimentos_no_sisvisa as (
@@ -61,26 +47,6 @@ estabelecimentos_receita_federal as (
 
     from {{ ref('raw_bcadastro__cnpj') }} as cadastros
 ),
-
--- Identificação
--- - Tipo (Estabelecimento, Feirante, etc)
--- - ID SISVISA
--- - CPF
--- - CNPJ
--- - Inscrição Municipal
-
--- Cadastro
--- - Nome do Empreendimento (Razão Social ou Nome do Titular)
--- - Titular
--- - Titular com Óbito
-
--- Situação
--- - Situação
-
--- Operação
--- - Tipos de Operação
--- - Atividades
--- - Endereço
 
 estabelecimentos_no_sisvisa_atualizados as (
     select
