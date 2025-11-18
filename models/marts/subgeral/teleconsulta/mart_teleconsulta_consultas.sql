@@ -16,6 +16,11 @@ with
         group by 1
     ),
 
+    estabelecimentos as (
+        select id_cnes, area_programatica, nome_limpo
+        from {{ ref("dim_estabelecimento") }}
+    ),
+
     agendamentos_tele as (
         select
             age.id_global as id_agendamento,
@@ -33,11 +38,17 @@ with
             cad.ine_equipe,
 
             upper(prof.profissional_nome) as profissional_nome,
+            prof.profissional_cbo as profissional_cbo,
+            prof.profissional_cbo_descricao as profissional_cbo_descricao,
+            prof.profissional_equipe_nome as profissional_equipe_nome,
+            prof.profissional_equipe_cod_ine as profissional_equipe_cod_ine,
+
             datahora_agendamento as dthr_marcacao,
             safe_cast(null as datetime) as dthr_inicio_atendimento,
             safe_cast(null as datetime) as dthr_fim_atendimento,
 
             cast(null as string) as eh_coleta,
+            tipo_consulta,
 
             estado_marcacao,
             motivo,
@@ -45,16 +56,14 @@ with
             cast(null as string) as subjetivo_motivo,
             cast(null as string) as plano_observacoes,
             cast(null as string) as avaliacao_observacoes,
-            cast(null as string) as notas_observacoes
+            cast(null as string) as notas_observacoes,
+
+            age.loaded_at
         from {{ ref("raw_prontuario_vitacare_historico__agendamento") }} age
             left join {{ ref("raw_prontuario_vitacare_historico__profissional") }} prof on prof.id_global = age.id_profissional
             left join {{ ref("raw_prontuario_vitacare_historico__cadastro") }} cad on cad.id_global = age.id_cadastro
         where
-            age.id_cnes in (
-                '5476607', -- CF ADIB JANETE
-                '9442251' -- CMS JEREMIAS MORAES
-            )
-            and tipo_atendimento = 'TELECONSULTA'
+            tipo_atendimento = 'TELECONSULTA'
     ),
     atendimentos_tele as (
         select
@@ -73,11 +82,17 @@ with
             cad.ine_equipe,
 
             upper(profissional_nome) as profissional_nome,
+            profissional_cbo as profissional_cbo,
+            profissional_cbo_descricao as profissional_cbo_descricao,
+            profissional_equipe_nome as profissional_equipe_nome,
+            profissional_equipe_cod_ine as profissional_equipe_cod_ine,
+
             datahora_marcacao_atendimento as dthr_marcacao,
             safe_cast(datahora_inicio_atendimento as datetime) as dthr_inicio_atendimento,
             safe_cast(datahora_fim_atendimento as datetime) as dthr_fim_atendimento,
 
             eh_coleta,
+            tipo_consulta,
 
             'EXECUTADO' as estado_marcacao,
             'N/A' as motivo,
@@ -85,36 +100,44 @@ with
             subjetivo_motivo,
             plano_observacoes,
             avaliacao_observacoes,
-            notas_observacoes
+            notas_observacoes,
+
+            acto.loaded_at
         from
             {{ ref("raw_prontuario_vitacare_historico__acto") }} acto
             left join {{ ref("raw_prontuario_vitacare_historico__cadastro") }} cad on cad.id_global = acto.id_cadastro
         where
-            acto.id_cnes in (
-                '5476607', -- CF ADIB JANETE
-                '9442251' -- CMS JEREMIAS MORAES
-            )
-            and tipo_atendimento = 'TELECONSULTA'
+            tipo_atendimento = 'TELECONSULTA'
     ),
     juncao as (
-        select id_agendamento, id_atendimento, id_cnes, nome, cpf, cns, sexo, raca_cor, 
-            bairro_residencia, id_unidade_referencia, equipe, ine_equipe, profissional_nome, dthr_marcacao, dthr_inicio_atendimento, dthr_fim_atendimento, 
-            estado_marcacao, motivo, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
+        select 
+            id_agendamento, id_atendimento, id_cnes, nome, cpf, cns, sexo, raca_cor, 
+            bairro_residencia, id_unidade_referencia, equipe, ine_equipe, 
+            profissional_nome, profissional_cbo, profissional_cbo_descricao, profissional_equipe_nome, profissional_equipe_cod_ine,
+            tipo_consulta, dthr_marcacao, dthr_inicio_atendimento, dthr_fim_atendimento, 
+            estado_marcacao, motivo, eh_coleta, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
         from agendamentos_tele
 
         union all
 
-        select id_agendamento, id_atendimento, id_cnes, nome, cpf, cns, sexo, raca_cor, 
-            bairro_residencia, id_unidade_referencia, equipe, ine_equipe, profissional_nome, dthr_marcacao, dthr_inicio_atendimento, dthr_fim_atendimento, 
-            estado_marcacao, motivo, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
+        select 
+            id_agendamento, id_atendimento, id_cnes, nome, cpf, cns, sexo, raca_cor, 
+            bairro_residencia, id_unidade_referencia, equipe, ine_equipe, 
+            profissional_nome, profissional_cbo, profissional_cbo_descricao, profissional_equipe_nome, profissional_equipe_cod_ine,
+            tipo_consulta, dthr_marcacao, dthr_inicio_atendimento, dthr_fim_atendimento, 
+            estado_marcacao, motivo, eh_coleta, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
         from atendimentos_tele
     ),
-    condicoes_ativas_join as (
+
+    enriquecimento as (
         select
+            estabelecimentos.area_programatica,
+            estabelecimentos.nome_limpo,
             juncao.*,
             condicoes_ativas.condicoes_ativas
         from juncao
             left join condicoes_ativas on juncao.id_atendimento = condicoes_ativas.id_atendimento
+            left join estabelecimentos on juncao.id_cnes = estabelecimentos.id_cnes
     ),
 
     -- TEMPORARIO P/ ANONIMIZAR
@@ -125,7 +148,7 @@ with
                 id_agendamento, id_atendimento,
                 motivo, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
             )
-        from condicoes_ativas_join
+        from enriquecimento
     )
 select *
 from anonimizacao
