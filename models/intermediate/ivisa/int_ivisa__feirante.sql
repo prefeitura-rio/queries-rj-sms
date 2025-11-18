@@ -8,6 +8,30 @@
 
 with 
 
+feirantes_no_slffe as (
+    select
+        null as id,
+
+        cpf,
+        cnpj,
+        cast(null as string) as razao_social,
+        inscricao_municipal,
+
+        logradouro as endereco_logradouro,
+        numero_porta as endereco_numero,
+        complemento as endereco_complemento,
+        cep as endereco_cep,
+        bairro as endereco_bairro,
+        municipio as endereco_cidade,
+
+        case when situacao = 'ATIVO' then true else false end as ativo,
+        cast(null as string) as situacao_do_alvara,
+        cast(null as string) as situacao_da_emissao_da_licenca,
+        cast(null as string) as situacao_da_licenca_sanitaria,
+        cast(null as string) as situacao_validacao_da_licenca_sanitaria
+    from {{ ref('raw_sisvisa__feirante_slffe') }}
+),
+
 feirantes_no_sisvisa as (
     select
         id,
@@ -25,12 +49,18 @@ feirantes_no_sisvisa as (
         municipio as endereco_cidade,
 
         case when afastado = 'N' then true else false end as ativo,
-        situacao_do_alvara,
-        situacao_da_emissao_da_licenca,
-        situacao_da_licenca_sanitaria,
-        situacao_validacao_da_licenca_sanitaria
+        cast(situacao_do_alvara as string) as situacao_do_alvara,
+        cast(situacao_da_emissao_da_licenca as string) as situacao_da_emissao_da_licenca,
+        cast(situacao_da_licenca_sanitaria as string) as situacao_da_licenca_sanitaria,
+        cast(situacao_validacao_da_licenca_sanitaria as string) as situacao_validacao_da_licenca_sanitaria
     from {{ ref('raw_sisvisa__feirante_sisvisa') }}
     where cpf is not null or cnpj is not null
+),
+
+feirantes_unidos as (
+    select *, 'slffe' as fonte from feirantes_no_slffe
+    union all
+    select *, 'sisvisa' as fonte from feirantes_no_sisvisa
 ),
 
 obitos as (
@@ -40,14 +70,14 @@ obitos as (
     where cpf.obito_ano is not null
 ),
 
-feirantes_no_sisvisa_atualizados as (
+feirantes_atualizados as (
     select
         struct(
             'Feirante' as tipo,
             cast(id as string) as id_sisvisa,
-            cast(feirantes_no_sisvisa.cpf as string) as cpf,
-            cast(feirantes_no_sisvisa.cnpj as string) as cnpj,
-            cast(feirantes_no_sisvisa.inscricao_municipal as string) as inscricao_municipal
+            cast(feirantes.cpf as string) as cpf,
+            cast(feirantes.cnpj as string) as cnpj,
+            cast(feirantes.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
 
         struct(
@@ -75,10 +105,10 @@ feirantes_no_sisvisa_atualizados as (
             cast(situacao_da_emissao_da_licenca as string) as licenca_sanitaria_emissao,
             cast(situacao_validacao_da_licenca_sanitaria as string) as licenca_sanitaria_validacao
         ) as situacao
-    from feirantes_no_sisvisa
-        left join obitos on feirantes_no_sisvisa.cpf = obitos.cpf
+    from feirantes_unidos feirantes
+        left join obitos on feirantes.cpf = obitos.cpf
 )
 
 select * 
-from feirantes_no_sisvisa_atualizados
+from feirantes_atualizados
 
