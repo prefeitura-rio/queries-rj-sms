@@ -1,3 +1,11 @@
+{{
+    config(
+        schema="intermediario_empreendimentos_cariocas",
+        alias="int_estabelecimento",
+        materialized="table",
+    )
+}}
+
 with 
 
 estabelecimentos_no_sisvisa as (
@@ -43,21 +51,19 @@ estabelecimentos_receita_federal as (
         cadastros.cnpj.endereco.complemento as endereco_complemento,
         cadastros.cnpj.endereco.cep as endereco_cep,
         cadastros.cnpj.endereco.bairro as endereco_bairro,
-        cadastros.cnpj.endereco.municipio_nome as endereco_cidade,
+        cadastros.cnpj.endereco.municipio_nome as endereco_cidade
 
     from {{ ref('raw_bcadastro__cnpj') }} as cadastros
 ),
 
 estabelecimentos_no_sisvisa_atualizados as (
     select
-        cast(estabelecimentos_no_sisvisa.cnpj as int64) as particao_cnpj,
-
         struct(
             'Estabelecimento' as tipo,
             id as id_sisvisa,
             null as cpf,
-            estabelecimentos_no_sisvisa.cnpj
-            inscricao_municipal,
+            estabelecimentos_no_sisvisa.cnpj,
+            inscricao_municipal
         ) as identificacao,
 
         struct(
