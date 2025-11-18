@@ -2,8 +2,8 @@
     config(
         alias="profissional", 
         materialized="incremental",
-        unique_key = 'id_prof',
-        cluster_by= 'id_prof',
+        unique_key = 'id_global',
+        cluster_by= 'id_global',
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -31,7 +31,13 @@ WITH
     fato_profissionais AS (
         SELECT
             -- PKs e Chaves
-            REPLACE(prof_id, '.0', '') AS id_prof,
+            CONCAT(
+                id_cnes,
+                '.',
+                REPLACE(prof_id, '.0', '')
+            ) AS id_global,
+            REPLACE(prof_id, '.0', '') as id_local,
+
             {{ process_null('profissional_cns') }} AS profissional_cns,
             {{ process_null('profissional_cpf') }} AS profissional_cpf,
             {{ process_null(proper_br('profissional_nome')) }} AS profissional_nome,

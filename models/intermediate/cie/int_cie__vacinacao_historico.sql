@@ -27,7 +27,7 @@ with
         select 
             id_cnes,
             id_prontuario_global,
-            ut_id,
+            id_local as ut_id,
             profissional_nome,
             profissional_equipe_nome,
             profissional_equipe_cod_ine,
@@ -54,10 +54,10 @@ with
             situacao_usuario,
             data_cadastro,
             obito,
-            ut_id
+            id_local as ut_id
         from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
         qualify row_number() over(
-            partition by ut_id, id_cnes
+            partition by id_local, id_cnes
             order by greatest(data_cadastro, data_atualizacao_cadastro, updated_at) desc
         ) = 1
     ),

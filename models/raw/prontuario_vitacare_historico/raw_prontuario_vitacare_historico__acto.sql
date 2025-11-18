@@ -48,9 +48,26 @@ WITH
     fato_atendimentos AS (
         SELECT
             -- PKs e Chaves
+            CONCAT(
+                id_cnes,
+                '.',
+                REPLACE(acto_id, '.0', '')
+            ) as id_global,
+            REPLACE(acto_id, '.0', '') AS id_local,
+            id_cnes,
+            CONCAT(
+                id_cnes,
+                '.',
+                ut_id
+            ) as id_cadastro,
+
+            -- ------------------------
+            -- DEPRECATED
+            -- ------------------------
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
-            id_cnes ,
+            ut_id AS ut_id,
+            -- ------------------------
 
             unidade_ap AS unidade_ap,
             {{ process_null('patient_cpf') }} AS patient_cpf,
@@ -72,11 +89,9 @@ WITH
             {{ process_null('avaliacao_observacoes') }} AS avaliacao_observacoes,
             {{ process_null('objetivo_descricao') }} AS objetivo_descricao,
             {{ process_null('notas_observacoes') }} AS notas_observacoes,
-            ut_id AS ut_id,
             realizado AS realizado,
             {{ process_null('tipo_atendimento') }} AS tipo_atendimento,
             
-
             extracted_at AS loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM atendimentos_deduplicados

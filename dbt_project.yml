@@ -661,6 +661,15 @@ models:
               dado_pessoal: sim
               dado_sensivel: sim
               dominio: subgeral
+        
+        teleconsulta:
+          +schema: projeto_teleconsulta
+          +tags: ["daily", "subgeral", "teleconsulta"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subgeral
 
         nps:
           +schema: projeto_nps
