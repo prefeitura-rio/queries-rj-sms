@@ -35,7 +35,7 @@ WITH
     cadastros_historico as (
         SELECT
             id_cnes,
-            ut_id,
+            id_local as ut_id,
             updated_at
         FROM {{ ref("raw_prontuario_vitacare_historico__cadastro") }}
         WHERE 

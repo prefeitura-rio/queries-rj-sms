@@ -20,7 +20,7 @@ with
             concat(
                 nullif(id_cnes, ''),
                 '.',
-                nullif({{ clean_numeric_string("ut_id") }}, '')
+                id_local
             ) as id, 
             * 
         from {{ ref("raw_prontuario_vitacare_historico__cadastro") }}
@@ -34,7 +34,7 @@ with
             cast(id as string) as id,
             
             cast(cpf as string) as cpf,
-            ut_id as id_paciente,
+            id_local as id_paciente,
             npront as numero_prontuario,
             
             id_cnes as unidade_cadastro,

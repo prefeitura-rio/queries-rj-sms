@@ -32,12 +32,12 @@ WITH
             CONCAT(
                 NULLIF(id_cnes, ''), 
                 '.',
-                NULLIF(ut_id, '')
+                id_local
             ) AS id,
 
             -- Outras Chaves
             id_cnes,
-            ut_id AS id_local,
+            id_local,
             npront AS numero_prontuario,
             cpf,
             dnv,

@@ -35,7 +35,7 @@ with
         select 
             * 
         from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
-        qualify row_number() over( partition by ut_id, id_cnes order by greatest(data_cadastro, data_atualizacao_cadastro, updated_at) desc
+        qualify row_number() over( partition by id_local, id_cnes order by greatest(data_cadastro, data_atualizacao_cadastro, updated_at) desc
         ) = 1
     ),
 
@@ -77,7 +77,7 @@ with
         left join atendimento a
             on v.id_prontuario_global = a.id_prontuario_global
         left join paciente p
-            on a.ut_id = p.ut_id
+            on a.id_local = p.id_local
             and a.id_cnes = p.id_cnes
         left join estabelecimento e
             on v.id_cnes = e.id_cnes
