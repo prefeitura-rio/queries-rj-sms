@@ -574,6 +574,15 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+      ivisa:
+        empreendimentos_cariocas:
+          +schema: projeto_empreendimentos_cariocas
+          +tags: ["daily", "ivisa", "empreendimentos"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: ivisa
 
       iplanrio:
         whatsapp:
