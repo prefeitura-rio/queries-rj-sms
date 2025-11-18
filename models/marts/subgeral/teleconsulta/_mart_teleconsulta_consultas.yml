@@ -1,0 +1,134 @@
+version: 2
+
+models:
+  - name: mart_teleconsulta_consultas
+    description: >
+      Tabela contendo informações consolidadas sobre agendamentos e atendimentos
+      realizados na rede de saúde. Inclui dados demográficos do paciente,
+      informações da unidade, profissional, horários do atendimento e registros
+      complementares de avaliação e evolução. Uma linha representa um agendamento
+      ou atendimento individual.
+
+    columns:
+      - name: id_agendamento
+        description: Identificador único do agendamento registrado no sistema.
+        data_type: string
+        quote: true
+
+      - name: id_atendimento
+        description: Identificador único do atendimento executado, quando existente.
+        data_type: string
+        quote: true
+
+      - name: id_cnes
+        description: Código CNES da unidade em que o atendimento foi agendado ou executado.
+        data_type: string
+        quote: true
+
+      - name: nome
+        description: Nome completo do paciente.
+        data_type: string
+        quote: true
+
+      - name: cpf
+        description: Número do CPF do paciente.
+        data_type: string
+        quote: true
+
+      - name: cns
+        description: Número do Cartão Nacional de Saúde (CNS) do paciente.
+        data_type: string
+        quote: true
+
+      - name: sexo
+        description: Sexo do paciente conforme cadastro.
+        data_type: string
+        quote: true
+
+      - name: raca_cor
+        description: Raça/Cor informada pelo paciente ou registrada na unidade de saúde.
+        data_type: string
+        quote: true
+
+      - name: bairro_residencia
+        description: Bairro de residência do paciente conforme cadastro.
+        data_type: string
+        quote: true
+
+      - name: id_unidade_referencia
+        description: Código CNES da unidade de referência do paciente, quando aplicável.
+        data_type: string
+        quote: true
+
+      - name: equipe
+        description: Nome da equipe de Saúde da Família ou equipe assistencial responsável.
+        data_type: string
+        quote: true
+
+      - name: ine_equipe
+        description: Código INE da equipe responsável pelo atendimento.
+        data_type: string
+        quote: true
+
+      - name: profissional_nome
+        description: Nome do profissional responsável pelo atendimento.
+        data_type: string
+        quote: true
+
+      - name: dthr_marcacao
+        description: Timestamp de agendamento do atendimento.
+        data_type: datetime
+        quote: true
+
+      - name: dthr_inicio_atendimento
+        description: Timestamp de início do atendimento.
+        data_type: datetime
+        quote: true
+
+      - name: dthr_fim_atendimento
+        description: Timestamp de término do atendimento.
+        data_type: datetime
+        quote: true
+
+      - name: estado_marcacao
+        description: Estado atual da marcação (AGENDADO, CANCELADO, REALIZADO, etc.).
+        data_type: string
+        quote: true
+
+      - name: motivo
+        description: Motivo do atendimento conforme categorização do sistema.
+        data_type: string
+        quote: true
+
+      - name: subjetivo_motivo
+        description: >
+          Texto subjetivo relatando a queixa principal, tal como registrada pelo
+          paciente ou transcrita pelo profissional.
+        data_type: string
+        quote: true
+
+      - name: plano_observacoes
+        description: >
+          Campo textual contendo observações relativas ao plano de cuidado,
+          orientações ou condutas definidas pelo profissional.
+        data_type: string
+        quote: true
+
+      - name: avaliacao_observacoes
+        description: >
+          Observações referentes à avaliação clínica realizada durante o atendimento.
+        data_type: string
+        quote: true
+
+      - name: notas_observacoes
+        description: >
+          Campo livre de anotações complementares sobre o atendimento.
+        data_type: string
+        quote: true
+
+      - name: condicoes_ativas
+        description: >
+          Lista de condições ativas do paciente associadas ao atendimento,
+          conforme registros da unidade. Campo do tipo array de strings.
+        data_type: string
+        quote: true

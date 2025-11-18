@@ -9,8 +9,8 @@
             "data_type": "date",
             "granularity": "day"
         },
-        unique_key=['cpf', 'id_cnes'],
-        cluster_by=['cpf','id_cnes']
+        unique_key=['id_global'],
+        cluster_by=['id_global']
     )
 }}
 
@@ -44,12 +44,17 @@ WITH
     fato_pacientes AS (
         SELECT
             -- PKs e Chaves
-
+            CONCAT(
+                id_cnes,
+                '.',
+                REPLACE({{ process_null('ut_id') }}, '.0', '')
+            ) as id_global,
+            REPLACE({{ process_null('ut_id') }}, '.0', '') as id_local,
             id_cnes,
 
             {{ process_null('ap') }} AS ap,
             {{ process_null('unidade') }} AS unidade,
-            {{ process_null('ut_id') }} AS ut_id,
+            
             {{ process_null(proper_br('nome')) }} AS nome,
             {{ process_null('cns') }} AS cns,
             {{ process_null('cpf') }} AS cpf,
