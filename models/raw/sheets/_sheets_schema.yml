@@ -564,3 +564,20 @@ models:
           Flag que indica se o recipiente deve receber emails indicando erros
           no flow (TRUE), ou não (FALSE).
         data_type: string
+
+  - name: raw_sheets__codigos_exames
+    description: >
+      Descrições de códigos de exames laboratoriais.
+    columns:
+      - name: codigo
+        description: Código usado em laudos de exames laboratoriais
+        data_type: string
+      - name: laboratorio
+        description: Fonte do código (CientificaLab, Megalab, ...)
+        data_type: string
+      - name: exame
+        description: Descrição do exame indicado pelo código
+        data_type: string
+      - name: observacoes
+        description: Comentários/metadados deixados durante o preenchimento
+        data_type: string

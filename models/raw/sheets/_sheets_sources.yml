@@ -28,6 +28,7 @@ sources:
       - name: seguranca_destinatarios
       - name: seguranca_cids
       - name: contatos_caps
+      - name: codigos_exames
       - name: projeto_odontologia_historico
       - name: projeto_odontologia_historico_ap
       - name: projeto_odontologia_sigtap_odo

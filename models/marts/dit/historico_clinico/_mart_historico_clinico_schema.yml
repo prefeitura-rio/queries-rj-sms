@@ -882,6 +882,40 @@ models:
       - name: exame_codigo_sigtap
         description: Código SIGTAP do Exame
       - name: cpf_particao
-        description: Particionamento pelo cpf do paciente
+        description: Particionamento pelo CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+  - name: mart_historico_clinico__exame_laboratorial
+    description: Exames laboratoriais realizados
+    columns:
+      - name: unidade_nome
+        description: Nome da unidade em que o exame foi realizado.
+      - name: paciente_cpf
+        description: CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: exames
+        description: Informações sobre os exames em um mesmo laudo
+      - name: exames.descricao
+        description: >
+          Descrição do exame (ex.: "HEMOGLOBINA GLICADA")
+      - name: exames.codigo
+        description: >
+          Código descritivo do exame (ex.: "HGL" → exame de hemoglobina glicada)
+      - name: exames.data_assinatura
+        description: Data em que o exame foi assinado pelo médico
+      - name: laudo_url
+        description: URL do laudo em PDF
+      - name: medico_solicitante
+        description: Nome do(a) médico(a) que solicitou o exame ao paciente
+      - name: datahora_pedido
+        description: Data/hora da solicitação do exame
+      - name: _ultima_datahora_assinatura
+        description: >
+          Data/hora mais recente de assinatura de exame; usado para ordenar laudos
+          de um paciente por atividade mais recente.
+      - name: cpf_particao
+        description: Particionamento pelo CPF do paciente
         policy_tags:
           - '{{ var("TAG_CPF") }}'
