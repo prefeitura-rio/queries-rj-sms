@@ -44,30 +44,29 @@ feirantes_no_sisvisa_atualizados as (
     select
         struct(
             'Feirante' as tipo,
-            id as id_sisvisa,
-            feirantes_no_sisvisa.cpf,
-            cnpj,
-            inscricao_municipal
+            cast(id as string) as id_sisvisa,
+            cast(feirantes_no_sisvisa.cpf as string) as cpf,
+            cast(feirantes_no_sisvisa.cnpj as string) as cnpj,
+            cast(feirantes_no_sisvisa.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
 
         struct(
             razao_social as nome_empreendimento,
-            null as natureza_juridica,
-            null as porte,
+            cast(null as string) as natureza_juridica,
+            cast(null as string) as porte,
             razao_social as titular,
             (obitos.cpf is not null) as titular_com_obito
         ) as cadastro,
 
         struct(
             ativo as sisvisa,
-            null as receita_federal
+            cast(null as string) as receita_federal
         ) as atividade,
 
         struct(
-            null as atividades,
-            null as tipos_operacoes,
-            endereco_bairro,
-            endereco_cidade
+            cast([] as array<string>) as tipos_operacoes,
+            cast(endereco_bairro as string) as endereco_bairro,
+            cast(endereco_cidade as string) as endereco_cidade
         ) as operacao,
 
         struct(

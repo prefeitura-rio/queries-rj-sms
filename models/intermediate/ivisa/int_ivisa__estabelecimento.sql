@@ -60,10 +60,10 @@ estabelecimentos_no_sisvisa_atualizados as (
     select
         struct(
             'Estabelecimento' as tipo,
-            id as id_sisvisa,
-            null as cpf,
-            estabelecimentos_no_sisvisa.cnpj,
-            inscricao_municipal
+            cast(id as string) as id_sisvisa,
+            cast(null as string) as cpf,
+            cast(estabelecimentos_no_sisvisa.cnpj as string) as cnpj,
+            cast(estabelecimentos_no_sisvisa.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
 
         struct(
@@ -71,7 +71,7 @@ estabelecimentos_no_sisvisa_atualizados as (
             estabelecimentos_receita_federal.natureza_juridica,
             porte,
             cast(null as string) as titular,
-            cast(null as string) as titular_com_obito
+            cast(null as boolean) as titular_com_obito
         ) as cadastro,
 
         struct(
@@ -80,7 +80,6 @@ estabelecimentos_no_sisvisa_atualizados as (
         ) as atividade,
 
         struct(
-            null as atividades,
             formas_atuacao as tipos_operacoes,
             estabelecimentos_no_sisvisa.endereco_bairro,
             estabelecimentos_no_sisvisa.endereco_cidade
