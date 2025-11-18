@@ -122,7 +122,8 @@ SELECT
     cnes,
     id_tipo_exame,
     id_resultado,
-    dt_resultado
+    dt_resultado,
+    diagnostico -- Verificar se é diagnostico ou acompanhamento (1 = diagnostco e 0 não)
 FROM dedup
 WHERE dt_resultado IS NOT NULL
     AND id_tipo_exame IS NOT NULL

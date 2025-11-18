@@ -22,3 +22,5 @@ sources:
         freshness:
           error_after: {count: 30, period: day}
       - name: views_ipp__Unidades_OSA
+      - name: subpav_sinan__tuberculose_sinan
+
