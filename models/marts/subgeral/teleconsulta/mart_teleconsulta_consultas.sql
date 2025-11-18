@@ -115,7 +115,18 @@ with
             condicoes_ativas.condicoes_ativas
         from juncao
             left join condicoes_ativas on juncao.id_atendimento = condicoes_ativas.id_atendimento
+    ),
+
+    -- TEMPORARIO P/ ANONIMIZAR
+    anonimizacao as (
+        select
+            * except (
+                nome, cpf, cns, 
+                id_agendamento, id_atendimento,
+                motivo, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
+            )
+        from condicoes_ativas_join
     )
 select *
-from condicoes_ativas_join
+from anonimizacao
 order by id_cnes, dthr_marcacao
