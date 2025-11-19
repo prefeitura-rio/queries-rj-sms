@@ -1,9 +1,9 @@
 -- noqa: disable=LT08
-
+-- Calcula o numero de dias sem resposta para o ultimo evento do paciente relacionado ao monitoramento do cancer de mama
 {{
   config(
     enabled=true,
-    schema="projeto_vigilancia_cancer",
+    schema="projeto_monitora_cancer",
     alias="pacientes_dias_sem_resposta",
     unique_key=['paciente_cpf'],
     partition_by={
@@ -24,7 +24,7 @@ with
             data_autorizacao,
             data_execucao,
             data_exame_resultado
-        from {{ ref('mart_vigilancia_cancer__fatos') }}
+        from {{ ref('mart_monitora_cancer__fatos') }}
         where data_solicitacao >= '2025-01-01'
     ),
 

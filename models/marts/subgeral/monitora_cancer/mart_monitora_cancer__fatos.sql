@@ -1,9 +1,9 @@
 -- noqa: disable=LT08
-
+-- Este modelo contem fatos relacionados a todos os procedimentos de mama encontrados nas bases listadas
 {{
   config(
     enabled=true,
-    schema="projeto_vigilancia_cancer",
+    schema="projeto_monitora_cancer",
     alias="fatos",
     unique_key=['sistema_origem', 'id_sistema_origem'],
     partition_by={
