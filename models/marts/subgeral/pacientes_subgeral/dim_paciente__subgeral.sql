@@ -3,8 +3,8 @@
 {{
   config(
     enabled=true,
-    schema="projeto_vigilancia_cancer",
-    alias="paciente",
+    schema="pacientes_subgeral",
+    alias="dim_paciente_subgeral",
     unique_key='cpf',
     partition_by={
         "field": "cpf_particao",
