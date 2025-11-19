@@ -664,7 +664,7 @@ models:
         
         teleconsulta:
           +schema: projeto_teleconsulta
-          +tags: ["daily", "subgeral", "teleconsulta"]
+          +tags: ["weekly", "subgeral", "teleconsulta"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
