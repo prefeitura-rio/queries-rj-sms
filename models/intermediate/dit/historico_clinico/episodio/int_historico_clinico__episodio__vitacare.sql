@@ -361,7 +361,8 @@ with
                 end as string
             ) as subtipo,
 
-            safe_cast(datahora_inicio as date) as entrada_datahora_hora,
+            -- Entrada e Saída
+            safe_cast(datahora_inicio as date) as entrada_datahora,
             safe_cast(datahora_fim as date) as saida_datahora,
 
             -- Motivo e Desfecho
