@@ -28,7 +28,7 @@ bancas_no_sisvisa as (
         situacao_da_emissao_da_licenca,
         situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
-    from {{ ref('raw_sisvisa__banca_jornal') }}
+    from {{ ref('raw_sisvisa__banca_jornal_sisvisa') }}
     where cpf_titular is not null
 ),
 

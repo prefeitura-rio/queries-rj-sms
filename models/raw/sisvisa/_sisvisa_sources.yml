@@ -23,3 +23,5 @@ sources:
       - name: Piscina
       - name: UnidadePublicaSaude
       - name: Vw_Feirante_Datalake
+      - name: Vw_Ambulante_Datalake
+      - name: Vw_BancaJornal_Datalake

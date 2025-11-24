@@ -1,7 +1,7 @@
 {{
     config(
         schema="brutos_sisvisa",
-        alias="ambulante_atividade",
+        alias="ambulante_sisvisa_atividade",
     )
 }}
 

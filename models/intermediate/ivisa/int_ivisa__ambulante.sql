@@ -36,7 +36,7 @@ ambulantes_no_sisvisa as (
         situacao_da_emissao_da_licenca,
         situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
-    from {{ ref('raw_sisvisa__ambulante') }}
+    from {{ ref('raw_sisvisa__ambulante_sisvisa') }}
     where cpf is not null or cnpj is not null
 ),
 
