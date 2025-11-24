@@ -2,54 +2,66 @@
     config(
         schema="intermediario_historico_clinico",
         alias="episodio_assistencial_pcsm",
-        materialized="table" 
+        materialized="table",
+        unique_key=['id_hci'],
+        cluster_by=['id_hci'],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
 
 with 
+
 -- ATENDIMENTOS SIMPLIFICADOS
   atendimento_simplificado as (
     select
+        a.id_atendimento,
         a.id_hci,
         a.id_paciente,
         p.numero_cpf_paciente as cpf,
         p.numero_cartao_saude as cns,
         p.nome_paciente as nome,
-        --ta.descricao_classificacao_atendimento as tipo,
+        ta.classificacao_atendimento as classificacao_atendimento, 
         ta.descricao_tipo_atendimento as subtipo,
         datetime(a.data_entrada_atendimento, parse_time('%H%M', a.hora_entrada_atendimento)) as entrada_datahora, 
         datetime(a.data_saida_atendimento, parse_time('%H%M', a.hora_saida_atendimento)) as saida_datahora,
 
         -- estabelecimento
         struct (
-            {{proper_estabelecimento("nome_unidade_saude")}} as nome,
             u.codigo_nacional_estabelecimento_saude as cnes,
+            {{proper_estabelecimento("nome_unidade_saude")}} as nome,
             e.tipo_sms as estabelecimento_tipo
         ) as estabelecimento,
 
         -- prontuario
         struct (
-            a.id_atendimento as id_prontuario_global,
-            null as id_prontuario_local,
+            cast(a.id_atendimento as string) as id_prontuario_global,
+            cast(null as string) as id_prontuario_local,
             'pcsm' as fornecedor
         ) as prontuario,
 
         -- metadados
         struct (
-            a.loaded_at as imported_at,
-            a.transformed_at as updated_at,
-            current_timestamp() as processed_at
+            cast(a.loaded_at as datetime) as imported_at,
+            cast(a.transformed_at as datetime) as updated_at,
+            cast(current_timestamp() as datetime) as processed_at
         ) as metadados,
         cast(numero_cpf_paciente as int64) as cpf_particao,
         cast(data_entrada_atendimento as date) as data_particao
 
     from {{ref('raw_pcsm_atendimentos')}} a 
     left join {{ref('raw_pcsm_pacientes')}} p on a.id_paciente = p.id_paciente
-    left join {{ref('raw_pcsm_tipos_atendimentos')}} ta on a.id_tipo_atendimento = ta.id_tipo_atendimento
+    left join {{ref('raw_pcsm_tipos_atendimentos')}} ta on a.id_tipo_atendimento = ta.id_tipo_atendimento 
     left join {{ref('raw_pcsm_unidades_saude')}} u on a.id_unidade_saude = u.id_unidade_saude
     left join {{ref('dim_estabelecimento')}} e on u.codigo_nacional_estabelecimento_saude = e.id_cnes
+
   ),
+ 
+  -- Condições  
     cid_4_digitos as (
         select distinct 
             id_paciente as id, 
@@ -109,22 +121,48 @@ with
                     id_cid as id,
                     cid_nome as descricao,
                     "ATIVO" as situacao,
-                    data_diagnostico as data_diagnostico
+                    cast(data_diagnostico as string) as data_diagnostico
                 ) ignore nulls
             ) as condicoes,
         from all_cids
         group by 1
     ),
 
+    -- Desfechos 
+    desfechos_atendimentos_simplificados as (
+        select 
+            id_atendimento,
+            id_paciente,
+            data_evolucao_paciente as data_desfecho,
+            descricao_evolucao_paciente as desfecho
+        from {{ref('raw_pcsm_evolucao_paciente')}}
+        union all
+        select 
+            id_atendimento,
+            id_paciente,
+            data_evolucao_internacao as data_desfecho,
+            descricao_evolucao_internacao as desfecho
+        from {{ref('raw_pcsm_evolucao_internacao')}}
+        union all
+        select 
+            id_atendimento,
+            id_paciente,
+            data_evolucao as data_desfecho, 
+            descricao_evolucao as defecho
+        from {{ref('raw_pcsm_evolucao_ambulatorial')}}
+    ),
+
     simplificado_final as (
         select
+            id_hci,
             cpf,
             a.id_paciente,
             cns,
-            'Simplificado' as tipo,
+            'Consulta' as tipo,
             subtipo,
             entrada_datahora,
             saida_datahora,
+            {{remove_html('desfecho')}} as desfecho_atendimento,
             cg.condicoes,
             estabelecimento,
             prontuario,
@@ -133,15 +171,19 @@ with
             cpf_particao
         from atendimento_simplificado a
         left join cid_grouped cg on a.id_paciente = cg.id_paciente
-        
+        left join desfechos_atendimentos_simplificados d 
+            on a.id_atendimento = d.id_atendimento 
+            and date(a.entrada_datahora) = date(d.data_desfecho)
+            and a.id_paciente = d.id_paciente
+        where a.classificacao_atendimento = 'CA'
     ),
 
 
--- ANTEDIMENTOS AMBULATORIAIS 
+-- ANTEDIMENTOS AMBULATORIAIS
+
     atendimento_ambulatorial as (
         select 
-            null as id_hci, -- TODO
-            null as id_paciente, -- TODO
+            a.id_hci, 
             a.id_atendimento, 
             a.id_paciente as id_paciente_local,
             p.registro_prontuario as id_paciente_global,
@@ -163,8 +205,8 @@ with
     ),
 
     prescricoes_ambulatorial as (
-        select 
-            pp.id_prescricao
+        select distinct
+            pp.id_prescricao,
             id_atendimento, 
             id_medicamento,
             pm.nome_medicamento, 
@@ -181,38 +223,26 @@ with
             id_atendimento,
             array_agg(
                 struct(
-                    id_medicamento,
-                    nome_medicamento,
-                    via_administracao,
-                    dose_administrada,
-                    intervalo_doses,
-                    observacao_administracao
+                    cast(id_prescricao as string) as id,
+                    nome_medicamento as nome,
+                    cast(null as string) as concentracao, -- informação contida no nome do medicamento
+                    cast(null as string) as uso_continuo
                 ) ignore nulls
             ) as prescricoes
         from prescricoes_ambulatorial
         group by 1
     ),
 
-
-
     episodio_ambulatorial as (
         select 
-            a.id_paciente_global as id_paciente,
+            id_hci,
+            p.numero_cpf_paciente as cpf,
+            id_paciente_local as id_paciente,
             'Ambulatorial' as tipo,
-            '' as subtipo,
+            '' as subtipo, -- TODO
             a.entrada_datahora,
-            null as saida_datahora,
-            null as motivo_atendimento, -- Tabela de evoluções
-            null as desfecho_atendimento,
             cg.condicoes,
             pa.prescricoes,
-            -- medicamentos_administrados
-                -- nome
-                -- quantidade
-                -- unidade_medida
-                -- uso
-                -- via_administracao
-                -- prescricao_data
             struct(
                 a.cnes,
                 a.estabelecimento_nome as nome,
@@ -220,28 +250,76 @@ with
             ) as estabelecimento,
             -- profissional
             struct(
-                a.crm as id,
-                a.medico_cpf as cpf,
+                cast(a.crm as string) as id,
+                cast(a.medico_cpf as string) as cpf,
+                cast(null as string) as cns,
                 a.nome_medico as nome,
-                null as cns,
-                null as especialidade
-            ) as profissional,
+                cast(null as string) as especialidade
+            ) as profissional_saude_responsavel,
             -- prontuario
             struct(
-                a.id_atendimento as id_prontuario_global,
-                null as id_prontuario_local,
+                cast(a.id_atendimento as string) as id_prontuario_global,
+                cast(null as string) as id_prontuario_local,
                 'pcsm' as fornecedor
             ) as prontuario,
-
+            -- metadados
             struct(
-                a.loaded_at as imported_at,
-                a.transformed_at as updated_at,
-                current_timestamp() as processed_at
+                cast(a.loaded_at as datetime) as imported_at,
+                cast(a.transformed_at as datetime) as updated_at,
+                cast(current_timestamp() as datetime) as processed_at
             ) as metadados
         from atendimento_ambulatorial a
         left join cid_grouped cg on a.id_paciente_global = cg.id_paciente
         left join prescricoes_ambulatorial_agg pa on a.id_atendimento = pa.id_atendimento
-    ) 
-select * from episodio_ambulatorial
+        left join {{ref('raw_pcsm_pacientes')}} p on a.id_paciente_global = p.id_paciente
+    ), 
 
+merge_final as ( 
+    select 
+        id_hci,
+        cpf,
+        id_paciente,
+        tipo,
+        subtipo,
+        safe_cast(entrada_datahora as date) as entrada_datahora,
+        safe_cast(saida_datahora as date) as saida_datahora,
+        desfecho_atendimento,
+        condicoes,
+        array<struct<id string, nome string, concentracao string, uso_continuo string>>[] as prescricoes,
+        estabelecimento,
+        struct(
+            cast(null as string) as id,
+            cast(null as string) as cpf,
+            cast(null as string) as cns,
+            cast(null as string) as nome,
+            cast(null as string) as especialidade
+        ) as profissional_saude_responsavel,
+        prontuario,
+        metadados
+    from simplificado_final
+    union all
+    select 
+        id_hci,
+        cpf,
+        id_paciente,
+        tipo,
+        subtipo,
+        safe_cast(entrada_datahora as date) as entrada_datahora,
+        safe_cast(null as date) as saida_datahora,
+        cast(null as string) as desfecho_atendimento, -- TODO
+        condicoes,
+        prescricoes,
+        estabelecimento,
+        profissional_saude_responsavel,
+        prontuario,
+        metadados
+    from episodio_ambulatorial
+)
+
+
+select 
+    *,
+    cast(cpf as int64) as cpf_particao,
+    cast(entrada_datahora as date) as data_particao
+from merge_final
 

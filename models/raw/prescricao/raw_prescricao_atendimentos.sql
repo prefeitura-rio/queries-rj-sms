@@ -12,7 +12,7 @@ select
     {{
     dbt_utils.generate_surrogate_key(
             [
-                "seqatend",
+                "id_atendimento",
             ]
         )
     }} as id_hci,
