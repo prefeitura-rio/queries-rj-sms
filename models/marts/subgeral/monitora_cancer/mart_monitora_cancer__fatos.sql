@@ -1,9 +1,9 @@
 -- noqa: disable=LT08
-
+-- Este modelo contem fatos relacionados a todos os procedimentos de mama encontrados nas bases listadas
 {{
   config(
     enabled=true,
-    schema="projeto_vigilancia_cancer",
+    schema="projeto_monitora_cancer",
     alias="fatos",
     unique_key=['sistema_origem', 'id_sistema_origem'],
     partition_by={
@@ -11,7 +11,7 @@
       "data_type": "date",
       "granularity": "month",
     },
-    cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cns'],
+    cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
     on_schema_change='sync_all_columns'
   )
 }}
@@ -21,7 +21,8 @@ sisreg as (
     select 
         -- pk
         "SISREG" as sistema_origem,
-        cast(id_solicitacao as int) as id_sistema_origem,
+        "REGULACAO" as sistema_tipo,
+        safe_cast(id_solicitacao as int) as id_sistema_origem,
 
         -- paciente
         paciente_cpf,
@@ -41,13 +42,13 @@ sisreg as (
         procedimento,
 
         -- datas
-        cast(data_solicitacao as date) as data_solicitacao,
-        --data_autorizacao,
-        cast(data_execucao as date) as data_execucao,
+        safe_cast(data_solicitacao as date) as data_solicitacao,
+        safe_cast(data_autorizacao as date) as data_autorizacao,
+        safe_cast(data_execucao as date) as data_execucao,
         --data_cancelamento,
-        data_atualizacao_registro,
 
         -- resultados siscan
+        cast(NULL as date) as data_exame_resultado,
         cast(NULL as string) as mama_esquerda_classif_radiologica,
         cast(NULL as string) as mama_direita_classif_radiologica
 
@@ -59,26 +60,26 @@ sisreg as (
         and fcts.procedimento in (
             "MAMOGRAFIA BILATERAL",
             "MAMOGRAFIA  DIAGNOSTICA",
-            "CONSULTA EM MASTOLOGIA"
-            "CONSULTA EM GINECOLOGIA - MASTOLOGIA"
-            "CONSULTA EM CIRURGIA PLASTICA - REPARADORA - MAMA"
+            "CONSULTA EM MASTOLOGIA",
+            "CONSULTA EM GINECOLOGIA - MASTOLOGIA",
+            "CONSULTA EM CIRURGIA PLASTICA - REPARADORA - MAMA",
             "BIÓPSIA DE MAMA - LESÃO PALPÁVEL",
-            "BIOPSIA DE MAMA GUIADA POR USG"
-            "BIOPSIA DE MAMA POR ESTEREOTAXIA"
-            "ULTRASSONOGRAFIA DE MAMAS BILATERAL"
-            "ULTRA-SONOGRAFIA DE MAMAS  BILATERAL"
-            "ULTRA-SONOGRAFIA  DE MAMAS (BILATERAL) - PEDIATRICA"
-            "ULTRA-SONOGRAFIA DOPPLER DE MAMAS"
-            "ULTRASSONOGRAFIA MAMARIA BILATERAL PARA ORIENTAR BIOPSIA DE MAMA"
-            "RESSONANCIA MAGNETICA DE MAMA (BILATERAL)"
-            "RESSONANCIA MAGNETICA DE MAMA ESQUERDA"
-            "RESSONANCIA MAGNETICA DE MAMA DIREITA"
+            "BIOPSIA DE MAMA GUIADA POR USG",
+            "BIOPSIA DE MAMA POR ESTEREOTAXIA",
+            "ULTRASSONOGRAFIA DE MAMAS BILATERAL",
+            "ULTRA-SONOGRAFIA DE MAMAS  BILATERAL",
+            "ULTRA-SONOGRAFIA  DE MAMAS (BILATERAL) - PEDIATRICA",
+            "ULTRA-SONOGRAFIA DOPPLER DE MAMAS",
+            "ULTRASSONOGRAFIA MAMARIA BILATERAL PARA ORIENTAR BIOPSIA DE MAMA",
+            "RESSONANCIA MAGNETICA DE MAMA (BILATERAL)",
+            "RESSONANCIA MAGNETICA DE MAMA ESQUERDA",
+            "RESSONANCIA MAGNETICA DE MAMA DIREITA",
 
-            "MAMOGRAFIA BILATERAL - PPI"
-            "CONSULTA EM GINECOLOGIA - MASTOLOGIA - PPI"
-            "BIÓPSIA DE MAMA - LESÃO PALPÁVEL - PPI"
-            "BIOPSIA DE MAMA GUIADA POR USG-PPI"
-            "ULTRA-SONOGRAFIA DE MAMAS BILATERAL - PPI"
+            "MAMOGRAFIA BILATERAL - PPI",
+            "CONSULTA EM GINECOLOGIA - MASTOLOGIA - PPI",
+            "BIÓPSIA DE MAMA - LESÃO PALPÁVEL - PPI",
+            "BIOPSIA DE MAMA GUIADA POR USG-PPI",
+            "ULTRA-SONOGRAFIA DE MAMAS BILATERAL - PPI",
             "ULTRA-SONOGRAFIA DOPPLER DE MAMAS - PPI"
         )
 ),
@@ -87,6 +88,7 @@ ser_ambulatorial as (
     select
         -- pk
         "SER" as sistema_origem,
+        "REGULACAO" as sistema_tipo,
         id_solicitacao as id_sistema_origem,
 
         -- paciente
@@ -107,13 +109,13 @@ ser_ambulatorial as (
 
         -- datas
         data_solicitacao,
-        --data_agendamento,
+        data_agendamento as data_autorizacao,
         --data_tratamento_inicio,
         --data_tratamento_prevista,
         data_execucao,
-        data_atualizacao_registro,
 
         -- resultados siscan
+        cast(NULL as date) as data_exame_resultado,
         cast(NULL as string) as mama_esquerda_classif_radiologica,
         cast(NULL as string) as mama_direita_classif_radiologica
 
@@ -188,6 +190,7 @@ ser_internacoes as (
     select
         -- pk
         "SER" as sistema_origem,
+        "REGULACAO" as sistema_tipo,
         id_solicitacao as id_sistema_origem,
 
         -- paciente
@@ -209,13 +212,13 @@ ser_internacoes as (
 
         -- datas
         data_solicitacao,
-        --data_reserva as data_agendamento,
+        data_reserva as data_autorizacao, -- está certo isso? data_reserva = data_autorizacao?
         data_internacao_inicio as data_execucao,
         --data_internacao_termino,
         --data_alta,
-        data_atualizacao_registro,
 
         -- resultados siscan
+        cast(NULL as date) as data_exame_resultado,
         cast(NULL as string) as mama_esquerda_classif_radiologica,
         cast(NULL as string) as mama_direita_classif_radiologica
     
@@ -236,8 +239,9 @@ ser_internacoes as (
 siscan as ( 
     select
         -- pk
-        "SISCAN" as sistema_origem, 
-        cast(protocolo_id as int) as id_sistema_origem, 
+        "SISCAN" as sistema_origem,
+        "EXAME" as sistema_tipo,
+        safe_cast(protocolo_id as int) as id_sistema_origem, 
 
         -- paciente
         paciente_cns,
@@ -261,10 +265,11 @@ siscan as (
 
         -- datas
         data_solicitacao,
+        cast(NULL as date) as data_autorizacao,
         data_realizacao as data_execucao,
-        data_liberacao_resultado as data_atualizacao_registro,
 
         -- resultados siscan
+        data_liberacao_resultado as data_exame_resultado,
         mama_esquerda_classif_radiologica,
         mama_direita_classif_radiologica
 
@@ -276,6 +281,7 @@ siscan as (
 fatos as (
     select 
         sistema_origem,
+        sistema_tipo,
         id_sistema_origem,
         paciente_cns,
         id_cnes_unidade_origem,
@@ -286,8 +292,9 @@ fatos as (
         procedimento_tipo,
         procedimento,
         data_solicitacao,
+        data_autorizacao,
         data_execucao,
-        data_atualizacao_registro,
+        data_exame_resultado,
         mama_esquerda_classif_radiologica,
         mama_direita_classif_radiologica
     from sisreg
@@ -296,6 +303,7 @@ fatos as (
 
     select 
         sistema_origem,
+        sistema_tipo,
         id_sistema_origem,
         paciente_cns,
         id_cnes_unidade_origem,
@@ -306,8 +314,9 @@ fatos as (
         procedimento_tipo,
         procedimento,
         data_solicitacao,
+        data_autorizacao,
         data_execucao,
-        data_atualizacao_registro,
+        data_exame_resultado,
         mama_esquerda_classif_radiologica,
         mama_direita_classif_radiologica
     from ser_ambulatorial
@@ -316,6 +325,7 @@ fatos as (
 
     select 
         sistema_origem,
+        sistema_tipo,
         id_sistema_origem,
         paciente_cns,
         id_cnes_unidade_origem,
@@ -326,8 +336,9 @@ fatos as (
         procedimento_tipo,
         procedimento,
         data_solicitacao,
+        data_autorizacao,
         data_execucao,
-        data_atualizacao_registro,
+        data_exame_resultado,
         mama_esquerda_classif_radiologica,
         mama_direita_classif_radiologica
     from ser_internacoes
@@ -336,6 +347,7 @@ fatos as (
 
     select 
         sistema_origem,
+        sistema_tipo,
         id_sistema_origem,
         paciente_cns,
         id_cnes_unidade_origem,
@@ -346,68 +358,67 @@ fatos as (
         procedimento_tipo,
         procedimento,
         data_solicitacao,
+        data_autorizacao,
         data_execucao,
-        data_atualizacao_registro,
+        data_exame_resultado,
         mama_esquerda_classif_radiologica,
         mama_direita_classif_radiologica
     from siscan       
 ),
 
-fatos_final as (
-select
-    sistema_origem,
-    id_sistema_origem,
-    paciente_cns,
-    id_cnes_unidade_origem,
-    id_cnes_unidade_executante,
-    carater,
-    left(cid, 3) as cid,
-    procedimento_especialidade,
-    procedimento_tipo,
-    {{ clean_proced_name("procedimento") }} as procedimento,
-    data_solicitacao,
-    data_execucao,
-    date_diff(data_execucao, data_solicitacao, day) as tempo_espera,
-    data_atualizacao_registro,
-    mama_esquerda_classif_radiologica,
-    mama_direita_classif_radiologica
-from fatos
+limpa_fatos as (
+    select
+        sistema_origem,
+        sistema_tipo,
+        id_sistema_origem,
+        paciente_cns,
+        id_cnes_unidade_origem,
+        id_cnes_unidade_executante,
+        upper(carater) as carater,
+        left(cid, 3) as cid,
+        procedimento_especialidade,
+        procedimento_tipo,
+        {{ clean_proced_name("procedimento") }} as procedimento,
+        data_solicitacao,
+        data_autorizacao,
+        data_execucao,
+        date_diff(data_execucao, data_solicitacao, day) as tempo_espera,
+        data_exame_resultado,
+        mama_esquerda_classif_radiologica,
+        mama_direita_classif_radiologica
+    from fatos
 ),
 
 enriquece_cpf as (
     select 
-        cns_cpf.cpf as paciente_cpf,
-        fatos_final.*
+        safe_cast(cns_cpf.cpf as int) as paciente_cpf,
+        limpa_fatos.*
         
-    from fatos_final 
+    from limpa_fatos 
     left join {{ref("int_dim_paciente__relacao_cns_cpf")}} as cns_cpf
-    on safe_cast(fatos_final.paciente_cns as int) = safe_cast(cns_cpf.cns as int)
+    on safe_cast(limpa_fatos.paciente_cns as int) = safe_cast(cns_cpf.cns as int)
 ),
 
-enriquece_paciente as (
-    select
-        enriquece_cpf.*,
-        dim_paciente.cpf_particao as paciente_cpf_particao,
-        dim_paciente.nomes[SAFE_OFFSET(0)] as paciente_nome,
-        dim_paciente.sexos[SAFE_OFFSET(0)] as paciente_sexo,
-        dim_paciente.racas_cores[SAFE_OFFSET(0)] as paciente_racacor,
-        dim_paciente.datas_nascimento[SAFE_OFFSET(0)] as paciente_data_nascimento,
-        date_diff(
-            data_solicitacao,
-            date(dim_paciente.datas_nascimento[SAFE_OFFSET(0)]),
-            year
-        ) as paciente_idade,
-        dim_paciente.municipios_residencia[SAFE_OFFSET(0)] as paciente_municipio_residencia,
-        dim_paciente.bairros_residencia[SAFE_OFFSET(0)] as paciente_bairro_residencia
-        
-    from enriquece_cpf
-    left join {{ ref("mart_vigilancia_cancer__dim_paciente") }} as dim_paciente
-    on safe_cast(enriquece_cpf.paciente_cpf as int) = dim_paciente.cpf_particao
+enriquece_cid as (
+    select 
+        ec.*,
+        dim_cid.cid_descricao,
+        dim_cid.cid_capitulo_descricao 
+
+    from enriquece_cpf ec
+    left join (
+        select distinct
+            categoria.id as cid,
+            categoria.descricao as cid_descricao,
+            capitulo.descricao as cid_capitulo_descricao
+        from {{ref("dim_condicao_cid10")}}
+    ) as dim_cid
+    using (cid)
 ),
 
 enriquece_estabelecimento as (
     select
-        enriquece_paciente.*,
+        enriquece_cid.*,
         estabs_origem.nome_fantasia as estabelecimento_origem_nome,
         estabs_origem.esfera as estabelecimento_origem_esfera,
         estabs_origem.id_ap as estabelecimento_origem_ap,
@@ -424,7 +435,7 @@ enriquece_estabelecimento as (
         estabs_exec.tipo_unidade_agrupado as estabelecimento_executante_tipo_agrupado,
         estabs_exec.estabelecimento_sms_indicador as estabelecimento_sms_indicador
 
-    from enriquece_paciente
+    from enriquece_cid
 
     left join {{ref("dim_estabelecimento_sus_rio_historico")}} as estabs_origem
     on safe_cast(id_cnes_unidade_origem as int) = safe_cast(estabs_origem.id_cnes as int)
@@ -437,21 +448,59 @@ enriquece_estabelecimento as (
         and estabs_exec.ano_competencia = 2025 and estabs_exec.mes_competencia = 6
 ),
 
-enriquece_cid as (
-    select 
-        ec.*,
-        dim_cid.cid_descricao,
-        dim_cid.cid_capitulo_descricao 
+final as (
+    select
+        -- pk
+        sistema_origem,
+        id_sistema_origem,
 
-    from enriquece_estabelecimento ec
-    left join (
-        select distinct
-            categoria.id as cid,
-            categoria.descricao as cid_descricao,
-            capitulo.descricao as cid_capitulo_descricao
-        from {{ref("dim_condicao_cid10")}}
-    ) as dim_cid
-    using (cid)
+        -- id paciente
+        paciente_cpf,
+        paciente_cns,
+
+        -- tipo sistema fonte
+        sistema_tipo,
+
+        -- qualificacao do procedimento
+        procedimento_especialidade,
+        procedimento_tipo,
+        procedimento,        
+        carater,
+        cid,
+        cid_descricao,
+        cid_capitulo_descricao,
+
+        -- datas
+        data_solicitacao,
+        data_autorizacao,
+        data_execucao,
+        tempo_espera,
+
+        -- resultados siscan
+        data_exame_resultado,
+        mama_esquerda_classif_radiologica,
+        mama_direita_classif_radiologica,
+
+        -- unidade solicitante
+        id_cnes_unidade_origem,
+        estabelecimento_origem_nome,
+        estabelecimento_origem_esfera,
+        estabelecimento_origem_ap,
+        estabelecimento_origem_bairro,
+        estabelecimento_origem_tipo,
+        estabelecimento_origem_tipo_agrupado,
+        estabelecimento_origem_sms_indicador,
+
+        -- unidade executante
+        id_cnes_unidade_executante,
+        estabelecimento_executante_nome,
+        estabelecimento_executante_esfera,	
+        estabelecimento_executante_ap,
+        estabelecimento_executante_bairro,
+        estabelecimento_executante_tipo,
+        estabelecimento_executante_tipo_agrupado,
+        estabelecimento_sms_indicador
+    from enriquece_estabelecimento
 )
 
-select * from enriquece_cid
+select * from final

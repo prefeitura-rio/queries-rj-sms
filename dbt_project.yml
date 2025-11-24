@@ -715,9 +715,9 @@ models:
             dado_pessoal: nao
             dado_sensivel: nao
 
-        vigilancia_cancer:
-          +schema: projeto_vigilancia_cancer
-          +tags: ["daily", "subgeral", "vigilancia_cancer"]
+        projeto_monitora_cancer:
+          +schema: projeto_monitora_cancer
+          +tags: ["daily", "subgeral", "monitora_cancer"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
