@@ -78,8 +78,8 @@ rnds_transmissao as (
 
 formatted as (
   SELECT 
-    v.area_programatica,
-    v.id_cnes,
+    coalesce(v.area_programatica, t.area_programatica) as area_programatica,
+    coalesce(v.id_cnes, t.id_cnes) as id_cnes,
     coalesce(v.id_vacinacao, id_vacinacao_global) as id_vacinacao, 
     v.vacina_registro_data, 
     v.vacina_aplicacao_data,
