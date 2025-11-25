@@ -83,7 +83,7 @@ WITH
             'Visita Domiciliar' AS tipo_evento,
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE tipo = 'Visita Domiciliar'
+        WHERE REGEXP_CONTAINS(tipo, r'(?i)visita')
         AND cpf IS NOT NULL AND cpf <> 'NAO TEM'
     ),
 
