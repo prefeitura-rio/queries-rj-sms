@@ -13,13 +13,13 @@
 with
     vacinacoes as (
         select *, 'historico' as origem
-        from {{ ref("int_historico_clinico__vacinacao__historico") }}
+        from {{ ref("int_cie__vacinacao_historico") }}
         union all
         select *, 'api' as origem
-        from {{ ref("int_historico_clinico__vacinacao__api") }}
+        from {{ ref("int_cie__vacinacao_api") }}
         union all
         select *, 'continuo' as origem
-        from {{ ref("int_historico_clinico__vacinacao__continuo") }}
+        from {{ ref("int_cie__vacinacao_continuo") }}
     ),
 
     vacinacoes_dedup as (
