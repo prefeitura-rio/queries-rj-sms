@@ -4,7 +4,7 @@
         schema="intermediario_cie",
         materialized="table",
         partition_by={
-            "field": "particao_registro_vacinacao",
+            "field": "particao_aplicacao_vacinacao",
             "data_type": "date",
             "granularity": "month"
         }
@@ -91,7 +91,7 @@ with
             safe_cast(p.data_cadastro as date) as paciente_cadastro_data,
             p.obito as paciente_obito,
             safe_cast(v.loaded_at as datetime) as loaded_at,
-            safe_cast(v.data_registro as date) as particao_registro_vacinacao
+            safe_cast(v.data_aplicacao as date) as particao_aplicacao_vacinacao
         from vacina v
         left join atendimento a
             on v.id_prontuario_global = a.id_prontuario_global

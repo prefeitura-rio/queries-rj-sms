@@ -201,10 +201,8 @@ models:
           recuperação eficiente de dados. Os dados são armazenados no formato de
           uma string.
         data_type: string
-      - name: cpf
-        description: Coluna particionada pelo cpf a fins de otimização de consultas.
-        policy_tags:
-        - '{{ var("TAG_CPF") }}'  
+      - name: particao_aplicacao_vacinacao
+        description: Coluna particionada pela data de aplicacao a fins de otimização de consultas
         data_type: string
       - name: loaded_at
         description: Esta coluna indica a data e hora em que os dados foram importados

@@ -4,7 +4,7 @@
         schema="intermediario_cie",
         materialized="table",
         partition_by={
-            "field": "particao_registro_vacinacao",
+            "field": "particao_aplicacao_vacinacao",
             "data_type": "date",
             "granularity": "month"
         }
@@ -66,7 +66,7 @@ with
             safe_cast(v.paciente_cadastro_data as date) as paciente_cadastro_data,
             (coalesce(v.paciente_obito, '') != '') AS paciente_obito,
             safe_cast(v.metadados.loaded_at as datetime) as loaded_at,
-            safe_cast(v.vacina_registro_data as date) as particao_registro_vacinacao
+            safe_cast(v.vacina_aplicacao_data as date) as particao_aplicacao_vacinacao
         from vacina v
         left join estabelecimento e
             on v.id_cnes = e.id_cnes

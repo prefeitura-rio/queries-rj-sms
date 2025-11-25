@@ -3,9 +3,9 @@
         alias="vacinacao",
         materialized="table",
         partition_by={
-            "field": "cpf_particao",
-            "data_type": "int64",
-            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+            "field": "particao_aplicacao_vacinacao",
+            "data_type": "date",
+            "granularity": "month"
         },
     )
 }}
@@ -69,7 +69,7 @@ with
             paciente_obito,
             loaded_at,
             origem,
-            safe_cast(paciente_cpf as int64) as cpf_particao
+            vacina_aplicacao_data as particao_aplicacao_vacinacao
         from vacinacoes_dedup
     )
 
