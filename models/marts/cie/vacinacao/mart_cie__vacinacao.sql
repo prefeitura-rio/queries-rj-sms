@@ -41,7 +41,7 @@ with
             id_vacinacao,
             id_cnes,
             id_equipe,
-            id_ine_equipe,
+            id_ine_equipe as id_equipe_ine,
             id_microarea,
             paciente_id_prontuario,
             paciente_cns,
