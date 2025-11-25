@@ -172,11 +172,22 @@ with
             safe_cast(
                 coalesce(
                     if(
-                        entrada_datahora > current_date(), null, entrada_datahora
+                        entrada_datahora > current_date("America/Sao_Paulo"),
+                        null,
+                        entrada_datahora
                     ),
-                    saida_datahora) as string
+                    saida_datahora
+                ) as string
             ) as entry_datetime,
-            safe_cast(saida_datahora as string) as exit_datetime,
+            
+            safe_cast(
+                if(
+                    saida_datahora > CURRENT_DATE("America/Sao_Paulo"),
+                    null,
+                    saida_datahora
+                ) as string
+            ) as exit_datetime,
+
             safe_cast(estabelecimento.nome as string) as location,
             safe_cast(tipo as string) as type,
             safe_cast(subtipo as string) as subtype,
