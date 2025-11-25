@@ -19,115 +19,86 @@ models:
           exclusivamente cada registro de vacinação.
         data_tests:
           - unique:
-              name: mart_cie__vacinacao__id__unique
-              config:
-                severity: warn
-                warn_if: ">1000"
+              name: mart_cie__vacinacao__id_vacinacao__unique
           - not_null:
-              name: mart_cie__vacinacao__id__not_null
-              config:
-                severity: warn
-                warn_if: ">1000"
-        data_type: string
-        quote: true
-      - name: id_surrogate
-        description: Esta é uma chave substituta para cada registro. É um valor hash gerado a partir do
-          id_cnes e do id original dos dados de origem. Esta chave substituta é
-          usada para fins de data warehousing para garantir a integridade dos
-          dados e lidar com mudanças nos dados de origem ao longo do tempo.
-        data_type: string
-        data_tests:
-          - unique:
-              name: mart_cie__vacinacao__id_surrogate_unique
+              name: mart_cie__vacinacao__id_vacinacao__not_null
+              # Teste normal (erro) para TODAS as outras sources
+              where: "origem != 'continuo'"
           - not_null:
-              name: mart_cie__vacinacao__id_surrogate__not_null
-              config:
-                severity: warn
-                warn_if: ">1000"
-        quote: true
+              name: mart_cie__vacinacao__id__vacinacao_continuo__not_null
+              severity: warn
+              # Teste apenas para a fonte 'continuo'
+              where: "origem = 'continuo'"
+        data_type: string
       - name: id_cnes
         description: Este é o identificador único para o estabelecimento de saúde onde
           a vacinação foi administrada. Este id é usado para vincular o registro de vacinação
           ao estabelecimento de saúde específico no sistema de saúde.
         data_type: string
-        quote: true
       - name: id_microarea
         description: Este é um identificador único para a microárea onde o paciente está
           localizado. É usado para categorizar pacientes com base em sua
           localização geográfica dentro do sistema de saúde.
         data_type: string
-        quote: true
       - name: id_equipe
         description: Este é um identificador único para a equipe de saúde responsável
           pelo paciente. É usado para rastrear qual equipe está fornecendo
           cuidados ao paciente.
         data_type: string
-        quote: true
       - name: id_equipe_ine
         description: Este é um identificador único para a equipe de saúde, reconhecido
           pelo Cadastro Nacional de Estabelecimentos de Saúde (CNES). É usado
           para fins oficiais de relatórios e rastreamento.
         data_type: string
-        quote: true
       - name: requisicao_area_programatica
         description: Este campo representa a área programática do estabelecimento de
           saúde onde o paciente recebeu a vacina.
         data_type: string
-        quote: true
       - name: paciente_id_prontuario
         description: Este é o identificador único para cada paciente no sistema
           Vitacare dentro da unidade de saúde onde está cadastrado. Este valor
           somente está preenchido para pacientes que posuem uma equipe da família
           vinculada.
         data_type: string
-        quote: true
       - name: estabelecimento_nome
         description: Este campo representa o nome do estabelecimento de saúde onde o
           paciente recebeu a vacina. 
         data_type: string
-        quote: true
       - name: paciente_cpf
         description: Esta coluna representa o CPF (Cadastro de Pessoas Físicas) do
           paciente.
         data_type: string
-        quote: true
         policy_tags:
         - '{{ var("TAG_CPF") }}'
       - name: paciente_cns
         description: Esta coluna representa o CNS (Cartão Nacional de Saúde) do
           paciente.
         data_type: string
-        quote: true
         policy_tags:
         - '{{ var("TAG_CNS") }}'
       - name: paciente_nome
         description: Esta coluna representa o nome do paciente.
         data_type: string
-        quote: true
         policy_tags:
         - '{{ var("TAG_NOME") }}'
       - name: paciente_sexo
         description: Esta coluna representa o sexo do paciente. 
         data_type: string
-        quote: true
       - name: paciente_nascimento_data
         description: Este campo representa a data de nascimento do paciente. É
           armazenado no formato AAAA-MM-DD.
         data_type: date
-        quote: true
         policy_tags:
         - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: paciente_nome_mae
         description: Este campo contém o nome completo da mãe do paciente.
         data_type: string
-        quote: true
         policy_tags:
         - '{{ var("TAG_NOME_MAE") }}'
       - name: paciente_mae_nascimento_data
         description: Este campo representa a data de nascimento da mãe do paciente. É
           armazenado no formato AAAA-MM-DD. 
         data_type: date
-        quote: true
         policy_tags:
         - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: paciente_situacao
@@ -135,34 +106,30 @@ models:
           informações sobre se o paciente está ativo, inativo ou em qualquer
           outro estado específico no sistema de saúde.
         data_type: string
-        quote: true
       - name: paciente_cadastro_data
         description: Este campo representa a data em que o paciente foi registrado no
           sistema. 
         data_type: date
-        quote: true
       - name: paciente_obito
         description: Este campo indica se o paciente é falecido.
         data_type: string
-        quote: true
+        policy_tags:
+        - '{{ var("TAG_DADO_CLINICO") }}'
       - name: vacina_descricao
         description: Esta coluna contém a descrição da vacina que foi administrada ao
           paciente. 
         data_type: string
-        quote: true
         policy_tags:
         - '{{ var("TAG_DADO_CLINICO") }}'
       - name: vacina_aplicacao_data
         description: Esta coluna representa a data em que a vacina foi aplicada ao
           paciente. É um campo de data e está formatado como AAAA-MM-DD.
         data_type: date
-        quote: true
       - name: vacina_registro_data
         description: Esta coluna representa a data e hora em que o registro de vacinação
           foi registrado no sistema. É um campo de data e hora e está formatado
           como AAAA-MM-DD HH:MM:SS.
         data_type: datetime
-        quote: true
         data_tests:
           - not_null:
               name: mart_cie__vacinacao__data_registro__not_null
@@ -173,54 +140,44 @@ models:
         description: Este campo representa a dose da vacina que foi administrada ao
           paciente. 
         data_type: string
-        quote: true
         policy_tags:
         - '{{ var("TAG_DADO_CLINICO") }}'
       - name: vacina_lote
         description: Este campo representa o número do lote da vacina. 
         data_type: string
-        quote: true
       - name: vacina_registro_tipo
         description: Este campo representa o tipo de registro. É um valor de string que
           fornece informações sobre a natureza do registro, como se é um novo
           registro de vacinação ou um registro retroativo.
         data_type: string
-        quote: true
       - name: vacina_estrategia
         description: Este campo representa a estratégia usada para a vacinação.
         data_type: string
-        quote: true
       - name: vacina_diff
         description: Diferença, em dias, entre a data de aplicação da vacina e a data de registro da vacina.
         data_type: string
-        quote: true
       - name: equipe_nome
         description: Este campo representa o nome da equipe que vinculada ao paciente na unidade de saúde.
           vacinações.
         data_type: string
-        quote: true
       - name: profissional_cbo
         description: Esta coluna representa o código da Classificação Brasileira de
           Ocupações (CBO) para o profissional de saúde que administrou a vacina.
         data_type: string
-        quote: true
       - name: profissional_cns
         description: Esta coluna contém o número do Cartão Nacional de Saúde (CNS) do
           profissional de saúde que administrou a vacina.
         data_type: string
-        quote: true
       - name: profissional_cpf
         description: Esta coluna representa o número do Cadastro de Pessoas Físicas
           (CPF) do profissional de saúde que administrou a vacina. 
         data_type: string
-        quote: true
         policy_tags:
         - '{{ var("TAG_CPF") }}'
       - name: profissional_nome
         description: Esta coluna contém o nome do profissional de saúde que administrou
           a vacina.
         data_type: string
-        quote: true
         policy_tags:
         - '{{ var("TAG_NOME") }}'
       - name: requisicao_endpoint
@@ -228,39 +185,28 @@ models:
           originou o registro de vacinação. Ele indica a fonte requisitada dentro 
           do sistema de saúde.
         data_type: string
-        quote: true
       - name: requisicao_id_cnes
         description: Este é o identificador único para o estabelecimento de saúde que 
           foi utilizado na requisição. Este id representa o CNES requisitado, 
           associado ao registro de vacinação no sistema de saúde.
         data_type: string
-        quote: true
       - name: particao_data_vacinacao
         description: Esta coluna representa o ano da partição. É usada para
           particionamento de dados e ajuda na recuperação eficiente de dados. Os
           dados são armazenados no formato de uma string.
         data_type: string
-        quote: true
       - name: mes_particao
         description: Esta coluna representa o mês da partição. Semelhante ao
           'ano_particao', é usado para particionamento de dados e ajuda na
           recuperação eficiente de dados. Os dados são armazenados no formato de
           uma string.
         data_type: string
-        quote: true
-      - name: data_particao
-        description: Esta coluna representa a data de particionamento. É usada para
-          organizar os dados de uma maneira que facilite o gerenciamento e a
-          consulta. A data está no formato 'AAAA-MM-DD'.
+      - name: cpf
+        description: Coluna particionada pelo cpf a fins de otimização de consultas.
+        policy_tags:
+        - '{{ var("TAG_CPF") }}'  
         data_type: string
-        quote: true
-      - name: imported_at
+      - name: loaded_at
         description: Esta coluna indica a data e hora em que os dados foram importados
-          para o datalake. Ajuda a rastrear as atualizações de dados e é
-          útil para auditoria de dados e controle de versão. A data e hora estão
-          no formato 'AAAA-MM-DD HH:MM:SS'.
-        data_type: string
-        quote: true
-      - name: metadados
-        description: Metadados do registro
+          para o datalake
   
