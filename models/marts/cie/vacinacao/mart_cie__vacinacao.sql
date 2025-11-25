@@ -3,10 +3,10 @@
         alias="vacinacao",
         materialized="table",
         partition_by={
-            "field": "particao_data_vacinacao",
-            "data_type": "date",
-            "granularity": "month"
-        }
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
@@ -64,7 +64,6 @@ with
             paciente_sexo,
             paciente_nascimento_data,
             paciente_nome_mae,
-            paciente_mae_nascimento_data,
             paciente_situacao,
             paciente_cadastro_data,
             paciente_obito,

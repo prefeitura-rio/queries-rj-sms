@@ -4,7 +4,7 @@
         schema="intermediario_cie",
         materialized="table",
         partition_by={
-            "field": "particao_data_vacinacao",
+            "field": "particao_registro_vacinacao",
             "data_type": "date",
             "granularity": "month"
         }
