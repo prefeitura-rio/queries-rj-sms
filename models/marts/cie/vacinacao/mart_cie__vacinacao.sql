@@ -3,42 +3,30 @@
         alias="vacinacao",
         materialized="table",
         partition_by={
-            "field": "particao_data_vacinacao",
+            "field": "particao_aplicacao_vacinacao",
             "data_type": "date",
             "granularity": "month"
-        }
+        },
     )
 }}
 
 with
-    continuo_e_historico as (
-        select *, 'historico' as origem from {{ ref('int_cie__vacinacao_historico') }}
-        union all
-        select *, 'continuo' as origem from {{ ref('int_cie__vacinacao_continuo') }}
-    ),
-
-    api as (
-        select *, 'api' as origem
-        from {{ ref('int_cie__vacinacao_api') }}
-        where id_vacinacao not in (
-            select id_vacinacao
-            from continuo_e_historico
-        )
-    ),
-
     vacinacoes as (
-        select * from continuo_e_historico
+        select *, 'historico' as origem
+        from {{ ref("int_historico_clinico__vacinacao__historico") }}
         union all
-        select * from api
+        select *, 'api' as origem
+        from {{ ref("int_historico_clinico__vacinacao__api") }}
+        union all
+        select *, 'continuo' as origem
+        from {{ ref("int_historico_clinico__vacinacao__continuo") }}
     ),
-
 
     vacinacoes_dedup as (
-        select 
-            *
+        select *
         from vacinacoes
         qualify row_number() over (
-            partition by id_vacinacao
+            partition by id_vacinacao 
             order by 
                 case 
                     when origem = 'api' then 1 
@@ -46,8 +34,45 @@ with
                     else 3 
                 end
         ) = 1
+    ),
+
+    final as (
+        select
+            id_vacinacao,
+            id_cnes,
+            id_equipe,
+            id_ine_equipe as id_equipe_ine,
+            id_microarea,
+            paciente_id_prontuario,
+            paciente_cns,
+            paciente_cpf,
+            estabelecimento_nome,
+            equipe_nome,
+            profissional_nome,
+            profissional_cbo,
+            profissional_cns,
+            profissional_cpf,
+            vacina_descricao,
+            vacina_dose,
+            vacina_lote,
+            vacina_registro_tipo,
+            vacina_estrategia,
+            vacina_diff,
+            vacina_aplicacao_data,
+            vacina_registro_data,
+            paciente_nome,
+            paciente_sexo,
+            paciente_nascimento_data,
+            paciente_nome_mae,
+            paciente_situacao,
+            paciente_cadastro_data,
+            paciente_obito,
+            loaded_at,
+            origem,
+            vacina_aplicacao_data as particao_aplicacao_vacinacao
+        from vacinacoes_dedup
     )
 
 select *
-from vacinacoes_dedup
-   
+from final
+
