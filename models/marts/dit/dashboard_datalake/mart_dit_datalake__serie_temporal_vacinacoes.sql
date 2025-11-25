@@ -29,7 +29,7 @@ WITH
         SELECT
             id_vacinacao,
             id_cnes,
-            particao_data_vacinacao as date
+            particao_aplicacao_vacinacao as date
         FROM {{ ref("mart_cie__vacinacao") }}
     ),
 
