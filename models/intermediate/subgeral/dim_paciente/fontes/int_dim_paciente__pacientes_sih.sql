@@ -31,10 +31,10 @@ with pacientes as (
         safe_cast(mun.nome_municipio as string) as paciente_municipio,
         safe_cast(paciente_uf as string) as paciente_uf
 
-        /*
-        paciente_tel_ddd,
-        paciente_tel_num
-        */
+        concat(
+            coalesce(paciente_tel_ddd, ''),
+            coalesce(paciente_tel_num, '')
+        ) as paciente_telefone
         
     from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}
     left join {{ref("raw_sheets__municipios_rio")}} as mun

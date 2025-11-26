@@ -18,11 +18,9 @@ with pacientes as (
         safe_cast(paciente_tp_logradouro_residencia as string) as paciente_tp_logradouro_residencia,
         safe_cast(paciente_bairro_residencia as string) as paciente_bairro_residencia,
         safe_cast(paciente_municipio_residencia as string) as paciente_municipio_residencia,
-        safe_cast(paciente_uf_residencia as string) as paciente_uf_residencia
+        safe_cast(paciente_uf_residencia as string) as paciente_uf_residencia,
 
-        /*
-        paciente_telefone
-        */
+        safe_cast(paciente_telefone as string) as paciente_telefone
     
     from {{ ref("mart_sisreg__solicitacoes") }}
     where date(data_solicitacao) >= date '2024-01-01'

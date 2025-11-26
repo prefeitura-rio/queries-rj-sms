@@ -20,12 +20,10 @@ with pacientes as (
         safe_cast(paciente_bairro as string) as paciente_bairro_residencia,
         safe_cast(paciente_logradouro as string) as paciente_endereco_residencia,
         safe_cast(paciente_endereco_complemento as string) as paciente_complemento_residencia,
-        safe_cast(paciente_endereco_numero as string) as paciente_numero_residencia
+        safe_cast(paciente_endereco_numero as string) as paciente_numero_residencia,
 
-        /*
-        paciente_telefone
-        */
-        
+        safe_cast(paciente_telefone as string) as paciente_telefone
+            
     from {{ ref("raw_siscan_web__laudos") }}
     where date(data_solicitacao) >= date '2024-01-01'
 )

@@ -28,7 +28,12 @@ with
             paciente_endereco_residencia,
             paciente_complemento_residencia,
             paciente_numero_residencia,
-            paciente_tp_logradouro_residencia
+            paciente_tp_logradouro_residencia,
+
+            paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_sisreg")}}
 
         union all
@@ -56,7 +61,12 @@ with
             paciente_endereco_residencia,
             paciente_complemento_residencia,
             paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_siscan")}}
 
         union all
@@ -84,7 +94,12 @@ with
             cast(null as string) as paciente_endereco_residencia,
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_ser_internacoes")}}
 
         union all
@@ -112,7 +127,12 @@ with
             cast(null as string) as paciente_endereco_residencia,
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_ser_ambulatorial")}}
 
         union all
@@ -140,7 +160,12 @@ with
             paciente_endereco_residencia,
             paciente_complemento as paciente_complemento_residencia,
             paciente_numero as paciente_numero_residencia,
-            paciente_tp_logradouro_residencia
+            paciente_tp_logradouro_residencia,
+
+            paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_sih")}}
 
         union all
@@ -168,7 +193,12 @@ with
             cast(null as string) as paciente_endereco_residencia,
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__profissionais_cnes")}}
 
         union all
@@ -196,7 +226,12 @@ with
             cast(null as string) as paciente_endereco_residencia,
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_minha_saude")}}
 
         union all
@@ -224,7 +259,12 @@ with
             cast(null as string) as paciente_endereco_residencia,
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_tea")}}
 
         union all
@@ -252,7 +292,12 @@ with
             cast(null as string) as paciente_endereco_residencia,
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_fibromialgia")}}
 
         union all
@@ -280,7 +325,12 @@ with
             cast(null as string) as paciente_endereco_residencia,
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_sipni")}}
 
         union all
@@ -308,7 +358,12 @@ with
             cast(null as string) as paciente_endereco_residencia,
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_hci")}}
 
         union all
@@ -327,16 +382,21 @@ with
             paciente_sexo,
             cast(null as string) as paciente_racacor,
 
-            cast(null as string) as paciente_uf_nascimento,
+            paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
-            cast(null as string) as paciente_uf_residencia,
-            cast(null as string) as paciente_municipio_residencia,
-            cast(null as string) as paciente_bairro_residencia,
-            cast(null as string) as paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia
+            paciente_uf_residencia,
+            paciente_municipio_residencia,
+            paciente_bairro_residencia,
+            paciente_cep_residencia,
+            paciente_endereco_residencia,
+            paciente_complemento_residencia,
+            as paciente_numero_residencia,
+            paciente_tp_logradouro_residencia,
+
+            paciente_telefone,
+            paciente_email,
+            
+            paciente_obito_ano
         from {{ref("int_dim_paciente__pacientes_hci")}}
     ),
 
@@ -375,7 +435,12 @@ with
             ar.paciente_endereco_residencia,
             ar.paciente_complemento_residencia,
             ar.paciente_numero_residencia,
-            ar.paciente_tp_logradouro_residencia
+            ar.paciente_tp_logradouro_residencia,
+
+            ar.paciente_telefone,
+            ar.paciente_email,
+            
+            ar.paciente_obito_ano
         from todos_registros ar
             left join {{ref("int_dim_paciente__relacao_cns_cpf")}} m
             on safe_cast(ar.paciente_cns as int) = safe_cast(m.cns as int)

@@ -5,7 +5,6 @@ with pacientes as (
     safe_cast(usuariocns as int) as paciente_cns,
     safe_cast(usuarionome as string) as paciente_nome
 
-    -- nao estao sendo utilizados:
     /*
     unidaderefcnes,
     unidaderefnome,
