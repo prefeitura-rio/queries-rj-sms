@@ -411,6 +411,13 @@ models:
             dominio: historico_clinico
           paciente:
             +tags: ["paciente"]
+        cadastro:
+          +tags: ["cadastro", "weekly"]
+          +schema: intermediario_cadastro
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
         cdi:
           +tags: ["cdi", "daily"]
           +schema: intermediario_cdi
