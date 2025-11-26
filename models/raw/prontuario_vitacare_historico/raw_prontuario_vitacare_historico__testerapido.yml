@@ -28,6 +28,14 @@ models:
         description: Resultado do teste PPD (Derivado Proteico Purificado) para tuberculose.
       - name: data_teste_ppd
         description: Data de realização do teste PPD.
+      - name: resultado_teste_hiv1
+        description: Resultado do teste rápido para HIV tipo 1.
+      - name: resultado_teste_hiv1_positivo
+        description: Indica se o teste rápido para HIV tipo 1 foi positivo.
+      - name: resultado_teste_hiv2
+        description: Resultado do teste rápido para HIV tipo 2.
+      - name: resultado_teste_hiv2_positivo
+        description: Indica se o teste rápido para HIV tipo 2 foi positivo.
       - name: resultado_teste_hepatite_c
         description: Resultado do teste rápido de Hepatite C.
       - name: resultado_teste_hepatite_c_positivo
