@@ -47,6 +47,11 @@ agg as (
     array_agg(distinct paciente_numero_residencia ignore nulls) as numeros_residencia,
     array_agg(distinct paciente_tp_logradouro_residencia ignore nulls) as tipos_logradouro_residencia,
 
+    array_agg(distinct paciente_telefone ignore nulls) as telefones
+    array_agg(distinct paciente_email ignore nulls) as emails,
+
+    array_agg(distinct paciente_obito_ano ignore nulls) as anos_obito,
+
     -- checagens de conflitos
     (select count(distinct safe_cast(paciente_data_nascimento as string)) from {{ref("int_dim_paciente__esquema_canonico")}} x where x.cpf_particao = agg_src.cpf_particao) > 1
       as data_nascimento_conflitantes,
@@ -89,6 +94,11 @@ final as (
     complementos_residencia,
     numeros_residencia,
     tipos_logradouro_residencia,
+
+    telefones,
+    emails,
+    
+    anos_obito,
 
     data_nascimento_conflitantes,
     sexos_conflitantes,

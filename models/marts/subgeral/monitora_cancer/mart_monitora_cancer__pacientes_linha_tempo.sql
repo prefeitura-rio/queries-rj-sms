@@ -66,6 +66,8 @@ with
             pop.paciente_cpf,
             dim_paciente.nomes[SAFE_OFFSET(0)] as nome,
             dim_paciente.racas_cores[SAFE_OFFSET(0)] as raca_cor,
+
+            dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
             
             date_diff(
                 current_date(),
@@ -100,7 +102,7 @@ with
             cast(null as string) as equipe_sf,
             cast(null as string) as status,
             pop.gravidade_score,
-            cast(null as string) as telefone,
+            pop.telefone as telefone,
 
             -- dados evento
             fcts.sistema_origem as fonte,
