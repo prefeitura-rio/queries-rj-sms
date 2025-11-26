@@ -82,6 +82,36 @@ ambulantes_unidos as (
     select *, "sisvisa" as fonte from ambulantes_no_sisvisa
 ),
 
+ambulantes_deduplicados as (
+    -- Queremos deduplicar mas sem substituição
+    -- Isto é, queremos juntar entradas com mesma inscrição municipal
+    -- removendo todos os nulos possíveis. Para isso, fazemos coalesce(max, max).
+    -- Em duas repetições, se um é nulo, o outro é o max.
+    -- Contudo, na base com ~300 mil linhas, 6 possuem 3 repetições.
+    -- Assim, estamos em teoria perdendo algumas poucas informações caso
+    -- mais de um esteja preenchido com não-nulo :\
+    -- [Ref] https://www.rainstormtech.com/efficient-data-deduplication-and-null-value-handling-in-sql-server/
+    select
+        coalesce(max(id), max(id)) as id,
+        coalesce(max(cpf), max(cpf)) as cpf,
+        coalesce(max(cnpj), max(cnpj)) as cnpj,
+        coalesce(max(razao_social), max(razao_social)) as razao_social,
+        inscricao_municipal,
+        coalesce(max(endereco_logradouro), max(endereco_logradouro)) as endereco_logradouro,
+        coalesce(max(endereco_numero), max(endereco_numero)) as endereco_numero,
+        coalesce(max(endereco_complemento), max(endereco_complemento)) as endereco_complemento,
+        coalesce(max(cep_int64), max(cep_int64)) as cep_int64,
+        coalesce(max(endereco_bairro), max(endereco_bairro)) as endereco_bairro,
+        coalesce(max(ativo), max(ativo)) as ativo,
+        coalesce(max(situacao_do_alvara), max(situacao_do_alvara)) as situacao_do_alvara,
+        coalesce(max(situacao_da_emissao_da_licenca), max(situacao_da_emissao_da_licenca)) as situacao_da_emissao_da_licenca,
+        coalesce(max(situacao_da_licenca_sanitaria), max(situacao_da_licenca_sanitaria)) as situacao_da_licenca_sanitaria,
+        coalesce(max(situacao_validacao_da_licenca_sanitaria), max(situacao_validacao_da_licenca_sanitaria)) as situacao_validacao_da_licenca_sanitaria,
+        max(fonte) as fonte  -- prefere 'sisvisa' a 'scca' se for o caso
+    from ambulantes_unidos
+    group by inscricao_municipal
+),
+
 obitos as (
     select
         cpf.cpf
@@ -94,9 +124,9 @@ ambulantes_atualizados as (
         struct(
             'Ambulante' as tipo,
             cast(id as string) as id_sisvisa,
-            cast(ambulantes_unidos.cpf as string) as cpf,
-            cast(ambulantes_unidos.cnpj as string) as cnpj,
-            cast(ambulantes_unidos.inscricao_municipal as string) as inscricao_municipal
+            cast(ambulantes.cpf as string) as cpf,
+            cast(ambulantes.cnpj as string) as cnpj,
+            cast(ambulantes.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
 
         struct(
@@ -129,8 +159,8 @@ ambulantes_atualizados as (
             cast(situacao_da_emissao_da_licenca as string) as licenca_sanitaria_emissao,
             cast(situacao_validacao_da_licenca_sanitaria as string) as licenca_sanitaria_validacao
         ) as situacao
-    from ambulantes_unidos
-        left join obitos on ambulantes_unidos.cpf = obitos.cpf
+    from ambulantes_deduplicados as ambulantes
+        left join obitos on ambulantes.cpf = obitos.cpf
 )
 
 select *

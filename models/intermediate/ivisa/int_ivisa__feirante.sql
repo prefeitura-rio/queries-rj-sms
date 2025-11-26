@@ -135,6 +135,30 @@ feirantes_unidos as (
     select *, 'sisvisa' as fonte from feirantes_no_sisvisa
 ),
 
+feirantes_deduplicados as (
+    -- Vide explicação em `int_ivisa__ambulante`
+    select
+        coalesce(max(id), max(id)) as id,
+        coalesce(max(cpf), max(cpf)) as cpf,
+        coalesce(max(cnpj), max(cnpj)) as cnpj,
+        coalesce(max(razao_social), max(razao_social)) as razao_social,
+        inscricao_municipal,
+        coalesce(max(endereco_logradouro), max(endereco_logradouro)) as endereco_logradouro,
+        coalesce(max(endereco_numero), max(endereco_numero)) as endereco_numero,
+        coalesce(max(endereco_complemento), max(endereco_complemento)) as endereco_complemento,
+        coalesce(max(endereco_cep), max(endereco_cep)) as endereco_cep,
+        coalesce(max(endereco_bairro), max(endereco_bairro)) as endereco_bairro,
+        coalesce(max(endereco_cidade), max(endereco_cidade)) as endereco_cidade,
+        coalesce(max(ativo), max(ativo)) as ativo,
+        coalesce(max(situacao_do_alvara), max(situacao_do_alvara)) as situacao_do_alvara,
+        coalesce(max(situacao_da_emissao_da_licenca), max(situacao_da_emissao_da_licenca)) as situacao_da_emissao_da_licenca,
+        coalesce(max(situacao_da_licenca_sanitaria), max(situacao_da_licenca_sanitaria)) as situacao_da_licenca_sanitaria,
+        coalesce(max(situacao_validacao_da_licenca_sanitaria), max(situacao_validacao_da_licenca_sanitaria)) as situacao_validacao_da_licenca_sanitaria,
+        min(fonte) as fonte  -- prefere 'sisvisa' a 'slffe' se for o caso
+    from feirantes_unidos
+    group by inscricao_municipal
+),
+
 obitos as (
     select
         cpf.cpf
@@ -180,7 +204,7 @@ feirantes_atualizados as (
             cast(situacao_da_emissao_da_licenca as string) as licenca_sanitaria_emissao,
             cast(situacao_validacao_da_licenca_sanitaria as string) as licenca_sanitaria_validacao
         ) as situacao
-    from feirantes_unidos feirantes
+    from feirantes_deduplicados as feirantes
         left join obitos on feirantes.cpf = obitos.cpf
 )
 

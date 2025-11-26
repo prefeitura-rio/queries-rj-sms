@@ -89,6 +89,29 @@ bancas_unidas as (
     select *, "sisvisa" as fonte from bancas_no_sisvisa
 ),
 
+bancas_deduplicadas as (
+    -- Vide explicação em `int_ivisa__ambulante`
+    select
+        coalesce(max(id), max(id)) as id,
+        coalesce(max(cpf), max(cpf)) as cpf,
+        coalesce(max(razao_social), max(razao_social)) as razao_social,
+        inscricao_municipal,
+        coalesce(max(endereco_logradouro), max(endereco_logradouro)) as endereco_logradouro,
+        coalesce(max(endereco_numero), max(endereco_numero)) as endereco_numero,
+        coalesce(max(endereco_complemento), max(endereco_complemento)) as endereco_complemento,
+        coalesce(max(endereco_cep), max(endereco_cep)) as endereco_cep,
+        coalesce(max(endereco_bairro), max(endereco_bairro)) as endereco_bairro,
+        coalesce(max(endereco_cidade), max(endereco_cidade)) as endereco_cidade,
+        coalesce(max(ativo), max(ativo)) as ativo,
+        coalesce(max(situacao_do_alvara), max(situacao_do_alvara)) as situacao_do_alvara,
+        coalesce(max(situacao_da_emissao_da_licenca), max(situacao_da_emissao_da_licenca)) as situacao_da_emissao_da_licenca,
+        coalesce(max(situacao_da_licenca_sanitaria), max(situacao_da_licenca_sanitaria)) as situacao_da_licenca_sanitaria,
+        coalesce(max(situacao_validacao_da_licenca_sanitaria), max(situacao_validacao_da_licenca_sanitaria)) as situacao_validacao_da_licenca_sanitaria,
+        max(fonte) as fonte  -- prefere 'sisvisa' a 'silfae' se for o caso
+    from bancas_unidas
+    group by inscricao_municipal
+),
+
 obitos as (
     select 
         cpf.cpf
@@ -101,9 +124,9 @@ bancas_atualizadas as (
         struct(
             'Banca de Jornal' as tipo,
             cast(id as string) as id_sisvisa,
-            cast(bancas_unidas.cpf as string) as cpf,
+            cast(bancas.cpf as string) as cpf,
             cast(null as string) as cnpj,
-            cast(bancas_unidas.inscricao_municipal as string) as inscricao_municipal
+            cast(bancas.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
 
         struct(
@@ -132,8 +155,8 @@ bancas_atualizadas as (
             cast(situacao_da_emissao_da_licenca as string) as licenca_sanitaria_emissao,
             cast(situacao_validacao_da_licenca_sanitaria as string) as licenca_sanitaria_validacao
         ) as situacao
-    from bancas_unidas
-        left join obitos on bancas_unidas.cpf = obitos.cpf
+    from bancas_deduplicadas as bancas
+        left join obitos on bancas.cpf = obitos.cpf
 )
 
 select *
