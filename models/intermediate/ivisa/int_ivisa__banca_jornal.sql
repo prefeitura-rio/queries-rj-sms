@@ -6,30 +6,87 @@
     )
 }}
 
-with 
-
-bancas_no_sisvisa as (
+with bancas_no_sisvisa as (
     select
         id,
 
         cpf_titular as cpf,
-        nome_titular as razao_social,
+        {{ proper_br("nome_titular") }} as razao_social,
         inscricao_municipal,
 
         logradouro_banca as endereco_logradouro,
         numero_porta_banca as endereco_numero,
         complemento_banca as endereco_complemento,
         cep_banca as endereco_cep,
-        bairro_banca as endereco_bairro,
-        null as endereco_cidade,
+        -- Precisamos re-adicionar espaços antes de parênteses para
+        -- "freguesia(jacarepaguá)"
+        case
+            when REGEXP_CONTAINS(bairro_banca, r"[A-Za-z]\(")
+                then array_to_string(split(bairro_banca, "("), " (")
+            else bairro_banca
+        end as endereco_bairro,
+        cast(null as string) as endereco_cidade,
 
         ativo,
-        situacao_do_alvara,
+        case
+            when upper(trim(situacao_do_alvara)) = "ATIVA"
+                then "ATIVO"
+            when upper(trim(situacao_do_alvara)) in (
+                "BAIXADA", "CANCELADA"
+            ) then "CANCELADO"
+            when upper(trim(situacao_do_alvara)) = "PENDENTE"
+                then "PENDENTE"
+            else null
+        end as situacao_do_alvara,
         situacao_da_emissao_da_licenca,
         situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
     from {{ ref('raw_sisvisa__banca_jornal_sisvisa') }}
     where cpf_titular is not null
+),
+
+-- SILFAE tem muito pouca informação :\
+bancas_no_silfae as (
+    select
+        cast(null as int64) as id,
+
+        cpf_titular as cpf,
+        {{ proper_br("nome_titular") }} as razao_social,
+        cast(inscricao_municipal as string) as inscricao_municipal,
+
+        logradouro_banca as endereco_logradouro,
+        numero_porta_banca as endereco_numero,
+        complemento_banca as endereco_complemento,
+        cast(null as string) as endereco_cep,
+        case
+            when REGEXP_CONTAINS(bairro_banca, r"[A-Za-z]\(")
+                then array_to_string(split(bairro_banca, "("), " (")
+            else bairro_banca
+        end as endereco_bairro,
+        cast(null as string) as endereco_cidade,
+
+        cast(null as boolean) as ativo,
+        case
+            when upper(trim(situacao)) = "ATIVA"
+                then "ATIVO"
+            when upper(trim(situacao)) in (
+                "BAIXADA", "CANCELADA"
+            ) then "CANCELADO"
+            when upper(trim(situacao)) = "PENDENTE"
+                then "PENDENTE"
+            else null
+        end as situacao_do_alvara,
+        cast(null as int64) as situacao_da_emissao_da_licenca,
+        cast(null as int64) as situacao_da_licenca_sanitaria,
+        cast(null as int64) as situacao_validacao_da_licenca_sanitaria
+    from {{ ref("raw_sisvisa__banca_jornal_silfae") }}
+    where cpf_titular is not null
+),
+
+bancas_unidas as (
+    select *, "silfae" as fonte from bancas_no_silfae
+    union all
+    select *, "sisvisa" as fonte from bancas_no_sisvisa
 ),
 
 obitos as (
@@ -39,14 +96,14 @@ obitos as (
     where cpf.obito_ano is not null
 ),
 
-bancas_no_sisvisa_atualizadas as (
+bancas_atualizadas as (
     select
         struct(
             'Banca de Jornal' as tipo,
             cast(id as string) as id_sisvisa,
-            cast(bancas_no_sisvisa.cpf as string) as cpf,
+            cast(bancas_unidas.cpf as string) as cpf,
             cast(null as string) as cnpj,
-            cast(bancas_no_sisvisa.inscricao_municipal as string) as inscricao_municipal
+            cast(bancas_unidas.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
 
         struct(
@@ -54,7 +111,8 @@ bancas_no_sisvisa_atualizadas as (
             cast(null as string) as natureza_juridica,
             cast(null as string) as porte,
             razao_social as titular,
-            (obitos.cpf is not null) as titular_com_obito
+            (obitos.cpf is not null) as titular_com_obito,
+            fonte
         ) as cadastro,
 
         struct(
@@ -64,7 +122,7 @@ bancas_no_sisvisa_atualizadas as (
 
         struct(
             cast([] as array<string>) as tipos_operacoes,
-            cast(endereco_bairro as string) as endereco_bairro,
+            {{ add_accents_bairros("endereco_bairro") }} as endereco_bairro,
             cast(endereco_cidade as string) as endereco_cidade
         ) as operacao,
 
@@ -74,10 +132,9 @@ bancas_no_sisvisa_atualizadas as (
             cast(situacao_da_emissao_da_licenca as string) as licenca_sanitaria_emissao,
             cast(situacao_validacao_da_licenca_sanitaria as string) as licenca_sanitaria_validacao
         ) as situacao
-    from bancas_no_sisvisa
-        left join obitos on bancas_no_sisvisa.cpf = obitos.cpf
+    from bancas_unidas
+        left join obitos on bancas_unidas.cpf = obitos.cpf
 )
 
-select * 
-from bancas_no_sisvisa_atualizadas
-
+select *
+from bancas_atualizadas

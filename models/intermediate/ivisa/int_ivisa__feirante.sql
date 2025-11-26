@@ -21,8 +21,43 @@ feirantes_no_slffe as (
         numero_porta as endereco_numero,
         complemento as endereco_complemento,
         cep as endereco_cep,
-        bairro as endereco_bairro,
-        municipio as endereco_cidade,
+        -- Precisamos re-adicionar espaços antes de parênteses para
+        -- "freguesia(jacarepaguá)"
+        case
+            when REGEXP_CONTAINS(bairro, r"[A-Za-z]\(")
+                then array_to_string(split(bairro, "("), " (")
+            else bairro
+        end as endereco_bairro,
+        case
+            when lower(trim(municipio)) in (
+                "rio de janeiro", "rj",
+                "recreio dos bandeirantes"
+            )
+                then "Rio de Janeiro"
+            when lower(trim(municipio)) = "b.roxo"
+                then "Belford Roxo"
+            when lower(trim(municipio)) = "nova iguacu"
+                then "Nova Iguaçu"
+            when lower(trim(municipio)) = "nilopolis"
+                then "Nilópolis"
+            when lower(trim(municipio)) = "sao goncalo"
+                then "São Gonçalo"
+            when lower(trim(municipio)) = "itaguai"
+                then "Itaguaí"
+            when lower(trim(municipio)) = "itaborai"
+                then "Itaboraí"
+            when lower(trim(municipio)) = "petropolis"
+                then "Petrópolis"
+            when lower(trim(municipio)) = "teresopolis"
+                then "Teresópolis"
+            when lower(trim(municipio)) = "sao joao de meriti"
+                then "São João de Meriti"
+            when lower(trim(municipio)) = "mage"
+                then "Magé"
+            when lower(trim(municipio)) = "marica"
+                then "Maricá"
+            else {{ proper_br("municipio") }}
+        end as endereco_cidade,
 
         case when situacao = 'ATIVO' then true else false end as ativo,
         cast(null as string) as situacao_do_alvara,
@@ -38,18 +73,55 @@ feirantes_no_sisvisa as (
 
         cpf,
         cnpj,
-        razao_social,
+        {{ proper_br("razao_social") }} as razao_social,
         inscricao_municipal,
 
         logradouro as endereco_logradouro,
         numero_porta as endereco_numero,
         complemento as endereco_complemento,
         cep as endereco_cep,
-        bairro as endereco_bairro,
-        municipio as endereco_cidade,
+        case
+            when REGEXP_CONTAINS(bairro, r"[A-Za-z]\(")
+                then array_to_string(split(bairro, "("), " (")
+            else bairro
+        end as endereco_bairro,
+        case
+            when lower(trim(municipio)) in (
+                "rio de janeiro", "rj",
+                "recreio dos bandeirantes"
+            )
+                then "Rio de Janeiro"
+            when lower(trim(municipio)) = "b.roxo"
+                then "Belford Roxo"
+            when lower(trim(municipio)) = "nova iguacu"
+                then "Nova Iguaçu"
+            when lower(trim(municipio)) = "nilopolis"
+                then "Nilópolis"
+            when lower(trim(municipio)) = "sao goncalo"
+                then "São Gonçalo"
+            when lower(trim(municipio)) = "itaguai"
+                then "Itaguaí"
+            when lower(trim(municipio)) = "itaborai"
+                then "Itaboraí"
+            when lower(trim(municipio)) = "petropolis"
+                then "Petrópolis"
+            when lower(trim(municipio)) = "teresopolis"
+                then "Teresópolis"
+            when lower(trim(municipio)) = "sao joao de meriti"
+                then "São João de Meriti"
+            when lower(trim(municipio)) = "mage"
+                then "Magé"
+            when lower(trim(municipio)) = "marica"
+                then "Maricá"
+            else {{ proper_br("municipio") }}
+        end as endereco_cidade,
 
         case when afastado = 'N' then true else false end as ativo,
-        cast(situacao_do_alvara as string) as situacao_do_alvara,
+        case 
+            when upper(trim(situacao_do_alvara)) = "BAIXADO"
+                then "CANCELADO"
+            else upper(trim(situacao_do_alvara))
+        end as situacao_do_alvara,
         cast(situacao_da_emissao_da_licenca as string) as situacao_da_emissao_da_licenca,
         cast(situacao_da_licenca_sanitaria as string) as situacao_da_licenca_sanitaria,
         cast(situacao_validacao_da_licenca_sanitaria as string) as situacao_validacao_da_licenca_sanitaria
@@ -64,7 +136,7 @@ feirantes_unidos as (
 ),
 
 obitos as (
-    select 
+    select
         cpf.cpf
     from {{ ref('raw_bcadastro__cpf') }} as cpf
     where cpf.obito_ano is not null
@@ -85,7 +157,8 @@ feirantes_atualizados as (
             cast(null as string) as natureza_juridica,
             cast(null as string) as porte,
             razao_social as titular,
-            (obitos.cpf is not null) as titular_com_obito
+            (obitos.cpf is not null) as titular_com_obito,
+            fonte
         ) as cadastro,
 
         struct(
@@ -95,7 +168,9 @@ feirantes_atualizados as (
 
         struct(
             cast([] as array<string>) as tipos_operacoes,
-            cast(endereco_bairro as string) as endereco_bairro,
+            trim(
+                cast({{ add_accents_bairros("endereco_bairro") }} as string)
+            ) as endereco_bairro,
             cast(endereco_cidade as string) as endereco_cidade
         ) as operacao,
 

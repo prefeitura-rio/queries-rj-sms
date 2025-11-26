@@ -6,14 +6,12 @@
     )
 }}
 
-with 
-
-estabelecimentos_no_sisvisa as (
+with estabelecimentos_no_sisvisa as (
     select
         id,
 
         cnpj,
-        razao_social as razao_social,
+        {{ proper_br("razao_social") }} as razao_social,
         nome_fantasia as nome_fantasia,
         inscricao_municipal as inscricao_municipal,
 
@@ -22,11 +20,65 @@ estabelecimentos_no_sisvisa as (
         numero as endereco_numero,
         complemento as endereco_complemento,
         concat(cep_numero, cep_complemento) as endereco_cep,
-        bairro as endereco_bairro,
-        cidade as endereco_cidade,
+        -- Precisamos re-adicionar espaços antes de parênteses para
+        -- "freguesia(jacarepaguá)"
+        case
+            when REGEXP_CONTAINS(bairro, r"[A-Za-z]\(")
+                then array_to_string(split(bairro, "("), " (")
+            else bairro
+        end as endereco_bairro,
+        {{ proper_br("cidade") }} as endereco_cidade,
 
         ativo,
-        situacao_do_alvara,
+        case
+            -- 01 - ATIVO
+            when upper(situacao_do_alvara) like "%ATIVO"
+                then "ATIVO"
+            -- ?
+            when upper(trim(situacao_do_alvara)) = "20 - INSCRICAO EX-OFFICIO"
+                then "ATIVO"
+
+            -- 40 - PROVISORIO CANCELADO
+            -- 41 - CANCELADO
+            -- 42 - CANCELADO DE OFICIO
+            -- 50 - CANCELADO SEM PAGTO
+            when upper(situacao_do_alvara) like "%CANCELADO%"
+                then "CANCELADO"
+
+            -- 00 - PENDENTE DE INCLUSAO
+            -- 02 - PENDENTE DE ALTERACAO
+            -- 08 - PENDENTE FIC
+            -- 11 - PENDENTE DE ALVARA
+            -- 15 - PENDENTE EMISSAO GUIA UNICA
+            -- 25 - PENDENTE MICROEMPRESA
+            -- 30 - PROVISORIO PENDENTE
+            when upper(situacao_do_alvara) like "%PENDENTE%"
+                then "PENDENTE"
+
+            when upper(trim(situacao_do_alvara)) in (
+                "06 - BAIXADO",
+                "10 - BAIXA ISS",
+                "21 - ANULADO",
+                "22 - CASSADO",
+                "23 - SUSPENSAO DE OFICIO",
+                "28 - EX-OFFICIO/BAIXADO",
+                "32 - PROVISORIO VENCIDO",
+                "45 - CANC. BAIXA RFB",
+                "46 - ALVARA SUSPENSO",
+                "47 - CANC POR OBITO",
+                "48 - BAIXA ISS OFICIO MEI"
+            ) then "CANCELADO"
+
+            when upper(trim(situacao_do_alvara)) in (
+                "14 - SOLICITACAO GUIAS T.L.E.",
+                "29 - PROVISORIO",
+                "31 - PROVISORIO RENOVADO",
+                "43 - PROV PRORR INDEFERIDA"
+            ) then "PENDENTE"
+
+            -- Aqui sobra uma situação, "1", que eu não sei o significado
+            else null
+        end as situacao_do_alvara,
         situacao_da_emissao_da_licenca,
         situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
@@ -71,7 +123,8 @@ estabelecimentos_no_sisvisa_atualizados as (
             estabelecimentos_receita_federal.natureza_juridica,
             porte,
             cast(null as string) as titular,
-            cast(null as boolean) as titular_com_obito
+            cast(null as boolean) as titular_com_obito,
+            "sisvisa" as fonte
         ) as cadastro,
 
         struct(
@@ -81,8 +134,8 @@ estabelecimentos_no_sisvisa_atualizados as (
 
         struct(
             formas_atuacao as tipos_operacoes,
-            estabelecimentos_no_sisvisa.endereco_bairro,
-            estabelecimentos_no_sisvisa.endereco_cidade
+            {{ add_accents_bairros("estabelecimentos_no_sisvisa.endereco_bairro") }} as endereco_bairro,
+            {{ proper_br("estabelecimentos_no_sisvisa.endereco_cidade") }} as endereco_cidade
         ) as operacao,
 
         struct(
@@ -95,5 +148,5 @@ estabelecimentos_no_sisvisa_atualizados as (
         on estabelecimentos_no_sisvisa.cnpj = estabelecimentos_receita_federal.cnpj
 )
 
-select * 
+select *
 from estabelecimentos_no_sisvisa_atualizados
