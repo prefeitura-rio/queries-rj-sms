@@ -1,347 +1,449 @@
 with
 -- criando esquema canonico para unir todos os sistemas
-todos_registros as (
-  select
+    todos_registros as (
+        select
     -- fonte dos dados
-    'sisreg' as sistema_origem,
+            'sisreg' as sistema_origem,
 
     -- id paciente
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
-    
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
+
     -- sociodemograficos
-    paciente_sexo,
-    cast(null as string) as paciente_racacor,
+            paciente_sexo,
+            cast(null as string) as paciente_racacor,
 
     -- endereco
-    paciente_uf_nascimento,
-    paciente_municipio_nascimento,
-    paciente_uf_residencia,
-    paciente_municipio_residencia,
-    paciente_bairro_residencia,
-    paciente_cep_residencia,
-    paciente_endereco_residencia,
-    paciente_complemento_residencia,
-    paciente_numero_residencia,
-    paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_sisreg")}}
+            paciente_uf_nascimento,
+            paciente_municipio_nascimento,
+            paciente_uf_residencia,
+            paciente_municipio_residencia,
+            paciente_bairro_residencia,
+            paciente_cep_residencia,
+            paciente_endereco_residencia,
+            paciente_complemento_residencia,
+            paciente_numero_residencia,
+            paciente_tp_logradouro_residencia,
 
-  union all
+            paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_sisreg")}}
 
-  select
-    'siscan' as sistema_origem,
+        union all
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+        select
+            'siscan' as sistema_origem,
 
-    paciente_sexo,
-    cast(null as string) as paciente_racacor,
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    paciente_uf_residencia,
-    paciente_municipio_residencia,
-    paciente_bairro_residencia,
-    paciente_cep_residencia,
-    paciente_endereco_residencia,
-    paciente_complemento_residencia,
-    paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_siscan")}}
+            paciente_sexo,
+            cast(null as string) as paciente_racacor,
 
-  union all
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            paciente_uf_residencia,
+            paciente_municipio_residencia,
+            paciente_bairro_residencia,
+            paciente_cep_residencia,
+            paciente_endereco_residencia,
+            paciente_complemento_residencia,
+            paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
 
-  select
-    'ser_internacoes' as sistema_origem,
+            paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_siscan")}}
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    cast(null as string) as paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+        union all
 
-    cast(null as string) as paciente_sexo,
-    cast(null as string) as paciente_racacor,
+        select
+            'ser_internacoes' as sistema_origem,
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    cast(null as string) as paciente_uf_residencia,
-    cast(null as string) as paciente_municipio_residencia, 
-    cast(null as string) as paciente_bairro_residencia,
-    cast(null as string) as paciente_cep_residencia,
-    cast(null as string) as paciente_endereco_residencia,
-    cast(null as string) as paciente_complemento_residencia,
-    cast(null as string) as paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_ser_internacoes")}}
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            cast(null as string) as paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-  union all
+            cast(null as string) as paciente_sexo,
+            cast(null as string) as paciente_racacor,
 
-  select
-    'ser_ambulatorial' as sistema_origem,
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            cast(null as string) as paciente_uf_residencia,
+            cast(null as string) as paciente_municipio_residencia,
+            cast(null as string) as paciente_bairro_residencia,
+            cast(null as string) as paciente_cep_residencia,
+            cast(null as string) as paciente_endereco_residencia,
+            cast(null as string) as paciente_complemento_residencia,
+            cast(null as string) as paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    cast(null as string) as paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_ser_internacoes")}}
 
-    paciente_sexo,
-    cast(null as string) as paciente_racacor,
+        union all
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    cast(null as string) as paciente_uf_residencia,
-    paciente_municipio_residencia,
-    cast(null as string) as paciente_bairro_residencia,
-    cast(null as string) as paciente_cep_residencia,
-    cast(null as string) as paciente_endereco_residencia,
-    cast(null as string) as paciente_complemento_residencia,
-    cast(null as string) as paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-    from {{ref("int_dim_paciente__pacientes_ser_ambulatorial")}}
+        select
+            'ser_ambulatorial' as sistema_origem,
 
-  union all
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            cast(null as string) as paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-  select
-    'sih' as sistema_origem,
+            paciente_sexo,
+            cast(null as string) as paciente_racacor,
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    cast(null as string) as paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            cast(null as string) as paciente_uf_residencia,
+            paciente_municipio_residencia,
+            cast(null as string) as paciente_bairro_residencia,
+            cast(null as string) as paciente_cep_residencia,
+            cast(null as string) as paciente_endereco_residencia,
+            cast(null as string) as paciente_complemento_residencia,
+            cast(null as string) as paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
 
-    paciente_sexo,
-    paciente_racacor,
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_ser_ambulatorial")}}
 
-    cast(null as string) as paciente_uf_nascimento,
-    paciente_municipio_nascimento,
-    paciente_uf as paciente_uf_residencia,
-    paciente_municipio as paciente_municipio_residencia,
-    paciente_bairro as paciente_bairro_residencia,
-    paciente_cep as paciente_cep_residencia, 
-    paciente_endereco_residencia,
-    paciente_complemento as paciente_complemento_residencia,
-    paciente_numero as paciente_numero_residencia,
-    paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_sih")}}
+        union all
 
-  union all
+        select
+            'sih' as sistema_origem,
 
-  select
-    'profissionais_cnes' as sistema_origem,
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            cast(null as string) as paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    cast(null as string) as paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    cast(null as date) as paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+            paciente_sexo,
+            paciente_racacor,
 
-    cast(null as string) as paciente_sexo,
-    cast(null as string) as paciente_racacor,
+            cast(null as string) as paciente_uf_nascimento,
+            paciente_municipio_nascimento,
+            paciente_uf as paciente_uf_residencia,
+            paciente_municipio as paciente_municipio_residencia,
+            paciente_bairro as paciente_bairro_residencia,
+            paciente_cep as paciente_cep_residencia,
+            paciente_endereco_residencia,
+            paciente_complemento as paciente_complemento_residencia,
+            paciente_numero as paciente_numero_residencia,
+            paciente_tp_logradouro_residencia,
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    cast(null as string) as paciente_uf_residencia,
-    cast(null as string) as paciente_municipio_residencia,
-    cast(null as string) as paciente_bairro_residencia,
-    cast(null as string) as paciente_cep_residencia,
-    cast(null as string) as paciente_endereco_residencia,
-    cast(null as string) as paciente_complemento_residencia,
-    cast(null as string) as paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__profissionais_cnes")}}
+            paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_sih")}}
 
-  union all
+        union all
 
-  select
-    'minha_saude' as sistema_origem,
+        select
+            'profissionais_cnes' as sistema_origem,
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    cast(null as string) as paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            cast(null as string) as paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            cast(null as date) as paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-    paciente_sexo,
-    paciente_racacor,
+            cast(null as string) as paciente_sexo,
+            cast(null as string) as paciente_racacor,
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    paciente_uf_residencia,
-    paciente_municipio_residencia,
-    paciente_bairro_residencia,
-    cast(null as string) as paciente_cep_residencia,
-    cast(null as string) as paciente_endereco_residencia, 
-    cast(null as string) as paciente_complemento_residencia,
-    cast(null as string) as paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_minha_saude")}}
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            cast(null as string) as paciente_uf_residencia,
+            cast(null as string) as paciente_municipio_residencia,
+            cast(null as string) as paciente_bairro_residencia,
+            cast(null as string) as paciente_cep_residencia,
+            cast(null as string) as paciente_endereco_residencia,
+            cast(null as string) as paciente_complemento_residencia,
+            cast(null as string) as paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
 
-  union all
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__profissionais_cnes")}}
 
-  select
-    'tea' as sistema_origem,
+        union all
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    cast(null as string) as paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    cast(null as date) as paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+        select
+            'minha_saude' as sistema_origem,
 
-    cast(null as string) as paciente_sexo,
-    cast(null as string) as paciente_racacor,
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            cast(null as string) as paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    cast(null as string) as paciente_uf_residencia,
-    cast(null as string) as paciente_municipio_residencia,
-    cast(null as string) as paciente_bairro_residencia,
-    cast(null as string) as paciente_cep_residencia,
-    cast(null as string) as paciente_endereco_residencia,
-    cast(null as string) as paciente_complemento_residencia,
-    cast(null as string) as paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_tea")}}
+            paciente_sexo,
+            paciente_racacor,
 
-  union all
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            paciente_uf_residencia,
+            paciente_municipio_residencia,
+            paciente_bairro_residencia,
+            cast(null as string) as paciente_cep_residencia,
+            cast(null as string) as paciente_endereco_residencia,
+            cast(null as string) as paciente_complemento_residencia,
+            cast(null as string) as paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
 
-  select
-    'fibromialgia' as sistema_origem,
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_minha_saude")}}
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    cast(null as string) as paciente_nome_mae,
-    cast(null as string) as paciente_nome_pai,
-    cast(null as date) as paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+        union all
 
-    cast(null as string) as paciente_sexo,
-    cast(null as string) as paciente_racacor,
+        select
+            'tea' as sistema_origem,
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    cast(null as string) as paciente_uf_residencia,
-    cast(null as string) as paciente_municipio_residencia,
-    cast(null as string) as paciente_bairro_residencia,
-    cast(null as string) as paciente_cep_residencia,
-    cast(null as string) as paciente_endereco_residencia,
-    cast(null as string) as paciente_complemento_residencia,
-    cast(null as string) as paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_fibromialgia")}}
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            cast(null as string) as paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            cast(null as date) as paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-  union all
+            cast(null as string) as paciente_sexo,
+            cast(null as string) as paciente_racacor,
 
-  select
-    'sipni' as sistema_origem,
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            cast(null as string) as paciente_uf_residencia,
+            cast(null as string) as paciente_municipio_residencia,
+            cast(null as string) as paciente_bairro_residencia,
+            cast(null as string) as paciente_cep_residencia,
+            cast(null as string) as paciente_endereco_residencia,
+            cast(null as string) as paciente_complemento_residencia,
+            cast(null as string) as paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    paciente_nome_mae,
-    paciente_nome_pai,
-    paciente_data_nascimento,
-    cast(null as string) as paciente_nome_social,
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_tea")}}
 
-    cast(null as string) as paciente_sexo,
-    cast(null as string) as paciente_racacor,
+        union all
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    paciente_uf_residencia,
-    paciente_municipio_residencia,
-    paciente_bairro_residencia,
-    paciente_cep_residencia,
-    cast(null as string) as paciente_endereco_residencia,
-    cast(null as string) as paciente_complemento_residencia,
-    cast(null as string) as paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_sipni")}}
+        select
+            'fibromialgia' as sistema_origem,
 
-  union all 
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            cast(null as string) as paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            cast(null as date) as paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-  select
-    'hci' as sistema_origem,
+            cast(null as string) as paciente_sexo,
+            cast(null as string) as paciente_racacor,
 
-    paciente_cpf,
-    paciente_cns,
-    paciente_nome,
-    paciente_nome_mae,
-    paciente_nome_pai,
-    paciente_data_nascimento,
-    paciente_nome_social,
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            cast(null as string) as paciente_uf_residencia,
+            cast(null as string) as paciente_municipio_residencia,
+            cast(null as string) as paciente_bairro_residencia,
+            cast(null as string) as paciente_cep_residencia,
+            cast(null as string) as paciente_endereco_residencia,
+            cast(null as string) as paciente_complemento_residencia,
+            cast(null as string) as paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
 
-    paciente_sexo,
-    paciente_racacor,
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_fibromialgia")}}
 
-    cast(null as string) as paciente_uf_nascimento,
-    cast(null as string) as paciente_municipio_nascimento,
-    cast(null as string) as paciente_uf_residencia,
-    cast(null as string) as paciente_municipio_residencia,
-    cast(null as string) as paciente_bairro_residencia,
-    cast(null as string) as paciente_cep_residencia,
-    cast(null as string) as paciente_endereco_residencia,
-    cast(null as string) as paciente_complemento_residencia,
-    cast(null as string) as paciente_numero_residencia,
-    cast(null as string) as paciente_tp_logradouro_residencia
-  from {{ref("int_dim_paciente__pacientes_hci")}}
-),
+        union all
 
--- backfill cpf 
-todos_registros_enriquecido as (
-  select
-    ar.sistema_origem,
+        select
+            'sipni' as sistema_origem,
 
-    coalesce(ar.paciente_cpf, m.cpf) as paciente_cpf,  -- backfill
-    safe_cast(coalesce(ar.paciente_cpf, m.cpf) as int) as cpf_particao,
-    ar.paciente_cns,
-    ar.paciente_nome,
-    ar.paciente_nome_mae,
-    ar.paciente_nome_pai,
-    ar.paciente_nome_social,
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            paciente_nome_mae,
+            paciente_nome_pai,
+            paciente_data_nascimento,
+            cast(null as string) as paciente_nome_social,
 
-    ar.paciente_data_nascimento,
-    ar.paciente_sexo,
-    ar.paciente_racacor,
+            cast(null as string) as paciente_sexo,
+            cast(null as string) as paciente_racacor,
 
-    ar.paciente_uf_nascimento,
-    ar.paciente_municipio_nascimento,
-    ar.paciente_uf_residencia,
-    ar.paciente_municipio_residencia,
-    ar.paciente_bairro_residencia,
-    ar.paciente_cep_residencia,
-    ar.paciente_endereco_residencia,
-    ar.paciente_complemento_residencia,
-    ar.paciente_numero_residencia,
-    ar.paciente_tp_logradouro_residencia
-  from todos_registros ar
-  left join {{ref("int_dim_paciente__relacao_cns_cpf")}} m
-  on safe_cast(ar.paciente_cns as int) = safe_cast(m.cns as int)
-)
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            paciente_uf_residencia,
+            paciente_municipio_residencia,
+            paciente_bairro_residencia,
+            paciente_cep_residencia,
+            cast(null as string) as paciente_endereco_residencia,
+            cast(null as string) as paciente_complemento_residencia,
+            cast(null as string) as paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_sipni")}}
+
+        union all
+
+        select
+            'hci' as sistema_origem,
+
+            paciente_cpf,
+            paciente_cns,
+            paciente_nome,
+            paciente_nome_mae,
+            paciente_nome_pai,
+            paciente_data_nascimento,
+            paciente_nome_social,
+
+            paciente_sexo,
+            paciente_racacor,
+
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            cast(null as string) as paciente_uf_residencia,
+            cast(null as string) as paciente_municipio_residencia,
+            cast(null as string) as paciente_bairro_residencia,
+            cast(null as string) as paciente_cep_residencia,
+            cast(null as string) as paciente_endereco_residencia,
+            cast(null as string) as paciente_complemento_residencia,
+            cast(null as string) as paciente_numero_residencia,
+            cast(null as string) as paciente_tp_logradouro_residencia,
+
+            cast(null as string) as paciente_telefone,
+            cast(null as string) as paciente_email,
+            
+            cast(null as int) as paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_hci")}}
+
+        union all
+
+        select
+            'receita_federal' as sistema_origem,
+
+            paciente_cpf,
+            cast(null as int) as paciente_cns,
+            paciente_nome,
+            paciente_nome_mae,
+            cast(null as string) as paciente_nome_pai,
+            paciente_data_nascimento,
+            paciente_nome_social,
+
+            paciente_sexo,
+            cast(null as string) as paciente_racacor,
+
+            cast(null as string) as paciente_uf_nascimento,
+            cast(null as string) as paciente_municipio_nascimento,
+            paciente_uf_residencia,
+            paciente_municipio_residencia,
+            paciente_bairro_residencia,
+            paciente_cep_residencia,
+            paciente_endereco_residencia,
+            paciente_complemento_residencia,
+            paciente_numero_residencia,
+            paciente_tp_logradouro_residencia,
+
+            paciente_telefone,
+            paciente_email,
+            
+            paciente_obito_ano
+        from {{ref("int_dim_paciente__pacientes_bcadastro")}}
+    ),
+
+-- backfill cpf
+    todos_registros_enriquecido as (
+        select
+            ar.sistema_origem,
+
+            lpad(
+              safe_cast(
+                    coalesce(
+                        ar.paciente_cpf,
+                        m.cpf
+                    ) as string
+                ),
+                11, '0'
+              ) as paciente_cpf, -- backfill
+
+            safe_cast(coalesce(ar.paciente_cpf, m.cpf) as int) as cpf_particao,
+            ar.paciente_cns,
+            ar.paciente_nome,
+            ar.paciente_nome_mae,
+            ar.paciente_nome_pai,
+            ar.paciente_nome_social,
+
+            ar.paciente_data_nascimento,
+            ar.paciente_sexo,
+            ar.paciente_racacor,
+
+            ar.paciente_uf_nascimento,
+            ar.paciente_municipio_nascimento,
+            ar.paciente_uf_residencia,
+            ar.paciente_municipio_residencia,
+            ar.paciente_bairro_residencia,
+            ar.paciente_cep_residencia,
+            ar.paciente_endereco_residencia,
+            ar.paciente_complemento_residencia,
+            ar.paciente_numero_residencia,
+            ar.paciente_tp_logradouro_residencia,
+
+            ar.paciente_telefone,
+            ar.paciente_email,
+            
+            ar.paciente_obito_ano
+        from todos_registros ar
+            left join {{ref("int_dim_paciente__relacao_cns_cpf")}} m
+            on safe_cast(ar.paciente_cns as int) = safe_cast(m.cns as int)
+    )
 
 select * from todos_registros_enriquecido
