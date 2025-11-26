@@ -382,7 +382,7 @@ with
             paciente_sexo,
             cast(null as string) as paciente_racacor,
 
-            paciente_uf_nascimento,
+            cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             paciente_uf_residencia,
             paciente_municipio_residencia,
@@ -390,14 +390,14 @@ with
             paciente_cep_residencia,
             paciente_endereco_residencia,
             paciente_complemento_residencia,
-            as paciente_numero_residencia,
+            paciente_numero_residencia,
             paciente_tp_logradouro_residencia,
 
             paciente_telefone,
             paciente_email,
             
             paciente_obito_ano
-        from {{ref("int_dim_paciente__pacientes_hci")}}
+        from {{ref("int_dim_paciente__pacientes_bcadastro")}}
     ),
 
 -- backfill cpf

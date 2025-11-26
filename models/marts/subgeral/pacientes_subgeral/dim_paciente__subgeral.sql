@@ -47,7 +47,7 @@ agg as (
     array_agg(distinct paciente_numero_residencia ignore nulls) as numeros_residencia,
     array_agg(distinct paciente_tp_logradouro_residencia ignore nulls) as tipos_logradouro_residencia,
 
-    array_agg(distinct paciente_telefone ignore nulls) as telefones
+    array_agg(distinct paciente_telefone ignore nulls) as telefones,
     array_agg(distinct paciente_email ignore nulls) as emails,
 
     array_agg(distinct paciente_obito_ano ignore nulls) as anos_obito,

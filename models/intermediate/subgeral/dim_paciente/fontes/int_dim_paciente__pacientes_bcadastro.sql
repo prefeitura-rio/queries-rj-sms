@@ -22,7 +22,7 @@ with pacientes as (
             coalesce(contato.telefone.ddi, ''),
             coalesce(contato.telefone.ddd, ''),
             coalesce(contato.telefone.numero, '')
-        ) as paciente_telefone
+        ) as paciente_telefone,
         contato.email as paciente_email,      
     
         safe_cast(obito_ano as int) as paciente_obito_ano

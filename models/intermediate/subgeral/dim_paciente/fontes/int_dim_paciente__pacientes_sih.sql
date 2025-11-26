@@ -29,7 +29,7 @@ with pacientes as (
         safe_cast(paciente_tipo_logradouro as string) as paciente_tp_logradouro_residencia,
         safe_cast(paciente_bairro as string) as paciente_bairro,
         safe_cast(mun.nome_municipio as string) as paciente_municipio,
-        safe_cast(paciente_uf as string) as paciente_uf
+        safe_cast(paciente_uf as string) as paciente_uf,
 
         concat(
             coalesce(paciente_tel_ddd, ''),
