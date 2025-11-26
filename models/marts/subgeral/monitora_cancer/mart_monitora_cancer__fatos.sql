@@ -259,7 +259,7 @@ siscan as (
         "RESULTADO DE EXAME" as procedimento_tipo,
         case 
             when mamografia_tipo = "Rastreamento" then "RESULTADO MAMOGRAFIA DE RASTREIO"
-            when mamografia_tipo = "Diagnóstico" then "MAMOGRAFIA DIAGNOSTICA"
+            when mamografia_tipo = "Diagnóstico" then "RESULTADO MAMOGRAFIA DIAGNOSTICA"
             else null
         end as procedimento,
 
@@ -366,7 +366,7 @@ fatos as (
     from siscan       
 ),
 
-limpa_fatos as (
+transforma_fatos as (
     select
         sistema_origem,
         sistema_tipo,
@@ -382,6 +382,8 @@ limpa_fatos as (
         data_solicitacao,
         data_autorizacao,
         data_execucao,
+        if(data_execucao is not null, "SIM", "NAO") as indicador_procedimento_executado,
+        if(data_execucao < current_date(), "SIM", "NAO") as indicador_procedimento_execucao_passada,
         date_diff(data_execucao, data_solicitacao, day) as tempo_espera,
         data_exame_resultado,
         mama_esquerda_classif_radiologica,
@@ -392,11 +394,11 @@ limpa_fatos as (
 enriquece_cpf as (
     select 
         safe_cast(cns_cpf.cpf as int) as paciente_cpf,
-        limpa_fatos.*
+        transforma_fatos.*
         
-    from limpa_fatos 
+    from transforma_fatos 
     left join {{ref("int_dim_paciente__relacao_cns_cpf")}} as cns_cpf
-    on safe_cast(limpa_fatos.paciente_cns as int) = safe_cast(cns_cpf.cns as int)
+    on safe_cast(transforma_fatos.paciente_cns as int) = safe_cast(cns_cpf.cns as int)
 ),
 
 enriquece_cid as (
