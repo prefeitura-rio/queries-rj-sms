@@ -1,10 +1,10 @@
 with pacientes as (
     select distinct
         -- id
-        cast(mongo.cpf as string) as paciente_cpf,
-        cast(mongo.cns as string) as paciente_cns,
-        cast(mongo.nome as string) as paciente_nome,
-        cast(ms.datanascimento as date) as paciente_data_nascimento,
+        safe_cast(mongo.cpf as int) as paciente_cpf,
+        safe_cast(mongo.cns as int) as paciente_cns,
+        safe_cast(mongo.nome as string) as paciente_nome,
+        safe_cast(ms.datanascimento as date) as paciente_data_nascimento,
         
         case 
             when ms.sexo = 'F' THEN 'FEMININO'
@@ -18,9 +18,9 @@ with pacientes as (
             else ms.racacor
         end as paciente_racacor,
 
-        cast(ms.bairroresidencia as string) as paciente_bairro_residencia,
-        cast(ms.municipioresidencia as string) as paciente_municipio_residencia,
-        cast(ms.ufresidencia as string) as paciente_uf_residencia
+        safe_cast(ms.bairroresidencia as string) as paciente_bairro_residencia,
+        safe_cast(ms.municipioresidencia as string) as paciente_municipio_residencia,
+        safe_cast(ms.ufresidencia as string) as paciente_uf_residencia
 
     from {{ ref("raw_centralderegulacao_mysql__minha_saude__lista_usuario") }} as ms
     left join (

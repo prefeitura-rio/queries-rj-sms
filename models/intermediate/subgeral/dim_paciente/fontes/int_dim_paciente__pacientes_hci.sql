@@ -1,7 +1,7 @@
 with pacientes as (
     select distinct 
         -- id
-        cpf as paciente_cpf,
+        safe_cast(cpf as int) as paciente_cpf,
         cns as paciente_cns_array,
         upper(dados.nome) as paciente_nome,
         dados.data_nascimento as paciente_data_nascimento,
@@ -20,7 +20,19 @@ with pacientes as (
         enereco.tipo_logradouro as paciente_tp_logradouro_residencia,
         endereco.bairro as paciente_bairro_residencia,
         endereco.cidade as paciente_municipio_residencia,
-        endereco.estado as paciente_uf_residencia
+        endereco.estado as paciente_uf_residencia,
+
+        contato.telefone.ddd,
+        contato.telefone.valor,
+        contato.email.valor,        
+
+        equipe_saude_familia.id_ine,
+        equipe_saude_familia.nome,
+        equipe_saude_familia.telefone,
+
+        equipe_saude_familia.clinica_familia.id_cnes,
+        equipe_saude_familia.clinica_familia.nome,
+        equipe_saude_familia.clinica_familia.telefone
         */
 
     from {{ ref("mart_historico_clinico__paciente") }}
@@ -29,7 +41,7 @@ with pacientes as (
 pacientes_cns_unnested as (
     select
         p.paciente_cpf,
-        cns_item as paciente_cns,
+        safe_cast(cns_item as int) as paciente_cns,
         p.paciente_nome, 
         p.paciente_data_nascimento,
         p.paciente_nome_mae, 

@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: brutos_bcadastro_sms
+    database: rj-sms
+    schema: brutos_bcadastro
+    tables:
+      - name: cpf

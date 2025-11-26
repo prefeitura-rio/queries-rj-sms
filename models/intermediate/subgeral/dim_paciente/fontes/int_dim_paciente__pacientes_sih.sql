@@ -1,10 +1,10 @@
 with pacientes as (
     select distinct 
         -- id
-        cast(paciente_cpf as string) as paciente_cpf,
-        cast(paciente_cns as string) as paciente_cns,
-        cast(paciente_nome as string) as paciente_nome, 
-        cast(paciente_data_nascimento as date) as paciente_data_nascimento,
+        safe_cast(paciente_cpf as int) as paciente_cpf,
+        safe_cast(paciente_cns as int) as paciente_cns,
+        safe_cast(paciente_nome as string) as paciente_nome, 
+        safe_cast(paciente_data_nascimento as date) as paciente_data_nascimento,
 
         case 
             when paciente_sexo = 'M' then 'MASCULINO'
@@ -21,15 +21,20 @@ with pacientes as (
             else NULL 
         end as paciente_racacor,
 
-        cast(paciente_mun_origem as string) as paciente_municipio_nascimento,
-        cast(paciente_complemento as string) as paciente_complemento,
-        cast(paciente_numero as string) as paciente_numero,
-        cast(paciente_logradouro as string) as paciente_endereco_residencia,
-        cast(paciente_cep as string) as paciente_cep,
-        cast(paciente_tipo_logradouro as string) as paciente_tp_logradouro_residencia,
-        cast(paciente_bairro as string) as paciente_bairro,
-        cast(mun.nome_municipio as string) as paciente_municipio,
-        cast(paciente_uf as string) as paciente_uf
+        safe_cast(paciente_mun_origem as string) as paciente_municipio_nascimento,
+        safe_cast(paciente_complemento as string) as paciente_complemento,
+        safe_cast(paciente_numero as string) as paciente_numero,
+        safe_cast(paciente_logradouro as string) as paciente_endereco_residencia,
+        safe_cast(paciente_cep as string) as paciente_cep,
+        safe_cast(paciente_tipo_logradouro as string) as paciente_tp_logradouro_residencia,
+        safe_cast(paciente_bairro as string) as paciente_bairro,
+        safe_cast(mun.nome_municipio as string) as paciente_municipio,
+        safe_cast(paciente_uf as string) as paciente_uf
+
+        /*
+        paciente_tel_ddd,
+        paciente_tel_num
+        */
         
     from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}
     left join {{ref("raw_sheets__municipios_rio")}} as mun
