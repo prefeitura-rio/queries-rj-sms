@@ -18,13 +18,7 @@ with bancas_no_sisvisa as (
         numero_porta_banca as endereco_numero,
         complemento_banca as endereco_complemento,
         cep_banca as endereco_cep,
-        -- Precisamos re-adicionar espaços antes de parênteses para
-        -- "freguesia(jacarepaguá)"
-        case
-            when REGEXP_CONTAINS(bairro_banca, r"[A-Za-z]\(")
-                then array_to_string(split(bairro_banca, "("), " (")
-            else bairro_banca
-        end as endereco_bairro,
+        {{ clean_bairro("bairro_banca") }} as endereco_bairro,
         cast(null as string) as endereco_cidade,
 
         ativo,
@@ -69,11 +63,7 @@ bancas_no_silfae as (
         numero_porta_banca as endereco_numero,
         complemento_banca as endereco_complemento,
         cast(null as string) as endereco_cep,
-        case
-            when REGEXP_CONTAINS(bairro_banca, r"[A-Za-z]\(")
-                then array_to_string(split(bairro_banca, "("), " (")
-            else bairro_banca
-        end as endereco_bairro,
+        {{ clean_bairro("bairro_banca") }} as endereco_bairro,
         cast(null as string) as endereco_cidade,
 
         cast(null as boolean) as ativo,
@@ -124,10 +114,36 @@ bancas_deduplicadas as (
 ),
 
 obitos as (
-    select 
-        cpf.cpf
-    from {{ ref('raw_bcadastro__cpf') }} as cpf
-    where cpf.obito_ano is not null
+    select bcadastro.cpf
+    from {{ ref("raw_bcadastro__cpf") }} as bcadastro
+    where bcadastro.obito_ano is not null
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitacare") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__smsrio") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitai") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
 ),
 
 bancas_atualizadas as (
@@ -156,7 +172,7 @@ bancas_atualizadas as (
 
         struct(
             cast([] as array<string>) as tipos_operacoes,
-            {{ add_accents_bairros("endereco_bairro") }} as endereco_bairro,
+            cast(endereco_bairro as string) as endereco_bairro,
             cast(endereco_cidade as string) as endereco_cidade
         ) as operacao,
 

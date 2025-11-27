@@ -23,13 +23,7 @@ with ambulantes_no_sisvisa as (
             as int64
         ) as cep_int64, -- usado pra verificar se a cidade é o RJ
         
-        -- Precisamos re-adicionar espaços antes de parênteses para
-        -- "freguesia(jacarepaguá)"
-        case
-            when REGEXP_CONTAINS(bairro, r"[A-Za-z]\(")
-                then array_to_string(split(bairro, "("), " (")
-            else bairro
-        end as endereco_bairro,
+        {{ clean_bairro("bairro") }} as endereco_bairro,
 
         case
             when data_cancelamento is null
@@ -71,11 +65,7 @@ ambulantes_no_scca as (
         numero_porta_ponto as endereco_numero,
         complemento_ponto as endereco_complemento,
         null as cep_int64,
-        case
-            when REGEXP_CONTAINS(bairro_ponto, r"[A-Za-z]\(")
-                then array_to_string(split(bairro_ponto, "("), " (")
-            else bairro_ponto
-        end as endereco_bairro,
+        {{ clean_bairro("bairro_ponto") }} as endereco_bairro,
 
         cast(null as boolean) as ativo,
         upper(trim(status)) as situacao_do_alvara,
@@ -124,10 +114,36 @@ ambulantes_deduplicados as (
 ),
 
 obitos as (
-    select
-        cpf.cpf
-    from {{ ref('raw_bcadastro__cpf') }} as cpf
-    where cpf.obito_ano is not null
+    select bcadastro.cpf
+    from {{ ref("raw_bcadastro__cpf") }} as bcadastro
+    where bcadastro.obito_ano is not null
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitacare") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__smsrio") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitai") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
 ),
 
 ambulantes_atualizados as (
@@ -156,7 +172,7 @@ ambulantes_atualizados as (
 
         struct(
             cast([] as array<string>) as tipos_operacoes,
-            {{ add_accents_bairros("endereco_bairro") }} as endereco_bairro,
+            cast(endereco_bairro as string) as endereco_bairro,
             -- Confere se CEP é no Rio; se sim, aqui é "Rio de Janeiro",
             -- e se não, aqui é nulo
             cast(

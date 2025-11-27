@@ -21,13 +21,7 @@ feirantes_no_slffe as (
         numero_porta as endereco_numero,
         complemento as endereco_complemento,
         cep as endereco_cep,
-        -- Precisamos re-adicionar espaços antes de parênteses para
-        -- "freguesia(jacarepaguá)"
-        case
-            when REGEXP_CONTAINS(bairro, r"[A-Za-z]\(")
-                then array_to_string(split(bairro, "("), " (")
-            else bairro
-        end as endereco_bairro,
+        {{ clean_bairro("bairro") }} as endereco_bairro,
         {{ clean_cidade("municipio") }} as endereco_cidade,
 
         case when situacao = 'ATIVO' then true else false end as ativo,
@@ -51,11 +45,7 @@ feirantes_no_sisvisa as (
         numero_porta as endereco_numero,
         complemento as endereco_complemento,
         cep as endereco_cep,
-        case
-            when REGEXP_CONTAINS(bairro, r"[A-Za-z]\(")
-                then array_to_string(split(bairro, "("), " (")
-            else bairro
-        end as endereco_bairro,
+        {{ clean_bairro("bairro") }} as endereco_bairro,
         {{ clean_cidade("municipio") }} as endereco_cidade,
 
         case when afastado = 'N' then true else false end as ativo,
@@ -113,10 +103,36 @@ feirantes_deduplicados as (
 ),
 
 obitos as (
-    select
-        cpf.cpf
-    from {{ ref('raw_bcadastro__cpf') }} as cpf
-    where cpf.obito_ano is not null
+    select bcadastro.cpf
+    from {{ ref("raw_bcadastro__cpf") }} as bcadastro
+    where bcadastro.obito_ano is not null
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitacare") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__smsrio") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitai") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
 ),
 
 feirantes_atualizados as (
@@ -145,9 +161,7 @@ feirantes_atualizados as (
 
         struct(
             cast([] as array<string>) as tipos_operacoes,
-            trim(
-                cast({{ add_accents_bairros("endereco_bairro") }} as string)
-            ) as endereco_bairro,
+            cast(endereco_bairro as string) as endereco_bairro,
             cast(endereco_cidade as string) as endereco_cidade
         ) as operacao,
 

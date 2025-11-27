@@ -228,6 +228,6 @@ case
     then "Teresópolis"
 
   -- Outros
-  else {{ proper_br(val) }}
+  else {{ proper_br(add_tilde_to_saints(val)) }}
 end
 {% endmacro %}

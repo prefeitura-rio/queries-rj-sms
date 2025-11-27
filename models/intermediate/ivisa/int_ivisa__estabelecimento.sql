@@ -10,7 +10,8 @@ with estabelecimentos_no_sisvisa as (
     select
         id,
 
-        cnpj,
+        cast(cpf as string) as cpf,
+        cast(cnpj as string) as cnpj,
         {{ proper_br("razao_social") }} as razao_social,
         nome_fantasia as nome_fantasia,
         inscricao_municipal as inscricao_municipal,
@@ -20,13 +21,7 @@ with estabelecimentos_no_sisvisa as (
         numero as endereco_numero,
         complemento as endereco_complemento,
         concat(cep_numero, cep_complemento) as endereco_cep,
-        -- Precisamos re-adicionar espaços antes de parênteses para
-        -- "freguesia(jacarepaguá)"
-        case
-            when REGEXP_CONTAINS(bairro, r"[A-Za-z]\(")
-                then array_to_string(split(bairro, "("), " (")
-            else bairro
-        end as endereco_bairro,
+        {{ clean_bairro("bairro") }} as endereco_bairro,
         {{ clean_cidade("cidade") }} as endereco_cidade,
 
         ativo,
@@ -95,7 +90,10 @@ with estabelecimentos_no_sisvisa as (
         end as situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
     from {{ ref('raw_sisvisa__estabelecimento') }}
-    where cnpj is not null
+    where (
+        cnpj is not null
+        or cpf is not null
+    )
 ),
 
 estabelecimentos_receita_federal as (
@@ -120,12 +118,45 @@ estabelecimentos_receita_federal as (
     from {{ ref('raw_bcadastro__cnpj') }} as cadastros
 ),
 
+obitos as (
+    select bcadastro.cpf
+    from {{ ref("raw_bcadastro__cpf") }} as bcadastro
+    where bcadastro.obito_ano is not null
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitacare") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__smsrio") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitai") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+),
+
 estabelecimentos_no_sisvisa_atualizados as (
     select
         struct(
             'Estabelecimento' as tipo,
             cast(id as string) as id_sisvisa,
-            cast(null as string) as cpf,
+            cast(estabelecimentos_no_sisvisa.cpf as string) as cpf,
             cast(estabelecimentos_no_sisvisa.cnpj as string) as cnpj,
             cast(estabelecimentos_no_sisvisa.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
@@ -135,7 +166,11 @@ estabelecimentos_no_sisvisa_atualizados as (
             estabelecimentos_receita_federal.natureza_juridica,
             porte,
             cast(null as string) as titular,
-            cast(null as boolean) as titular_com_obito,
+            if(
+                estabelecimentos_no_sisvisa.cpf is not null,
+                obitos.cpf is not null,
+                null
+            ) as titular_com_obito,
             "sisvisa" as fonte
         ) as cadastro,
 
@@ -146,7 +181,7 @@ estabelecimentos_no_sisvisa_atualizados as (
 
         struct(
             formas_atuacao as tipos_operacoes,
-            {{ add_accents_bairros("estabelecimentos_no_sisvisa.endereco_bairro") }} as endereco_bairro,
+            cast(estabelecimentos_no_sisvisa.endereco_bairro as string) as endereco_bairro,
             {{ proper_br("estabelecimentos_no_sisvisa.endereco_cidade") }} as endereco_cidade
         ) as operacao,
 
@@ -159,6 +194,8 @@ estabelecimentos_no_sisvisa_atualizados as (
     from estabelecimentos_no_sisvisa
     left join estabelecimentos_receita_federal
         on estabelecimentos_no_sisvisa.cnpj = estabelecimentos_receita_federal.cnpj
+    left join obitos
+        on estabelecimentos_no_sisvisa.cpf = obitos.cpf
 )
 
 select *
