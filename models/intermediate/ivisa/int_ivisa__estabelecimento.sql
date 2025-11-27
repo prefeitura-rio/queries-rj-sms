@@ -27,12 +27,14 @@ with estabelecimentos_no_sisvisa as (
                 then array_to_string(split(bairro, "("), " (")
             else bairro
         end as endereco_bairro,
-        {{ proper_br("cidade") }} as endereco_cidade,
+        {{ clean_cidade("cidade") }} as endereco_cidade,
 
         ativo,
         case
             -- 01 - ATIVO
             when upper(situacao_do_alvara) like "%ATIVO"
+                then "ATIVO"
+            when trim(situacao_do_alvara) = "1"
                 then "ATIVO"
             -- ?
             when upper(trim(situacao_do_alvara)) = "20 - INSCRICAO EX-OFFICIO"
@@ -76,11 +78,21 @@ with estabelecimentos_no_sisvisa as (
                 "43 - PROV PRORR INDEFERIDA"
             ) then "PENDENTE"
 
-            -- Aqui sobra uma situação, "1", que eu não sei o significado
             else null
         end as situacao_do_alvara,
+
         situacao_da_emissao_da_licenca,
-        situacao_da_licenca_sanitaria,
+        -- Licenciamento:
+        case
+            when situacao_da_licenca_sanitaria = 0 then cast(null as string)
+            when situacao_da_licenca_sanitaria = 1 then "Autodeclarado"
+            when situacao_da_licenca_sanitaria = 2 then "Simplificado"
+            when situacao_da_licenca_sanitaria = 3 then "Licenciamento com Inspeção"
+            when situacao_da_licenca_sanitaria = 4 then "Licenciamento por Autorização"
+            when situacao_da_licenca_sanitaria = 5 then "Outorga"
+            when situacao_da_licenca_sanitaria = 6 then "Licenciamento Manual"
+            else trim(cast(situacao_da_licenca_sanitaria as string))
+        end as situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
     from {{ ref('raw_sisvisa__estabelecimento') }}
     where cnpj is not null
@@ -144,7 +156,8 @@ estabelecimentos_no_sisvisa_atualizados as (
             cast(situacao_da_emissao_da_licenca as string) as licenca_sanitaria_emissao,
             cast(situacao_validacao_da_licenca_sanitaria as string) as licenca_sanitaria_validacao
         ) as situacao
-    from estabelecimentos_no_sisvisa left join estabelecimentos_receita_federal
+    from estabelecimentos_no_sisvisa
+    left join estabelecimentos_receita_federal
         on estabelecimentos_no_sisvisa.cnpj = estabelecimentos_receita_federal.cnpj
 )
 

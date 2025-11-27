@@ -38,8 +38,19 @@ with bancas_no_sisvisa as (
                 then "PENDENTE"
             else null
         end as situacao_do_alvara,
+
         situacao_da_emissao_da_licenca,
-        situacao_da_licenca_sanitaria,
+        -- Licenciamento:
+        case
+            when situacao_da_licenca_sanitaria = 0 then cast(null as string)
+            when situacao_da_licenca_sanitaria = 1 then "Autodeclarado"
+            when situacao_da_licenca_sanitaria = 2 then "Simplificado"
+            when situacao_da_licenca_sanitaria = 3 then "Licenciamento com Inspeção"
+            when situacao_da_licenca_sanitaria = 4 then "Licenciamento por Autorização"
+            when situacao_da_licenca_sanitaria = 5 then "Outorga"
+            when situacao_da_licenca_sanitaria = 6 then "Licenciamento Manual"
+            else trim(cast(situacao_da_licenca_sanitaria as string))
+        end as situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
     from {{ ref('raw_sisvisa__banca_jornal_sisvisa') }}
     where cpf_titular is not null
@@ -76,9 +87,9 @@ bancas_no_silfae as (
                 then "PENDENTE"
             else null
         end as situacao_do_alvara,
-        cast(null as int64) as situacao_da_emissao_da_licenca,
-        cast(null as int64) as situacao_da_licenca_sanitaria,
-        cast(null as int64) as situacao_validacao_da_licenca_sanitaria
+        null as situacao_da_emissao_da_licenca,
+        cast(null as string) as situacao_da_licenca_sanitaria,
+        null as situacao_validacao_da_licenca_sanitaria
     from {{ ref("raw_sisvisa__banca_jornal_silfae") }}
     where cpf_titular is not null
 ),

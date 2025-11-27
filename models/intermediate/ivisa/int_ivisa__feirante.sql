@@ -28,36 +28,7 @@ feirantes_no_slffe as (
                 then array_to_string(split(bairro, "("), " (")
             else bairro
         end as endereco_bairro,
-        case
-            when lower(trim(municipio)) in (
-                "rio de janeiro", "rj",
-                "recreio dos bandeirantes"
-            )
-                then "Rio de Janeiro"
-            when lower(trim(municipio)) = "b.roxo"
-                then "Belford Roxo"
-            when lower(trim(municipio)) = "nova iguacu"
-                then "Nova Iguaçu"
-            when lower(trim(municipio)) = "nilopolis"
-                then "Nilópolis"
-            when lower(trim(municipio)) = "sao goncalo"
-                then "São Gonçalo"
-            when lower(trim(municipio)) = "itaguai"
-                then "Itaguaí"
-            when lower(trim(municipio)) = "itaborai"
-                then "Itaboraí"
-            when lower(trim(municipio)) = "petropolis"
-                then "Petrópolis"
-            when lower(trim(municipio)) = "teresopolis"
-                then "Teresópolis"
-            when lower(trim(municipio)) = "sao joao de meriti"
-                then "São João de Meriti"
-            when lower(trim(municipio)) = "mage"
-                then "Magé"
-            when lower(trim(municipio)) = "marica"
-                then "Maricá"
-            else {{ proper_br("municipio") }}
-        end as endereco_cidade,
+        {{ clean_cidade("municipio") }} as endereco_cidade,
 
         case when situacao = 'ATIVO' then true else false end as ativo,
         cast(null as string) as situacao_do_alvara,
@@ -85,36 +56,7 @@ feirantes_no_sisvisa as (
                 then array_to_string(split(bairro, "("), " (")
             else bairro
         end as endereco_bairro,
-        case
-            when lower(trim(municipio)) in (
-                "rio de janeiro", "rj",
-                "recreio dos bandeirantes"
-            )
-                then "Rio de Janeiro"
-            when lower(trim(municipio)) = "b.roxo"
-                then "Belford Roxo"
-            when lower(trim(municipio)) = "nova iguacu"
-                then "Nova Iguaçu"
-            when lower(trim(municipio)) = "nilopolis"
-                then "Nilópolis"
-            when lower(trim(municipio)) = "sao goncalo"
-                then "São Gonçalo"
-            when lower(trim(municipio)) = "itaguai"
-                then "Itaguaí"
-            when lower(trim(municipio)) = "itaborai"
-                then "Itaboraí"
-            when lower(trim(municipio)) = "petropolis"
-                then "Petrópolis"
-            when lower(trim(municipio)) = "teresopolis"
-                then "Teresópolis"
-            when lower(trim(municipio)) = "sao joao de meriti"
-                then "São João de Meriti"
-            when lower(trim(municipio)) = "mage"
-                then "Magé"
-            when lower(trim(municipio)) = "marica"
-                then "Maricá"
-            else {{ proper_br("municipio") }}
-        end as endereco_cidade,
+        {{ clean_cidade("municipio") }} as endereco_cidade,
 
         case when afastado = 'N' then true else false end as ativo,
         case 
@@ -122,8 +64,19 @@ feirantes_no_sisvisa as (
                 then "CANCELADO"
             else upper(trim(situacao_do_alvara))
         end as situacao_do_alvara,
+
         cast(situacao_da_emissao_da_licenca as string) as situacao_da_emissao_da_licenca,
-        cast(situacao_da_licenca_sanitaria as string) as situacao_da_licenca_sanitaria,
+        -- Licenciamento:
+        case
+            when situacao_da_licenca_sanitaria = 0 then cast(null as string)
+            when situacao_da_licenca_sanitaria = 1 then "Autodeclarado"
+            when situacao_da_licenca_sanitaria = 2 then "Simplificado"
+            when situacao_da_licenca_sanitaria = 3 then "Licenciamento com Inspeção"
+            when situacao_da_licenca_sanitaria = 4 then "Licenciamento por Autorização"
+            when situacao_da_licenca_sanitaria = 5 then "Outorga"
+            when situacao_da_licenca_sanitaria = 6 then "Licenciamento Manual"
+            else trim(cast(situacao_da_licenca_sanitaria as string))
+        end as situacao_da_licenca_sanitaria,
         cast(situacao_validacao_da_licenca_sanitaria as string) as situacao_validacao_da_licenca_sanitaria
     from {{ ref('raw_sisvisa__feirante_sisvisa') }}
     where cpf is not null or cnpj is not null
