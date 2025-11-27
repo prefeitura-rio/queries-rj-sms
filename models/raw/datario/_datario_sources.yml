@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: datario_dados_mestres
+    database: datario
+    schema: dados_mestres
+    tables:
+      - name: bairro

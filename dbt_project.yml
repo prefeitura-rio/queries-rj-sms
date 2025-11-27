@@ -114,6 +114,13 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
+      datario:
+        +schema: datario_dados_mestres
+        +tags: ["datario"]
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       gal:
         +schema: brutos_gal
         +tags: ["daily", "gal"]
