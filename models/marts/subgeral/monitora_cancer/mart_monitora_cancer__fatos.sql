@@ -449,14 +449,14 @@ with
             data_solicitacao,
             data_autorizacao,
             data_execucao,
-            if(data_execucao is not null, "SIM", "NAO") as indicador_procedimento_executado,
-            if(data_execucao < current_date(), "SIM", "NAO") as indicador_procedimento_execucao_passada,
-            date_diff(data_execucao, data_solicitacao, day) as tempo_espera,
-            data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
-            criterio_suspeita,
-            criterio_diagnostico
+        if(data_execucao is not null, "SIM", "NAO") as indicador_procedimento_executado,
+        if(data_execucao < current_date(), "SIM", "NAO") as indicador_procedimento_execucao_passada,
+        date_diff(data_execucao, data_solicitacao, day) as tempo_espera,
+        data_exame_resultado,
+        mama_esquerda_classif_radiologica,
+        mama_direita_classif_radiologica,
+        criterio_suspeita,
+        criterio_diagnostico
         from fatos
     ),
 
