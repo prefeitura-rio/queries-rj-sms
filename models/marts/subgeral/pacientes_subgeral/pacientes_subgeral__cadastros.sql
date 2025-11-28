@@ -577,7 +577,7 @@ with
             ar.equipe_sf,
             ar.equipe_sf_telefone
         from todos_registros ar
-            left join {{ref("int_dim_paciente__relacao_cns_cpf")}} m
+            left join {{ref("pacientes_subgeral__relacao_cns_cpf")}} m
             on safe_cast(ar.paciente_cns as int) = safe_cast(m.cns as int)
     )
 
