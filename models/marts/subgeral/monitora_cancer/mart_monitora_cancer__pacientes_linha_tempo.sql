@@ -10,10 +10,10 @@
         "field": "cpf_particao",
         "data_type": "int64",
         "range": {"start": 0, "end": 100000000000, "interval": 34722222},
-    },
-    cluster_by=['status', 'cf', 'equipe_sf', 'cpf_particao'],
-    on_schema_change='sync_all_columns'
-  )
+},
+cluster_by = ['status', 'cf', 'equipe_sf', 'cpf_particao'],
+on_schema_change = 'sync_all_columns'
+)
 }}
 
 with
@@ -40,41 +40,39 @@ with
             pop.paciente_cpf,
             pop.status,
 
-            dim_paciente.nomes[SAFE_OFFSET(0)] as nome,
-            dim_paciente.racas_cores[SAFE_OFFSET(0)] as raca_cor,
+            dim_paciente.nomes [SAFE_OFFSET(0)] as nome,
+            dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
 
             -- dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
 
             date_diff(
                 current_date(),
-                safe_cast(dim_paciente.datas_nascimento[SAFE_OFFSET(0)] as date),
+                safe_cast(dim_paciente.datas_nascimento [SAFE_OFFSET(0)] as date),
                 year
             ) as idade,
 
-            dim_paciente.clinicas_sf[SAFE_OFFSET(0)] as clinica_sf,
-            dim_paciente.clinicas_sf_ap[SAFE_OFFSET(0)] as clinica_sf_ap,
-            dim_paciente.clinicas_sf_telefone[SAFE_OFFSET(0)] as clinica_sf_telefone,
-            dim_paciente.equipes_sf[SAFE_OFFSET(0)] as equipe_sf,
+            dim_paciente.clinicas_sf [SAFE_OFFSET(0)] as clinica_sf,
+            dim_paciente.clinicas_sf_ap [SAFE_OFFSET(0)] as clinica_sf_ap,
+            dim_paciente.clinicas_sf_telefone [SAFE_OFFSET(0)] as clinica_sf_telefone,
+            dim_paciente.equipes_sf [SAFE_OFFSET(0)] as equipe_sf,
             -- dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
 
-            dsr.dias_sem_resposta as gravidade_score,
+            dsr.dias_sem_resposta as gravidade_score
 
-            exists (
+        from populacao_interesse as pop
+
+            left join {{ref("pacientes_subgeral__dim_paciente")}} as dim_paciente
+            on pop.paciente_cpf = dim_paciente.cpf_particao
+
+            left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
+            on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
+
+        where dim_paciente.sexos [SAFE_OFFSET(0)] != "MASCULINO"
+            and not exists(
                 select 1
-                from unnest(dim_paciente.anos_obito) as ano
+                from unnest (dim_paciente.anos_obito) as ano
                 where ano is not null
-            ) as obito_indicador
-
-        from populacao_interesse as pop 
-
-        left join {{ref("pacientes_subgeral__dim_paciente")}} as dim_paciente
-        on pop.paciente_cpf = dim_paciente.cpf_particao
-
-        left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
-        on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
-
-        where dim_paciente.sexos[SAFE_OFFSET(0)] != "MASCULINO"
-        having obito_indicador = false
+            )
     ),
 
     eventos as (
@@ -108,8 +106,8 @@ with
             fcts.mama_direita_classif_radiologica
 
         from enriquece_populacao_interesse as pop
-        left join {{ref("mart_monitora_cancer__fatos")}} as fcts
-        on pop.paciente_cpf = fcts.paciente_cpf
+            left join {{ref("mart_monitora_cancer__fatos")}} as fcts
+            on pop.paciente_cpf = fcts.paciente_cpf
     ),
 
     paciente_linha_tempo as (

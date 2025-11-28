@@ -31,8 +31,8 @@ with pacientes as (
 
     from {{ source("brutos_bcadastro_sms", "cpf") }}
     where
-        nascimento_local.uf = "rj"
-        or endereco.uf = "rj"
+        nascimento_local.municipio = "Rio de Janeiro"
+        or endereco.municipio = "Rio de Janeiro"
 )
 
 select * from pacientes 

@@ -466,7 +466,7 @@ with
             transforma_fatos.*
 
         from transforma_fatos
-            left join {{ref("int_dim_paciente__relacao_cns_cpf")}} as cns_cpf
+            left join {{ref("pacientes_subgeral__relacao_cns_cpf")}} as cns_cpf
             on safe_cast(transforma_fatos.paciente_cns as int) = safe_cast(cns_cpf.cns as int)
     ),
 
