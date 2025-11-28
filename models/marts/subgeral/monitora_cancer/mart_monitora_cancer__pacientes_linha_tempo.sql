@@ -34,20 +34,28 @@ with
         group by paciente_cpf
     ),
 
+    -- to do: pegar o registro mais recente ao invés de safe_offset(0)
     enriquece_populacao_interesse as (
         select
             pop.paciente_cpf,
             pop.status,
+
             dim_paciente.nomes[SAFE_OFFSET(0)] as nome,
             dim_paciente.racas_cores[SAFE_OFFSET(0)] as raca_cor,
 
             dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
-            
+
             date_diff(
                 current_date(),
                 safe_cast(dim_paciente.datas_nascimento[SAFE_OFFSET(0)] as date),
                 year
             ) as idade,
+
+            exists (
+                select 1
+                from unnest(dim_paciente.anos_obito) as ano
+                where ano is not null
+            ) as obito_indicador, 
 
             dsr.dias_sem_resposta as gravidade_score
 
@@ -60,6 +68,7 @@ with
         on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
 
         where dim_paciente.sexos[SAFE_OFFSET(0)] != "MASCULINO"
+        having obito_indicador = false
     ),
 
     eventos as (
@@ -129,7 +138,7 @@ with
             -- eventos
             array_agg (
                 struct(
-                    fonte,c
+                    fonte,
                     tipo,
                     procedimento,
                     cid,
