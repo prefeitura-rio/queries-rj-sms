@@ -3,7 +3,7 @@
   config(
     enabled=true,
     schema="pacientes_subgeral",
-    alias="cadastros",
+    alias="cadastros_pacientes",
     unique_key='cpf',
     partition_by={
         "field": "cpf_particao",

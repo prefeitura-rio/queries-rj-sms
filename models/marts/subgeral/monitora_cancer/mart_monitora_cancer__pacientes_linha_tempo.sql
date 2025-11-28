@@ -67,7 +67,7 @@ with
 
         from populacao_interesse as pop 
 
-        left join {{ref("dim_paciente__subgeral")}} as dim_paciente
+        left join {{ref("pacientes_subgeral__dim_paciente")}} as dim_paciente
         on pop.paciente_cpf = dim_paciente.cpf_particao
 
         left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
