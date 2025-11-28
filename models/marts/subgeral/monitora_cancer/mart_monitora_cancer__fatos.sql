@@ -125,8 +125,8 @@ with
         -- datas
             data_solicitacao,
             data_agendamento as data_autorizacao,
-        --data_tratamento_inicio,
-        --data_tratamento_prevista,
+            --data_tratamento_inicio,
+            --data_tratamento_prevista,
             data_execucao,
 
         -- resultados siscan
@@ -238,14 +238,14 @@ with
             procedimento_especialidade,
             procedimento_tipo,
             procedimento,
-        --coalesce(procedimento_leito_regulado_tipo, procedimento_leito_solicitado_tipo) as leito_tipo,
+            --coalesce(procedimento_leito_regulado_tipo, procedimento_leito_solicitado_tipo) as leito_tipo,
 
         -- datas
             data_solicitacao,
             data_reserva as data_autorizacao, -- está certo isso? data_reserva = data_autorizacao?
             data_internacao_inicio as data_execucao,
-        --data_internacao_termino,
-        --data_alta,
+            --data_internacao_termino,
+            --data_alta,
 
         -- resultados siscan
             cast(NULL as date) as data_exame_resultado,
