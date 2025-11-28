@@ -33,7 +33,14 @@ with
             paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone      
         from {{ref("int_dim_paciente__pacientes_sisreg")}}
 
         union all
@@ -66,7 +73,14 @@ with
             paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_siscan")}}
 
         union all
@@ -99,7 +113,14 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_ser_internacoes")}}
 
         union all
@@ -132,7 +153,14 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_ser_ambulatorial")}}
 
         union all
@@ -165,7 +193,14 @@ with
             paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_sih")}}
 
         union all
@@ -198,7 +233,14 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__profissionais_cnes")}}
 
         union all
@@ -231,7 +273,14 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_minha_saude")}}
 
         union all
@@ -264,7 +313,14 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            clinica_sf,
+            clinica_sf_ap,
+            clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_tea")}}
 
         union all
@@ -297,7 +353,14 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            clinica_sf,
+            clinica_sf_ap,
+            clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_fibromialgia")}}
 
         union all
@@ -330,7 +393,14 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            cast(null as string) as paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_sipni")}}
 
         union all
@@ -363,7 +433,14 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as int) as paciente_obito_ano
+            paciente_obito_ano,
+
+            clinica_sf,
+            clinica_sf_ap,
+            clinica_sf_telefone,
+
+            equipe_sf,
+            equipe_sf_telefone
         from {{ref("int_dim_paciente__pacientes_hci")}}
 
         union all
@@ -396,7 +473,14 @@ with
             paciente_telefone,
             paciente_email,
             
-            paciente_obito_ano
+            paciente_obito_ano,
+
+            cast(null as string) as clinica_sf,
+            cast(null as string) as clinica_sf_ap,
+            cast(null as string) as clinica_sf_telefone,
+
+            cast(null as string) as equipe_sf,
+            cast(null as string) as equipe_sf_telefone    
         from {{ref("int_dim_paciente__pacientes_bcadastro")}}
     ),
 
@@ -441,6 +525,13 @@ with
             ar.paciente_email,
             
             ar.paciente_obito_ano
+
+            ar.clinica_sf,
+            ar.clinica_sf_ap,
+            ar.clinica_sf_telefone,
+
+            ar.equipe_sf,
+            ar.equipe_sf_telefone
         from todos_registros ar
             left join {{ref("int_dim_paciente__relacao_cns_cpf")}} m
             on safe_cast(ar.paciente_cns as int) = safe_cast(m.cns as int)

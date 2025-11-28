@@ -52,6 +52,13 @@ agg as (
 
     array_agg(distinct paciente_obito_ano ignore nulls) as anos_obito,
 
+    array_agg(distinct clinica_sf ignore nulls) as clinicas_sf,
+    array_agg(distinct clinica_sf_ap ignore nulls) as clinicas_sf_ap,
+    array_agg(distinct clinica_sf_telefone ignore nulls) as clinicas_sf_telefone,
+
+    array_agg(distinct equipe_sf ignore nulls) as equipes_sf,
+    array_agg(distinct equipe_sf_telefone ignore nulls) as equipes_sf_telefone,
+
     -- checagens de conflitos
     (select count(distinct safe_cast(paciente_data_nascimento as string)) from {{ref("int_dim_paciente__esquema_canonico")}} x where x.cpf_particao = agg_src.cpf_particao) > 1
       as data_nascimento_conflitantes,
@@ -99,6 +106,13 @@ final as (
     emails,
     
     anos_obito,
+
+    clinicas_sf,
+    clinicas_sf_ap,
+    clinicas_sf_telefone,
+
+    equipes_sf,
+    equipes_sf_telefone,
 
     data_nascimento_conflitantes,
     sexos_conflitantes,

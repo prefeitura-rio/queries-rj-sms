@@ -43,7 +43,7 @@ with
             dim_paciente.nomes[SAFE_OFFSET(0)] as nome,
             dim_paciente.racas_cores[SAFE_OFFSET(0)] as raca_cor,
 
-            dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
+            -- dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
 
             date_diff(
                 current_date(),
@@ -51,13 +51,19 @@ with
                 year
             ) as idade,
 
+            dim_paciente.clinicas_sf[SAFE_OFFSET(0)] as clinica_sf,
+            dim_paciente.clinicas_sf_ap[SAFE_OFFSET(0)] as clinica_sf_ap,
+            dim_paciente.clinicas_sf_telefone[SAFE_OFFSET(0)] as clinica_sf_telefone,
+            dim_paciente.equipes_sf[SAFE_OFFSET(0)] as equipe_sf,
+            -- dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
+
+            dsr.dias_sem_resposta as gravidade_score,
+
             exists (
                 select 1
                 from unnest(dim_paciente.anos_obito) as ano
                 where ano is not null
-            ) as obito_indicador, 
-
-            dsr.dias_sem_resposta as gravidade_score
+            ) as obito_indicador
 
         from populacao_interesse as pop 
 
@@ -80,12 +86,12 @@ with
             pop.nome,
             pop.raca_cor,
             pop.idade,
-            cast(null as string) as ap,
-            cast(null as string) as cf,
-            cast(null as string) as equipe_sf,
+            pop.clinica_sf_ap as ap,
+            pop.clinica_sf as cf,
+            pop.equipe_sf,
             pop.status,
             pop.gravidade_score,
-            pop.telefone as telefone,
+            pop.clinica_sf_telefone as telefone,
 
             -- dados evento
             fcts.sistema_origem as fonte,
