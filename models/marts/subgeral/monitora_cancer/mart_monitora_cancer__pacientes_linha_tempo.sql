@@ -129,7 +129,7 @@ with
             -- eventos
             array_agg (
                 struct(
-                    fonte,
+                    fonte,c
                     tipo,
                     procedimento,
                     cid,

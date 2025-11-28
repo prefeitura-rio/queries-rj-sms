@@ -60,7 +60,7 @@ with
                     "BIOPSIA DE MAMA GUIADA POR USG",
                     "BIOPSIA DE MAMA POR ESTEREOTAXIA",
 
-                    "ULTRASSONOGRAFIA MAMARIA BILATERAL PARA ORIENTAR BIOPSIA DE MAMA",
+                    "ULTRASSONOGRAFIA MAMARIA BILATERAL PARA ORIENTAR BIOPSIA DE MAMA"
                 ) then true
                 else false
             end as criterio_suspeita,
@@ -139,11 +139,11 @@ with
             case
                 when
                 procedimento_solicitado in (
-                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)",
+                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)"
                 )
                 or
                 procedimento_regulado in (
-                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)",
+                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)"
                 )
                 then true
                 else false
