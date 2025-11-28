@@ -15,13 +15,16 @@
 
 
 with 
-
--- ATENDIMENTOS SIMPLIFICADOS
+  -- =============================
+  -- ATENDIMENTOS SIMPLIFICADOS
+  -- =============================
   atendimento_simplificado as (
     select
         a.id_atendimento,
         a.id_hci,
         a.id_paciente,
+        a.id_unidade_saude,
+        a.id_profissional_saude as id_profissional,
         p.numero_cpf_paciente as cpf,
         p.numero_cartao_saude as cns,
         p.nome_paciente as nome,
@@ -152,19 +155,89 @@ with
         from {{ref('raw_pcsm_evolucao_ambulatorial')}}
     ),
 
+    -- Profissionais
+    profissionais as (
+        select 
+            id_profissional,
+            id_unidade_saude,
+            nome as nome_profissional,
+            cpf as cpf_profissional,
+            cns as cns_profissional,
+            sigla_conselho,
+            case 
+                when sigla_conselho = 'CRM' then 'Médico'
+                when sigla_conselho = 'CRP' then 'Psicólogo'
+                when sigla_conselho = 'COREN' then 'Enfermeiro'
+                when sigla_conselho = 'CRESS' then 'Assistente Social'
+                when sigla_conselho = 'CRA' then 'Administrador'
+                when sigla_conselho = 'CRN' then 'Nutricionista'
+                when sigla_conselho = 'CRF' then 'Farmacêutico'
+                when sigla_conselho = 'CRO' then 'Odontólogo'
+                when sigla_conselho = 'CREFITO' then 'Fisioterapeuta/Terapeuta Ocupacional'
+                when sigla_conselho = 'CREFONO' then 'Fonoaudiólogo'
+                when sigla_conselho = 'CREF' then 'Educador Físico'
+                when sigla_conselho = 'OBM' then 'Músico'
+                else 'Ocupação Desconhecida'
+            end as especialidade_profissional
+        from {{ref('raw_pcsm_profissionais')}}
+    ),
+
     simplificado_final as (
         select
             id_hci,
             cpf,
             a.id_paciente,
             cns,
-            'Consulta' as tipo,
-            subtipo,
+            case
+                when subtipo in ('Acolhimento Diurno', 'Acolhimento em 3º turno','Evolução de paciente em ACOLHIMENTO(LEITO)', 
+                                'Evolução de Paciente em CONVIVÊNCIA / 3° TURNO', 'Acolhimento Noturno', 'Morador de SRT', 
+                                'Paciente em UAA', 'Convivência') 
+                    then 'Acolhimento e Convivência'
+                when subtipo in ('Ações de Reabilitação Psicossocial', 'Acolhimento Inicial', 'Acolhimento Inicial -1º acolh. já realizado RAPS',
+                                'Acompanhamento de SRT', 'Apoio a UAA/UAI', 'Atendimento à Crise', 'Atendimento ao Familiar', 'Atendimento Individual', 
+                                'Busca Ativa','Coleta de SINAIS VITAIS', 'Consulta de Prof. Nível Superior (Não médico)', 'Sessão de Auriculoterapia', 
+                                'Fortalecimento Protagonismo Usuários e Familiares', 'Promoção de Contratualidade no Território', 'Visita Domiciliar', 
+                                'Visita Institucional', 'Medicamentos Administração', 'Medicamentos Dispensação', 'Terapia de Reidratação Oral',
+                                'Curativo') 
+                    then 'Consulta'
+                when subtipo in ('Ações de Redução de Danos', 'Atendimento de Grupo', 'Prática expressiva e comunicativa', 'Práticas Corporais') 
+                    then 'Atividades e Grupos'
+                when subtipo = 'Articulação de Redes' then 'Articulação de Rede'
+                when subtipo = 'Encaminhamento' then 'Encaminhamento'
+                when subtipo in ('Matriciamento Atenção Básica', 'Matriciamento Urgência / Hospital') then 'Matriciamento'
+                else 'Outros'
+            end as tipo,
+            case 
+                when subtipo = 'Matriciamento Atenção Básica' then 'Matriciamento APS'
+                when subtipo = 'Matriciamento Urgência / Hospital' then 'Matriciamento Urgência/Hospital'
+                when subtipo in ('Acolhimento Inicial', 'Acolhimento Inicial - 1º acolh. já realizado RAPS') then 'Acolhimento Inicial'
+                when subtipo in ('Atendimento Individual', 'Consulta de Prof. Nível Superior (Não médico)') then 'Atendimento Clínico'
+                when subtipo = 'Coleta de SINAIS VITAIS' then 'Coleta de Sinais Vitais'
+                when subtipo = 'Fortalecimento Protagonismo Usuários e Familiares' then 'Fortalecimento da Autonomia'
+                when subtipo = 'Promoção de Contratualidade no Território' then 'Contratualidade no Território'
+                when subtipo = 'Sessão de Auriculoterapia' then 'Auriculoterapia'
+                when subtipo = 'Ações de Redução de Danos' then 'Redução de Danos'
+                when subtipo = 'Atendimento de Grupo' then 'Grupo Terapêutico'
+                when subtipo = 'Prática expressiva e comunicativa' then 'Prática Expressivas'
+                when subtipo = 'Articulação de Redes' then 'Articulação de Redes'
+                when subtipo = 'Evolução de paciente em ACOLHIMENTO(LEITO)' then 'Acolhimento em Leito'
+                when subtipo = 'Evolução de Paciente em CONVIVÊNCIA / 3° TURNO' then 'Acolhimento em 3º turno'
+                when subtipo = 'Morador de SRT' then 'Moradia SRT - Registro'
+                when subtipo = 'Paciente em UAA' then 'Registro UAA'
+                else subtipo
+            end as subtipo,
             entrada_datahora,
             saida_datahora,
             {{remove_html('desfecho')}} as desfecho_atendimento,
             cg.condicoes,
             estabelecimento,
+            struct(
+                cast(pr.id_profissional as string) as id,
+                pr.cpf_profissional as cpf,
+                pr.cns_profissional as cns,
+                initcap(pr.nome_profissional) as nome,
+                pr.especialidade_profissional as especialidade
+            ) as profissional_saude_responsavel,
             prontuario,
             metadados,
             data_particao,
@@ -175,11 +248,14 @@ with
             on a.id_atendimento = d.id_atendimento 
             and date(a.entrada_datahora) = date(d.data_desfecho)
             and a.id_paciente = d.id_paciente
+        left join profissionais pr on  a.id_profissional = pr.id_profissional and a.id_unidade_saude = pr.id_unidade_saude
         where a.classificacao_atendimento = 'CA'
     ),
 
 
--- ANTEDIMENTOS AMBULATORIAIS
+  -- =============================
+  -- ATENDIMENTOS AMBULATORIAIS
+  -- =============================
 
     atendimento_ambulatorial as (
         select 
@@ -204,6 +280,17 @@ with
         left join {{ref('raw_prescricao_medicos')}} m on a.conselho_regional_medicina = m.numero_crm
     ),
 
+    map_uso_continuo as (
+    -- Etapa 1: Resolve a lógica pesada (string matching) apenas uma vez por nome de medicamento
+    select
+        pm.nome_medicamento,
+        logical_or(c.medicamento is not null) as uso_continuo
+    from {{ref('raw_prescricao_medicamentos')}} pm
+    left join {{ref('raw_sheets__medicamentos_uso_continuo')}} c 
+        on strpos(upper(pm.nome_medicamento), upper(c.medicamento)) > 0
+    group by 1
+    ),
+
     prescricoes_ambulatorial as (
         select distinct
             pp.id_prescricao,
@@ -213,9 +300,13 @@ with
             via_administracao,
             dose_administrada,
             intervalo_doses,
-            observacao_administracao
+            observacao_administracao,
+            coalesce(map.uso_continuo, false) as uso_continuo
         from {{ref('raw_prescricao_prescricoes')}} pp 
-        left join {{ref('raw_prescricao_medicamentos')}} pm on cast(pm.id_prescricao as int64) = pp.id_prescricao
+        left join {{ref('raw_prescricao_medicamentos')}} pm 
+            on cast(pm.id_prescricao as int64) = pp.id_prescricao
+        left join map_uso_continuo map 
+                on pm.nome_medicamento = map.nome_medicamento
     ),
 
     prescricoes_ambulatorial_agg as  (
@@ -224,12 +315,12 @@ with
             array_agg(
                 struct(
                     cast(id_prescricao as string) as id,
-                    nome_medicamento as nome,
+                    upper(nome_medicamento) as nome,
                     cast(null as string) as concentracao, -- informação contida no nome do medicamento
-                    cast(null as string) as uso_continuo
+                    cast(uso_continuo as string) as uso_continuo
                 ) ignore nulls
             ) as prescricoes
-        from prescricoes_ambulatorial
+        from prescricoes_ambulatorial pa
         group by 1
     ),
 
@@ -239,7 +330,7 @@ with
             p.numero_cpf_paciente as cpf,
             id_paciente_local as id_paciente,
             'Ambulatorial' as tipo,
-            '' as subtipo, -- TODO
+            'Prescrição de medicamento' as subtipo, -- TODO
             a.entrada_datahora,
             cg.condicoes,
             pa.prescricoes,
@@ -287,13 +378,7 @@ merge_final as (
         condicoes,
         array<struct<id string, nome string, concentracao string, uso_continuo string>>[] as prescricoes,
         estabelecimento,
-        struct(
-            cast(null as string) as id,
-            cast(null as string) as cpf,
-            cast(null as string) as cns,
-            cast(null as string) as nome,
-            cast(null as string) as especialidade
-        ) as profissional_saude_responsavel,
+        profissional_saude_responsavel,
         prontuario,
         metadados
     from simplificado_final
@@ -322,4 +407,3 @@ select
     cast(cpf as int64) as cpf_particao,
     cast(entrada_datahora as date) as data_particao
 from merge_final
-

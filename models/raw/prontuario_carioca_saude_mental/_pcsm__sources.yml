@@ -47,6 +47,7 @@ sources:
       - name: gh_evolureuniao 
       - name: gh_evolusuperv
       - name: gh_internacao
+      - name: gh_prof
       
   - name: brutos_prontuario_carioca_saude_mental
     database: rj-sms
