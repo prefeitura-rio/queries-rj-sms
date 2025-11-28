@@ -1,5 +1,5 @@
 with pacientes as (
-    select distinct 
+    select  
         -- id
         safe_cast(paciente_cpf as int) as paciente_cpf,
         safe_cast(paciente_cns as int) as paciente_cns,
@@ -21,6 +21,7 @@ with pacientes as (
             else NULL 
         end as paciente_racacor,
 
+        /*
         safe_cast(paciente_mun_origem as string) as paciente_municipio_nascimento,
         safe_cast(paciente_complemento as string) as paciente_complemento,
         safe_cast(paciente_numero as string) as paciente_numero,
@@ -30,6 +31,7 @@ with pacientes as (
         safe_cast(paciente_bairro as string) as paciente_bairro,
         safe_cast(mun.nome_municipio as string) as paciente_municipio,
         safe_cast(paciente_uf as string) as paciente_uf,
+        */
 
         concat(
             coalesce(paciente_tel_ddd, ''),
@@ -41,6 +43,6 @@ with pacientes as (
     on safe_cast(paciente_municipio as int) = safe_cast(mun.cod_ibge_6 as int)
 )
 
-select * from pacientes
+select distinct * from pacientes
 -- paciente_sexo: I, -, M, F
 -- paciente_racacor: 0,1,2,3,4,5,99

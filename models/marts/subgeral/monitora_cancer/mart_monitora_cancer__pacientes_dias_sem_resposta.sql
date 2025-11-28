@@ -62,5 +62,5 @@ select
     paciente_cpf,
     estado_atual,
     data_ultimo_evento,
-    dias_sem_resposta
+    greatest(0, dias_sem_resposta) as dias_sem_resposta -- lida com casos de datas futuras
 from ultimo_evento_usuario

@@ -18,9 +18,9 @@ with pacientes as (
             else ms.racacor
         end as paciente_racacor,
 
-        safe_cast(ms.bairroresidencia as string) as paciente_bairro_residencia,
-        safe_cast(ms.municipioresidencia as string) as paciente_municipio_residencia,
-        safe_cast(ms.ufresidencia as string) as paciente_uf_residencia
+        --safe_cast(ms.bairroresidencia as string) as paciente_bairro_residencia,
+        --safe_cast(ms.municipioresidencia as string) as paciente_municipio_residencia,
+        --safe_cast(ms.ufresidencia as string) as paciente_uf_residencia
 
     from {{ ref("raw_centralderegulacao_mysql__minha_saude__lista_usuario") }} as ms
     left join (
