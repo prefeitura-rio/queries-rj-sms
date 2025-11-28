@@ -1,5 +1,5 @@
 with pacientes as (
-    select distinct 
+    select  
         -- id
         safe_cast(paciente_cpf as int) as paciente_cpf,
         safe_cast(paciente_cns as int) as paciente_cns,
@@ -43,6 +43,6 @@ with pacientes as (
     on safe_cast(paciente_municipio as int) = safe_cast(mun.cod_ibge_6 as int)
 )
 
-select * from pacientes
+select distinct * from pacientes
 -- paciente_sexo: I, -, M, F
 -- paciente_racacor: 0,1,2,3,4,5,99

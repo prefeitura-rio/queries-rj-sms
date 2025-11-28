@@ -1,5 +1,5 @@
 with pacientes as (
-        select distinct
+        select
         -- id
             safe_cast(cpf as int) as paciente_cpf,
             cns as paciente_cns_array,
@@ -68,6 +68,6 @@ with pacientes as (
             left join unnest (p.paciente_cns_array) as cns_item
     )
 
-select * from pacientes_cns_unnested
+select distinct * from pacientes_cns_unnested
 -- sexo: feminino, masculino
 -- racacor: parda, preta, branca, amarela

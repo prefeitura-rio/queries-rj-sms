@@ -1,5 +1,5 @@
 with pacientes as (
-    select distinct 
+    select  
         -- id
         safe_cast(usuariocpf as int) as paciente_cpf,
         safe_cast(usuariocns as int) as paciente_cns,
@@ -15,4 +15,4 @@ with pacientes as (
     where date(solicitacaodatahora) >= date '2024-01-01'
 )
 
-select * from pacientes
+select distinct * from pacientes

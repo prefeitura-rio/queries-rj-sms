@@ -1,5 +1,5 @@
 with pacientes as (
-    select distinct
+    select 
         -- id
         safe_cast(paciente_cpf as int) as paciente_cpf,
         safe_cast(paciente_cns as int) as paciente_cns,
@@ -12,7 +12,7 @@ with pacientes as (
         /*        
         safe_cast(paciente_uf_nascimento as string) as paciente_uf_nascimento,
         safe_cast(paciente_municipio_nascimento as string) as paciente_municipio_nascimento,
-        
+
         safe_cast(paciente_complemento_residencia as string) as paciente_complemento_residencia,
         safe_cast(paciente_numero_residencia as string) as paciente_numero_residencia,
         safe_cast(paciente_cep_residencia as string) as paciente_cep_residencia,
@@ -29,5 +29,5 @@ with pacientes as (
     where data_solicitacao >= >= TIMESTAMP('2024-01-01 00:00:00')
 )
 
-select * from pacientes
+select distinct * from pacientes
 -- paciente_sexo: MASCULINO, FEMININO

@@ -1,5 +1,5 @@
 with pacientes as (
-    select distinct 
+    select  
         -- id
         safe_cast(nu_cpf_paciente as int) as paciente_cpf,
         safe_cast(nu_cns_paciente as int) as paciente_cns,
@@ -55,6 +55,6 @@ with pacientes as (
     where dt_vacina >= TIMESTAMP('2024-01-01 00:00:00')
 )
 
-select * from pacientes
+select distinct * from pacientes
 -- paciente_sexo: M, F, I
 -- ufs: RIO DE JANEIRO, SAO PAULO, MINAS GERAIS, AMAPA ..
