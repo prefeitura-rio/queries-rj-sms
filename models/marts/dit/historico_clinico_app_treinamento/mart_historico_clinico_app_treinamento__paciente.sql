@@ -11,7 +11,7 @@
     )
 }}
 
-select 
+select
     42298037299 as cpf_particao,
     '42298037299' as cpf,
     'Paciente Fake I' as registration_name,
