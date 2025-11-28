@@ -259,7 +259,7 @@ siscan as (
         "RESULTADO DE EXAME" as procedimento_tipo,
         case 
             when mamografia_tipo = "Rastreamento" then "RESULTADO MAMOGRAFIA DE RASTREIO"
-            when mamografia_tipo = "Diagnóstico" then "RESULTADO MAMOGRAFIA DIAGNOSTICA"
+            when mamografia_tipo = "Diagnóstica" then "RESULTADO MAMOGRAFIA DIAGNOSTICA"
             else null
         end as procedimento,
 
