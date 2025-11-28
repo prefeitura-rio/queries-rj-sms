@@ -57,17 +57,7 @@ agg as (
     array_agg(distinct clinica_sf_telefone ignore nulls) as clinicas_sf_telefone,
 
     array_agg(distinct equipe_sf ignore nulls) as equipes_sf,
-    array_agg(distinct equipe_sf_telefone ignore nulls) as equipes_sf_telefone,
-
-    -- checagens de conflitos
-    (select count(distinct safe_cast(paciente_data_nascimento as string)) from {{ref("int_dim_paciente__esquema_canonico")}} x where x.cpf_particao = agg_src.cpf_particao) > 1
-      as data_nascimento_conflitantes,
-
-    (select count(distinct paciente_sexo) from {{ref("int_dim_paciente__esquema_canonico")}} x where x.cpf_particao = agg_src.cpf_particao and paciente_sexo is not null) > 1
-      as sexos_conflitantes,
-
-    (select count(distinct paciente_nome_mae) from {{ref("int_dim_paciente__esquema_canonico")}} x where x.cpf_particao = agg_src.cpf_particao and paciente_nome_mae is not null) > 1
-      as nome_mae_conflitantes
+    array_agg(distinct equipe_sf_telefone ignore nulls) as equipes_sf_telefone
 
   from {{ref("int_dim_paciente__esquema_canonico")}} as agg_src
   where paciente_cpf is not null
@@ -112,11 +102,9 @@ final as (
     clinicas_sf_telefone,
 
     equipes_sf,
-    equipes_sf_telefone,
+    equipes_sf_telefone
+    
 
-    data_nascimento_conflitantes,
-    sexos_conflitantes,
-    nome_mae_conflitantes
   from agg
 )
 

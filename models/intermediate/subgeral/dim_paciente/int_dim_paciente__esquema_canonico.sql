@@ -33,7 +33,7 @@ with
             paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
@@ -73,7 +73,7 @@ with
             paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
@@ -113,7 +113,7 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
@@ -153,7 +153,7 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
@@ -193,7 +193,7 @@ with
             paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
@@ -233,7 +233,7 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
@@ -273,7 +273,7 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
@@ -313,7 +313,7 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             clinica_sf,
             clinica_sf_ap,
@@ -353,7 +353,7 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             clinica_sf,
             clinica_sf_ap,
@@ -393,7 +393,7 @@ with
             cast(null as string) as paciente_telefone,
             cast(null as string) as paciente_email,
             
-            cast(null as string) as paciente_obito_ano,
+            cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
@@ -477,7 +477,7 @@ with
 
             cast(null as string) as clinica_sf,
             cast(null as string) as clinica_sf_ap,
-            cast(null as string) as clinica_sf_telefone,
+            cast(null as string) as clinica_sf_telefone, -- DEU MERDA
 
             cast(null as string) as equipe_sf,
             cast(null as string) as equipe_sf_telefone    
@@ -524,7 +524,7 @@ with
             ar.paciente_telefone,
             ar.paciente_email,
             
-            ar.paciente_obito_ano
+            ar.paciente_obito_ano,
 
             ar.clinica_sf,
             ar.clinica_sf_ap,

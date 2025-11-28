@@ -16,7 +16,7 @@ with pacientes as (
 
             estabs.nome_acentuado as clinica_sf,
             estabs.area_programatica as clinica_sf_ap,
-            estabs.telefone as clinica_sf_telefone,
+            estabs.telefone[SAFE_OFFSET(0)] as clinica_sf_telefone,
 
             upper(equipe_saude_familia [SAFE_OFFSET(0)].nome) as equipe_sf,
             equipe_saude_familia [SAFE_OFFSET(0)].telefone as equipe_sf_telefone
@@ -62,7 +62,8 @@ with pacientes as (
             p.clinica_sf_ap,
             p.clinica_sf,
             p.equipe_sf,
-            p.equipe_sf_telefone
+            p.equipe_sf_telefone,
+            p.clinica_sf_telefone
         from pacientes p
             left join unnest (p.paciente_cns_array) as cns_item
     )
