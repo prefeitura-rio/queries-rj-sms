@@ -18,52 +18,26 @@
 
 with
     populacao_interesse as (
-        select distinct paciente_cpf
-        from {{ref ("mart_monitora_cancer__fatos")}}
+        select
+            paciente_cpf,
+            case
+                when max(cast(criterio_diagnostico as int64)) = 1 then 'DIAGNOSTICO'
+                else 'SUSPEITA'
+            end as status
+        from {{ ref("mart_monitora_cancer__fatos") }}
         where
             data_solicitacao >= "2025-01-01"
             and (
-                -- critérios de seleção SISCAN
-                (
-                    sistema_origem = "SISCAN"
-                    and mama_esquerda_classif_radiologica in (
-                        "Categoria 4 - achados mamográficos suspeitos",
-                        "Categoria 5 - achados mamográficos altamente suspeitos",
-                        "Categoria 6 - achados mamográficos"
-                    )
-                )
-
-                or
-
-                -- critérios de seleção SISREG
-                (
-                    sistema_origem = "SISREG"
-                    and procedimento in (
-                        "MAMOGRAFIA  DIAGNOSTICA",
-                        "BIOPSIA DE MAMA   LESAO PALPAVEL",
-                        "BIOPSIA DE MAMA GUIADA POR USG",
-                        "BIOPSIA DE MAMA POR ESTEREOTAXIA",
-
-                        "ULTRASSONOGRAFIA MAMARIA BILATERAL PARA ORIENTAR BIOPSIA DE MAMA"
-                    )
-                )
-
-                or
-
-                -- critérios de seleção SER
-                (
-                    sistema_origem = "SER"
-                    and procedimento in (
-                        "AMBULATORIO 1  VEZ   MASTOLOGIA  ONCOLOGIA"
-                    )
-                )
-
+                criterio_suspeita = true
+                or criterio_diagnostico = true
             )
+        group by paciente_cpf
     ),
 
     enriquece_populacao_interesse as (
         select
             pop.paciente_cpf,
+            pop.status,
             dim_paciente.nomes[SAFE_OFFSET(0)] as nome,
             dim_paciente.racas_cores[SAFE_OFFSET(0)] as raca_cor,
 
@@ -100,7 +74,7 @@ with
             cast(null as string) as ap,
             cast(null as string) as cf,
             cast(null as string) as equipe_sf,
-            cast(null as string) as status,
+            pop.status,
             pop.gravidade_score,
             pop.telefone as telefone,
 
