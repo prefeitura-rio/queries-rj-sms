@@ -6,7 +6,7 @@ with pacientes as (
         safe_cast(no_paciente as string) as paciente_nome, 
         safe_cast(dt_nascimento_paciente as date) as paciente_data_nascimento,
         safe_cast(no_mae_paciente as string) as paciente_nome_mae,
-        safe_cast(no_pai_paciente as string) as paciente_nome_pai,
+        --safe_cast(no_pai_paciente as string) as paciente_nome_pai,
         
         case
             when tp_sexo_paciente = 'M' then 'MASCULINO'
@@ -14,6 +14,7 @@ with pacientes as (
             else NULL
         end as paciente_sexo,
 
+        /*
         safe_cast(nu_cep_paciente as string) as paciente_cep_residencia,
         safe_cast(no_bairro_paciente as string) as paciente_bairro_residencia,
         safe_cast(no_municipio_paciente as string) as paciente_municipio_residencia, 
@@ -48,9 +49,10 @@ with pacientes as (
             else NULL
         end as paciente_uf_residencia,
         safe_cast(no_pais_paciente as string) as paciente_pais_residencia
-        
+        */
+
     from {{ ref("raw_sipni__vacinacao") }}
-    where date(dt_vacina) >= date '2024-01-01'
+    where dt_vacina >= TIMESTAMP('2024-01-01 00:00:00')
 )
 
 select * from pacientes

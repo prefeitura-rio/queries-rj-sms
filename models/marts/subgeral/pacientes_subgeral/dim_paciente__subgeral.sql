@@ -28,13 +28,14 @@ agg as (
 
     array_agg(distinct paciente_nome ignore nulls) as nomes,
     array_agg(distinct paciente_nome_mae ignore nulls) as nomes_mae,
-    array_agg(distinct paciente_nome_pai ignore nulls) as nomes_pai,
+    --array_agg(distinct paciente_nome_pai ignore nulls) as nomes_pai,
     array_agg(distinct paciente_nome_social ignore nulls) as nomes_sociais,
 
     array_agg(distinct cast(paciente_data_nascimento as string) ignore nulls) as datas_nascimento,
     array_agg(distinct paciente_sexo ignore nulls) as sexos,
     array_agg(distinct paciente_racacor ignore nulls) as racas_cores,
 
+    /*
     array_agg(distinct paciente_uf_nascimento ignore nulls) as ufs_nascimento,
     array_agg(distinct paciente_municipio_nascimento ignore nulls) as municipios_nascimento,
 
@@ -46,9 +47,10 @@ agg as (
     array_agg(distinct paciente_complemento_residencia ignore nulls) as complementos_residencia,
     array_agg(distinct paciente_numero_residencia ignore nulls) as numeros_residencia,
     array_agg(distinct paciente_tp_logradouro_residencia ignore nulls) as tipos_logradouro_residencia,
+    */
 
     array_agg(distinct paciente_telefone ignore nulls) as telefones,
-    array_agg(distinct paciente_email ignore nulls) as emails,
+    --array_agg(distinct paciente_email ignore nulls) as emails,
 
     array_agg(distinct paciente_obito_ano ignore nulls) as anos_obito,
 
@@ -75,11 +77,12 @@ final as (
     nomes,
     datas_nascimento,
     nomes_mae,
-    nomes_pai,
+    --nomes_pai,
 
     sexos,
     racas_cores,
 
+    /*
     ufs_nascimento,
     municipios_nascimento,
 
@@ -91,9 +94,10 @@ final as (
     complementos_residencia,
     numeros_residencia,
     tipos_logradouro_residencia,
+    */
 
     telefones,
-    emails,
+    --emails,
     
     anos_obito,
 
@@ -104,7 +108,6 @@ final as (
     equipes_sf,
     equipes_sf_telefone
     
-
   from agg
 )
 

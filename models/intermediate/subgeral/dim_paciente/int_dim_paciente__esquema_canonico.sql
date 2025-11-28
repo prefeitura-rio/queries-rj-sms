@@ -10,7 +10,7 @@ with
             paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
@@ -19,6 +19,7 @@ with
             cast(null as string) as paciente_racacor,
 
     -- endereco
+            /*
             paciente_uf_nascimento,
             paciente_municipio_nascimento,
             paciente_uf_residencia,
@@ -29,9 +30,10 @@ with
             paciente_complemento_residencia,
             paciente_numero_residencia,
             paciente_tp_logradouro_residencia,
+            */
 
             paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -52,13 +54,14 @@ with
             paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             paciente_sexo,
             cast(null as string) as paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             paciente_uf_residencia,
@@ -69,9 +72,10 @@ with
             paciente_complemento_residencia,
             paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -92,13 +96,14 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             cast(null as string) as paciente_uf_residencia,
@@ -109,10 +114,12 @@ with
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             cast(null as string) as paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
+
             cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
@@ -132,13 +139,14 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             paciente_sexo,
             cast(null as string) as paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             cast(null as string) as paciente_uf_residencia,
@@ -149,9 +157,10 @@ with
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             cast(null as string) as paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -172,13 +181,14 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             paciente_sexo,
             paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             paciente_municipio_nascimento,
             paciente_uf as paciente_uf_residencia,
@@ -189,9 +199,10 @@ with
             paciente_complemento as paciente_complemento_residencia,
             paciente_numero as paciente_numero_residencia,
             paciente_tp_logradouro_residencia,
+            */
 
             paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -212,13 +223,14 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             cast(null as date) as paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             cast(null as string) as paciente_uf_residencia,
@@ -229,9 +241,10 @@ with
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             cast(null as string) as paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -252,13 +265,14 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             paciente_sexo,
             paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             paciente_uf_residencia,
@@ -269,9 +283,10 @@ with
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             cast(null as string) as paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -292,13 +307,14 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             cast(null as date) as paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             cast(null as string) as paciente_uf_residencia,
@@ -309,9 +325,10 @@ with
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             cast(null as string) as paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -332,13 +349,14 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             cast(null as date) as paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             cast(null as string) as paciente_uf_residencia,
@@ -349,9 +367,10 @@ with
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             cast(null as string) as paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -372,13 +391,14 @@ with
             paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            paciente_nome_pai,
+            --paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             paciente_uf_residencia,
@@ -389,9 +409,10 @@ with
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             cast(null as string) as paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             cast(null as int) as paciente_obito_ano,
 
@@ -412,13 +433,14 @@ with
             paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            paciente_nome_pai,
+            --paciente_nome_pai,
             paciente_data_nascimento,
             paciente_nome_social,
 
             paciente_sexo,
             paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             cast(null as string) as paciente_uf_residencia,
@@ -429,9 +451,10 @@ with
             cast(null as string) as paciente_complemento_residencia,
             cast(null as string) as paciente_numero_residencia,
             cast(null as string) as paciente_tp_logradouro_residencia,
+            */
 
             cast(null as string) as paciente_telefone,
-            cast(null as string) as paciente_email,
+            --cast(null as string) as paciente_email,
             
             paciente_obito_ano,
 
@@ -452,13 +475,14 @@ with
             cast(null as int) as paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            cast(null as string) as paciente_nome_pai,
+            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             paciente_nome_social,
 
             paciente_sexo,
             cast(null as string) as paciente_racacor,
 
+            /*
             cast(null as string) as paciente_uf_nascimento,
             cast(null as string) as paciente_municipio_nascimento,
             paciente_uf_residencia,
@@ -469,9 +493,10 @@ with
             paciente_complemento_residencia,
             paciente_numero_residencia,
             paciente_tp_logradouro_residencia,
+            */
 
             paciente_telefone,
-            paciente_email,
+            --paciente_email,
             
             paciente_obito_ano,
 
@@ -503,13 +528,14 @@ with
             ar.paciente_cns,
             ar.paciente_nome,
             ar.paciente_nome_mae,
-            ar.paciente_nome_pai,
+            --ar.paciente_nome_pai,
             ar.paciente_nome_social,
 
             ar.paciente_data_nascimento,
             ar.paciente_sexo,
             ar.paciente_racacor,
 
+            /*
             ar.paciente_uf_nascimento,
             ar.paciente_municipio_nascimento,
             ar.paciente_uf_residencia,
@@ -520,9 +546,10 @@ with
             ar.paciente_complemento_residencia,
             ar.paciente_numero_residencia,
             ar.paciente_tp_logradouro_residencia,
+            */
 
             ar.paciente_telefone,
-            ar.paciente_email,
+            --ar.paciente_email,
             
             ar.paciente_obito_ano,
 

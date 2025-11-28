@@ -7,10 +7,10 @@ with pacientes as (
         safe_cast(paciente_data_nascimento as date) as paciente_data_nascimento,
 
         safe_cast(paciente_sexo as string) as paciente_sexo,
-        safe_cast(paciente_municipio as string) as paciente_municipio_residencia
+        --safe_cast(paciente_municipio as string) as paciente_municipio_residencia
         
     from {{ ref ("raw_ser_metabase__ambulatorial") }}
-    where date(data_solicitacao) >= date '2024-01-01'
+    where data_solicitacao >= TIMESTAMP('2024-01-01 00:00:00')
 )
 
 select * from pacientes

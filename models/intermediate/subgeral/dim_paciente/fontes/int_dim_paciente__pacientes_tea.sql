@@ -7,7 +7,7 @@ with pacientes as (
 
         estabs.nome_acentuado as clinica_sf,
         estabs.area_programatica as clinica_sf_ap,
-        estabs.telefone[SAFE_OFFSET(0)] as clinica_sf_telefone,
+        estabs.telefone[SAFE_OFFSET(0)] as clinica_sf_telefone
 
     from {{ ref("raw_centralderegulacao_mysql__tea_relatorio") }}
     left join {{ ref("dim_estabelecimento") }} as estabs

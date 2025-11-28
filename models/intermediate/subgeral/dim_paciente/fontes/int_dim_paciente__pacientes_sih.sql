@@ -21,6 +21,7 @@ with pacientes as (
             else NULL 
         end as paciente_racacor,
 
+        /*
         safe_cast(paciente_mun_origem as string) as paciente_municipio_nascimento,
         safe_cast(paciente_complemento as string) as paciente_complemento,
         safe_cast(paciente_numero as string) as paciente_numero,
@@ -30,6 +31,7 @@ with pacientes as (
         safe_cast(paciente_bairro as string) as paciente_bairro,
         safe_cast(mun.nome_municipio as string) as paciente_municipio,
         safe_cast(paciente_uf as string) as paciente_uf,
+        */
 
         concat(
             coalesce(paciente_tel_ddd, ''),

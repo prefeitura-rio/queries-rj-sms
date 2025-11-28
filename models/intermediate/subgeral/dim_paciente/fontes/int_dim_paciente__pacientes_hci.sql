@@ -10,7 +10,7 @@ with pacientes as (
             upper(dados.nome_social) as paciente_nome_social,
             upper(dados.genero) as paciente_sexo,
             upper(dados.raca) as paciente_racacor,
-            upper(dados.pai_nome) as paciente_nome_pai,
+            --upper(dados.pai_nome) as paciente_nome_pai,
 
             extract(year from dados.obito_data) as paciente_obito_ano,
 
@@ -57,7 +57,7 @@ with pacientes as (
             p.paciente_nome_social,
             p.paciente_sexo,
             p.paciente_racacor,
-            p.paciente_nome_pai,
+            --p.paciente_nome_pai,
             paciente_obito_ano,
             p.clinica_sf_ap,
             p.clinica_sf,
