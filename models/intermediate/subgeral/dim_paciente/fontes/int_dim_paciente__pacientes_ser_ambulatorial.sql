@@ -10,7 +10,7 @@ with pacientes as (
         --safe_cast(paciente_municipio as string) as paciente_municipio_residencia
         
     from {{ ref ("raw_ser_metabase__ambulatorial") }}
-    where data_solicitacao >= TIMESTAMP('2024-01-01 00:00:00')
+    where data_solicitacao >= "2024-01-01"
 )
 
 select distinct * from pacientes

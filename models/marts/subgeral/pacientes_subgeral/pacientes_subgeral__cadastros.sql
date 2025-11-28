@@ -1,3 +1,20 @@
+-- noqa: disable=LT08
+{{
+  config(
+    enabled=true,
+    schema="pacientes_subgeral",
+    alias="cadastros",
+    unique_key='cpf',
+    partition_by={
+        "field": "cpf_particao",
+        "data_type": "int64",
+        "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+    },
+    on_schema_change='sync_all_columns',
+    tags=["weekly"]
+  )
+}}
+
 with
 -- criando esquema canonico para unir todos os sistemas
     todos_registros as (

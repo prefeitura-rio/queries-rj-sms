@@ -11,7 +11,7 @@ with pacientes as (
     from {{ ref("raw_ser_metabase__internacoes") }}
     left join {{ref("raw_sheets__municipios_rio")}} as mun
     on id_paciente_municipio_ibge = safe_cast(mun.cod_ibge_6 as int)
-    where data_solicitacao >= TIMESTAMP('2024-01-01 00:00:00')
+    where data_solicitacao >= "2024-01-01"
 )
 
 select distinct * from pacientes

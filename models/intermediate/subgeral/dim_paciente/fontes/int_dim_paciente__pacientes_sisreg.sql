@@ -26,7 +26,7 @@ with pacientes as (
         safe_cast(paciente_telefone as string) as paciente_telefone
     
     from {{ ref("mart_sisreg__solicitacoes") }}
-    where data_solicitacao >= >= TIMESTAMP('2024-01-01 00:00:00')
+    where data_solicitacao >= TIMESTAMP('2024-01-01 00:00:00')
 )
 
 select distinct * from pacientes

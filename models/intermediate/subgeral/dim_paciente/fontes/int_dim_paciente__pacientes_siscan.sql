@@ -28,7 +28,7 @@ with pacientes as (
         safe_cast(paciente_telefone as string) as paciente_telefone
             
     from {{ ref("raw_siscan_web__laudos") }}
-    where data_solicitacao >= TIMESTAMP('2024-01-01 00:00:00')
+    where data_solicitacao >= "2024-01-01"
 )
 
 select distinct * from pacientes 

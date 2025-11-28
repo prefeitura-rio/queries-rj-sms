@@ -61,7 +61,7 @@ agg as (
     array_agg(distinct equipe_sf ignore nulls) as equipes_sf,
     array_agg(distinct equipe_sf_telefone ignore nulls) as equipes_sf_telefone
 
-  from {{ref("int_dim_paciente__esquema_canonico")}} as agg_src
+  from {{ref("pacientes_subgeral__cadastros")}} as agg_src
   where paciente_cpf is not null
   group by cpf_particao
 ),
