@@ -26,4 +26,4 @@ select
 
     "https://storage.googleapis.com/sms_dit_arquivos_publicos/hci/mock-cientificalab.pdf" as laudo_url,
     cast("2025-01-04T16:43:00" as datetime) as datahora_pedido,
-    cast("2025-03-14T18:04:55" as datetime) as _ultima_datahora_assinatura,
+    cast("2025-03-14T18:04:55" as datetime) as _ultima_datahora_assinatura
