@@ -1,5 +1,5 @@
 with profissionais as (
-    select distinct
+    select 
         -- id
         safe_cast(cpf as int) as paciente_cpf,
         safe_cast(cns as int) as paciente_cns,
@@ -8,4 +8,4 @@ with profissionais as (
     where ano_competencia >= 2024
 )
 
-select * from profissionais
+select distinct * from profissionais

@@ -28,13 +28,14 @@ agg as (
 
     array_agg(distinct paciente_nome ignore nulls) as nomes,
     array_agg(distinct paciente_nome_mae ignore nulls) as nomes_mae,
-    array_agg(distinct paciente_nome_pai ignore nulls) as nomes_pai,
+    --array_agg(distinct paciente_nome_pai ignore nulls) as nomes_pai,
     array_agg(distinct paciente_nome_social ignore nulls) as nomes_sociais,
 
     array_agg(distinct cast(paciente_data_nascimento as string) ignore nulls) as datas_nascimento,
     array_agg(distinct paciente_sexo ignore nulls) as sexos,
     array_agg(distinct paciente_racacor ignore nulls) as racas_cores,
 
+    /*
     array_agg(distinct paciente_uf_nascimento ignore nulls) as ufs_nascimento,
     array_agg(distinct paciente_municipio_nascimento ignore nulls) as municipios_nascimento,
 
@@ -46,23 +47,21 @@ agg as (
     array_agg(distinct paciente_complemento_residencia ignore nulls) as complementos_residencia,
     array_agg(distinct paciente_numero_residencia ignore nulls) as numeros_residencia,
     array_agg(distinct paciente_tp_logradouro_residencia ignore nulls) as tipos_logradouro_residencia,
+    */
 
     array_agg(distinct paciente_telefone ignore nulls) as telefones,
-    array_agg(distinct paciente_email ignore nulls) as emails,
+    --array_agg(distinct paciente_email ignore nulls) as emails,
 
     array_agg(distinct paciente_obito_ano ignore nulls) as anos_obito,
 
-    -- checagens de conflitos
-    (select count(distinct safe_cast(paciente_data_nascimento as string)) from {{ref("int_dim_paciente__esquema_canonico")}} x where x.cpf_particao = agg_src.cpf_particao) > 1
-      as data_nascimento_conflitantes,
+    array_agg(distinct clinica_sf ignore nulls) as clinicas_sf,
+    array_agg(distinct clinica_sf_ap ignore nulls) as clinicas_sf_ap,
+    array_agg(distinct clinica_sf_telefone ignore nulls) as clinicas_sf_telefone,
 
-    (select count(distinct paciente_sexo) from {{ref("int_dim_paciente__esquema_canonico")}} x where x.cpf_particao = agg_src.cpf_particao and paciente_sexo is not null) > 1
-      as sexos_conflitantes,
+    array_agg(distinct equipe_sf ignore nulls) as equipes_sf,
+    array_agg(distinct equipe_sf_telefone ignore nulls) as equipes_sf_telefone
 
-    (select count(distinct paciente_nome_mae) from {{ref("int_dim_paciente__esquema_canonico")}} x where x.cpf_particao = agg_src.cpf_particao and paciente_nome_mae is not null) > 1
-      as nome_mae_conflitantes
-
-  from {{ref("int_dim_paciente__esquema_canonico")}} as agg_src
+  from {{ref("pacientes_subgeral__cadastros")}} as agg_src
   where paciente_cpf is not null
   group by cpf_particao
 ),
@@ -78,11 +77,12 @@ final as (
     nomes,
     datas_nascimento,
     nomes_mae,
-    nomes_pai,
+    --nomes_pai,
 
     sexos,
     racas_cores,
 
+    /*
     ufs_nascimento,
     municipios_nascimento,
 
@@ -94,15 +94,20 @@ final as (
     complementos_residencia,
     numeros_residencia,
     tipos_logradouro_residencia,
+    */
 
     telefones,
-    emails,
+    --emails,
     
     anos_obito,
 
-    data_nascimento_conflitantes,
-    sexos_conflitantes,
-    nome_mae_conflitantes
+    clinicas_sf,
+    clinicas_sf_ap,
+    clinicas_sf_telefone,
+
+    equipes_sf,
+    equipes_sf_telefone
+    
   from agg
 )
 

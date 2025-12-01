@@ -1,5 +1,5 @@
 with pacientes as (
-    select distinct
+    select
         -- id
         cast(null as int) as paciente_cpf,
         safe_cast(paciente_cns as int) as paciente_cns,
@@ -7,11 +7,11 @@ with pacientes as (
         safe_cast(paciente_data_nascimento as date) as paciente_data_nascimento,
 
         safe_cast(paciente_sexo as string) as paciente_sexo,
-        safe_cast(paciente_municipio as string) as paciente_municipio_residencia
+        --safe_cast(paciente_municipio as string) as paciente_municipio_residencia
         
     from {{ ref ("raw_ser_metabase__ambulatorial") }}
-    where date(data_solicitacao) >= date '2024-01-01'
+    where data_solicitacao >= "2024-01-01"
 )
 
-select * from pacientes
+select distinct * from pacientes
 -- paciente_sexo: MASCULINO, FEMININO, NULL

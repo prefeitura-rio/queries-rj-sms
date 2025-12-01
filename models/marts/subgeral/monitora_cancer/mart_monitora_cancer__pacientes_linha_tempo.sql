@@ -10,82 +10,69 @@
         "field": "cpf_particao",
         "data_type": "int64",
         "range": {"start": 0, "end": 100000000000, "interval": 34722222},
-    },
-    cluster_by=['status', 'cf', 'equipe_sf', 'cpf_particao'],
-    on_schema_change='sync_all_columns'
-  )
+},
+cluster_by = ['status', 'cf', 'equipe_sf', 'cpf_particao'],
+on_schema_change = 'sync_all_columns'
+)
 }}
 
 with
     populacao_interesse as (
-        select distinct paciente_cpf
-        from {{ref ("mart_monitora_cancer__fatos")}}
+        select
+            paciente_cpf,
+            case
+                when max(cast(criterio_diagnostico as int64)) = 1 then 'DIAGNOSTICO'
+                else 'SUSPEITA'
+            end as status
+        from {{ ref("mart_monitora_cancer__fatos") }}
         where
             data_solicitacao >= "2025-01-01"
             and (
-                -- critérios de seleção SISCAN
-                (
-                    sistema_origem = "SISCAN"
-                    and mama_esquerda_classif_radiologica in (
-                        "Categoria 4 - achados mamográficos suspeitos",
-                        "Categoria 5 - achados mamográficos altamente suspeitos",
-                        "Categoria 6 - achados mamográficos"
-                    )
-                )
-
-                or
-
-                -- critérios de seleção SISREG
-                (
-                    sistema_origem = "SISREG"
-                    and procedimento in (
-                        "MAMOGRAFIA  DIAGNOSTICA",
-                        "BIOPSIA DE MAMA   LESAO PALPAVEL",
-                        "BIOPSIA DE MAMA GUIADA POR USG",
-                        "BIOPSIA DE MAMA POR ESTEREOTAXIA",
-
-                        "ULTRASSONOGRAFIA MAMARIA BILATERAL PARA ORIENTAR BIOPSIA DE MAMA"
-                    )
-                )
-
-                or
-
-                -- critérios de seleção SER
-                (
-                    sistema_origem = "SER"
-                    and procedimento in (
-                        "AMBULATORIO 1  VEZ   MASTOLOGIA  ONCOLOGIA"
-                    )
-                )
-
+                criterio_suspeita = true
+                or criterio_diagnostico = true
             )
+        group by paciente_cpf
     ),
 
+    -- to do: pegar o registro mais recente ao invés de safe_offset(0)
     enriquece_populacao_interesse as (
         select
             pop.paciente_cpf,
-            dim_paciente.nomes[SAFE_OFFSET(0)] as nome,
-            dim_paciente.racas_cores[SAFE_OFFSET(0)] as raca_cor,
+            pop.status,
 
-            dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
-            
+            dim_paciente.nomes [SAFE_OFFSET(0)] as nome,
+            dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
+
+            -- dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
+
             date_diff(
                 current_date(),
-                safe_cast(dim_paciente.datas_nascimento[SAFE_OFFSET(0)] as date),
+                safe_cast(dim_paciente.datas_nascimento [SAFE_OFFSET(0)] as date),
                 year
             ) as idade,
 
+            dim_paciente.clinicas_sf [SAFE_OFFSET(0)] as clinica_sf,
+            dim_paciente.clinicas_sf_ap [SAFE_OFFSET(0)] as clinica_sf_ap,
+            dim_paciente.clinicas_sf_telefone [SAFE_OFFSET(0)] as clinica_sf_telefone,
+            dim_paciente.equipes_sf [SAFE_OFFSET(0)] as equipe_sf,
+            -- dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
+
             dsr.dias_sem_resposta as gravidade_score
 
-        from populacao_interesse as pop 
+        from populacao_interesse as pop
 
-        left join {{ref("dim_paciente__subgeral")}} as dim_paciente
-        on pop.paciente_cpf = dim_paciente.cpf_particao
+            left join {{ref("pacientes_subgeral__dim_paciente")}} as dim_paciente
+            on pop.paciente_cpf = dim_paciente.cpf_particao
 
-        left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
-        on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
+            left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
+            on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
 
-        where dim_paciente.sexos[SAFE_OFFSET(0)] != "MASCULINO"
+        where dim_paciente.sexos [SAFE_OFFSET(0)] != "MASCULINO"
+            and not exists(
+                select 1
+                from unnest (dim_paciente.anos_obito) as ano
+                where ano is not null
+            )
     ),
 
     eventos as (
@@ -97,12 +84,12 @@ with
             pop.nome,
             pop.raca_cor,
             pop.idade,
-            cast(null as string) as ap,
-            cast(null as string) as cf,
-            cast(null as string) as equipe_sf,
-            cast(null as string) as status,
+            pop.clinica_sf_ap as ap,
+            pop.clinica_sf as cf,
+            pop.equipe_sf,
+            pop.status,
             pop.gravidade_score,
-            pop.telefone as telefone,
+            pop.clinica_sf_telefone as telefone,
 
             -- dados evento
             fcts.sistema_origem as fonte,
@@ -119,8 +106,8 @@ with
             fcts.mama_direita_classif_radiologica
 
         from enriquece_populacao_interesse as pop
-        left join {{ref("mart_monitora_cancer__fatos")}} as fcts
-        on pop.paciente_cpf = fcts.paciente_cpf
+            left join {{ref("mart_monitora_cancer__fatos")}} as fcts
+            on pop.paciente_cpf = fcts.paciente_cpf
     ),
 
     paciente_linha_tempo as (
