@@ -248,7 +248,7 @@ with
             on a.id_atendimento = d.id_atendimento 
             and date(a.entrada_datahora) = date(d.data_desfecho)
             and a.id_paciente = d.id_paciente
-        left join profissionais pr on  a.id_profissional = pr.id_profissional and a.id_unidade_saude = pr.id_unidade_saude
+        left join profissionais pr on  a.id_profissional = pr.id_profissional
         where a.classificacao_atendimento = 'CA'
     ),
 
@@ -256,7 +256,6 @@ with
   -- =============================
   -- ATENDIMENTOS AMBULATORIAIS
   -- =============================
-
     atendimento_ambulatorial as (
         select 
             a.id_hci, 
@@ -281,7 +280,6 @@ with
     ),
 
     map_uso_continuo as (
-    -- Etapa 1: Resolve a lógica pesada (string matching) apenas uma vez por nome de medicamento
     select
         pm.nome_medicamento,
         logical_or(c.medicamento is not null) as uso_continuo
