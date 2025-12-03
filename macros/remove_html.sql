@@ -1,7 +1,20 @@
 {% macro remove_html(text) %}
 
+    {% set tags = {
+        '<p>':'',       '</p>':'',
+        '<h3>':'',      '</h3>':'\\n',
+        '<b>':'',       '</b>':'',
+        '<strong>':'',  '</strong>':'',
+        '<br>':'\\n',    '<br />':'\\n'
+    } %}
+
+    {% for tag, value in tags.items() %}
+        {% set ns.sql_expr = "replace(" ~ ns.sql_expr ~ ", '" ~ tag ~ "', '" ~ value ~ "')" %}
+    {% endfor %}
+
+
     {% set entities = {
-        '&nbsp;': ' ',      '&amp;': '&',       '&quot;': '"',      
+        '&nbsp;': ' ',      '&amp;': '&',       '&quot;': '"',
         '&lt;': '<',        '&gt;': '>',        '&ndash;': '-',     '&mdash;': '-',
         
         '&aacute;': 'á',    '&Aacute;': 'Á',    '&agrave;': 'à',    '&Agrave;': 'À',
@@ -22,7 +35,7 @@
         '&ucirc;': 'û',     '&Ucirc;': 'Û',     '&uuml;': 'ü',      '&Uuml;': 'Ü',
         
         '&ccedil;': 'ç',    '&Ccedil;': 'Ç',    '&ordf;': 'ª',      '&ordm;': 'º',
-        '&rdquo;':'”',      '&ldquo;':'“',      
+        '&rdquo;': '”',     '&ldquo;':'“'
     } %}
 
     {% set ns = namespace(sql_expr=text) %}
@@ -31,19 +44,6 @@
         {% set ns.sql_expr = "replace(" ~ ns.sql_expr ~ ", '" ~ entity ~ "', '" ~ char ~ "')" %}
     {% endfor %}
 
-
-    {% set tags = {
-        '<p>':'',       '</p>':'',
-        '<h3>':'',      '</h3>':'\\n',
-        '<b>':'',       '</b>':'',
-        '<strong>':'',  '</strong>':'',
-        '<br>':'\\n',    '<br />':'\\n'
-    } %}
-
-    {% for tag, value in tags.items() %}
-        {% set ns.sql_expr = "replace(" ~ ns.sql_expr ~ ", '" ~ tag ~ "', '" ~ value ~ "')" %}
-    {% endfor %}
-
     trim({{ ns.sql_expr }})
-            
+
 {% endmacro %}

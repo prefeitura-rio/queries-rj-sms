@@ -43,7 +43,7 @@ with
         -- prontuario
         struct (
             cast(a.id_atendimento as string) as id_prontuario_global,
-            cast(null as string) as id_prontuario_local,
+            cast(a.id_atendimento as string) as id_prontuario_local,
             'pcsm' as fornecedor
         ) as prontuario,
 
@@ -348,7 +348,7 @@ with
             -- prontuario
             struct(
                 cast(a.id_atendimento as string) as id_prontuario_global,
-                cast(null as string) as id_prontuario_local,
+                cast(a.id_atendimento as string) as id_prontuario_local,
                 'pcsm' as fornecedor
             ) as prontuario,
             -- metadados
