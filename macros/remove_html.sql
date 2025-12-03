@@ -1,5 +1,7 @@
 {% macro remove_html(text) %}
 
+    {% set ns = namespace(sql_expr=text) %}
+
     {% set tags = {
         '<p>':'',       '</p>':'',
         '<h3>':'',      '</h3>':'\\n',
@@ -37,8 +39,6 @@
         '&ccedil;': 'ç',    '&Ccedil;': 'Ç',    '&ordf;': 'ª',      '&ordm;': 'º',
         '&rdquo;': '”',     '&ldquo;':'“'
     } %}
-
-    {% set ns = namespace(sql_expr=text) %}
 
     {% for entity, char in entities.items() %}
         {% set ns.sql_expr = "replace(" ~ ns.sql_expr ~ ", '" ~ entity ~ "', '" ~ char ~ "')" %}
