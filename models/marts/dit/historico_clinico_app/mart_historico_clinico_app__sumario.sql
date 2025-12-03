@@ -41,8 +41,6 @@ select
     base.cpf,
     alergias_grouped.allergies,
     medicamentos_cronicos_grouped.continuous_use_medications,
-    comorbidades_grouped.comorbidities,
-    entorpecentes_grouped.narcotics,
     safe_cast(base.cpf as int64) as cpf_particao,
 from base
     left join alergias_grouped
