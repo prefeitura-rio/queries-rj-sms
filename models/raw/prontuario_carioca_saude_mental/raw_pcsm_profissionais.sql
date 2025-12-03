@@ -30,7 +30,7 @@ with
             safe_cast(dtcadast as date) as data_cadastro,
             if (crmbloq = 'S', true, false) as crm_bloqueado,
             if (indativo = 'S', true, false) as ativo,
-            dsctel as telefone
+            dsctel as telefone,
             safe_cast(datultmodif as date) as data_ultima_modificacao,
 
             --- Colunas desconhecidas 

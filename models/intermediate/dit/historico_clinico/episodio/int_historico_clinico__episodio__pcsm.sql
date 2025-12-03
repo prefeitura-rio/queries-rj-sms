@@ -160,7 +160,7 @@ with
         select 
             id_profissional,
             id_unidade_saude,
-            nome as nome_profissional,
+            {{proper_br('nome')}} as nome_profissional,
             cpf as cpf_profissional,
             cns as cns_profissional,
             sigla_conselho,
@@ -228,7 +228,7 @@ with
             end as subtipo,
             entrada_datahora,
             saida_datahora,
-            {{remove_html('desfecho')}} as desfecho_atendimento,
+            {{remove_html(remove_decode_chars_error('desfecho'))}} as desfecho_atendimento,
             cg.condicoes,
             estabelecimento,
             struct(

@@ -36,20 +36,6 @@ with
     from medicamentos_cronicos_single
     group by paciente_cpf
   ),
-  comorbidades_grouped as (
-    select
-      paciente_cpf,
-      array_agg(comorbidades) as comorbidities
-    from {{ ref('mart_historico_clinico__comorbidade') }}
-    group by paciente_cpf
-  ),
-  entorpecentes_grouped as (
-    select
-      paciente_cpf,
-      array_agg(entorpecentes ignore nulls) as narcotics
-    from {{ ref('mart_historico_clinico__entorpecente') }}
-    group by paciente_cpf
-  )
 
 select
     base.cpf,
@@ -59,11 +45,7 @@ select
     entorpecentes_grouped.narcotics,
     safe_cast(base.cpf as int64) as cpf_particao,
 from base
-    left join alergias_grouped 
+    left join alergias_grouped
       on alergias_grouped.paciente_cpf = base.cpf
     left join medicamentos_cronicos_grouped
       on medicamentos_cronicos_grouped.paciente_cpf = base.cpf
-    left join comorbidades_grouped
-      on comorbidades_grouped.paciente_cpf = base.cpf
-    left join entorpecentes_grouped
-      on entorpecentes_grouped.paciente_cpf = base.cpf

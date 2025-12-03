@@ -1,6 +1,5 @@
-{% macro remove_html(column_name) %}
+{% macro remove_html(text) %}
 
-    {# Dicionário de Entidades HTML #}
     {% set entities = {
         '&nbsp;': ' ',      '&amp;': '&',       '&quot;': '"',      
         '&lt;': '<',        '&gt;': '>',        '&ndash;': '-',     '&mdash;': '-',
@@ -22,18 +21,29 @@
         '&uacute;': 'ú',    '&Uacute;': 'Ú',    '&ugrave;': 'ù',    '&Ugrave;': 'Ù',
         '&ucirc;': 'û',     '&Ucirc;': 'Û',     '&uuml;': 'ü',      '&Uuml;': 'Ü',
         
-        '&ccedil;': 'ç',    '&Ccedil;': 'Ç',    '&ordf;': 'ª',      '&ordm;': 'º'
+        '&ccedil;': 'ç',    '&Ccedil;': 'Ç',    '&ordf;': 'ª',      '&ordm;': 'º',
+        '&rdquo;':'”',      '&ldquo;':'“',      
     } %}
 
-    {% set ns = namespace(sql_expr=column_name) %}
+    {% set ns = namespace(sql_expr=text) %}
 
     {% for entity, char in entities.items() %}
         {% set ns.sql_expr = "replace(" ~ ns.sql_expr ~ ", '" ~ entity ~ "', '" ~ char ~ "')" %}
     {% endfor %}
 
-    trim(regexp_replace(
-        {{ ns.sql_expr }},
-        '<[^>]+>', ' '
-    ))
 
+    {% set tags = {
+        '<p>':'',       '</p>':'',
+        '<h3>':'',      '</h3>':'\\n',
+        '<b>':'',       '</b>':'',
+        '<strong>':'',  '</strong>':'',
+        '<br>':'\\n',    '<br />':'\\n'
+    } %}
+
+    {% for tag, value in tags.items() %}
+        {% set ns.sql_expr = "replace(" ~ ns.sql_expr ~ ", '" ~ tag ~ "', '" ~ value ~ "')" %}
+    {% endfor %}
+
+    trim({{ ns.sql_expr }})
+            
 {% endmacro %}
