@@ -5,43 +5,34 @@
                 case
                     when
                         lower(word) in (
-                            'sms',
+                            'sms',   -- Secretaria Municipal de Saúde
+                            'smsdc',
                             'ap',
                             'cap',
-                            'caps',
-                            'cer',
-                            'cf',
-                            'cms',
-                            'cse',
-                            'padi',
-                            'smsdc',
-                            'upa',
-                            'a', 
-                            'e',
-                            'o',
-                            'ii',
-                            'iii',
-                            'iv',
-                            'vi',
-                            'vii',
-                            'viii',
-                            'ix',
-                            'xi',
-                            'xii',
-                            'xiii',
-                            'xxiii',
-                            'xiv',
-                            'xv',
-                            'xvi',
-                            'xvii',
-                            'xviii',
-                            'xix',
-                            'ad',
-                            'eat'
+                            'caps',  -- Centro de Atenção Psicossocial
+                            'cer',   -- Centro de Emergência Regional
+                            'cf',    -- Clínica da Família
+                            'cms',   -- Centro Municipal de Saúde
+                            'cse',   -- Centro de Saúde Escola
+                            'padi',  -- Programa de Atenção Domiciliar ao Idoso
+                            'upa',   -- Unidade de Pronto Atendimento
+                            'par',   -- Ponto de Apoio na Rua
+                            'ad',    -- (CAPS) Álcool e Drogas
+                            'eat',   -- (CAPS) Espaço Aberto ao Tempo
+                            'uerj',
+                            'ufrj',
+
+                            'a', 'e', 'o',
+
+                            'i',  'ii',  'iii',  'iv',  'v',  'vi',  'vii',  'viii',  'ix', 'x',
+                            'xi', 'xii', 'xiii', 'xiv', 'xv', 'xvi', 'xvii', 'xviii', 'xix', 'xx',
+                            'xxiii'
                         )
-                    then upper(word)
+                        then upper(word)
                     when lower(word) = 'capsi' -- Condição específica para retornar "CAPSi"
-                    then 'CAPSi'
+                        then 'CAPSi'
+                    when lower(word) = "Capsiii"  -- Typo "Capsiii Clarice Lispector"
+                        then "CAPS III"
                     else {{ proper_br("word") }}
                 end,
                 ' '
