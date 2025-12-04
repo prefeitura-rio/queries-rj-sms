@@ -1,5 +1,5 @@
 {{ config(
-    schema = "projeto_subway",
+    schema = "projeto_subhue",
     alias = "paciente",
     materialized = "table",
     tags = ['daily']
