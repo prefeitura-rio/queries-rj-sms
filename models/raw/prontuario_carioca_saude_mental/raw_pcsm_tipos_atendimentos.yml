@@ -23,7 +23,7 @@ models:
       - name: descricao_tipo_atendimento
         description: "Descrição do tipo de atendimento."
         data_type: string
-      - name: acao_pos_atentimento
+      - name: acao_pos_atendimento
         description: "Indicador de Ação de condição pós-atendimento (S-Sim, N-Não)."
         data_type: string
       - name: descricao_acao_pos_atendimento

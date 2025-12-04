@@ -32,6 +32,7 @@ sources:
       - name: projeto_odontologia_historico
       - name: projeto_odontologia_historico_ap
       - name: projeto_odontologia_sigtap_odo
+      - name: medicamentos_uso_continuo
 
   - name: brutos_sheets
     database: rj-sms

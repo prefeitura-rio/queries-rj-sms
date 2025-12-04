@@ -115,8 +115,34 @@ with
                     )
                 then true
                 else false
-            end as flag__subtipo_proibido_vitacare
-
+            end as flag__subtipo_proibido_vitacare,
+            
+            case 
+                when 
+                    prontuario.fornecedor = 'pcsm'
+                    AND subtipo IN (
+                        'Acolhimento Diurno',
+                        'Acolhimento Noturno',
+                        'Acolhimento em 3º turno',
+                        'Convivência',
+                        'Morador de SRT',
+                        'Moradia SRT - Registro'
+                        'Registro UAA',
+                        'Curativo',
+                        'Medicamentos Administração',
+                        'Medicamentos Dispensação',
+                        'Terapia de Reidratação Oral',
+                        'Teste de Glicemia Capilar',
+                        'Teste Rápido HBV',
+                        'Teste Rápido Hepatite C',
+                        'Teste Rápido HIV',
+                        'Teste Rápido Sífilis',
+                        'Teste Rápido SARS-COVID 2',
+                        'Teste Rápido Sífilis'
+                    )
+                then true
+                else false
+            end as flag__subtipo_proibido_pcsm
         from {{ ref("mart_historico_clinico__episodio") }}
     ),
     encounter_medicines as (
@@ -257,6 +283,7 @@ with
                     or flag__paciente_tem_restricao
                     or flag__paciente_sem_cpf
                     or flag__subtipo_proibido_vitacare
+                    or flag__subtipo_proibido_pcsm
                     or flag__episodio_vacinacao
                     or flag__exame_sem_subtipo
                 ) as indicador,
@@ -264,6 +291,7 @@ with
                 flag__paciente_tem_restricao as paciente_restrito,
                 flag__paciente_sem_cpf as paciente_sem_cpf,
                 flag__subtipo_proibido_vitacare as subtipo_proibido_vitacare,
+                flag__subtipo_proibido_pcsm as subtipo_proibido_pcsm,
                 flag__episodio_vacinacao as episodio_vacinacao,
                 flag__exame_sem_subtipo as exame_sem_subtipo
             ) as exibicao,
