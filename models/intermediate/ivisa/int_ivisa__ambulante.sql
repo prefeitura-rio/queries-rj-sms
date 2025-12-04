@@ -6,55 +6,154 @@
     )
 }}
 
-with 
-
-ambulantes_no_sisvisa as (
+with ambulantes_no_sisvisa as (
     select
         id,
 
         cpf,
         cnpj,
-        nome_titular as razao_social,
+        {{ proper_br("nome_titular") }} as razao_social,
         inscricao_municipal,
 
         logradouro as endereco_logradouro,
         numero as endereco_numero,
         complemento as endereco_complemento,
-        cep as endereco_cep,
-        bairro as endereco_bairro,
-        null as endereco_cidade,
+        safe_cast(
+            REGEXP_REPLACE(cep, r"[^0-9]", "")
+            as int64
+        ) as cep_int64, -- usado pra verificar se a cidade é o RJ
+        
+        {{ clean_bairro("bairro") }} as endereco_bairro,
 
-        case 
-            when data_cancelamento is null 
-                and data_revogacao is null 
-                and data_anulacao is null 
+        case
+            when data_cancelamento is null
+                and data_revogacao is null
+                and data_anulacao is null
                 and data_cassacao is null
-            then true 
-            else false 
+            then true
+            else false
         end as ativo,
         situacao_do_alvara,
+
         situacao_da_emissao_da_licenca,
-        situacao_da_licenca_sanitaria,
+        -- Licenciamento:
+        case
+            when situacao_da_licenca_sanitaria = 0 then cast(null as string)
+            when situacao_da_licenca_sanitaria = 1 then "Autodeclarado"
+            when situacao_da_licenca_sanitaria = 2 then "Simplificado"
+            when situacao_da_licenca_sanitaria = 3 then "Licenciamento com Inspeção"
+            when situacao_da_licenca_sanitaria = 4 then "Licenciamento por Autorização"
+            when situacao_da_licenca_sanitaria = 5 then "Outorga"
+            when situacao_da_licenca_sanitaria = 6 then "Licenciamento Manual"
+            else trim(cast(situacao_da_licenca_sanitaria as string))
+        end as situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
     from {{ ref('raw_sisvisa__ambulante_sisvisa') }}
     where cpf is not null or cnpj is not null
 ),
 
-obitos as (
-    select 
-        cpf.cpf
-    from {{ ref('raw_bcadastro__cpf') }} as cpf
-    where cpf.obito_ano is not null
+ambulantes_no_scca as (
+    select
+        null as id,
+
+        cpf,
+        cnpj,
+        {{ proper_br("nome") }} as razao_social,
+        inscricao_municipal,
+
+        logradouro_ponto as endereco_logradouro,
+        numero_porta_ponto as endereco_numero,
+        complemento_ponto as endereco_complemento,
+        null as cep_int64,
+        {{ clean_bairro("bairro_ponto") }} as endereco_bairro,
+
+        cast(null as boolean) as ativo,
+        upper(trim(status)) as situacao_do_alvara,
+        null as situacao_da_emissao_da_licenca,
+        cast(null as string) as situacao_da_licenca_sanitaria,
+        null as situacao_validacao_da_licenca_sanitaria
+    from {{ ref("raw_sisvisa__ambulante_scca") }}
+    where cpf is not null
+        or cnpj is not null
 ),
 
-ambulantes_no_sisvisa_atualizados as (
+ambulantes_unidos as (
+    select *, "scca" as fonte from ambulantes_no_scca
+    union all
+    select *, "sisvisa" as fonte from ambulantes_no_sisvisa
+),
+
+ambulantes_deduplicados as (
+    -- Queremos deduplicar mas sem substituição
+    -- Isto é, queremos juntar entradas com mesma inscrição municipal
+    -- removendo todos os nulos possíveis. Para isso, fazemos coalesce(max, max).
+    -- Em duas repetições, se um é nulo, o outro é o max.
+    -- Contudo, na base com ~300 mil linhas, 6 possuem 3 repetições.
+    -- Assim, estamos em teoria perdendo algumas poucas informações caso
+    -- mais de um esteja preenchido com não-nulo :\
+    -- [Ref] https://www.rainstormtech.com/efficient-data-deduplication-and-null-value-handling-in-sql-server/
+    select
+        coalesce(max(id), max(id)) as id,
+        coalesce(max(cpf), max(cpf)) as cpf,
+        coalesce(max(cnpj), max(cnpj)) as cnpj,
+        coalesce(max(razao_social), max(razao_social)) as razao_social,
+        inscricao_municipal,
+        coalesce(max(endereco_logradouro), max(endereco_logradouro)) as endereco_logradouro,
+        coalesce(max(endereco_numero), max(endereco_numero)) as endereco_numero,
+        coalesce(max(endereco_complemento), max(endereco_complemento)) as endereco_complemento,
+        coalesce(max(cep_int64), max(cep_int64)) as cep_int64,
+        coalesce(max(endereco_bairro), max(endereco_bairro)) as endereco_bairro,
+        coalesce(max(ativo), max(ativo)) as ativo,
+        coalesce(max(situacao_do_alvara), max(situacao_do_alvara)) as situacao_do_alvara,
+        coalesce(max(situacao_da_emissao_da_licenca), max(situacao_da_emissao_da_licenca)) as situacao_da_emissao_da_licenca,
+        coalesce(max(situacao_da_licenca_sanitaria), max(situacao_da_licenca_sanitaria)) as situacao_da_licenca_sanitaria,
+        coalesce(max(situacao_validacao_da_licenca_sanitaria), max(situacao_validacao_da_licenca_sanitaria)) as situacao_validacao_da_licenca_sanitaria,
+        max(fonte) as fonte  -- prefere 'sisvisa' a 'scca' se for o caso
+    from ambulantes_unidos
+    group by inscricao_municipal
+),
+
+obitos as (
+    select bcadastro.cpf
+    from {{ ref("raw_bcadastro__cpf") }} as bcadastro
+    where bcadastro.obito_ano is not null
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitacare") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__smsrio") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitai") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+),
+
+ambulantes_atualizados as (
     select
         struct(
             'Ambulante' as tipo,
             cast(id as string) as id_sisvisa,
-            cast(ambulantes_no_sisvisa.cpf as string) as cpf,
-            cast(ambulantes_no_sisvisa.cnpj as string) as cnpj,
-            cast(ambulantes_no_sisvisa.inscricao_municipal as string) as inscricao_municipal
+            cast(ambulantes.cpf as string) as cpf,
+            cast(ambulantes.cnpj as string) as cnpj,
+            cast(ambulantes.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
 
         struct(
@@ -62,7 +161,8 @@ ambulantes_no_sisvisa_atualizados as (
             cast(null as string) as natureza_juridica,
             cast(null as string) as porte,
             razao_social as titular,
-            (obitos.cpf is not null) as titular_com_obito
+            (obitos.cpf is not null) as titular_com_obito,
+            fonte
         ) as cadastro,
 
         struct(
@@ -73,7 +173,11 @@ ambulantes_no_sisvisa_atualizados as (
         struct(
             cast([] as array<string>) as tipos_operacoes,
             cast(endereco_bairro as string) as endereco_bairro,
-            cast(endereco_cidade as string) as endereco_cidade
+            -- Confere se CEP é no Rio; se sim, aqui é "Rio de Janeiro",
+            -- e se não, aqui é nulo
+            cast(
+                ({{ cidade_cep("cep_int64") }}) as string
+            ) as endereco_cidade
         ) as operacao,
 
         struct(
@@ -82,10 +186,9 @@ ambulantes_no_sisvisa_atualizados as (
             cast(situacao_da_emissao_da_licenca as string) as licenca_sanitaria_emissao,
             cast(situacao_validacao_da_licenca_sanitaria as string) as licenca_sanitaria_validacao
         ) as situacao
-    from ambulantes_no_sisvisa
-        left join obitos on ambulantes_no_sisvisa.cpf = obitos.cpf
+    from ambulantes_deduplicados as ambulantes
+        left join obitos on ambulantes.cpf = obitos.cpf
 )
 
-select * 
-from ambulantes_no_sisvisa_atualizados
-
+select *
+from ambulantes_atualizados

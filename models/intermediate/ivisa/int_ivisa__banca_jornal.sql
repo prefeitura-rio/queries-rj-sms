@@ -6,47 +6,154 @@
     )
 }}
 
-with 
-
-bancas_no_sisvisa as (
+with bancas_no_sisvisa as (
     select
         id,
 
         cpf_titular as cpf,
-        nome_titular as razao_social,
+        {{ proper_br("nome_titular") }} as razao_social,
         inscricao_municipal,
 
         logradouro_banca as endereco_logradouro,
         numero_porta_banca as endereco_numero,
         complemento_banca as endereco_complemento,
         cep_banca as endereco_cep,
-        bairro_banca as endereco_bairro,
-        null as endereco_cidade,
+        {{ clean_bairro("bairro_banca") }} as endereco_bairro,
+        cast(null as string) as endereco_cidade,
 
         ativo,
-        situacao_do_alvara,
+        case
+            when upper(trim(situacao_do_alvara)) = "ATIVA"
+                then "ATIVO"
+            when upper(trim(situacao_do_alvara)) in (
+                "BAIXADA", "CANCELADA"
+            ) then "CANCELADO"
+            when upper(trim(situacao_do_alvara)) = "PENDENTE"
+                then "PENDENTE"
+            else null
+        end as situacao_do_alvara,
+
         situacao_da_emissao_da_licenca,
-        situacao_da_licenca_sanitaria,
+        -- Licenciamento:
+        case
+            when situacao_da_licenca_sanitaria = 0 then cast(null as string)
+            when situacao_da_licenca_sanitaria = 1 then "Autodeclarado"
+            when situacao_da_licenca_sanitaria = 2 then "Simplificado"
+            when situacao_da_licenca_sanitaria = 3 then "Licenciamento com Inspeção"
+            when situacao_da_licenca_sanitaria = 4 then "Licenciamento por Autorização"
+            when situacao_da_licenca_sanitaria = 5 then "Outorga"
+            when situacao_da_licenca_sanitaria = 6 then "Licenciamento Manual"
+            else trim(cast(situacao_da_licenca_sanitaria as string))
+        end as situacao_da_licenca_sanitaria,
         situacao_validacao_da_licenca_sanitaria
     from {{ ref('raw_sisvisa__banca_jornal_sisvisa') }}
     where cpf_titular is not null
 ),
 
-obitos as (
-    select 
-        cpf.cpf
-    from {{ ref('raw_bcadastro__cpf') }} as cpf
-    where cpf.obito_ano is not null
+-- SILFAE tem muito pouca informação :\
+bancas_no_silfae as (
+    select
+        cast(null as int64) as id,
+
+        cpf_titular as cpf,
+        {{ proper_br("nome_titular") }} as razao_social,
+        cast(inscricao_municipal as string) as inscricao_municipal,
+
+        logradouro_banca as endereco_logradouro,
+        numero_porta_banca as endereco_numero,
+        complemento_banca as endereco_complemento,
+        cast(null as string) as endereco_cep,
+        {{ clean_bairro("bairro_banca") }} as endereco_bairro,
+        cast(null as string) as endereco_cidade,
+
+        cast(null as boolean) as ativo,
+        case
+            when upper(trim(situacao)) = "ATIVA"
+                then "ATIVO"
+            when upper(trim(situacao)) in (
+                "BAIXADA", "CANCELADA"
+            ) then "CANCELADO"
+            when upper(trim(situacao)) = "PENDENTE"
+                then "PENDENTE"
+            else null
+        end as situacao_do_alvara,
+        null as situacao_da_emissao_da_licenca,
+        cast(null as string) as situacao_da_licenca_sanitaria,
+        null as situacao_validacao_da_licenca_sanitaria
+    from {{ ref("raw_sisvisa__banca_jornal_silfae") }}
+    where cpf_titular is not null
 ),
 
-bancas_no_sisvisa_atualizadas as (
+bancas_unidas as (
+    select *, "silfae" as fonte from bancas_no_silfae
+    union all
+    select *, "sisvisa" as fonte from bancas_no_sisvisa
+),
+
+bancas_deduplicadas as (
+    -- Vide explicação em `int_ivisa__ambulante`
+    select
+        coalesce(max(id), max(id)) as id,
+        coalesce(max(cpf), max(cpf)) as cpf,
+        coalesce(max(razao_social), max(razao_social)) as razao_social,
+        inscricao_municipal,
+        coalesce(max(endereco_logradouro), max(endereco_logradouro)) as endereco_logradouro,
+        coalesce(max(endereco_numero), max(endereco_numero)) as endereco_numero,
+        coalesce(max(endereco_complemento), max(endereco_complemento)) as endereco_complemento,
+        coalesce(max(endereco_cep), max(endereco_cep)) as endereco_cep,
+        coalesce(max(endereco_bairro), max(endereco_bairro)) as endereco_bairro,
+        coalesce(max(endereco_cidade), max(endereco_cidade)) as endereco_cidade,
+        coalesce(max(ativo), max(ativo)) as ativo,
+        coalesce(max(situacao_do_alvara), max(situacao_do_alvara)) as situacao_do_alvara,
+        coalesce(max(situacao_da_emissao_da_licenca), max(situacao_da_emissao_da_licenca)) as situacao_da_emissao_da_licenca,
+        coalesce(max(situacao_da_licenca_sanitaria), max(situacao_da_licenca_sanitaria)) as situacao_da_licenca_sanitaria,
+        coalesce(max(situacao_validacao_da_licenca_sanitaria), max(situacao_validacao_da_licenca_sanitaria)) as situacao_validacao_da_licenca_sanitaria,
+        max(fonte) as fonte  -- prefere 'sisvisa' a 'silfae' se for o caso
+    from bancas_unidas
+    group by inscricao_municipal
+),
+
+obitos as (
+    select bcadastro.cpf
+    from {{ ref("raw_bcadastro__cpf") }} as bcadastro
+    where bcadastro.obito_ano is not null
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitacare") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__smsrio") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+
+    union distinct
+
+    select cpf
+    from {{ ref("int_historico_clinico__paciente__vitai") }},
+        unnest(dados) as dado
+    where cpf is not null
+        and dado.rank = 1
+        and dado.obito_indicador = true
+),
+
+bancas_atualizadas as (
     select
         struct(
             'Banca de Jornal' as tipo,
             cast(id as string) as id_sisvisa,
-            cast(bancas_no_sisvisa.cpf as string) as cpf,
+            cast(bancas.cpf as string) as cpf,
             cast(null as string) as cnpj,
-            cast(bancas_no_sisvisa.inscricao_municipal as string) as inscricao_municipal
+            cast(bancas.inscricao_municipal as string) as inscricao_municipal
         ) as identificacao,
 
         struct(
@@ -54,7 +161,8 @@ bancas_no_sisvisa_atualizadas as (
             cast(null as string) as natureza_juridica,
             cast(null as string) as porte,
             razao_social as titular,
-            (obitos.cpf is not null) as titular_com_obito
+            (obitos.cpf is not null) as titular_com_obito,
+            fonte
         ) as cadastro,
 
         struct(
@@ -74,10 +182,9 @@ bancas_no_sisvisa_atualizadas as (
             cast(situacao_da_emissao_da_licenca as string) as licenca_sanitaria_emissao,
             cast(situacao_validacao_da_licenca_sanitaria as string) as licenca_sanitaria_validacao
         ) as situacao
-    from bancas_no_sisvisa
-        left join obitos on bancas_no_sisvisa.cpf = obitos.cpf
+    from bancas_deduplicadas as bancas
+        left join obitos on bancas.cpf = obitos.cpf
 )
 
-select * 
-from bancas_no_sisvisa_atualizadas
-
+select *
+from bancas_atualizadas
