@@ -31,7 +31,7 @@
                         then upper(word)
                     when lower(word) = 'capsi' -- Condição específica para retornar "CAPSi"
                         then 'CAPSi'
-                    when lower(word) = "Capsiii"  -- Typo "Capsiii Clarice Lispector"
+                    when lower(word) = "capsiii"  -- Typo "Capsiii Clarice Lispector"
                         then "CAPS III"
                     else {{ proper_br("word") }}
                 end,
