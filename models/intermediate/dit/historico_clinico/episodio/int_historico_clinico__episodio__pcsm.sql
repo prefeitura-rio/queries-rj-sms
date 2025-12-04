@@ -262,7 +262,7 @@ with
             a.id_atendimento, 
             a.id_paciente as id_paciente_local,
             p.registro_prontuario as id_paciente_global,
-            a.data_atendimento as entrada_datahora,
+            a.data_hora_registro as entrada_datahora,
             a.id_unidade_saude,
             u.cnes_unidade_saude as cnes, 
             u.nome_unidade_saude as estabelecimento_nome,
@@ -313,7 +313,7 @@ with
             array_agg(
                 struct(
                     cast(id_prescricao as string) as id,
-                    upper(nome_medicamento) as nome,
+                    {{proper_br('nome_medicamento')}} as nome,
                     cast(null as string) as concentracao, -- informação contida no nome do medicamento
                     cast(uso_continuo as string) as uso_continuo
                 ) ignore nulls
@@ -334,7 +334,7 @@ with
             pa.prescricoes,
             struct(
                 a.cnes,
-                a.estabelecimento_nome as nome,
+                {{proper_estabelecimento('a.estabelecimento_nome')}} as nome,
                 a.estabelecimento_tipo as tipo 
             ) as estabelecimento,
             -- profissional
@@ -342,7 +342,7 @@ with
                 cast(a.crm as string) as id,
                 cast(a.medico_cpf as string) as cpf,
                 cast(null as string) as cns,
-                a.nome_medico as nome,
+                {{proper_br('nome_medico')}} as nome,
                 cast(null as string) as especialidade
             ) as profissional_saude_responsavel,
             -- prontuario
@@ -370,8 +370,8 @@ merge_final as (
         id_paciente,
         tipo,
         subtipo,
-        entrada_datahora,--safe_cast(entrada_datahora as date) as entrada_datahora,
-        saida_datahora,--safe_cast(saida_datahora as date) as saida_datahora,
+        entrada_datahora,
+        saida_datahora,
         desfecho_atendimento,
         condicoes,
         array<struct<id string, nome string, concentracao string, uso_continuo string>>[] as prescricoes,
@@ -387,9 +387,9 @@ merge_final as (
         id_paciente,
         tipo,
         subtipo,
-        safe_cast(entrada_datahora as datetime),
-        safe_cast(null as datetime), 
-        cast(null as string) as desfecho_atendimento, -- TODO
+        safe_cast(entrada_datahora as datetime) as entrada_datahora,
+        safe_cast(null as datetime) as saida_datahora, 
+        cast(null as string) as desfecho_atendimento,
         condicoes,
         prescricoes,
         estabelecimento,
