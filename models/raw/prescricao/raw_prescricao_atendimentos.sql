@@ -9,13 +9,6 @@
 }}
 
 select
-    {{
-    dbt_utils.generate_surrogate_key(
-            [
-                "id_atendimento",
-            ]
-        )
-    }} as id_hci,
     safe_cast(id_atendimento as int64) as id_atendimento,                         -- Identificador único do atendimento
     safe_cast(id_paciente as int64) as id_paciente,                               -- Identificador único do paciente
     safe_cast(crm as int64) as conselho_regional_medicina,                        -- CRM do médico responsável pelo atendimento

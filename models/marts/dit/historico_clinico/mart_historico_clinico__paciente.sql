@@ -143,7 +143,7 @@ with
             struct(
                 p.id_pcsm,
                 p.status_acompanhamento,
-                {{ proper_estabelecimento(process_null("u.nome_unidade")) }} as nome_unidade,
+                u.nome_unidade,
                 u.cnes,
                 u.telefones
             ) as saude_mental

@@ -3,20 +3,13 @@
         schema="brutos_prontuario_carioca_saude_mental",
         alias="atendimentos",
         materialized="table",
-        tags=["raw", "pcsm", "atendimentos", "daily"],
+        tags=["raw", "pcsm", "atendimentos"],
         description="Atendimentos simplificados realizados pela Prefeitura do Rio de Janeiro. O atendimento simplificado é um tipo de atendimento, não se encaixando em ambulatorial etc."
     )
 }}
 
 select
     safe_cast(seqatend as int64) as id_atendimento,
-    {{
-        dbt_utils.generate_surrogate_key(
-                [
-                    "seqatend",
-                ]
-            )
-        }} as id_hci,
     safe_cast(dtentrada as date) as data_entrada_atendimento,
     safe_cast(horaent as string) as hora_entrada_atendimento,
     safe_cast(dtsaida as date) as data_saida_atendimento,

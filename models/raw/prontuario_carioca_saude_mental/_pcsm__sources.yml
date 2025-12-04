@@ -34,20 +34,6 @@ sources:
       - name: gh_local
       - name: gh_tpatividades
       - name: gh_clinfamil_equipes
-      - name: gh_evoluamb
-      - name: gh_evoluadm
-      - name: gh_evoluadmsrt
-      - name: gh_evoluapoio
-      - name: gh_evoluarticula 
-      - name: gh_evoludialog
-      - name: gh_evolugrupo
-      - name: gh_evoluinstit
-      - name: gh_evoluinter
-      - name: gh_evolupac
-      - name: gh_evolureuniao 
-      - name: gh_evolusuperv
-      - name: gh_internacao
-      - name: gh_prof
       
   - name: brutos_prontuario_carioca_saude_mental
     database: rj-sms
