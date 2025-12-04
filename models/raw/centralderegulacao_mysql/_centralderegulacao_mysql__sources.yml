@@ -10,3 +10,4 @@ sources:
       - name: vw_minhaSaude_listaUsuario
       - name: vw_tea_relatorio
       - name: vw_minhasauderio_pesquisa_satisfacao
+      - name: vw_eletivas_sisare
