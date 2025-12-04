@@ -36,13 +36,12 @@ with
             desc_status as status,
             safe_cast(id_status as int64) as id_status,
 
-            safe_cast(split(hosp_origem, " - ") [offset(2)] as in64) as unidade_origem_ap,
-            upper(trim(split(hosp_origem, " - ") [offset(1)])) as unidade_origem,
-            safe_cast(split(hosp_origem, " - ") [offset(0)] as int64) as id_cnes_unidade_origem,
+            upper(trim(split(hosp_origem, "-") [offset(1)])) as unidade_origem,
+            safe_cast(split(hosp_origem, "-") [offset(0)] as int64) as id_cnes_unidade_origem,
 
-            safe_cast(data_entrada as date) as data_entrada,
-            safe_cast(ultima_movimentacao as timestamp) as data_atualizacao_registro,
-            safe_cast(data_particao date) as data_extracao
+            safe.parse_date('%d/%m/%Y', data_entrada) as data_entrada,
+            safe.parse_timestamp('%d/%m/%Y %H:%M:%S', ultima_movimentacao) as data_atualizacao_registro,
+            safe_cast(data_particao as date) as data_extracao
 
         from {{ source("brutos_centralderegulacao_mysql_staging", "vw_eletivas_sisare") }}
 
