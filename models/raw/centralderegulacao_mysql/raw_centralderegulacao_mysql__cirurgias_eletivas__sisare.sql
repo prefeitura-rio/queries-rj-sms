@@ -12,7 +12,7 @@
       "data_type": "date",
       "granularity": "month",
     },
-cluster_by = ['procedimento', 'id_cnes_unidade_origem', 'unidade_origem_ap'],
+cluster_by = ['procedimento', 'id_cnes_unidade_origem'],
 on_schema_change = 'sync_all_columns'
 )
 }}
