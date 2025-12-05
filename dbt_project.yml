@@ -289,7 +289,7 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
-      prontuario_carica_saude_mental:
+      prontuario_carioca_saude_mental:
         +schema: brutos_prontuario_carioca_saude_mental
         +tags: ["pcsm", "saude mental", "daily"]
         +labels:
