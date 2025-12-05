@@ -334,7 +334,7 @@ with
 
         from {{ ref("raw_siscan_web__laudos") }}
         where 1 = 1
-            and data_solicitacao >= "2025-01-01"
+            and data_solicitacao >= "2021-01-01"
     ),
 
     fatos as (
