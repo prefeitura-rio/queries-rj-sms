@@ -362,16 +362,8 @@ with
             ) as subtipo,
 
             -- Entrada e Saída
-            safe_cast(
-                if(datahora_inicio > current_date(),
-                    null,
-                    datahora_inicio) 
-                as date) as entrada_datahora,
-            safe_cast(
-                if(datahora_fim > current_date(),
-                null,
-                datahora_fim)
-                as date) as saida_datahora,
+            safe_cast(datahora_inicio as date) as entrada_datahora,
+            safe_cast(datahora_fim as date) as saida_datahora,
 
             -- Motivo e Desfecho
             upper(trim(soap_subjetivo_motivo)) as motivo_atendimento,
