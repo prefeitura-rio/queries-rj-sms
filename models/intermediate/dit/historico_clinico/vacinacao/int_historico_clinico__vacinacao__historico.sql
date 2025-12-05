@@ -77,8 +77,7 @@ with
         left join atendimento a
             on v.id_prontuario_global = a.id_prontuario_global
         left join paciente p
-            on a.id_local = p.id_local
-            and a.id_cnes = p.id_cnes
+            on a.id_cadastro = p.id_global
         left join estabelecimento e
             on v.id_cnes = e.id_cnes
     )
