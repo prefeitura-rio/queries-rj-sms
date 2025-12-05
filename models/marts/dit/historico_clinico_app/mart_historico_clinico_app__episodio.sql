@@ -125,6 +125,7 @@ with
                         'Acolhimento Noturno',
                         'Acolhimento em 3º turno',
                         'Convivência',
+                        'Coleta de Sinais Vitais',
                         'Morador de SRT',
                         'Moradia SRT - Registro'
                         'Registro UAA',

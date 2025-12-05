@@ -35,7 +35,7 @@ with
       array_agg(nome_medicamento) as continuous_use_medications
     from medicamentos_cronicos_single
     group by paciente_cpf
-  ),
+  )
 
 select
     base.cpf,
