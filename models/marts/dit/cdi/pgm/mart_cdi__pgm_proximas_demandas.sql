@@ -16,7 +16,7 @@ WITH base AS (
     TRIM(mandado_de_prisao) AS mandado_de_prisao,
     TRIM(crime_de_desobediencia) AS crime_de_desobediencia,
     TRIM(setor_responsavel) AS setor_responsavel
-  FROM {{ ref('int_cdi_pgm') }}
+  FROM {{ ref('int_cdi__pgm') }}
   WHERE prazo_dias IS NOT NULL
 ),
 

@@ -16,7 +16,7 @@ WITH base AS (
         crime_de_desobediencia,
         setor_responsavel
 
-    FROM {{ ref('int_cdi_pgm') }}
+    FROM {{ ref('int_cdi__pgm') }}
     WHERE data_de_entrada IS NOT NULL
 )
 

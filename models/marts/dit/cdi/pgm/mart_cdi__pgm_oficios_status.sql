@@ -14,5 +14,5 @@ SELECT
   COALESCE(TRIM(mandado_de_prisao), 'Não informado') AS mandado_de_prisao,
   COALESCE(TRIM(crime_de_desobediencia), 'Não informado') AS crime_de_desobediencia,
   COALESCE(TRIM(setor_responsavel), 'Não informado') AS setor_responsavel
-FROM {{ ref('int_cdi_pgm') }}
+FROM {{ ref('int_cdi__pgm') }}
 WHERE data_de_entrada IS NOT NULL
