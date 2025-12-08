@@ -33,8 +33,7 @@ agregado AS (
     ANY_VALUE(origem)              AS origem,
     ANY_VALUE(setor_responsavel)   AS setor_responsavel,
     ANY_VALUE(mandado_de_prisao)   AS mandado_de_prisao,
-    ANY_VALUE(crime_de_desobediencia) AS crime_de_desobediencia
-
+    ANY_VALUE(crime_de_desobediencia) AS crime_de_desobediencia,
     COUNT(DISTINCT processorio) AS total_demandas
 
   FROM base
