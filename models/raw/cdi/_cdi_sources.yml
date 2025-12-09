@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_cdi_staging
+    database: rj-sms
+    schema: brutos_cdi_staging
+    tables:
+      - name: judicial_residual
+      - name: pgm
