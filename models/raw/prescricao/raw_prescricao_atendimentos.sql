@@ -13,6 +13,8 @@ select
     dbt_utils.generate_surrogate_key(
             [
                 "id_atendimento",
+                "id_paciente",
+                "sequs"
             ]
         )
     }} as id_hci,

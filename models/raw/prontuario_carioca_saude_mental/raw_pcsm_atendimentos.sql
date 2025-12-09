@@ -14,6 +14,8 @@ select
         dbt_utils.generate_surrogate_key(
                 [
                     "seqatend",
+                    "seqpac",
+                    "sequs"
                 ]
             )
         }} as id_hci,
