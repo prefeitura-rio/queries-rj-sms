@@ -156,30 +156,26 @@ with
     ),
 
     -- Profissionais
+    profissionais_cbo as (
+        select 
+            cpf, 
+            cns,
+            dados_cbo.cbo as ocupacao
+        from {{ref('dim_profissional_saude')}} ps,
+        unnest(ps.cbo) as dados_cbo
+    ),
+
     profissionais as (
         select 
             id_profissional,
             id_unidade_saude,
             {{proper_br('nome')}} as nome_profissional,
-            cpf as cpf_profissional,
-            cns as cns_profissional,
+            p.cpf as cpf_profissional,
+            p.cns as cns_profissional,
             sigla_conselho,
-            case 
-                when sigla_conselho = 'CRM' then 'Médico'
-                when sigla_conselho = 'CRP' then 'Psicólogo'
-                when sigla_conselho = 'COREN' then 'Enfermeiro'
-                when sigla_conselho = 'CRESS' then 'Assistente Social'
-                when sigla_conselho = 'CRA' then 'Administrador'
-                when sigla_conselho = 'CRN' then 'Nutricionista'
-                when sigla_conselho = 'CRF' then 'Farmacêutico'
-                when sigla_conselho = 'CRO' then 'Odontólogo'
-                when sigla_conselho = 'CREFITO' then 'Fisioterapeuta/Terapeuta Ocupacional'
-                when sigla_conselho = 'CREFONO' then 'Fonoaudiólogo'
-                when sigla_conselho = 'CREF' then 'Educador Físico'
-                when sigla_conselho = 'OBM' then 'Músico'
-                else 'Ocupação Desconhecida'
-            end as especialidade_profissional
-        from {{ref('raw_pcsm_profissionais')}}
+            pc.ocupacao as especialidade_profissional
+        from {{ref('raw_pcsm_profissionais')}} p
+        left join profissionais_cbo pc on p.cpf = pc.cpf
     ),
 
     simplificado_final as (
@@ -322,6 +318,17 @@ with
         group by 1
     ),
 
+    profissionais_ambulatorial as (
+        select 
+            cpf_medico as cpf,
+            numero_crm as id,
+            nome_medico as nome,
+            pc.cns as cns,
+            pc.ocupacao
+        from {{ref('raw_prescricao_medicos')}}
+        left join profissionais_cbo pc on cpf_medico = pc.cpf
+    ),
+
     episodio_ambulatorial as (
         select 
             id_hci,
@@ -339,16 +346,16 @@ with
             ) as estabelecimento,
             -- profissional
             struct(
-                cast(a.crm as string) as id,
+                cast(pr.id as string) as id,
                 cast(a.medico_cpf as string) as cpf,
-                cast(null as string) as cns,
+                cast(pr.cns as string) as cns,
                 {{proper_br('nome_medico')}} as nome,
-                cast(null as string) as especialidade
+                pr.ocupacao as especialidade
             ) as profissional_saude_responsavel,
             -- prontuario
             struct(
                 cast(a.id_atendimento as string) as id_prontuario_global,
-                cast(a.id_atendimento as string) as id_prontuario_local,
+                cast(null as string) as id_prontuario_local,
                 'pcsm' as fornecedor
             ) as prontuario,
             -- metadados
@@ -361,6 +368,7 @@ with
         left join cid_grouped cg on a.id_paciente_global = cg.id_paciente
         left join prescricoes_ambulatorial_agg pa on a.id_atendimento = pa.id_atendimento
         left join {{ref('raw_pcsm_pacientes')}} p on a.id_paciente_global = p.id_paciente
+        left join profissionais_ambulatorial pr on a.medico_cpf = pr.cpf
     ), 
 
 merge_final as ( 
