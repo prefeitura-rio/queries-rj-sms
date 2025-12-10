@@ -1,55 +1,67 @@
 {{ 
     config(
-        materialized='table',
-        alias = "resultado_exame",
+        materialized = 'table',
+        alias        = "resultado_exame",
+        tags         = ["subpav", "sinanrio", "gal"],
+        partition_by = {
+            "field": "dt_resultado",
+            "data_type": "date"
+        },
+        cluster_by   = ["paciente_cns", "id_tipo_exame", "dt_resultado"]
     ) 
 }}
 
-WITH base AS (
-    SELECT
-        NULLIF(REGEXP_REPLACE(
-        CASE
-            WHEN REGEXP_CONTAINS(UPPER(tipo_doc_paciente_1), r'CPF') THEN documento_paciente_1
-            WHEN REGEXP_CONTAINS(UPPER(tipo_doc_paciente_2), r'CPF') THEN documento_paciente_2
-            ELSE NULL
-        END, r'\D', ''), ''
-        ) AS paciente_cpf,
+with base as (
+    select
+        nullif(
+            regexp_replace(
+                case
+                    when regexp_contains(upper(tipo_doc_paciente_1), r'CPF') then documento_paciente_1
+                    when regexp_contains(upper(tipo_doc_paciente_2), r'CPF') then documento_paciente_2
+                    else null
+                end,
+                r'\D',
+                ''
+            ),
+            ''
+        ) as paciente_cpf,
 
-        REGEXP_REPLACE(cns_paciente, r'\D', '') AS paciente_cns,
-        UPPER(paciente) as nome,
-        NULLIF(TRIM(codigo_amostra), '') AS codigo_amostra,
+        regexp_replace(cns_paciente, r'\D', '') as paciente_cns,
+        upper(paciente)                         as nome,
+        nullif(trim(codigo_amostra), '')        as codigo_amostra,
 
-        COALESCE(
-        NULLIF(TRIM(cnes_unidade_solicitante), ''),
-        NULLIF(TRIM(cnes_unidade_notificacao_sinan), ''),
-        NULLIF(TRIM(cnes_laboratorio_execucao), ''),
-        NULLIF(TRIM(cnes_laboratorio_responsavel), ''),
-        NULLIF(TRIM(cnes_laboratorio_cadastro), '')
-        ) AS cnes,
+        coalesce(
+            nullif(trim(cnes_unidade_solicitante), ''),
+            nullif(trim(cnes_unidade_notificacao_sinan), ''),
+            nullif(trim(cnes_laboratorio_execucao), ''),
+            nullif(trim(cnes_laboratorio_responsavel), ''),
+            nullif(trim(cnes_laboratorio_cadastro), '')
+        ) as cnes,
 
-        CASE
-        WHEN tipo_exame = 'tugexp-pcrtr' THEN 1
-        WHEN tipo_exame = 'tubb-colzn'  THEN 2
-        END AS id_tipo_exame,
+        case
+            when tipo_exame = 'tugexp-pcrtr' then 1
+            when tipo_exame = 'tubb-colzn'  then 2
+        end as id_tipo_exame,
 
-        COALESCE(
-        COALESCE(SAFE.PARSE_DATE('%d/%m/%Y', data_liberacao),         SAFE.PARSE_DATE('%Y-%m-%d', data_liberacao),         SAFE.PARSE_DATE('%d-%m-%Y', data_liberacao)),
-        COALESCE(SAFE.PARSE_DATE('%d/%m/%Y', data_processamento),     SAFE.PARSE_DATE('%Y-%m-%d', data_processamento),     SAFE.PARSE_DATE('%d-%m-%Y', data_processamento)),
-        COALESCE(SAFE.PARSE_DATE('%d/%m/%Y', data_inicio_processamento), SAFE.PARSE_DATE('%Y-%m-%d', data_inicio_processamento), SAFE.PARSE_DATE('%d-%m-%Y', data_inicio_processamento)),
-        COALESCE(SAFE.PARSE_DATE('%d/%m/%Y', data_recebimento),       SAFE.PARSE_DATE('%Y-%m-%d', data_recebimento),       SAFE.PARSE_DATE('%d-%m-%Y', data_recebimento)),
-        COALESCE(SAFE.PARSE_DATE('%d/%m/%Y', data_solicitacao),       SAFE.PARSE_DATE('%Y-%m-%d', data_solicitacao),       SAFE.PARSE_DATE('%d-%m-%Y', data_solicitacao))
-        ) AS dt_resultado,
+        coalesce(
+            coalesce(safe.parse_date('%d/%m/%Y', data_liberacao),         safe.parse_date('%Y-%m-%d', data_liberacao),         safe.parse_date('%d-%m-%Y', data_liberacao)),
+            coalesce(safe.parse_date('%d/%m/%Y', data_processamento),     safe.parse_date('%Y-%m-%d', data_processamento),     safe.parse_date('%d-%m-%Y', data_processamento)),
+            coalesce(safe.parse_date('%d/%m/%Y', data_inicio_processamento), safe.parse_date('%Y-%m-%d', data_inicio_processamento), safe.parse_date('%d-%m-%Y', data_inicio_processamento)),
+            coalesce(safe.parse_date('%d/%m/%Y', data_recebimento),       safe.parse_date('%Y-%m-%d', data_recebimento),       safe.parse_date('%d-%m-%Y', data_recebimento)),
+            coalesce(safe.parse_date('%d/%m/%Y', data_solicitacao),       safe.parse_date('%Y-%m-%d', data_solicitacao),       safe.parse_date('%d-%m-%Y', data_solicitacao))
+        ) as dt_resultado,
 
-        UPPER(tugexp_pcrtr.dna_para_complexo_mycobacterium_tuberculosis) AS pcr_dna,
-        UPPER(tugexp_pcrtr.rifampicina)                                  AS pcr_rif,
-        UPPER(tubb_colzn.resultado)                                      AS ziehl_res,
+        upper(tugexp_pcrtr.dna_para_complexo_mycobacterium_tuberculosis) as pcr_dna,
+        upper(tugexp_pcrtr.rifampicina)                                  as pcr_rif,
+        upper(tubb_colzn.resultado)                                      as ziehl_res,
 
         loaded_at
-    FROM {{ ref('raw_gal__exames_laboratoriais') }}
-    WHERE tipo_exame IN ('tugexp-pcrtr','tubb-colzn')
+    from {{ ref('raw_gal__exames_laboratoriais') }}
+    where tipo_exame in ('tugexp-pcrtr','tubb-colzn')
 ),
-classificado AS (
-    SELECT
+
+classificado as (
+    select
         codigo_amostra,
         paciente_cpf,
         paciente_cns,
@@ -57,49 +69,49 @@ classificado AS (
         cnes,
         id_tipo_exame,
         dt_resultado,
-        CASE
-        WHEN id_tipo_exame = 1 THEN
-            CASE
-            WHEN REGEXP_CONTAINS(pcr_dna, r'N[ÃA]O\s*TESTA') THEN 5
-            WHEN REGEXP_CONTAINS(pcr_dna, r'N[ÃA]O\s*DETEC') THEN 3
-            WHEN REGEXP_CONTAINS(pcr_dna, r'INCONCLUS|INDETERMIN') THEN 4
-            WHEN REGEXP_CONTAINS(pcr_dna, r'DETEC') AND REGEXP_CONTAINS(pcr_dna, r'TRA[ÇC]') THEN 4
-            WHEN REGEXP_CONTAINS(pcr_dna, r'DETEC') THEN
-                CASE
-                WHEN REGEXP_CONTAINS(pcr_rif, r'RESIST') THEN 2
-                WHEN pcr_rif IS NULL OR TRIM(pcr_rif) = '' OR REGEXP_CONTAINS(pcr_rif, r'SENSI|SUSCET|INDETERMIN') THEN 1
-                ELSE 1
-                END
-            ELSE NULL
-            END
-        WHEN id_tipo_exame = 2 THEN
-            CASE
-                -- precedência: +++ > ++ > + (exatamente um)
-                WHEN REGEXP_CONTAINS(ziehl_res, r'\+{3}') THEN 1
-                WHEN REGEXP_CONTAINS(ziehl_res, r'\+{2}') THEN 5
-                WHEN REGEXP_CONTAINS(ziehl_res, r'\+') AND NOT REGEXP_CONTAINS(ziehl_res, r'\+{2,}') THEN 4
 
-                -- "Encontrado(s) N B.A.A.R." (N >= 1)
-                WHEN REGEXP_CONTAINS(ziehl_res, r'ENCONTRAD[OA]S?\s+\b[1-9][0-9]*\b\s+B\.A\.A\.R') THEN 4
+        case
+            when id_tipo_exame = 1 then
+                case
+                    when regexp_contains(pcr_dna, r'N[ÃA]O\s*TESTA') then 5
+                    when regexp_contains(pcr_dna, r'N[ÃA]O\s*DETEC') then 3
+                    when regexp_contains(pcr_dna, r'INCONCLUS|INDETERMIN') then 4
+                    when regexp_contains(pcr_dna, r'DETEC') and regexp_contains(pcr_dna, r'TRA[ÇC]') then 4
+                    when regexp_contains(pcr_dna, r'DETEC') then
+                        case
+                            when regexp_contains(pcr_rif, r'RESIST') then 2
+                            when pcr_rif is null
+                                or trim(pcr_rif) = ''
+                                or regexp_contains(pcr_rif, r'SENSI|SUSCET|INDETERMIN') then 1
+                            else 1
+                        end
+                    else null
+                end
 
-                -- "Positiva ..." sem "+" explícito
-                WHEN REGEXP_CONTAINS(ziehl_res, r'\bPOSITIV') AND NOT REGEXP_CONTAINS(ziehl_res, r'\+') THEN 4
+            when id_tipo_exame = 2 then
+                case
+                    when regexp_contains(ziehl_res, r'\+{3}') then 1
+                    when regexp_contains(ziehl_res, r'\+{2}') then 5
+                    when regexp_contains(ziehl_res, r'\+') and not regexp_contains(ziehl_res, r'\+{2,}') then 4
 
-                -- negativos (variações vistas no GAL)
-                WHEN REGEXP_CONTAINS(ziehl_res, r'AUS[ÊE]NCIA\s+DE\s+B\.A\.A\.R')
-                    OR REGEXP_CONTAINS(ziehl_res, r'ENCONTRAD[OA]S?\s+\b0\b\s+B\.A\.A\.R')
-                    OR REGEXP_CONTAINS(ziehl_res, r'\bNEGATIV') THEN 2
+                    when regexp_contains(ziehl_res, r'ENCONTRAD[OA]S?\s+\b[1-9][0-9]*\b\s+B\.A\.A\.R') then 4
+                    when regexp_contains(ziehl_res, r'\bPOSITIV') and not regexp_contains(ziehl_res, r'\+') then 4
 
-                -- presença textual de BAAR sem graduação
-                WHEN REGEXP_CONTAINS(ziehl_res, r'PRESEN[ÇC]A.*B\.A\.A\.R') THEN 4
-                ELSE NULL
-            END
-        END AS id_resultado,
+                    when regexp_contains(ziehl_res, r'AUS[ÊE]NCIA\s+DE\s+B\.A\.A\.R')
+                        or regexp_contains(ziehl_res, r'ENCONTRAD[OA]S?\s+\b0\b\s+B\.A\.A\.R')
+                        or regexp_contains(ziehl_res, r'\bNEGATIV') then 2
+
+                    when regexp_contains(ziehl_res, r'PRESEN[ÇC]A.*B\.A\.A\.R') then 4
+                    else null
+                end
+        end as id_resultado,
+
         loaded_at
-    FROM base
+    from base
 ),
-dedup AS (
-    SELECT
+
+exames_dedup as (
+    select
         codigo_amostra,
         paciente_cpf,
         paciente_cns,
@@ -108,13 +120,57 @@ dedup AS (
         id_tipo_exame,
         id_resultado,
         dt_resultado,
-        ROW_NUMBER() OVER (
-            PARTITION BY paciente_cns, id_tipo_exame, dt_resultado
-            ORDER BY loaded_at DESC
-        ) AS rn
-    FROM classificado
+        row_number() over (
+            partition by paciente_cns, id_tipo_exame, dt_resultado
+            order by loaded_at desc
+        ) as rn
+    from classificado
+),
+
+exames_filtrados as (
+    select
+        codigo_amostra,
+        paciente_cpf,
+        paciente_cns,
+        nome,
+        cnes,
+        id_tipo_exame,
+        id_resultado,
+        dt_resultado
+    from exames_dedup
+    where dt_resultado  is not null
+        and id_tipo_exame is not null
+        and id_resultado  is not null
+        and regexp_contains(paciente_cns, r'^\d{15}$')
+        and paciente_cns <> '000000000000000'
+        and rn = 1
+),
+
+notificacao as (
+    select
+        nu_cartao_sus,
+        dt_notificacao,
+        dt_encerramento,
+        co_cid,
+        tp_classificacao_final
+    from {{ ref("mart_subpav_sinanrio__notificacao") }}
+),
+
+exames_com_notif as (
+    select
+        e.*,
+        case
+            when n.nu_cartao_sus is not null then 1
+            else 0
+        end as notificacao_ativa
+    from exames_filtrados e
+    left join notificacao n
+        on e.paciente_cns = n.nu_cartao_sus
+        and n.dt_notificacao <= e.dt_resultado
+        and (n.dt_encerramento is null or n.dt_encerramento >= e.dt_resultado)
 )
-SELECT
+
+select
     codigo_amostra,
     paciente_cpf,
     paciente_cns,
@@ -123,11 +179,9 @@ SELECT
     id_tipo_exame,
     id_resultado,
     dt_resultado,
-    diagnostico -- Verificar se é diagnostico ou acompanhamento (1 = diagnostco e 0 não)
-FROM dedup
-WHERE dt_resultado IS NOT NULL
-    AND id_tipo_exame IS NOT NULL
-    AND id_resultado IS NOT NULL
-    AND REGEXP_CONTAINS(paciente_cns, r'^\d{15}$')
-    AND paciente_cns <> '000000000000000'
-    AND rn = 1
+    notificacao_ativa,
+    case
+        when notificacao_ativa = 1 then 0  -- acompanhamento
+        else 1                             -- diagnóstico
+    end as diagnostico
+from exames_com_notif

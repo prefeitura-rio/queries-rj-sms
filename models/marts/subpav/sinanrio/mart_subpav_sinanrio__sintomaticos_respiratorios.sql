@@ -1,7 +1,7 @@
 {{ 
     config(
-        materialized='table',
-        alias = "sintomaticos_respiratorios_dia",
+        materialized = 'table',
+        alias        = "sintomaticos_respiratorios_dia"
     ) 
 }}
 
@@ -21,19 +21,19 @@ episodios_ontem_base as (
         data_particao
     from {{ ref('mart_historico_clinico__episodio') }}
     where paciente_cpf is not null
-        and data_particao = '{{ ontem }}'
+      and data_particao = '{{ ontem }}'
 ),
 
 episodios_filtrados as (
     select e.*
     from episodios_ontem_base e
     where e.condicoes is not null
-        and exists (
-        select 1
-        from unnest(e.condicoes) cid
-        where substr(regexp_replace(upper(cid.id), r'\.', ''), 1, 4)
-            in unnest({{ sinanrio_lista_cids_sintomaticos() }})
-        )
+      and exists (
+          select 1
+          from unnest(e.condicoes) cid
+          where substr(regexp_replace(upper(cid.id), r'\.', ''), 1, 4)
+              in unnest({{ sinanrio_lista_cids_sintomaticos() }})
+      )
 ),
 
 cpfs_sintomaticos as (
@@ -43,7 +43,8 @@ cpfs_sintomaticos as (
 cpfs_sintomaticos_int as (
     select distinct safe_cast(cpf as int64) as cpf_particao
     from cpfs_sintomaticos
-    where cpf is not null and regexp_contains(cpf, r'^\d+$')
+    where cpf is not null
+      and regexp_contains(cpf, r'^\d+$')
 ),
 
 cadastros_de_paciente as (
@@ -56,50 +57,49 @@ cadastros_de_paciente as (
         p.dados.raca                          as raca,
         {{ sinanrio_padronize_raca_cor('p.dados.raca') }} as id_raca_cor,
         (
-        select c
-        from unnest(p.cns) c with offset off
-        order by 
-            case
-            when regexp_contains(c, r'^\d{15}$') and substr(c,1,1) = '7' then 1
-            when regexp_contains(c, r'^\d{15}$') and substr(c,1,1) in ('1','2') then 2
-            when regexp_contains(c, r'^\d{15}$') and substr(c,1,1) = '8' then 3
-            when regexp_contains(c, r'^\d{15}$') then 4
-            else 9
-            end,
-            off
-        limit 1
+            select c
+            from unnest(p.cns) c with offset off
+            order by 
+                case
+                    when regexp_contains(c, r'^\d{15}$') and substr(c,1,1) = '7' then 1
+                    when regexp_contains(c, r'^\d{15}$') and substr(c,1,1) in ('1','2') then 2
+                    when regexp_contains(c, r'^\d{15}$') and substr(c,1,1) = '8' then 3
+                    when regexp_contains(c, r'^\d{15}$') then 4
+                    else 9
+                end,
+                off
+            limit 1
         ) as cns,
         (
-        select as struct t.valor as telefone
-        from unnest(p.contato.telefone) t
-        order by t.rank
-        limit 1
+            select as struct t.valor as telefone
+            from unnest(p.contato.telefone) t
+            order by t.rank
+            limit 1
         ).telefone as telefone,
         (
-        select as struct
-            e.cep               as endereco_cep,
-            e.tipo_logradouro   as endereco_tipo_logradouro,
-            e.logradouro        as endereco_logradouro,
-            e.numero            as endereco_numero,
-            e.complemento       as endereco_complemento,
-            e.bairro            as endereco_bairro,
-            e.cidade            as endereco_cidade,
-            e.datahora_ultima_atualizacao
-        from unnest(p.endereco) e
-        order by e.datahora_ultima_atualizacao desc nulls last
-        limit 1
+            select as struct
+                e.cep               as endereco_cep,
+                e.tipo_logradouro   as endereco_tipo_logradouro,
+                e.logradouro        as endereco_logradouro,
+                e.numero            as endereco_numero,
+                e.complemento       as endereco_complemento,
+                e.bairro            as endereco_bairro,
+                e.cidade            as endereco_cidade,
+                e.datahora_ultima_atualizacao
+            from unnest(p.endereco) e
+            order by e.datahora_ultima_atualizacao desc nulls last
+            limit 1
         ) as endr,
         (
-        select as struct
-            pr.id_cnes     as cnes,
-            pr.id_paciente as n_prontuario,
-            pr.rank        as rank
-        from unnest(p.prontuario) pr
-        order by pr.rank
-        limit 1
+            select as struct
+                pr.id_cnes     as cnes,
+                pr.id_paciente as n_prontuario,
+                pr.rank        as rank
+            from unnest(p.prontuario) pr
+            order by pr.rank
+            limit 1
         ) as prt,
         (select ef.id_ine from unnest(p.equipe_saude_familia) ef limit 1) as ine
-
     from {{ ref('mart_historico_clinico__paciente') }} p
     join cpfs_sintomaticos     cs  on cs.cpf = p.cpf
     join cpfs_sintomaticos_int csi on csi.cpf_particao = p.cpf_particao
@@ -128,6 +128,7 @@ cadastros_de_paciente_norm as (
         c.prt.n_prontuario               as n_prontuario
     from cadastros_de_paciente c
 ),
+
 cadastros_com_bairro as (
     select
         n.*,
@@ -157,38 +158,59 @@ preferencias as (
         coalesce(au.estabelecimento.id_cnes, au.cnes) as cnes_final,
 
         coalesce(
-        json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.equipe.id_ine'),
-        au.ine
+            json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.equipe.id_ine'),
+            au.ine
         ) as ine_final,
 
         au.n_prontuario as n_prontuario_final,
 
         coalesce(
-        json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.estabelecimento.id_cnes'),
-        json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.id_cnes'),
-        au.estabelecimento.id_cnes
+            json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.estabelecimento.id_cnes'),
+            json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.id_cnes'),
+            au.estabelecimento.id_cnes
         ) as cnes_cadastrante_final,
 
         coalesce(
-        json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.cpf'),
-        json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.id_cpf')
+            json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.cpf'),
+            json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.id_cpf')
         ) as cpf_cadastrante_final,
 
         coalesce(
-        json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.cns'),
-        json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.id_cns')
+            json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.cns'),
+            json_extract_scalar(to_json_string(au.profissional_saude_responsavel), '$.id_cns')
         ) as cns_cadastrante_final,
 
         case
-        when au.id_bairro is not null then 0
-        when au.endereco_cidade is null then 0
-        when {{ clean_name_string("au.endereco_cidade") }} like '%RIO DE JANEIRO%' then 0
-        else 1
+            when au.id_bairro is not null then 0
+            when au.endereco_cidade is null then 0
+            when {{ clean_name_string("au.endereco_cidade") }} like '%RIO DE JANEIRO%' then 0
+            else 1
         end as nao_municipe_final,
 
         row_number() over (partition by au.cpf_pessoa order by au.saida_datahora desc) as rn
     from atendimentos_enriquecidos au
+),
+
+preferencias_filtrado as (
+    select
+        p.*
+    from preferencias p
+    left join {{ ref("raw_plataforma_subpav_sinanrio__tb_sintomatico") }} s
+        on (
+            regexp_replace(p.cpf_pessoa, r'\D', '') != ''
+            and regexp_replace(p.cpf_pessoa, r'\D', '') = regexp_replace(s.cpf, r'\D', '')
+        )
+        or (
+            p.cns is not null
+            and regexp_replace(p.cns, r'\D', '') != ''
+            and regexp_replace(p.cns, r'\D', '') = regexp_replace(s.cns, r'\D', '')
+        )
+    where
+        p.rn = 1
+        and s.cpf is null
+        and s.cns is null
 )
+
 
 select
     cpf_pessoa                                  as cpf,
@@ -217,5 +239,4 @@ select
     cns_cadastrante_final                       as cns_cadastrante,
     1                                           as id_tb_situacao,
     prontuario_fornecedor                       as origem
-from preferencias
-where rn = 1
+from preferencias_filtrado
