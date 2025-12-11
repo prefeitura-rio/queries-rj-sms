@@ -6,18 +6,18 @@
 
 WITH base AS (
   SELECT
-    {{ normalize_null("regexp_replace(trim(processorio), r'[\\n\\r]', '')") }} AS processorio,
+    {{ normalize_null("regexp_replace(trim(processorio___sei), r'[\\n\\r]', '')") }} AS processorio,
     {{ normalize_null("regexp_replace(trim(procuradora), r'[\\n\\r\\t]+', '')") }} AS procuradora,
     {{ normalize_null("regexp_replace(trim(requerente), r'[\\n\\r\\t]+', '')") }} AS requerente,
     {{ normalize_null("regexp_replace(trim(processo_judicial), r'[\\n\\r]', '')") }} AS processo_judicial,
     {{ normalize_null("regexp_replace(trim(origem), r'[\\n\\r\\t]+', '')") }} AS origem,
 
     -- Datas
-    {{ cdi_parse_date('data_de_entrada', 'processorio', 'processo_judicial') }} AS data_de_entrada,
-    {{ cdi_parse_date('data_de_saida', 'processorio', 'processo_judicial') }} AS data_de_saida,
-    {{ cdi_parse_date('data_de_saida_para_pgm', 'processorio', 'processo_judicial') }} AS data_de_saida_para_pgm,
-    {{ cdi_parse_date('prazo', 'processorio', 'processo_judicial') }} AS prazo,
-    {{ cdi_parse_date('mes_ano', 'processorio', 'processo_judicial') }} AS mes_ano,
+    {{ cdi_parse_date('data_de_entrada', 'processorio___sei', 'processo_judicial') }} AS data_de_entrada,
+    {{ cdi_parse_date('data_de_saida', 'processorio___sei', 'processo_judicial') }} AS data_de_saida,
+    {{ cdi_parse_date('data_de_saida_para_pgm', 'processorio___sei', 'processo_judicial') }} AS data_de_saida_para_pgm,
+    {{ cdi_parse_date('prazo', 'processorio___sei', 'processo_judicial') }} AS prazo,
+    {{ cdi_parse_date('mes_ano', 'processorio___sei', 'processo_judicial') }} AS mes_ano,
     trim({{ normalize_null('sexo') }}) AS sexo,
     {{ normalize_null('idade') }} AS idade,
 

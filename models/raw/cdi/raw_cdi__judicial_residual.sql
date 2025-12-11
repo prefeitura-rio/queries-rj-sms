@@ -7,18 +7,18 @@
 with base as (
   select
 
-    {{ normalize_null("regexp_replace(trim(processo_rio), r'[\\n\\r]', '')") }} as processo_rio,
+    {{ normalize_null("regexp_replace(trim(processo_rio___sei), r'[\\n\\r]', '')") }} as processo_rio,
     {{ normalize_null("upper(regexp_replace(trim(mrj_e_parte), r'[\\n\\r\\t]+', ''))") }} as mrj_e_parte,
     {{ normalize_null('oficio') }}                                              as oficio,
 
     -- Formata datas que vem com erro de digitacao
-    {{ cdi_parse_date('data','processo_rio','oficio') }}  AS data,
-    {{ cdi_parse_date('entrada_gat_3','processo_rio','oficio') }} AS entrada_gat_3,
-    {{ cdi_parse_date('vencimento','processo_rio','oficio') }} AS vencimento,
-    {{ cdi_parse_date('retorno','processo_rio','oficio') }} AS retorno,
-    {{ cdi_parse_date('data_de_saida','processo_rio','oficio') }} AS data_de_saida,
-    {{ cdi_parse_date('data_do_oficio','processo_rio','oficio') }} AS data_do_oficio,
-    {{ cdi_parse_date('pg_pas_dta_sfc','processo_rio','oficio') }} AS pg_pas_dta_sfc,
+    {{ cdi_parse_date('data','processo_rio___sei','oficio') }}  AS data,
+    {{ cdi_parse_date('entrada_gat_3','processo_rio___sei','oficio') }} AS entrada_gat_3,
+    {{ cdi_parse_date('vencimento','processo_rio___sei','oficio') }} AS vencimento,
+    {{ cdi_parse_date('retorno','processo_rio___sei','oficio') }} AS retorno,
+    {{ cdi_parse_date('data_de_saida','processo_rio___sei','oficio') }} AS data_de_saida,
+    {{ cdi_parse_date('data_do_oficio','processo_rio___sei','oficio') }} AS data_do_oficio,
+    {{ cdi_parse_date('pg_pas_dta_sfc','processo_rio___sei','oficio') }} AS pg_pas_dta_sfc,
 
     {{ normalize_null('orgao') }}                                               as orgao,
     {{ normalize_null('processo') }}                                            as processo,
