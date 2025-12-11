@@ -2,7 +2,7 @@
 {{
   config(
     enabled=true,
-    schema="ser_matabase",
+    schema="brutos_ser_metabase",
     alias="internacoes",
     materialized='incremental',
     incremental_strategy='merge',
