@@ -405,11 +405,31 @@ merge_final as (
         prontuario,
         metadados
     from episodio_ambulatorial
+),
+
+deduplicated as (
+    select 
+        *,
+        row_number() over (partition by id_hci order by metadados.imported_at desc) as rn
+    from merge_final
 )
 
-
 select 
-    *,
+    id_hci,
+    cpf,
+    id_paciente,
+    tipo,
+    subtipo,
+    entrada_datahora,
+    saida_datahora,
+    desfecho_atendimento,
+    condicoes,
+    prescricoes,
+    estabelecimento,
+    profissional_saude_responsavel,
+    prontuario,
+    metadados,
     cast(cpf as int64) as cpf_particao,
     cast(entrada_datahora as date) as data_particao
-from merge_final
+from deduplicated
+where rn = 1
