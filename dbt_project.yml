@@ -368,9 +368,9 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      cientificalab:
-        +schema: brutos_cientificalab
-        +tags: ["cientificalab"]
+      exames_laboratoriais:
+        +schema: brutos_exames_laboratoriais
+        +tags: ["exames_laboratoriais"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -419,6 +419,8 @@ models:
             dominio: historico_clinico
           paciente:
             +tags: ["paciente"]
+          exames:
+            +tags: ['exames_laboratoriais']
         cadastro:
           +tags: ["cadastro", "weekly"]
           +schema: intermediario_cadastro

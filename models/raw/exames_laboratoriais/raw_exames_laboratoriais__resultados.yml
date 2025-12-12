@@ -6,11 +6,11 @@ models:
     columns:
       - name: id
         description: Identificador único do resultado de um exame.
-      - name: exame_id
+      - name: id_exame
         description: Chave estrangeira que vincula o resultado ao registro de exame correspondente.
-      - name: cod_lis
+      - name: codigo_lis
         description: Código do resultado no sistema LIS (Laboratory Information System).
-      - name: cod_apoio
+      - name: codigo_apoio
         description: Código do resultado no sistema de apoio.
       - name: descricao_apoio
         description: Descrição do resultado no sistema de apoio.
@@ -32,5 +32,5 @@ models:
         description: Valor máximo aceitável para a faixa de referência do exame.
       - name: loaded_at
         description: Data e hora em que o registro foi carregado no datalake.
-      - name: processed_at
-        description: Timestamp indicando quando o registro foi processado.
+      - name: origem
+        description: Nome da origem da solicitação (e.g., cientificalab, biomega).

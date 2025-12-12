@@ -6,18 +6,22 @@ models:
     columns:
       - name: id
         description: Identificador único da solicitação de exame.
-      - name: cod_lis
-        description: Código da solicitação no sistema LIS (Laboratory Information System).
-      - name: cod_apoio
+      - name: codigo_lis
+        description: Código da solicitação no sistema LIS 
+      - name: codigo_apoio
         description: Código da solicitação no sistema de apoio.
-      - name: cod_unidade
+      - name: laudo_url
+        description: Url do laudo do exame
+      - name: area_programatica
+        description: Área da unidade
+      - name: codigo_unidade
         description: Código da unidade que fez a solicitação.
       - name: unidade
         description: Nome da unidade que fez a solicitação.
-      - name: cod_origem
+      - name: codigo_origem
         description: Código da origem da solicitação.
       - name: origem
-        description: Nome da origem da solicitação (e.g., laboratório, clínica).
+        description: Nome da origem da solicitação (e.g., cientificalab, biomega).
       - name: datahora_pedido
         description: Data e hora em que a solicitação foi registrada.
       - name: autorizacao
@@ -36,7 +40,7 @@ models:
         description: Nome do responsável técnico.
         policy_tags:
           - '{{ var("TAG_NOME") }}'
-      - name: paciente_cod_lis
+      - name: paciente_codigo_lis
         description: Código do paciente no sistema LIS.
         policy_tags:
           - '{{ var("TAG_DADO_CLINICO") }}'
@@ -44,7 +48,7 @@ models:
         description: Nome completo do paciente.
         policy_tags:
           - '{{ var("TAG_NOME") }}'
-      - name: paciente_nascimento
+      - name: paciente_data_nascimento
         description: Data de nascimento do paciente.
         policy_tags:
           - '{{ var("TAG_DATA_NASCIMENTO") }}'
@@ -74,5 +78,3 @@ models:
         description: Origem do lote no LIS.
       - name: loaded_at
         description: Data e hora em que o registro foi carregado no datalake.
-      - name: processed_at
-        description: Timestamp indicando quando o registro foi processado.

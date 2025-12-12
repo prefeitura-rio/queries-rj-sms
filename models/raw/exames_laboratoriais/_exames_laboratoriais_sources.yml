@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: brutos_exames_laboratoriais_staging
+    database: rj-sms-dev
+    schema: brutos_exames_laboratoriais_staging
+    tables:
+    - name: solicitacoes
+      loaded_at_field: "CAST(loaded_at AS TIMESTAMP)"
+      freshness:
+        warn_after: {count: 24, period: hour}
+        error_after: {count: 48, period: hour}
+    - name: exames
+      loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      freshness:
+        warn_after: {count: 24, period: hour}
+        error_after: {count: 48, period: hour}
+    - name: resultados
+      loaded_at_field: "CAST(loaded_at AS TIMESTAMP)"
+      freshness:
+        warn_after: {count: 24, period: hour}
+        error_after: {count: 48, period: hour}

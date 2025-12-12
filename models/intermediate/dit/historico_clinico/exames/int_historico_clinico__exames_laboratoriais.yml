@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: int_historico_clinico__exames__cientificalab
+  - name: int_historico_clinico__exames_laboratoriais
     description: Informações sobre exames laboratoriais
     columns:
       - name: paciente_cpf

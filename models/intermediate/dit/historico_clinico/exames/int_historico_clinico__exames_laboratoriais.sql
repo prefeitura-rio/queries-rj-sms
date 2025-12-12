@@ -1,8 +1,13 @@
 {{
     config(
+        alias="exames_laboratoriais",
         schema="intermediario_historico_clinico",
-        alias="exames_cientificalab",
         materialized="table",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
@@ -13,20 +18,19 @@ with
             paciente_cpf,
             -- Remove "SMS RIO" do início do nome da unidade
             REGEXP_REPLACE(
-                origem,
+                unidade,
                 r"(?i)^SMS\s+(RIO)?\s*",
                 ""
             ) as unidade_nome,
             laudo_url,
-            -- datahora_pedido é TIMESTAMP; converte pra DATETIME
-            DATETIME(datahora_pedido, "America/Sao_Paulo") as datahora_pedido
-        from {{ ref('raw_cientificalab__solicitacoes') }}
+            datahora_pedido
+        from {{ ref('raw_exames_laboratoriais__solicitacoes') }}
     ),
 
     exame as (
         select
-            solicitacao_id,
-            cod_apoio as codigo_apoio,
+            id_solicitacao as solicitacao_id,
+            codigo_apoio,
             -- Conserta casos como o seguinte:
             -- "&lt;i&gt;ANDRE FILIPE PEREIRA DE OLIVEIRA SOARES (SMS CF MAESTRO CELES"
             -- 1) Remove '&lt;i&gt;' (<i> escapado)
@@ -39,12 +43,13 @@ with
                 ),
                 " (SMS"
             )[safe_offset(0)] as medico_solicitante,
-            SAFE.PARSE_DATETIME("%d/%m/%Y %H:%M:%S", data_assinatura) as datahora_assinatura
-        from {{ ref('raw_cientificalab__exames') }}
+            data_assinatura as datahora_assinatura
+        from {{ ref('raw_exames_laboratoriais__exames') }}
     ),
 
     exames_com_resultados as (
         select
+            s.id as id_solicitacao,
             s.paciente_cpf,
             -- Adiciona acentuação ao nome da unidade, capitalização adequada
             {{ proper_estabelecimento(add_accents_estabelecimento("s.unidade_nome")) }} as unidade_nome,
@@ -81,6 +86,7 @@ with
         select
             ex.*,
             cod.exame as exame_nome,
+            safe_cast(paciente_cpf as int64) as cpf_particao
         from exame_deduplicado as ex
         left join codigos_exames as cod
             on ex.codigo_apoio = cod.codigo
