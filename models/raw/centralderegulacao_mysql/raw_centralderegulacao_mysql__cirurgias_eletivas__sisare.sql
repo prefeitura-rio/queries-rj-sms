@@ -18,13 +18,6 @@ on_schema_change = 'sync_all_columns'
 }}
 
 with
-
-    {% if is_incremental() %}
-    max_data_extracao as (
-        select max(data_extracao) from {{ this }}
-    ),
-    {% endif %}
-
     source as (
         select
             safe_cast(cns_pac as int64) as paciente_cns,
@@ -45,10 +38,12 @@ with
 
         from {{ source("brutos_centralderegulacao_mysql_staging", "vw_eletivas_sisare") }}
 
-            {% if is_incremental() %}
+        {% if is_incremental() %}
         where 1 = 1
-            and safe_cast(data_particao as date) >= (select max_data_extracao from max_data_extracao)
-            {% endif %}
+            and safe_cast(data_particao as date) >= (
+                select max(data_extracao) from {{ this }}
+            )
+        {% endif %}
     )
 
 select
