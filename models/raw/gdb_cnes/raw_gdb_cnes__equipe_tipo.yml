@@ -1,0 +1,20 @@
+version: 2
+models:
+  - name: raw_gdb_cnes__equipe_tipo
+    description: |-
+      Relação dos tipos de equipes das unidades de saúde
+      Arquivo CNES: NFCES046
+      Granularidade: Tipo de equipe
+    columns:
+      - name: id_equipe_tipo
+        description: Código de tipo da equipe
+      - name: equipe_descricao
+        description: Descrição do tipo da equipe
+      - name: id_equipe_grupo
+        description: Código de tipo de grupo da equipe
+      - name: data_carga
+        description: Data e hora em que os dados foram carregados no banco de dados
+        data_type: string
+      - name: data_particao
+        description: Data e hora de particionamento da tabela crua
+        data_type: string

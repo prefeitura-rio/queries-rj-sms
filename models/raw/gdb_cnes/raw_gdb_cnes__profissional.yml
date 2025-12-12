@@ -1,0 +1,52 @@
+version: 2
+models:
+  - name: raw_gdb_cnes__profissional
+    description: |-
+        Relação de profissionais do SUS.
+        Tabela original do CNES: LFCES018
+    columns:
+      - name: id_profissional_sus
+        description: Este é um identificador único para cada profissional no banco de
+          dados do SUS (Sistema Único de Saúde). É um valor de string que é
+          convertido do campo 'co_profissional_sus' nos dados de origem.
+      - name: id_profissional_cnes
+        description: Código cru do profissional de saúde
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: cns
+        description: Número do CNS (Cartão Nacional de Saúde) do profissional.
+          É um identificador único fornecido a cada profissional de saúde no
+          Brasil. É um valor de string que é convertido do campo 'co_cns' nos
+          dados de origem.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: cpf
+        description: Número do CPF (Cadastro de Pessoas Físicas) do profissional
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: nome
+        description: Este é o nome do profissional. É um valor de string que é
+          convertido do campo 'no_profissional' nos dados de origem. Este campo
+          é usado para identificar o profissional de uma forma mais legível em
+          comparação com os campos 'id_profissional_sus' ou 'cns'.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: data_nascimento
+        description: Este é a data de nascimento do profissional. É um valor de string que é
+          convertido do campo 'data_nasc' nos dados de origem. 
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+      - name: sexo
+        description: Este é o sexo do profissional. É um valor de string que é
+          convertido do campo 'sexo' nos dados de origem.
+      - name: data_carga
+        description: Data e hora em que os dados foram carregados no banco de dados
+        data_type: string
+      - name: data_particao
+        description: Data e hora de particionamento da tabela crua
+        data_type: string
+      - name: cpf_particao
+        description: Coluna de particionamento dos dados, com base no CPF do profissional
+        data_type: int64
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
