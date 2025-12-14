@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_prontuaRIO
+    database: rj-sms-dev
+    schema: brutos_prontuario_prontuaRIO
+    tables:
+      - name: alta_clinica
+      - name: atendimento
+      - name: cen02
