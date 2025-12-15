@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: raw_cientificalab__exames
+  - name: raw_exames_laboratoriais__exames
     description: Tabela contendo informações detalhadas sobre os exames realizados
     columns:
       - name: id

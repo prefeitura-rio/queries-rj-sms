@@ -22,3 +22,7 @@ models:
         description: Data/hora da solicitação do exame
       - name: exame_nome
         description: Descrição do exame realizado, com base no código
+      - name: cpf_particao
+        description: Particionamento pelo CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

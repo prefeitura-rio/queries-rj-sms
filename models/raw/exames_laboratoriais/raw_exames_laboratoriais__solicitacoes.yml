@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: raw_cientificalab__solicitacoes
+  - name: raw_exames_laboratoriais__solicitacoes
     description: Tabela contendo informações detalhadas sobre as solicitações de exames
     columns:
       - name: id

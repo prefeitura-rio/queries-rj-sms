@@ -17,6 +17,8 @@ with exame_laboratorial as (
     from {{ ref('mart_historico_clinico__exame_laboratorial') }}
 ),
 
+    -- Rever lógica no futuro - Atualmente estamos ignorando qualquer solicitacao
+    -- onde há um exame de hiv reagente (positivo)
     pacientes_com_hiv_reagente as (
         select distinct
             m.id_solicitacao
