@@ -1,8 +1,14 @@
 {{
     config(
+        schema='brutos_prontuario_prontuaRio',
         alias="triagem",
         materialized="table",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
@@ -11,7 +17,7 @@ with
 
 source_ as (
   select *
-  from {{source('brutos_prontuario_prontuaRIO', 'triagem') }}
+  from {{source('brutos_prontuario_prontuaRio_staging', 'triagem') }}
 ),
 
 triagem as (
@@ -75,10 +81,67 @@ triagem as (
       from source_
 ), 
 
-deduplicated as (
-  select * from triagem 
-  qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by loaded_at desc) = 1
+final as (
+  select
+    {{ process_null('id_prontuario') }} as id_prontuario,
+    {{ process_null('id_boletim') }} as id_boletim,
+    {{ process_null('id_internacao') }} as id_internacao,
+    {{ process_null('id_receituario') }} as id_receituario,
+    {{ process_null('queixas') }} as queixas,
+    {{ remove_html('descricao_receituario') }} as descricao_receituario,
+    {{ process_null('profissional_cpf') }} as profissional_cpf,
+    {{ process_null('profissional_nome') }} as profissional_nome,
+    data_registro,
+    {{ process_null('profissional_cpf_2') }} as profissional_cpf_2,
+    {{ process_null('profissional_nome_2') }} as profissional_nome_2,
+    {{ process_null('descricao_atividade') }} as descricao_atividade,
+    {{ process_null('dt_consulta_amb') }} as dt_consulta_amb,
+    {{ process_null('modulo_triagem') }} as modulo_triagem,
+    {{ process_null('obs_prescricao') }} as obs_prescricao,
+    {{ process_null('cor_risco') }} as cor_risco,
+    {{ process_null('pressao_arterial') }} as pressao_arterial,
+    {{ process_null('frequencia_cardiaca') }} as frequencia_cardiaca,
+    {{ process_null('temperatura') }} as temperatura,
+    {{ process_null('peso') }} as peso,
+    {{ process_null('altura') }} as altura,
+    {{ process_null('spo2') }} as spo2,
+    {{ process_null('hgt') }} as hgt,
+    {{ process_null('diabetico') }} as diabetico,
+    {{ process_null('alergia_quantidade') }} as alergia_quantidade,
+    {{ process_null('alergia') }} as alergia,
+    {{ process_null('hiper') }} as hiper,
+    {{ process_null('doencas_pre_existentes_quantidade') }} as doencas_pre_existentes_quantidade,
+    {{ process_null('doencas_pre_existentes') }} as doencas_pre_existentes,
+    {{ process_null('medicamento_uso_continuo_quantidade') }} as medicamento_uso_continuo_quantidade,
+    {{ process_null('medicamento_uso_continuo') }} as medicamento_uso_continuo,
+    {{ process_null('quantidade_c_recentes') }} as quantidade_c_recentes,
+    {{ process_null('c_recentes') }} as c_recentes,
+    {{ process_null('id_fluxograma') }} as id_fluxograma,
+    {{ process_null('id_discriminador') }} as id_discriminador,
+    {{ process_null('gesta') }} as gesta,
+    {{ process_null('para') }} as para,
+    {{ process_null('parto') }} as parto,
+    {{ process_null('aborto') }} as aborto,
+    {{ process_null('dum') }} as dum,
+    {{ process_null('dpp') }} as dpp,
+    {{ process_null('ig') }} as ig,
+    {{ process_null('prenatal') }} as prenatal,
+    {{ process_null('numero_consultas') }} as numero_consultas,
+    {{ process_null('local') }} as local,
+    {{ process_null('hiv') }} as hiv,
+    dt_obstetrica_triagem,
+    {{ process_null('resultado_triagem') }} as resultado_triagem,
+    tempo_acolhimento,
+    tempo_atendimento,
+    {{ process_null('status_fatu') }} as status_fatu,
+    {{ process_null('profissional_atendimento_cpf') }} as profissional_atendimento_cpf,
+    {{ process_null('parto_normal') }} as parto_normal,
+    {{ process_null('parto_cesario') }} as parto_cesario,
+    cnes,
+    loaded_at,
+    cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+  from triagem
+  qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by data_registro desc, loaded_at desc) = 1
 )
 
-select *, date(loaded_at) as data_particao
-from deduplicated
+select * from final

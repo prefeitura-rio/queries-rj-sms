@@ -1,16 +1,22 @@
 {{
     config(
+        schema='brutos_prontuario_prontuaRio',
         alias="emergencia",
         materialized="table",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
 with 
 
     source_ as (
-        select * from {{source('brutos_prontuario_prontuaRIO', 'hp_rege_emerg') }}
-    )
+        select * from {{source('brutos_prontuario_prontuaRio_staging', 'hp_rege_emerg') }}
+    ),
 
     emergencia as (
         select
@@ -27,10 +33,21 @@ with
     from source_
     ),
 
-    deduplicated as (
-        select * from emergencia 
+    final as (
+        select 
+            {{ process_null('id_boletim') }} as id_boletim,
+            {{ process_null('numero_cor') }} as numero_cor,
+            {{ process_null('cor') }} as cor,
+            tempo_espera,
+            {{ process_null('paciente_nome') }} as paciente_nome,
+            {{ process_null('motivo') }} as motivo,
+            data_entrada_saida,
+            {{ process_null('cpf_emergencia') }} as cpf_emergencia,
+            cnes,
+            loaded_at,
+            cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+        from emergencia
         qualify row_number() over(partition by id_boletim, cnes order by loaded_at desc) = 1
     )
 
-select *, date(loaded_at) as data_particao
-from deduplicated
+select * from final

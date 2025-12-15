@@ -1,6 +1,7 @@
 {{
     config(
-        alias="alta_internacao",
+        schema="brutos_prontuario_prontuaRio",
+        alias="internacao_alta",
         materialized="table",
         unique_key="id_prontuario",
         tags=["prontuaRio"],
@@ -12,7 +13,7 @@ with
   source_ as (
     select  
       *
-    from {{ source('brutos_prontuario_prontuaRIO', 'cen15') }}
+    from {{ source('brutos_prontuario_prontuaRio_staging', 'cen15') }}
   ),
 
  alta_internacao as (

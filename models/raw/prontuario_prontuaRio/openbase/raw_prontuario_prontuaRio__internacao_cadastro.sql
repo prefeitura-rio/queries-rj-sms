@@ -1,20 +1,26 @@
 {{
     config(
-        alias="interb6",
+        schema='brutos_prontuario_prontuaRio',
+        alias="internacao_cadastro",
         materialized="table",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
 with
 
 source_ as (
-  select * from {{ source('brutos_prontuario_prontuaRIO', 'intb6') }} 
+  select * from {{ source('brutos_prontuario_prontuaRio_staging', 'intb6') }} 
 ),
 
 intb6 as (
     select
-        json_extract_scalar(data, '$.ib6regist') as id_registo,
+        json_extract_scalar(data, '$.ib6regist') as id_registro,
         json_extract_scalar(data, '$.ib6prontuar') as id_prontuario,
         concat(
             json_extract_scalar(data, '$.ib6pnome'),
@@ -65,9 +71,41 @@ intb6 as (
     from source_
 ),
 
-deduplicated as (
-  select * from intb6 
-  qualify row_number() over(partition by id_registro, id_prontuario, cnes order by loaded_at desc) = 1
+final as (
+    select 
+        {{ process_null('id_registro') }} as id_registro,
+        {{ process_null('id_prontuario') }} as id_prontuario,
+        paciente_nome,
+        {{ process_null('sexo') }} as sexo,
+        paciente_data_nascimento,
+        {{ process_null('paciente_pai') }} as paciente_pai,
+        {{ process_null('paciente_mae') }} as paciente_mae,
+        {{ process_null('paciente_naturalidade') }} as paciente_naturalidade,
+        {{ process_null('paciente_nacionalidade') }} as paciente_nacionalidade,
+        {{ process_null('paciente_numero_documento') }} as paciente_numero_documento,
+        {{ process_null('endereco_logradouro') }} as endereco_logradouro,
+        {{ process_null('endereco_numero') }} as endereco_numero,
+        {{ process_null('endereco_complemento') }} as endereco_complemento,
+        {{ process_null('endereco_bairro') }} as endereco_bairro,
+        {{ process_null('endereco_municipio') }} as endereco_municipio,
+        {{ process_null('endereco_uf') }} as endereco_uf,
+        {{ process_null('endereco_cep') }} as endereco_cep,
+        {{ process_null('paciente_telefone') }} as paciente_telefone,
+        ultimo_atendimento_data,
+        cadastro_data,
+        {{ process_null('depend') }} as depend,
+        obito_data,
+        {{ process_null('codcs') }} as codcs,
+        {{ process_null('cns') }} as cns,
+        {{ process_null('documento_tipo') }} as documento_tipo,
+        {{ process_null('id_municipio') }} as id_municipio,
+        {{ process_null('paciente_cpf') }} as paciente_cpf,
+        {{ process_null('id_logradouro') }} as id_logradouro,
+        cnes,
+        loaded_at,
+        cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+    from intb6
+    qualify row_number() over(partition by id_registro, id_prontuario, cnes order by loaded_at desc) = 1
 )
 
-select *, date(loaded_at) as data_particao from deduplicated
+select * from final

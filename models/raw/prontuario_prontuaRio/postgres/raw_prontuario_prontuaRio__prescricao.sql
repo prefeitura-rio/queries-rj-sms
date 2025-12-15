@@ -1,15 +1,21 @@
 {{
     config(
+        schema='brutos_prontuario_prontuaRio',
         alias="prescricao",
         materialized="table",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },      
     )
 }}
 
 with 
 
 source_ as (
-    select * from {{source('brutos_prontuario_prontuaRIO', 'prescricao')}}
+    select * from {{source('brutos_prontuario_prontuaRio_staging', 'prescricao')}}
 ),
 
 prescricao as (
@@ -45,4 +51,7 @@ final as (
     qualify row_number() over(partition by id_prescricao, id_atendimento, cnes order by loaded_at desc) = 1
 )
 
-select *, date(loaded_at) as data_particao from final
+select 
+    *, 
+    date(safe_cast(loaded_at as timestamp)) as data_particao 
+from final

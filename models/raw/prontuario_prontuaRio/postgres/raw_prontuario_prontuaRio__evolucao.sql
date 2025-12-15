@@ -1,14 +1,20 @@
 {{
     config(
+        schema='brutos_prontuario_prontuaRio',
         alias="evolucao",
         materialized="table",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
 with 
     source_ as (
-    select * from `rj-sms-dev.brutos_prontuario_prontuaRIO.hp_rege_evolucao` 
+    select * from {{source('brutos_prontuario_prontuaRio_staging', 'hp_rege_evolucao') }}
     ),
 
     evolucao as (
@@ -45,10 +51,41 @@ with
         from source_
     ),
 
-  deduplicated as (
-    select * from evolucao 
-    qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by loaded_at desc) = 1
-  )
+    final as (
+        select 
+            {{ process_null('id_prontuario') }} as id_prontuario,
+            {{ process_null('id_boletim') }} as id_boletim,
+            {{ process_null('cns') }} as cns,
+            {{ process_null('registro') }} as registro,
+            evolucao_data,
+            registro_data,
+            {{ process_null('nome_profissional') }} as nome_profissional,
+            {{ process_null('id_profissional') }} as id_profissional,
+            {{ remove_html('descricao') }} as descricao,
+            {{ process_null('tipo') }} as tipo,
+            atualizacao_data,
+            {{ process_null('id_cen38') }} as id_cen38,
+            {{ process_null('id_am12') }} as id_am12,
+            {{ process_null('id_cen02') }} as id_cen02,
+            {{ process_null('id_cen54') }} as id_cen54,
+            {{ process_null('id_outro') }} as id_outro,
+            {{ process_null('tip_outro') }} as tip_outro,
+            {{ process_null('status_evolucao') }} as status_evolucao,
+            {{ process_null('descricao_sub_atividade') }} as descricao_sub_atividade,
+            {{ process_null('id_sub_atividade') }} as id_sub_atividade,
+            {{ process_null('id_atividade') }} as id_atividade,
+            {{ process_null('id_clinica') }} as id_clinica,
+            {{ process_null('setor') }} as setor,
+            {{ process_null('cid_evolucao') }} as cid_evolucao,
+            {{ process_null('cid_descricao') }} as cid_descricao,
+            {{ process_null('proc_evo') }} as proc_evo,
+            {{ process_null('proc_descricao') }} as proc_descricao,
+            cnes,
+            loaded_at,
+            cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+        from evolucao
+        qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by evolucao_data desc, loaded_at desc) = 1
+    )
 
-select *, date(loaded_at) as data_particao
-from deduplicated
+select *
+from final

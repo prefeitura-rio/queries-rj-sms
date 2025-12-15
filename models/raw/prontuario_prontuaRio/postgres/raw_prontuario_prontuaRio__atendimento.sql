@@ -1,17 +1,23 @@
 {{
     config(
+        schema='brutos_prontuario_prontuaRio',
         alias="atendimento",
         materialized="table",
         unique_key="id_prontuario",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
-
-with 
+with
+ 
   source_ as (
     select * 
-    from {{source('brutos_prontuario_prontuaRIO', 'atendimento') }}
+    from {{source('brutos_prontuario_prontuaRio_staging', 'atendimento') }}
   ),
 
   atendimentos as (
@@ -69,9 +75,60 @@ with
     from source_
 ),
 
-deduplicated as (
-  select * from atendimentos 
-  qualify row_number() over(partition by id_atendimento, cnes order by loaded_at desc) = 1
+final as (
+  select 
+    {{ process_null('id_atendimento') }} as id_atendimento,
+    {{ process_null('id_paciente') }} as id_paciente,
+    {{ process_null('medico_crm') }} as medico_crm,
+    {{ process_null('id_leito') }} as id_leito,
+    {{ process_null('clinica') }} as clinica,
+    {{ process_null('recomendacoes') }} as recomendacoes,
+    datahora,
+    internacao_data,
+    atendimento_data,
+    {{ process_null('ativo_indicador') }} as ativo_indicador,
+    {{ process_null('id_clinica') }} as id_clinica,
+    {{ process_null('enfermaria') }} as enfermaria,
+    {{ process_null('parenteral') }} as parenteral,
+    {{ process_null('parenteral_status') }} as parenteral_status,
+    {{ process_null('peso') }} as peso,
+    {{ process_null('paren_neo') }} as paren_neo,
+    {{ process_null('paren_venosa') }} as paren_venosa,
+    {{ process_null('paren_neo_status') }} as paren_neo_status,
+    {{ process_null('paren_venosa_status') }} as paren_venosa_status,
+    {{ process_null('precisa_fono') }} as precisa_fono,
+    {{ process_null('precisa_fisio') }} as precisa_fisio,
+    {{ process_null('obs_fisio') }} as obs_fisio,
+    {{ process_null('obs_fono') }} as obs_fono,
+    {{ process_null('fisio_motora') }} as fisio_motora,
+    {{ process_null('fisio_respiratoria') }} as fisio_respiratoria,
+    {{ process_null('fisio_ok_motora') }} as fisio_ok_motora,
+    {{ process_null('avisos_farm') }} as avisos_farm,
+    {{ process_null('estatura') }} as estatura,
+    {{ process_null('sc') }} as sc,
+    {{ process_null('tht') }} as tht,
+    {{ process_null('med') }} as med,
+    {{ process_null('hv') }} as hv,
+    {{ process_null('dieta') }} as dieta,
+    {{ process_null('vm') }} as vm,
+    {{ process_null('paren_sedacao') }} as paren_sedacao,
+    {{ process_null('diag') }} as diag,
+    {{ process_null('ig') }} as ig,
+    {{ process_null('igc') }} as igc,
+    {{ process_null('precisa_psicologia') }} as precisa_psicologia,
+    {{ process_null('precisa_nutricao') }} as precisa_nutricao, 
+    {{ process_null('obs_psicologia') }} as obs_psicologia,
+    {{ process_null('obs_nutricao') }} as obs_nutricao,
+    {{ process_null('psicologia_ok') }} as psicologia_ok,
+    {{ process_null('sala') }} as sala,
+    prescricao_data,
+    {{ process_null('precisa_hemo') }} as precisa_hemo, 
+    {{ process_null('obs_hemo') }} as obs_hemo,
+    {{ process_null('hemo_ok') }} as hemo_ok,
+    cnes,
+    loaded_at,
+    cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+  from atendimentos
 )
 
 select 
@@ -79,10 +136,10 @@ select
         dbt_utils.generate_surrogate_key(
                 [
                     'id_atendimento',
-                    "id_paciente",
+                    'id_paciente',
+                    'cnes'
                 ]
             )
         }} as id_hci,
-    *,
-    date(loaded_at) as data_particao 
-from deduplicated
+    *
+  from final

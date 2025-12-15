@@ -1,14 +1,20 @@
 {{
     config(
+        schema='brutos_prontuario_prontuaRio',
         alias="receituario",
         materialized="table",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
 with 
   source_ as (
-  select * from {{source('brutos_prontuario_prontuaRIO', 'hp_rege_receituario') }}
+  select * from {{source('brutos_prontuario_prontuaRio_staging', 'hp_rege_receituario') }}
   ),
 
   receituario as (
@@ -29,18 +35,18 @@ from source_
 
 final as (
     select 
-        {{ process_null('id_receituario') }},
-        {{ process_null('id_prontuario') }},
-        {{ process_null('id_boletim') }},
-        {{ process_null('id_internacao') }},
+        {{ process_null('id_receituario') }} as id_receituario,
+        {{ process_null('id_prontuario') }} as id_prontuario,
+        {{ process_null('id_boletim') }} as id_boletim,
+        {{ process_null('id_internacao') }} as id_internacao,
         {{remove_html('descricao') }} as descricao,
-        {{ process_null('profissional_cpf') }},
-        {{ process_null('profissional_nome') }},
-        {{ process_null('data_registro') }},
-        {{ process_null('descricao_atividade') }},
+        {{ process_null('profissional_cpf') }} as profissional_cpf,
+        {{ process_null('profissional_nome') }} as profissional_nome,
+        data_registro,
+        {{ process_null('descricao_atividade') }} as descricao_atividade,
         cnes,
         loaded_at,
-        cast(loaded_at as date) as data_particao
+        cast(safe_cast(loaded_at as timestamp) as date) as data_particao
     from receituario
     qualify row_number() over(partition by id_receituario, id_prontuario, id_boletim, cnes order by loaded_at desc) = 1
 )

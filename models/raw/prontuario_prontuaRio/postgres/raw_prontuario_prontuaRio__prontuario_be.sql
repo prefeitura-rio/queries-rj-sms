@@ -1,15 +1,21 @@
 {{
     config(
+        schema='brutos_prontuario_prontuaRio',
         alias="prontuario_be",
         materialized="table",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
 with 
 
   source_ as (
-    select * from {{source('brutos_prontuario_prontuaRIO', 'prontuario_be') }} 
+    select * from {{source('brutos_prontuario_prontuaRio_staging', 'hp_prontuario_be') }} 
   ),
 
   prontuario_be as (
@@ -26,4 +32,7 @@ with
       qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by loaded_at desc) = 1
     )
 
-select * from deduplicated
+select 
+  *, 
+  cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+from deduplicated
