@@ -1,22 +1,24 @@
 version: 2
 
 models:
-  - name: raw_cientificalab__exames
+  - name: raw_exames_laboratoriais__exames
     description: Tabela contendo informações detalhadas sobre os exames realizados
     columns:
       - name: id
         description: Identificador único do registro de exame.
-      - name: solicitacao_id
+      - name: id_solicitacao
         description: Identificador da solicitação à qual o exame está vinculado.
-      - name: cod_lis
-        description: Código do exame no sistema LIS (Laboratory Information System).
+      - name: codigo_lis
+        description: Código do exame no sistema LIS 
       - name: amostra_lis
         description: Código da amostra no sistema LIS.
-      - name: cod_apoio
+      - name: codigo_apoio
         description: Código do exame no sistema de apoio.
+      - name: material_lis
+        description: Código do material no sistema LIS.
       - name: amostra_apoio
         description: Código da amostra no sistema de apoio.
-      - name: cod_exame
+      - name: codigo_exame
         description: Código do exame em si.
       - name: sequencia_lis
         description: Sequência do exame dentro do LIS.
@@ -40,6 +42,12 @@ models:
         description: Data e hora em que o exame foi assinado.
       - name: alterado
         description: Indica se o exame sofreu alguma alteração.
+      - name: impresso
+        description: Indica se foi impresso
+      - name: codigo_versao
+        description: data da ultima versao
+      - name: descricao_metodo
+        description: metodo utilizado
       - name: status
         description: Status atual do exame (e.g., pendente, concluído).
       - name: mensagem
@@ -58,5 +66,6 @@ models:
           - '{{ var("TAG_NOME") }}'
       - name: datalake_loaded_at
         description: Data e hora em que o registro foi carregado no datalake.
-      - name: processed_at
-        description: Timestamp indicando quando o registro foi processado.
+      - name: origem
+        description: Nome da origem da solicitação (e.g., cientificalab, biomega).
+     
