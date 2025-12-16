@@ -64,3 +64,8 @@ sources:
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
         freshness:
           error_after: {count: 30, period: day}
+
+      - name: relacao_hasdm_vitahiscare
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
