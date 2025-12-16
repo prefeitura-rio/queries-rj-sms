@@ -25,6 +25,12 @@ sources:
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
         freshness:
           error_after: {count: 30, period: day}
+      - name: ficha_a_vitahiscare
+        loaded_at_field: 
+        loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
+        freshness:
+          error_after: {count: 30, period: day}
+
       - name: ficha_c_v2
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
         freshness:
