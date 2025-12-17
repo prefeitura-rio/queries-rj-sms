@@ -40,12 +40,13 @@ with
             {{ process_null("n_da_familia") }} as n_da_familia,
             {{ process_null("n_do_prontuario") }} as n_do_prontuario,
             cast({{ process_null("data_cadastro") }} as date format "DD/MM/YYYY") as data_cadastro,
-            cast({{ process_null("data_ultima_atualizacao_do_cadastro") }} as date format "DD/MM/YYYY") as data_ultima_atualizacao_cadastro,
+            {{ parse_date(process_null("data_cadastro")) }} as data_cadastro,
+            {{ parse_date(process_null("data_ultima_atualizacao_do_cadastro")) }} as data_ultima_atualizacao_cadastro,
             {{ process_null("situacao_usuario") }} as situacao_usuario,
             {{ process_null("obito") }} as obito,
             {{ process_null("sexo") }} as sexo,
             {{ process_null("raca_cor") }} as raca_cor,
-            cast({{ process_null("data_de_nascimento") }} as date format "DD/MM/YYYY") as data_nascimento,
+            {{ parse_date(process_null("data_de_nascimento")) }} as data_nascimento,
             {{ process_null("alcoolismo") }} as alcoolismo,
             {{ process_null("doenca_de_chagas") }} as doenca_de_chagas,
             {{ process_null("deficiencia_fisica") }} as deficiencia_fisica,
@@ -105,95 +106,32 @@ with
             {{ process_null("n_de_consultas_2011") }} as n_de_consultas_2011,
             {{ process_null("n_de_procedimentos_2011") }} as n_de_procedimentos_2011,
 
-            case
-                when REGEXP_CONTAINS({{ process_null("data_1a_consulta") }},r'\d{4}-\d{2}-\d{2}') 
-                    then cast(
-                        {{ process_null("data_1a_consulta") }}
-                        as date format "YYYY-MM-DD"
-                    )
-                when REGEXP_CONTAINS({{ process_null("data_1a_consulta") }},r'\d{2}/\d{2}/\d{4}') 
-                    then cast(
-                        {{ process_null("data_1a_consulta") }}
-                        as date format "DD/MM/YYYY"
-                    )
-                else null
-            end as data_1a_consulta,
-            case
-                when REGEXP_CONTAINS({{ process_null("data_2a_consulta") }},r'\d{4}-\d{2}-\d{2}') 
-                    then cast(
-                        {{ process_null("data_2a_consulta") }}
-                        as date format "YYYY-MM-DD"
-                    )
-                when REGEXP_CONTAINS({{ process_null("data_2a_consulta") }},r'\d{2}/\d{2}/\d{4}') 
-                    then cast(
-                        {{ process_null("data_2a_consulta") }}
-                        as date format "DD/MM/YYYY"
-                    )
-                else null
-            end as data_2a_consulta,
+            {{ parse_date(process_null("data_1a_consulta")) }} as data_1a_consulta,
+            {{ parse_date(process_null("data_2a_consulta")) }} as data_2a_consulta,
 
-            case
-                when REGEXP_CONTAINS({{ process_null("data_da_ultima_consulta") }},r'\d{4}-\d{2}-\d{2}') 
-                    then cast(
-                        {{ process_null("data_da_ultima_consulta") }}
-                        as date format "YYYY-MM-DD"
-                    )
-                when REGEXP_CONTAINS({{ process_null("data_da_ultima_consulta") }},r'\d{2}/\d{2}/\d{4}') 
-                    then cast(
-                        {{ process_null("data_da_ultima_consulta") }}
-                        as date format "DD/MM/YYYY"
-                    )
-                else null
-            end as data_ultima_consulta,
-            case
-                when REGEXP_CONTAINS({{ process_null("data_da_ultima_consulta_med_enf_propria_equipe") }},r'\d{4}-\d{2}-\d{2}') 
-                    then cast(
-                        {{ process_null("data_da_ultima_consulta_med_enf_propria_equipe") }}
-                        as date format "YYYY-MM-DD"
-                    )
-                when REGEXP_CONTAINS({{ process_null("data_da_ultima_consulta_med_enf_propria_equipe") }},r'\d{2}/\d{2}/\d{4}') 
-                    then cast(
-                        {{ process_null("data_da_ultima_consulta_med_enf_propria_equipe") }}
-                        as date format "DD/MM/YYYY"
-                    )
-                else null
-            end as data_ultima_consulta_med_enf_propria_equipe,
+            {{ parse_date(process_null("data_da_ultima_consulta")) }} as data_ultima_consulta,
+            {{ parse_date(process_null("data_da_ultima_consulta_med_enf_propria_equipe")) }} as data_ultima_consulta_med_enf_propria_equipe,
 
             {{ process_null("hist_cid") }} as hist_cid,
 
             -- CIDs e datas de registro (01--10)
             {% for i in range(1, 11) %}
                 {% set idx = "%02d" % i %}
-                cast(
-                    {{ process_null("data_registro_cid_" ~ idx) }}
-                    as date format "DD/MM/YYYY"
-                ) as data_registro_cid_{{ idx }},
+                {{ parse_date(process_null("data_registro_cid_" ~ idx)) }} as data_registro_cid_{{ idx }},
                 {{ process_null("cid_" ~ idx) }} as cid_{{ idx }}{% if not loop.last %},{% endif %}
             {% endfor %},
     
             {{ process_null("primeiro_cid_extra_por_campo") }} as primeiro_cid_extra_por_campo,
-            cast(
-                {{ process_null("data_registro_cid_extra_01") }}
-                as date format "DD/MM/YYYY"
-            ) as data_registro_cid_extra_01,
+            {{ parse_date(process_null("data_registro_cid_extra_01")) }} as data_registro_cid_extra_01,
 
             {{ process_null("segundo_cid_extra_por_campo") }} as segundo_cid_extra_por_campo,
-            cast(
-                {{ process_null("data_registro_cid_extra_02") }}
-                as date format "DD/MM/YYYY"
-            ) as data_registro_cid_extra_02,
+            {{ parse_date(process_null("data_registro_cid_extra_02")) }} as data_registro_cid_extra_02,
 
             {{ process_null("peso") }} as peso,
             {{ process_null("altura") }} as altura,
-            cast(
-                {{ process_null("data_registro_peso_altura") }}
-                as date format "DD/MM/YYYY"
-            ) as data_registro_peso_altura,
+            {{ parse_date(process_null("data_registro_peso_altura")) }} as data_registro_peso_altura,
 
-            cast(
-                {{ process_null("data_ultima_menstruacao") }}
-                as date format "DD/MM/YYYY"
-            ) as data_ultima_menstruacao,
+            {{ parse_date(process_null("data_ultima_menstruacao")) }} as data_ultima_menstruacao,
 
             struct(
                 _source_file as arquivo_fonte,

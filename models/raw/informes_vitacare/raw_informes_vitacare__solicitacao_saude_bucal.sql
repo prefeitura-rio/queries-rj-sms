@@ -39,14 +39,8 @@ with
             {{ process_null("tabagista") }} as tabagista,
             {{ process_null("familia_recebe_bf") }} as familia_recebe_bf,
 
-            cast(
-                {{ process_null("data_ultima_cons_dentista") }}
-                as date format "DD/MM/YYYY"
-            ) as data_ultima_cons_dentista,
-            cast(
-                {{ process_null("data_ultima_cons_nasf") }}
-                as date format "DD/MM/YYYY"
-            ) as data_ultima_cons_nasf,
+            {{ parse_date(process_null("data_ultima_cons_dentista")) }} as data_ultima_cons_dentista,
+            {{ parse_date(process_null("data_ultima_cons_nasf")) }} as data_ultima_cons_nasf,
 
             struct(
                 _source_file as arquivo_fonte,

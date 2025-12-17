@@ -43,49 +43,28 @@ with
             {{ process_null("nome_mae") }} as nome_mae,
             {{ process_null("sexo") }} as sexo,
             {{ process_null("idade") }} as idade,
-            cast(
-                {{ process_null("data_nasc") }}
-                as date format "DD/MM/YYYY"
-            ) as data_nascimento,
+            {{ parse_date(process_null("data_nasc")) }} as data_nascimento,
             {{ process_null("cor") }} as cor,
             {{ process_null("n_escolar") }} as n_escolar,
 
-            cast(
-                {{ process_null("dt_diag_dm") }}
-                as date format "DD/MM/YYYY"
-            ) as data_diagnostico_dm,
+            {{ parse_date(process_null("dt_diag_dm")) }} as data_diagnostico_dm,
             {{ process_null("cid_ent_dm") }} as cid_ent_dm,
 
-            cast(
-                {{ process_null("dt_diag_has") }}
-                as date format "DD/MM/YYYY"
-            ) as data_diagnostico_has,
+            {{ parse_date(process_null("dt_diag_has")) }} as data_diagnostico_has,
             {{ process_null("cid_ent_has") }} as cid_ent_has,
 
             {{ process_null("tab") }} as tab,
             {{ process_null("tab_tempo") }} as tab_tempo,
             {{ process_null("tab_quant") }} as tab_quant,
 
-            cast(
-                {{ process_null("dt_ult_cons_med") }}
-                as date format "DD/MM/YYYY"
-            ) as data_ultima_consulta_med,
+            {{ parse_date(process_null("dt_ult_cons_med")) }} as data_ultima_consulta_med,
             {{ process_null("cons_med_total") }} as cons_med_total,
 
-            cast(
-                {{ process_null("dt_ult_cons_enf") }}
-                as date format "DD/MM/YYYY"
-            ) as data_ultima_consulta_enf,
+            {{ parse_date(process_null("dt_ult_cons_enf")) }} as data_ultima_consulta_enf,
             {{ process_null("cons_enf_total") }} as cons_enf_total,
 
-            cast(
-                {{ process_null("dt_ult_cons_sb") }}
-                as date format "DD/MM/YYYY"
-            ) as data_ultima_consulta_sb,
-            cast(
-                {{ process_null("dt_ult_visita_acs") }}
-                as date format "DD/MM/YYYY"
-            ) as data_ultima_visita_acs,
+            {{ parse_date(process_null("dt_ult_cons_sb")) }} as data_ultima_consulta_sb,
+            {{ parse_date(process_null("dt_ult_visita_acs")) }} as data_ultima_visita_acs,
 
             {{ process_null("ativ_fis") }} as ativ_fis,
             {{ process_null("peso") }} as peso,
@@ -94,88 +73,50 @@ with
             {{ process_null("cc_atual") }} as cc_atual,
 
             {{ process_null("retinografia_esq") }} as retinografia_esq,
-            cast(
-                {{ process_null("dt_retin_esq") }}
-                as date format "DD/MM/YYYY"
-            ) as data_retinografia_esq,
+            {{ parse_date(process_null("dt_retin_esq")) }} as data_retinografia_esq,
             {{ process_null("retinografia_dir") }} as retinografia_dir,
-            cast(
-                {{ process_null("dt_retin_dir") }}
-                as date format "DD/MM/YYYY"
-            ) as data_retinografia_dir,
+            {{ parse_date(process_null("dt_retin_dir")) }} as data_retinografia_dir,
 
             {{ process_null("fundoscopia_esq") }} as fundoscopia_esq,
-            cast(
-                {{ process_null("dt_fundoscopia_esq") }}
-                as date format "DD/MM/YYYY"
-            ) as data_fundoscopia_esq,
+            {{ parse_date(process_null("dt_fundoscopia_esq")) }} as data_fundoscopia_esq,
             {{ process_null("fundoscopia_dir") }} as fundoscopia_dir,
-            cast(
-                {{ process_null("dt_fundoscopia_dir") }}
-                as date format "DD/MM/YYYY"
-            ) as data_fundoscopia_dir,
+            {{ parse_date(process_null("dt_fundoscopia_dir")) }} as data_fundoscopia_dir,
 
-            cast(
-                {{ process_null("dt_pes_aval") }}
-                as date format "DD/MM/YYYY"
-            ) as data_pes_aval,
+            {{ parse_date(process_null("dt_pes_aval")) }} as data_pes_aval,
             {{ process_null("categ_risc_mmii_esq") }} as categ_risc_mmii_esq,
             {{ process_null("categ_risc_mmii_dir") }} as categ_risc_mmii_dir,
 
             {{ process_null("amput_mmii_esq") }} as amput_mmii_esq,
-            cast(
-                {{ process_null("dt_amput_esq") }}
-                as date format "DD/MM/YYYY"
-            ) as data_amput_esq,
+            {{ parse_date(process_null("dt_amput_esq")) }} as data_amput_esq,
             {{ process_null("amput_mmii_dir") }} as amput_mmii_dir,
-            cast(
-                {{ process_null("dt_amput_dir") }}
-                as date format "DD/MM/YYYY"
-            ) as data_amput_dir,
+            {{ parse_date(process_null("dt_amput_dir")) }} as data_amput_dir,
 
             {{ process_null("colesterol_total") }} as colesterol_total,
-            cast(
-                {{ process_null("dt_colest_total") }}
-                as date format "DD/MM/YYYY"
-            ) as data_colesterol_total,
+            {{ parse_date(process_null("dt_colest_total")) }} as data_colesterol_total,
 
+            -- Por algum motivo, aparecem alguns números inteiros aqui ao invés de datas
+            -- ex. "106", "1058", "0", ...
+            -- Talvez resultados do exame de LDL/HDL inseridos no campo errado?
             {{ process_null("ldl") }} as ldl,
-            cast(
-                {{ process_null("dt_ldl") }}
-                as date format "DD/MM/YYYY"
-            ) as data_ldl,
-
+            {{ parse_date(process_null("dt_ldl")) }} as data_ldl,
             {{ process_null("hdl") }} as hdl,
-            cast(
-                {{ process_null("dt_hdl") }}
-                as date format "DD/MM/YYYY"
-            ) as data_hdl,
+            {{ parse_date(process_null("dt_hdl")) }} as data_hdl,
 
             {{ process_null("triglicerideos") }} as triglicerideos,
-            cast(
-                {{ process_null("dt_trig") }}
-                as date format "DD/MM/YYYY"
-            ) as data_triglicerideos,
+            {{ parse_date(process_null("dt_trig")) }} as data_triglicerideos,
 
             {{ process_null("pas") }} as pas,
             {{ process_null("pas_cat") }} as categ_pas,
             {{ process_null("pad") }} as pad,
             {{ process_null("pad_cat") }} as categ_pad,
-            cast(
-                {{ process_null("dt_pa") }}
-                as date format "DD/MM/YYYY"
-            ) as data_pa,
+            {{ parse_date(process_null("dt_pa")) }} as data_pa,
 
             {{ process_null("hba1c") }} as hba1c,
             {{ process_null("hba1c_cat") }} as categ_hba1c,
             {{ process_null("complicacoes_sec") }} as complicacoes_sec,
 
             {{ process_null("creatinina") }} as creatinina,
-            {{ process_null("dt_creatinina") }}
-            cast(
-                {{ process_null("dt_creatinina") }}
-                as date format "DD/MM/YYYY"
-            ) as daat_creatinina,
+            {{ parse_date(process_null("dt_creatinina")) }} as data_creatinina,
 
             {{ process_null("situacao_cad") }} as situacao_cad,
 
