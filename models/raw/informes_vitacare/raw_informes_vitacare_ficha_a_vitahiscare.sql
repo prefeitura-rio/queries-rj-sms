@@ -39,7 +39,6 @@ with
             {{ process_null("nome_da_mae_pessoa_cadastrada") }} as nome_da_mae_pessoa_cadastrada,
             {{ process_null("n_da_familia") }} as n_da_familia,
             {{ process_null("n_do_prontuario") }} as n_do_prontuario,
-            cast({{ process_null("data_cadastro") }} as date format "DD/MM/YYYY") as data_cadastro,
             {{ parse_date(process_null("data_cadastro")) }} as data_cadastro,
             {{ parse_date(process_null("data_ultima_atualizacao_do_cadastro")) }} as data_ultima_atualizacao_cadastro,
             {{ process_null("situacao_usuario") }} as situacao_usuario,
