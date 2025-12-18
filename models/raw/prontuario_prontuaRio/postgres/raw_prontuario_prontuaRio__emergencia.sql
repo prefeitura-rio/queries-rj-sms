@@ -23,7 +23,7 @@ with
             json_extract_scalar(data, '$.be') as id_boletim,
             json_extract_scalar(data, '$.num_cor') as numero_cor,
             json_extract_scalar(data, '$.cor') as cor,
-            safe_cast(json_extract_scalar(data, '$.tempo_espera') as datetime) as tempo_espera,
+            json_extract_scalar(data, '$.tempo_espera') as tempo_espera,
             json_extract_scalar(data, '$.nome_pac') as paciente_nome,
             json_extract_scalar(data, '$.motivo') as motivo,
             json_extract_scalar(data, '$.dt_ent_saida') as data_entrada_saida,
@@ -35,14 +35,20 @@ with
 
     final as (
         select 
-            {{ process_null('id_boletim') }} as id_boletim,
+            safe_cast(id_boletim as int64) as id_boletim,
             {{ process_null('numero_cor') }} as numero_cor,
             {{ process_null('cor') }} as cor,
-            tempo_espera,
+            safe.parse_date('%Y%m%d', tempo_espera) as tempo_espera,
             {{ process_null('paciente_nome') }} as paciente_nome,
             {{ process_null('motivo') }} as motivo,
-            data_entrada_saida,
-            {{ process_null('cpf_emergencia') }} as cpf_emergencia,
+            safe.parse_date('%Y%m%d', data_entrada_saida) as data_entrada_saida,
+            case 
+                when cpf_emergencia like "%000%"
+                    then cast(null as string)
+                when cpf_emergencia = '0'
+                    then cast(null as string)
+                else {{ process_null('cpf_emergencia') }}
+            end as cpf_emergencia,
             cnes,
             loaded_at,
             cast(safe_cast(loaded_at as timestamp) as date) as data_particao
@@ -50,4 +56,7 @@ with
         qualify row_number() over(partition by id_boletim, cnes order by loaded_at desc) = 1
     )
 
-select * from final
+select
+    concat(cnes, '.', id_boletim) as gid_boletim,
+    *
+from final

@@ -7,7 +7,11 @@
         '<h3>':'',      '</h3>':'\\n',
         '<b>':'',       '</b>':'',
         '<strong>':'',  '</strong>':'',
-        '<br>':'\\n',    '<br />':'\\n'
+        '<br>':'\\n',   '<br />':'\\n',
+        '<em>':'',      '</em>':'',
+        '<tr>':'',      '</tr>':'',
+        '<u>':'',       '</u>':''
+
     } %}
 
     {% for tag, value in tags.items() %}
@@ -37,7 +41,7 @@
         '&ucirc;': 'û',     '&Ucirc;': 'Û',     '&uuml;': 'ü',      '&Uuml;': 'Ü',
         
         '&ccedil;': 'ç',    '&Ccedil;': 'Ç',    '&ordf;': 'ª',      '&ordm;': 'º',
-        '&rdquo;': '”',     '&ldquo;':'“'
+        '&rdquo;': '”',     '&ldquo;':'“',      '&deg;':'°'
     } %}
 
     {% for entity, char in entities.items() %}

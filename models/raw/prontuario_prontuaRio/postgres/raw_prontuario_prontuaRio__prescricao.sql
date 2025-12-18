@@ -36,8 +36,8 @@ prescricao as (
 
 final as (
     select 
-        {{ process_null('id_prescricao') }} as id_prescricao,
-        {{ process_null('id_atendimento') }} as id_atendimento,
+        safe_cast(id_prescricao as int64) as id_prescricao,
+        safe_cast(id_atendimento as int64) as id_atendimento,
         {{ process_null('impressao_farmacia') }} as impressao_farmacia,
         {{ process_null('impressao_nutricao') }} as impressao_nutricao,
         {{ process_null('status_impressao') }} as status_impressao,
@@ -46,12 +46,14 @@ final as (
         {{ process_null('ativo_aprasamento') }} as ativo_aprasamento,
         {{ process_null('status_aprasado') }} as status_aprasado,
         cnes,
-        loaded_at
+        loaded_at,
+        date(safe_cast(loaded_at as timestamp)) as data_particao
     from prescricao
     qualify row_number() over(partition by id_prescricao, id_atendimento, cnes order by loaded_at desc) = 1
 )
 
 select 
-    *, 
-    date(safe_cast(loaded_at as timestamp)) as data_particao 
+    concat(cnes, '.', id_prescricao) as gid_prescricao,
+    concat(cnes, '.', id_atendimento) as gid_atendimento,
+    * 
 from final

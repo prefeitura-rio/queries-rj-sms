@@ -18,16 +18,17 @@ source_ as (
   select * from {{ source('brutos_prontuario_prontuaRio_staging', 'intb6') }} 
 ),
 
-intb6 as (
+internacao_cadastro as (
     select
         json_extract_scalar(data, '$.ib6regist') as id_registro,
-        json_extract_scalar(data, '$.ib6prontuar') as id_prontuario,
+        json_extract_scalar(data, '$.ib6prontuar') as id_prontuario1,
+        json_extract_scalar(data, '$.ib6cpfpac') as paciente_cpf,
         concat(
             json_extract_scalar(data, '$.ib6pnome'),
             json_extract_scalar(data, '$.ib6compos')
         ) as paciente_nome,
         json_extract_scalar(data, '$.ib6sexo') as sexo,
-        parse_date('%Y%m%d',json_extract_scalar(data, '$.ib6dtnasc')) as paciente_data_nascimento,
+        safe.parse_date('%Y%m%d',json_extract_scalar(data, '$.ib6dtnasc')) as paciente_data_nascimento,
         json_extract_scalar(data, '$.ib6pai') as paciente_pai,
         json_extract_scalar(data, '$.ib6mae') as paciente_mae,
         json_extract_scalar(data, '$.ib6natural') as paciente_naturalidade,
@@ -45,26 +46,25 @@ intb6 as (
             when json_extract_scalar(data, '$.ib6dtultaten') in ('00000000','0', '') 
             then cast(null as date)
             when regexp_contains(json_extract_scalar(data, '$.ib6dtultaten'), r'^\d{8}$') 
-            then parse_date('%Y%m%d',json_extract_scalar(data, '$.ib6dtultaten')) 
+            then safe.parse_date('%Y%m%d',json_extract_scalar(data, '$.ib6dtultaten')) 
         end as ultimo_atendimento_data,
         case 
             when json_extract_scalar(data, '$.ib6dtcad') in ('00000000','0', '') 
             then cast(null as date)
             when regexp_contains(json_extract_scalar(data, '$.ib6dtcad'), r'^\d{8}$') 
-            then parse_date('%Y%m%d',json_extract_scalar(data, '$.ib6dtcad')) 
+            then safe.parse_date('%Y%m%d',json_extract_scalar(data, '$.ib6dtcad')) 
         end as cadastro_data,
-        json_extract_scalar(data, '$.ib6idpron') as id_prontuario,
+        json_extract_scalar(data, '$.ib6idpron') as id_prontuario2,
         json_extract_scalar(data, '$.ib6depend') as depend, -- Confirmar nome de coluna
         case 
             when json_extract_scalar(data, '$.ib6dtobito') in ('00000000', '0', '') 
             then cast(null as date)
-            else parse_date('%Y%m%d', json_extract_scalar(data, '$.ib6dtobito'))
+            else safe.parse_date('%Y%m%d', json_extract_scalar(data, '$.ib6dtobito'))
         end as obito_data,
         json_extract_scalar(data, '$.ib6codcs') as codcs, -- Confirmar nome da coluna
         json_extract_scalar(data, '$.ib6cns') as cns,
         json_extract_scalar(data, '$.ib6tipodoc') as documento_tipo,
         json_extract_scalar(data, '$.ib6codmun') as id_municipio,
-        json_extract_scalar(data, '$.ib6cpfpac') as paciente_cpf,
         json_extract_scalar(data, '$.ib6cod.logra') as id_logradouro,
         cnes,
         loaded_at
@@ -73,8 +73,15 @@ intb6 as (
 
 final as (
     select 
-        {{ process_null('id_registro') }} as id_registro,
-        {{ process_null('id_prontuario') }} as id_prontuario,
+        safe_cast(id_registro as int64) as id_registro,
+        safe_cast(id_prontuario1 as int64) as id_prontuario1,
+        case 
+            when paciente_cpf like "%000%"
+                then cast(null as string)
+            when paciente_cpf = "0"
+                then cast(null as string)
+            else {{ process_null('paciente_cpf') }}
+        end as paciente_cpf,
         paciente_nome,
         {{ process_null('sexo') }} as sexo,
         paciente_data_nascimento,
@@ -94,18 +101,22 @@ final as (
         ultimo_atendimento_data,
         cadastro_data,
         {{ process_null('depend') }} as depend,
+        {{ process_null('id_prontuario2') }} as id_prontuario2,
         obito_data,
         {{ process_null('codcs') }} as codcs,
         {{ process_null('cns') }} as cns,
         {{ process_null('documento_tipo') }} as documento_tipo,
         {{ process_null('id_municipio') }} as id_municipio,
-        {{ process_null('paciente_cpf') }} as paciente_cpf,
         {{ process_null('id_logradouro') }} as id_logradouro,
         cnes,
         loaded_at,
         cast(safe_cast(loaded_at as timestamp) as date) as data_particao
-    from intb6
-    qualify row_number() over(partition by id_registro, id_prontuario, cnes order by loaded_at desc) = 1
+    from internacao_cadastro
+    qualify row_number() over(partition by id_registro, id_prontuario1, cnes order by loaded_at desc) = 1
 )
 
-select * from final
+select 
+    concat(cnes, '.', id_prontuario1) as gid_prontuario,
+    concat(cnes, '.', id_registro) as gid_registro,
+    *
+from final

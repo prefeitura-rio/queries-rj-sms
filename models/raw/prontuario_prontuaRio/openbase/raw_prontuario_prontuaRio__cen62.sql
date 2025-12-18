@@ -22,9 +22,14 @@ with
   cadastro as (
     select
         json_extract_scalar(data, '$.n62numbolet') as id_boletim,
-        
         json_extract_scalar(data, '$.d62inter') as internacao_data,
-        json_extract_scalar(data, '$.c62hinter') as internacao_hora,
+        case 
+            when json_extract_scalar(data, '$.d62inter') in ('', '00000000') 
+                then null
+            when regexp_contains(json_extract_scalar(data, '$.c62hinter'), r'^\d{4}$') 
+                then safe.parse_time('%H%M',json_extract_scalar(data, '$.c62hinter'))
+            else null
+        end as internacao_hora,
         json_extract_scalar(data, '$.d62alta') as alta_data,
         json_extract_scalar(data, '$.c62halta') as alta_hora,
         json_extract_scalar(data, '$.c62sexo') as paciente_sexo,
@@ -61,7 +66,7 @@ with
 
 final as (
     select
-        {{ process_null('id_boletim') }} as id_boletim,
+        safe_cast(id_boletim as int64) as id_boletim,
         internacao_data,
         internacao_hora,
         alta_data,
@@ -76,7 +81,11 @@ final as (
         {{ process_null('origem') }} as origem,
         {{ process_null('motivo') }} as motivo,
         {{ process_null('tipo_alta') }} as tipo_alta,
-        {{ process_null('cpf_alta') }} as cpf_alta,
+        case 
+            when cpf_alta like "%000%" 
+                then cast(null as string)
+            else {{ process_null('cpf_alta') }}
+        end as cpf_alta,
         {{ process_null('codussai') }} as codussai,
         {{ process_null('motivo_atendimento') }} as motivo_atendimento,
         {{ process_null('caso_policial') }} as caso_policial,
@@ -100,5 +109,8 @@ final as (
     qualify row_number() over(partition by id_boletim, cnes order by loaded_at desc) = 1
 )
 
-select * from final
+select 
+    concat(cnes, '.', id_boletim) as gid_boletim,
+    *
+from final
 

@@ -30,8 +30,8 @@ with
       json_extract_scalar(data, '$.c02codclin') as id_clinica,
       json_extract_scalar(data, '$.c02codleito') as id_leito,
       json_extract_scalar(data, '$.c02procsol') as id_procsol,
-      parse_date('%Y%m%d', json_extract_scalar(data, '$.d02inter')) as internacao_data,
-      parse_time('%H%M', json_extract_scalar(data, '$.c02hora')) as internacao_hora,
+      json_extract_scalar(data, '$.d02inter') as internacao_data,
+      json_extract_scalar(data, '$.c02hora') as internacao_hora,
       json_extract_scalar(data, '$.c02carint') as carint,
       json_extract_scalar(data, '$.c02cid') as codigo_cid,
       json_extract_scalar(data, '$.c02estado') as estado,
@@ -67,16 +67,28 @@ with
 
  final as (
   select 
-      {{ process_null('id_prontuario') }} as id_prontuario,
-      {{ process_null('id_boletim') }} as id_boletim,
+      safe_cast(id_prontuario as int64) as id_prontuario,
+      safe_cast(id_boletim as int64) as id_boletim,
       {{ process_null('codigo_cid10') }} as codigo_cid10,
-      {{ process_null('medico_solicitante_cpf') }} as medico_solicitante_cpf,
-      {{ process_null('medico_responsavel_cpf') }} as medico_responsavel_cpf,
+      case 
+        when medico_solicitante_cpf like "%000%"
+          then cast(null as string)
+        when medico_solicitante_cpf = '0'
+          then cast(null as string)
+        else {{ process_null('medico_solicitante_cpf') }}
+      end as medico_solicitante_cpf,
+      case 
+        when medico_responsavel_cpf like "%000%"
+          then cast(null as string)
+        when medico_responsavel_cpf = '0'
+          then cast(null as string)
+        else {{ process_null('medico_responsavel_cpf') }}
+      end as medico_responsavel_cpf,
       {{ process_null('id_clinica') }} as id_clinica,
       {{ process_null('id_leito') }} as id_leito,
       {{ process_null('id_procsol') }} as id_procsol,
-      internacao_data,
-      internacao_hora,
+      safe.parse_date('%Y%m%d', internacao_data) as internacao_data,
+      safe.parse_date('%H%M', internacao_hora) as internacao_hora,
       {{ process_null('carint') }} as carint,
       {{ process_null('codigo_cid') }} as codigo_cid,
       {{ process_null('estado') }} as estado,
@@ -110,4 +122,8 @@ with
   from internacoes
  )
 
-select * from final
+select 
+  concat(cnes, '.', id_prontuario) as gid_prontuario,
+  concat(cnes, '.', id_boletim) as gid_boletim,
+  *
+from final

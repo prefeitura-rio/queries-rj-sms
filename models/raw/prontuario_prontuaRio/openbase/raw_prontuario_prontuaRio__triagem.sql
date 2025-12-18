@@ -29,7 +29,7 @@ triagem as (
             json_extract_scalar(data, '$.ds_receituario') as descricao_receituario,
             json_extract_scalar(data, '$.cpf_profissional') as profissional_cpf,
             json_extract_scalar(data, '$.no_profissional') as profissional_nome,
-            safe_cast(json_extract_scalar(data, '$.data_reg') as datetime) as data_registro,
+            json_extract_scalar(data, '$.data_reg') as data_registro,
             json_extract_scalar(data, '$.cpf_profissional_2') as profissional_cpf_2,
             json_extract_scalar(data, '$.no_profissional_2') as profissional_nome_2,
             json_extract_scalar(data, '$.ds_atividade') as descricao_atividade,
@@ -68,10 +68,10 @@ triagem as (
             json_extract_scalar(data, '$.num_consultas_triagem') as numero_consultas,
             json_extract_scalar(data, '$.local_triagem') as local,
             json_extract_scalar(data, '$.hiv_triagem') as hiv,
-            safe_cast(json_extract_scalar(data, '$.dt_obstetrica_triagem') as date)as dt_obstetrica_triagem,
+            json_extract_scalar(data, '$.dt_obstetrica_triagem') as dt_obstetrica_triagem,
             json_extract_scalar(data, '$.resultado_triagem') as resultado_triagem,
-            safe_cast(json_extract_scalar(data, '$.tempo_acolh_triagem') as datetime) as tempo_acolhimento,
-            safe_cast(json_extract_scalar(data, '$.tempo_atend_triagem') as datetime) as tempo_atendimento,
+            json_extract_scalar(data, '$.tempo_acolh_triagem') as tempo_acolhimento,
+            json_extract_scalar(data, '$.tempo_atend_triagem') as tempo_atendimento,
             json_extract_scalar(data, '$.status_fatu') as status_fatu,
             json_extract_scalar(data, '$.cpf_profissional_atend') as profissional_atendimento_cpf,
             json_extract_scalar(data, '$.parto_normal') as parto_normal,
@@ -83,15 +83,15 @@ triagem as (
 
 final as (
   select
-    {{ process_null('id_prontuario') }} as id_prontuario,
-    {{ process_null('id_boletim') }} as id_boletim,
+    safe_cast(id_prontuario as int64) as id_prontuario,
+    safe_cast(id_boletim as int64) as id_boletim,
     {{ process_null('id_internacao') }} as id_internacao,
     {{ process_null('id_receituario') }} as id_receituario,
-    {{ process_null('queixas') }} as queixas,
-    {{ remove_html('descricao_receituario') }} as descricao_receituario,
+    upper(queixas) as queixas,
+    upper({{ remove_html('descricao_receituario') }}) as descricao_receituario,
     {{ process_null('profissional_cpf') }} as profissional_cpf,
     {{ process_null('profissional_nome') }} as profissional_nome,
-    data_registro,
+    safe_cast(data_registro as datetime) as data_registro,
     {{ process_null('profissional_cpf_2') }} as profissional_cpf_2,
     {{ process_null('profissional_nome_2') }} as profissional_nome_2,
     {{ process_null('descricao_atividade') }} as descricao_atividade,
@@ -129,19 +129,30 @@ final as (
     {{ process_null('numero_consultas') }} as numero_consultas,
     {{ process_null('local') }} as local,
     {{ process_null('hiv') }} as hiv,
-    dt_obstetrica_triagem,
+    safe.parse_date('%Y%m%d', dt_obstetrica_triagem) as dt_obstetrica_triagem,
     {{ process_null('resultado_triagem') }} as resultado_triagem,
-    tempo_acolhimento,
-    tempo_atendimento,
+    safe.parse_date('%Y%m%d', tempo_acolhimento) as tempo_acolhimento,
+    safe.parse_date('%Y%m%d', tempo_atendimento) as tempo_atendimento,
     {{ process_null('status_fatu') }} as status_fatu,
-    {{ process_null('profissional_atendimento_cpf') }} as profissional_atendimento_cpf,
+    case 
+      when profissional_atendimento_cpf like '%000%'
+        then cast(null as string)
+      when profissional_atendimento_cpf = '0'
+        then cast(null as string)
+      else {{ process_null('profissional_atendimento_cpf') }}
+    end as profissional_atendimento_cpf,
     {{ process_null('parto_normal') }} as parto_normal,
     {{ process_null('parto_cesario') }} as parto_cesario,
     cnes,
-    loaded_at,
+    cast(loaded_at as timestamp) as loaded_at,
     cast(safe_cast(loaded_at as timestamp) as date) as data_particao
   from triagem
   qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by data_registro desc, loaded_at desc) = 1
 )
 
-select * from final
+select 
+  concat(cnes, '.', id_boletim) as gid_boletim,
+  concat(cnes, '.', id_internacao) as gid_internacao,
+  concat(cnes, '.', id_receituario) as gid_receituario,
+  *
+from final

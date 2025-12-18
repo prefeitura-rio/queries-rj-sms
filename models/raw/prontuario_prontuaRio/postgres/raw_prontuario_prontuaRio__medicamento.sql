@@ -49,8 +49,8 @@ with
 
     final as (
         select 
-            {{ process_null('id_prescricao') }} as id_prescricao,
-            {{ process_null('id_medicamento') }} as id_medicamento,
+            safe_cast(id_prescricao as int64) as id_prescricao,
+            safe_cast(id_medicamento as int64) as id_medicamento,
             {{ process_null('medicamento_nome') }} as medicamento_nome,
             {{ process_null('via') }} as via,
             {{ process_null('dose') }} as dose,
@@ -77,4 +77,8 @@ with
         qualify row_number() over(partition by id_prescricao, id_medicamento, cnes order by loaded_at desc) = 1
     )
 
-select * from final
+select
+    concat(cnes, '.', id_prescricao) as gid_prescricao,
+    concat(cnes, '.', id_medicamento) as gid_medicamento,
+    *
+from final

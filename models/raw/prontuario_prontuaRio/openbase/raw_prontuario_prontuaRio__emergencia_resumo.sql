@@ -27,8 +27,12 @@ with
         json_extract_scalar(data, '$.c54pident'),
         json_extract_scalar(data, '$.c54compos1')
       ) as paciente_nome,
-      json_extract_scalar(data, '$.c54sexo') as paciente_sexo,
-      json_extract_scalar(data, '$.d54nasc') as paciente_data_nascimento, -- TODO: Tratar data
+      case trim(upper(json_extract_scalar(data, '$.c54sexo')))
+        when '1' then 'Masculino'
+        when '3' then 'Feminino'
+        else 'Outro'
+      end as paciente_sexo,
+      safe.parse_date('%Y%m%d',json_extract_scalar(data, '$.d54nasc')) as paciente_data_nascimento, -- TODO: Tratar data
       safe_cast(json_extract_scalar(data, '$.i54idade') as int64) as paciente_idade,
       json_extract_scalar(data, '$.i54tipidade') as tipo_idade, -- TODO: Confirmar nome da coluna
       json_extract_scalar(data, '$.c54natural') as naturalidade,
@@ -46,13 +50,45 @@ with
       json_extract_scalar(data, '$.c54cep') as paciente_cep,
       json_extract_scalar(data, '$.c54tel') as paciente_telefone,
       json_extract_scalar(data, '$.c54setor') as setor,
-      json_extract_scalar(data, '$.d54inter') as internacao_data, -- TODO: Tratar data
-      json_extract_scalar(data, '$.c54hinter') as internacao_hora, -- TODO: Tratar hora
+
+      case
+        when json_extract_scalar(data, '$.d54inter') in ('00000000','0', '', '99999999') 
+          then cast(null as date)
+        when regexp_contains(json_extract_scalar(data, '$.d54inter'), r'^\d{8}$') 
+          then coalesce(
+            safe.parse_date('%Y%m%d', json_extract_scalar(data, '$.d54inter')),
+            safe.parse_date('%Y%d%m', json_extract_scalar(data, '$.d54inter'))
+          )
+        else null
+      end as internacao_data,
+
+      case
+        when json_extract_scalar(data, '$.c54hinter') in ('0', '', '9999') 
+          then cast(null as time)
+        when regexp_contains(json_extract_scalar(data, '$.c54hinter'), r'^\d{4}$') 
+          then safe.parse_time('%H%M', json_extract_scalar(data, '$.c54hinter'))
+        else null
+      end as internacao_hora,
       json_extract_scalar(data, '$.c54cid') as cid, -- process null
       json_extract_scalar(data, '$.c54estado') as estado,
       json_extract_scalar(data, '$.c54origem') as origem,
-      json_extract_scalar(data, '$.d54alta') as alta_data, -- TODO: Tratar data
-      json_extract_scalar(data, '$.c54halta') as alta_hora, -- TODO: Tratar hora
+      case 
+          when json_extract_scalar(data, '$.d54alta') in ('00000000','0', '', '99999999') 
+            then cast(null as date)
+          when regexp_contains(json_extract_scalar(data, '$.d54alta'), r'^\d{8}$') 
+            then coalesce(
+              safe.parse_date('%Y%m%d', json_extract_scalar(data, '$.d54alta')),
+              safe.parse_date('%Y%d%m', json_extract_scalar(data, '$.d54alta'))
+            )
+          else null
+      end as alta_data,
+      case 
+          when json_extract_scalar(data, '$.c54halta') in ('0', '', '9999') 
+            then cast(null as time)
+          when regexp_contains(json_extract_scalar(data, '$.c54halta'), r'^\d{4}$') 
+            then safe.parse_time('%H%M', json_extract_scalar(data, '$.c54halta'))
+          else null
+      end as alta_hora,
       json_extract_scalar(data, '$.c54motivo') as motivo,
       json_extract_scalar(data, '$.c54tipalta') as tipo_alta,
       json_extract_scalar(data, '$.c54cpfalta') as medico_responsavel_alta_cpf,
@@ -84,16 +120,20 @@ with
 
   final as (
     select
-        {{ process_null('id_boletim') }} as id_boletim,
-        {{ process_null('id_prontuario') }} as id_prontuario,
+        safe_cast(id_boletim as int64) as id_boletim,
+        safe_cast(id_prontuario as int64) as id_prontuario,
         {{ process_null('paciente_nome') }} as paciente_nome,
         {{ process_null('paciente_sexo') }} as paciente_sexo,
-        {{ process_null('paciente_data_nascimento') }} as paciente_data_nascimento,
+        paciente_data_nascimento,
         paciente_idade,
         {{ process_null('tipo_idade') }} as tipo_idade,
         {{ process_null('naturalidade') }} as naturalidade,
         {{ process_null('nacionalidade') }} as nacionalidade,
-        {{ process_null('paciente_cpf') }} as paciente_cpf,
+        case
+          when paciente_cpf like '%000%' or paciente_cpf = '0'
+            then cast(null as string)
+          else {{ process_null('paciente_cpf') }}
+        end as paciente_cpf,
         {{ process_null('paciente_pai_nome') }} as paciente_pai_nome,
         {{ process_null('paciente_mae_nome') }} as paciente_mae_nome,
         {{ process_null('paciente_responsavel') }} as paciente_responsavel,
@@ -106,16 +146,22 @@ with
         {{ process_null('paciente_cep') }} as paciente_cep,
         {{ process_null('paciente_telefone') }} as paciente_telefone,
         {{ process_null('setor') }} as setor,
-        {{ process_null('internacao_data') }} as internacao_data,
-        {{ process_null('internacao_hora') }} as internacao_hora,
+        internacao_data,
+        internacao_hora,
         {{ process_null('cid') }} as cid,
         {{ process_null('estado') }} as estado,
         {{ process_null('origem') }} as origem,
-        {{ process_null('alta_data') }} as alta_data,
-        {{ process_null('alta_hora') }} as alta_hora,
+        alta_data,
+        alta_hora,
         {{ process_null('motivo') }} as motivo,
         {{ process_null('tipo_alta') }} as tipo_alta,
-        {{ process_null('medico_responsavel_alta_cpf') }} as medico_responsavel_alta_cpf,
+        case 
+          when medico_responsavel_alta_cpf like '%000%'
+            then cast(null as string)
+          when medico_responsavel_alta_cpf = '0'
+            then cast(null as string)
+          else {{ process_null('medico_responsavel_alta_cpf') }}
+        end as medico_responsavel_alta_cpf,
         {{ process_null('codussai') }} as codussai,
         {{ process_null('motivo_atendimento') }} as motivo_atendimento,
         {{ process_null('caso_policial') }} as caso_policial,
@@ -144,4 +190,8 @@ with
     qualify row_number() over(partition by id_boletim, id_prontuario, cnes order by loaded_at desc) = 1
   )
 
-select * from final
+select 
+  concat(cnes,'.',id_boletim) as gid_boletim,
+  concat(cnes,'.',id_prontuario) as gid_prontuario,
+  *
+from final

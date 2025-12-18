@@ -27,12 +27,19 @@ with
     from source_
   ),
 
-    deduplicated as (
-      select * from prontuario_be 
+    final as (
+      select 
+        safe_cast(id_prontuario as int64) as id_prontuario,
+        safe_cast(id_boletim as int64) as id_boletim,
+        cnes,
+        loaded_at,
+        cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+      from prontuario_be 
       qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by loaded_at desc) = 1
     )
 
-select 
-  *, 
-  cast(safe_cast(loaded_at as timestamp) as date) as data_particao
-from deduplicated
+select
+  concat(cnes, '.', id_prontuario) as gid_prontuario,
+  concat(cnes, '.', id_boletim) as gid_boletim,
+  *
+from final

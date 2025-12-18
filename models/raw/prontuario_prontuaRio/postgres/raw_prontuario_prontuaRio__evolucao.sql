@@ -23,13 +23,13 @@ with
             json_extract_scalar(data, '$.id_be') as id_boletim,
             json_extract_scalar(data, '$.cns') as cns,
             json_extract_scalar(data, '$.registro') as registro, -- process null
-            safe_cast(json_extract_scalar(data, '$.data_reg') as datetime) as registro_data,
-            safe_cast(json_extract_scalar(data, '$.data_evo') as datetime) as evolucao_data,
+            json_extract_scalar(data, '$.data_reg') as registro_data,
+            json_extract_scalar(data, '$.data_evo') as evolucao_data,
             json_extract_scalar(data, '$.profissional') as nome_profissional,
             json_extract_scalar(data, '$.id_profissional') as id_profissional, -- CPF?
             json_extract_scalar(data, '$.descricao') as descricao, 
             json_extract_scalar(data, '$.tipo') as tipo,
-            safe_cast(json_extract_scalar(data, '$.data_atu') as datetime) as atualizacao_data,
+            json_extract_scalar(data, '$.data_atu') as atualizacao_data,
             json_extract_scalar(data, '$.id_cen38') as id_cen38,
             json_extract_scalar(data, '$.id_am12') as id_am12,
             json_extract_scalar(data, '$.id_cen02') as id_cen02,
@@ -52,18 +52,24 @@ with
     ),
 
     final as (
-        select 
-            {{ process_null('id_prontuario') }} as id_prontuario,
-            {{ process_null('id_boletim') }} as id_boletim,
+        select
+            safe_cast(id_prontuario as int64) as id_prontuario, 
+            safe_cast(id_boletim as int64) as id_boletim,
             {{ process_null('cns') }} as cns,
             {{ process_null('registro') }} as registro,
-            evolucao_data,
-            registro_data,
+            safe_cast(evolucao_data as datetime) as evolucao_data,
+            safe_cast(registro_data as datetime) as registro_data,
             {{ process_null('nome_profissional') }} as nome_profissional,
-            {{ process_null('id_profissional') }} as id_profissional,
+            case 
+                when id_profissional like '%000%'
+                    then cast(null as string)
+                when id_profissional = '0'
+                    then cast(null as string)
+                else {{ process_null('id_profissional') }}
+            end as cpf_profissional,
             {{ remove_html('descricao') }} as descricao,
             {{ process_null('tipo') }} as tipo,
-            atualizacao_data,
+            safe_cast(atualizacao_data as datetime) as atualizacao_data,
             {{ process_null('id_cen38') }} as id_cen38,
             {{ process_null('id_am12') }} as id_am12,
             {{ process_null('id_cen02') }} as id_cen02,
@@ -87,5 +93,8 @@ with
         qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by evolucao_data desc, loaded_at desc) = 1
     )
 
-select *
+select 
+    concat(cnes, '.', id_prontuario) as gid_prontuario,
+    concat(cnes, '.', id_boletim) as gid_boletim,
+    *
 from final

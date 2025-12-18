@@ -20,3 +20,5 @@ sources:
       - name: medicamento
       - name: hp_rege_emerg
       - name: hp_prontuario_be
+      - name: paciente
+      - name: medico

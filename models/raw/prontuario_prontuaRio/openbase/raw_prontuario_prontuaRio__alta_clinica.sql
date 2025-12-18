@@ -67,7 +67,7 @@ with
 
 final as (
   select 
-      {{ process_null('id_prontuario') }} as id_prontuario,
+      safe_cast(id_prontuario as int64) as id_prontuario,
       internacao_data,
       internacao_hora,
       alta_data,
@@ -77,7 +77,11 @@ final as (
       {{ process_null('id_clinica') }} as id_clinica,
       {{ process_null('id_leito') }} as id_leito,
       {{ process_null('id_unidade') }} as id_unidade,
-      {{ process_null('alta_cpf') }} as alta_cpf,
+      case 
+        when alta_cpf like '%000%'
+          then cast(null as string)
+        else {{ process_null('alta_cpf') }}
+      end as alta_cpf,
       {{ process_null('proc') }} as proc,
       {{ process_null('codigo_cid10') }} as codigo_cid10,
       {{ process_null('status') }} as status,
@@ -87,4 +91,10 @@ final as (
     from alta_clinica
 )
 
-select * from final
+select 
+  concat(cnes, '.', id_prontuario) as gid_prontuario,
+  concat(cnes, '.', id_clinica) as gid_clinica,
+  concat(cnes, '.', id_leito) as gid_leito,
+  concat(cnes, '.', id_unidade) as gid_unidade,
+  *
+from final

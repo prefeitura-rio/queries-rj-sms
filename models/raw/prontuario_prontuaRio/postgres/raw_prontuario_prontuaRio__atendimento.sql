@@ -28,9 +28,9 @@ with
       json_extract_scalar(data,'$.leito') as id_leito,
       json_extract_scalar(data,'$.clinica') as clinica,
       json_extract_scalar(data,'$.recomendacoes') as recomendacoes,
-      safe_cast(json_extract_scalar(data,'$.data_hora') as datetime) as datahora,
-      safe_cast(json_extract_scalar(data,'$.data_internacao') as date) as internacao_data,
-      safe_cast(json_extract_scalar(data,'$.data_atendimento')as date) as atendimento_data,
+      json_extract_scalar(data,'$.data_hora') as datahora,
+      json_extract_scalar(data,'$.data_internacao') as internacao_data,
+      json_extract_scalar(data,'$.data_atendimento') as atendimento_data,
       json_extract_scalar(data,'$.ativo') as ativo_indicador,
       json_extract_scalar(data,'$.cod_clin') as id_clinica,
       json_extract_scalar(data,'$.enfermeria') as enfermaria,
@@ -77,15 +77,15 @@ with
 
 final as (
   select 
-    {{ process_null('id_atendimento') }} as id_atendimento,
-    {{ process_null('id_paciente') }} as id_paciente,
+    safe_cast(id_atendimento as int64) as id_atendimento,
+    safe_cast(id_paciente as int64) as id_paciente,
     {{ process_null('medico_crm') }} as medico_crm,
     {{ process_null('id_leito') }} as id_leito,
     {{ process_null('clinica') }} as clinica,
     {{ process_null('recomendacoes') }} as recomendacoes,
-    datahora,
-    internacao_data,
-    atendimento_data,
+    safe_cast(datahora as datetime) as datahora,  
+    safe.parse_date('%Y-%m-%d', internacao_data) as internacao_data,
+    safe.parse_date('%Y-%m-%d', atendimento_data) as atendimento_data,
     {{ process_null('ativo_indicador') }} as ativo_indicador,
     {{ process_null('id_clinica') }} as id_clinica,
     {{ process_null('enfermaria') }} as enfermaria,
@@ -121,7 +121,7 @@ final as (
     {{ process_null('obs_nutricao') }} as obs_nutricao,
     {{ process_null('psicologia_ok') }} as psicologia_ok,
     {{ process_null('sala') }} as sala,
-    prescricao_data,
+    safe.parse_date('%Y%m%d', prescricao_data) as prescricao_data,
     {{ process_null('precisa_hemo') }} as precisa_hemo, 
     {{ process_null('obs_hemo') }} as obs_hemo,
     {{ process_null('hemo_ok') }} as hemo_ok,
@@ -132,14 +132,7 @@ final as (
 )
 
 select 
-    {{
-        dbt_utils.generate_surrogate_key(
-                [
-                    'id_atendimento',
-                    'id_paciente',
-                    'cnes'
-                ]
-            )
-        }} as id_hci,
-    *
-  from final
+  concat(cnes, '.', id_atendimento) as gid_atendimento,
+  concat(cnes, '.', id_paciente) as gid_paciente,
+  *
+from final
