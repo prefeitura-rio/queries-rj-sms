@@ -19,16 +19,16 @@ vacinacoes_api as (
   WHERE
     v.vacina_registro_tipo not in ('nao aplicavel', 'nao aplicada') and
     (
-      (v.vacina_registro_data between '2025-08-04' and '2025-12-16' and e.area_programatica = '10') or
-      (v.vacina_registro_data between '2025-08-04' and '2025-12-16' and e.area_programatica = '21') or
-      (v.vacina_registro_data between '2025-06-16' and '2025-12-16' and e.area_programatica = '22') or
-      (v.vacina_registro_data between '2025-06-30' and '2025-12-16' and e.area_programatica = '31') or
-      (v.vacina_registro_data between '2025-08-11' and '2025-12-16' and e.area_programatica = '32') or
-      (v.vacina_registro_data between '2025-08-11' and '2025-12-16' and e.area_programatica = '33') or
-      (v.vacina_registro_data between '2025-08-18' and '2025-12-16' and e.area_programatica = '40') or
-      (v.vacina_registro_data between '2025-08-18' and '2025-12-16' and e.area_programatica = '51') or
-      (v.vacina_registro_data between '2025-08-25' and '2025-12-16' and e.area_programatica = '52') or
-      (v.vacina_registro_data between '2025-08-25' and '2025-12-16' and e.area_programatica = '53')
+      (v.vacina_registro_data between '2025-08-05' and '2025-12-16' and e.area_programatica = '10') or
+      (v.vacina_registro_data between '2025-08-05' and '2025-12-16' and e.area_programatica = '21') or
+      (v.vacina_registro_data between '2025-06-17' and '2025-12-16' and e.area_programatica = '22') or
+      (v.vacina_registro_data between '2025-07-01' and '2025-12-16' and e.area_programatica = '31') or
+      (v.vacina_registro_data between '2025-08-12' and '2025-12-16' and e.area_programatica = '32') or
+      (v.vacina_registro_data between '2025-08-12' and '2025-12-16' and e.area_programatica = '33') or
+      (v.vacina_registro_data between '2025-08-19' and '2025-12-16' and e.area_programatica = '40') or
+      (v.vacina_registro_data between '2025-08-19' and '2025-12-16' and e.area_programatica = '51') or
+      (v.vacina_registro_data between '2025-08-26' and '2025-12-16' and e.area_programatica = '52') or
+      (v.vacina_registro_data between '2025-08-26' and '2025-12-16' and e.area_programatica = '53')
     )
 ),
 vacinacoes_bkp as (
@@ -44,16 +44,16 @@ vacinacoes_bkp as (
   WHERE
     v.tipo_registro not in ('Não aplicavel', 'Não aplicada') and
     (
-      (v.data_registro between '2025-08-04' and '2025-12-16' and e.area_programatica = '10') or
-      (v.data_registro between '2025-08-04' and '2025-12-16' and e.area_programatica = '21') or
-      (v.data_registro between '2025-06-16' and '2025-12-16' and e.area_programatica = '22') or
-      (v.data_registro between '2025-06-30' and '2025-12-16' and e.area_programatica = '31') or
-      (v.data_registro between '2025-08-11' and '2025-12-16' and e.area_programatica = '32') or
-      (v.data_registro between '2025-08-11' and '2025-12-16' and e.area_programatica = '33') or
-      (v.data_registro between '2025-08-18' and '2025-12-16' and e.area_programatica = '40') or
-      (v.data_registro between '2025-08-18' and '2025-12-16' and e.area_programatica = '51') or
-      (v.data_registro between '2025-08-25' and '2025-12-16' and e.area_programatica = '52') or
-      (v.data_registro between '2025-08-25' and '2025-12-16' and e.area_programatica = '53')
+      (v.data_registro between '2025-08-05' and '2025-12-16' and e.area_programatica = '10') or
+      (v.data_registro between '2025-08-05' and '2025-12-16' and e.area_programatica = '21') or
+      (v.data_registro between '2025-06-17' and '2025-12-16' and e.area_programatica = '22') or
+      (v.data_registro between '2025-07-01' and '2025-12-16' and e.area_programatica = '31') or
+      (v.data_registro between '2025-08-12' and '2025-12-16' and e.area_programatica = '32') or
+      (v.data_registro between '2025-08-12' and '2025-12-16' and e.area_programatica = '33') or
+      (v.data_registro between '2025-08-19' and '2025-12-16' and e.area_programatica = '40') or
+      (v.data_registro between '2025-08-19' and '2025-12-16' and e.area_programatica = '51') or
+      (v.data_registro between '2025-08-26' and '2025-12-16' and e.area_programatica = '52') or
+      (v.data_registro between '2025-08-26' and '2025-12-16' and e.area_programatica = '53')
     )
 ),
 
