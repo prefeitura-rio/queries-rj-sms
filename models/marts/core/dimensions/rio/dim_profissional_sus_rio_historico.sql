@@ -149,7 +149,11 @@ with
         left join
             (
                 select distinct safe_cast(cns as int64) as cns, cpf
-                from {{ ref("raw_cnes_gdb__profissional") }}
+                from {{ ref("raw_gdb_cnes__profissional") }}
+                qualify row_number() over (
+                    partition by cpf
+                    order by data_particao desc
+                ) = 1
             ) as gdb
 
             on safe_cast(ec.cns as int64) = gdb.cns

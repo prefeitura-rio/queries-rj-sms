@@ -40,7 +40,7 @@ renamed as (
         case
             when lower(trim(SEXO))='f' then 'Feminino'
             when lower(trim(SEXO))='m' then 'Masculino'
-            -- único outro valor aqui é strig vazia
+            -- único outro valor aqui é string vazia
             else null
         end as sexo,
 
