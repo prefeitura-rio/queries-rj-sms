@@ -1,6 +1,6 @@
 {{ 
     config(
-        alias='vacinacao',
+        alias='vacinacao_retransmissao',
         materialized='table',
     ) 
 }}
