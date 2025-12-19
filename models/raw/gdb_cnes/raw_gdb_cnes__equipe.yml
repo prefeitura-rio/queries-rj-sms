@@ -12,7 +12,7 @@ models:
         description: Código sequencial da equipe
       - name: equipe_nome
         description: Nome de referência da equipe
-      - name: id_tipo_equipe
+      - name: id_equipe_tipo
         description: Id do tipo de equipe
       - name: id_subtipo_equipe
         description: Id do tipo de equipe
