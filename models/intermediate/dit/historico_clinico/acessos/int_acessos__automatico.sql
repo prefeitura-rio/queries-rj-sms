@@ -13,7 +13,11 @@ with
             nome,
             cns,
             cpf
-        from {{ ref("raw_cnes_gdb__profissional") }}
+        from {{ ref("raw_gdb_cnes__profissional") }}
+        qualify row_number() over (
+            partition by cpf
+            order by data_particao desc
+        ) = 1
     ),
     unidades_de_saude as (
         select
@@ -26,6 +30,14 @@ with
     ),
     cbo_datasus as (
         select * from {{ ref("raw_datasus__cbo") }}
+    ),
+    vinctulos_dedup as (
+        select *
+        from {{ ref("raw_gdb_cnes__vinculo") }}
+        qualify row_number() over (
+            partition by id_profissional_sus, id_unidade, id_cbo
+            order by data_particao desc
+        ) = 1
     ),
     vinculos_profissionais_cnes as (
         select
@@ -70,33 +82,56 @@ with
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
             data_ultima_atualizacao,
-        from {{ ref("raw_cnes_gdb__vinculo") }} as gdb_profissional
+        from vinctulos_dedup as gdb_profissional
         left join cbo_datasus using (id_cbo)
         inner join unidades_de_saude using (id_unidade)
     ),
     -- -----------------------------------------
     -- Lista profissionais alocados em consultórios de rua
     -- -----------------------------------------
+    equipe_dedup as (
+        select *
+        from {{ ref('raw_gdb_cnes__equipe')}}
+        qualify row_number() over (
+            partition by id_unidade, equipe_ine
+            order by data_particao desc
+        ) = 1
+    ),
+    equipe_tipo_dedup as (
+        select *
+        from {{ ref('raw_gdb_cnes__equipe_tipo')}}
+        qualify row_number() over (
+            partition by id_equipe_tipo
+            order by data_particao desc
+        ) = 1
+    ),
     equipe_consultorio_rua as (
-        select 
+        select
             equipe_ine,
             equipe_sequencial,
             id_equipe_tipo,
             equipe_descricao
-        from {{ ref('raw_cnes_gdb__equipe')}}
-        left join {{ ref('raw_cnes_gdb__equipe_tipo')}}
+        from equipe_dedup
+        left join equipe_tipo_dedup
         using (id_equipe_tipo)
     ),
+    equipe_profissionais_dedup as (
+        select *
+        from {{ ref('raw_gdb_cnes__equipe_profissionais') }}
+        qualify row_number() over (
+            partition by id_profissional_sus, id_unidade, id_cbo, equipe_sequencial
+            order by data_particao desc
+        ) = 1
+    ),
     profissionais_consultorio_rua as (
-        select 
+        select
             id_profissional_sus,
             id_equipe_tipo,
             equipe_descricao
-        from {{ ref('raw_cnes_gdb__equipe_profissionais') }} 
+        from equipe_profissionais_dedup
         left join equipe_consultorio_rua
         using (equipe_sequencial)
         where id_equipe_tipo = '73'
-
     ),
     -- -----------------------------------------
     -- Enriquecimento de Dados dos Funcionários
