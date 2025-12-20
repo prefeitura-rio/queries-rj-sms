@@ -78,46 +78,26 @@ triagem as (
       nome_profissional,
       upper(descricao) AS desfecho_atendimento,
     from {{ ref("raw_prontuario_prontuaRio__evolucao") }}
+    where gid_boletim is not null
     qualify row_number() over(partition by gid_boletim order by evolucao_data desc) = 1
   ),
 
 -------------------------------
 --       PROFISSIONAIS
 -------------------------------
-  dim_profissionais as (
-    select 
-      id_profissional_sus as id,
-      cpf,
-      cns,
-      nome,
-      cbo.cbo as especialidade
-    from {{ ref("dim_profissional_saude") }} ps,
-    unnest(ps.cbo) as cbo
-  ),
 
   emerg_profissionais_enriquecido as (
     select 
       gid_boletim,
-      id,
-      cpf,
-      cns,
-      nome_profissional as nome,
-      especialidade
-    from emerg_ultima_evolucao
-    left join dim_profissionais using(cpf) 
-  ),
-
-  emerg_profissionais_agg as (
-    select 
-      gid_boletim,
       struct(
-        id,
+        cast(null as string) as id,
         cpf,
         cns,
-        {{ proper_br("nome") }} as nome,
-        especialidade
-      ) profissional_saude_responsavel
-    from emerg_profissionais_enriquecido
+        {{proper_br('nome_completo')}} as nome,
+        descricao as especialidade
+      ) as profissional_saude_responsavel
+    from emerg_ultima_evolucao
+    left join {{ref("raw_datasus__cbo")}} using(id_cbo) 
   ),
 
 -------------------------------
@@ -255,14 +235,15 @@ inter_cadastro as (
     nome_profissional,
     upper(descricao) AS desfecho_atendimento
   from {{ ref("raw_prontuario_prontuaRio__evolucao") }}
+  where gid_prontuario is not null
   qualify row_number() over(partition by gid_prontuario order by evolucao_data desc) = 1
 ),
 
 inter_saida as (
-  select distinct
+  select 
     gid_prontuario,
     registro_data as saida_datahora
-  from {{ ref("raw_prontuario_prontuaRio__evolucao") }}
+  from {{ ref("raw_prontuario_prontuaRio__ralta") }}
 ),
 
 -------------------------------
@@ -334,26 +315,15 @@ inter_saida as (
   inter_profissionais_enriquecido as (
     select distinct
       gid_prontuario,
-      id,
-      cpf,
-      cns,
-      nome,
-      especialidade
-    from inter_profissional ep
-    left join dim_profissionais using(cpf) 
-  ),
-
-  inter_profissionais_agg as (
-    select 
-      gid_prontuario,
       struct(
-        id,
+        cast(null as string) as id,
         cpf,
         cns,
-        {{  proper_br("nome") }} as nome, 
-        especialidade
-      ) profissional_saude_responsavel
-    from inter_profissionais_enriquecido
+        nome_completo as nome,
+        descricao as especialidade
+      ) as profissional_saude_responsavel
+    from {{ref("raw_prontuario_prontuaRio__profissionais")}} 
+    left join {{ref("raw_datasus__cbo")}} using(id_cbo)
   ),
 
 -------------------------------
@@ -427,7 +397,7 @@ merge_ as (
       c.condicoes,
       pr.medicamentos_administrados,
       e.estabelecimento,
-      pa.profissional_saude_responsavel,
+      p.profissional_saude_responsavel,
       struct(
         gid_boletim as id_prontuario_global,
         split(gid_boletim, '.')[offset(1)] as id_prontuario_local,
@@ -439,7 +409,7 @@ merge_ as (
     left join emerg_ultima_evolucao u using(gid_boletim)
     left join emerg_cid_agg c using(gid_boletim)
     left join emerg_estabelecimento e using(gid_boletim)
-    left join emerg_profissionais_agg pa using(gid_boletim)
+    left join emerg_profissionais_enriquecido p using(gid_boletim)
     left join emerg_prescricao_agg pr using(gid_boletim)
     where t.gid_prontuario is null
   union all
@@ -468,10 +438,11 @@ merge_ as (
     left join inter_cid_agg ca using(gid_prontuario)
     left join inter_desfecho id using(gid_prontuario)
     left join inter_saida s using(gid_prontuario)
-    left join inter_profissionais_agg p using(gid_prontuario)
+    left join inter_profissionais_enriquecido p using(gid_prontuario)
     left join inter_estabelecimento e using(gid_prontuario)
     left join inter_cadastro ic using(gid_prontuario)
     left join inter_prescricao_agg pr using(gid_prontuario)
+    where t.gid_prontuario is not null
 ),
 
 
