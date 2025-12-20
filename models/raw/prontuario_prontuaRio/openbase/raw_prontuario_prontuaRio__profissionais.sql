@@ -53,8 +53,9 @@ final as (
         {{process_null('email')}} as email,
         cnes,
         cast(cast(loaded_at as timestamp)as datetime) as loaded_at
-
     from profissionais
+    qualify row_number() over(partition by cpf, cnes order by loaded_at desc) = 1 
+
 )
 
 

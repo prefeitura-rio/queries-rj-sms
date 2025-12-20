@@ -129,6 +129,9 @@ final as (
     loaded_at,
     cast(safe_cast(loaded_at as timestamp) as date) as data_particao
   from atendimentos
+  qualify row_number() over(
+    partition by id_atendimento, cnes
+    order by loaded_at desc) = 1
 )
 
 select 

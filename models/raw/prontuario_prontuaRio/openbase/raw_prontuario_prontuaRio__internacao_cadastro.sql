@@ -113,6 +113,7 @@ final as (
         cast(safe_cast(loaded_at as timestamp) as date) as data_particao
     from internacao_cadastro
     qualify row_number() over(partition by id_registro, id_prontuario1, cnes order by loaded_at desc) = 1
+
 )
 
 select 

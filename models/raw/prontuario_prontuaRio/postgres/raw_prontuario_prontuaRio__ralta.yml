@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__ralta
+    description: "Tabela de registros detalhados de altas hospitalares, incluindo os profissionais responsáveis e a descrição clínica do desfecho."
+    columns:
+      - name: gid_alta
+        description: "ID global único do registro de alta."
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: gid_boletim
+        description: "ID global único do boletim de atendimento."
+      - name: gid_internacao
+        description: "ID global único da internação."
+      - name: id_alta
+        description: "Identificador local do registro de alta."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: id_boletim
+        description: "Identificador local do boletim."
+      - name: id_internacao
+        description: "Identificador local da internação."
+      - name: registro_data
+        description: "Data e hora do registro da alta no sistema."
+      - name: descricao_alta
+        description: "Texto descritivo com as orientações ou resumo da alta."
+      - name: profissional_cpf
+        description: "CPF do profissional que realizou o registro."
+      - name: profissional_nome
+        description: "Nome do profissional que realizou o registro."
+      - name: descricao_atividade
+        description: "Descrição da atividade ou especialidade profissional exercida no momento da alta."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__paciente
+    description: "Tabela simplificada para identificação e dados biométricos básicos de pacientes."
+    columns:
+      - name: gid_paciente
+        description: "ID global único do paciente."
+      - name: gid_registro
+        description: "ID global único do registro cadastral."
+      - name: id_paciente
+        description: "Identificador local do paciente."
+      - name: registro
+        description: "Número do prontuário ou registro hospitalar."
+      - name: nome
+        description: "Nome completo do paciente."
+      - name: data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: tipo_documento
+        description: "Tipo de documento de identificação utilizado."
+      - name: peso
+        description: "Peso registrado do paciente."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado no sistema."
+      - name: data_particao
+        description: "Data de referência para particionamento."

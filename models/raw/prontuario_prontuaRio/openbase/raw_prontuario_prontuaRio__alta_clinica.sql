@@ -89,6 +89,10 @@ final as (
       loaded_at,
       cast(safe_cast(loaded_at as timestamp) as date) as data_particao
     from alta_clinica
+    
+    qualify row_number() over (
+      partition by id_prontuario, cnes
+      order by loaded_at desc) = 1
 )
 
 select 

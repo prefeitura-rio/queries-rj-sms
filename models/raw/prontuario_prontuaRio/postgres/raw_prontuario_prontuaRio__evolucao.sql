@@ -91,6 +91,7 @@ with
             cast(safe_cast(loaded_at as timestamp) as date) as data_particao
         from evolucao
         qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by evolucao_data desc, loaded_at desc) = 1
+
     )
 
 select 

@@ -147,7 +147,9 @@ final as (
     cast(loaded_at as timestamp) as loaded_at,
     cast(safe_cast(loaded_at as timestamp) as date) as data_particao
   from triagem
-  qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by data_registro desc, loaded_at desc) = 1
+  qualify row_number() over(
+    partition by id_prontuario, id_boletim, cnes 
+    order by loaded_at desc) = 1
 )
 
 select 
@@ -156,3 +158,4 @@ select
   concat(cnes, '.', id_receituario) as gid_receituario,
   *
 from final
+

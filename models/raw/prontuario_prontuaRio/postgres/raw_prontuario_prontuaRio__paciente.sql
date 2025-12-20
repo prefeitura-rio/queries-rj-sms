@@ -42,6 +42,7 @@ final as (
         cnes,
         cast(loaded_at as timestamp) as loaded_at
     from paciente
+    qualify row_number() over(partition by id_paciente, registro, cnes order by loaded_at) = 1
 )
 
 select 

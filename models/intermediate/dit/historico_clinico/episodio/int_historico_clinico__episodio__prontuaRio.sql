@@ -52,6 +52,7 @@ triagem as (
     t.loaded_at
   from {{ ref('raw_prontuario_prontuaRio__triagem') }} t
   left join {{ ref("raw_prontuario_prontuaRio__prontuario_be") }} pbe using(gid_boletim)
+  qualify row_number() over(partition by gid_boletim order by data_registro desc) = 1
 
 ),
 
@@ -66,6 +67,7 @@ triagem as (
       paciente_cpf,
       datetime(alta_data, alta_hora) as saida_datahora,
     from {{ ref("raw_prontuario_prontuaRio__emergencia_resumo") }}
+    qualify row_number() over(partition by gid_boletim order by alta_data desc) = 1
   ),
 
 -------------------------------
@@ -77,7 +79,11 @@ triagem as (
       cpf_profissional as cpf,
       nome_profissional,
       upper(descricao) AS desfecho_atendimento,
-    from {{ ref("raw_prontuario_prontuaRio__evolucao") }}
+      p.cns,
+      id_cbo
+    from {{ ref("raw_prontuario_prontuaRio__evolucao") }} e
+    left join {{ ref("raw_prontuario_prontuaRio__profissionais") }} p
+      on e.cpf_profissional = p.cpf
     where gid_boletim is not null
     qualify row_number() over(partition by gid_boletim order by evolucao_data desc) = 1
   ),
@@ -93,7 +99,7 @@ triagem as (
         cast(null as string) as id,
         cpf,
         cns,
-        {{proper_br('nome_completo')}} as nome,
+        {{proper_br('nome_profissional')}} as nome,
         descricao as especialidade
       ) as profissional_saude_responsavel
     from emerg_ultima_evolucao
@@ -159,6 +165,7 @@ paciente as (
   from triagem t
   inner join {{ref("raw_prontuario_prontuaRio__paciente")}} p
     on t.gid_boletim = p.gid_registro
+  qualify row_number() over(partition by gid_boletim order by gid_paciente) = 1
   ),
 
 emerg_prescricao as (
@@ -222,6 +229,7 @@ inter_cadastro as (
     gid_registro as gid_prontuario, 
     paciente_cpf
   from {{ref("raw_prontuario_prontuaRio__internacao_cadastro")}}
+  qualify row_number() over(partition by gid_registro order by paciente_cpf) = 1
 ),
 
 
@@ -233,8 +241,12 @@ inter_cadastro as (
     gid_prontuario,
     cpf_profissional as cpf,
     nome_profissional,
-    upper(descricao) AS desfecho_atendimento
-  from {{ ref("raw_prontuario_prontuaRio__evolucao") }}
+    upper(descricao) AS desfecho_atendimento,
+    p.cns,
+    id_cbo
+  from {{ ref("raw_prontuario_prontuaRio__evolucao") }} e
+  left join {{ ref("raw_prontuario_prontuaRio__profissionais") }} p
+    on e.cpf_profissional = p.cpf
   where gid_prontuario is not null
   qualify row_number() over(partition by gid_prontuario order by evolucao_data desc) = 1
 ),
@@ -244,6 +256,7 @@ inter_saida as (
     gid_prontuario,
     registro_data as saida_datahora
   from {{ ref("raw_prontuario_prontuaRio__ralta") }}
+  qualify row_number() over(partition by gid_prontuario order by registro_data desc) = 1
 ),
 
 -------------------------------
@@ -308,9 +321,14 @@ inter_saida as (
   inter_profissional as (
     select 
       gid_prontuario,
-      medico_alta_cpf as cpf
-    from {{ref("raw_prontuario_prontuaRio__internacao_alta")}}
-  ),
+      medico_alta_cpf as cpf,
+      nome_completo,
+      p.cns,
+      id_cbo
+    from {{ref("raw_prontuario_prontuaRio__internacao_alta")}} a
+    left join {{ ref("raw_prontuario_prontuaRio__profissionais") }} p 
+      on a.medico_alta_cpf = p.cpf
+  ),  
 
   inter_profissionais_enriquecido as (
     select distinct
@@ -319,11 +337,12 @@ inter_saida as (
         cast(null as string) as id,
         cpf,
         cns,
-        nome_completo as nome,
+        {{proper_br("nome_completo")}} as nome,
         descricao as especialidade
       ) as profissional_saude_responsavel
-    from {{ref("raw_prontuario_prontuaRio__profissionais")}} 
+    from inter_profissional
     left join {{ref("raw_datasus__cbo")}} using(id_cbo)
+    qualify row_number() over(partition by gid_prontuario order by cpf) = 1
   ),
 
 -------------------------------
@@ -378,6 +397,7 @@ inter_prescricao_agg as (
       ) as estabelecimento
     from triagem as t
     inner join {{ ref("dim_estabelecimento") }} es on es.id_cnes = t.cnes
+    qualify row_number() over(partition by gid_prontuario order by t.entrada_datahora desc) = 1
   ),
 
 
@@ -452,8 +472,11 @@ final as (
         dbt_utils.generate_surrogate_key(
               [
                   "prontuario.id_prontuario_global",
+                  "cpf",
+                  "gid_paciente",
                   "subtipo",
-                  "cpf"
+                  "entrada_datahora",
+                  "saida_datahora"
               ]
           )
       }} as id_hci,
@@ -471,4 +494,7 @@ final as (
 )
 
 
-select distinct * from final
+select 
+  *
+  except (loaded_at) 
+from final

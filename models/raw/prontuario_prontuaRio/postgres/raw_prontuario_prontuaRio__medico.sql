@@ -39,6 +39,7 @@ final as (
     cnes,
     cast(loaded_at as timestamp) as loaded_at
     from medico
+    qualify row_number() over(partition by cpf, cnes order by loaded_at) = 1
 )
 
 
