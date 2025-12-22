@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_prontuaRio_staging
+    database: rj-sms
+    schema: brutos_prontuario_prontuaRio_staging
+    tables:
+      - name: alta_clinica
+      - name: atendimento
+      - name: cen02
+      - name: intb6
+      - name: triagem
+      - name: cen62
+      - name: cen15
+      - name: cen54
+      - name: hp_rege_receituario
+      - name: hp_rege_evolucao
+      - name: hp_rege_ralta
+      - name: prescricao
+      - name: medicamento
+      - name: hp_rege_emerg
+      - name: hp_prontuario_be
+      - name: paciente
+      - name: medico
+      - name: intb0
+      - name: intc0

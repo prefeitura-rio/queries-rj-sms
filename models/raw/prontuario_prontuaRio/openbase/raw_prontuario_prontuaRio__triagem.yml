@@ -1,0 +1,126 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__triagem
+    description: "Tabela detalhada de triagem, sinais vitais, histórico clínico e acolhimento obstétrico/ambulatorial."
+    columns:
+      - name: gid_boletim
+        description: "ID global único do boletim."
+      - name: gid_internacao
+        description: "ID global único da internação."
+      - name: gid_receituario
+        description: "ID global único do receituário."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: id_boletim
+        description: "Identificador local do boletim."
+      - name: id_internacao
+        description: "Identificador local da internação."
+      - name: id_receituario
+        description: "Identificador local do receituário."
+      - name: queixas
+        description: "Relato das queixas principais do paciente na triagem."
+      - name: descricao_receituario
+        description: "Descrição detalhada do receituário emitido."
+      - name: profissional_cpf
+        description: "CPF do profissional responsável pelo registro."
+      - name: profissional_nome
+        description: "Nome do profissional responsável pelo registro."
+      - name: data_registro
+        description: "Data e hora do registro."
+      - name: profissional_cpf_2
+        description: "CPF do segundo profissional envolvido (auxiliar ou validador)."
+      - name: profissional_nome_2
+        description: "Nome do segundo profissional envolvido."
+      - name: descricao_atividade
+        description: "Descrição da atividade profissional realizada."
+      - name: dt_consulta_amb
+        description: "Data da consulta ambulatorial agendada ou realizada."
+      - name: modulo_triagem
+        description: "Identificador do módulo de triagem utilizado."
+      - name: obs_prescricao
+        description: "Observações pertinentes à prescrição médica."
+      - name: cor_risco
+        description: "Cor da classificação de risco (Protocolo de Manchester)."
+      - name: pressao_arterial
+        description: "Medição da pressão arterial (Sistólica/Diastólica)."
+      - name: frequencia_cardiaca
+        description: "Frequência cardíaca (bpm)."
+      - name: temperatura
+        description: "Temperatura corporal (°C)."
+      - name: peso
+        description: "Peso do paciente (kg)."
+      - name: altura
+        description: "Altura do paciente (m ou cm)."
+      - name: spo2
+        description: "Saturação de oxigênio (%)."
+      - name: hgt
+        description: "Hemoglicoteste (Glicemia capilar)."
+      - name: diabetico
+        description: "Indicador se o paciente é diabético."
+      - name: alergia_quantidade
+        description: "Quantidade de alergias relatadas."
+      - name: alergia
+        description: "Descrição das alergias."
+      - name: hiper
+        description: "Indicador de hipertensão."
+      - name: doencas_pre_existentes_quantidade
+        description: "Quantidade de comorbidades pré-existentes."
+      - name: doencas_pre_existentes
+        description: "Descrição das doenças pré-existentes."
+      - name: medicamento_uso_continuo_quantidade
+        description: "Quantidade de medicamentos de uso contínuo."
+      - name: medicamento_uso_continuo
+        description: "Lista de medicamentos de uso contínuo."
+      - name: quantidade_c_recentes
+        description: "Quantidade de cirurgias ou complicações recentes."
+      - name: c_recentes
+        description: "Descrição de eventos cirúrgicos/clínicos recentes."
+      - name: id_fluxograma
+        description: "ID do fluxograma de decisão clínica utilizado."
+      - name: id_discriminador
+        description: "ID do discriminador de risco aplicado."
+      - name: gesta
+        description: "Número de gestações (G)."
+      - name: para
+        description: "Número de partos (P)."
+      - name: parto
+        description: "Histórico detalhado de partos."
+      - name: aborto
+        description: "Número de abortos (A)."
+      - name: dum
+        description: "Data da Última Menstruação."
+      - name: dpp
+        description: "Data Provável do Parto."
+      - name: ig
+        description: "Idade Gestacional apurada."
+      - name: prenatal
+        description: "Indicador de realização de pré-natal."
+      - name: numero_consultas
+        description: "Quantidade de consultas de pré-natal realizadas."
+      - name: local
+        description: "Local de realização do pré-natal."
+      - name: hiv
+        description: "Status ou resultado de exame de HIV (se coletado)."
+      - name: dt_obstetrica_triagem
+        description: "Data da triagem especificamente obstétrica."
+      - name: resultado_triagem
+        description: "Desfecho ou classificação final da triagem."
+      - name: tempo_acolhimento
+        description: "Timestamp do início do acolhimento."
+      - name: tempo_atendimento
+        description: "Timestamp do início do atendimento médico."
+      - name: status_fatu
+        description: "Status de faturamento do atendimento."
+      - name: profissional_atendimento_cpf
+        description: "CPF do profissional que realizou o atendimento final."
+      - name: parto_normal
+        description: "Indicador/Contagem de partos normais anteriores."
+      - name: parto_cesario
+        description: "Indicador/Contagem de partos cesáreos anteriores."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

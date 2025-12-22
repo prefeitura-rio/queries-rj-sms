@@ -128,6 +128,34 @@ with
         {% if is_incremental() %}
             WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
         {% endif %}
+        union all
+        select 
+            id_hci,
+            cpf as paciente_cpf,
+            tipo, 
+            subtipo,
+            entrada_datahora,
+            saida_datahora,
+            array(
+                select as struct
+                    cast(null as string) as tipo, cast(null as string) as descricao
+            ) as exames_realizados,
+            cast(null as string) as procedimentos_realizados,
+            motivo_atendimento,
+            desfecho_atendimento,
+            condicoes,
+            medidas,
+            array<struct<id string, nome string, concentracao string, uso_continuo string>>[] as prescricoes,
+            medicamentos_administrados,
+            estabelecimento,
+            profissional_saude_responsavel,
+            prontuario,
+            metadados,
+            cpf_particao
+        from {{ref("int_historico_clinico__episodio__prontuaRio")}}
+        {% if is_incremental() %}
+            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+        {% endif %}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- PATIENT DATA: Patient Enrichment 

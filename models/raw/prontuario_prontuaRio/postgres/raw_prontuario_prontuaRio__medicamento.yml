@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__medicamento
+    description: "Tabela de itens de prescrição médica, administração de medicamentos e validação farmacêutica."
+    columns:
+      - name: gid_prescricao
+        description: "ID global único da prescrição."
+      - name: gid_medicamento
+        description: "ID global único do medicamento."
+      - name: id_prescricao
+        description: "Identificador local da prescrição."
+      - name: id_medicamento
+        description: "Identificador local do medicamento no catálogo."
+      - name: medicamento_nome
+        description: "Nome comercial ou genérico do medicamento."
+      - name: via
+        description: "Via de administração (ex: Oral, Venosa, Intramuscular)."
+      - name: dose
+        description: "Quantidade da dose unitária prescrita."
+      - name: intervalo
+        description: "Frequência de administração (ex: 8/8h, ACM, Dose Única)."
+      - name: previsao
+        description: "Data/hora prevista para a próxima administração."
+      - name: justificativa
+        description: "Justificativa clínica para o uso do medicamento (se obrigatório)."
+      - name: observacoes
+        description: "Notas adicionais de preparo ou cuidado."
+      - name: qtd_atendida
+        description: "Quantidade efetivamente dispensada pela farmácia."
+      - name: cod_med_hospub
+        description: "Código do medicamento no sistema Hospsub/legado."
+      - name: cpf_farmaceutico
+        description: "CPF do farmacêutico que validou a prescrição."
+      - name: nome_farmaceutico
+        description: "Nome do farmacêutico responsável."
+      - name: apresentacao
+        description: "Forma farmacêutica (ex: Comprimido, Ampola, Frasco)."
+      - name: dose_tot
+        description: "Cálculo da dose total diária ou acumulada."
+      - name: dias_medic
+        description: "Quantidade de dias previstos para o tratamento."
+      - name: soro
+        description: "Informações sobre o soro utilizado como diluente."
+      - name: hidratacao
+        description: "Volume e tipo de hidratação associada."
+      - name: qtd_va
+        description: "Quantidade de ampolas ou unidades para volume de administração."
+      - name: medicva
+        description: "Descrição técnica do volume de administração."
+      - name: etiqueta_aprasamento
+        description: "Informação para impressão de etiquetas de horário (aprasamento)."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

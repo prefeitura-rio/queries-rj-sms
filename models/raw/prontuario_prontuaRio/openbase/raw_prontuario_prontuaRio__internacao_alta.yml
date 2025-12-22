@@ -1,0 +1,144 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__internacao_alta.yml
+    description: "Tabela de resumo de internação, contendo detalhes clínicos, desfechos de parto (obstetrícia) e indicadores de infecção."
+    columns:
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: internacao_data
+        description: "Data de admissão do paciente."
+      - name: internacao_hora
+        description: "Horário de admissão do paciente."
+      - name: alta_data
+        description: "Data de encerramento da internação."
+      - name: alta_hora
+        description: "Horário de encerramento da internação."
+      - name: carint
+        description: "Caráter da internação (Eletiva, Urgência, etc.)."
+      - name: medico_solicitante_cpf
+        description: "CPF do médico que solicitou a internação."
+      - name: apresentacao
+        description: "Forma de apresentação clínica na admissão."
+      - name: motivo
+        description: "Motivo principal da internação."
+      - name: estado
+        description: "Estado geral do paciente no registro."
+      - name: id_clinica
+        description: "Identificador da clínica responsável."
+      - name: id_leito
+        description: "Identificador do leito utilizado."
+      - name: procsol
+        description: "Código do procedimento solicitado."
+      - name: procreal
+        description: "Código do procedimento efetivamente realizado."
+      - name: cid
+        description: "Código Internacional de Doenças (principal)."
+      - name: vivos
+        description: "Número de conceptos nascidos vivos (parto)."
+      - name: mortos
+        description: "Número de conceptos nascidos mortos (óbito fetal)."
+      - name: medico_alta_cpf
+        description: "CPF do médico que assinou a alta."
+      - name: forment
+        description: "Forma de entrada do paciente na unidade."
+      - name: codusent
+        description: "Código do usuário que registrou a entrada."
+      - name: codussai
+        description: "Código do usuário que registrou a saída."
+      - name: procprin
+        description: "Procedimento principal codificado."
+      - name: procsec
+        description: "Procedimento secundário codificado."
+      - name: cidprim
+        description: "CID principal detalhado."
+      - name: cidsec
+        description: "CID secundário detalhado."
+      - name: retorno
+        description: "Indicador se a internação é um retorno."
+      - name: origem
+        description: "Procedência do paciente."
+      - name: anest
+        description: "Tipo de anestesia utilizada."
+      - name: acidanest
+        description: "Ocorrência de acidente anestésico."
+      - name: intacid
+        description: "Intercorrências ou acidentes durante a internação."
+      - name: infeccao
+        description: "Indicador de infecção hospitalar."
+      - name: antimicro
+        description: "Uso de antimicrobianos durante o período."
+      - name: obitinfec
+        description: "Óbito relacionado a processo infeccioso."
+      - name: tipproc
+        description: "Tipo de procedimento (Cirúrgico, Clínico, Obstétrico)."
+      - name: supuracao
+        description: "Presença de supuração ou processo inflamatório grave."
+      - name: numgest
+        description: "Número de gestações anteriores."
+      - name: gestrisc
+        description: "Indicador de gestação de alto risco."
+      - name: prenatal
+        description: "Informações sobre o acompanhamento pré-natal."
+      - name: conceptos
+        description: "Quantidade total de conceptos."
+      - name: sexo1
+        description: "Sexo do primeiro concepto."
+      - name: sexo2
+        description: "Sexo do segundo concepto (em caso de gemelar)."
+      - name: peso1
+        description: "Peso ao nascer do primeiro concepto."
+      - name: peso2
+        description: "Peso ao nascer do segundo concepto."
+      - name: tipo1
+        description: "Tipo de parto ou ocorrência para o conceito 1."
+      - name: tipo2
+        description: "Tipo de parto ou ocorrência para o conceito 2."
+      - name: sit1
+        description: "Situação clínica do primeiro concepto."
+      - name: sit2
+        description: "Situação clínica do segundo concepto."
+      - name: senha
+        description: "Senha de autorização do convênio ou SUS."
+      - name: aih
+        description: "Número da Autorização de Internação Hospitalar."
+      - name: dtger
+        description: "Data de geração do faturamento ou guia."
+      - name: acompanha
+        description: "Nome do acompanhante."
+      - name: parentesc
+        description: "Grau de parentesco do acompanhante."
+      - name: entacomp
+        description: "Data de entrada do acompanhante."
+      - name: hentacomp
+        description: "Hora de entrada do acompanhante."
+      - name: saiacomp
+        description: "Data de saída do acompanhante."
+      - name: hsaiacomp
+        description: "Hora de saída do acompanhante."
+      - name: evento
+        description: "Código do evento administrativo."
+      - name: numcons
+        description: "Número da consulta ou conselho profissional."
+      - name: notifcomp
+        description: "Indicador de notificação compulsória (Campo 1)."
+      - name: notif2
+        description: "Indicador de notificação compulsória (Campo 2)."
+      - name: codigo_cid10
+        description: "Código CID-10 padrão."
+      - name: codigo_categoria_cid10
+        description: "Categoria de agrupamento do CID-10."
+      - name: compos3
+        description: "Campo de composição de dados 3."
+      - name: codigo_cid10_secundario
+        description: "Código CID-10 secundário."
+      - name: intercar
+        description: "Intercorrências de caráter clínico."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

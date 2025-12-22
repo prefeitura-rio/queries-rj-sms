@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__evolucao
+    description: "Tabela de registros de evoluções clínicas, procedimentos e atividades realizadas por profissionais de saúde."
+    columns:
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: gid_boletim
+        description: "ID global único do boletim de atendimento."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: id_boletim
+        description: "Identificador local do boletim."
+      - name: cns
+        description: "Cartão Nacional de Saúde do paciente."
+      - name: registro
+        description: "Número do registro clínico ou da evolução."
+      - name: evolucao_data
+        description: "Data e hora em que a evolução foi realizada."
+      - name: registro_data
+        description: "Data e hora em que o registro foi inserido no sistema."
+      - name: nome_profissional
+        description: "Nome do profissional responsável pela evolução."
+      - name: cpf_profissional
+        description: "CPF do profissional responsável."
+      - name: descricao
+        description: "Texto detalhado da evolução clínica."
+      - name: tipo
+        description: "Tipo de evolução (ex: Médica, Enfermagem, Fisioterapia)."
+      - name: atualizacao_data
+        description: "Data e hora da última atualização do registro."
+      - name: id_cen38
+        description: "Identificador específico do censo ou tabela de domínio 38."
+      - name: id_am12
+        description: "Identificador específico de domínio ambulatorial/médico 12."
+      - name: id_cen02
+        description: "Identificador específico de domínio 02."
+      - name: id_cen54
+        description: "Identificador específico de domínio 54."
+      - name: id_outro
+        description: "Outros identificadores de sistemas legados ou externos."
+      - name: tip_outro
+        description: "Tipo do identificador externo informado."
+      - name: status_evolucao
+        description: "Status do registro (ex: Finalizado, Pendente, Retificado)."
+      - name: descricao_sub_atividade
+        description: "Descrição da sub-atividade realizada pelo profissional."
+      - name: id_sub_atividade
+        description: "Identificador da sub-atividade."
+      - name: id_atividade
+        description: "Identificador da atividade principal realizada."
+      - name: id_clinica
+        description: "Identificador da clínica onde ocorreu a evolução."
+      - name: setor
+        description: "Setor ou unidade hospitalar do atendimento."
+      - name: cid_evolucao
+        description: "Código CID associado especificamente a esta evolução."
+      - name: cid_descricao
+        description: "Descrição textual do CID informado."
+      - name: proc_evo
+        description: "Código do procedimento realizado nesta evolução."
+      - name: proc_descricao
+        description: "Nome ou descrição do procedimento realizado."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado no data lake/warehouse."
+      - name: data_particao
+        description: "Data de referência para particionamento."

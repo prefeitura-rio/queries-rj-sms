@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: vinculo_prontuario_boletim
+    description: "Tabela de relacionamento entre identificadores globais e locais de prontuários e boletins."
+    columns:
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: gid_boletim
+        description: "ID global único do boletim de atendimento."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: id_boletim
+        description: "Identificador local do boletim."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

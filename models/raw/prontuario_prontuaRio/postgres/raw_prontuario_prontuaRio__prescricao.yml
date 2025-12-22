@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__prescricao
+    description: "Tabela de controle de fluxo, impressão e status de aprasamento de prescrições para farmácia e nutrição."
+    columns:
+      - name: gid_prescricao
+        description: "ID global único da prescrição."
+      - name: gid_atendimento
+        description: "ID global único do atendimento associado."
+      - name: id_prescricao
+        description: "Identificador local da prescrição."
+      - name: id_atendimento
+        description: "Identificador local do atendimento."
+      - name: impressao_farmacia
+        description: "Status ou log de impressão para a farmácia."
+      - name: impressao_nutricao
+        description: "Status ou log de impressão para a nutrição."
+      - name: status_impressao
+        description: "Estado atual da impressão do documento."
+      - name: aprasado
+        description: "Indicador se os horários de administração (aprasamento) foram definidos."
+      - name: etiqueta_aprasar_impressa
+        description: "Indica se a etiqueta de aprasamento já foi emitida."
+      - name: ativo_aprasamento
+        description: "Indica se o aprasamento está vigente ou ativo."
+      - name: status_aprasado
+        description: "Estado atual do processo de aprasamento."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."
