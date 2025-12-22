@@ -80,7 +80,7 @@ triagem as (
       nome_profissional,
       upper(descricao) AS desfecho_atendimento,
       p.cns,
-      id_cbo
+      ativ as id_atividade
     from {{ ref("raw_prontuario_prontuaRio__evolucao") }} e
     left join {{ ref("raw_prontuario_prontuaRio__profissionais") }} p
       on e.cpf_profissional = p.cpf
@@ -100,10 +100,11 @@ triagem as (
         cpf,
         cns,
         {{proper_br('nome_profissional')}} as nome,
-        descricao as especialidade
+        {{proper_br("descricao")}} as especialidade
       ) as profissional_saude_responsavel
-    from emerg_ultima_evolucao
-    left join {{ref("raw_datasus__cbo")}} using(id_cbo) 
+    from emerg_ultima_evolucao u
+    left join {{ref("raw_prontuario_prontuaRio__ocupacao")}} o
+      on o.id_cbo = u.id_atividade
   ),
 
 -------------------------------
@@ -324,7 +325,7 @@ inter_saida as (
       medico_alta_cpf as cpf,
       nome_completo,
       p.cns,
-      id_cbo
+      ativ as id_atividade
     from {{ref("raw_prontuario_prontuaRio__internacao_alta")}} a
     left join {{ ref("raw_prontuario_prontuaRio__profissionais") }} p 
       on a.medico_alta_cpf = p.cpf
@@ -338,10 +339,12 @@ inter_saida as (
         cpf,
         cns,
         {{proper_br("nome_completo")}} as nome,
-        descricao as especialidade
+        {{proper_br("descricao")}} as especialidade
       ) as profissional_saude_responsavel
-    from inter_profissional
-    left join {{ref("raw_datasus__cbo")}} using(id_cbo)
+    from inter_profissional as p
+    left join {{ref("raw_prontuario_prontuaRio__ocupacao")}} as o 
+      on o.id_cbo = p.id_atividade
+      
     qualify row_number() over(partition by gid_prontuario order by cpf) = 1
   ),
 

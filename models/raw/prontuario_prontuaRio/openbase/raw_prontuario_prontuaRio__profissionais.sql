@@ -15,7 +15,7 @@
 with 
 
 source_ as (
-  select * from rj-sms-dev.brutos_prontuario_prontuaRio_staging.intc0
+  select * from {{ source('brutos_prontuario_prontuaRio_staging', 'intc0') }}
 ),
 
 profissionais as (

@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_prontuario_prontuaRio_staging
-    database: rj-sms-dev
+    database: rj-sms
     schema: brutos_prontuario_prontuaRio_staging
     tables:
       - name: alta_clinica
@@ -22,3 +22,5 @@ sources:
       - name: hp_prontuario_be
       - name: paciente
       - name: medico
+      - name: intb0
+      - name: intc0
