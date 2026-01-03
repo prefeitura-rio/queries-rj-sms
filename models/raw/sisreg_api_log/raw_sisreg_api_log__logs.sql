@@ -25,9 +25,9 @@ extracoes as (
       environment as run_ambiente,
       bq_table as tabela,
       bq_dataset,
-      safe_cast(data_inicial as date) as data_inicial,
-      safe_cast(data_final as date) as data_final,
-      completed
+      data_inicial,
+      data_final,
+      cast(completed as bool) as completed
   from {{ source("brutos_sisreg_api_log_staging", "marcacoes") }}
   {% if is_incremental() %}
     where
@@ -44,9 +44,9 @@ extracoes as (
       environment as run_ambiente,
       bq_table as tabela,
       bq_dataset,
-      safe_cast(data_inicial as date) as data_inicial,
-      safe_cast(data_final as date) as data_final,
-      completed
+      data_inicial,
+      data_final,
+      cast(completed as bool) as completed
   from {{ source("brutos_sisreg_api_log_staging", "solicitacoes") }}
   {% if is_incremental() %}
   where 
