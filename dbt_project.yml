@@ -116,7 +116,7 @@ models:
           dado_sensivel: nao
       datario:
         +schema: datario_dados_mestres
-        +tags: ["datario"]
+        +tags: ["monthly", "datario"]
         +labels:
           dado_publico: sim
           dado_pessoal: nao
@@ -213,7 +213,7 @@ models:
           dominio: estoque
       sisvisa:
         +schema: brutos_sisvisa
-        +tags: ["daily", "sisvisa"]
+        +tags: ["daily", "sisvisa", "ivisa"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -409,6 +409,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: iplanrio
+      ivisa:
+          +schema: intermediario_empreendimentos_cariocas
+          +tags: ["daily", "ivisa", "empreendimentos"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: ivisa
       cie:
           +tags: ["cie", "daily"]
           +schema: intermediario_cie
