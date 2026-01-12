@@ -22,7 +22,6 @@ with vacinacao as (
         vacina_detalhes,
         vacina_dose,
         vacina_lote,
-        vacina_categoria,
         vacina_registro_tipo,
         vacina_estrategia,
         vacina_aplicacao_data,

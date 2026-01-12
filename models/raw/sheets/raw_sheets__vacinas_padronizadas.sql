@@ -18,8 +18,7 @@ with source as (
         ) as nome_para,
 
         {{ process_null("sigla") }} as sigla,
-        {{ process_null("detalhes") }} as detalhes,
-        {{ process_null("categoria") }} as categoria
+        {{ process_null("detalhes") }} as detalhes
 
     from {{ source("brutos_sheets_staging", "vacinas_padronizadas") }}
 )

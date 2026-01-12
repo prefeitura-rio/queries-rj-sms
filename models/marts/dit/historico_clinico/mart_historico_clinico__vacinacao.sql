@@ -60,8 +60,7 @@ with
                 {{ proper_br("dedup.vacina_descricao") }}
              ) as vacina_descricao_padronizada,
              nomes.sigla as vacina_sigla,
-             nomes.detalhes as vacina_detalhes,
-             nomes.categoria as vacina_categoria
+             nomes.detalhes as vacina_detalhes
 
         from vacinacoes_dedup as dedup
         left join nomes_vacinas as nomes
@@ -105,47 +104,18 @@ with
                 REPLACE(
                     REPLACE(
                         {{ capitalize_first_letter("vacina_dose") }},
-                        "eforco",  -- "Reforco"
+                        "eforco",  -- ex. "Reforco"
                         "eforço"
                     ),
-                    "acinacao", -- "Revacinacao"
+                    "acinacao", -- ex. "Revacinacao"
                     "acinação"
                 ),
-                "unica", -- "Dose unica"
+                "unica", -- ex. "Dose unica"
                 "única"
             ) as vacina_dose,
 
-            case
-                when upper(trim(vacina_lote)) in (
-                    "N/E", "Ñ INFORMADO"
-                )
-                    then null
-                when REGEXP_CONTAINS(
-                    trim(vacina_lote),
-                    r"^([0,\s]+|[1,\s]+|[2,\s]+|[3,\s]+|[4,\s]+|[5,\s]+|[6,\s]+|[7,\s]+|[8,\s]+|[9,\s]+)$"
-                )
-                    then null
-                else upper(
-                    REGEXP_REPLACE(
-                        REGEXP_REPLACE(
-                            REGEXP_REPLACE(
-                                {{ process_null("vacina_lote") }},
-                                -- Lixo no início
-                                r'^[\"\',\*\.\s\\/\+\-–´`~\[\]]+',
-                                ""
-                            ),
-                            -- Lixo no fim
-                            r'[\"\',\*\.\s\\/\+\-–´`~\[\]]+$',
-                            ""
-                        ),
-                        -- Espaço em branco duplicado
-                        r"\s{1,}",
-                        " "
-                    )
-                )
-            end as vacina_lote,
+            {{ clean_lote_vacina("vacina_lote") }} as vacina_lote,
 
-            vacina_categoria,
             vacina_registro_tipo,
             vacina_estrategia,
             vacina_diff,
