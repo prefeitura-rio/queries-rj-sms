@@ -2,6 +2,7 @@ version: 2
 
 models:
   - name: raw_prontuario_vitai__resumo_alta
+
     description: |
       Tabela contendo informações detalhadas sobre os resumos de alta realizados nos estabelecimentos de saúde.
     columns:
