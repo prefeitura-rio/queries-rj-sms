@@ -26,7 +26,7 @@
 
 with
     latest_src_partition as (
-        select max(cast(data_inicial as date)) as latest_load_dt
+        select max(cast(data_particao as date)) as latest_load_dt
         from {{ ref('raw_sisreg_api_log__logs') }}
         where tabela = 'marcacoes' and completed = True
     ),
