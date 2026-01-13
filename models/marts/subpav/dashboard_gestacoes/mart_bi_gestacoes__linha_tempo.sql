@@ -109,6 +109,142 @@ pacientes_info AS (
  WHERE p_dedup.rn = 1
 ),
 
+-- CTE cad_e_atd: Adiciona informações de unidade de cadastro e unidade de atendimento
+-- Versão completa do arquivo 6_linha_tempo.sql com lógica de priorização robusta
+cad_e_atd AS (
+  -- Base que relaciona id_paciente -> cpf usando pacientes_info já definida em proced_6
+  WITH linha_tempo_base AS (
+    SELECT DISTINCT
+      p.id_paciente,
+      p.cpf,
+      f.id_gestacao,
+      COALESCE(p.nome, '') AS nome_linha_tempo,
+      f.fase_atual
+    FROM filtrado f
+    JOIN pacientes_info p
+      ON f.id_paciente = p.id_paciente
+    WHERE p.cpf IS NOT NULL AND p.cpf != ''
+  ),
+  linha_cadastro AS (
+    SELECT
+      lt.id_paciente,
+      lt.cpf,
+      lt.id_gestacao,
+      lt.nome_linha_tempo,
+      lt.fase_atual,
+      cad.* EXCEPT(cpf)
+    FROM linha_tempo_base lt
+    -- LEFT JOIN `rj-sms.brutos_prontuario_vitacare_historico.cadastro` cad
+    LEFT JOIN {{ ref('raw_prontuario_vitacare_historico__cadastro') }} cad
+      ON lt.cpf = cad.cpf
+  ),
+  cadastro_filtrado AS (
+    SELECT *
+    FROM linha_cadastro
+    WHERE situacao_usuario = 'Ativo'
+  ),
+  cadastro_normalizado AS (
+    SELECT
+      cf.*,
+      COALESCE(NULLIF(UPPER(TRIM(cf.unidade)), ''), 'SEM INFORMACAO') AS unidade_norm
+    FROM cadastro_filtrado cf
+  ),
+  atendimentos_por_unidade AS (
+    SELECT
+      lt.id_paciente,
+      COALESCE(NULLIF(UPPER(TRIM(apa.estabelecimento)), ''), 'SEM INFORMACAO') AS unidade_norm,
+      ANY_VALUE(apa.estabelecimento) AS unidade_display,
+      COUNT(*) AS total_atendimentos,
+      MAX(apa.data_consulta) AS ultima_data_atendimento
+    FROM linha_tempo_base lt
+    -- JOIN `rj-sms-sandbox.sub_pav_us._atendimentos_prenatal_aps` apa
+    JOIN {{ ref('mart_bi_gestacoes__atendimentos_prenatal_aps') }} apa
+      ON lt.id_gestacao = apa.id_gestacao
+    GROUP BY lt.id_paciente, unidade_norm
+  ),
+  unidade_atendimento_prioritaria AS (
+    SELECT
+      id_paciente,
+      unidade_norm,
+      unidade_display,
+      total_atendimentos,
+      ultima_data_atendimento
+    FROM (
+      SELECT
+        a.*,
+        ROW_NUMBER() OVER (
+          PARTITION BY a.id_paciente
+          ORDER BY
+            a.total_atendimentos DESC,
+            a.ultima_data_atendimento DESC,
+            a.unidade_display
+        ) AS rn
+      FROM atendimentos_por_unidade a
+    )
+    WHERE rn = 1
+  ),
+  cadastro_enriquecido AS (
+    SELECT
+      cn.*,
+      COALESCE(a.total_atendimentos, 0) AS total_atendimentos_unidade_cadastro,
+      a.ultima_data_atendimento
+    FROM cadastro_normalizado cn
+    LEFT JOIN atendimentos_por_unidade a
+      ON cn.id_paciente = a.id_paciente
+     AND cn.unidade_norm = a.unidade_norm
+  ),
+  cadastro_classificado AS (
+    SELECT
+      ce.*,
+      COUNTIF(ce.cadastro_permanente) OVER (PARTITION BY ce.id_paciente) AS cnt_permanente
+    FROM cadastro_enriquecido ce
+  ),
+  cadastro_prioritario AS (
+    SELECT *
+    FROM (
+      SELECT
+        cc.*,
+        ROW_NUMBER() OVER (
+          PARTITION BY cc.id_paciente
+          ORDER BY
+            CASE
+              WHEN cc.cnt_permanente = 1 AND cc.cadastro_permanente THEN 1
+              WHEN cc.cnt_permanente > 1 AND cc.cadastro_permanente THEN 2
+              WHEN cc.cnt_permanente = 0 THEN 3
+              ELSE 4
+            END,
+            CASE
+              WHEN cc.cnt_permanente > 1 AND cc.cadastro_permanente THEN cc.total_atendimentos_unidade_cadastro
+            END DESC,
+            CASE
+              WHEN cc.cnt_permanente > 1 AND cc.cadastro_permanente THEN cc.ultima_data_atendimento
+            END DESC,
+            CASE
+              WHEN cc.cnt_permanente = 0 THEN cc.ultima_data_atendimento
+            END DESC,
+            cc.data_atualizacao_cadastro DESC,
+            cc.unidade
+        ) AS rn
+      FROM cadastro_classificado cc
+    )
+    WHERE rn = 1
+  )
+  SELECT
+    cp.id_paciente,
+    cp.cpf,
+    COALESCE(cp.nome, cp.nome_linha_tempo) AS nome,
+    cp.id_cnes,
+    cp.ap,
+    cp.unidade AS unidade_vinculo_cadastro,
+    COALESCE(uap.unidade_display, cp.unidade) AS unidade_atendimento,
+    COALESCE(uap.total_atendimentos, 0) AS total_atendimentos_unidade_atendimento,
+    cp.total_atendimentos_unidade_cadastro,
+    cp.ultima_data_atendimento
+  FROM cadastro_prioritario cp
+  LEFT JOIN unidade_atendimento_prioritaria uap
+    ON cp.id_paciente = uap.id_paciente
+),
+
 -- Agrega todos os CNS distintos para cada paciente em uma string.
 pacientes_todos_cns AS (
     SELECT p.dados.id_paciente, STRING_AGG (
@@ -425,14 +561,18 @@ condicoes_flags AS (
         MAX(
             CASE
                 WHEN (
-                    REGEXP_CONTAINS(cg.cid, r'\bI1[0-5]\b')
-                    OR cg.cid LIKE 'O10%'
+                    -- cg.cid LIKE 'I1[0-5]%'
+                    -- OR cg.cid LIKE 'O10%'
+                    REGEXP_CONTAINS(cg.cid, r'I1[0-5]') or
+                    REGEXP_CONTAINS(cg.cid, r'O10')
                 )
-                AND cg.data_diagnostico < COALESCE(
-                    f.data_fim_efetiva,
-                    f.dpp,
-                    CURRENT_DATE()
-                ) THEN 1
+                
+                -- AND cg.data_diagnostico < COALESCE(
+                --     f.data_fim_efetiva,
+                --     f.dpp,
+                --     CURRENT_DATE()
+                -- ) 
+                THEN 1
                 ELSE 0
             END
         ) AS hipertensao_previa,
@@ -440,26 +580,32 @@ condicoes_flags AS (
         MAX(
             CASE
                 WHEN (
-                    cg.cid LIKE 'O11%'
-                    OR cg.cid LIKE 'O14%'
+                    -- cg.cid LIKE 'O11%'
+                    -- OR cg.cid LIKE 'O14%'
+                    cg.cid LIKE '%O11%'
+                    OR cg.cid LIKE '%O14%'
                 )
-                AND cg.data_diagnostico BETWEEN f.data_inicio AND COALESCE(
-                    f.data_fim_efetiva,
-                    f.dpp,
-                    CURRENT_DATE()
-                )  THEN 1
+                -- AND cg.data_diagnostico BETWEEN f.data_inicio AND COALESCE(
+                --     f.data_fim_efetiva,
+                --     f.dpp,
+                --     CURRENT_DATE()
+                -- )  
+                THEN 1
                 ELSE 0
             END
         ) AS preeclampsia,
         -- Hipertensão Não Especificada: CID O16 DURANTE a gestação
         MAX(
             CASE
-                WHEN cg.cid = 'O16'
-                AND cg.data_diagnostico BETWEEN f.data_inicio AND COALESCE(
-                    f.data_fim_efetiva,
-                    f.dpp,
-                    CURRENT_DATE()
-                )  THEN 1
+                WHEN
+                    -- cg.cid = 'O16' 
+                    cg.cid = '%O16%'
+                -- AND cg.data_diagnostico BETWEEN f.data_inicio AND COALESCE(
+                --     f.data_fim_efetiva,
+                --     f.dpp,
+                --     CURRENT_DATE()
+                -- )  
+                THEN 1
                 ELSE 0
             END
         ) AS hipertensao_nao_especificada,
@@ -970,28 +1116,6 @@ encaminhamento_hipertensao_SER AS (
         AND pi.cpf != ''
 ),
 
--- -- CTE 35: resumo_encaminhamento_has (CORRIGIDA)
--- resumo_encaminhamento_has AS (
---     SELECT
---         eh_sis.id_gestacao,
---         1 AS tem_encaminhamento_has, -- Será 1 porque filtramos abaixo para apenas os que têm match
---         MIN(eh_sis.sisreg_data_solicitacao) AS data_primeiro_encaminhamento_has,
---         STRING_AGG (DISTINCT eh_sis.sisreg_primeira_cid, '; ') AS cids_encaminhamento_has
---     FROM
---         encaminhamento_hipertensao_sisreg eh_sis
---     WHERE
---         (eh_sis.rn_encaminhamento_has = 1
---         AND eh_sis.sisreg_primeira_data_solicitacao IS NOT NULL)
-        
---         -- ESSA É A CONDIÇÃO CRÍTICA FALTANTE!
---         -- Garante que apenas gestações com um encaminhamento SISREG *real*
---         -- que satisfez os critérios da CTE 34 (procedimento, CID de HAS, data)
---         -- sejam consideradas. Se s.data_solicitacao fosse NULL na CTE 34,
---         -- significa que não houve um match válido nos critérios do JOIN.
---     GROUP BY
---         eh_sis.id_gestacao
--- ),
-
 
 -- CTE 35: resumo_encaminhamento_has (CORRIGIDA)
 resumo_encaminhamento_has AS (
@@ -1061,14 +1185,14 @@ prescricao_aas AS (
 ),
 
 -- CTE 36B: obesidade_gestante
--- Identifica obesidade por IMC (>30) considerando IMC da consulta ou IMC de início
+-- Identifica obesidade por IMC (>=30) usando apenas o IMC de início (único por gestação)
 obesidade_gestante AS (
   SELECT
     f.id_gestacao,
+    MAX(SAFE_CAST(fapn.imc_inicio AS FLOAT64)) AS imc_inicio,  -- Agregação explícita garante valor único
     MAX(
       CASE
-        WHEN SAFE_CAST(fapn.imc_consulta AS FLOAT64) > 30
-          OR SAFE_CAST(fapn.imc_inicio AS FLOAT64) >= 30
+        WHEN SAFE_CAST(fapn.imc_inicio AS FLOAT64) >= 30
         THEN 1 ELSE 0
       END
     ) AS tem_obesidade
@@ -1252,127 +1376,220 @@ hipertensao_gestacional_completa AS (
 -- CTE 40: fatores_risco_pe_adequacao
 -- Consolida fatores de risco e avalia adequação da prescrição de AAS
 
-fatores_risco_pe_adequacao AS (
+-- ========================================
+-- BLOCO REFATORADO: Fatores de Risco para Pré-eclâmpsia e Adequação AAS
+-- Dividido em 6 CTEs para melhor organização e manutenibilidade
+-- ========================================
+
+-- 1. CTE: Flags individuais de fatores de risco
+fatores_risco_base AS (
  SELECT
    f.id_gestacao,
-   -- Fatores presentes (versão para regra AAS)
-   CASE WHEN (cf.hipertensao_previa = 1 OR hgc.provavel_hipertensa_sem_diagnostico = 1 OR COALESCE(prm.has_cronica_prenatal,0) = 1) THEN 1 ELSE 0 END AS hipertensao_cronica_confirmada,
-   CASE WHEN cf.diabetes_previo = 1 OR pad.tem_antidiabetico = 1 THEN 1 ELSE 0 END AS diabetes_previo_confirmado,
+   f.numero_gestacao,
+    f.data_inicio,
+   prm.nuliparidade_prenatal,
+    og.imc_inicio,
+    og.tem_obesidade,
+    pi.idade_atual,
+
+    -- Flags de fatores de risco individuais
+    CASE WHEN (cf.hipertensao_previa = 1 OR hgc.provavel_hipertensa_sem_diagnostico = 1 OR COALESCE(prm.has_cronica_prenatal,0) = 1)
+      THEN 1 ELSE 0 END AS hipertensao_cronica_confirmada,
+
+    CASE WHEN cf.diabetes_previo = 1 OR pad.tem_antidiabetico = 1
+      THEN 1 ELSE 0 END AS diabetes_previo_confirmado,
+
    frc.doenca_renal_cat,
-   -- Autoimune por categorias OU por CID
-   CASE WHEN COALESCE(frc.doenca_autoimune_cat, 0) = 1 OR COALESCE(cf.doenca_autoimune_cid, 0) = 1 THEN 1 ELSE 0 END AS doenca_autoimune_total,
-   -- Gemelaridade: categoria ou marcação de pre_natal
-   CASE WHEN COALESCE(frc.gravidez_gemelar_cat,0) = 1 OR COALESCE(prm.gestacao_multipla_prenatal,0) = 1 THEN 1 ELSE 0 END AS gravidez_gemelar_total,
+
+    CASE WHEN COALESCE(frc.doenca_autoimune_cat, 0) = 1 OR COALESCE(cf.doenca_autoimune_cid, 0) = 1
+      THEN 1 ELSE 0 END AS doenca_autoimune_total,
+
+    CASE WHEN COALESCE(frc.gravidez_gemelar_cat,0) = 1 OR COALESCE(prm.gestacao_multipla_prenatal,0) = 1
+      THEN 1 ELSE 0 END AS gravidez_gemelar_total,
+
    COALESCE(cf.reproducao_assistida_cid, 0) AS reproducao_assistida_cid,
-   COALESCE(og.tem_obesidade, 0) AS tem_obesidade,
    COALESCE(prm.hist_pre_eclampsia, 0) AS hist_pre_eclampsia,
 
-   -- Contadores de risco conforme regra: Alto (>=1) OU Moderado (>=2)
-   (
-     CASE WHEN COALESCE(prm.hist_pre_eclampsia,0) = 1 THEN 1 ELSE 0 END +
-    --  CASE WHEN COALESCE(gravidez_gemelar_total,0) = 1 THEN 1 ELSE 0 END +
-     CASE WHEN COALESCE(frc.gravidez_gemelar_cat,0) = 1 OR COALESCE(prm.gestacao_multipla_prenatal,0) = 1 THEN 1 ELSE 0 END +
-     CASE WHEN COALESCE(og.tem_obesidade,0) = 1 THEN 1 ELSE 0 END +
-     -- Ajuste para englobar preeclampsia e hipertensão não especificada
-     CASE WHEN (cf.preeclampsia = 1 OR cf.hipertensao_nao_especificada = 1) THEN 1 ELSE 0 END +
-     CASE WHEN (cf.hipertensao_previa = 1 OR hgc.provavel_hipertensa_sem_diagnostico = 1 OR COALESCE(prm.has_cronica_prenatal,0) = 1) THEN 1 ELSE 0 END +
-     CASE WHEN (cf.diabetes_previo = 1 OR COALESCE(pad.tem_antidiabetico,0) = 1) THEN 1 ELSE 0 END +
-     CASE WHEN COALESCE(frc.doenca_renal_cat,0) = 1 THEN 1 ELSE 0 END +
-     CASE WHEN (COALESCE(frc.doenca_autoimune_cat,0) = 1 OR COALESCE(cf.doenca_autoimune_cid,0) = 1) THEN 1 ELSE 0 END +
-     CASE WHEN COALESCE(cf.reproducao_assistida_cid,0) = 1 THEN 1 ELSE 0 END
-   ) AS total_fatores_alto_risco_aas,
+    -- Flags adicionais para cálculos
+    cf.preeclampsia,
+    cf.hipertensao_nao_especificada,
+    cf.hipertensao_previa,
+    cf.diabetes_previo,
+    cah.tem_anti_hipertensivo,
+    frc.doenca_autoimune_cat,
+    frc.gravidez_gemelar_cat
 
-   (
-     CASE WHEN (COALESCE(prm.nuliparidade_prenatal,0) = 1) THEN 1 ELSE 0 END +
-     CASE WHEN COALESCE(pi.idade_atual, 0) >= 35 THEN 1 ELSE 0 END
-   ) AS total_fatores_moderado_aas,
-
-   -- Campo legado mantido para compatibilidade (soma de alguns fatores anteriores)
-   (CASE WHEN cf.hipertensao_previa = 1 AND cah.tem_anti_hipertensivo = 1 THEN 1 ELSE 0 END +
-    CASE WHEN cf.diabetes_previo = 1 THEN 1 ELSE 0 END +
-    COALESCE(frc.doenca_renal_cat,0) + COALESCE(frc.doenca_autoimune_cat,0) + COALESCE(frc.gravidez_gemelar_cat,0)) AS total_fatores_risco_pe,
-
-   -- Indicação de AAS (nova regra)
-   CASE
-     WHEN (
-       (
-         CASE WHEN COALESCE(prm.hist_pre_eclampsia,0) = 1 THEN 1 ELSE 0 END +
-        --  CASE WHEN COALESCE(gravidez_gemelar_total,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(frc.gravidez_gemelar_cat,0) = 1 OR COALESCE(prm.gestacao_multipla_prenatal,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(og.tem_obesidade,0) = 1 THEN 1 ELSE 0 END +
-         -- Ajuste para englobar preeclampsia e hipertensão não especificada
-         CASE WHEN (cf.preeclampsia = 1 OR cf.hipertensao_nao_especificada = 1) THEN 1 ELSE 0 END +
-         CASE WHEN (cf.hipertensao_previa = 1 OR hgc.provavel_hipertensa_sem_diagnostico = 1 OR COALESCE(prm.has_cronica_prenatal,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN (cf.diabetes_previo = 1 OR COALESCE(pad.tem_antidiabetico,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(frc.doenca_renal_cat,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN (COALESCE(frc.doenca_autoimune_cat,0) = 1 OR COALESCE(cf.doenca_autoimune_cid,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(cf.reproducao_assistida_cid,0) = 1 THEN 1 ELSE 0 END
-       ) >= 1
-       OR (
-         CASE WHEN (f.numero_gestacao = 1 OR COALESCE(prm.nuliparidade_prenatal,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(pi.idade_atual, 0) >= 35 THEN 1 ELSE 0 END
-       ) >= 2
-     ) THEN 1 ELSE 0
-   END AS tem_indicacao_aas,
-
-   -- Status da prescrição
-   paas.tem_prescricao_aas, sp.prescricao_carbonato_calcio,
-
-   -- Adequação (nova regra)
-   CASE
-     WHEN (
-       (
-         CASE WHEN COALESCE(prm.hist_pre_eclampsia,0) = 1 THEN 1 ELSE 0 END +
-         -- CASE WHEN COALESCE(gravidez_gemelar_total,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(frc.gravidez_gemelar_cat,0) = 1 OR COALESCE(prm.gestacao_multipla_prenatal,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(og.tem_obesidade,0) = 1 THEN 1 ELSE 0 END +
-         -- Ajuste para englobar preeclampsia e hipertensão não especificada
-         CASE WHEN (cf.preeclampsia = 1 OR cf.hipertensao_nao_especificada = 1) THEN 1 ELSE 0 END +
-         CASE WHEN (cf.hipertensao_previa = 1 OR hgc.provavel_hipertensa_sem_diagnostico = 1 OR COALESCE(prm.has_cronica_prenatal,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN (cf.diabetes_previo = 1 OR COALESCE(pad.tem_antidiabetico,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(frc.doenca_renal_cat,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN (COALESCE(frc.doenca_autoimune_cat,0) = 1 OR COALESCE(cf.doenca_autoimune_cid,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(cf.reproducao_assistida_cid,0) = 1 THEN 1 ELSE 0 END
-       ) >= 1
-       OR (
-         CASE WHEN (f.numero_gestacao = 1 OR COALESCE(prm.nuliparidade_prenatal,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(pi.idade_atual, 0) >= 35 THEN 1 ELSE 0 END
-       ) >= 2
-     ) AND paas.tem_prescricao_aas = 1 THEN 'Adequado - Com AAS'
-     WHEN (
-       (
-         CASE WHEN COALESCE(prm.hist_pre_eclampsia,0) = 1 THEN 1 ELSE 0 END +
-        --  CASE WHEN COALESCE(gravidez_gemelar_total,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(frc.gravidez_gemelar_cat,0) = 1 OR COALESCE(prm.gestacao_multipla_prenatal,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(og.tem_obesidade,0) = 1 THEN 1 ELSE 0 END +
-         -- Ajuste para englobar preeclampsia e hipertensão não especificada
-         CASE WHEN (cf.preeclampsia = 1 OR cf.hipertensao_nao_especificada = 1) THEN 1 ELSE 0 END +
-         CASE WHEN (cf.hipertensao_previa = 1 OR hgc.provavel_hipertensa_sem_diagnostico = 1 OR COALESCE(prm.has_cronica_prenatal,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN (cf.diabetes_previo = 1 OR COALESCE(pad.tem_antidiabetico,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(frc.doenca_renal_cat,0) = 1 THEN 1 ELSE 0 END +
-         CASE WHEN (COALESCE(frc.doenca_autoimune_cat,0) = 1 OR COALESCE(cf.doenca_autoimune_cid,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(cf.reproducao_assistida_cid,0) = 1 THEN 1 ELSE 0 END
-       ) >= 1
-       OR (
-         CASE WHEN (f.numero_gestacao = 1 OR COALESCE(prm.nuliparidade_prenatal,0) = 1) THEN 1 ELSE 0 END +
-         CASE WHEN COALESCE(pi.idade_atual, 0) >= 35 THEN 1 ELSE 0 END
-       ) >= 2
-     ) AND COALESCE(paas.tem_prescricao_aas,0) = 0 THEN 'Inadequado - Sem AAS'
-     ELSE 'Sem indicação'
-   END AS adequacao_aas_pe
-  
- FROM filtrado f
- LEFT JOIN condicoes_flags cf ON f.id_gestacao = cf.id_gestacao
- LEFT JOIN classificacao_anti_hipertensivos cah ON f.id_gestacao = cah.id_gestacao
- LEFT JOIN prescricoes_antidiabeticos pad ON f.id_gestacao = pad.id_gestacao
- LEFT JOIN fatores_risco_categorias frc ON f.id_gestacao = frc.id_gestacao
- LEFT JOIN prescricao_aas paas ON f.id_gestacao = paas.id_gestacao
-  LEFT JOIN status_prescricoes sp ON f.id_gestacao = sp.id_gestacao
+  FROM filtrado f
+  LEFT JOIN condicoes_flags cf ON f.id_gestacao = cf.id_gestacao
+  LEFT JOIN classificacao_anti_hipertensivos cah ON f.id_gestacao = cah.id_gestacao
+  LEFT JOIN prescricoes_antidiabeticos pad ON f.id_gestacao = pad.id_gestacao
+  LEFT JOIN fatores_risco_categorias frc ON f.id_gestacao = frc.id_gestacao
   LEFT JOIN hipertensao_gestacional_completa hgc ON f.id_gestacao = hgc.id_gestacao
   LEFT JOIN obesidade_gestante og ON f.id_gestacao = og.id_gestacao
   LEFT JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
   LEFT JOIN prenatal_risco_marcadores prm ON f.id_gestacao = prm.id_gestacao
 ),
+
+-- 2. CTE: Contadores de risco (calculados UMA VEZ)
+contadores_risco AS (
+  SELECT
+    id_gestacao,
+
+    -- Total de fatores de ALTO risco (9 condições)
+    (
+      CASE WHEN COALESCE(hist_pre_eclampsia,0) = 1 THEN 1 ELSE 0 END +
+      CASE WHEN COALESCE(gravidez_gemelar_total,0) = 1 THEN 1 ELSE 0 END +
+      CASE WHEN COALESCE(tem_obesidade,0) = 1 THEN 1 ELSE 0 END +
+      CASE WHEN (preeclampsia = 1 OR hipertensao_nao_especificada = 1) THEN 1 ELSE 0 END +
+      CASE WHEN COALESCE(hipertensao_cronica_confirmada,0) = 1 THEN 1 ELSE 0 END +
+      CASE WHEN COALESCE(diabetes_previo_confirmado,0) = 1 THEN 1 ELSE 0 END +
+      CASE WHEN COALESCE(doenca_renal_cat,0) = 1 THEN 1 ELSE 0 END +
+      CASE WHEN COALESCE(doenca_autoimune_total,0) = 1 THEN 1 ELSE 0 END +
+      CASE WHEN COALESCE(reproducao_assistida_cid,0) = 1 THEN 1 ELSE 0 END
+   ) AS total_fatores_alto_risco_aas,
+
+    -- Total de fatores MODERADOS (2 condições)
+   (
+      CASE WHEN COALESCE(nuliparidade_prenatal,0) = 1 THEN 1 ELSE 0 END +
+      CASE WHEN COALESCE(idade_atual, 0) >= 35 THEN 1 ELSE 0 END
+   ) AS total_fatores_moderado_aas,
+
+    -- Campo legado mantido para compatibilidade
+    (
+      CASE WHEN hipertensao_previa = 1 AND tem_anti_hipertensivo = 1 THEN 1 ELSE 0 END +
+      CASE WHEN diabetes_previo = 1 THEN 1 ELSE 0 END +
+      COALESCE(doenca_renal_cat,0) +
+      COALESCE(doenca_autoimune_cat,0) +
+      COALESCE(gravidez_gemelar_cat,0)
+    ) AS total_fatores_risco_pe
+
+  FROM fatores_risco_base
+),
+
+-- 3. CTE: Janelas de idade gestacional (3 períodos mutuamente exclusivos)
+idade_gestacional_janelas AS (
+  SELECT
+    id_gestacao,
+    DATE_DIFF(CURRENT_DATE(), data_inicio, WEEK) AS semanas_gestacao,
+
+    -- Janela 1: Antes de 12 semanas (muito cedo para AAS)
+    CASE WHEN DATE_DIFF(CURRENT_DATE(), data_inicio, WEEK) < 12
+      THEN 1 ELSE 0 END AS antes_janela_12,
+
+    -- Janela 2: Entre 12 e 20 semanas (período ideal para iniciar AAS)
+    CASE WHEN DATE_DIFF(CURRENT_DATE(), data_inicio, WEEK) >= 12
+         AND DATE_DIFF(CURRENT_DATE(), data_inicio, WEEK) <= 20
+      THEN 1 ELSE 0 END AS dentro_janela_12_20,
+
+    -- Janela 3: Após 20 semanas (passou do período ideal)
+    CASE WHEN DATE_DIFF(CURRENT_DATE(), data_inicio, WEEK) > 20
+      THEN 1 ELSE 0 END AS apos_janela_20
+
+  FROM fatores_risco_base
+),
+
+-- 4. CTE: Critérios de indicação de AAS
+criterios_indicacao_aas AS (
+  SELECT
+    cr.id_gestacao,
+    cr.total_fatores_alto_risco_aas,
+    cr.total_fatores_moderado_aas,
+
+    -- Possui indicação clínica: Alto risco >=1 OU Moderado >=2 (independente da janela temporal)
+    CASE WHEN (cr.total_fatores_alto_risco_aas >= 1 OR cr.total_fatores_moderado_aas >= 2)
+      THEN 1 ELSE 0 END AS possui_indicacao_aas
+
+  FROM contadores_risco cr
+),
+
+-- 5. CTE: Status de prescrições
+prescricoes_aas_calcio AS (
+  SELECT
+    f.id_gestacao,
+    COALESCE(paas.tem_prescricao_aas, 0) AS tem_prescricao_aas,
+    sp.prescricao_carbonato_calcio
+  
+ FROM filtrado f
+ LEFT JOIN prescricao_aas paas ON f.id_gestacao = paas.id_gestacao
+  LEFT JOIN status_prescricoes sp ON f.id_gestacao = sp.id_gestacao
+),
+
+-- 6. CTE FINAL: Adequação de AAS com lógica completa (12 combinações)
+fatores_risco_pe_adequacao AS (
+  SELECT
+    -- Identificadores
+    frb.id_gestacao,
+    frb.numero_gestacao,
+
+    -- Variáveis individuais de risco
+    frb.nuliparidade_prenatal,
+    frb.imc_inicio,
+    frb.tem_obesidade,
+    frb.hipertensao_cronica_confirmada,
+    frb.diabetes_previo_confirmado,
+    frb.doenca_renal_cat,
+    frb.doenca_autoimune_total,
+    frb.gravidez_gemelar_total,
+    frb.reproducao_assistida_cid,
+    frb.hist_pre_eclampsia,
+
+    -- Contadores de risco
+    cr.total_fatores_alto_risco_aas,
+    cr.total_fatores_moderado_aas,
+    cr.total_fatores_risco_pe,
+
+    -- Indicação de AAS (campo legado - apenas janela 12-20)
+    CASE WHEN cia.possui_indicacao_aas = 1 
+    AND igj.dentro_janela_12_20 = 1
+      THEN 1 ELSE 0 END AS tem_indicacao_aas,
+
+    -- Status de prescrição
+    pac.tem_prescricao_aas,
+    pac.prescricao_carbonato_calcio,
+
+    -- ADEQUAÇÃO DE AAS - Lógica completa com 12 combinações possíveis
+    CASE
+      -- PERÍODO < 12 SEMANAS (4 casos - todos com mesma mensagem)
+      WHEN igj.antes_janela_12 = 1
+        THEN 'Antes de 12s - FORA PERÍODO INDICADO'
+
+      -- PERÍODO 12-20 SEMANAS (4 casos)
+      WHEN igj.dentro_janela_12_20 = 1 AND cia.possui_indicacao_aas = 1 AND pac.tem_prescricao_aas = 1
+        THEN 'Na janela e prescrito - ADEQUADO'
+
+      WHEN igj.dentro_janela_12_20 = 1 AND cia.possui_indicacao_aas = 1 AND COALESCE(pac.tem_prescricao_aas,0) = 0
+        THEN 'Na janela e não prescrito - DEVE INICIAR PRESCRIÇÃO'
+
+      WHEN igj.dentro_janela_12_20 = 1 AND COALESCE(cia.possui_indicacao_aas,0) = 0
+        THEN 'Sem indicação'
+
+      -- PERÍODO > 20 SEMANAS (4 casos)
+      WHEN igj.apos_janela_20 = 1 AND cia.possui_indicacao_aas = 1 AND pac.tem_prescricao_aas = 1
+        THEN 'Com indicação e prescrito - MANTER PRESCRIÇÃO'
+
+      WHEN igj.apos_janela_20 = 1 AND cia.possui_indicacao_aas = 1 AND COALESCE(pac.tem_prescricao_aas,0) = 0
+        THEN 'Com indicação e não prescrito - FALHA CONDUTA / FORA PERÍODO INDICADO'
+
+      WHEN igj.apos_janela_20 = 1 AND COALESCE(cia.possui_indicacao_aas,0) = 0 AND pac.tem_prescricao_aas = 1
+        THEN 'Sem indicação e prescrito - SUSPENDER - SEM INDICAÇÃO'
+
+      WHEN igj.apos_janela_20 = 1 AND COALESCE(cia.possui_indicacao_aas,0) = 0 AND COALESCE(pac.tem_prescricao_aas,0) = 0
+        THEN 'Sem indicação'
+
+      -- Fallback (não deveria acontecer, mas mantido por segurança)
+      ELSE 'Sem indicação'
+    END AS adequacao_aas_pe
+
+  FROM fatores_risco_base frb
+  INNER JOIN contadores_risco cr ON frb.id_gestacao = cr.id_gestacao
+  INNER JOIN idade_gestacional_janelas igj ON frb.id_gestacao = igj.id_gestacao
+  INNER JOIN criterios_indicacao_aas cia ON frb.id_gestacao = cia.id_gestacao
+  INNER JOIN prescricoes_aas_calcio pac ON frb.id_gestacao = pac.id_gestacao
+),
+
+-- ========================================
+-- FIM DO BLOCO REFATORADO
+-- ========================================
 
 -- ========================================
 -- FIM DO BLOCO DE HIPERTENSÃO
@@ -1392,106 +1609,7 @@ incluir_AP AS (
             ON pinfo.id_cnes = estab.id_cnes
 ),
 
--- -- CTE encaminhamento_SISREG (permanece como a última versão corrigida)
--- encaminhamento_SISREG AS (
---     SELECT
---         f.id_gestacao,
---         pi.id_paciente,
---         s.paciente_cpf,
---         s.paciente_cns,
---         s.paciente_nome,
---         s.paciente_dt_nasc,
---         s.data_solicitacao,
---         DATE(s.data_solicitacao) AS data_solicitacao_date,
---         s.solicitacao_status,
---         s.solicitacao_situacao,
---         s.procedimento,
---         s.procedimento_id,
---         s.unidade_solicitante,
---         s.medico_solicitante,
---         s.operador_solicitante_nome,
---         ROW_NUMBER() OVER (
---             PARTITION BY
---                 f.id_gestacao
---             ORDER BY s.data_solicitacao ASC, s.procedimento_id ASC
---         ) as rn_solicitacao
---     FROM
---         filtrado f
---         JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
---         -- LEFT JOIN {{ ref('raw_sisreg_api__solicitacoes') }} s
---         LEFT JOIN rj-sms.brutos_sisreg_api.solicitacoes s
---             ON (
---             (
---                 (
---                     pi.cpf IS NOT NULL
---                     AND pi.cpf != ''
---                 )
---                 AND (
---                     s.paciente_cpf IS NOT NULL
---                     AND s.paciente_cpf != ''
---                 )
---                 AND pi.cpf = s.paciente_cpf
---             )
---             -- OR
---             -- ((pi.cns IS NOT NULL AND ARRAY_LENGTH(pi.cns) > 0) AND (s.paciente_cns IS NOT NULL AND s.paciente_cns != '') AND s.paciente_cns IN UNNEST(pi.cns))
---         )
---         AND s.procedimento_id IN (
---             '0703844',
---             '0703886',
---             '0737024',
---             '0710301',
---             '0710128'
---         )
---         AND DATE(s.data_solicitacao) BETWEEN f.data_inicio AND COALESCE(
---             f.data_fim_efetiva,
---             CURRENT_DATE()
---         )
--- ),
 
--- -- CTE encaminhamento_SISREG_SER (permanece como a última versão corrigida)
--- encaminhamento_SISREG_SER AS (
---     SELECT
---         f.id_gestacao,
---         pi.id_paciente,
---         s.*,
-
---         ROW_NUMBER() OVER (
---             PARTITION BY
---                 f.id_gestacao
---             ORDER BY s.data_solicitacao ASC, s.procedimento_id ASC
---         ) as rn_solicitacao
---     FROM
---         filtrado f
---         JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
---         -- LEFT JOIN {{ ref('raw_sisreg_api__solicitacoes') }} s
---         LEFT JOIN rj-sms.brutos_sisreg_api.solicitacoes s
---             ON (
---             (
---                 (
---                     pi.cpf IS NOT NULL
---                     AND pi.cpf != ''
---                 )
---                 AND (
---                     s.paciente_cpf IS NOT NULL
---                     AND s.paciente_cpf != ''
---                 )
---                 AND pi.cpf = s.paciente_cpf
---             )
---             -- OR
---             -- ((pi.cns IS NOT NULL AND ARRAY_LENGTH(pi.cns) > 0) AND (s.paciente_cns IS NOT NULL AND s.paciente_cns != '') AND s.paciente_cns IN UNNEST(pi.cns))
---         )
---         AND s.procedimento_id IN (
---             '0703844',
---             '0703886',
---             '0737024',
---             '0710301',
---             '0710128'
---         )
---         AND DATE(s.data_solicitacao) BETWEEN f.data_inicio AND COALESCE(
---             f.data_fim_efetiva,
---             CURRENT_DATE()
---         )
--- ),
 
 Urgencia_e_emergencia as (
     SELECT *
@@ -1552,20 +1670,20 @@ final AS (
         f.fase_atual,
         f.trimestre_atual_gestacao AS trimestre, -- Usando o trimestre calculado em 'filtrado'
         CASE
-            WHEN f.fase_atual IN ('Gestação') THEN DATE_DIFF (
+            WHEN f.fase_atual IN ('Gestação') THEN DIV(DATE_DIFF (
                 CURRENT_DATE(),
                 f.data_inicio,
-                WEEK
-            )
+                DAY
+            ),7)
             ELSE NULL
         END AS IG_atual_semanas,
         CASE
             WHEN f.fase_atual IN ('Encerrada', 'Puerpério')
-            AND f.data_fim_efetiva IS NOT NULL THEN DATE_DIFF (
+            AND f.data_fim_efetiva IS NOT NULL THEN DIV(DATE_DIFF (
                 f.data_fim_efetiva,
                 f.data_inicio,
-                WEEK
-            )
+                DAY
+            ),7)
             ELSE NULL
         END AS IG_final_semanas,
 
@@ -1630,7 +1748,20 @@ final AS (
     frpa.hipertensao_cronica_confirmada,
     -- frpa.hipertensao_cronica_presente,
     frpa.diabetes_previo_confirmado,
-    frpa.total_fatores_risco_pe,
+    frpa.total_fatores_alto_risco_aas,
+    frpa.total_fatores_moderado_aas,
+    frpa.imc_inicio,
+    frpa.tem_obesidade,
+    -- frpa.total_fatores_risco_pe,
+    CASE
+        WHEN f.fase_atual IN ('Gestação') THEN DIV(DATE_DIFF (
+            CURRENT_DATE(),
+            f.data_inicio,
+            DAY
+        ),7)
+        ELSE NULL
+    END AS IG_atual_semanas_aas,
+    hgc.tem_prescricao_aas as tem_prescricao_aas2,
     frpa.tem_indicacao_aas,
     frpa.adequacao_aas_pe,
     -- ========================================
@@ -1751,9 +1882,13 @@ final AS (
     ue.data_consulta as ue_data_consulta,
     ue.motivo_atendimento as ue_motivo_atendimento,
     ue.nome_estabelecimento as ue_nome_estabelecimento,
+    -- Novas colunas de unidade de cadastro e atendimento
+    cad.unidade_vinculo_cadastro AS unidade_cadastro,
+    cad.unidade_atendimento AS unidade_atendimento
     FROM
         filtrado f
         LEFT JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
+        LEFT JOIN cad_e_atd cad ON f.id_paciente = cad.id_paciente
         -- Não precisa mais de 'faixa_etaria' e 'incluir_trimestre' como joins separados
         LEFT JOIN incluir_AP iap ON f.id_paciente = iap.id_paciente
         LEFT JOIN pacientes_todos_cns ptc ON f.id_paciente = ptc.id_paciente
