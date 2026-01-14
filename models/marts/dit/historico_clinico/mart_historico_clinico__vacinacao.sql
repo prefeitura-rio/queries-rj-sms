@@ -100,18 +100,26 @@ with
             vacina_sigla,
             vacina_detalhes,
 
-            REPLACE(
-                REPLACE(
+            REGEXP_REPLACE(
+                REGEXP_REPLACE(
                     REPLACE(
-                        {{ capitalize_first_letter("vacina_dose") }},
-                        "eforco",  -- ex. "Reforco"
-                        "eforço"
+                        REPLACE(
+                            REPLACE(
+                                {{ capitalize_first_letter("vacina_dose") }},
+                                "eforco",  -- ex. "Reforco"
+                                "eforço"
+                            ),
+                            "acinacao", -- ex. "Revacinacao"
+                            "acinação"
+                        ),
+                        "unica", -- ex. "Dose unica"
+                        "única"
                     ),
-                    "acinacao", -- ex. "Revacinacao"
-                    "acinação"
+                    r"([0-9]+)\s*dose",  -- ex. "2 dose" -> "2ª dose"
+                    r"\1ª dose"
                 ),
-                "unica", -- ex. "Dose unica"
-                "única"
+                r"([0-9]+)\s*reforço",  -- ex. "2 reforço" -> "2º reforço"
+                r"\1º reforço"
             ) as vacina_dose,
 
             {{ clean_lote_vacina("vacina_lote") }} as vacina_lote,
@@ -119,8 +127,19 @@ with
             vacina_registro_tipo,
             vacina_estrategia,
             vacina_diff,
-            vacina_aplicacao_data,
-            vacina_registro_data,
+
+            -- Diversos casos de data de aplicação 1900-01-01
+            if(
+                -- TODO: quando tivermos dados de 1900, atualizar
+                vacina_aplicacao_data > date("1900-01-01"),
+                vacina_aplicacao_data,
+                null
+            ) as vacina_aplicacao_data,
+            if(
+                vacina_registro_data > date("1900-01-01"),
+                vacina_registro_data,
+                null
+            ) as vacina_registro_data,
             paciente_nome,
             paciente_sexo,
             paciente_nascimento_data,
