@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__alta_clinica
+    description: "Tabela contendo informações de altas clínicas"
+    columns:
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: gid_clinica
+        description: "ID global da clínica responsável."
+      - name: gid_leito
+        description: "ID global do leito ocupado."
+      - name: gid_unidade
+        description: "ID global da unidade de saúde."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: internacao_data
+        description: "Data de entrada do paciente."
+      - name: internacao_hora
+        description: "Horário de entrada do paciente."
+      - name: alta_data
+        description: "Data de saída/alta do paciente."
+      - name: alta_hora
+        description: "Horário de saída/alta do paciente."
+      - name: saida_saida
+        description: "Tipo ou destino da saída do paciente."
+      - name: alta_motivo
+        description: "Motivo clínico ou administrativo da alta."
+      - name: id_clinica
+        description: "Identificador local da clínica."
+      - name: id_leito
+        description: "Identificador local do leito."
+      - name: id_unidade
+        description: "Identificador local da unidade."
+      - name: alta_cpf
+        description: "CPF do profissional responsável pela alta."
+      - name: proc
+        description: "Procedimento realizado ou associado à alta."
+      - name: codigo_cid10
+        description: "Código da Classificação Internacional de Doenças (CID-10)."
+      - name: status
+        description: "Estado atual do registro de alta."
+      - name: cnes
+        description: "Cadastro Nacional de Estabelecimentos de Saúde."
+      - name: loaded_at
+        description: "Data e hora da carga dos dados no sistema."
+      - name: data_particao
+        description: "Data de referência para particionamento da tabela."

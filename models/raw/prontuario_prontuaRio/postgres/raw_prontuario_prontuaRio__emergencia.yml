@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__emergencia
+    description: "Tabela de registros de boletins de emergência e classificação de risco."
+    columns:
+      - name: gid_boletim
+        description: "ID global único do boletim de atendimento."
+      - name: id_boletim
+        description: "Identificador local do boletim."
+      - name: numero_cor
+        description: "Código numérico associado à cor da classificação de risco."
+      - name: cor
+        description: "Cor da classificação de risco (ex: Verde, Amarelo, Vermelho)."
+      - name: tempo_espera
+        description: "Tempo estimado ou decorrido de espera para o atendimento."
+      - name: paciente_nome
+        description: "Nome completo do paciente."
+      - name: motivo
+        description: "Queixa principal ou motivo do atendimento de emergência."
+      - name: data_entrada_saida
+        description: "Data do registro de movimentação (entrada ou saída) no boletim."
+      - name: cpf_emergencia
+        description: "CPF do paciente ou do profissional responsável pelo registro."
+      - name: cnes
+        description: "Código do Cadastro Nacional de Estabelecimentos de Saúde."
+      - name: loaded_at
+        description: "Timestamp da carga dos dados no sistema."
+      - name: data_particao
+        description: "Data de referência para particionamento dos dados."
