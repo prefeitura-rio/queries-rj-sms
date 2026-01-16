@@ -22,12 +22,14 @@ with vacinacao as (
         vacina_detalhes,
         vacina_dose,
         vacina_lote,
-        vacina_registro_tipo,
         vacina_estrategia,
+
+        vacina_registro_tipo,
         vacina_aplicacao_data,
         vacina_registro_data,
         cpf_particao
     from {{ ref('mart_historico_clinico__vacinacao') }}
+    where vacina_registro_tipo != "Vacina não aplicada"
 )
 
 select *

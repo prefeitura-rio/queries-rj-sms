@@ -124,8 +124,21 @@ with
 
             {{ clean_lote_vacina("vacina_lote") }} as vacina_lote,
 
-            vacina_registro_tipo,
-            vacina_estrategia,
+            case
+                when vacina_registro_tipo = "administracao"
+                    then "Administração"
+                when vacina_registro_tipo = "registro de vacinacao anterior"
+                    then "Registro de vacinação anterior"
+                -- Vacinas não aplicadas são filtradas na camada app; se
+                -- for modificar o texto abaixo, lembra de alterar também lá
+                when vacina_registro_tipo = "nao aplicada"
+                    then "Vacina não aplicada"
+
+                else {{ capitalize_first_letter("vacina_registro_tipo")}}
+            end as vacina_registro_tipo,
+
+            {{ clean_estrategia_vacina("vacina_estrategia") }} as vacina_estrategia,
+
             vacina_diff,
 
             -- Diversos casos de data de aplicação 1900-01-01
