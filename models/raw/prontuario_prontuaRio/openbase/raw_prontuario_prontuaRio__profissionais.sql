@@ -49,6 +49,7 @@ final as (
         rpad(id_cbo, 6, '0') as id_cbo,
         {{process_null('atua')}} as atua,
         {{process_null('ativ')}} as ativ,
+        concat(cnes, '.', ativ) as gid_atividade,
         {{process_null('ativo_indicador')}} as ativo_indicador,
         {{process_null('email')}} as email,
         cnes,

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: vinculo_prontuario_boletim
+  - name: raw_prontuario_boletim
     description: "Tabela de relacionamento entre identificadores globais e locais de prontuários e boletins."
     columns:
       - name: gid_prontuario
