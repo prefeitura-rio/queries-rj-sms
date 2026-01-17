@@ -80,7 +80,7 @@ triagem as (
       nome_profissional,
       upper(descricao) AS desfecho_atendimento,
       p.cns,
-      ativ as id_atividade
+      gid_atividade
     from {{ ref("raw_prontuario_prontuaRio__evolucao") }} e
     left join {{ ref("raw_prontuario_prontuaRio__profissionais") }} p
       on e.cpf_profissional = p.cpf
@@ -92,6 +92,8 @@ triagem as (
 --       PROFISSIONAIS
 -------------------------------
 
+  -- No prontuaRio é utilizado o id_atividade para obter a especialidade do profissional
+  -- pois o id_cbo é incompleto em (5 digitos ao invés de 6 digitos)
   emerg_profissionais_enriquecido as (
     select 
       gid_boletim,
@@ -103,8 +105,8 @@ triagem as (
         {{proper_br("descricao")}} as especialidade
       ) as profissional_saude_responsavel
     from emerg_ultima_evolucao u
-    left join {{ref("raw_prontuario_prontuaRio__ocupacao")}} o
-      on o.id_cbo = u.id_atividade
+    left join {{ref("raw_prontuario_prontuaRio__profissional_atividade")}} o
+      on o.gid_atividade = u.gid_atividade
   ),
 
 -------------------------------
@@ -325,12 +327,14 @@ inter_saida as (
       medico_alta_cpf as cpf,
       nome_completo,
       p.cns,
-      ativ as id_atividade
+      gid_atividade,
     from {{ref("raw_prontuario_prontuaRio__internacao_alta")}} a
     left join {{ ref("raw_prontuario_prontuaRio__profissionais") }} p 
       on a.medico_alta_cpf = p.cpf
   ),  
-
+  
+  -- No prontuaRio é utilizado o id_atividade para obter a especialidade do profissional
+  -- pois o id_cbo é incompleto em (5 digitos ao invés de 6 digitos)
   inter_profissionais_enriquecido as (
     select distinct
       gid_prontuario,
@@ -342,8 +346,8 @@ inter_saida as (
         {{proper_br("descricao")}} as especialidade
       ) as profissional_saude_responsavel
     from inter_profissional as p
-    left join {{ref("raw_prontuario_prontuaRio__ocupacao")}} as o 
-      on o.id_cbo = p.id_atividade
+    left join {{ref("raw_prontuario_prontuaRio__profissional_atividade")}} as a 
+      on a.gid_atividade = p.gid_atividade
       
     qualify row_number() over(partition by gid_prontuario order by cpf) = 1
   ),

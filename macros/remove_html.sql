@@ -2,6 +2,7 @@
 
     {% set ns = namespace(sql_expr=text) %}
 
+    -- tags simples
     {% set tags = {
         '<p>':'',       '</p>':'',
         '<div>':'',     '</div>':'',
@@ -11,7 +12,13 @@
         '<br>':'\\n',   '<br />':'\\n',
         '<em>':'',      '</em>':'',
         '<tr>':'',      '</tr>':'',
-        '<u>':'',       '</u>':''
+        '<u>':'',       '</u>':'',
+        '<td>':'',       '</td>':'',
+        '<tbody>':'',    '</tbody>':'',
+        '<table>':'',    '</table>':'',
+        '<li>':'- ',    '</li>':'\\n',
+        '<ul>':'\\n',   '</ul>':'\\n',
+        '<ol>':'\\n',   '</ol>':'\\n',
 
     } %}
 
@@ -19,7 +26,20 @@
         {% set ns.sql_expr = "replace(" ~ ns.sql_expr ~ ", '" ~ tag ~ "', '" ~ value ~ "')" %}
     {% endfor %}
 
+    -- tags com atributos
+    {% set patterns = {
+        '<a\s+[^>]*>': '', '</a>': '',
+        '<div\s+[^>]*>': '', '</div>': '',
+        '<p\s+align="[^"]*">': '',
+        '<img\s+[^>]*>': '',
+        '</?(table|tbody|tr|td)\b[^>]*>': '',
+    } %}
 
+    {% for pattern, replacement in patterns.items() %}
+        {% set ns.sql_expr = "regexp_replace(" ~ ns.sql_expr ~ ", r'" ~ pattern ~ "', '" ~ replacement ~ "')" %}
+    {% endfor %}
+
+    -- entidades HTML
     {% set entities = {
         '&nbsp;': ' ',      '&amp;': '&',       '&quot;': '"',
         '&lt;': '<',        '&gt;': '>',        '&ndash;': '-',     '&mdash;': '-',

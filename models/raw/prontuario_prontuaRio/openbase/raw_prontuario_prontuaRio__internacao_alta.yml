@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: raw_prontuario_prontuaRio__internacao_alta.yml
+  - name: raw_prontuario_prontuaRio__internacao_alta
     description: "Tabela de resumo de internação, contendo detalhes clínicos, desfechos de parto (obstetrícia) e indicadores de infecção."
     columns:
       - name: gid_prontuario
