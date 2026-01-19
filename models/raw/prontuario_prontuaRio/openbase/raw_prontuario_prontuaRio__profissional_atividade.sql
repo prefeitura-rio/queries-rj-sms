@@ -19,7 +19,7 @@ with
             cnes,
             safe_cast(loaded_at as timestamp) as loaded_at,
         from source_
-    )
+    ),
 
     final as (
         select 
@@ -32,8 +32,10 @@ with
                 when descricao = 'ENFERMEIRA OBSTETRA' then 'ENFERMEIRO(A) OBSTETRA'
                 else upper(descricao)
             end as descricao,
+            loaded_at,
         from ocupacoes
 
     )
 
-qualify row_number() over(partition by id_atividade, cnes, descricao order by loaded_at desc)=1
+select * from final
+qualify row_number() over(partition by gid_atividade, descricao order by loaded_at desc)=1
