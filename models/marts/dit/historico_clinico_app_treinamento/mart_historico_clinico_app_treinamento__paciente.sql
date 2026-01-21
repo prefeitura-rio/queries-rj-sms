@@ -16,7 +16,7 @@ select
     '42298037299' as cpf,
     'Paciente Fake I' as registration_name,
     null as social_name,
-    '700000000000000' as cns,
+    '700000000000001' as cns,
     '1989-01-01' as birth_date,
     'masculino' as gender,
     'parda' as race,
