@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: brutos_gdb_sih_staging
+    database: rj-sms
+    schema: brutos_gdb_sih_staging
+    tables:
+
+    - name: TB_HA
+      # TB_HA -> cadastro de hospitais
+
+    - name: TB_GESTOR
+      # TB_GESTOR -> cadastro de gestores
+
+    - name: TB_C_D
+      # TB_C_D -> tabela código-descrição
+
+    - name: TB_HAIH
+      # TB_HAIH -> histórico AIH
