@@ -181,12 +181,31 @@ with bruto_atendimento as (
             {{ proper_br("atendimento.atendimento_subtipo") }} as subtipo,
 
             -- ENTRADA E SAIDA
-            safe_cast(atendimento.datahora_entrada as datetime) as entrada_datahora,
+            safe_cast(atendimento.atendimento_medico_datahora as datetime) as entrada_datahora,
             safe_cast(atendimento.datahora_saida as datetime) as saida_datahora,
 
             --- MOTIVO E DESFECHO
-            upper(trim(atendimento.historia_doenca_atual)) as motivo_atendimento,
-            upper(trim(atendimento.conduta_imediata)) as desfecho_atendimento,
+            concat(
+                'História da doença atual: \n',
+                upper(trim(atendimento.historia_doenca_atual)),
+                '\n',
+                '----------------------------------------------------------------------------------------------------------------------',
+                '\n\nExame físico: \n',
+                upper(trim(atendimento.exame_fisico))
+            ) as motivo_atendimento,
+            concat(
+                'Conduta Imediata: \n',
+                upper(trim(atendimento.conduta_imediata)) ,
+                '\n',
+                '----------------------------------------------------------------------------------------------------------------------',
+                '\n\nEncaminhamento: \n',
+                upper(trim(atendimento.encaminhamento)),
+                '\n',
+                '----------------------------------------------------------------------------------------------------------------------',
+                '\n\nRetorno em dias: \n',
+                upper(trim(safe_cast(atendimento.dias_retorno as string)))
+            ) as desfecho_atendimento,
+
 
             -- CONDICOES
             dca.condicoes,
