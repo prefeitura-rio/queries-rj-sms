@@ -156,6 +156,53 @@ with
         {% if is_incremental() %}
             WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
         {% endif %}
+        -- ... (union all anterior)
+        union all
+        select
+            id_hci,
+            cpf as paciente_cpf,
+            tipo,
+            subtipo,
+            entrada_datahora,
+            saida_datahora,
+            array(
+                select as struct
+                    cast(null as string) as tipo, cast(null as string) as descricao
+            ) as exames_realizados,
+            procedimentos_realizados,
+            motivo_atendimento,
+            desfecho_atendimento,
+            condicoes,
+            struct(
+                cast(null as float64) as altura,
+                cast(null as float64) as circunferencia_abdominal,
+                cast(null as float64) as frequencia_cardiaca,
+                cast(null as float64) as frequencia_respiratoria,
+                cast(null as float64) as glicemia,
+                cast(null as float64) as hemoglobina_glicada,
+                cast(null as float64) as imc,
+                cast(null as float64) as peso,
+                cast(null as float64) as pressao_sistolica,
+                cast(null as float64) as pressao_diastolica,
+                cast(null as string) as pulso_ritmo,
+                cast(null as float64) as saturacao_oxigenio,
+                cast(null as float64) as temperatura
+            ) as medidas,
+            array(
+                select as struct
+                    p.id, p.nome, p.posologia as concentracao, p.uso_continuo
+                from unnest(prescricoes) as p
+            ) as prescricoes,
+            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string, prescricao_data timestamp>>[] as medicamentos_administrados,
+            estabelecimento,
+            profissional_saude_responsavel,
+            prontuario,
+            metadados,
+            cpf_particao
+        from {{ ref("int_historico_clinico__episodio__sarah") }} -- Ajuste para o nome real do seu ref
+        {% if is_incremental() %}
+            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+        {% endif %}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     -- PATIENT DATA: Patient Enrichment 
