@@ -1,0 +1,26 @@
+version: 2
+models:
+  - name: raw_gdb_cnes__estabelecimento_motivo_desabilitacao
+    description: |-
+      Tabela de motivos para desativação de estabelecimentos
+      Tabela CNES: NFCES049
+      Granularidade: estabelecimento de saúde
+      Atualização: mensal
+    columns:
+      - name: id_motivo_desabilitacao
+        description: Código do motivo da desativação do estabelecimento
+      - name: motivo_desativacao
+        description: Descrição legível do motivo para desativação do estabelecimento
+
+      - name: tipo_desativacao
+        description: Tipo da desativação ('manual'/'automática')
+      - name: desativacao_definitiva
+        description: Se a desativação é definitiva (`true`) ou não (`false`)
+        data_type: bool
+
+      - name: data_particao
+        description: Data e hora de particionamento da tabela crua
+        data_type: string
+      - name: data_carga
+        description: Data e hora em que os dados foram carregados no banco de dados
+        data_type: string

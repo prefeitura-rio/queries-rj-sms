@@ -1,0 +1,77 @@
+version: 2
+models:
+  - name: raw_gdb_cnes__equipe
+    description: |-
+      Tabelas contendo o cadastro des equipes das unidades de saúde
+      Arquivo CNES: LFCES037
+      Granularidade: unidade de saude / equipe
+    columns:
+      - name: equipe_ine
+        description: Código INE da equipe
+      - name: equipe_sequencial
+        description: Código sequencial da equipe
+      - name: equipe_nome
+        description: Nome de referência da equipe
+      - name: id_equipe_tipo
+        description: Id do tipo de equipe
+      - name: id_subtipo_equipe
+        description: Id do tipo de equipe
+      - name: id_unidade
+        description: Código da unidade de saúde da equipe
+      - name: id_municipio
+        description: Código do município
+      - name: id_area
+        description: Código da área da equipe
+      - name: data_ativacao
+        description: Data de ativacao da equipe
+      - name: data_desativacao
+        description: Data de desativacao da equipe
+      - name: atende_pop_quilombola
+        description: Atende População Assistida Quilombolas
+      - name: atende_pop_assentados
+        description: Atende População Assistida Assentados
+      - name: atende_pop_geral
+        description: Atende População Assistida Geral
+      - name: atende_pop_escola
+        description: Atende População Assistida Escola
+      - name: atende_pop_pronasci
+        description: Atende População Assistida Pronasci
+      - name: atende_pop_indigena
+        description: Atende População Assistida Indígena
+      - name: atende_pop_ribeirinha
+        description: Atende População Assistida Ribeirinha
+      - name: atende_pop_situacao_rua
+        description: Atende População Assistida em Situação de Rua
+      - name: atende_pop_privada_liberdade
+        description: Atende População Assistida Privada de Liberdade
+      - name: atende_pop_conflito_lei
+        description: Atende População Assistida Com Transtorno Mental em Conflito com a Lei
+      - name: atende_pop_adolescente_conflito_lei
+        description: Atende População Assistida Adolescente em Conflito com a Lei
+      - name: id_cnes_uom
+        description: CNES da UOM (Unidade Odontológica Móvel)
+      - name: carga_horaria_uom
+        description: Carga horária da UOM (Unidade Odontológica Móvel)
+      - name: id_motivacao_desativacao_equipe
+        description: Código do Motivo de Desativação da Equipe
+      - name: id_tipo_desativacao_equipe
+        description: Código do Tipo de Desativação da Equipe
+      - name: tipo_desativacao_equipe
+        description: >
+          Conversão hardcoded do `id_tipo_desativacao_equipe`: "01"=Temporária; "02"=Definitiva.
+      - name: id_profissional_preceptor
+        description: Código do profissional Preceptor na equipe
+      - name: id_cnes_preceptor
+        description: CNES no qual o Profissional está vinculado como Preceptor
+      - name: data_atualizacao
+        description: Data da Última Atualização do Registro
+      - name: data_atualizacao_origem
+        description: Data da primeira entrada no Banco de Produção Federal
+      - name: usuario
+        description: Último Usuário que atualizou o Registro
+      - name: data_carga
+        description: Data e hora em que os dados foram carregados no banco de dados
+        data_type: string
+      - name: data_particao
+        description: Data e hora de particionamento da tabela crua
+        data_type: string

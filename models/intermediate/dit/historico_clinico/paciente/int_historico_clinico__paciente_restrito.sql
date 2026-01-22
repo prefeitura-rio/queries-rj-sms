@@ -5,16 +5,19 @@
         materialized="table",
     )
 }}
+
 with source as (
-    select *except(cpf), lpad(cpf,11,'0') as cpf
+    select
+        * except(cpf),
+        lpad(cpf, 11, '0') as cpf
     from {{ source("intermediario_historico_clinico_staging", "paciente_restrito") }}
 ),
 source_deduped as (
-    select * 
-    from source 
-    qualify row_number() over (partition by cpf, id_hci order by data_particao desc)  = 1
+    select *
+    from source
+    qualify row_number() over (partition by id_hci order by data_particao desc) = 1
 )
-select * 
+select *
 from source_deduped
 where flag_gemini = '1'
-or flag_gemini = '0'
+    or flag_gemini = '0'

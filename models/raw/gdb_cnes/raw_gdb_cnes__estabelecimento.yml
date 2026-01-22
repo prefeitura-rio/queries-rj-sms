@@ -1,0 +1,140 @@
+version: 2
+models:
+  - name: raw_gdb_cnes__estabelecimento
+    description: |-
+      Tabela com a relação dos estabelecimentos de saúde
+      Tabela CNES: LFCES004
+      Granularidade: estabelecimento de saúde
+      Atualização: mensal
+    columns:
+      - name: id_unidade
+        description: Código da unidade de saúde
+      - name: id_cnes
+        description: Código Nacional do Estabelecimento de Saúde
+      - name: id_tipo_unidade
+        description: Tipo de Estabelecimento
+      - name: id_tipo_estabelecimento
+        description: Código do Tipo de Estabelecimento
+      - name: id_atividade_principal
+        description: Código da Atividade Principal
+      - name: id_municipio_gestor
+        description: Código do Município
+      - name: estado_gestor_sigla
+        description: Sigla do Estado
+      - name: id_regiao_saude
+        description: Código da Região de Saúde
+      - name: id_micro_regiao
+        description: Código da Microregião de Saúde
+      - name: id_distrito_sanitario
+        description: Código do Distrito Sanitário
+      - name: id_distrito_administrativo
+        description: Código do Módulo Assistencial (Conforme o plano Diretor de
+          Regionalização do Estado/Município)
+      - name: id_atividade
+        description: Código da Atividade de Ensino / Pesquisa
+      - name: id_cliente
+        description: Código de Fluxo da Clientela
+      - name: id_turno_atendimento
+        description: Código do Turno de Atendimento
+      - name: id_motivo_desabilitacao
+        description: Código do Motivo de Desativação do Estabelecimento
+      - name: id_natureza_juridica
+        description: Código da Natureza Jurídica do Estabelecimento
+      - name: cnpj_mantenedora
+        description: CNPJ da Mantenedora
+      - name: tipo_pessoa
+        description: >
+          Indica se é Pessoa Física ou Jurídica: "Pessoa física"; "Pessoa jurídica"
+      - name: dependencia_nivel
+        description: >
+          Nivel de dependência do estabelecimento de saúde: "Individual"; "Mantido"
+      - name: contrato_formalizado_sus
+        description: Indica se o Estabelecimento possui Contrato formalizado com o SUS
+        data_type: bool
+      - name: nome_razao_social
+        description: Razão Social
+      - name: nome_fantasia
+        description: Nome fantasia
+      - name: endereco_logradouro
+        description: Logradouro
+      - name: endereco_numero
+        description: Número
+      - name: endereco_complemento
+        description: Complemento
+      - name: endereco_bairro
+        description: Bairro
+      - name: endereco_cep
+        description: Código de endereçamento postal (CEP)
+      - name: endereco_latitude
+        description: Latitude
+      - name: endereco_longitude
+        description: Longitude
+      - name: telefone
+        description: Telefone para contato
+      - name: fax
+        description: Fax para contato
+      - name: email
+        description: Email para contato
+      - name: url
+        description: "URL "
+      - name: cpf
+        description: |
+          CPF do Estabelecimento
+          Esse campo só é preenchido no caso do campo tipo_pfpj = 1
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
+      - name: cnpj
+        description: |-
+          CNPJ do Estabelecimento
+          Esse campo só é preenchido no caso do campo tipo_pfpj = 3
+      - name: aberto_sempre
+        description: Funcionamento do estabelecimento. Indica se está sempre aberto
+        data_type: bool
+      - name: possui_conexao_internet
+        description: Se a unidade possui conexão com a Internet
+        data_type: bool
+      - name: alvara_numero
+        description: Número do Alvará (Vigilância Sanitária)
+      - name: alvara_data_expedicao
+        description: Data de Expedição do Alvará (Vigilância Sanitária)
+      - name: alvara_orgao_expedidor
+        description: >
+          Órgão Expedidor (Vigilância Sanitária): "SES"; "SMS"
+      - name: licenca_sanitaria_data_validade
+        description: Data de Validade do Licenciamento Sanitário
+      - name: licenca_sanitaria_tipo
+        description: >
+          Tipo do Licenciamento Sanitário: "Total"; "Parcial/Restrições"
+      - name: diretor_clinico_cpf
+        description: CPF do Diretor Clínico ou  Gerente / Administrador
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_CPF") }}'
+      - name: diretor_clinico_conselho
+        policy_tags:
+          - '{{ var ("TAG_PUBLICO_NOME") }}'
+        description: Registro no Conselho de Classe do Diretor Clinico
+      - name: adesao_hospital_filantropico
+        description: Indica se o hospital fez adesão ao Programa de Reestruturação de
+          Hospital Filantrópico
+        data_type: bool
+      - name: gera_credito_gerente_sgif
+        description: Indica se o crédito gerado pelo estab. será direcionado para o
+          Gerente/Administrador(Terceiro)/Interveniente no SGIF (Sistema de
+          Gestão de Informações Financeiras do SUS).
+        data_type: bool
+      - name: data_entrada_sistema
+        description: Data da Primeira entrada no Banco de Produção Federal
+      - name: usuario_atualizador_registro
+        description: Último Usuário que atualizou o Registro
+      - name: data_atualizacao_registro
+        description: Data da Última Atualização do Registro
+      - name: usuario_atualizador_geolocalizacao
+        description: Nome do Usuário que atualizou as Coordenadas
+      - name: data_atualizacao_geolocalizacao
+        description: Data de atualização das Coordenadas
+      - name: data_carga
+        description: Data e hora em que os dados foram carregados no banco de dados
+        data_type: string
+      - name: data_particao
+        description: Data e hora de particionamento da tabela crua
+        data_type: string

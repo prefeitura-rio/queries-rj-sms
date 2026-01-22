@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__profissionais
+    description: "Tabela de cadastro de profissionais de saúde, incluindo vínculos, registros de conselho e contatos."
+    columns:
+      - name: cpf
+        description: "CPF do profissional."
+      - name: cns
+        description: "Cartão Nacional de Saúde (SUS) do profissional."
+      - name: matricula
+        description: "Número de matrícula funcional no estabelecimento ou rede."
+      - name: nome_completo
+        description: "Nome completo do profissional."
+      - name: icr
+        description: "Identificador de Conselho Regional (ex: CRM, COREN, CREFITO)."
+      - name: nome_guerra
+        description: "Nome social ou nome pelo qual o profissional é conhecido na unidade."
+      - name: telefone
+        description: "Telefone de contato do profissional."
+      - name: id_cbo
+        description: "Código da Classificação Brasileira de Ocupações."
+      - name: atua
+        description: "Área de atuação ou especialidade clínica."
+      - name: ativ
+        description: "Descrição da atividade principal exercida."
+      - name: ativo_indicador
+        description: "Indicador se o cadastro do profissional está ativo."
+      - name: email
+        description: "E-mail institucional ou de contato."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga dos dados no sistema."
+      - name: data_particao
+        description: "Data de referência para particionamento."
