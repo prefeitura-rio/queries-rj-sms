@@ -95,6 +95,13 @@ with bruto_atendimento as (
         where cid_secundario is not null
     ),
 
+    condicoes_deduplicadas as (
+        select 
+            *
+        from condicoes_unificadas
+        qualify row_number() over (partition by fk_atendimento, cid_id order by data_diagnostico) = 1
+    ),
+
 
     dim_condicoes_atribuidas as (
         select
@@ -108,7 +115,7 @@ with bruto_atendimento as (
                 )
                 order by c.data_diagnostico desc
             ) as condicoes
-        from condicoes_unificadas c
+        from condicoes_deduplicadas c
         left join cid_descricao d on c.cid_id = d.id
         group by fk_atendimento
     ),
@@ -150,6 +157,19 @@ with bruto_atendimento as (
                 else 'false' 
             end as uso_continuo
         from {{ ref('raw_prontuario_sarah__receituario_controle_especial') }}
+
+        union all
+        
+        -- 4. Receituário Interno
+        select
+            source_id as fk_atendimento,
+            upper(medicamento_nome) as nome,
+            medicamento_posologia as posologia,
+            case 
+                when upper(medicamento_orientacao) like '%CONTÍNUO%' then 'true' 
+                else 'false' 
+            end as uso_continuo
+        from {{ ref('raw_prontuario_sarah__receituario_interno') }}
     ),
 
     dim_prescricoes_atribuidas as (
