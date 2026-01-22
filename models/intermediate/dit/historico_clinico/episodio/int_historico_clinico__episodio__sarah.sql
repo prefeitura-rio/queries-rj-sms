@@ -47,10 +47,11 @@ with bruto_atendimento as (
         select
             cns as pk,
             struct(
+                id_profissional_sus as id,
                 cpf,
-                {{ proper_br("nome") }} as nome,
                 cns,
-                cbo
+                {{ proper_br("nome") }} as nome,
+                safe_cast(cbo[SAFE_OFFSET(0)].cbo as string) as especialidade
             ) as profissional_saude_responsavel
         from {{ ref("dim_profissional_saude") }}
     ),
