@@ -4,6 +4,7 @@
         schema= "brutos_gdb_sih"
     )
 }}
+-- Acredito que os backups em `brutos_sih_staging` são dessa tabela  -Avellar
 
 with source as (
     select * from {{ source('brutos_gdb_sih_staging', 'TB_HAIH') }}
@@ -208,13 +209,13 @@ renamed as (
         cast({{ process_null("AH_AUTORIZADOR_DOC") }} as string) as autorizador_doc,
 
         -- Paciente
-        cast(trim({{ process_null("AH_PACIENTE_NOME") }}) as string) as paciente_nome,
+        cast({{ process_null("trim(AH_PACIENTE_NOME)") }} as string) as paciente_nome,
         cast({{ process_null("AH_PACIENTE_DT_NASCIMENTO") }} as string) as paciente_data_nascimento,
         cast({{ process_null("AH_PACIENTE_IDADE") }} as string) as paciente_idade,
         cast({{ process_null("AH_PACIENTE_SEXO") }} as string) as paciente_sexo,
         cast({{ process_null("AH_PACIENTE_RACA_COR") }} as string) as paciente_raca,
-        cast(trim({{ process_null("AH_PACIENTE_NOME_RESP") }}) as string) as paciente_nome_responsavel,
-        cast(trim({{ process_null("AH_PACIENTE_NOME_MAE") }}) as string) as paciente_nome_mae,
+        cast({{ process_null("trim(AH_PACIENTE_NOME_RESP)") }} as string) as paciente_nome_responsavel,
+        cast({{ process_null("trim(AH_PACIENTE_NOME_MAE)") }} as string) as paciente_nome_mae,
         cast({{ process_null("AH_PACIENTE_IDENT_DOC") }} as string) as paciente_ident_doc,
         cast({{ process_null("AH_PACIENTE_NUMERO_DOC") }} as string) as paciente_numero_doc,
         cast({{ process_null("AH_PACIENTE_ETNIA") }} as string) as paciente_etnia,
@@ -234,10 +235,10 @@ renamed as (
         cast({{ process_null("AH_PACIENTE_NACIONALIDADE") }} as string) as paciente_nacionalidade,
         cast({{ process_null("AH_PACIENTE_MUN_ORIGEM") }} as string) as paciente_municipio_origem,
         cast({{ process_null("AH_PACIENTE_TIPO_LOGR") }} as string) as paciente_tipo_logradouro,
-        cast(trim({{ process_null("AH_PACIENTE_LOGR") }}) as string) as paciente_logradouro,
+        cast({{ process_null("trim(AH_PACIENTE_LOGR)") }} as string) as paciente_logradouro,
         cast({{ process_null("AH_PACIENTE_LOGR_NUMERO") }} as string) as paciente_logradouro_numero,
         cast({{ process_null("AH_PACIENTE_LOGR_COMPL") }} as string) as paciente_logradouro_complemento,
-        cast(trim({{ process_null("AH_PACIENTE_LOGR_BAIRRO") }}) as string) as paciente_logradouro_bairro,
+        cast({{ process_null("trim(AH_PACIENTE_LOGR_BAIRRO)") }} as string) as paciente_logradouro_bairro,
         cast({{ process_null("AH_PACIENTE_LOGR_MUNICIPIO") }} as string) as paciente_logradouro_municipio,
         cast({{ process_null("AH_PACIENTE_LOGR_UF") }} as string) as paciente_logradouro_uf,
         cast({{ process_null("AH_PACIENTE_LOGR_CEP") }} as string) as paciente_logradouro_cep,

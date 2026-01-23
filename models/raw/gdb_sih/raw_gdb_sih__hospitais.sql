@@ -40,7 +40,7 @@ renamed as (
     select
 
         cast({{ process_null("HA_CNES") }} as string) as id_cnes,
-        cast(trim({{ process_null("HA_RAZAO") }}) as string) as razao_social,
+        cast({{ process_null("trim(HA_RAZAO)") }} as string) as razao_social,
 
         case
             when REGEXP_CONTAINS(trim(HA_CNPJ), r"^0+$")

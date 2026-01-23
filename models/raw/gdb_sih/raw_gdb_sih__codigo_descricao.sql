@@ -30,7 +30,7 @@ renamed as (
         cast({{ process_null("C_D_COD_ITEM") }} as string) as codigo_item,
         cast({{ process_null("C_D_CMPT_INI") }} as string) as cmpt_inicio,
         cast({{ process_null("C_D_CMPT_FIM") }} as string) as cmpt_fim,
-        cast(trim({{ process_null("C_D_DESCRICAO") }}) as string) as descricao,
+        cast({{ process_null("trim(C_D_DESCRICAO)") }} as string) as descricao,
 
         -- Podem ser usados posteriormente para deduplicação
         data_particao,
