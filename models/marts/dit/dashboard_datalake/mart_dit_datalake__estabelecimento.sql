@@ -43,5 +43,3 @@ estabelecimentos as (
 
 select * 
 from estabelecimentos
-
-LIMIT 1000
