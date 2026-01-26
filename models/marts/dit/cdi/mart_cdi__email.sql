@@ -3,6 +3,11 @@
         alias="email",
         schema="projeto_cdi",
         materialized="table",
+        tags=["cdi_vps"],
+        partition_by={
+            "field": "data_publicacao",
+            "data_type": "date"
+        }
     )
 }}
 
