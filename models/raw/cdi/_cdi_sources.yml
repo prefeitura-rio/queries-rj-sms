@@ -1,9 +1,14 @@
 version: 2
-
 sources:
   - name: brutos_cdi_staging
-    database: rj-sms
+    database: rj-sms-dev
     schema: brutos_cdi_staging
     tables:
+      - name: equipe_tutela_coletiva
       - name: judicial_residual
       - name: pgm
+      - name: equipe_tutela_individual_v2
+      - name: equipe_tutela_individual_v2_2026
+      - name: equipe_tutela_coletiva_v2_2025
+      - name: equipe_tutela_coletiva_v2_2026
+

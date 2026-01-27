@@ -389,6 +389,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      cdi:
+          +tags: ["cdi", "daily"]
+          +schema: intermediario_cdi
+          +labels:
+            dado_publico: sim
+            dado_pessoal: nao
+            dado_sensivel: nao
 
     intermediate:
       +materialized: ephemeral
