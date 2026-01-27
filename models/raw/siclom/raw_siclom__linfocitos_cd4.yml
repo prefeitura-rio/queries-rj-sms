@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: raw_siclom__cd4
+    description: "Tabela bruta com os resultados de exames de CD4 do sistema SICLOM."
+    columns:
+      - name: instituicao_solicitante_cidade
+        description: "Cidade da instituição que solicitou o exame."
+      - name: instituicao_solicitante_uf
+        description: "UF da instituição que solicitou o exame."
+      - name: cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: "Cartão Nacional de Saúde (CNS) do paciente."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_nome
+        description: "Nome completo do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: mae_nome
+        description: "Nome da mãe do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: data_nascimento
+        description: "Data de nascimento do paciente."
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: sexo
+        description: "Sexo do paciente."
+      - name: raca
+        description: "Raça/cor do paciente."
+      - name: genero
+        description: "Gênero do paciente."
+      - name: orientacao_sexual
+        description: "Orientação sexual do paciente."
+      - name: escolaridade
+        description: "Escolaridade do paciente."
+      - name: municipio
+        description: "Município de residência do paciente."
+      - name: uf
+        description: "UF de residência do paciente."
+      - name: gestante
+        description: "Indica se a paciente é gestante."
+      - name: nu_idade_gestacional
+        description: "Idade gestacional em semanas."
+      - name: avaliacao_inicial
+        description: "Indica se o motivo do exame é avaliação inicial."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: mo_pes_assinto_segmento
+        description: "Indica se o motivo do exame é para paciente assintomático em seguimento."
+      - name: mo_crianca_adolescente
+        description: "Indica se o motivo do exame é para criança ou adolescente."
+      - name: mo_pes_falha_viro
+        description: "Indica se o motivo do exame é para paciente com falha virológica."
+      - name: mo_pes_sinto
+        description: "Indica se o motivo do exame é para paciente sintomático."
+      - name: avaliacao_imuniza
+        description: "Indica se o motivo do exame é para avaliação para imunização."
+      - name: nao_informado
+        description: "Indica se o motivo do exame não foi informado."
+      - name: instituicao_solicitante
+        description: "Nome da instituição que solicitou o exame."
+      - name: cnes
+        description: "Código CNES da instituição solicitante."
+      - name: coleta_datahora
+        description: "Data e hora da coleta da amostra."
+      - name: resultado_datahora
+        description: "Data e hora do resultado do exame."
+      - name: contagem_cd3
+        description: "Resultado da contagem de linfócitos T-CD3."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: contagem_cd4
+        description: "Resultado da contagem de linfócitos T-CD4."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: contagem_cd8
+        description: "Resultado da contagem de linfócitos T-CD8."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: extraido_em
+        description: "Data e hora da extração dos dados."
+      - name: data_particao
+        description: "Data de partição para otimização de consultas."
+      - name: cpf_particao
+        description: "Coluna de partição para otimização de consultas."

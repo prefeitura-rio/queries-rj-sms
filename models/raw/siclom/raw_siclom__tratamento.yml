@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: raw_siclom__tratamento
+    description: "Tabela bruta com dados de dispensação de tratamentos do sistema SICLOM."
+    columns:
+      - name: unidade_nome
+        description: "Nome da unidade de dispensação."
+      - name: unidade_municipio
+        description: "Município da unidade de dispensação."
+      - name: unidade_uf
+        description: "UF da unidade de dispensação."
+      - name: cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: "Nome civil do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: genero
+        description: "Gênero do paciente."
+      - name: data_dispensa
+        description: "Data da dispensação do tratamento."
+      - name: categoria_usuario
+        description: "Categoria do usuário (ex: gestante, adulto)."
+      - name: idade_gestacional
+        description: "Idade gestacional em semanas, se aplicável."
+      - name: parto_data
+        description: "Data do parto, se aplicável."
+      - name: tipo_servico_atendimento
+        description: "Tipo de serviço de atendimento."
+      - name: tipo_publico_privado
+        description: "Indica se o atendimento é público ou privado."
+      - name: mudanca_tratamento
+        description: "Indica se houve mudança no tratamento."
+      - name: coinfectado
+        description: "Indica se o paciente possui coinfecções."
+      - name: crm_uf
+        description: "UF do CRM do médico prescritor."
+      - name: codigo_crm
+        description: "Código do CRM do médico prescritor."
+      - name: medico_nome
+        description: "Nome do médico prescritor."
+      - name: esquema
+        description: "Descrição do esquema de tratamento."
+      - name: duracao
+        description: "Duração do tratamento em dias."
+      - name: extraido_em
+        description: "Data e hora da extração dos dados."
+      - name: data_particao
+        description: "Data de partição para otimização de consultas."
+      - name: cpf_particao
+        description: "Coluna de partição para otimização de consultas."

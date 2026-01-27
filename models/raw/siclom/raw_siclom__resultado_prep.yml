@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: raw_siclom__resultado_prep
+    description: "Tabela bruta com os resultados de dispensação de Profilaxia Pré-Exposição (PrEP) do sistema SICLOM."
+    columns:
+      - name: unidade_nome
+        description: "Nome da unidade de dispensação."
+      - name: unidade_municipio
+        description: "Município da unidade de dispensação."
+      - name: unidade_uf
+        description: "UF da unidade de dispensação."
+      - name: servico_atendimento
+        description: "Tipo de serviço de atendimento."
+      - name: tipo_atendimento
+        description: "Indica se o atendimento é público ou privado."
+      - name: cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: "Nome civil do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: genero
+        description: "Gênero do paciente."
+      - name: st_participante_estudo_vacina
+        description: "Indica se o paciente é participante de estudo de vacina."
+      - name: dinheiro_sexo
+        description: "Indica se o paciente trocou dinheiro por sexo."
+      - name: droga_injetavel
+        description: "Indica se o paciente faz uso de droga injetável."
+      - name: substancias_psicoativas
+        description: "Indica se o paciente faz uso de substâncias psicoativas."
+      - name: modalidade
+        description: ""
+      - name: esquema_prep
+        description: "Esquema de PrEP utilizado."
+      - name: quantidade_autoteste
+        description: "Quantidade de autotestes dispensados."
+      - name: duracao
+        description: "Duração do tratamento em dias."
+      - name: data_dispensa
+        description: "Data e hora da dispensação."
+      - name: resultado_ist
+        description: "Resultado de teste de IST (Infecção Sexualmente Transmissível)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: extraido_em
+        description: "Data e hora da extração dos dados."
+      - name: data_particao
+        description: "Data de partição para otimização de consultas."
+      - name: cpf_particao
+        description: "Coluna de partição para otimização de consultas."
