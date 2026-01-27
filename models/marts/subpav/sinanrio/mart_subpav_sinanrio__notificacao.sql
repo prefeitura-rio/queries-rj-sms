@@ -225,7 +225,7 @@ with
             l.cpf_notificante,
             l.cpf_paciente,
             l.dnv_paciente,
-            l.justificativa,
+            l.justificativa as justificativa_cpf,
             l.lat,
             l.long,
             l.notif_assistente,
