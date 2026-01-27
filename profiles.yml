@@ -8,7 +8,7 @@ sms:
       dataset: gerenciamento__dbt
       location: US
       threads: 10
-      keyfile: /Users/chris/.dbt/chave-chris.json
+      keyfile: /tmp/credentials.json
     prod:
       type: bigquery
       method: service-account
@@ -16,7 +16,7 @@ sms:
       dataset: gerenciamento__dbt
       location: US
       threads: 10
-      keyfile: /Users/chris/.dbt/chave-chris.json
+      keyfile: /tmp/credentials.json
     ci:
       type: bigquery
       method: service-account
@@ -24,7 +24,7 @@ sms:
       dataset: gerenciamento__dbt
       location: US
       threads: 10
-      keyfile: /Users/chris/.dbt/chave-chris.json
+      keyfile: /tmp/credentials.json
     sandbox:
       type: bigquery
       method: service-account
@@ -32,5 +32,5 @@ sms:
       dataset: gerenciamento__dbt
       location: US
       threads: 10
-      keyfile: /Users/chris/.dbt/chave-chris.json
+      keyfile: /tmp/credentials.json
 
