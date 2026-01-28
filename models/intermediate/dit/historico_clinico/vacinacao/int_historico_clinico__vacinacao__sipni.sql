@@ -70,7 +70,7 @@ with
             safe_cast(null as string) as paciente_id_prontuario,
             safe_cast(v.nu_cns_paciente as string) as paciente_cns,
             safe_cast(v.nu_cpf_paciente as string) as paciente_cpf,
-            safe_cast(e.nome_limpo as string) as estabelecimento_nome,
+            {{ proper_estabelecimento("safe_cast(e.nome_limpo as string)") }} as estabelecimento_nome,
             safe_cast(v.equipe as string) as equipe_nome,   
             safe_cast(null as string) as profissional_nome,
             safe_cast(null as string) as profissional_cbo,
@@ -88,13 +88,13 @@ with
             safe_cast(null as string) as vacina_diff,
             safe_cast(v.dt_vacina as date) as vacina_aplicacao_data,
             safe_cast(null as date) as vacina_registro_data,
-            safe_cast(v.no_paciente as string) as paciente_nome,
+            {{ proper_br("safe_cast(v.no_paciente as string)") }} as paciente_nome,
             case when safe_cast(v.tp_sexo_paciente as string) = 'M' then 'masculino'
                  when safe_cast(v.tp_sexo_paciente as string) = 'F' then 'feminino'
                  else null 
             end as paciente_sexo,
             safe_cast(v.dt_nascimento_paciente as date) as paciente_nascimento_data,
-            safe_cast(v.no_mae_paciente as string) as paciente_nome_mae,
+            {{ proper_br("safe_cast(v.no_mae_paciente as string)") }} as paciente_nome_mae,
             safe_cast(null as date) as paciente_mae_nascimento_data,
             safe_cast(v.situacao_usuario as string) as paciente_situacao,
             safe_cast(null as date) as paciente_cadastro_data,
