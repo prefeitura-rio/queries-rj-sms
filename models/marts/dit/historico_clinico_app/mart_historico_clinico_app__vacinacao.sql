@@ -12,9 +12,25 @@
 }}
 
 with vacinacao as (
-    select 
-        * 
+    select
+        id_vacinacao,
+        id_cnes,
+        estabelecimento_nome,
+        profissional_nome,
+        vacina_descricao_padronizada as vacina_descricao,
+        vacina_sigla,
+        vacina_detalhes,
+        vacina_dose,
+        vacina_lote,
+        vacina_estrategia,
+
+        vacina_registro_tipo,
+        vacina_aplicacao_data,
+        vacina_registro_data,
+        cpf_particao
     from {{ ref('mart_historico_clinico__vacinacao') }}
+    where vacina_registro_tipo != "Vacina não aplicada"
 )
 
-select * from vacinacao
+select *
+from vacinacao
