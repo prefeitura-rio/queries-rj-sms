@@ -18,8 +18,9 @@ source as (
 )
 
 select 
-    {{ process_null('cidade_instituicao_solicitante') }} as instituicao_solicitante_cidade,
+    {{ process_null('instituicao_solicitante') }} as instituicao_solicitante,
     {{ process_null('CNES') }} as cnes,
+    {{ process_null('cidade_instituicao_solicitante') }} as instituicao_solicitante_cidade,
     {{ process_null('uf_instituicao_solicitante') }} as instituicao_solicitante_uf,
     {{ process_null('cpf') }} as cpf,
     {{ process_null('CNS') }} as cns,
@@ -37,13 +38,12 @@ select
     {{ process_null('Gestante') }} as gestante,
     {{ process_null('nu_idade_gestacional') }} as nu_idade_gestacional,
     {{ process_null('avaliacao_inicial') }} as avaliacao_inicial,
-    {{ process_null('mo_pes_assinto_segmento') }} as mo_pes_assinto_segmento, -- Confirmar nome da coluna
-    {{ process_null('mo_crianca_adolescente') }} as mo_crianca_adolescente, -- Confirmar nome da coluna
-    {{ process_null('mo_pes_falha_viro') }} as mo_pes_falha_viro, -- Confirmar nome da coluna
-    {{ process_null('mo_pes_sinto') }} as mo_pes_sinto, -- Confirmar nome da coluna
+    {{ process_null('mo_pes_assinto_segmento') }} as assinto_segmento, -- Confirmar nome da coluna
+    {{ process_null('mo_crianca_adolescente') }} as crianca_adolescente, -- Confirmar nome da coluna
+    {{ process_null('mo_pes_falha_viro') }} as pes_falha_viro, -- Confirmar nome da coluna
+    {{ process_null('mo_pes_sinto') }} as pes_sinto, -- Confirmar nome da coluna
     {{ process_null('avaliacao_imuniza') }} as avaliacao_imuniza, -- Confirmar nome da coluna
     {{ process_null('nao_informado') }} as nao_informado,
-    {{ process_null('instituicao_solicitante') }} as instituicao_solicitante,
     {{ process_null('dt_hr_coleta') }} as coleta_datahora,
     {{ process_null('dt_result') }} as resultado_datahora,
     {{ process_null('contagem_cd3') }} as contagem_cd3,

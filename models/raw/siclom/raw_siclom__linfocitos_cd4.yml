@@ -54,13 +54,13 @@ models:
         description: "Indica se o motivo do exame é avaliação inicial."
         policy_tags:
           - '{{ var("TAG_DADO_CLINICO") }}'
-      - name: mo_pes_assinto_segmento
+      - name: pes_assinto_segmento
         description: "Indica se o motivo do exame é para paciente assintomático em seguimento."
-      - name: mo_crianca_adolescente
+      - name: crianca_adolescente
         description: "Indica se o motivo do exame é para criança ou adolescente."
-      - name: mo_pes_falha_viro
+      - name: pes_falha_viro
         description: "Indica se o motivo do exame é para paciente com falha virológica."
-      - name: mo_pes_sinto
+      - name: pes_sinto
         description: "Indica se o motivo do exame é para paciente sintomático."
       - name: avaliacao_imuniza
         description: "Indica se o motivo do exame é para avaliação para imunização."
