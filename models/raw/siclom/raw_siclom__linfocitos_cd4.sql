@@ -14,7 +14,7 @@
 with 
 
 source as (
-    select * from {{ source('brutos_siclom_api_staging', 'cd4') }}
+    select * from {{ source('brutos_siclom_api_staging', 'linfocitos_cd4') }}
 )
 
 select 
