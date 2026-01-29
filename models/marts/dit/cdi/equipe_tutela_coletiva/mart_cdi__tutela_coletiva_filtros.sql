@@ -47,9 +47,14 @@ filtros as (
             when orgao is null then 'Sem Informação' 
             else orgao 
         end as orgao,
-        reiteracoes,
         sintese_da_solicitacao,
-        status,
+        status,    
+        SUM(
+            CASE
+                WHEN lower(trim(reiteracoes)) = 'x' THEN 0
+                ELSE ARRAY_LENGTH(REGEXP_EXTRACT_ALL(reiteracoes, r'\d+/\d+'))
+            END
+        ) AS total_reiteracoes,
 
         count(distinct processo_rio) as total_requisicoes
 
@@ -64,7 +69,6 @@ filtros as (
         grupo_orgao,
         ic,
         orgao,
-        reiteracoes,
         sintese_da_solicitacao,
         status
 

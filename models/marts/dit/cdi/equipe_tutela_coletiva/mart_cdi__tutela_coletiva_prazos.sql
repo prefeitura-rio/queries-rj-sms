@@ -52,12 +52,20 @@ prazo as (
             day
         ) as dias_para_vencer,
 
-        -- criando logica de antes e depois do prazo de vencimento
-        case 
-            when current_date() <= data_fim_sla then 'Dentro do Prazo'
-            else 'Fora do Prazo'
-        end as situacao_prazo,
-        -- calculando tempo de atendimento
+        CASE
+            WHEN data_da_entrada IS NULL 
+                OR prazo_dias IS NULL 
+                OR data_envio_orgao_solicitante_arquivamento IS NULL
+                THEN 'Sem Prazo'
+
+            WHEN DATE(data_envio_orgao_solicitante_arquivamento)
+                <= DATE_ADD(DATE(data_da_entrada), INTERVAL prazo_dias DAY)
+                THEN 'Dentro do Prazo'
+
+            ELSE 'Fora do Prazo'
+        END AS situacao_prazo,
+
+
         date_diff(
             date(data_envio_orgao_solicitante_arquivamento),
             date(data_da_entrada),

@@ -37,6 +37,7 @@ with base as (
         end as orgao_mp_dp,
         situacao,
         count(processo_rio) total_procesos
+        
     from {{ ref('int_cdi__equipe_tutela_individual') }}
     
     group by 1,2,3,4,5,6,7,8,9

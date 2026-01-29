@@ -13,7 +13,7 @@ with base as (
 
 ),
 
-typed as (
+base_1 as (
 
     select
         processo_rio,
@@ -56,7 +56,7 @@ sla as (
             interval prazo_dias day
         ) as data_fim_sla
 
-    from typed
+    from base_1
 
 ),
 

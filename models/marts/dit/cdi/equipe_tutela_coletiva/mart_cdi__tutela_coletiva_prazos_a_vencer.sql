@@ -18,7 +18,11 @@ with base as (
         ic,
         reiteracoes,
         sintese_da_solicitacao,
-        status,
+        case 
+            when status = "" then "Sem Status"
+            else status
+        end as status,
+        
         prazo_dias,
 
         case

@@ -41,7 +41,20 @@ calculos as (
             else 'A vencer'
         end as status_vencimento,
 
-        -- descrição amigável
+        case
+            when prazo_dias is null or data_de_entrada is null
+                then 'Ignorado'
+
+            when date_add(data_de_entrada, interval prazo_dias day) < current_date()
+                then 'Vencido'
+
+            when date_add(data_de_entrada, interval prazo_dias day) = current_date()
+                then 'Vence hoje'
+
+            when date_add(data_de_entrada, interval prazo_dias day) > current_date()
+                then 'A vencer'
+        end as status_prazo_simples,
+
         case
             when prazo_dias is null or data_de_entrada is null
                 then 'Prazo ignorado'
@@ -68,7 +81,8 @@ calculos as (
                 ),
                 ' dias'
             )
-        end as descricao_vencimento
+        end as descricao_vencimento,
+        
 
     from base
 )
