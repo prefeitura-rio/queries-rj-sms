@@ -38,8 +38,8 @@ calculos as (
             when data_de_entrada is null
               or data_do_sms_ofi is null
                 then null
-            when data_do_sms_ofi < data_de_entrada
-                then null
+    --        when data_do_sms_ofi < data_de_entrada
+        --        then null
             else date_diff(
                 data_do_sms_ofi,
                 data_de_entrada,
@@ -68,7 +68,6 @@ calculos as (
         end as status_prazo
 
     from base
-    where processo_rio is not null
 )
 
 select *
