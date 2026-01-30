@@ -5,7 +5,7 @@ sources:
     database: rj-sms-dev
     schema: brutos_siclom_api_staging
     tables:
-      - name: linfocitos_cd4
+      - name: cd4
       - name: cargaviral
-      - name: resultadoprep
       - name: tratamento
+      - name: pep

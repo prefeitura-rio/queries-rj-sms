@@ -34,7 +34,7 @@ models:
         description: "Data do parto, se aplicável."
       - name: tipo_servico_atendimento
         description: "Tipo de serviço de atendimento."
-      - name: tipo_publico_privado
+      - name: esfera_atendimento
         description: "Indica se o atendimento é público ou privado."
       - name: mudanca_tratamento
         description: "Indica se houve mudança no tratamento."

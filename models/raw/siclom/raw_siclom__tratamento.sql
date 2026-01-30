@@ -27,7 +27,7 @@ select
     {{ process_null('idade_gestacional') }} as idade_gestacional,
     {{ process_null('dt_parto') }} as parto_data,
     {{ process_null('tp_servico_atendimento') }} as tipo_servico_atendimento,
-    {{ process_null('st_pub_priv') }} as tipo_publico_privado,
+    {{ process_null('st_pub_priv') }} as esfera_atendimento,
     {{ process_null('mudanca_tratamento') }} as mudanca_tratamento,
     {{ process_null('coinfectado') }} as coinfectado,
     {{ process_null('uf_crm') }} as crm_uf,
@@ -36,5 +36,5 @@ select
     {{ process_null('esquema') }} as esquema,
     {{ process_null('duracao') }} as duracao,
     {{ process_null('extracted_at') }} as extraido_em,
-    cast(cpf as int64) as cpf_particao
+    safe_cast( {{ process_null('CPF') }} as int64) as cpf_particao
 from source
