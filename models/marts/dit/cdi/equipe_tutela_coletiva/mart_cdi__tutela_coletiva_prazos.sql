@@ -54,7 +54,9 @@ prazo as (
 
         -- criando logica de antes e depois do prazo de vencimento
         case 
-            when current_date() <= data_fim_sla then 'Dentro do Prazo'
+            -- caso nao tenha data_envio
+            when data_envio_orgao_solicitante_arquivamento is null then 'Pendente'
+            when data_envio_orgao_solicitante_arquivamento <= data_fim_sla then 'Dentro do Prazo'
             else 'Fora do Prazo'
         end as situacao_prazo,
         -- calculando tempo de atendimento
