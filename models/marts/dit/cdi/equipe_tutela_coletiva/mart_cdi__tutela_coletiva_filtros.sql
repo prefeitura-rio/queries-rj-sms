@@ -47,6 +47,7 @@ filtros as (
             when orgao is null then 'Sem Informação' 
             else orgao 
         end as orgao,
+        -- total de reiteracoes unicas
         reiteracoes,
         sintese_da_solicitacao,
         status,
