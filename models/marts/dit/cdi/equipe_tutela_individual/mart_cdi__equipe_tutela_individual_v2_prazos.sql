@@ -31,6 +31,14 @@ calculos as (
             current_date(),
             day
         ) as dias_para_vencer,
+        -- situação do prazo
+        case
+            -- caso nao tenha data_de_entrada ou prazo_dias
+            when data_do_sms_ofi is null then 'Pendente'
+            when data_do_sms_ofi <= date_add(data_de_entrada, interval prazo_dias day)
+                then 'Dentro do Prazo'
+            else 'Fora do Prazo'
+        end as situacao_prazo,
 
         -- status
         case
