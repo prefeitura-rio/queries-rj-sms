@@ -14,11 +14,22 @@ with source as (
 ),
 
     contrarreferencia_filtrado as (
-        select 
+        select
             source_id,
+
+            json_extract_scalar(data, "$.paciente.nome") as paciente_nome,
+            json_extract_scalar(data, "$.paciente.nome_social") as paciente_nome_social,
+            json_extract_scalar(data, "$.paciente.cpf") as paciente_cpf,
+            json_extract_scalar(data, "$.paciente.cns") as paciente_cns,
+            json_extract_scalar(data, "$.paciente.data_nascimento") as paciente_data_nascimento,
+            json_extract_scalar(data, "$.paciente.fone") as paciente_telefone,
+            -- Municípios são códigos do IBGE, ex. "3304557" = Rio de Janeiro
+            json_extract_scalar(data, "$.paciente.municipio_naturalidade") as paciente_cod_municipio_naturalidade,
+            json_extract_scalar(data, "$.paciente.municipio_residencia") as paciente_cod_municipio_residencia,
+
             doc as doc_cr
-        from source, 
-        unnest(json_extract_array(data, '$.documentos')) AS doc
+        from source,
+        unnest(json_extract_array(data, '$.documentos')) as doc
         where json_value(doc, '$.tipo') in (
             'CONTRAREFERÊNCIA',  -- Atualmente mandam assim
             'CONTRARREFERÊNCIA'  -- Por precaução caso um dia consertem
@@ -27,10 +38,11 @@ with source as (
 
     contrarreferencia as (
         select
-            source_id,
+            * except(doc_cr),
+
             json_extract_scalar(doc_cr, '$.dados.unidade.cnes') as id_cnes,
             json_extract_scalar(doc_cr, '$.dados.unidade.nome') as unidade_nome,
-            json_extract_scalar(doc_cr, '$.dados.unidade.municipio') as unidade_municipio,
+            json_extract_scalar(doc_cr, '$.dados.unidade.municipio') as unidade_cod_municipio,  -- Código IBGE
 
             json_extract_scalar(doc_cr, '$.id') as id_contrarreferencia,
             json_extract_scalar(doc_cr, '$.numero') as contrarreferencia_numero,
@@ -60,10 +72,19 @@ with source as (
 
     cast_rename as (
         select
+            safe_cast({{ process_null("paciente_nome") }} as string) as paciente_nome,
+            safe_cast({{ process_null("paciente_nome_social") }} as string) as paciente_nome_social,
+            safe_cast({{ process_null("paciente_cpf") }} as string) as paciente_cpf,
+            safe_cast({{ process_null("paciente_cns") }} as string) as paciente_cns,
+            safe_cast({{ process_null("paciente_data_nascimento") }} as string) as paciente_data_nascimento,
+            safe_cast({{ process_null("paciente_telefone") }} as string) as paciente_telefone,
+            safe_cast({{ process_null("paciente_cod_municipio_naturalidade") }} as string) as paciente_cod_municipio_naturalidade,
+            safe_cast({{ process_null("paciente_cod_municipio_residencia") }} as string) as paciente_cod_municipio_residencia,
+
             safe_cast({{ process_null('source_id') }} as string) as source_id,
             safe_cast({{ process_null('id_cnes') }} as string) as id_cnes,
             safe_cast({{ process_null('unidade_nome') }} as string) as unidade_nome,
-            safe_cast({{ process_null('unidade_municipio') }} as string) as unidade_municipio,
+            safe_cast({{ process_null('unidade_cod_municipio') }} as string) as unidade_cod_municipio,
             safe_cast({{ process_null('id_contrarreferencia') }} as string) as id_documento,
             safe_cast({{ process_null('contrarreferencia_numero') }} as string) as contrarreferencia_numero,
             safe_cast({{ process_null('contrarreferencia_datahora') }} as datetime) as contrarreferencia_datahora,
