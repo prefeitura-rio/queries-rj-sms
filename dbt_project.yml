@@ -311,6 +311,14 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      prontuario_sarah:
+        +schema: brutos_prontuario_sarah
+        +tags: ["sarah", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
       bcadastro:
         +schema: brutos_bcadastro
         +tags: "bcadastro"
