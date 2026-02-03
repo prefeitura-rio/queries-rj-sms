@@ -437,7 +437,7 @@ models:
           +tags: ["cdi", "daily"]
           +schema: intermediario_cdi
           +labels:
-            dado_publico: sim
+            dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
         monitoramento:
