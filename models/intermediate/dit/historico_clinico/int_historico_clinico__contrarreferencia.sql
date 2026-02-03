@@ -52,7 +52,7 @@ with source as (
       s.paciente_cod_municipio_naturalidade,
       m2.nome_municipio as paciente_municipio_naturalidade,
 
-      m2.nome_uf as paciente_uf_residencia,
+      m3.nome_uf as paciente_uf_residencia,
       s.paciente_cod_municipio_residencia,
       m3.nome_municipio as paciente_municipio_residencia,
 
