@@ -53,7 +53,7 @@ WITH pgm_2025 AS (
     TRIM({{ normalize_null('pendencias') }}) AS pendencias,
     REGEXP_REPLACE(TRIM({{ normalize_null('observacoes') }}), r'\s+', ' ') AS observacoes
 
-  FROM {{ source("brutos_cdi_staging", "pgm") }}
+  FROM {{ source("brutos_cdi_staging", "pgm_2025") }}
 
 ),
 

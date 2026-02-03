@@ -31,7 +31,7 @@ with base as (
         observacoes,
         situacao,
         mes
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_individual_v2') }}
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_individual_2025') }}
 
     union all
 
@@ -59,7 +59,7 @@ with base as (
         observacoes,
         situacao,
         mes
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_individual_v2_2026') }}
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_individual_2026') }}
 ),
 
 fim as (

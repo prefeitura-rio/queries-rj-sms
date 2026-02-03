@@ -33,7 +33,7 @@ with base as (
         oficio_sms,
         observacoes,
         status
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_v2_2025') }}
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_2025') }}
 
     union all
 
@@ -62,7 +62,7 @@ with base as (
         oficio_sms,
         observacoes,
         status
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_v2_2026') }}
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_2026') }}
 
 ),
 
