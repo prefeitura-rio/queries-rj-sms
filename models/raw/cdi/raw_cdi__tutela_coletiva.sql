@@ -1,7 +1,7 @@
 {{
     config(
-        schema='staging_cdi',
-        alias='equipe_tutela_coletiva_v1',
+        schema='brutos_cdi',
+        alias='equipe_tutela_coletiva',
         materialized='table'
     )
 }}
@@ -10,36 +10,7 @@ with base as (
 
     -- 2025
     select
-        processorio___sei as sei,--
-        oficio,
-        orgao,--
-        reiteracoes, --
-        ic,--
-        pa,--
-        referencia,
-        no_documento,
-        data_da_entrada, --
-        vencimento,
-        data_de_saida,
-        data_do_envio_ao_orgao_solicitante___arquivamento,
-        prazo_dias,--
-        assunto,--
-        sintese_da_solicitacao,--
-        unidade,--
-        area,--
-        sei as sei_status,--
-        orgao_para_subsidiar,--
-        exigencia,
-        oficio_sms,
-        observacoes,
-        status
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_2025') }}
-
-    union all
-
-    -- 2026
-    select
-        sei,
+        processorio___sei as sei,        -- processo
         oficio,
         orgao,
         reiteracoes,
@@ -56,7 +27,36 @@ with base as (
         sintese_da_solicitacao,
         unidade,
         area,
-        sei_status,
+        sei as sei_status,               -- status
+        orgao_para_subsidiar,
+        exigencia,
+        oficio_sms,
+        observacoes,
+        status
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_2025') }}
+
+    union all
+
+    -- 2026
+    select
+        sei017_2026_5pjtcicap as sei,                    
+        oficio,
+        orgao,
+        reiteracoes,
+        ic,
+        pa,
+        referencia,
+        no_documento,
+        data_da_entrada,
+        vencimento,
+        data_de_saida,
+        data_do_envio_ao_orgao_solicitante___arquivamento,
+        prazo_dias,
+        assunto,
+        sintese_da_solicitacao,
+        unidade,
+        area,
+        sei_status as sei_status,       -- status
         orgao_para_subsidiar,
         exigencia,
         oficio_sms,
@@ -154,8 +154,8 @@ renamed as (
         ) }} as area,
 
         {{ normalize_null(
-            "regexp_replace(trim(sei), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
-        ) }} as sei,
+            "regexp_replace(trim(sei_status), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
+        ) }} as sei_status,
 
         {{ normalize_null(
             "regexp_replace(trim(orgao_para_subsidiar), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
@@ -178,8 +178,6 @@ renamed as (
         ) }} as status
 
     from base
-    where {{ process_null('sei') }} is not null
-      and {{ process_null('oficio') }} is not null
 )
 
 select *

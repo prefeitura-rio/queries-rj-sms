@@ -1,7 +1,7 @@
 {{ 
     config(
         materialized = 'table',
-        schema = 'marts_cdi',
+        schema = 'projeto_cdi',
         alias = 'equipe_tutela_coletiva_filtros'
     ) 
 }}
@@ -56,7 +56,6 @@ filtros as (
 
     from base
 
-    where processo_rio is not null
 
     group by
         area,

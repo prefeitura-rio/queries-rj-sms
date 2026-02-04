@@ -1,7 +1,7 @@
 {{
     config(
-        schema = 'staging_cdi',
-        alias = 'stg_equipe_tutela_individual_v2',
+        schema = 'brutos_cdi',
+        alias = 'equipe_tutela_individual',
         materialized = 'table'
     )
 }}
@@ -196,9 +196,6 @@ fim as (
         ) }} as mes
 
     from base
-    where
-        {{ process_null('processorio__sei') }} is not null
-        and {{ process_null('no_oficio') }} is not null
 )
 
 select *

@@ -1,7 +1,7 @@
 {{ 
     config(
         materialized = 'table',
-        schema = 'marts_cdi',
+        schema = 'projeto_cdi',
         alias = 'equipe_tutela_coletiva_demandas_prazos_a_vencer'
     ) 
 }}

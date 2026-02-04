@@ -1,7 +1,7 @@
 {{ 
     config(
         materialized = 'table',
-        schema = 'marts_cdi',
+        schema = 'projeto_cdi',
         alias = 'equipe_tutela_coletiva_prazos'
     ) 
 }}
@@ -45,7 +45,7 @@ prazo as (
         -- Data limite do prazo
         data_fim_sla as data_vencimento_prazo,
 
-        -- Dias para vencer (positivo = no prazo, negativo = vencido)
+        -- dias para vencer
         date_diff(
             data_fim_sla,
             current_date(),
@@ -55,34 +55,22 @@ prazo as (
         -- criando logica de antes e depois do prazo de vencimento
         case 
             -- caso nao tenha data_envio
-            when data_envio_orgao_solicitante_arquivamento is null then 'Pendente'
+            when status <> 'RESOLVIDO' then null
             when data_envio_orgao_solicitante_arquivamento <= data_fim_sla then 'Dentro do Prazo'
             else 'Fora do Prazo'
         end as situacao_prazo,
         -- calculando tempo de atendimento
-        date_diff(
-            date(data_envio_orgao_solicitante_arquivamento),
-            date(data_da_entrada),
-            day
-        ) as tempo_atendimento_dias,
-        case
-            when status is null
-                then 'Pendente'
-
-            when upper(status) = 'RESOLVIDO'
-                then 'Resolvido'
-
-            when upper(status) like 'PENDENTE:%ENCERRADO%'
-                then 'Pendente - Prazo encerrado'
-
-            when upper(status) like 'PENDENTE:%15%'
-                then 'Pendente - Prazo menor que 15 dias'
-
-            when upper(status) like 'PENDENTE%'
-                then 'Pendente'
-
-            else 'Outros'
-        end as status_padronizado
+        
+        case 
+            when status <> 'RESOLVIDO' 
+                then null
+            else date_diff(
+                    date(data_envio_orgao_solicitante_arquivamento),
+                    date(data_da_entrada),
+                    day
+        
+        ) end as tempo_atendimento_dias
+            
 
 
     from base

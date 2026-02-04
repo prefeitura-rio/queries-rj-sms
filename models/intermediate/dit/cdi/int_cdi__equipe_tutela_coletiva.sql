@@ -2,7 +2,7 @@
     config(
         materialized = 'table',
         schema = 'intermediario_cdi',
-        alias = 'int_cdi__tutela_equipe_coletiva_v1'
+        alias = 'equipe_tutela_coletiva'
     ) 
 }}
 
@@ -31,7 +31,7 @@ typed as (
         pa,
         referencia,
         no_documento,
-        sei,
+        sei_status,
         reiteracoes,
         oficio_sms,
 
@@ -65,16 +65,14 @@ status as (
     select
         *,
         case
-            when data_da_entrada is null
-              or prazo_dias is null
-              or data_envio_orgao_solicitante_arquivamento is null
-                then null
+            when status <> 'RESOLVIDO' then null
 
             when data_envio_orgao_solicitante_arquivamento <= data_fim_sla
                 then 'Dentro do prazo'
 
             else 'Fora do prazo'
         end as status_sla
+
 
     from sla
 

@@ -2,7 +2,7 @@
     config(
         materialized = 'table',
         schema = 'marts_cdi',
-        alias = 'mart_cdi__equipe_tutela_individual_v2_tempo_atendimento'
+        alias = 'equipe_tutela_individual_tempo_atendimento'
     ) 
 }}
 
