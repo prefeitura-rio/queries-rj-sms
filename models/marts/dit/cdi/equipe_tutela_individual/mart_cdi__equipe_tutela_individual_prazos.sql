@@ -1,7 +1,7 @@
 {{ 
     config(
         materialized = 'table',
-        schema = 'marts_cdi',
+        schema = 'projeto_cdi',
         alias = 'equipe_tutela_individual_prazos'
     ) 
 }}
@@ -34,25 +34,16 @@ calculos as (
         -- situação do prazo
         case
             -- caso nao tenha data_de_entrada ou prazo_dias
-            when data_do_sms_ofi is null then 'Pendente'
+            when situacao <> "RESOLVIDO" then null
             when data_do_sms_ofi <= date_add(data_de_entrada, interval prazo_dias day)
                 then 'Dentro do Prazo'
             else 'Fora do Prazo'
         end as situacao_prazo,
 
-        -- status
-        case
-            when prazo_dias is null or data_de_entrada is null
-                then 'Ignorado'
-            when date_add(data_de_entrada, interval prazo_dias day) < current_date()
-                then 'Vencido'
-            else 'A vencer'
-        end as status_vencimento,
 
         -- descrição amigável
         case
-            when prazo_dias is null or data_de_entrada is null
-                then 'Prazo ignorado'
+            when situacao <> "RESOLVIDO" then "Finalizado"
 
             when date_add(data_de_entrada, interval prazo_dias day) < current_date()
                 then concat(

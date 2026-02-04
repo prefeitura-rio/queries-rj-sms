@@ -39,7 +39,7 @@ with base as (
 
     -- 2026
     select
-        sei017_2026_5pjtcicap as sei,                    
+        sei,                    
         oficio,
         orgao,
         reiteracoes,

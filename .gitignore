@@ -13,4 +13,4 @@ target-base/
 .cursorignore
 .cursor/
 dbt_internal_packages/
-
+profiles.yml

@@ -1,7 +1,7 @@
 {{ 
     config(
         materialized = 'table',
-        schema = 'marts_cdi',
+        schema = 'projeto_cdi',
         alias = 'equipe_tutela_individual_tempo_atendimento'
     ) 
 }}
@@ -35,30 +35,18 @@ calculos as (
 
         -- tempo de atendimento (por processo)
         case
-            when data_de_entrada is null
-              or data_do_sms_ofi is null
-                then null
-    --        when data_do_sms_ofi < data_de_entrada
-        --        then null
-            else date_diff(
+            when situacao <> "RESOLVIDO" then date_diff(
                 data_do_sms_ofi,
                 data_de_entrada,
                 day
             )
+            else null
         end as tempo_atendimento_dias,
 
-        -- status de atendimento
-        case
-            when data_do_sms_ofi is null
-                then 'Em aberto'
-            else 'Finalizados'
-        end as status_atendimento_finalizados,
 
         case
-            when data_de_entrada is null
-              or data_do_sms_ofi is null
-              or prazo_dias is null
-                then 'Ignorado'
+            when situacao <> "RESOLVIDO"
+                then 'Resolvido'
 
             when data_do_sms_ofi
                  <= date_add(data_de_entrada, interval prazo_dias day)

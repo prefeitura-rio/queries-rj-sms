@@ -60,7 +60,7 @@ with base as (
     {{ normalize_null('processo') }}                                            as processo,
     {{ normalize_null('demandante') }}                                   as demandante,
 
-    {{ cdi_parse_date('data','processo_rio___sei','oficio') }}  AS data_1,
+    {{ cdi_parse_date('data','processo_rio___sei','oficio') }}  AS data,
     {{ cdi_parse_date('entrada_gat_3','processo_rio___sei','oficio') }} AS entrada_gat_3,
     {{ cdi_parse_date('vencimento','processo_rio___sei','oficio') }} AS vencimento,
     {{ cdi_parse_date('retorno','processo_rio___sei','oficio') }} AS retorno,
