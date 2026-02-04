@@ -14,23 +14,22 @@
 with source as (
   select
 
-    cr.source_id,
     cr.id_hci,
 
     cr.estabelecimento.nome as estabelecimento,
 
     cr.profissional.nome as profissional_nome,
-    cr.profissional.cbo as profissional_cbo, -- TODO: cargo
+    cr.profissional.cargo as profissional_cargo,
 
     cr.contrarreferencia.numero as documento_numero,
     cr.contrarreferencia.datahora as documento_datahora,
 
-    concat(
-      cr.avaliacao.conduta,
-      "\n---------------\n",
-      cr.avaliacao.seguimento
-    ) as conduta,
-    cr.avaliacao.resumo as resumo,
+    cr.avaliacao.conduta,
+    cr.avaliacao.seguimento,
+    cr.avaliacao.resumo,
+    cr.avaliacao.historia_doenca_atual,
+    cr.avaliacao.medicamentos_em_uso,
+    cr.avaliacao.hipotese_diagnostica,
 
     safe_cast(cr.paciente.cpf as int64) as cpf_particao
 

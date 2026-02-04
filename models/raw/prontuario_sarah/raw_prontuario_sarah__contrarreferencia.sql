@@ -89,12 +89,12 @@ with source as (
             safe_cast({{ process_null('contrarreferencia_numero') }} as string) as contrarreferencia_numero,
             safe_cast({{ process_null('contrarreferencia_datahora') }} as datetime) as contrarreferencia_datahora,
 
-            safe_cast({{ process_null('motivo') }} as string) as motivo,
-            safe_cast({{ process_null('resultados') }} as string) as resultados,
-            safe_cast({{ process_null('conduta') }} as string) as conduta,
-            safe_cast({{ process_null('impressao') }} as string) as impressao,
-            safe_cast({{ process_null('conduta_seguimento') }} as string) as conduta_seguimento,
-            safe_cast({{ process_null('resumo') }} as string) as resumo,
+            safe_cast({{ process_null('trim(motivo)') }} as string) as motivo,
+            safe_cast({{ process_null('trim(resultados)') }} as string) as resultados,
+            safe_cast({{ process_null('trim(conduta)') }} as string) as conduta,
+            safe_cast({{ process_null('trim(impressao)') }} as string) as impressao,
+            safe_cast({{ process_null('trim(conduta_seguimento)') }} as string) as conduta_seguimento,
+            safe_cast({{ process_null('trim(resumo)') }} as string) as resumo,
 
             safe_cast({{ process_null('cid_principal') }} as string) as cid_principal,
             safe_cast({{ process_null('diagnostico_principal') }} as string) as diagnostico_principal,

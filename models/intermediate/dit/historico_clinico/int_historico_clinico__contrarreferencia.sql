@@ -26,7 +26,19 @@ with source as (
     from {{ ref("raw_sheets__municipios_brasil") }}
   ),
 
-  cidades_particionado as (
+  cbo as (
+    select * 
+    from {{ ref("raw_datasus__cbo") }}
+  ),
+
+  estabelecimentos as (
+    select
+      id_cnes,
+      {{ proper_estabelecimento("nome_acentuado") }} as nome
+    from {{ ref("dim_estabelecimento") }}
+  ),
+
+  cbo_cidades_particionado as (
     select
 
       {{
@@ -40,10 +52,70 @@ with source as (
       }} as id_hci,
 
       s.* except (
+        conduta,
+        conduta_seguimento,
         unidade_cod_municipio,
+        unidade_nome,
         paciente_cod_municipio_naturalidade,
         paciente_cod_municipio_residencia
       ),
+
+      case
+        when REGEXP_CONTAINS(
+          conduta,
+          r"^[\-\.\s;,/=]+$"
+        )
+          then null
+        when REGEXP_CONTAINS(
+          lower(conduta),
+          r"^(as|vide)?\s*acim\s*a\.?$"
+        ) or lower(conduta) = "supracitada"
+          then null
+        when lower(conduta) = "nenhuma"
+          then null
+        else REGEXP_REPLACE(
+          REGEXP_REPLACE(
+            conduta,
+            r"^[\-\.\s;,/=]+",
+            ""
+          ),
+          r"[\-\.\s;,/=]+$",
+          ""
+        )
+      end as conduta,
+
+      case
+        when lower(conduta_seguimento) = lower(conduta)
+          then null
+        when REGEXP_CONTAINS(
+          conduta_seguimento,
+          r"^[\-\.\s;,/=]+$"
+        )
+          then null
+        when REGEXP_CONTAINS(
+          lower(conduta_seguimento),
+          r"^(as|vide)?\s*acim\s*a\.?$"
+        ) or lower(conduta_seguimento) = "supracitada"
+          then null
+        else REGEXP_REPLACE(
+          REGEXP_REPLACE(
+            conduta_seguimento,
+            r"^[\-\.\s;,/=]+",
+            ""
+          ),
+          r"[\-\.\s;,/=]+$",
+          ""
+        )
+      end as conduta_seguimento,
+
+      cbo.descricao as profissional_cargo,
+      coalesce(
+        -- Nome de estabelecimento acentuado, se existir na tabela de CNES
+        e.nome,
+        -- Nome recebido pelo prontuário; às vezes é "Residência", sem CNES
+        {{ proper_estabelecimento("unidade_nome") }}
+      ) as unidade_nome,
+
       m1.nome_uf as unidade_uf,
       s.unidade_cod_municipio,
       m1.nome_municipio as unidade_municipio,
@@ -58,6 +130,10 @@ with source as (
 
       safe_cast(contrarreferencia_datahora as date) as data_particao
     from source as s
+    left join cbo
+      on cbo.id_cbo = s.profissional_cbo
+    left join estabelecimentos as e
+      on e.id_cnes = s.id_cnes
     -- Se alguém souber uma forma mais elegante do que 3 joins, sou todo ouvidos
     left join municipios as m1
       on m1.cod_mun = s.unidade_cod_municipio
@@ -68,4 +144,4 @@ with source as (
   )
 
 select *
-from cidades_particionado
+from cbo_cidades_particionado
