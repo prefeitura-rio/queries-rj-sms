@@ -54,6 +54,7 @@ with source as (
       s.* except (
         conduta,
         conduta_seguimento,
+        resumo,
         unidade_cod_municipio,
         unidade_nome,
         paciente_cod_municipio_naturalidade,
@@ -107,6 +108,12 @@ with source as (
           ""
         )
       end as conduta_seguimento,
+
+      if(
+        (lower(conduta) = lower(resumo) or lower(conduta_seguimento) = lower(resumo)),
+        null,
+        resumo
+      ) as resumo,
 
       cbo.descricao as profissional_cargo,
       coalesce(
