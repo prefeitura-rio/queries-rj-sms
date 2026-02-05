@@ -12,5 +12,3 @@ target-base/
 .state/
 .cursorignore
 .cursor/
-dbt_internal_packages/
-profiles.yml
