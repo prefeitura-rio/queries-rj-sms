@@ -1,0 +1,85 @@
+version: 2
+
+models:
+  - name: raw__siclom__pep
+    description: "Tabela bruta com dados de Profilaxia Pós-Exposição (PEP) provenientes da API do SICLOM. Contém informações sobre o paciente, a exposição, o atendimento e a dispensação de medicamentos."
+    columns:
+      - name: cpf
+        description: "CPF do paciente."
+        data_type: string
+        data_tests:
+          - not_null
+      - name: paciente_nome
+        description: "Nome civil do paciente."
+        data_type: string
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        data_type: string
+      - name: situacao_estrangeiro
+        description: "Indica a situação do paciente como estrangeiro."
+        data_type: string
+      - name: habitante_fronteira
+        description: "Indicador se o paciente é habitante de área de fronteira."
+        data_type: string
+      - name: identidade_genero
+        description: "Identidade de gênero autodeclarada pelo paciente."
+        data_type: string
+      - name: situacao_rua
+        description: "Indicador se o paciente vive em situação de rua."
+        data_type: string
+      - name: privada_liberdade
+        description: "Indicador se o paciente se encontra em privação de liberdade."
+        data_type: string
+      - name: exposicao_data
+        description: "Data em que ocorreu a exposição de risco ao HIV."
+        data_type: string
+      - name: circunstancia_exposicao
+        description: "Descrição da circunstância em que ocorreu a exposição."
+        data_type: string
+      - name: origem_acompanhamento
+        description: "Origem do encaminhamento para o acompanhamento PEP."
+        data_type: string
+      - name: servico_atendimento
+        description: "Serviço de saúde onde o atendimento foi realizado."
+        data_type: string
+      - name: uf_dispensador
+        description: "UF da unidade que dispensou o medicamento."
+        data_type: string
+      - name: dispensador
+        description: "Nome da unidade que dispensou o medicamento."
+        data_type: string
+      - name: pessoa_fonte
+        description: "Informações sobre a pessoa-fonte da exposição, se conhecida."
+        data_type: string
+      - name: contraindicacao_esquema
+        description: "Indica se havia alguma contraindicação ao esquema PEP padrão."
+        data_type: string
+      - name: dispensa_data
+        description: "Data em que o medicamento foi dispensado ao paciente."
+        data_type: string
+        data_tests:
+          - not_null
+      - name: esquema
+        description: "Descrição do esquema antirretroviral prescrito."
+        data_type: string
+      - name: duracao
+        description: "Duração do tratamento prescrito, em dias."
+        data_type: string
+      - name: profissional_tipo
+        description: "Tipo de profissional de saúde que realizou a prescrição."
+        data_type: string
+      - name: prescricao_data
+        description: "Data da prescrição do esquema PEP."
+        data_type: string
+      - name: testagem_hiv
+        description: "Informações sobre a testagem para HIV realizada."
+        data_type: string
+      - name: esquema_alternativo
+        description: "Indica se foi utilizado um esquema alternativo de tratamento."
+        data_type: string
+      - name: extraido_em
+        description: "Timestamp da extração dos dados da fonte."
+        data_type: timestamp
+      - name: cpf_particao
+        description: "Coluna de partição numérica baseada no CPF para otimização de performance no BigQuery."
+        data_type: int64

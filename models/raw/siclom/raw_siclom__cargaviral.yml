@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: raw_siclom__cargaviral
+    description: "Tabela bruta com os resultados de exames de carga viral do sistema SICLOM."
+    columns:
+      - name: instituicao_solicitante
+        description: "Nome da instituição que solicitou o exame."
+      - name: cnes
+        description: "Código CNES da instituição solicitante."
+      - name: instituicao_solicitante_cidade
+        description: "Cidade da instituição que solicitou o exame."
+      - name: instituicao_solicitante_uf
+        description: "UF da instituição que solicitou o exame."
+      - name: cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cns
+        description: "Cartão Nacional de Saúde (CNS) do paciente."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_nome
+        description: "Nome completo do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: mae_nome
+        description: "Nome da mãe do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: data_nascimento
+        description: "Data de nascimento do paciente."
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: sexo
+        description: "Sexo do paciente."
+      - name: raca
+        description: "Raça/cor do paciente."
+      - name: genero
+        description: "Gênero do paciente."
+      - name: orientacao_sexual
+        description: "Orientação sexual do paciente."
+      - name: escolaridade
+        description: "Escolaridade do paciente."
+      - name: municipio
+        description: "Município de residência do paciente."
+      - name: uf
+        description: "UF de residência do paciente."
+      - name: gestante
+        description: "Indica se a paciente é gestante."
+      - name: nu_idade_gestacional
+        description: "Idade gestacional em semanas."
+      - name: codigo_motivo_exame
+        description: "Código do motivo da solicitação do exame."
+      - name: motivo_exame
+        description: "Descrição do motivo da solicitação do exame."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: solic_geno_simultanea
+        description: "Indica se houve solicitação de genotipagem simultânea."
+      - name: coleta_datahora
+        description: "Data e hora da coleta da amostra."
+      - name: resultado_datahora
+        description: "Data e hora do resultado do exame."
+      - name: carga_viral
+        description: "Resultado da carga viral (cópias/mL)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: log
+        description: "Resultado do log da carga viral."
+      - name: condicao_chegada_amostra
+        description: "Condição em que a amostra chegou ao laboratório."
+      - name: extraido_em
+        description: "Data e hora da extração dos dados."
+      - name: data_particao
+        description: "Data de partição para otimização de consultas."
+      - name: cpf_particao
+        description: "Coluna de partição para otimização de consultas."
