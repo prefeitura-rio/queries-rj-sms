@@ -448,9 +448,9 @@ models:
           +tags: ["cdi", "daily"]
           +schema: intermediario_cdi
           +labels:
-            dado_publico: sim
-            dado_pessoal: nao
-            dado_sensivel: nao
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
         monitoramento:
           +tags: "daily"
           +labels:
@@ -574,7 +574,7 @@ models:
           +schema: projeto_cdi
           +tags: ["daily", "cdi"]
           +labels:
-            dado_publico: sim
+            dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
         gerenciamento:
