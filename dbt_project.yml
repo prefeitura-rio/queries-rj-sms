@@ -396,13 +396,6 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      cdi:
-        +schema: brutos_cdi
-        +tags: ["daily", "cdi"]
-        +labels:
-          dado_publico: sim
-          dado_pessoal: nao
-          dado_sensivel: nao
       
 
     intermediate:
@@ -584,13 +577,6 @@ models:
             dado_publico: sim
             dado_pessoal: sim
             dado_sensivel: sim
-        cdi_marts:
-          +schema: marts_cdi
-          +tags: ["daily", "cdi"]
-          +labels:
-            dado_publico: sim
-            dado_pessoal: nao
-            dado_sensivel: nao
         gerenciamento:
           +tags: "daily"
         historico_clinico:

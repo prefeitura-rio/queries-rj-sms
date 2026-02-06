@@ -14,9 +14,11 @@ with base as (
         data_de_entrada,
         classificacao_idade as faixa_idade,
         case
-            -- Núcleo familiar (tem M e F juntos)
-            when regexp_contains(upper(sexo), r'M')
+            when (
+                regexp_contains(upper(sexo), r'M')
                 and regexp_contains(upper(sexo), r'F')
+            )
+            or upper(trim(sexo)) = 'AMBOS'
                 then 'Nucleo Familiar'
 
             -- Núcleo familiar (NF explícito)
@@ -33,7 +35,7 @@ with base as (
 
             -- Qualquer outro valor
             else 'Não identificado'
-        end as genero_tratado,
+        end as sexo_tratado,
  
         orgao,
         orgao_para_subsidiar, 

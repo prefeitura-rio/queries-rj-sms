@@ -23,6 +23,8 @@ with base as (
         data_de_saida,
         data_do_envio_ao_orgao_solicitante___arquivamento,
         prazo_dias,
+        retorno,
+        data_do_of,
         assunto,
         sintese_da_solicitacao,
         unidade,
@@ -45,6 +47,8 @@ with base as (
         reiteracoes,
         ic,
         pa,
+        data_do_of,
+        retorno,
         referencia,
         no_documento,
         data_da_entrada,
@@ -56,7 +60,7 @@ with base as (
         sintese_da_solicitacao,
         unidade,
         area,
-        sei_status as sei_status,       -- status
+        sei_status,
         orgao_para_subsidiar,
         exigencia,
         oficio_sms,
@@ -111,6 +115,12 @@ renamed as (
             oficio_field=process_null('oficio')
         ) }} as data_da_entrada,
 
+        -- parse date data_do_of icio
+        {{ cdi_parse_date(
+            process_null('data_do_of'),
+            processo_field=process_null('sei'),
+            oficio_field=process_null('oficio')
+        ) }} as data_do_of,
         {{ cdi_parse_date(
             process_null('vencimento'),
             processo_field=process_null('sei'),
@@ -175,8 +185,11 @@ renamed as (
 
         {{ normalize_null(
             "regexp_replace(trim(status), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
-        ) }} as status
+        ) }} as status,
 
+        {{ normalize_null(
+            "regexp_replace(trim(retorno), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
+        ) }} as retorno
     from base
 )
 

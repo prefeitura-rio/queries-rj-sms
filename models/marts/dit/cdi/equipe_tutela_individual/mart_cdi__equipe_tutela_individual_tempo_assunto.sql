@@ -21,7 +21,29 @@ calculos as (
 
         -- dimensões para filtros
         orgao,
-        sexo,
+        case
+            when (
+                regexp_contains(upper(sexo), r'M')
+                and regexp_contains(upper(sexo), r'F')
+            )
+            or upper(trim(sexo)) = 'AMBOS'
+                then 'Nucleo Familiar'
+
+            -- Núcleo familiar (NF explícito)
+            when upper(trim(sexo)) = 'NF'
+                then 'Nucleo Familiar'
+
+            -- Feminino
+            when upper(trim(sexo)) = 'F'
+                then 'Feminino'
+
+            -- Masculino
+            when upper(trim(sexo)) = 'M'
+                then 'Masculino'
+
+            -- Qualquer outro valor
+            else 'Não identificado'
+        end as sexo_tratado,
         classificacao_idade,
         area,
         promotora_defensora,
