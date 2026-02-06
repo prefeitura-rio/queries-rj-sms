@@ -195,3 +195,5 @@ renamed as (
 
 select *
 from renamed
+where processo_rio is not null and 
+    orgao is not null

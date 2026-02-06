@@ -189,3 +189,5 @@ fim as (
 
 select *
 from fim
+where processo_rio is not null 
+        and orgao is not null
