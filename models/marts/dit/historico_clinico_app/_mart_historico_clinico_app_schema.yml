@@ -222,6 +222,7 @@ models:
           Coluna de particionamento de CPF
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+
   - name: mart_historico_clinico_app__paciente
     description: >
       Tabela com uma visão consolidada dos pacientes atendidos em
@@ -324,6 +325,7 @@ models:
         description: AP cadastro.
       - name: exibicao.unidades_cadastro
         description: Unidades cadastro.
+
   - name: mart_historico_clinico_app__sumario
     description: >
       Tabela com uma visão consolidada dos sumários de atendimentos realizados
@@ -341,6 +343,7 @@ models:
         description: CPF do paciente.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+
   - name: mart_historico_clinico_app__sistema
     description: >
       Tabela com uma visão consolidada do comportamendo dos usuários do HCI em
@@ -374,6 +377,7 @@ models:
             - '{{ var ("TAG_CPF") }}'
         - name: consultas.momento_consulta
           description: Data e hora do acesso.
+
   - name: mart_historico_clinico_app__indice
     description: >
       Tabela utilizada para busca por CNS e Nome no histórico clínico.
@@ -395,6 +399,7 @@ models:
         description: CPF do paciente
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+
   - name: mart_historico_clinico_app__busca
     description: >
       Tabela utilizada para dar informações prévias na pagina de busca
@@ -443,6 +448,7 @@ models:
         description: Descreve a área programatica do paciente em questão.
       - name: exibicao.unidades_cadastro
         description: Descreve quais unidades o paciente em questão tem cadastro.
+
   - name: mart_historico_clinico_app__acessos
     description: >
       Tabela de acessos permitidos no HCI, tanto automáticos quanto manuais
@@ -553,6 +559,7 @@ models:
         description: Particionamento pelo CPF do paciente
         policy_tags:
           - '{{ var("TAG_CPF") }}'
+
   - name: mart_historico_clinico_app__vacinacao
     columns:
       - name: id_vacinacao
@@ -718,5 +725,51 @@ models:
 
       - name: cpf_particao
         description: CPF do paciente convertido para inteiro para fins de partição.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+  - name: mart_historico_clinico_app__contrarreferencia
+    description: Contrarreferências
+    columns:
+      - name: id_hci
+        description: Fingerprint determinístico para o atendimento.
+      - name: estabelecimento
+        description: Nome da unidade
+      - name: profissional_nome
+        description: Nome do profissional responsável
+      - name: profissional_cargo
+        description: Cargo do profissional responsável
+      - name: documento_numero
+        description: Número identificador da contrarrferência
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: documento_datahora
+        description: Data e hora de emissão da contrarrferência
+      - name: conduta
+        description: Conduta descrita pelo profissional responsável
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: seguimento
+        description: Seguimento à conduta descrito pelo profissional responsável
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: resumo
+        description: Resumo do atendimento
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: historia_doenca_atual
+        description: História da Doença Atual (HPA)
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medicamentos_em_uso
+        description: Medicamentos em uso pelo paciente
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: hipotese_diagnostica
+        description: Hipótese diagnóstica
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: cpf_particao
+        description: Particionamento pelo CPF do paciente
         policy_tags:
           - '{{ var("TAG_CPF") }}'
