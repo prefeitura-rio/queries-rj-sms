@@ -2,16 +2,19 @@
     config(
         alias='serie_temporal_atendimentos_unidade_pcsm',
         materialized='incremental',
-        incremental_strategy='merge',
+        incremental_strategy='insert_overwrite',
         partition_by={
             "field": "data_registro",
             "data_type": "date",
             "granularity": "day"
         },
         unique_key=['cnes', 'data_registro'],
-        description='Série temporal de atendimentos por data de entrada no prontuário do PCSM, segmentada por unidade de saúde'
+        description='Série temporal de atendimentos por data de entrada no prontuário do PCSM, segmentada por unidade de saúde',
+        tags=['datalake']
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 with
     atendimentos as (
@@ -23,7 +26,7 @@ with
         left join {{ref('raw_pcsm_unidades_saude')}} u 
             on u.id_unidade_saude = a.id_unidade_saude
         {% if is_incremental() %}
-            where data_entrada_atendimento > (select max(data_registro) from {{ this }})
+            where data_entrada_atendimento >= date('{{ last_partition }}'))
         {% endif %}
     ),
 

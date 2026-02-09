@@ -2,7 +2,7 @@
     config(
         alias='serie_temporal_atendimentos_unidade_vt',
         materialized='incremental',
-        incremental_strategy='merge',
+        incremental_strategy='insert_overwrite',
         partition_by={
             "field": "data_registro",
             "data_type": "date",
@@ -13,6 +13,8 @@
         tags=['datalake'],
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 with
   estabelecimentos as (
@@ -30,7 +32,7 @@ with
     from {{ref('raw_prontuario_vitai__atendimento')}} a
     inner join estabelecimentos e on a.gid_estabelecimento = e.gid
     {% if is_incremental() %}
-        where cast(inicio_datahora as date) > (select max(data_registro) from {{ this }})
+        where cast(inicio_datahora as date) >= date('{{ last_partition }}')
     {% endif %}
   )
 

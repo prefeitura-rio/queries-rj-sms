@@ -2,7 +2,7 @@
     config(
         alias='serie_temporal_atendimentos_vt',
         materialized='incremental',
-        incremental_strategy='merge',
+        incremental_strategy='insert_overwrite',
         partition_by={
             "field": "data_registro",
             "data_type": "date",
@@ -14,11 +14,13 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 select 
     cast(data_entrada as date) as data_registro,
     count(gid) as atendimentos
 from {{ ref('raw_prontuario_vitai__boletim') }}
 {% if is_incremental() %}
-    where cast(data_entrada as date) > (select max(data_registro) from {{ this }})
+    where cast(data_entrada as date) >= date('{{ last_partition }}')
 {% endif %}
 group by 1
