@@ -1,7 +1,16 @@
 {{
     config(
         alias='serie_temporal_atendimentos_unidade_vt',
-        materialized='table',
+        materialized='incremental',
+        incremental_strategy='merge',
+        partition_by={
+            "field": "data_registro",
+            "data_type": "date",
+            "granularity": "month"
+        },
+        unique_key=['cnes', 'nome', 'data_registro'],
+        description='Série temporal de atendimentos por data de entrada no prontuário Vitai, segmentada por unidade de saúde',
+        tags=['datalake'],
     )
 }}
 
@@ -20,7 +29,9 @@ with
       cast(inicio_datahora as date) as data_registro,
     from {{ref('raw_prontuario_vitai__atendimento')}} a
     inner join estabelecimentos e on a.gid_estabelecimento = e.gid
-    where cast(inicio_datahora as date) between DATE_SUB(CURRENT_DATE('America/Sao_Paulo') - 1, INTERVAL 30 DAY) and CURRENT_DATE('America/Sao_Paulo') - 1
+    {% if is_incremental() %}
+        where cast(inicio_datahora as date) > (select max(data_registro) from {{ this }})
+    {% endif %}
   )
 
 select
@@ -30,4 +41,3 @@ select
   count(id_atendimento) as atendimentos
 from atendimentos
 group by 1,2,3
-order by 3
