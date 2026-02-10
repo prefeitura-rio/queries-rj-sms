@@ -85,6 +85,7 @@ WITH
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE REGEXP_CONTAINS(tipo, r'(?i)visita')
         AND cpf IS NOT NULL AND cpf <> 'NAO TEM'
+        AND cbo_profissional = '515105' -- apenas ACS
     ),
 
     -- CONSULTAS
@@ -94,7 +95,7 @@ WITH
             'Consulta' AS tipo_evento,
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE cpf <> 'NAO TEM' and tipo <> 'Visita Domiciliar'
+        WHERE cpf <> 'NAO TEM' AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
     ),
 
     -- CONSULTAS MÉDICO/ENFERMEIRO
@@ -104,7 +105,7 @@ WITH
             'Consulta - Médico/Enfermeiro' AS tipo_evento,
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE cpf <> 'NAO TEM' and tipo <> 'Visita Domiciliar'
+        WHERE cpf <> 'NAO TEM' AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
         AND (
                 REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"medico")
             OR REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"enfermeiro")
