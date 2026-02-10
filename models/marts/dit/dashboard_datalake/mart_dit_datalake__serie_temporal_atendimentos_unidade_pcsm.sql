@@ -26,7 +26,7 @@ with
         left join {{ref('raw_pcsm_unidades_saude')}} u 
             on u.id_unidade_saude = a.id_unidade_saude
         {% if is_incremental() %}
-            where data_entrada_atendimento >= date('{{ last_partition }}'))
+            where data_entrada_atendimento >= date('{{ last_partition }}')
         {% endif %}
     ),
 
@@ -35,8 +35,8 @@ with
             cnes,
             data_registro,
             count(id_atendimento) as atendimentos
-    from atendimentos
-    group by 1,2
+        from atendimentos
+        group by 1,2
     ),
 
     final as (
@@ -48,7 +48,7 @@ with
         from grouped_by_cnes_and_date g
         inner join {{ref('dim_estabelecimento')}} e
             on g.cnes = e.id_cnes
-        order by data_registro  
+        where data_registro is not null
     )
 
 select * from final
