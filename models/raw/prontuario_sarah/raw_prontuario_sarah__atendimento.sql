@@ -10,6 +10,7 @@ with source as (
     select 
         * 
     from {{ source("brutos_prontuario_sarah_api_staging", "atendimento_continuo") }}
+    where source_id != 'string' -- filtro para remover registro de teste
     qualify row_number() over (partition by source_id order by datalake_loaded_at desc) = 1
 ),
 
