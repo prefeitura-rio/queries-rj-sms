@@ -67,7 +67,7 @@ calculos as (
 
 
         case
-            when situacao <> "RESOLVIDO"
+            when situacao = "RESOLVIDO"
                 then 'Resolvido'
 
             when data_do_sms_ofi
