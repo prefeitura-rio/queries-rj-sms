@@ -22,6 +22,6 @@ select
     count(id_atendimento) as atendimentos
 from {{ ref('raw_pcsm_atendimentos') }}
 {% if is_incremental() %}
-    where {{parse_and_filter_future_date('data_entrada_atendimento')}} >= date('{{ last_partition }}')
+    where {{parse_and_filter_future_date('data_entrada_atendimento')}} >= safe_cast('{{ last_partition }}' as date)
 {% endif %}
-group BY 1
+group by 1

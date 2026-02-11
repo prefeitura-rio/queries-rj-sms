@@ -21,6 +21,6 @@ select
     count(gid) as atendimentos
 from {{ ref('raw_prontuario_vitai__boletim') }}
 {% if is_incremental() %}
-    where cast(data_entrada as date) >= date('{{ last_partition }}')
+    where cast(data_entrada as date) >= safe_cast('{{ last_partition }}' as date)
 {% endif %}
 group by 1

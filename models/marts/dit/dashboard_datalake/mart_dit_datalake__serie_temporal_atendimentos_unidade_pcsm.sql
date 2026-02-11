@@ -26,7 +26,7 @@ with
         left join {{ref('raw_pcsm_unidades_saude')}} u 
             on u.id_unidade_saude = a.id_unidade_saude
         {% if is_incremental() %}
-            where data_entrada_atendimento >= date('{{ last_partition }}')
+            where data_entrada_atendimento >= safe_cast('{{ last_partition }}' as date)
         {% endif %}
     ),
 
