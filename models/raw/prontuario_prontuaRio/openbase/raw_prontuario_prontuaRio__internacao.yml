@@ -1,0 +1,90 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__internacao
+    description: "Tabela de detalhes de internação, solicitações médicas, acompanhantes e eventos administrativos."
+    columns:
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: gid_boletim
+        description: "ID global único do boletim."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: id_boletim
+        description: "Identificador local do boletim."
+      - name: codigo_cid10
+        description: "Código CID-10 principal do diagnóstico."
+      - name: medico_solicitante_cpf
+        description: "CPF do médico que solicitou a internação."
+      - name: medico_responsavel_cpf
+        description: "CPF do médico responsável pelo paciente."
+      - name: id_clinica
+        description: "ID da clínica de internação."
+      - name: id_leito
+        description: "ID do leito ocupado."
+      - name: id_procsol
+        description: "ID do procedimento solicitado."
+      - name: internacao_data
+        description: "Data de início da internação."
+      - name: internacao_hora
+        description: "Hora de início da internação."
+      - name: carint
+        description: "Caráter da internação (ex: Urgência, Eletiva)."
+      - name: codigo_cid
+        description: "Código CID auxiliar."
+      - name: estado
+        description: "Estado clínico ou status da internação."
+      - name: cirurgia
+        description: "Indicador de procedimento cirúrgico."
+      - name: fora
+        description: "Indicador de atendimento fora da área ou unidade."
+      - name: clinreal
+        description: "Clínica real de internação."
+      - name: clinapo1
+        description: "Clínica de apoio 1."
+      - name: clinapo2
+        description: "Clínica de apoio 2."
+      - name: clinapo3
+        description: "Clínica de apoio 3."
+      - name: forment
+        description: "Forma de entrada do paciente."
+      - name: codusent
+        description: "Código do usuário que realizou a entrada."
+      - name: origem
+        description: "Procedência/Origem do paciente."
+      - name: entrada
+        description: "Tipo de registro de entrada."
+      - name: c02hentrada
+        description: "Hora de entrada (formato específico do censo)."
+      - name: clinant
+        description: "Clínica anterior do paciente."
+      - name: compos
+        description: "Composição de dados técnicos ou administrativos."
+      - name: cevento
+        description: "Código do evento de internação."
+      - name: senha
+        description: "Senha de autorização ou atendimento."
+      - name: acompanha
+        description: "Nome do acompanhante do paciente."
+      - name: parentesc
+        description: "Grau de parentesco do acompanhante."
+      - name: entacomp
+        description: "Data de entrada do acompanhante."
+      - name: hentacomp
+        description: "Hora de entrada do acompanhante."
+      - name: saiacomp
+        description: "Data de saída do acompanhante."
+      - name: hsaiacomp
+        description: "Hora de saída do acompanhante."
+      - name: aih
+        description: "Número da Autorização de Internação Hospitalar."
+      - name: numcons
+        description: "Número do conselho profissional ou consulta."
+      - name: notifcomp
+        description: "Indicador de notificação compulsória."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

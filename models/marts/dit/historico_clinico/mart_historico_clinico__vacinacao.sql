@@ -22,6 +22,9 @@ with
         union all
         select *, 'continuo' as origem
         from {{ ref("int_historico_clinico__vacinacao__continuo") }}
+        union all
+        select *, 'sipni' as origem
+        from {{ ref("int_historico_clinico__vacinacao__sipni") }}
     ),
 
     vacinacoes_dedup as (
@@ -37,12 +40,13 @@ with
 
         from vacinacoes
         qualify row_number() over (
-            partition by id_vacinacao
-            order by
-                case
-                    when origem = 'api' then 1
-                    when origem = 'historico' then 2
-                    else 3
+            partition by id_vacinacao 
+            order by 
+                case 
+                    when origem = 'api' then 1 
+                    when origem = 'historico' then 2 
+                    when origem = 'sipni' then 3
+                    else 4
                 end
         ) = 1
     ),

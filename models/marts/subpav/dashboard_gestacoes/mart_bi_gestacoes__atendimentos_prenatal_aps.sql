@@ -24,35 +24,73 @@ marcadores_temporais AS (
 ),
 
 
--- Peso dentro de -180 a +84 dias da data_inicio
-peso_filtrado AS (
+-- Peso ANTERIOR à DUM (prioridade): consulta até 180 dias antes da DUM, mais próxima possível
+peso_anterior_dum AS (
  SELECT
    mt.id_gestacao,
    mt.id_paciente,
    ea.entrada_data,
    ea.medidas.peso,
-   DATE_DIFF(ea.entrada_data, mt.data_inicio, DAY) AS dias_diferenca
---  FROM {{ ref('mart_historico_clinico__episodio') }} ea
+   DATE_DIFF(mt.data_inicio, ea.entrada_data, DAY) AS dias_antes_dum,
+   ROW_NUMBER() OVER (
+     PARTITION BY mt.id_gestacao
+     ORDER BY ea.entrada_data DESC  -- Mais próximo da DUM, mas ANTES
+   ) AS rn
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
  WHERE ea.medidas.peso IS NOT NULL
-   AND ea.entrada_data BETWEEN DATE_SUB(mt.data_inicio, INTERVAL 180 DAY)
-                           AND DATE_ADD(mt.data_inicio, INTERVAL 84 DAY)
+   AND ea.entrada_data < mt.data_inicio  -- ANTES da DUM
+   AND ea.entrada_data >= DATE_SUB(mt.data_inicio, INTERVAL 180 DAY)  -- Até 180 dias antes
 ),
 
+-- Peso POSTERIOR à DUM (fallback): se não houver anterior válido, usa consulta DEPOIS da DUM, mais próxima possível
+peso_posterior_dum AS (
+ SELECT
+   mt.id_gestacao,
+   mt.id_paciente,
+   ea.entrada_data,
+   ea.medidas.peso,
+   DATE_DIFF(ea.entrada_data, mt.data_inicio, DAY) AS dias_depois_dum,
+   ROW_NUMBER() OVER (
+     PARTITION BY mt.id_gestacao
+     ORDER BY ea.entrada_data ASC  -- Mais próximo da DUM, mas DEPOIS
+   ) AS rn
+ FROM `rj-sms.saude_historico_clinico.episodio_assistencial` ea
+ JOIN marcadores_temporais mt
+   ON ea.paciente.id_paciente = mt.id_paciente
+ WHERE ea.medidas.peso IS NOT NULL
+   AND ea.entrada_data >= mt.data_inicio  -- DEPOIS da DUM
+),
 
+-- Combina anterior (prioritário) com posterior (fallback) - garante exatamente 1 peso por gestação
 peso_proximo_inicio AS (
- SELECT *
- FROM (
-   SELECT *,
-          ROW_NUMBER() OVER (
-            PARTITION BY id_gestacao
-            ORDER BY ABS(dias_diferenca)
-          ) AS rn
-   FROM peso_filtrado
- )
+  -- Prioriza peso ANTERIOR se existir
+  SELECT
+    id_gestacao,
+    id_paciente,
+    entrada_data,
+    peso,
+    dias_antes_dum AS dias_diferenca,
+    'ANTERIOR_DUM' AS origem_peso
+  FROM peso_anterior_dum
+  WHERE rn = 1
+
+  UNION ALL
+
+  -- Fallback para peso POSTERIOR se não houver anterior válido
+  SELECT
+    id_gestacao,
+    id_paciente,
+    entrada_data,
+    peso,
+    dias_depois_dum AS dias_diferenca,
+    'POSTERIOR_DUM' AS origem_peso
+  FROM peso_posterior_dum
  WHERE rn = 1
+    AND id_gestacao NOT IN (
+      SELECT id_gestacao FROM peso_anterior_dum WHERE rn = 1
+    )
 ),
 
 
@@ -117,12 +155,15 @@ peso_altura_inicio AS (
    p.id_gestacao,
    p.id_paciente,
    p.peso,
-   a.altura_cm / 100 AS altura_m,
-   ROUND(p.peso / POW(a.altura_cm / 100, 2), 1) AS imc_inicio,
+   p.entrada_data AS data_peso_inicio,
+   p.dias_diferenca AS dias_diferenca_peso_dum,
+   p.origem_peso,
+   safe_divide(a.altura_cm, 100) AS altura_m,
+   ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) AS imc_inicio,
    CASE
-     WHEN ROUND(p.peso / POW(a.altura_cm / 100, 2), 1) < 18 THEN 'Baixo peso'
-     WHEN ROUND(p.peso / POW(a.altura_cm / 100, 2), 1) < 25 THEN 'Eutrófico'
-     WHEN ROUND(p.peso / POW(a.altura_cm / 100, 2), 1) < 30 THEN 'Sobrepeso'
+     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 18 THEN 'Baixo peso'
+     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 25 THEN 'Eutrófico'
+     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 30 THEN 'Sobrepeso'
      ELSE 'Obesidade'
    END AS classificacao_imc_inicio
  FROM peso_proximo_inicio p
@@ -213,7 +254,8 @@ AND ea.profissional_saude_responsavel.especialidade IN (
     'Enfermeiro',
     'Enfermeiro Obstetrico - Nasf',
     'Médico Generalista',
-    'Médico de Família e Comunidade'
+    'Médico de Família e Comunidade',
+    'Farmacêutico Hospitalar e Clinico - NASF'
   )
   GROUP BY 1,2,3,4,5,6,7
 ),
@@ -265,13 +307,16 @@ consultas_enriquecidas AS (
    ROW_NUMBER() OVER (PARTITION BY ag.id_gestacao ORDER BY ag.entrada_data) AS numero_consulta,
   
    pai.peso AS peso_inicio,
+   pai.data_peso_inicio,
+   pai.dias_diferenca_peso_dum,
+   pai.origem_peso,
    pai.altura_m,
    pai.imc_inicio,
    pai.classificacao_imc_inicio,
 
 
    ag.peso - pai.peso AS ganho_peso_acumulado,
-   ROUND(ag.peso / POW(pai.altura_m, 2), 1) AS imc_consulta
+   ROUND(safe_divide(ag.peso, POW(pai.altura_m, 2)), 1) AS imc_consulta
 
 
  FROM atendimentos_gestacao ag
@@ -292,6 +337,9 @@ SELECT
 
 
  peso_inicio,
+ data_peso_inicio,
+ dias_diferenca_peso_dum,
+ origem_peso,
  altura_m AS altura_inicio,
  imc_inicio,
  classificacao_imc_inicio,
