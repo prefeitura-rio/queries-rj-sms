@@ -57,7 +57,7 @@ calculos as (
 
         -- tempo de atendimento (por processo)
         case
-            when situacao <> "RESOLVIDO" then date_diff(
+            when situacao = "RESOLVIDO" then date_diff(
                 data_do_sms_ofi,
                 data_de_entrada,
                 day
