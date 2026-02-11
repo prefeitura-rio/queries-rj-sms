@@ -32,7 +32,7 @@ with
     from {{ref('raw_prontuario_vitai__atendimento')}} a
     inner join estabelecimentos e on a.gid_estabelecimento = e.gid
     {% if is_incremental() %}
-        where cast(inicio_datahora as date) >= safe_cast('{{ last_partition }}' as date)
+        where cast(inicio_datahora as date) >= date('{{ last_partition }}')
     {% endif %}
   )
 
