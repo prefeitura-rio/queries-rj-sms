@@ -6,3 +6,5 @@ sources:
     schema: brutos_siscan_web_staging
     tables:
       - name: laudos
+      - name: laudos_mamografia
+      - name: laudos_histo_mama

@@ -12,12 +12,13 @@
       "data_type": "date",
       "granularity": "month",
     },
-    cluster_by=['protocolo_id', 'unidade_prestadora_id_cnes', 'unidade_solicitante_id_cnes', 'mamografia_tipo'],
-    on_schema_change='sync_all_columns'
-  )
+cluster_by = ['protocolo_id', 'unidade_prestadora_id_cnes', 'unidade_solicitante_id_cnes', 'mamografia_tipo'],
+on_schema_change = 'sync_all_columns'
+)
 }}
 
-{% set src = source('brutos_siscan_web_staging', 'laudos') %}
+{% set src = source('brutos_siscan_web_staging', 'laudos') %} -- tabela antiga de laudos de mamografia
+{% set src_new = source('brutos_siscan_web_staging', 'laudos_mamografia') %} -- nova tabela com os laudos de mamografia
 {% set cols = adapter.get_columns_in_relation(src) %}
 {% set last_partition = get_last_partition_date( this ) %}
 
@@ -27,35 +28,55 @@ with
 -- e pegando so a particao mais atual em staging.
 -- obs: na tabela em staging a data_particao é construida a partir de data_extracao,
 -- porem neste modelo a data_particao é definida posteriormente como a data_realizacao
-source as (
+    source as (
+        {% if not is_incremental() %}
+          select *
+          from {{ src }}
 
-    select * 
-    from {{ src }}
-    {% if is_incremental() %}
-      where data_particao >= '{{ last_partition }}'
-    {% endif %}
+          union all
 
-    qualify row_number() over (
-        partition by n_protocolo
-        order by data_particao desc nulls last 
-    ) = 1
+          select *
+          from {{ src_new }}
 
-),
+          qualify row_number() over (
+              partition by n_protocolo
+              order by data_particao desc nulls last
+          ) = 1
+        {% else %}
+
+        select *,
+          -- gambiarra máxima (nao ir pra producao!!!)
+          -- o scrapper nao está mais pegando os seguintes campos por algum motivo:
+          "" as responsavel_resultado,
+          "" as cns_resultado,
+          "" as conselho,
+          "" as data_liberacao_resultado 
+
+        from {{ src_new }}
+        where data_particao >= '{{ last_partition }}'
+
+        qualify row_number() over (
+            partition by n_protocolo
+            order by data_particao desc nulls last
+        ) = 1
+
+        {% endif %}
+    ),
 
 -- aplicando macro process_null em todas as colunas do tipo string
-source_norm as (
-  select
-    {%- for c in cols %}
-      {%- set dtype = (c.data_type) -%}
-      {%- if dtype in ['STRING'] -%}
-        {{ process_null('s.' ~ adapter.quote(c.name)) }} as {{ adapter.quote(c.name) }}
-      {%- else -%}
-        s.{{ adapter.quote(c.name) }}
-      {%- endif -%}
-      {%- if not loop.last %}, {% endif -%}
-    {%- endfor %}
-  from source as s
-)
+    source_norm as (
+        select
+            {%- for c in cols %}
+            {%- set dtype = (c.data_type) -%}
+            {%- if dtype in ['STRING'] -%}
+            {{ process_null('s.' ~ adapter.quote(c.name)) }} as {{ adapter.quote(c.name) }}
+            {%- else -%}
+            s.{{ adapter.quote(c.name) }}
+            {%- endif -%}
+            {%- if not loop.last %}, {% endif -%}
+            {%- endfor %}
+        from source as s
+    )
 
 -- OBS: Os dados são extraídos da fonte por data_liberacao_resultado
 --          (Roda diariamente para d-1, e uma vez por mês para os 30 últimos dias)
@@ -71,7 +92,7 @@ select
     {{ clean_name_string("paciente_nome") }} as paciente_nome,
     {{ clean_name_string("paciente_mae") }} as paciente_nome_mae,
     parse_date('%d/%m/%Y', paciente_dt_nasc) as paciente_data_nasc,
-    safe_cast(paciente_idade as int) as paciente_idade, 
+    safe_cast(paciente_idade as int) as paciente_idade,
     paciente_sexo,
     paciente_telefone,
 
@@ -89,33 +110,33 @@ select
     parse_date('%d/%m/%Y', data_realizacao) as data_realizacao,
     parse_date('%d/%m/%Y', data_liberacao_resultado) as data_liberacao_resultado,
     parse_date('%d/%m/%Y',
-      nullif(
-        trim(split(data_ultima_menstruacao, ':')[safe_offset(1)]),
-        'Não lembra'
-      )
+        nullif(
+            trim(split(data_ultima_menstruacao, ':') [safe_offset(1)]),
+            'Não lembra'
+        )
     ) as data_ultima_menstruacao,
 
     -- resultados exame - mama esquerda
-    tipo_mama_esquerda as mama_esquerda_tipo, 
+    tipo_mama_esquerda as mama_esquerda_tipo,
     mama_esquerda_pele,
     linfonodos_axiliares_esquerda as mama_esquerda_linfonodos_axilares, -- incompleto, falta dilatacao ductal ex:121528446
     split(achados_benignos_esquerda, ', ') as mama_esquerda_achados_benignos,
     -- SCRAPPER BUG: FALTANDO `achado_exame_esquerda`
-    trim(split(classif_radiologica_esquerda, ':')[safe_offset(1)]) as mama_esquerda_classif_radiologica,
+    trim(split(classif_radiologica_esquerda, ':') [safe_offset(1)]) as mama_esquerda_classif_radiologica,
 
     -- resultados exame - mama direita
     tipo_mama_direita as mama_direita_tipo,
     mama_direita_pele,
     linfonodos_axiliares_direita as mama_direita_linfonodos_axilares, -- incompleto, falta dilatacao ductal ex:121528446
-    split(achados_benignos_direita, ', ' )  as mama_direita_achados_benignos,
+    split(achados_benignos_direita, ', ') as mama_direita_achados_benignos,
     achado_exame_direita as mama_direita_achado_exame,
-    trim(split(classif_radiologica_direita, ':')[safe_offset(1)]) as mama_direita_classif_radiologica,
+    trim(split(classif_radiologica_direita, ':') [safe_offset(1)]) as mama_direita_classif_radiologica,
 
     -- infos exame geral
     mamografia_tipo,
     mamografia_rastreamento_tipo,
-    microcalcificacoes as mamografia_microcalcificacoes,    
-    safe_cast(numero_filmes as int) as mamografia_numero_filmes, 
+    microcalcificacoes as mamografia_microcalcificacoes,
+    safe_cast(numero_filmes as int) as mamografia_numero_filmes,
     recomendacoes as mamografia_recomendacoes,
     observacoes_gerais as mamografia_observacoes_gerais,
     -- achado_exame_clinico as mamografia_achado_exame_clinico, -- SCRAPPER BUG: só vem ("Achados no exame clínico:"", '')
@@ -136,9 +157,9 @@ select
 
     -- Profissional responsável pelo resultado (? CONFIRMAR)
     lpad(safe_cast(safe_cast(cns_resultado as int) as string), 15, "0") as profissional_responsavel_cns,
-    trim(split(conselho, ' - ')[safe_offset(1)]) as profissional_responsavel_crm,
+    trim(split(conselho, ' - ') [safe_offset(1)]) as profissional_responsavel_crm,
     {{ clean_name_string("responsavel_resultado") }} as profissional_responsavel_nome,
-    
+
     -- metadados
     parse_timestamp('%Y-%m-%d %H:%M:%E6S', data_extracao) as data_extracao,
     parse_date('%d/%m/%Y', data_realizacao) as data_particao
