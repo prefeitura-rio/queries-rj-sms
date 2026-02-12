@@ -43,7 +43,7 @@ calculos as (
 
         -- descrição amigável
         case
-            when situacao <> "RESOLVIDO" then "Finalizado"
+            when situacao = "RESOLVIDO" then "Finalizado"
 
             when date_add(data_de_entrada, interval prazo_dias day) < current_date()
                 then concat(
