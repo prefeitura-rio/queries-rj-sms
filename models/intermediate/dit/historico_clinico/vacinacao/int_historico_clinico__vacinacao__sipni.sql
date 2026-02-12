@@ -62,7 +62,18 @@ with
 
     casted_normalized as (
         select 
-            safe_cast(null as string) as id_vacinacao,
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "v.id_cnes",
+                        "paciente_cpf",
+                        "vacina_aplicacao_data",
+                        "vacina_nome",
+                        "vacina_dose",
+                        "vacina_lote"
+                    ]
+                )
+            }} as id_vacinacao,
             safe_cast(v.id_cnes as string) as id_cnes,
             safe_cast(v.codigo_equipe as string) as id_equipe,
             safe_cast(v.ine_equipe as string) as id_ine_equipe,
