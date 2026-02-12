@@ -625,6 +625,15 @@ models:
             dado_sensivel: sim
             dominio: ivisa
 
+      minha_saude:
+        exames:
+          +schema: projeto_minha_saude
+          +tags: ["daily", "minha_saude", "exames"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+
       iplanrio:
         whatsapp:
           +tags: ["daily", "iplanrio", "whatsapp"]
