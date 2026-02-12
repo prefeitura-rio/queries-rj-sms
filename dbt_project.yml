@@ -389,13 +389,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      cdi:
-          +tags: ["cdi", "daily"]
-          +schema: intermediario_cdi
+      brutos_cdi:
+          +tags: ["cdi", "daily", "cdi-4hours"]
+          +schema: brutos_cdi
           +labels:
-            dado_publico: sim
-            dado_pessoal: nao
-            dado_sensivel: nao
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
 
     intermediate:
       +materialized: ephemeral
@@ -434,12 +434,12 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
         cdi:
-          +tags: ["cdi", "daily"]
+          +tags: ["cdi", "daily", "cdi-4hours"]
           +schema: intermediario_cdi
           +labels:
-            dado_publico: sim
-            dado_pessoal: nao
-            dado_sensivel: nao
+            dado_publico: nao 
+            dado_pessoal: sim
+            dado_sensivel: sim
         monitoramento:
           +tags: "daily"
           +labels:
@@ -561,9 +561,9 @@ models:
             dominio: estoque
         cdi:
           +schema: projeto_cdi
-          +tags: ["daily", "cdi"]
+          +tags: ["daily", "cdi", "cdi-4hours"]
           +labels:
-            dado_publico: sim
+            dado_publico: não
             dado_pessoal: sim
             dado_sensivel: sim
         gerenciamento:
