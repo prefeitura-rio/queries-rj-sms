@@ -158,7 +158,8 @@ with
                     safe_cast(data_solicitacao as string) as data_solicitacao_str,
                     safe_cast(data_autorizacao as string) as data_autorizacao_str,
                     safe_cast(data_execucao as string) as data_execucao_str,
-                    safe_cast(data_resultado as string) as data_resultado_str
+                    safe_cast(data_resultado as string) as data_resultado_str,
+
 
                     array_concat(
                         if(
