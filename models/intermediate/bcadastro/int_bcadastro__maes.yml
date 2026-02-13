@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: int_bcadastro__maes
+    description: >
+      Tabela CPF↔Possíveis CPFs da mãe
+    columns:
+      - name: cpf
+        description: Número do CPF do titular
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+
+      - name: mae_cpfs_candidatos
+        description: Lista de possíveis CPFs da mãe
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+
+      - name: cpf_particao
+        description: Particionamento da tabela
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'

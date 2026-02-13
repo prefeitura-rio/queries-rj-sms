@@ -12,7 +12,7 @@
     )
 }}
 
-select 
-    * except(airbyte, metadados), 
-    metadados.ano_exercicio 
-    from {{ source("brutos_bcadastro", 'cpf') }}
+select
+    * except(airbyte, metadados),
+    metadados.ano_exercicio
+from {{ source("brutos_bcadastro", "cpf") }}

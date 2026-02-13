@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: int_bcadastro__nome
+    description: >
+      Tabela para buscas por primeiro nome
+    columns:
+      - name: cpf
+        description: Número do CPF do titular
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+
+      - name: nome
+        description: Nome completo do titular
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+
+      - name: primeiro_nome
+        description: Primeiro nome do titular
+
+      - name: hash_particao
+        description: >
+          Partição da tabela via `FARM_FINGERPRINT(primeiro_nome)`,
+          usado para buscas
