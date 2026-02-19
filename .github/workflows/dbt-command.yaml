@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      
+        uses: actions/checkout@v6
+
       - name: Get changed files
         id: files
-        uses: Ana06/get-changed-files@v2.1.0
-      
+        uses: Ana06/get-changed-files@v2.3.0
+
       - name: Create DBT Run Command
         id: create-dbtrun-command
         continue-on-error: true
@@ -34,4 +34,4 @@ jobs:
         uses: thollander/actions-comment-pull-request@v3
         with:
           file-path: ./message.txt
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

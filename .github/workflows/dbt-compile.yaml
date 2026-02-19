@@ -6,14 +6,18 @@ jobs:
   dbt-compile:
     name: DBT Compile
     runs-on: ubuntu-latest
+    # Improvement #4: Add a timeout of 30 mins
+    # [Ref] https://ashishb.net/programming/common-pitfalls-of-github-actions/
+    timeout-minutes: 30
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
-        python-version: 3.x
+        python-version: "<3.14"  # https://github.com/dbt-labs/dbt-core/issues/12098
 
     - name: Create credentials directory
       run: mkdir -p credentials
@@ -28,12 +32,32 @@ jobs:
         JSON_VALUE=$(jq -r '.client_email' /tmp/credentials.json)
         echo "A conta de serviço é: $JSON_VALUE"
 
+    # Improvement #5: Cache Python dependencies
+    # Como não temos um arquivo 'requirements.txt', aqui fazemos cache
+    # direto pelo nome dos pacotes que são instalados hardcoded abaixo
+    - uses: actions/cache@v5
+      with:
+        path: |
+          ~/.cache/pip
+          ~/.cache/pypoetry
+        key: ${{ runner.os }}-pip-poetry-${{ 'dbt-core dbt-bigquery setuptools' }}
+        restore-keys: |
+          ${{ runner.os }}-pip-poetry-
+
     - name: Install dbt
       run:  pip install dbt-core dbt-bigquery setuptools
+
+    # Cache das dependências do dbt
+    - uses: actions/cache@v5
+      with:
+        path: |
+          ./dbt_packages
+        key: ${{ runner.os }}-dbt-${{ hashFiles('**/package-lock.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-dbt-
 
     - name: Install DBT Dependencies
       run:  dbt deps
 
     - name: Compile dbt models
       run: dbt compile --profiles-dir . --profile sms --target dev
-
