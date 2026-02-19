@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__medico
+    description: "Tabela de cadastro de profissionais de saúde e médicos responsáveis."
+    columns:
+      - name: cpf
+        description: "CPF do profissional."
+      - name: nome
+        description: "Nome completo do profissional."
+      - name: crm
+        description: "Conselho Regional de Medicina (ou registro profissional equivalente)."
+      - name: ativo
+        description: "Indicador se o profissional está com registro ativo no sistema."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

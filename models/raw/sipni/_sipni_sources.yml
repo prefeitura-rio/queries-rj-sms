@@ -5,4 +5,4 @@ sources:
     database: rj-sms
     schema: brutos_sipni_staging
     tables:
-      - name: vacinacao_pentavalente_rotina
+      - name: vacinacao_historico

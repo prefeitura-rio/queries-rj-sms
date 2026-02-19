@@ -114,6 +114,13 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: nao
+      datario:
+        +schema: datario_dados_mestres
+        +tags: ["monthly", "datario"]
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       gal:
         +schema: brutos_gal
         +tags: ["daily", "gal"]
@@ -129,9 +136,9 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      cnes_gdb:
-        +schema: brutos_cnes_gdb
-        +tags: ["weekly",'cnes_gdb']
+      gdb_cnes:
+        +schema: brutos_gdb_cnes
+        +tags: ["weekly", "gdb_cnes"]
         +labels:
           dado_publico: sim
           dado_pessoal: sim
@@ -206,7 +213,7 @@ models:
           dominio: estoque
       sisvisa:
         +schema: brutos_sisvisa
-        +tags: ["daily", "sisvisa"]
+        +tags: ["daily", "sisvisa", "ivisa"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -304,6 +311,14 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      prontuario_sarah:
+        +schema: brutos_prontuario_sarah
+        +tags: ["sarah", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
       bcadastro:
         +schema: brutos_bcadastro
         +tags: "bcadastro"
@@ -368,9 +383,9 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      cientificalab:
-        +schema: brutos_cientificalab
-        +tags: ["cientificalab"]
+      exames_laboratoriais:
+        +schema: brutos_exames_laboratoriais
+        +tags: ["exames_laboratoriais"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -389,13 +404,7 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
-      brutos_cdi:
-          +tags: ["cdi", "daily", "cdi-4hours"]
-          +schema: brutos_cdi
-          +labels:
-            dado_publico: nao
-            dado_pessoal: sim
-            dado_sensivel: sim
+      
 
     intermediate:
       +materialized: ephemeral
@@ -409,6 +418,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: iplanrio
+      ivisa:
+          +schema: intermediario_empreendimentos_cariocas
+          +tags: ["daily", "ivisa", "empreendimentos"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: ivisa
       cie:
           +tags: ["cie", "daily"]
           +schema: intermediario_cie
@@ -426,6 +443,8 @@ models:
             dominio: historico_clinico
           paciente:
             +tags: ["paciente"]
+          exames:
+            +tags: ['exames_laboratoriais']
         cadastro:
           +tags: ["cadastro", "weekly"]
           +schema: intermediario_cadastro
@@ -434,10 +453,10 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
         cdi:
-          +tags: ["cdi", "daily", "cdi-4hours"]
+          +tags: ["cdi", "daily"]
           +schema: intermediario_cdi
           +labels:
-            dado_publico: nao 
+            dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
         monitoramento:
@@ -561,9 +580,9 @@ models:
             dominio: estoque
         cdi:
           +schema: projeto_cdi
-          +tags: ["daily", "cdi", "cdi-4hours"]
+          +tags: ["daily", "cdi"]
           +labels:
-            dado_publico: não
+            dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
         gerenciamento:
@@ -605,6 +624,15 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: ivisa
+
+      minha_saude:
+        exames:
+          +schema: projeto_minha_saude
+          +tags: ["daily", "minha_saude", "exames"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
 
       iplanrio:
         whatsapp:

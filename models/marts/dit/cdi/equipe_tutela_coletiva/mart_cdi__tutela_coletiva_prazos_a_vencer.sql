@@ -1,7 +1,7 @@
 {{ 
     config(
         materialized = 'table',
-        schema = 'marts_cdi',
+        schema = 'projeto_cdi',
         alias = 'equipe_tutela_coletiva_demandas_prazos_a_vencer'
     ) 
 }}
@@ -18,11 +18,7 @@ with base as (
         ic,
         reiteracoes,
         sintese_da_solicitacao,
-        case 
-            when status = "" then "Sem Status"
-            else status
-        end as status,
-        
+        status,
         prazo_dias,
 
         case

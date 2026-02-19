@@ -2,7 +2,7 @@
     config(
         materialized = 'table',
         schema = 'intermediario_cdi',
-        alias = 'int_cdi__equipe_tutela_individual_v2'
+        alias = 'equipe_tutela_individual'
     ) 
 }}
 

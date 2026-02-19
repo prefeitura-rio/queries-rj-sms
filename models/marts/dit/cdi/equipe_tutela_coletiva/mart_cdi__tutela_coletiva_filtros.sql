@@ -1,7 +1,7 @@
 {{ 
     config(
         materialized = 'table',
-        schema = 'marts_cdi',
+        schema = 'projeto_cdi',
         alias = 'equipe_tutela_coletiva_filtros'
     ) 
 }}
@@ -47,20 +47,15 @@ filtros as (
             when orgao is null then 'Sem Informação' 
             else orgao 
         end as orgao,
+        -- total de reiteracoes unicas
+        reiteracoes,
         sintese_da_solicitacao,
-        status,    
-        SUM(
-            CASE
-                WHEN lower(trim(reiteracoes)) = 'x' THEN 0
-                ELSE ARRAY_LENGTH(REGEXP_EXTRACT_ALL(reiteracoes, r'\d+/\d+'))
-            END
-        ) AS total_reiteracoes,
+        status,
 
         count(distinct processo_rio) as total_requisicoes
 
     from base
 
-    where processo_rio is not null
 
     group by
         area,
@@ -69,6 +64,7 @@ filtros as (
         grupo_orgao,
         ic,
         orgao,
+        reiteracoes,
         sintese_da_solicitacao,
         status
 

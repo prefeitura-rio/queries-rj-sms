@@ -1,7 +1,7 @@
 {{
     config(
-        schema='staging_cdi',
-        alias='equipe_tutela_coletiva_v1',
+        schema='brutos_cdi',
+        alias='equipe_tutela_coletiva',
         materialized='table'
     )
 }}
@@ -10,41 +10,45 @@ with base as (
 
     -- 2025
     select
-        processorio___sei as sei,--
-        oficio,
-        orgao,--
-        reiteracoes, --
-        ic,--
-        pa,--
-        referencia,
-        no_documento,
-        data_da_entrada, --
-        vencimento,
-        data_de_saida,
-        data_do_envio_ao_orgao_solicitante___arquivamento,
-        prazo_dias,--
-        assunto,--
-        sintese_da_solicitacao,--
-        unidade,--
-        area,--
-        sei as sei_status,--
-        orgao_para_subsidiar,--
-        exigencia,
-        oficio_sms,
-        observacoes,
-        status
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_v2_2025') }}
-
-    union all
-
-    -- 2026
-    select
-        sei,
+        processorio___sei as sei,        -- processo
         oficio,
         orgao,
         reiteracoes,
         ic,
         pa,
+        referencia,
+        no_documento,
+        data_da_entrada,
+        vencimento,
+        data_de_saida,
+        data_do_envio_ao_orgao_solicitante___arquivamento,
+        prazo_dias,
+        retorno,
+        data_do_of,
+        assunto,
+        sintese_da_solicitacao,
+        unidade,
+        area,
+        sei as sei_status,               -- status
+        orgao_para_subsidiar,
+        exigencia,
+        oficio_sms,
+        observacoes,
+        status
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_2025') }}
+
+    union all
+
+    -- 2026
+    select
+        sei,                    
+        oficio,
+        orgao,
+        reiteracoes,
+        ic,
+        pa,
+        data_do_of,
+        retorno,
         referencia,
         no_documento,
         data_da_entrada,
@@ -62,7 +66,7 @@ with base as (
         oficio_sms,
         observacoes,
         status
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_v2_2026') }}
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_coletiva_2026') }}
 
 ),
 
@@ -111,6 +115,12 @@ renamed as (
             oficio_field=process_null('oficio')
         ) }} as data_da_entrada,
 
+        -- parse date data_do_of icio
+        {{ cdi_parse_date(
+            process_null('data_do_of'),
+            processo_field=process_null('sei'),
+            oficio_field=process_null('oficio')
+        ) }} as data_do_of,
         {{ cdi_parse_date(
             process_null('vencimento'),
             processo_field=process_null('sei'),
@@ -154,8 +164,8 @@ renamed as (
         ) }} as area,
 
         {{ normalize_null(
-            "regexp_replace(trim(sei), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
-        ) }} as sei,
+            "regexp_replace(trim(sei_status), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
+        ) }} as sei_status,
 
         {{ normalize_null(
             "regexp_replace(trim(orgao_para_subsidiar), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
@@ -175,12 +185,15 @@ renamed as (
 
         {{ normalize_null(
             "regexp_replace(trim(status), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
-        ) }} as status
+        ) }} as status,
 
+        {{ normalize_null(
+            "regexp_replace(trim(retorno), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
+        ) }} as retorno
     from base
-    where {{ process_null('sei') }} is not null
-      and {{ process_null('oficio') }} is not null
 )
 
 select *
 from renamed
+where processo_rio is not null and 
+    orgao is not null

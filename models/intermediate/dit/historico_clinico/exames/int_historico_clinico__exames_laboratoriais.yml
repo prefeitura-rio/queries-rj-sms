@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: int_historico_clinico__exames_laboratoriais
+    description: Informações sobre exames laboratoriais
+    columns:
+      - name: paciente_cpf
+        description: CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: unidade_nome
+        description: Nome da unidade em que o exame foi realizado
+      - name: codigo_apoio
+        description: Código do exame realizado
+      - name: laudo_url
+        description: URL do laudo em PDF
+      - name: medico_solicitante
+        description: Nome do(a) médico(a) que solicitou o exame, quando houver
+      - name: datahora_assinatura
+        description: Data/hora de assinatura dos resultados do exame
+      - name: datahora_pedido
+        description: Data/hora da solicitação do exame
+      - name: exame_nome
+        description: Descrição do exame realizado, com base no código
+      - name: cpf_particao
+        description: Particionamento pelo CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

@@ -1,7 +1,7 @@
 {{
     config(
-        schema = 'staging_cdi',
-        alias = 'stg_equipe_tutela_individual_v2',
+        schema = 'brutos_cdi',
+        alias = 'equipe_tutela_individual',
         materialized = 'table'
     )
 }}
@@ -31,7 +31,7 @@ with base as (
         observacoes,
         situacao,
         mes
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_individual_v2') }}
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_individual_2025') }}
 
     union all
 
@@ -59,7 +59,7 @@ with base as (
         observacoes,
         situacao,
         mes
-    from {{ source('brutos_cdi_staging', 'equipe_tutela_individual_v2_2026') }}
+    from {{ source('brutos_cdi_staging', 'equipe_tutela_individual_2026') }}
 ),
 
 fim as (
@@ -136,37 +136,26 @@ fim as (
 
         upper(trim({{ normalize_null('sexo') }})) as sexo,
 
-        -- Normalização idade
+    
         case
-            -- Ignorados / inválidos
-            when {{ normalize_null('idade') }} is null then 'Ignorado'
-            when trim({{ normalize_null('idade') }}) = '' then 'Ignorado'
-            when lower(trim({{ normalize_null('idade') }})) in ('x', 'n/f') then 'Ignorado'
-            when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'\d') then 'Ignorado'
-
-            -- Criança + Adolescente (qualquer combinação)
-            when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'crian')
-                and regexp_contains(lower(trim({{ normalize_null('idade') }})), r'adolesc')
-                then 'Criança e Adolescente'
-
-            -- Criança / Infante
-            when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'crian')
-                or regexp_contains(lower(trim({{ normalize_null('idade') }})), r'infant')
-                then 'Criança e Adolescente'
-
-            -- Adolescente (sozinho)
-            when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'adolesc')
-                then 'Criança e Adolescente'
-
-            -- Idoso (inclui variações)
             when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'idos')
                 then 'Idoso'
-
-            -- Adulto (inclui plural, feminino e erro "adula")
+            
+            when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'crian')
+                or regexp_contains(lower(trim({{ normalize_null('idade') }})), r'infant')
+                or regexp_contains(lower(trim({{ normalize_null('idade') }})), r'adolesc')
+                then 'Criança/Adolescente'
+            
             when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'adult')
-                or lower(trim({{ normalize_null('idade') }})) = 'adula'
+                or lower(trim({{ normalize_null('idade') }})) = 'adulo'
                 then 'Adulto'
-
+            
+            when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'n[uú]cleo\s+familiar')
+                then 'Núcleo Familiar'
+            
+            when regexp_contains(lower(trim({{ normalize_null('idade') }})), r'n[aã]o\s+identif')
+                then 'Não Identificado'
+            
             else 'Ignorado'
         end as classificacao_idade,
 
@@ -196,10 +185,9 @@ fim as (
         ) }} as mes
 
     from base
-    where
-        {{ process_null('processorio__sei') }} is not null
-        and {{ process_null('no_oficio') }} is not null
 )
 
 select *
 from fim
+where processo_rio is not null 
+        and orgao is not null

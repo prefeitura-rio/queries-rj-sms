@@ -773,3 +773,570 @@ models:
           Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+  - name: int_historico_clinico__episodio__prontuaRio
+    description: >
+      Tabela com uma visão consolidada dos atendimentos realizados em
+      estabelecimentos de saúde.
+    columns:
+      - name: id_hci
+        description: >
+          Identificador único para o atendimento
+        data_tests:
+          - not_null:
+              name: int_historico_clinico__episodio__prontuaRio__id__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - unique:
+              name: int_historico_clinico__episodio__prontuaRio__id__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+      - name: cpf
+        description: |
+          CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: tipo
+        description: >
+          Tipo de atendimento classificado como 'Exames', 'Consulta' ou
+          'Internação', baseado no tipo de atendimento informado no boletim.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: subtipo
+        description: >
+          Subtipo do atendimento, obtido a partir do tipo de atendimento do
+          boletim. 
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: entrada_datahora
+        description: >
+          Data e hora de início do atendimento. Representa o momento em que o
+          atendimento começou.
+      - name: saida_datahora
+        description: >
+          Data e hora de término do atendimento. Representa o momento em que o
+          atendimento terminou.
+      - name: paciente
+        description: >
+          Informações sobre os pacientes envolvidos no atendimento, incluindo
+          CPF e CNS. 
+          Agrupados por identificador de prontuário.
+      - name: motivo_atendimento
+        description: |
+          Queixa inicial do paciente
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: desfecho_atendimento
+        description: |
+          Desfecho do episódio
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: procedimentos_realizados
+        description: >
+          Procedimentos realizados durante o episódio.
+      - name: procedimentos_realizados.descricao
+        description: >
+          Descrição do tipo de procedimento realizado durante o episódio.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: procedimentos_realizados.observacao
+        description: >
+          Campo aberto de observações referentes ao procedimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: condicoes
+        description: >
+          Códigos e descrições dos CID (Classificação Internacional de Doenças)
+          relacionados ao atendimento. 
+          Inclui informações como código e nome do CID.
+      - name: condicoes.id
+        description: |
+          Código CID ativo
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: condicoes.descricao
+        description: |
+          Descrição do CID associado
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: condicoes.situacao
+        description: |
+          Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
+      - name: condicoes.data_diagnostico
+        description: |
+          Data do diagnóstico da condição. Campo preenchido somente para episódios da Atenção Primária.
+      - name: medidas
+        description: >
+          Medidas aferidas durante o episódio.
+      - name: medidas.altura
+        description: |
+          Altura do paciente em centímetros (cm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.circunferencia_abdominal
+        description: |
+          Circunferência abdominal do paciente em centímetros (cm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.frequencia_cardiaca
+        description: |
+          Frequência cardíaca do paciente em batimentos por minuto (bpm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.frequencia_respiratoria
+        description: |
+          Frequência respiratória do paciente em respirações por minuto (rpm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.glicemia
+        description: |
+          Glicemia em jejumdo paciente em miligramas por decilitro (mg/dl).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.hemoglobina_glicada
+        description: |
+          Hemoglobina glicada A1c (HbA1c) do paciente em percentuais (%).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.imc
+        description: |
+          Índice de Massa Corporal do paciente em quilogramas por metro quadrado (kg/m²).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.peso
+        description: |
+          Peso do paciente em quilogramas (kg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pressao_sistolica
+        description: |
+          Pressão arterial sistólica do paciente em milímetros de mercúrio (mmHg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pressao_diastolica
+        description: |
+          Pressão arterial diastólica do paciente em milímetros de mercúrio (mmHg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pulso_ritmo
+        description: |
+          Ritmo cardíaco do paciente. O valor pode ser 'filiforme', 'arritmico', 'ritmico cheio' ou 'ritmico debil'.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.saturacao_oxigenio
+        description: |
+          Saturação de oxigênio do paciente em percentuais (%).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.temperatura
+        description: |
+          Temperatura do paciente em graus Celsius (°C).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: alergias
+        description: >
+          Descrições das alergias associadas ao atendimento, extraídas dos
+          registros de alergias.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: prescricoes
+        description: >
+          Informações sobre as prescrições médicas realizadas durante o
+          atendimento, incluindo medicamentos e dosagens.
+      - name: prescricoes.id
+        description: |
+          ID da prescrição.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: prescricoes.nome
+        description: |
+          Nome do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: prescricoes.concentracao
+        description: |
+          Concentração do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: prescricoes.uso_continuo
+        description: |
+          Flag que indica se o medicamento é de uso contínuo.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: estabelecimento
+        description: >
+          Informações sobre o estabelecimento de saúde onde o atendimento foi
+          realizado, incluindo CNES, nome e sigla.
+      - name: estabelecimento.id_cnes
+        description: |
+          CNES do estabelecimento onde ocorreu o atendimento
+      - name: estabelecimento.nome
+        description: |
+          Nome do estabelecimento onde ocorreu o atendimento
+      - name: estabelecimento.estabelecimento_tipo
+        description: |
+          Tipo do estabelecimento onde ocorreu o atendimento
+      - name: profissional_saude_responsavel
+        description: >
+          Dados dos profissionais de saúde responsáveis pelo atendimento,
+          incluindo CPF, CNS e nome.
+      - name: profissional_saude_responsavel.id
+        description: |
+          ID do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: profissional_saude_responsavel.cns
+        description: |
+          CNS do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: profissional_saude_responsavel.nome
+        description: |
+          Nome do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: profissional_saude_responsavel.especialidade
+        description: |
+          Especialidade do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: profissional_saude_responsavel.cpf
+        description: |
+          CPF do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: prontuario
+        description: >
+          Informações adicionais sobre o atendimento, como o fornecedor e o
+          identificador do atendimento.
+      - name: prontuario.id_prontuario_global
+        description: |
+          Identificador único do atendimento. Composto pelo CNES do estabelecimento e
+          pelo identificador do atendimento no estabelecimento (`gid`). Utilizado para
+          diferenciar atendimentos entre diferentes estabelecimentos.
+      - name: prontuario.id_prontuario_local
+        description: |
+          Identificador local do atendimento, utilizado no prontuário do qual ele vem
+      - name: prontuario.fornecedor
+        description: |
+          Fornecedor do prontuário.
+      - name: metadados
+        description: |
+          Metadados do registro
+      - name: metadados.updated_at
+        description: |
+          Data de última atualização.
+      - name: metadados.imported_at
+        description: |
+          Data de importação do registro.
+      - name: metadados.processed_at
+        description: |
+          Data de merge do registro.
+      - name: metadados.tem_informacoes_basicas
+        description: >
+          Flag que indica se o episodio tem informações relevantes para a
+          aplicação do HCI.
+      - name: metadados.tem_identificador_paciente
+        description: |
+          Flag que indica se o episodio tem identificador de pacientes.
+      - name: metadados.tem_dados_sensiveis
+        description: Flag que indica se o episodio tem dados sensíveis.
+      - name: data_particao
+        description: >
+          Campo utilizado para particionamento de dados através da data do evento.
+      - name: cpf_particao
+        description: >
+          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+  - name: int_historico_clinico__episodio__sarah
+    description: >
+      Tabela com uma visão consolidada dos atendimentos realizados em
+      estabelecimentos de saúde.
+    columns:
+      - name: id_hci
+        description: >
+          Identificador único para o atendimento
+        data_tests:
+          - not_null:
+              name: int_historico_clinico__episodio__sarah__id__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - unique:
+              name: int_historico_clinico__episodio__sarah__id__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+      - name: tipo
+        description: >
+          Tipo de atendimento classificado como 'Exames', 'Consulta' ou
+          'Internação', baseado no tipo de atendimento informado no boletim.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: subtipo
+        description: >
+          Subtipo do atendimento, obtido a partir do tipo de atendimento do
+          boletim. 
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: entrada_datahora
+        description: >
+          Data e hora de início do atendimento. Representa o momento em que o
+          atendimento começou.
+      - name: saida_datahora
+        description: >
+          Data e hora de término do atendimento. Representa o momento em que o
+          atendimento terminou.
+      - name: paciente
+        description: >
+          Informações sobre os pacientes envolvidos no atendimento, incluindo
+          CPF e CNS. 
+          Agrupados por identificador de prontuário.
+      - name: paciente.id_prontuario
+        description: |
+          Prontuário relacionado ao atendimento.
+      - name: paciente.cpf
+        description: |
+          CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: paciente.cns
+        description: |
+          CNS do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: paciente.data_nascimento
+        description: |
+          Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+      - name: motivo_atendimento
+        description: |
+          Queixa inicial do paciente
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: desfecho_atendimento
+        description: |
+          Desfecho do episódio
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: procedimentos_realizados
+        description: >
+          Procedimentos realizados durante o episódio.
+      - name: procedimentos_realizados.descricao
+        description: >
+          Descrição do tipo de procedimento realizado durante o episódio.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: procedimentos_realizados.observacao
+        description: >
+          Campo aberto de observações referentes ao procedimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: condicoes
+        description: >
+          Códigos e descrições dos CID (Classificação Internacional de Doenças)
+          relacionados ao atendimento. 
+          Inclui informações como código e nome do CID.
+      - name: condicoes.id
+        description: |
+          Código CID ativo
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: condicoes.descricao
+        description: |
+          Descrição do CID associado
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: condicoes.situacao
+        description: |
+          Situação do CID associado ao atendimento. Pode assumir os valores "ATIVO", "NAO ESPECIFICADO" OU "RESOLVIDO"
+      - name: condicoes.data_diagnostico
+        description: |
+          Data do diagnóstico da condição. Campo preenchido somente para episódios da Atenção Primária.
+      - name: medidas
+        description: >
+          Medidas aferidas durante o episódio.
+      - name: medidas.altura
+        description: |
+          Altura do paciente em centímetros (cm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.circunferencia_abdominal
+        description: |
+          Circunferência abdominal do paciente em centímetros (cm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.frequencia_cardiaca
+        description: |
+          Frequência cardíaca do paciente em batimentos por minuto (bpm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.frequencia_respiratoria
+        description: |
+          Frequência respiratória do paciente em respirações por minuto (rpm).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.glicemia
+        description: |
+          Glicemia em jejumdo paciente em miligramas por decilitro (mg/dl).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.hemoglobina_glicada
+        description: |
+          Hemoglobina glicada A1c (HbA1c) do paciente em percentuais (%).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.imc
+        description: |
+          Índice de Massa Corporal do paciente em quilogramas por metro quadrado (kg/m²).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.peso
+        description: |
+          Peso do paciente em quilogramas (kg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pressao_sistolica
+        description: |
+          Pressão arterial sistólica do paciente em milímetros de mercúrio (mmHg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pressao_diastolica
+        description: |
+          Pressão arterial diastólica do paciente em milímetros de mercúrio (mmHg).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.pulso_ritmo
+        description: |
+          Ritmo cardíaco do paciente. O valor pode ser 'filiforme', 'arritmico', 'ritmico cheio' ou 'ritmico debil'.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.saturacao_oxigenio
+        description: |
+          Saturação de oxigênio do paciente em percentuais (%).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: medidas.temperatura
+        description: |
+          Temperatura do paciente em graus Celsius (°C).
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: alergias
+        description: >
+          Descrições das alergias associadas ao atendimento, extraídas dos
+          registros de alergias.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: prescricoes
+        description: >
+          Informações sobre as prescrições médicas realizadas durante o
+          atendimento, incluindo medicamentos e dosagens.
+      - name: prescricoes.id
+        description: |
+          ID da prescrição.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: prescricoes.nome
+        description: |
+          Nome do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: prescricoes.concentracao
+        description: |
+          Concentração do medicamento prescrito.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: prescricoes.uso_continuo
+        description: |
+          Flag que indica se o medicamento é de uso contínuo.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: estabelecimento
+        description: >
+          Informações sobre o estabelecimento de saúde onde o atendimento foi
+          realizado, incluindo CNES, nome e sigla.
+      - name: estabelecimento.id_cnes
+        description: |
+          CNES do estabelecimento onde ocorreu o atendimento
+      - name: estabelecimento.nome
+        description: |
+          Nome do estabelecimento onde ocorreu o atendimento
+      - name: estabelecimento.estabelecimento_tipo
+        description: |
+          Tipo do estabelecimento onde ocorreu o atendimento
+      - name: profissional_saude_responsavel
+        description: >
+          Dados dos profissionais de saúde responsáveis pelo atendimento,
+          incluindo CPF, CNS e nome.
+      - name: profissional_saude_responsavel.id
+        description: |
+          ID do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: profissional_saude_responsavel.cns
+        description: |
+          CNS do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+      - name: profissional_saude_responsavel.nome
+        description: |
+          Nome do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_NOME") }}'
+      - name: profissional_saude_responsavel.especialidade
+        description: |
+          Especialidade do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: profissional_saude_responsavel.cpf
+        description: |
+          CPF do profissional responsável pelo atendimento.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: prontuario
+        description: >
+          Informações adicionais sobre o atendimento, como o fornecedor e o
+          identificador do atendimento.
+      - name: prontuario.id_prontuario_global
+        description: |
+          Identificador único do atendimento. Composto pelo CNES do estabelecimento e
+          pelo identificador do atendimento no estabelecimento (`gid`). Utilizado para
+          diferenciar atendimentos entre diferentes estabelecimentos.
+      - name: prontuario.id_prontuario_local
+        description: |
+          Identificador local do atendimento, utilizado no prontuário do qual ele vem
+      - name: prontuario.fornecedor
+        description: |
+          Fornecedor do prontuário.
+      - name: metadados
+        description: |
+          Metadados do registro
+      - name: metadados.updated_at
+        description: |
+          Data de última atualização.
+      - name: metadados.imported_at
+        description: |
+          Data de importação do registro.
+      - name: metadados.processed_at
+        description: |
+          Data de merge do registro.
+      - name: metadados.tem_informacoes_basicas
+        description: >
+          Flag que indica se o episodio tem informações relevantes para a
+          aplicação do HCI.
+      - name: metadados.tem_identificador_paciente
+        description: |
+          Flag que indica se o episodio tem identificador de pacientes.
+      - name: metadados.tem_dados_sensiveis
+        description: Flag que indica se o episodio tem dados sensíveis.
+      - name: data_particao
+        description: >
+          Campo utilizado para particionamento de dados através da data do evento.
+      - name: cpf_particao
+        description: >
+          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
