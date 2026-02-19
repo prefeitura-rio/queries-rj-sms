@@ -4,12 +4,14 @@
         alias="tratamento",
         tags=["siclom"],
         partition_by={
-            "field": "cpf_particao",
-            "data_type": "int64",
-            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
-        }
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
+
+-- TODO: Confirmar nome das colunas com a SAP
 
 with 
     source as (select * from {{ source('brutos_siclom_api_staging', 'tratamento') }})
@@ -36,5 +38,5 @@ select
     {{ process_null('esquema') }} as esquema,
     {{ process_null('duracao') }} as duracao,
     {{ process_null('extracted_at') }} as extraido_em,
-    safe_cast( {{ process_null('CPF') }} as int64) as cpf_particao
+    date(data_particao) as data_particao
 from source

@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: raw_siclom__prep
+    description: "Modelo que contém dados brutos de Profilaxia Pré-Exposição (PrEP) do sistema SICLOM. Inclui informações sobre o paciente, a dispensação de medicamentos e o esquema terapêutico."
+    columns:
+      - name: cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: cd_dis
+        description: "Código da unidade dispensadora."
+      - name: id_solicitacao
+        description: "Identificador único da solicitação de PrEP."
+      - name: unidade
+        description: "Nome da unidade de dispensação."
+      - name: municipio
+        description: "Município da unidade de dispensação."
+      - name: uf
+        description: "UF da unidade de dispensação."
+      - name: servico_atendimento
+        description: "Tipo de serviço de atendimento."
+      - name: esfera_atendimento
+        description: "Esfera do atendimento (Público/Privado)."
+      - name: nome_civil
+        description: "Nome civil do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: genero
+        description: "Gênero do paciente."
+      - name: participante_estudo_vacina
+        description: "Indica se o paciente é participante de estudo de vacina."
+      - name: dinheiro_sexo
+        description: "Indica se o paciente trocou dinheiro por sexo."
+      - name: droga_injetavel
+        description: "Indica se o paciente faz uso de droga injetável."
+      - name: substancias_psicoativas
+        description: "Indica se o paciente faz uso de substâncias psicoativas."
+      - name: modalidade
+        description: "Modalidade da PrEP (e.g., sob demanda, contínua)."
+      - name: esquema_prep
+        description: "Esquema terapêutico da PrEP prescrito."
+      - name: quantidade_autoteste
+        description: "Quantidade de autotestes dispensados."
+      - name: duracao
+        description: "Duração do tratamento em dias."
+      - name: solicitacao_dispensa_data
+        description: "Data da solicitação ou dispensação da PrEP."
+      - name: extraido_em
+        description: "Timestamp de quando o dado foi extraído da fonte."
+      - name: data_particao
+        description: "Data de partição da tabela, baseada na data da solicitação/dispensação ou extração."
