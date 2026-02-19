@@ -31,10 +31,10 @@ with
         select
             * except(vacina_descricao),
 
-            -- Remove prefixos "vacina", "vacina contra", ...
+            -- Remove prefixos "vacina", "vacina contra", "vc", ...
             REGEXP_REPLACE(
                 trim({{ process_null("vacina_descricao") }}),
-                r"(?i)^vacina\s*(contra(\s*[oa])?)?\s*",
+                r"(?i)^(vacina|vc)\s*(contra(\s*[oa])?)?\s*",
                 ""
             ) as vacina_descricao
 
@@ -94,7 +94,7 @@ with
             paciente_cns,
             paciente_cpf,
             {{ proper_estabelecimento("estabelecimento_nome") }} as estabelecimento_nome,
-            equipe_nome,
+            {{ proper_br("equipe_nome") }} as equipe_nome,
             profissional_nome,
             profissional_cbo,
             profissional_cns,
@@ -104,27 +104,7 @@ with
             vacina_sigla,
             vacina_detalhes,
 
-            REGEXP_REPLACE(
-                REGEXP_REPLACE(
-                    REPLACE(
-                        REPLACE(
-                            REPLACE(
-                                {{ capitalize_first_letter("vacina_dose") }},
-                                "eforco",  -- ex. "Reforco"
-                                "eforço"
-                            ),
-                            "acinacao", -- ex. "Revacinacao"
-                            "acinação"
-                        ),
-                        "unica", -- ex. "Dose unica"
-                        "única"
-                    ),
-                    r"([0-9]+)\s*dose",  -- ex. "2 dose" -> "2ª dose"
-                    r"\1ª dose"
-                ),
-                r"([0-9]+)\s*reforço",  -- ex. "2 reforço" -> "2º reforço"
-                r"\1º reforço"
-            ) as vacina_dose,
+            {{ proper_vacina_dose("vacina_dose") }} as vacina_dose,
 
             {{ clean_lote_vacina("vacina_lote") }} as vacina_lote,
 
