@@ -311,6 +311,14 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      prontuario_sarah:
+        +schema: brutos_prontuario_sarah
+        +tags: ["sarah", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
       bcadastro:
         +schema: brutos_bcadastro
         +tags: "bcadastro"
@@ -396,6 +404,14 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+
+      cdi:
+        +schema: brutos_cdi
+        +tags: ["daily", "cdi", "cdi-4hours"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       
 
     intermediate:
@@ -445,7 +461,7 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
         cdi:
-          +tags: ["cdi", "daily"]
+          +tags: ["cdi", "daily", "cdi-4hours"]
           +schema: intermediario_cdi
           +labels:
             dado_publico: nao
@@ -572,7 +588,7 @@ models:
             dominio: estoque
         cdi:
           +schema: projeto_cdi
-          +tags: ["daily", "cdi"]
+          +tags: ["daily", "cdi", "cdi-4hours"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -616,6 +632,15 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: ivisa
+
+      minha_saude:
+        exames:
+          +schema: projeto_minha_saude
+          +tags: ["daily", "minha_saude", "exames"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
 
       iplanrio:
         whatsapp:
