@@ -40,7 +40,7 @@ jobs:
         path: |
           ~/.cache/pip
           ~/.cache/pypoetry
-        key: ${{ runner.os }}-pip-poetry-${{ 'dbt-core dbt-bigquery setuptools' }}
+        key: ${{ runner.os }}-pip-poetry-${{ 'dbt-core--dbt-bigquery--setuptools' }}
         restore-keys: |
           ${{ runner.os }}-pip-poetry-
 
@@ -60,4 +60,4 @@ jobs:
       run:  dbt deps
 
     - name: Compile dbt models
-      run: dbt compile --profiles-dir . --profile sms --target dev
+      run: dbt compile --profiles-dir . --profile sms --target ci
