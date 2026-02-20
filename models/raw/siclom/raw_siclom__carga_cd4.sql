@@ -108,7 +108,7 @@ linfocitos_cd4 as (
         {{ process_null('autorizado_liberador') }} as liberador, 
         {{ process_null('ds_projeto') }} as projeto,
 
-        {{ process_null('extracted_at') }} as extraido_em,
+        cast(extracted_at as datetime) as extraido_em,
         date(data_particao) as data_particao
     from source
 )

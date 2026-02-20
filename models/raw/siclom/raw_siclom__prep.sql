@@ -47,7 +47,7 @@ prep as (
         {{ process_null('tp_esquema_prep') }} as esquema_prep,
         safe_cast(qtde_autoteste as int64) as autoteste_quantidade,
         safe_cast(duracao as int64) as duracao,
-        safe.parse_timestamp('%Y-%m-%d %H:%M:%E3S',  dt_dispensa_sol, 'America/Sao_Paulo') as dispensacao_solicitacao_data,
+        safe_cast(dt_dispensa_sol as datetime) as dispensacao_solicitacao_data,
         
         cast(extracted_at as datetime) as extraido_em,
         date(data_particao) as data_particao

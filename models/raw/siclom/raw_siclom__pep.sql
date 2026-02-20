@@ -29,7 +29,7 @@ select
   
     -- Dados de exposição
     -- Ex: 2011-06-25 00:00:00.000
-    safe.parse_timestamp('%Y-%m-%d %H:%M:%E3S',  DATA_DA_EXPOSICAO, 'America/Sao_Paulo') as exposicao_data,
+    safe_cast(DATA_DA_EXPOSICAO as datetime) as exposicao_data,
     {{ process_null('CIRCUNSTANCIA_DA_EXPOSICAO') }} as circunstancia_exposicao,
     {{ process_null('ORIGEM_DO_ACOMPANHAMENTO') }} as origem_acompanhamento,
     {{ process_null('PESSOA_FONTE') }} as pessoa_fonte,
@@ -41,13 +41,10 @@ select
     
     -- Prescrição
     {{ process_null('st_contraindicacao_esquema') }} as contraindicacao_esquema,
-    -- Ex: 2011-06-27 18:40:18.000
-    safe.parse_timestamp('%Y-%m-%d %H:%M:%E3S', DATA_DA_DISPENSA, 'America/Sao_Paulo')  as dispensa_data,
+    safe_cast(DATA_DA_DISPENSA as datetime) as dispensa_data,
     {{ process_null('ESQUEMA') }} as esquema,
     safe_cast(DURACAO as int64) as duracao,
-    {{ process_null('TP_PROFISSIONAL') }} as profissional_tipo,
-    -- Ex: 2015-01-28 00:00:00.000
-    safe.parse_timestamp('%Y-%m-%d %H:%M:%E3S',  DATA_DA_PRESCRICAO, 'America/Sao_Paulo') as prescricao_data,
+    safe_cast(DATA_DA_PRESCRICAO as datetime) as prescricao_data,
 
     -- Testagem
     {{ process_null('tp_testagem_hiv') }} as testagem_hiv,
