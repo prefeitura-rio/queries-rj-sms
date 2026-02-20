@@ -266,8 +266,8 @@ with bruto_atendimento as (
 
             -- METADADOS
             struct(
-                safe_cast(null as datetime) as imported_at, 
-                safe_cast(null as datetime) as updated_at,
+                loaded_at as imported_at, 
+                updated_at as updated_at,
                 datetime(current_timestamp(),'America/Sao_Paulo') as processed_at
             ) as metadados,
 

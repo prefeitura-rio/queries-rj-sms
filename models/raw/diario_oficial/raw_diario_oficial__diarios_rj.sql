@@ -2,6 +2,7 @@
     config(
         alias="diarios_rj",
         materialized="table",
+        tags=["cdi_vps"],
         partition_by={
             "field": "data_particao",
             "data_type": "date"
@@ -18,10 +19,10 @@ with
             {{ process_null(clean_numeric_string('secao_indice')) }} as secao_indice,
             {{ process_null(clean_numeric_string('bloco_indice')) }} as bloco_indice,
             {{ process_null(clean_numeric_string('conteudo_indice')) }} as conteudo_indice,
-            trim({{ process_null('secao') }}) as pasta,
-            trim({{ process_null('titulo') }}) as arquivo,
-            trim({{ process_null('cabecalho') }}) as cabecalho,
-            trim({{ process_null('conteudo') }}) as conteudo,
+            {{ process_null('trim(secao)') }} as pasta,
+            {{ process_null('trim(titulo)') }} as arquivo,
+            {{ process_null('trim(cabecalho)') }} as cabecalho,
+            {{ process_null('trim(conteudo)') }} as conteudo,
             _extracted_at as data_extracao,
             ano_particao,
             mes_particao,
