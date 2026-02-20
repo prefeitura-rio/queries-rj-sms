@@ -19,7 +19,7 @@ source as (
 
     linfocitos_cd4 as (
         select
-            -- Identificação do Paciente 
+            -- Identificação do paciente 
             {{ process_null('cd_pac') }} as id_cidadao,
             {{ process_null('CPF') }} as paciente_cpf,
             {{ process_null('nm_pac') }} as paciente_nome,
@@ -27,25 +27,27 @@ source as (
             {{ process_null('nm_mae') }} as paciente_mae_nome,
             {{ process_null('nm_resp') }} as paciente_responsavel_nome,
 
-            -- Dados Demográficos
+            -- Dados demográficos
             {{ process_null('sexo') }} as sexo,
             {{ process_null('ds_escolaridade') }} as escolaridade,
             {{ process_null('ds_raca') }} as raca,
-            {{ process_null('dt_nasc') }} as data_nascimento,
+            safe.parse_date('%d/%m/%Y', dt_nasc) as data_nascimento,
+
+            -- Endereço
             {{ process_null('end_cont') }} as paciente_endereco,
             {{ process_null('bai_cont') }} as paciente_bairro,
             {{ process_null('cep_cont') }} as paciente_cep,
             {{ process_null('cd_uf') }} as paciente_uf,
             {{ process_null('nm_cid') }} as paciente_cidade,
 
-            -- Dados do Exame
+            -- Dados do exame
             {{ process_null('num_form') }} as numero_formulario,
             {{ process_null('ident_amostra_lab') }} as id_amostra_laboratorial,
             {{ process_null('paciente_gestante') }} as paciente_gestante,
             safe_cast(nu_idade_gestacional as int64) as paciente_idade_gestacional,
             {{ process_null('ds_motivo_exame') }} as motivo_exame,
 
-            -- Avaliação Clínica
+            -- Avaliação clínica
             {{ process_null('st_dois_ult_cd4_maior_350') }} as dois_ult_cd4_maior_350,
             {{ process_null('estagio_clinico') }} as estagio_clinico,
             {{ process_null('st_carga_viral_indetectavel') }} as carga_viral_indentectavel,
@@ -87,7 +89,7 @@ source as (
             {{ process_null('uf_instituicao_executora') }} as instituicao_executora_uf,
             {{ process_null('cidade_instituicao_executora') }} as instituicao_executora_cidade, 
 
-            -- Resultados do Exame
+            -- Resultados do exame
             safe_cast(contagem_cd4 as int64) as cd4_contagem,
             safe_cast(perc_cd4 as float64) as cd4_percentual,
             safe_cast(contagem_cd8 as int64) as cd8_contagem,
@@ -105,6 +107,7 @@ source as (
             {{ process_null('observacoes') }} as observacoes,
             {{ process_null('autorizado_liberador') }} as liberador, 
             {{ process_null('ds_projeto') }} as projeto,
+
             {{ process_null('extracted_at') }} as extraido_em,
             date(data_particao) as data_particao
         from source

@@ -1,82 +1,175 @@
 version: 2
 
 models:
-  - name: raw_siclom__cargaviral
-    description: "Tabela bruta com os resultados de exames de carga viral do sistema SICLOM."
+  - name: raw_siclom__carga_viral
+    description: "Tabela de exames de Carga Viral para HIV do sistema SICLOM. Contém informações sobre o paciente, solicitação, coleta, execução e resultado do exame."
     columns:
-      - name: instituicao_solicitante
-        description: "Nome da instituição que solicitou o exame."
-      - name: cnes
-        description: "Código CNES da instituição solicitante."
-      - name: instituicao_solicitante_cidade
-        description: "Cidade da instituição que solicitou o exame."
-      - name: instituicao_solicitante_uf
-        description: "UF da instituição que solicitou o exame."
+      # Identificação do paciente
+      - name: id_paciente
+        description: "Identificador único do paciente no sistema SICLOM."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: cpf
         description: "CPF do paciente."
         policy_tags:
           - '{{ var("TAG_CPF") }}'
-      - name: cns
-        description: "Cartão Nacional de Saúde (CNS) do paciente."
-        policy_tags:
-          - '{{ var("TAG_CNS") }}'
       - name: paciente_nome
-        description: "Nome completo do paciente."
+        description: "Nome civil do paciente."
         policy_tags:
           - '{{ var("TAG_NOME") }}'
       - name: paciente_nome_social
         description: "Nome social do paciente."
         policy_tags:
           - '{{ var("TAG_NOME") }}'
-      - name: mae_nome
+      - name: paciente_mae_nome
         description: "Nome da mãe do paciente."
         policy_tags:
           - '{{ var("TAG_NOME_MAE") }}'
+      - name: paciente_responsavel_nome
+        description: "Nome do responsável pelo paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      # Dados demográficos
+      - name: sexo
+        description: "Sexo do paciente."
       - name: data_nascimento
         description: "Data de nascimento do paciente."
         policy_tags:
           - '{{ var("TAG_DATA_NASCIMENTO") }}'
-      - name: sexo
-        description: "Sexo do paciente."
-      - name: raca
-        description: "Raça/cor do paciente."
-      - name: genero
-        description: "Gênero do paciente."
-      - name: orientacao_sexual
-        description: "Orientação sexual do paciente."
-      - name: escolaridade
+      - name: ds_escolaridade
         description: "Escolaridade do paciente."
-      - name: municipio
-        description: "Município de residência do paciente."
-      - name: uf
-        description: "UF de residência do paciente."
-      - name: gestante
-        description: "Indica se a paciente é gestante."
-      - name: nu_idade_gestacional
-        description: "Idade gestacional em semanas."
-      - name: codigo_motivo_exame
-        description: "Código do motivo da solicitação do exame."
-      - name: motivo_exame
-        description: "Descrição do motivo da solicitação do exame."
+      - name: raca
+        description: "Raça/cor autodeclarada pelo paciente."
+
+      # Endereço
+      - name: paciente_endereco
+        description: "Endereço de contato do paciente."
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+      - name: paciente_bairro
+        description: "Bairro de contato do paciente."
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+      - name: paciente_cep
+        description: "CEP de contato do paciente."
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+      - name: paciente_uf
+        description: "UF de contato do paciente."
+      - name: paciente_cidade
+        description: "Cidade de contato do paciente."
+
+      # Dados do exame
+      - name: numero_formulario
+        description: "Número do formulário."
+      - name: id_amostra_laboratorial
+        description: "Identificação da amostra no laboratório."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: paciente_gestante
+        description: "Indica se a paciente está gestante."
         policy_tags:
           - '{{ var("TAG_DADO_CLINICO") }}'
-      - name: solic_geno_simultanea
-        description: "Indica se houve solicitação de genotipagem simultânea."
-      - name: coleta_datahora
-        description: "Data e hora da coleta da amostra."
-      - name: resultado_datahora
-        description: "Data e hora do resultado do exame."
-      - name: carga_viral
-        description: "Resultado da carga viral (cópias/mL)."
+      - name: paciente_idade_gestacional
+        description: "Idade gestacional em semanas, caso a paciente seja gestante."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: motivo_exame
+        description: "Motivo da solicitação do exame."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: coleta_genotipagem_simultanea
+        description: "Coleta genotipagem simultânea."
+      - name: solicitacao_genotipagem_simultanea
+        description: "Solicitação genotipagem simultânea."
+
+      # Data e horários
+      - name: solicitacao_medica_data
+        description: "Data da solicitação médica."
+      - name: coleta_data
+        description: "Data da coleta da amostra."
+      - name: coleta_hora
+        description: "Hora da coleta da amostra."
+      - name: recebimento_amostra_data
+        description: "Data de recebimento da amostra no laboratório."
+      - name: recebimento_amostra_hora
+        description: "Hora de recebimento da amostra no laboratório."
+      - name: exame_execucao_data
+        description: "Data de execução do exame."
+      - name: digitacao_data
+        description: "Data de digitação do formulário no sistema."
+      - name: liberacao_exame_data
+        description: "Data de liberação do resultado do exame."
+      - name: liberacao_exame_hora
+        description: "Hora de liberação do resultado do exame."
+      - name: inclusao_data
+        description: "Hora de inclusão do registro no sistema de origem."
+
+      # Profissional solicitante
+      - name: solicitacao_digitador
+        description: "Profissional que digitou a solicitação no sistema."
+      - name: profissional_tipo
+        description: "Tipo do profissional solicitante (ex: Médico, Enfermeiro)."
+      - name: id_conselho
+        description: "Número de registro do profissional solicitante em seu conselho de classe."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: conselho_uf
+        description: "UF do conselho de classe do profissional solicitante."
+
+      # Instituições
+      - name: instituicao_solicitante
+        description: "Nome da instituição solicitante do exame."
+      - name: instituicao_solicitante_uf
+        description: "UF da instituição solicitante."
+      - name: instituicao_solicitante_cidade
+        description: "Cidade da instituição solicitante."
+      - name: instituicao_coletora
+        description: "Nome da instituição que realizou a coleta da amostra."
+      - name: instituicao_coletora_uf
+        description: "UF da instituição coletora."
+      - name: instituicao_coletora_cidade
+        description: "Cidade da instituição coletora."
+      - name: instituicao_executora
+        description: "Nome da instituição que executou o exame."
+      - name: instituicao_executora_uf
+        description: "UF da instituição executora."
+      - name: instituicao_executora_cidade
+        description: "Cidade da instituição executora."
+
+      # Resultados do exame
+      - name: copias
+        description: "Cópias de RNA viral (cópias/mL)"
         policy_tags:
           - '{{ var("TAG_DADO_CLINICO") }}'
       - name: log
-        description: "Resultado do log da carga viral."
-      - name: condicao_chegada_amostra
-        description: "Condição em que a amostra chegou ao laboratório."
+        description: "Log10 das cópias."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: volume_amostra
+        description: "Volume da amostra coletada."
+
+      # Método e Kit
+      - name: metodo
+        description: "Método utilizado na execução do exame."
+      - name: kit_nome
+        description: "Nome do kit utilizado no exame."
+      - name: tipo_entrada
+        description: "Tipo de entrada do dado no sistema."
+
+      # Outros
+      - name: exame_digitador
+        description: "Profissional que digitou o resultado do exame no sistema."
+      - name: observacoes
+        description: "Campo de texto livre para observações."
+      - name: liberador
+        description: "Profissional que liberou o resultado do exame."
+      - name: projeto
+        description: "Descrição do projeto de pesquisa, se aplicável."
+      
+      # Campos de Controle
       - name: extraido_em
-        description: "Data e hora da extração dos dados."
+        description: "Data/hora de extração do dado da fonte."
       - name: data_particao
-        description: "Data de partição para otimização de consultas."
-      - name: cpf_particao
-        description: "Coluna de partição para otimização de consultas."
+        description: "Data de partição da tabela, baseada na data de extração."
