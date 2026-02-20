@@ -2,55 +2,82 @@ version: 2
 
 models:
   - name: raw_siclom__prep
-    description: "Modelo que contém dados brutos de Profilaxia Pré-Exposição (PrEP) do sistema SICLOM. Inclui informações sobre o paciente, a dispensação de medicamentos e o esquema terapêutico."
+    description: "Tabela de dispensação de Profilaxia Pré-Exposição (PrEP) ao HIV do sistema SICLOM. Contém informações sobre o paciente, a dispensação, fatores de risco e a prescrição."
     columns:
-      - name: cpf
-        description: "CPF do paciente."
+      # Controle
+      - name: paginacao_total
+        description: "Total de registros na paginação da API."
+      - name: paginacao_linha
+        description: "Número da linha na paginação da API."
+      - name: id_dispensacao
+        description: "Identificador único da dispensação no sistema SICLOM."
         policy_tags:
-          - '{{ var("TAG_CPF") }}'
-      - name: cd_dis
-        description: "Código da unidade dispensadora."
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: id_solicitacao
-        description: "Identificador único da solicitação de PrEP."
-      - name: unidade
-        description: "Nome da unidade de dispensação."
-      - name: municipio
-        description: "Município da unidade de dispensação."
-      - name: uf
-        description: "UF da unidade de dispensação."
+        description: "Identificador único da solicitação no sistema SICLOM."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      # Unidade Dispensadora
+      - name: unidade_dispensadora
+        description: "Nome da unidade que dispensou o medicamento."
+      - name: unidade_dispensadora_municipio
+        description: "Município da unidade dispensadora."
+      - name: unidade_dispensadora_uf
+        description: "UF da unidade dispensadora."
       - name: servico_atendimento
         description: "Tipo de serviço de atendimento."
       - name: esfera_atendimento
-        description: "Esfera do atendimento (Público/Privado)."
-      - name: nome_civil
+        description: "Esfera do atendimento (pública ou privada)."
+
+      # Identificação do Paciente
+      - name: paciente_cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
         description: "Nome civil do paciente."
         policy_tags:
           - '{{ var("TAG_NOME") }}'
-      - name: nome_social
+      - name: paciente_nome_social
         description: "Nome social do paciente."
         policy_tags:
           - '{{ var("TAG_NOME") }}'
       - name: genero
-        description: "Gênero do paciente."
+        description: "Gênero autodeclarado pelo paciente."
+
+      # Fatores de Risco
       - name: participante_estudo_vacina
         description: "Indica se o paciente é participante de estudo de vacina."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: dinheiro_sexo
-        description: "Indica se o paciente trocou dinheiro por sexo."
+        description: "Indica se o paciente relata receber dinheiro por sexo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: droga_injetavel
-        description: "Indica se o paciente faz uso de droga injetável."
+        description: "Indica se o paciente faz uso de drogas injetáveis."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: substancias_psicoativas
         description: "Indica se o paciente faz uso de substâncias psicoativas."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      # Prescrição
       - name: modalidade
-        description: "Modalidade da PrEP (e.g., sob demanda, contínua)."
+        description: "Modalidade da prescrição de PrEP (ex: Contínua, Sob Demanda)."
       - name: esquema_prep
-        description: "Esquema terapêutico da PrEP prescrito."
-      - name: quantidade_autoteste
-        description: "Quantidade de autotestes dispensados."
+        description: "Descrição do esquema de PrEP prescrito."
+      - name: autoteste_quantidade
+        description: "Quantidade de autotestes de HIV fornecidos na dispensação."
       - name: duracao
-        description: "Duração do tratamento em dias."
-      - name: solicitacao_dispensa_data
-        description: "Data da solicitação ou dispensação da PrEP."
+        description: "Duração do tratamento prescrito em dias."
+      - name: dispensacao_solicitacao_data
+        description: "Data da solicitação da dispensação."
+
+      # Campos de Controle
       - name: extraido_em
-        description: "Timestamp de quando o dado foi extraído da fonte."
+        description: "Data/hora de extração do dado da fonte."
       - name: data_particao
-        description: "Data de partição da tabela, baseada na data da solicitação/dispensação ou extração."
+        description: "Data de partição da tabela, baseada na data de extração."

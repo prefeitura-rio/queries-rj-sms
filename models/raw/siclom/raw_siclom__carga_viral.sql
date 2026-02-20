@@ -13,9 +13,10 @@
 
 
 with
-    source as (select * from {{ source("brutos_siclom_api_staging", "carga_viral") }}),
+
+source as (select * from {{ source("brutos_siclom_api_staging", "carga_viral") }}),
     
-    carga_viral as (
+carga_viral as (
     select 
         -- Identificação do paciente 
         {{ process_null('cd_pac') }} as id_paciente,
@@ -92,7 +93,7 @@ with
         {{ process_null('autorizado_liberador') }} as liberador,
         {{ process_null('ds_projeto') }} as projeto,
 
-        {{ process_null('extracted_at') }} as extraido_em,
+        cast(extracted_at as datetime) as extraido_em,
         date(data_particao) as data_particao
     from source
     )

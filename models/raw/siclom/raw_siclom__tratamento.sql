@@ -17,26 +17,36 @@ with
     source as (select * from {{ source('brutos_siclom_api_staging', 'tratamento') }})
 
 select
-    {{ process_null('udm') }} as unidade_nome,
-    {{ process_null('municipio_udm') }} as unidade_municipio,
-    {{ process_null('uf_udm') }} as unidade_uf,
-    {{ process_null('CPF') }} as cpf,
+    -- Unidade Dispensadora 
+    {{ process_null('udm') }} as unidade_dispensadora,
+    {{ process_null('municipio_udm') }} as unidade_dispensadora_municipio,
+    {{ process_null('uf_udm') }} as unidade_dispensadora_uf,
+    {{ process_null('tp_servico_atendimento') }} as servico_atendimento,
+    {{ process_null('st_pub_priv') }} as esfera_atendimento,
+
+    -- Identificação do paciente
+    {{ process_null('CPF') }} as paciente_cpf,
     {{ process_null('nome_civil') }} as paciente_nome,
     {{ process_null('nome_social') }} as paciente_nome_social,
-    {{ process_null('ds_genero') }} as genero,
-    {{ process_null('data_dispensa') }} as data_dispensa,
+    {{ process_null('ds_genero') }} as paciente_genero,
+
+    -- Dados clínicos
     {{ process_null('categoria_usuario') }} as categoria_usuario,
-    {{ process_null('idade_gestacional') }} as idade_gestacional,
-    {{ process_null('dt_parto') }} as parto_data,
-    {{ process_null('tp_servico_atendimento') }} as tipo_servico_atendimento,
-    {{ process_null('st_pub_priv') }} as esfera_atendimento,
-    {{ process_null('mudanca_tratamento') }} as mudanca_tratamento,
+    safe_cast(idade_gestacional as int64) as idade_gestacional,
+    safe_cast(dt_parto as date) as parto_data,
     {{ process_null('coinfectado') }} as coinfectado,
-    {{ process_null('uf_crm') }} as crm_uf,
-    {{ process_null('cd_crm') }} as codigo_crm,
-    {{ process_null('nome_medico') }} as medico_nome,
+
+    -- Prescrição
+    safe_cast(data_dispensa as datetime) as dispensa_data,
+    {{ process_null('mudanca_tratamento') }} as mudanca_tratamento,
     {{ process_null('esquema') }} as esquema,
     {{ process_null('duracao') }} as duracao,
-    {{ process_null('extracted_at') }} as extraido_em,
+
+    -- Médico prescritor
+    {{ process_null('nome_medico') }} as medico_nome,
+    {{ process_null('cd_crm') }} as id_conselho,
+    {{ process_null('uf_crm') }} as conselho_uf,
+
+    cast(extracted_at as datetime) as extraido_em,
     date(data_particao) as data_particao
 from source
