@@ -28,7 +28,16 @@ with
     ),
 
     vacinacoes_dedup as (
-        select *
+        select
+            * except(vacina_descricao),
+
+            -- Remove prefixos "vacina", "vacina contra", "vc", ...
+            REGEXP_REPLACE(
+                trim({{ process_null("vacina_descricao") }}),
+                r"(?i)^(vacina|vc)\s*(contra(\s*[oa])?)?\s*",
+                ""
+            ) as vacina_descricao
+
         from vacinacoes
         qualify row_number() over (
             partition by id_vacinacao 
@@ -42,6 +51,38 @@ with
         ) = 1
     ),
 
+    nomes_vacinas as (
+        select *
+        from {{ ref("raw_sheets__vacinas_padronizadas") }}
+    ),
+
+    vacinacoes_padronizado as (
+        select
+            dedup.*,
+            coalesce(
+                nomes.nome_para,
+                {{ proper_br("dedup.vacina_descricao") }}
+             ) as vacina_descricao_padronizada,
+             nomes.sigla as vacina_sigla,
+             nomes.detalhes as vacina_detalhes
+
+        from vacinacoes_dedup as dedup
+        left join nomes_vacinas as nomes
+            -- Aqui fazemos um pequeno tratamento para aumentar
+            -- as chances de achar um par na planilha
+            on nomes.nome_de = REGEXP_REPLACE(
+                REGEXP_REPLACE(
+                    dedup.vacina_descricao,
+                    -- Remove parênteses, vírgulas
+                    r"[,\(\)]",
+                    ""
+                ),
+                -- Remove espaços em branco duplicados
+                r"\s{2,}",
+                " "
+            )
+    ),
+
     final as (
         select
             id_vacinacao,
@@ -52,20 +93,50 @@ with
             paciente_id_prontuario,
             paciente_cns,
             paciente_cpf,
-            estabelecimento_nome,
-            equipe_nome,
+            {{ proper_estabelecimento("estabelecimento_nome") }} as estabelecimento_nome,
+            {{ proper_br("equipe_nome") }} as equipe_nome,
             profissional_nome,
             profissional_cbo,
             profissional_cns,
             profissional_cpf,
             vacina_descricao,
-            vacina_dose,
-            vacina_lote,
-            vacina_registro_tipo,
-            vacina_estrategia,
+            vacina_descricao_padronizada,
+            vacina_sigla,
+            vacina_detalhes,
+
+            {{ proper_vacina_dose("vacina_dose") }} as vacina_dose,
+
+            {{ clean_lote_vacina("vacina_lote") }} as vacina_lote,
+
+            case
+                when vacina_registro_tipo = "administracao"
+                    then "Administração"
+                when vacina_registro_tipo = "registro de vacinacao anterior"
+                    then "Registro de vacinação anterior"
+                -- Vacinas não aplicadas são filtradas na camada app; se
+                -- for modificar o texto abaixo, lembra de alterar também lá
+                when vacina_registro_tipo = "nao aplicada"
+                    then "Vacina não aplicada"
+
+                else {{ capitalize_first_letter("vacina_registro_tipo")}}
+            end as vacina_registro_tipo,
+
+            {{ clean_estrategia_vacina("vacina_estrategia") }} as vacina_estrategia,
+
             vacina_diff,
-            vacina_aplicacao_data,
-            vacina_registro_data,
+
+            -- Diversos casos de data de aplicação 1900-01-01
+            if(
+                -- TODO: quando tivermos dados de 1900, atualizar
+                vacina_aplicacao_data > date("1900-01-01"),
+                vacina_aplicacao_data,
+                null
+            ) as vacina_aplicacao_data,
+            if(
+                vacina_registro_data > date("1900-01-01"),
+                vacina_registro_data,
+                null
+            ) as vacina_registro_data,
             paciente_nome,
             paciente_sexo,
             paciente_nascimento_data,
@@ -77,9 +148,8 @@ with
             loaded_at,
             origem,
             safe_cast(paciente_cpf as int64) as cpf_particao
-        from vacinacoes_dedup
+        from vacinacoes_padronizado
     )
 
 select *
 from final
-
