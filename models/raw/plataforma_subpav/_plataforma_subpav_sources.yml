@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_plataforma_subpav_staging
-    database: rj-sms-dev
+    database: rj-sms
     schema: brutos_plataforma_subpav_staging
     tables:
       - name: subpav_cnes__equipes
@@ -22,3 +22,8 @@ sources:
         freshness:
           error_after: {count: 30, period: day}
       - name: views_ipp__Unidades_OSA
+      - name: subpav_sinan__tuberculose_sinan
+      - name: subpav_sinanrio__notificacao
+      - name: subpav_sinanrio__tb_investiga
+      - name: subpav_sinanrio__tb_sintomatico
+

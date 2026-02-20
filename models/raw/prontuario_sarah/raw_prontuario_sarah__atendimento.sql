@@ -10,6 +10,7 @@ with source as (
     select 
         * 
     from {{ source("brutos_prontuario_sarah_api_staging", "atendimento_continuo") }}
+    where source_id != 'string' -- filtro para remover registro de teste
     qualify row_number() over (partition by source_id order by datalake_loaded_at desc) = 1
 ),
 
@@ -67,7 +68,10 @@ with source as (
             json_extract_scalar(am.doc_atendimento, '$.profissional.cbo') as profissional_cbo,
 
             json_extract_scalar(am.doc_atendimento, '$.procedimento.tabela') as procedimento_tabela,
-            json_extract_scalar(am.doc_atendimento, '$.procedimento.codigo') as procedimento_codigo
+            json_extract_scalar(am.doc_atendimento, '$.procedimento.codigo') as procedimento_codigo,
+
+            s.datalake_loaded_at as loaded_at,
+            s.source_updated_at as updated_at
 
         from source s
         left join atendimento_filtrado am on s.source_id = am.source_id
@@ -118,7 +122,9 @@ with source as (
             safe_cast({{ process_null('profissional_nome') }} as string) as profissional_nome,
             safe_cast({{ process_null('profissional_cpf') }} as string) as profissional_cpf,
             safe_cast({{ process_null('profissional_cns') }} as string) as profissional_cns,
-            safe_cast({{ process_null('profissional_cbo') }} as string) as profissional_cbo
+            safe_cast({{ process_null('profissional_cbo') }} as string) as profissional_cbo,
+            datetime(loaded_at) as loaded_at,
+            datetime(updated_at) as updated_at
         from atendimento
     )
 
