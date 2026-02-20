@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: brutos_siclom_api_staging
+    database: rj-sms
+    schema: brutos_siclom_api_staging
+    tables:
+      - name: carga_cd4
+      - name: carga_viral
+      - name: tratamento
+      - name: pep
+      - name: prep
