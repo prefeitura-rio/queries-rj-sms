@@ -1003,6 +1003,10 @@ models:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: contrarreferencia.datahora
         description: Data e hora de emissão da contrarrferência
+      - name: contrarreferencia.pdf_uri
+        description: URI do Google Cloud Storage (gs://) contendo a contrarreferência em PDF
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: avaliacao
         description: Avaliação do profissional responsável
         policy_tags:

@@ -23,6 +23,7 @@ with source as (
 
     cr.contrarreferencia.numero as documento_numero,
     cr.contrarreferencia.datahora as documento_datahora,
+    cr.contrarreferencia.pdf_uri as documento_uri,
 
     cr.avaliacao.conduta,
     cr.avaliacao.seguimento,

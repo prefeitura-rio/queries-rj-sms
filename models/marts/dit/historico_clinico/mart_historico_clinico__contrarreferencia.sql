@@ -48,7 +48,8 @@ with source as (
     struct(
       id_documento,
       contrarreferencia_numero as numero,
-      safe_cast(contrarreferencia_datahora as datetime) as datahora
+      safe_cast(contrarreferencia_datahora as datetime) as datahora,
+      pdf_uri
     ) as contrarreferencia,
 
     struct(

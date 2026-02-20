@@ -65,7 +65,9 @@ with source as (
             json_extract_scalar(doc_cr, '$.profissional.nome') as profissional_nome,
             json_extract_scalar(doc_cr, '$.profissional.cpf') as profissional_cpf,
             json_extract_scalar(doc_cr, '$.profissional.cns') as profissional_cns,
-            json_extract_scalar(doc_cr, '$.profissional.cbo') as profissional_cbo
+            json_extract_scalar(doc_cr, '$.profissional.cbo') as profissional_cbo,
+
+            json_extract_scalar(doc_cr, "$.pdf") as pdf_uri
 
         from contrarreferencia_filtrado
     ),
@@ -106,7 +108,9 @@ with source as (
             safe_cast({{ process_null('profissional_nome') }} as string) as profissional_nome,
             safe_cast({{ process_null('profissional_cpf') }} as string) as profissional_cpf,
             safe_cast({{ process_null('profissional_cns') }} as string) as profissional_cns,
-            safe_cast({{ process_null('profissional_cbo') }} as string) as profissional_cbo
+            safe_cast({{ process_null('profissional_cbo') }} as string) as profissional_cbo,
+
+            safe_cast({{ process_null("pdf_uri") }} as string) as pdf_uri
         from contrarreferencia
     )
 
