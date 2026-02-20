@@ -605,6 +605,7 @@ models:
           Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+
   - name: mart_historico_clinico__medicamento_cronico
     description: "Tabela contendo os medicamentos de uso contínuo prescrito para o paciente
     nos últimos 12 meses."
@@ -815,7 +816,7 @@ models:
         description: CPF do paciente convertido para inteiro para fins de partição.
         policy_tags:
           - '{{ var("TAG_CPF") }}'
-        
+
   - name: mart_historico_clinico__ficha_c
     description: >
       Modelo contendo dados de pacientes atendidos pela atenção primária, incluindo informações demográficas, de saúde, socioeconômicas do cadastro infantil.
@@ -850,6 +851,7 @@ models:
         description: "CPF do paciente convertido para inteiro para fins de partição"
         policy_tags:
           - '{{ var("TAG_CPF") }}'
+
   - name: mart_historico_clinico__exame_imagem
     description: Tabela contendo informações detalhadas sobre os exames de imagem realizados
     columns:
@@ -915,6 +917,160 @@ models:
         description: >
           Data/hora mais recente de assinatura de exame; usado para ordenar laudos
           de um paciente por atividade mais recente.
+      - name: cpf_particao
+        description: Particionamento pelo CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+  - name: mart_historico_clinico__contrarreferencia
+    description: Contrarreferências
+    columns:
+
+      - name: source_id
+        description: Identificador do evento na fonte
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: id_hci
+        description: Fingerprint determinístico para o atendimento.
+      - name: paciente
+        description: Informações sobre o paciente
+      - name: paciente.nome
+        description: Nome do paciente
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente.nome_social
+        description: Nome social do paciente, se existir
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente.cpf
+        description: CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente.cns
+        description: CNS do paciente
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente.data_nascimento
+        description: Data de nascimento do paciente
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente.telefone
+        description: Número de telefone do paciente
+        policy_tags:
+          - '{{ var ("TAG_TELEFONE") }}'
+      - name: paciente.uf_naturalidade
+        description: UF de nascimento do paciente
+      - name: paciente.municipio_naturalidade
+        description: Município de nascimento do paciente
+      - name: paciente.uf_residencia
+        description: UF de residência do paciente
+      - name: paciente.municipio_residencia
+        description: Município de residência do paciente
+      - name: estabelecimento
+        description: Informações sobre a unidade de saúde onde ocorreu o atendimento
+      - name: estabelecimento.id_cnes
+        description: Identificador CNES da unidade
+      - name: estabelecimento.nome
+        description: Nome da unidade
+      - name: estabelecimento.uf
+        description: UF onde se localiza a unidade
+      - name: estabelecimento.municipio
+        description: Município onde se localiza a unidade
+      - name: profissional
+        description: Informações sobre o profissional responsável
+      - name: profissional.nome
+        description: Nome do profissional responsável
+      - name: profissional.cpf
+        description: CPF do profissional responsável
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: profissional.cns
+        description: CNS do profissional responsável
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: profissional.cargo
+        description: Cargo do profissional responsável
+      - name: contrarreferencia
+        description: Informações sobre o documento da contrarreferência em si
+      - name: contrarreferencia.id_documento
+        description: Identificador do documento na fonte
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: contrarreferencia.numero
+        description: Número identificador da contrarrferência
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: contrarreferencia.datahora
+        description: Data e hora de emissão da contrarrferência
+      - name: contrarreferencia.pdf_uri
+        description: URI do Google Cloud Storage (gs://) contendo a contrarreferência em PDF
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao
+        description: Avaliação do profissional responsável
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.motivo
+        description: "" # ?
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.impressao
+        description: "" # ?
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.resultados
+        description: "" # ?
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.conduta
+        description: Conduta descrita pelo profissional responsável
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.seguimento
+        description: Seguimento à conduta descrito pelo profissional responsável
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.resumo
+        description: >
+          Resumo da avaliação; contém HDA, medicamentos em uso e hipótese diagnóstica
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.historia_doenca_atual
+        description: História da Doença Atual (HDA); seção de 'resumo'
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.medicamentos_em_uso
+        description: Medicamentos em uso; seção de 'resumo'
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.hipotese_diagnostica
+        description: Hipótese diagnóstica; seção de 'resumo'
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: avaliacao.encaminhamento
+        description: "" # ?
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: diagnostico
+        description: Informações sobre o diagnóstico principal
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: diagnostico.cid
+        description: CID do diagnóstico principal
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: diagnostico.descricao
+        description: Descrição do diagnóstico principal
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+      - name: flag_problema
+        description: "" # ?
+      - name: flag_motivo_coincide
+        description: "" # ?
+      - name: data_particao
+        description: >
+          Data da contrarreferência, usada em camadas menos refinadas para particionamento
       - name: cpf_particao
         description: Particionamento pelo CPF do paciente
         policy_tags:
