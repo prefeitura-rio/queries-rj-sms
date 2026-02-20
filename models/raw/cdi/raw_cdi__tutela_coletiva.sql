@@ -41,14 +41,12 @@ with base as (
 
     -- 2026
     select
-        sei,                    
+        sei,
         oficio,
         orgao,
         reiteracoes,
         ic,
         pa,
-        data_do_of,
-        retorno,
         referencia,
         no_documento,
         data_da_entrada,
@@ -56,6 +54,8 @@ with base as (
         data_de_saida,
         data_do_envio_ao_orgao_solicitante___arquivamento,
         prazo_dias,
+        retorno,
+        data_do_of,
         assunto,
         sintese_da_solicitacao,
         unidade,
