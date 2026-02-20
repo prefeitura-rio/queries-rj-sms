@@ -52,7 +52,7 @@ filtros as (
         sintese_da_solicitacao,
         status,
 
-        count(distinct processo_rio) as total_requisicoes
+        count(processo_rio) as total_requisicoes
 
     from base
 
