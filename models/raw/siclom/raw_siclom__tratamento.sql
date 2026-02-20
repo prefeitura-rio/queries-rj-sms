@@ -11,8 +11,6 @@
     )
 }}
 
--- TODO: Confirmar nome das colunas com a SAP
-
 with 
     source as (select * from {{ source('brutos_siclom_api_staging', 'tratamento') }})
 
