@@ -46,7 +46,7 @@ with base as (
             else 'Outros'
         end as orgao_mp_dp,
         situacao,
-        count(processo_rio) total_procesos
+        count(processo_rio) total_processos
     from {{ ref('int_cdi__equipe_tutela_individual') }}
     
     group by 1,2,3,4,5,6,7,8,9
