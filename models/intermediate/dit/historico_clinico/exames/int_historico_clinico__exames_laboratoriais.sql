@@ -43,7 +43,7 @@ with
                 ),
                 " (SMS"
             )[safe_offset(0)] as medico_solicitante,
-            {{ parse_and_filter_future_datetime('data_assinatura') }} as data_assinatura
+            {{ parse_and_filter_future_datetime('data_assinatura') }} as datahora_assinatura
         from {{ ref('raw_exames_laboratoriais__exames') }}
     ),
 
