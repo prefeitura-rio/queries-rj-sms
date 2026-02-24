@@ -39,8 +39,8 @@ with
             {{ remove_accents_upper("descricao_raca_cor_paciente") }} as raca,
             {{ remove_accents_upper("nome_mae_paciente") }} as mae_nome,
             {{ remove_accents_upper("nome_pai_paciente") }} as pai_nome,
-            date(data_nascimento_paciente) as data_nascimento,
-            date(data_obito_paciente) as obito_data,
+            {{ parse_and_filter_future_date("data_nascimento_paciente") }} as data_nascimento,
+            {{ parse_and_filter_future_date("data_obito_paciente") }} as obito_data,
             loaded_at, -- Usando loaded_at como referência de atualização
             coalesce(
                 id_unidade_caps_referencia,
