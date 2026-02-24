@@ -507,7 +507,7 @@ with
             cpf_valido_indicador,
             {{ proper_br(remove_invalid_names("nome")) }} as nome,
             {{ proper_br(remove_invalid_names(eliminate_babies("nome_social"))) }} as nome_social,
-            data_nascimento,
+            {{ parse_and_filter_future_date("data_nascimento") }} as data_nascimento,
             case
                 when lower(sexo) in ('female', 'feminino') then 'feminino'
                 when lower(sexo) in ('male', 'masculino') then 'masculino'
