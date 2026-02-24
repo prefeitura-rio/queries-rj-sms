@@ -88,8 +88,8 @@ with
             internacao_data,
             b.imported_at,
             b.updated_at,
-            if(b.data_entrada > current_date(),null, b.data_entrada) as entrada_datahora,
-            if(b.alta_data > current_date(),null, b.alta_data) as saida_datahora,
+            {{ parse_and_filter_future_datetime('b.data_entrada') }} as entrada_datahora,
+            {{ parse_and_filter_future_datetime('b.alta_data') }} as saida_datahora,
             if(
                 {{ process_null(clean_numeric("b.cpf")) }} is null,
                 {{ process_null(clean_numeric("paciente_mrg.cpf")) }},
@@ -144,7 +144,7 @@ with
                     unidade_medida,
                     uso,
                     via_administracao,
-                    data_prescricao as prescricao_data
+                    {{ parse_and_filter_future_date('data_prescricao') }} as prescricao_data
                 )
                 order by data_prescricao desc
             ) as medicamentos_administrados
