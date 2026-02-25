@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: raw_siclom__pep
+    description: "Tabela de dispensação de Profilaxia Pós-Exposição (PEP) ao HIV do sistema SICLOM. Contém informações sobre o paciente, a exposição, o atendimento e a prescrição."
+    columns:
+      # Identificação do paciente
+      - name: paciente_cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: "Nome civil do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      # Dados demográficos e sociais
+      - name: situacao_estrangeiro
+        description: "Indica se o paciente é estrangeiro."
+      - name: habitante_fronteira
+        description: "Indica se o paciente é habitante de região de fronteira."
+      - name: identidade_genero
+        description: "Identidade de gênero autodeclarada pelo paciente."
+      - name: situacao_rua
+        description: "Indica se o paciente está em situação de rua."
+      - name: privada_liberdade
+        description: "Indica se o paciente está em situação de privação de liberdade."
+
+      # Dados de exposição
+      - name: exposicao_data
+        description: "Data e hora da exposição de risco."
+      - name: circunstancia_exposicao
+        description: "Circunstância em que ocorreu a exposição de risco (ex: violência sexual, acidente ocupacional)."
+      - name: origem_acompanhamento
+        description: "Origem do acompanhamento do paciente."
+      - name: pessoa_fonte
+        description: "Informações sobre a pessoa-fonte da exposição."
+
+      # Local de Atendimento
+      - name: servico_atendimento
+        description: "Serviço de saúde onde o atendimento foi realizado."
+      - name: dispensador_uf
+        description: "UF da unidade dispensadora do medicamento."
+      - name: dispensador
+        description: "Nome da unidade dispensadora do medicamento."
+
+      # Prescrição
+      - name: contraindicacao_esquema
+        description: "Indica se há contraindicação para o esquema PEP prescrito."
+      - name: dispensa_data
+        description: "Data e hora da dispensação do medicamento."
+      - name: esquema
+        description: "Descrição do esquema terapêutico prescrito."
+      - name: duracao
+        description: "Duração do tratamento em dias."
+      - name: profissional_tipo
+        description: "Tipo do profissional que realizou a prescrição (ex: Médico, Enfermeiro)."
+      - name: prescricao_data
+        description: "Data e hora da prescrição do esquema PEP."
+
+      # Testagem
+      - name: testagem_hiv
+        description: "Tipo de testagem para HIV realizada."
+      - name: esquema_alternativo
+        description: "Indica se foi utilizado um esquema alternativo."
+
+      # Campos de Controle
+      - name: extraido_em
+        description: "Data/hora de extração do dado da fonte."
+      - name: data_particao
+        description: "Data de partição da tabela, baseada na data de extração."
+
