@@ -12,3 +12,8 @@ sources:
       - name: equipe_tutela_individual_2026
       - name: equipe_tutela_coletiva_2025
       - name: equipe_tutela_coletiva_2026
+      - name: controle_demanda_interna_externa_derivados
+      - name: controle_demandas_interno_externo
+      - name: atendimento_mandado
+      - name: atendimento_mandado_atas_vigentes
+
