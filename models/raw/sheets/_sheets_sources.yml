@@ -17,6 +17,7 @@ sources:
       - name: assistencial_procedimento
       - name: usuarios_permitidos_hci
       - name: municipios_rio
+      - name: municipios_brasil
       - name: projeto_c34_cids
       - name: projeto_c34_procedimentos
       - name: procedimentos_ser

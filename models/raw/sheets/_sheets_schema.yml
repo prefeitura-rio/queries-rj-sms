@@ -449,6 +449,28 @@ models:
         description: Nome do município.
         data_type: string
         quote: true
+
+  - name: raw_sheets__municipios_brasil
+    description: >
+      Tabela contendo todos os municípios do Brasil, bem como seus respectivos códigos
+      identificadores conforme a classificação do IBGE.
+    columns:
+      - name: cod_uf
+        description: Código identificador do IBGE da Unidade Federativa
+        data_type: string
+      - name: nome_uf
+        description: Nome da Unidade Federativa
+        data_type: string
+      - name: cod_mun
+        description: Código identificador do IBGE do município
+        data_type: string
+      - name: nome_mun
+        description: Nome do município
+        data_type: string
+      - name: data_atualizacao
+        description: Data da fonte do dado
+        data_type: string
+
   - name: raw_sheets__projeto_c34_cids
     description: |-
       Esta tabela foi construída para uma análise sobre a trajetória dos pacientes de Câncer de Pulmão na rede SUS - MRJ.
