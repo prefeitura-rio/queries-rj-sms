@@ -198,7 +198,7 @@ emerg_prescricao_agg as (
         cast(null as string) as unidade_medida,
         intervalo as uso,
         via as via_administracao,
-        safe_cast(atendimento_data as timestamp) as prescricao_data
+        {{ parse_and_filter_future_date('atendimento_data') }} as prescricao_data
       )
     ) as medicamentos_administrados
   from emerg_prescricao 
@@ -383,7 +383,7 @@ inter_prescricao_agg as (
         cast(null as string) as unidade_medida,
         intervalo as uso,
         via as via_administracao,
-        safe_cast(atendimento_data as timestamp) as prescricao_data
+        {{  parse_and_filter_future_date('atendimento_data') }} as prescricao_data
       )
     ) as medicamentos_administrados
   from inter_prescricao 
