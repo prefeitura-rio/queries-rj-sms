@@ -1,0 +1,96 @@
+version: 2
+
+models:
+  - name: raw_rnds_historico__vacinacao
+    description: Modelo histórico de registros de vacinação do RNDS, consolidando dados das áreas programáticas (AP) da SMS.
+
+    columns:
+      - name: id_global
+        description: Identificador global único do registro de vacinação (LOCAL_UUID).
+
+      - name: id_local
+        description: Identificador local do registro de vacinação na origem.
+
+      - name: id_rnds
+        description: Identificador do registro de vacinação no RNDS.
+
+      - name: id_vacinacao
+        description: Identificador da ação de vacinação realizada.
+
+      - name: id_cnes
+        description: Número CNES da unidade de saúde onde a vacina foi aplicada.
+
+      - name: paciente_cpf
+        description: CPF do paciente vacinado.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: paciente_cns
+        description: CNS do paciente vacinado.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: vacina_codigo_imunobiologico
+        description: Código ou descrição do imunobiológico administrado.
+
+      - name: vacina_aplicacao_data
+        description: Data de administração da vacina.
+
+      - name: vacina_tipo_registro
+        description: Tipo do registro da vacinacao
+
+      - name: vacina_local_aplicacao
+        description: Local onde a vacina foi aplicada
+
+      - name: vacina_fabricante
+        description: Fabricante da vacina
+
+      - name: vacina_lote
+        description: Número do lote do imunobiológico administrado.
+
+      - name: vacina_validade_lote
+        description: Data de validade do lote do imunobiológico.
+
+      - name: vacina_local_aplicacao_codigo
+        description: Código do local anatômico de aplicação da vacina.
+
+      - name: vacina_via_administracao_codigo
+        description: Código da via de administração da vacina.
+
+      - name: profissional_cns
+        description: CNS do profissional responsável pela aplicação da vacina.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: vacina_estrategia
+        description: Estratégia de vacinação associada à aplicação.
+
+      - name: vacina_dose
+        description: Descrição padronizada da dose aplicada (1 dose, 2 reforço, única, revacinação).
+
+      - name: data_referencia_processamento
+        description: Data de referência do processamento do registro no RNDS.
+
+      - name: status_envio
+        description: Status de envio do registro ao RNDS.
+
+      - name: data_envio
+        description: Data de envio do registro ao RNDS.
+
+      - name: codigo_resposta_servidor
+        description: Código de resposta retornado pelo servidor do RNDS.
+
+      - name: mensagem_resposta_servidor
+        description: Mensagem de resposta retornada pelo servidor do RNDS.
+
+      - name: extracted_at
+        description: Data e hora do carregamento no datalake
+
+      - name: ano_particao
+        description: Ano de partição do registro.
+
+      - name: mes_particao
+        description: Mês de partição do registro.
+
+      - name: data_particao
+        description: Data utilizada como partição da tabela incremental.
