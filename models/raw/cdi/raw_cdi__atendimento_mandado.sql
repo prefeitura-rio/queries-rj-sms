@@ -1,7 +1,7 @@
 {{
     config(
         schema='brutos_cdi',
-        alias='controle_expediente',
+        alias='atendimento_mandado',
         materialized='table'
     )
 }}
@@ -24,14 +24,13 @@ with base as (
         sexo,
         estadual_federal,
         advogado_particular__defensoria_publica,
-        valor_r_,
-        n__do_documento,
+        valor_r,
+        n_do_documento,
         multas,
         prazos,
         data_de_saida,
-        responsavel_pela_saida,
-        juridico
-    from {{ source('brutos_cdi_staging', 'controle_expediente_2026') }}
+        responsavel_pela_saida_juridico
+    from {{ source('brutos_cdi_staging', 'atendimento_mandado') }}
 
 ),
 
@@ -48,7 +47,7 @@ renamed as (
         ) }} as tipo_de_documento,
 
         {{ normalize_null(
-            "regexp_replace(trim(n__do_documento), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
+            "regexp_replace(trim(n_do_documento), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
         ) }} as num_documento,
 
         -- Pessoas
@@ -61,8 +60,8 @@ renamed as (
         ) }} as nome_do_paciente,
 
         {{ normalize_null(
-            "regexp_replace(trim(responsavel_pela_saida), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
-        ) }} as responsavel_pela_saida,
+            "regexp_replace(trim(responsavel_pela_saida_juridico), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
+        ) }} as responsavel_pela_saida_juridico,
 
         -- Órgão e origem
         {{ normalize_null(
@@ -102,13 +101,10 @@ renamed as (
             "regexp_replace(trim(advogado_particular__defensoria_publica), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
         ) }} as advogado_ou_defensoria,
 
-        {{ normalize_null(
-            "regexp_replace(trim(juridico), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
-        ) }} as juridico,
 
         -- Valores
         {{ normalize_null(
-            "regexp_replace(trim(valor_r_), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
+            "regexp_replace(trim(valor_r), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
         ) }} as valor_reais,
 
         {{ normalize_null(
@@ -122,10 +118,10 @@ renamed as (
             oficio_field=process_null('tipo_de_documento')
         ) }} as data_entrada,
 
-        {{ cdi_parse_date(
-            process_null('prazos'),
-            processo_field=process_null('processo'),
-            oficio_field=process_null('tipo_de_documento')
+        -- Passando prazos para um tratamento posterior, somente tratando nulos
+        -- Isso por conta de ter valores que nao sao data
+        {{ normalize_null(
+            "regexp_replace(trim(prazos), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')"
         ) }} as prazos,
 
         {{ cdi_parse_date(

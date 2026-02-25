@@ -58,3 +58,4 @@ select
     {{ normalize_null("regexp_replace(trim(observacao), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as observacao
 
 from base
+where processorio is not null and data_de_emissao is not null
