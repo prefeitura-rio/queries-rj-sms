@@ -29,7 +29,19 @@ with vacinacao as (
         vacina_registro_data,
         cpf_particao
     from {{ ref('mart_historico_clinico__vacinacao') }}
-    where vacina_registro_tipo != "Vacina não aplicada"
+    where (
+        -- Queremos todas as entradas cujo `vacina_registro_tipo`
+        -- não seja especificamente "Vacina não aplicada";
+        -- Em SQL, ao usar `COL != const`, se COL for NULL,
+        -- a expressão inteira vira NULL, que é false-y.
+        -- Ou seja, `vacina_registro_tipo != "Vacina não aplicada"`
+        -- também remove `vacina_registro_tipo` com valor de NULL
+
+        -- O mais apropriado aqui portanto é `IS DISTINCT FROM`,
+        -- que faz o que você esperaria que `!=` fizesse
+        vacina_registro_tipo is distinct from "Vacina não aplicada"
+    )
+    and cpf_particao is not null
 )
 
 select *

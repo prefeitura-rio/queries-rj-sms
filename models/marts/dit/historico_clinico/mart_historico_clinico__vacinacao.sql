@@ -27,7 +27,12 @@ with
         from {{ ref("int_historico_clinico__vacinacao__sipni") }}
     ),
 
-    vacinacoes_dedup as (
+    nomes_vacinas as (
+        select *
+        from {{ ref("raw_sheets__vacinas_padronizadas") }}
+    ),
+
+    vacinacoes_nome_tratado as (
         select
             * except(vacina_descricao),
 
@@ -39,40 +44,29 @@ with
             ) as vacina_descricao
 
         from vacinacoes
-        qualify row_number() over (
-            partition by id_vacinacao 
-            order by 
-                case 
-                    when origem = 'api' then 1 
-                    when origem = 'historico' then 2 
-                    when origem = 'sipni' then 3
-                    else 4
-                end
-        ) = 1
     ),
 
-    nomes_vacinas as (
-        select *
-        from {{ ref("raw_sheets__vacinas_padronizadas") }}
-    ),
-
-    vacinacoes_padronizado as (
+    vacinacoes_limpeza_inicial as (
         select
-            dedup.*,
+            v.* except (vacina_dose, vacina_lote),
+
+            {{ proper_vacina_dose("v.vacina_dose") }} as vacina_dose,
+            {{ clean_lote_vacina("v.vacina_lote") }} as vacina_lote,
+
             coalesce(
                 nomes.nome_para,
-                {{ proper_br("dedup.vacina_descricao") }}
+                {{ proper_br("v.vacina_descricao") }}
              ) as vacina_descricao_padronizada,
              nomes.sigla as vacina_sigla,
              nomes.detalhes as vacina_detalhes
 
-        from vacinacoes_dedup as dedup
+        from vacinacoes_nome_tratado as v
         left join nomes_vacinas as nomes
             -- Aqui fazemos um pequeno tratamento para aumentar
             -- as chances de achar um par na planilha
-            on nomes.nome_de = REGEXP_REPLACE(
+            on lower(nomes.nome_de) = REGEXP_REPLACE(
                 REGEXP_REPLACE(
-                    dedup.vacina_descricao,
+                    lower(v.vacina_descricao),
                     -- Remove parênteses, vírgulas
                     r"[,\(\)]",
                     ""
@@ -81,6 +75,28 @@ with
                 r"\s{2,}",
                 " "
             )
+    ),
+
+    vacinacoes_dedup as (
+        select
+            *
+        from vacinacoes_limpeza_inicial
+        qualify row_number() over (
+            partition by
+                id_cnes,
+                paciente_cpf,
+                vacina_aplicacao_data,
+                vacina_descricao_padronizada,
+                vacina_dose,
+                vacina_lote
+            order by
+                case
+                    when origem = 'api' then 1
+                    when origem = 'historico' then 2
+                    when origem = 'sipni' then 3
+                    else 4
+                end
+        ) = 1
     ),
 
     final as (
@@ -103,10 +119,8 @@ with
             vacina_descricao_padronizada,
             vacina_sigla,
             vacina_detalhes,
-
-            {{ proper_vacina_dose("vacina_dose") }} as vacina_dose,
-
-            {{ clean_lote_vacina("vacina_lote") }} as vacina_lote,
+            vacina_dose,
+            vacina_lote,
 
             case
                 when vacina_registro_tipo = "administracao"
@@ -148,7 +162,7 @@ with
             loaded_at,
             origem,
             safe_cast(paciente_cpf as int64) as cpf_particao
-        from vacinacoes_padronizado
+        from vacinacoes_dedup
     )
 
 select *
