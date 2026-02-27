@@ -28,12 +28,13 @@ with regulares as (
 pais as (
 
     -- enriquece os derivados com os mesmos atributos de filtro
-    select distinct
+    select
         processorio_sei,
-        orgao_demandante,
-        manifestacao,
-        tipo_de_demanda,
-        unidade_ap
+        coalesce(orgao_demandante, 'Sem informação') as orgao_demandante,
+        coalesce(manifestacao, 'Sem informação') as manifestacao,
+        coalesce(tipo_de_demanda, 'Sem informação') as tipo_de_demanda,
+        coalesce(unidade_ap, 'Sem informação') as unidade_ap,
+        coalesce(relator_auditor, 'Sem informação ou Sem Relator') as relator_auditor
     from {{ ref('int_cdi__controle_interno_externo') }}
 
 ),
@@ -42,15 +43,15 @@ derivados as (
     -- criando a derivados com info da regular para conseguir filtrar
     select
         d.subsecretaria___setor,
-        d.data_de_emissao as data_de_entrada,               
-        coalesce(p.manifestacao, 'Sem informação') as manifestacao,
+        d.data_de_emissao as data_de_entrada,         
+        p.manifestacao,
         d.status,
         p.unidade_ap,
-        d.vencimento as vencimento_1,                      
-        'Sem informação ou Sem Relator' as relator_auditor,
+        d.vencimento as vencimento_1,
+        p.relator_auditor,
         d.data_da_ultima_atualizacao,
         p.orgao_demandante,
-        coalesce(p.tipo_de_demanda, 'Sem informação') as tipo_de_demanda,
+        p.tipo_de_demanda,
         cast(d.id as string) as id,
         'Derivado' as tipo_registro
     from {{ ref('int_cdi__controle_interno_externo_derivados') }} d
@@ -72,11 +73,11 @@ base_tratada as (
     select
         subsecretaria___setor,
         data_de_entrada,
-        manifestacao,
+        case when manifestacao is null then 'Sem informação' else manifestacao end as manifestacao,
         status,
-        unidade_ap,
+        case when unidade_ap is null then 'Sem informação' else unidade_ap end as unidade_ap,
         vencimento_1,
-        relator_auditor,
+        case when relator_auditor is null then 'Sem informação ou Sem Relator' else relator_auditor end as relator_auditor,
         data_da_ultima_atualizacao,
         orgao_demandante,
         tipo_de_demanda,
