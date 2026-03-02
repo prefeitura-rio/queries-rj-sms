@@ -6,7 +6,6 @@
     )
 }}
 
-
 with base as (
 
     select
@@ -49,7 +48,7 @@ select
 
     {{ normalize_null("regexp_replace(trim(decisao), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as decisao,
 
-    {{ normalize_null("regexp_replace(trim(na_da_natureza_juridica), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as na_da_natureza_juridica,
+    {{ normalize_null("regexp_replace(trim(na_da_natureza_juridica), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as num_da_natureza_juridica,
 
     {{ normalize_null("regexp_replace(trim(natureza_juridica), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as natureza_juridica,
 
@@ -65,14 +64,10 @@ select
             processo_field = process_null('processorio_sei'),
             oficio_field   = process_null('no_da_manifestacao')
         ) }} as vencimento_1,
-    -- vencimento 2
-    {{ cdi_parse_date(
-            process_null('vencimento_2'),
-            processo_field = process_null('processorio_sei'),
-            oficio_field   = process_null('no_da_manifestacao')
-        ) }} as vencimento_2,
+    -- vencimento 2 foi retirado por nao ter informação utilizada
 
-    {{ normalize_null("regexp_replace(trim(subsecretaria___setor), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as subsecretaria___setor,
+
+    {{ normalize_null("regexp_replace(trim(subsecretaria___setor), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as subsecretaria_setor,
 
     {{ cdi_parse_date(
             process_null('data_da_ultima_atualizacao'),
@@ -82,13 +77,12 @@ select
 
     {{ normalize_null("regexp_replace(trim(prazo_para_retorno_gat_2), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as prazo_para_retorno_gat_2,
 
-    {{ normalize_null("regexp_replace(trim(atraso_em_dias___venc_1), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as atraso_em_dias___venc_1,
+ -- retirei os colunas atraso_em_dias__venc_1 e 2
 
-    {{ normalize_null("regexp_replace(trim(atraso_em_dias__venc_2), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as atraso_em_dias__venc_2,
 
     {{ normalize_null("regexp_replace(trim(status), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as status,
 
-    {{ normalize_null("regexp_replace(trim(oficio_de_dilacao_de_prazo__solicitacao), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as oficio_de_dilacao_de_prazo__solicitacao,
+    {{ normalize_null("regexp_replace(trim(oficio_de_dilacao_de_prazo__solicitacao), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as oficio_de_dilacao_de_prazo_solicitacao,
 
     -- data_da_solicitacao_de_prazo cdi parse date
     {{ cdi_parse_date(
@@ -105,7 +99,7 @@ select
             oficio_field   = process_null('no_da_manifestacao')
         ) }} as data_prorrogada,
 
-    {{ normalize_null("regexp_replace(trim(numero_de_dilacoes_solicitadas), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as numero_de_dilacoes_solicitadas,
+   -- {{ normalize_null("regexp_replace(trim(numero_de_dilacoes_solicitadas), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as numero_de_dilacoes_solicitadas,
 
     {{ normalize_null("regexp_replace(trim(observacao), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as observacao
 
