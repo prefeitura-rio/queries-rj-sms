@@ -3,23 +3,15 @@ case
   when {{ process_null(val) }} is null
     then null
 
-  -- Opções:
-  --  -  bloqueio
-  --  -  campanha
-  --  -  campanha indiscriminada
-  --  -  especial
-  -- {!} intensificacao
-  -- {!} intensificação
-  --  -  monitoramento rápido de cobertura vacinal
-  -- {!} pos-exposicao
-  -- {!} pós-exposição
-  -- {!} pre-exposicao
-  -- {!} pré-exposição
-  -- {!} reexposicao
-  -- {!} reexposição
-  --  -  rotina
-  --  -  vacina escolar
+  when {{ remove_accents_upper(val) }} = "SEM REGISTRO NO SISTEMA DE INFORMACAO DE ORIGEM"
+    then null
 
+  when {{ remove_accents_upper(val) }} in (
+    "VACINA ESCOLAR", "VACINACAO ESCOLAR"
+  )
+    then "Vacinação escolar"
+
+  -- Alguns vêm sem acento, alguns com; aqui padronizamos
   when {{ remove_accents_upper(val) }} = "INTENSIFICACAO"
     then "Intensificação"
   when {{ remove_accents_upper(val) }} = "POS-EXPOSICAO"
