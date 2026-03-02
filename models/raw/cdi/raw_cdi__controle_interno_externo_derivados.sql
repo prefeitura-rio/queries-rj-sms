@@ -41,7 +41,7 @@ select
         ) }} as vencimento,
 
     -- Setor e acompanhamento
-    {{ normalize_null("regexp_replace(trim(subsecretaria___setor), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as subsecretaria___setor,
+    {{ normalize_null("regexp_replace(trim(subsecretaria___setor), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as subsecretaria_setor,
 
     {{ cdi_parse_date(
             process_null('data_da_ultima_atualizacao'),
@@ -50,8 +50,6 @@ select
         ) }} as data_da_ultima_atualizacao,
 
     {{ normalize_null("regexp_replace(trim(prazo_para_retorno), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as prazo_para_retorno,
-
-    {{ normalize_null("regexp_replace(trim(atrazo_em_dias), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as atraso_em_dias,
 
     {{ normalize_null("regexp_replace(trim(status), r'(?i)^(x|-|#ref!)$|[\\n\\r\\t]', '')") }} as status,
 

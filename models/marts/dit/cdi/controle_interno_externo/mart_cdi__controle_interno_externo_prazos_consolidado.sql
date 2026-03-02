@@ -10,7 +10,7 @@ with regulares as (
 
     select
         processorio_sei,
-        subsecretaria___setor as subsecretaria,
+        subsecretaria_setor as subsecretaria,
         data_de_entrada,
         vencimento_1 as data_vencimento,
         data_da_ultima_atualizacao,
@@ -37,8 +37,11 @@ with regulares as (
 
         -- Tempo de atendimento
         case
-            when status in ('Arquivado', 'Concluído - Devolvido ao Setor de Origem')
-                then date_diff(data_da_ultima_atualizacao, data_de_entrada, day)
+        when ifnull(trim(status), '') in ('Arquivado', 'Concluído - Devolvido ao Setor de Origem')
+            and data_da_ultima_atualizacao is not null
+            and data_de_entrada is not null
+        then date_diff(data_da_ultima_atualizacao, data_de_entrada, day)
+        else null
         end as tempo_atendimento,
 
         -- Dias para vencer
@@ -46,6 +49,7 @@ with regulares as (
             when status not in ('Arquivado', 'Concluído - Devolvido ao Setor de Origem')
              and vencimento_1 is not null
                 then date_diff(vencimento_1, current_date(), day)
+            else null
         end as dias_para_vencer,
 
         'Regular' as tipo_registro
@@ -58,7 +62,7 @@ derivados as (
 
     select
         d.processorio as processorio_sei,
-        d.subsecretaria___setor as subsecretaria,
+        d.subsecretaria_setor as subsecretaria,
         d.data_de_emissao as data_de_entrada,
         d.vencimento as data_vencimento,
         d.data_da_ultima_atualizacao,

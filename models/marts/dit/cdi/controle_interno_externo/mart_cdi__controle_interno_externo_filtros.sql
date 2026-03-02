@@ -9,17 +9,17 @@
 with regulares as (
 
     select
-        subsecretaria___setor,
+        coalesce(subsecretaria_setor, 'Sem informação') as subsecretaria_setor,
         data_de_entrada,
         coalesce(manifestacao, 'Sem informação') as manifestacao,
         status,
         unidade_ap,
         vencimento_1,
         coalesce(relator_auditor, 'Sem informação ou Sem Relator') as relator_auditor,
-        data_da_ultima_atualizacao,
-        orgao_demandante,
+        coalesce(data_da_ultima_atualizacao, null) as data_da_ultima_atualizacao, -- pra evitar nulls na análise de prazo
+        coalesce(orgao_demandante, 'Sem informação') as orgao_demandante,
         coalesce(tipo_de_demanda, 'Sem informação') as tipo_de_demanda,
-        cast(id as string) as id,
+        id,
         'Regular' as tipo_registro
     from {{ ref('int_cdi__controle_interno_externo') }}
 
@@ -42,7 +42,7 @@ pais as (
 derivados as (
     -- criando a derivados com info da regular para conseguir filtrar
     select
-        d.subsecretaria___setor,
+        d.subsecretaria_setor,
         d.data_de_emissao as data_de_entrada,         
         p.manifestacao,
         d.status,
@@ -71,7 +71,7 @@ base_union as (
 base_tratada as (
 
     select
-        subsecretaria___setor,
+        subsecretaria_setor,
         data_de_entrada,
         case when manifestacao is null then 'Sem informação' else manifestacao end as manifestacao,
         status,
