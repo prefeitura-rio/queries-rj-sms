@@ -548,8 +548,20 @@ with
             ar.paciente_nome_social,
 
             ar.paciente_data_nascimento,
-            ar.paciente_sexo,
-            ar.paciente_racacor,
+            
+            case
+                when ar.paciente_sexo not in (
+                    "FEMININO", "MASCULINO"
+                ) then null
+                else ar.paciente_sexo
+            end as paciente_sexo,
+            
+            case 
+                when ar.paciente_racacor not in (
+                    "BRANCA", "PRETA", "PARDA", "AMARELA", "INDIGENA"
+                ) then null
+                else ar.paciente_racacor
+            end as paciente_racacor, 
 
             /*
             ar.paciente_uf_nascimento,
