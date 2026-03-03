@@ -44,12 +44,12 @@ with
             dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
 
             coalesce(
-                telefones.`telefones`[SAFE_OFFSET(0)].telefone_formatado,
                 concat(
-                    coalesce(contato.telefone.ddi, ''),
-                    coalesce(contato.telefone.ddd, ''),
-                    coalesce(contato.telefone.numero, '')
-                )
+                    coalesce(trim(contato.telefone.ddi), null),
+                    coalesce(trim(contato.telefone.ddd), null),
+                    coalesce(trim(contato.telefone.numero), null)
+                ),
+                telefones.`telefones`[SAFE_OFFSET(0)].telefone_formatado
             ) as telefone,
 
             date_diff(
