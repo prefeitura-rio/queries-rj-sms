@@ -427,6 +427,21 @@ consultas_prenatal AS (
     FROM
         -- {{ ref('mart_bi_gestacoes__atendimentos_prenatal_aps') }}
         {{ ref('mart_bi_gestacoes__atendimentos_prenatal_aps') }}
+            WHERE
+        tipo_atd_prof_saude = 'Médico e Enfermeiro'
+    GROUP BY
+        id_gestacao
+),
+
+-- CTE 21b: atendimentos por saúde bucal (tipo_atd_prof_saude = 'Saúde Bucal')
+consultas_saude_bucal AS (
+    SELECT
+        id_gestacao,
+        COUNT(*) AS total_consultas_saude_bucal
+    FROM
+        {{ ref('mart_bi_gestacoes__atendimentos_prenatal_aps') }}
+    WHERE
+        tipo_atd_prof_saude = 'Saúde Bucal'
     GROUP BY
         id_gestacao
 ),
@@ -1229,18 +1244,18 @@ dispensacao_aparelho_pa AS (
         pi.cpf,
         MAX(
             CASE
-                WHEN m.id_material IN ('65159513221', '65159506608') THEN 1
+                WHEN m.id_material IN ('65159513221', '65159506608','65155518474', '65155518555') THEN 1
                 ELSE 0
             END
         ) AS tem_aparelho_pa_dispensado,
         MIN(
             CASE
-                WHEN m.id_material IN ('65159513221', '65159506608') THEN DATE(m.data_hora_evento) -- Corrigido: data_hora_movimento → data_hora_evento
+                WHEN m.id_material IN ('65159513221', '65159506608', '65155518474', '65155518555') THEN DATE(m.data_hora_evento) -- Corrigido: data_hora_movimento → data_hora_evento
             END
         ) AS data_primeira_dispensacao_pa,
         COUNT(
             CASE
-                WHEN m.id_material IN ('65159513221', '65159506608') THEN 1
+                WHEN m.id_material IN ('65159513221', '65159506608', '65155518474', '65155518555') THEN 1
             END
         ) AS qtd_aparelhos_pa_dispensados
     FROM
@@ -1549,9 +1564,18 @@ fatores_risco_pe_adequacao AS (
 
     -- ADEQUAÇÃO DE AAS - Lógica completa com 12 combinações possíveis
     CASE
-      -- PERÍODO < 12 SEMANAS (4 casos - todos com mesma mensagem)
-      WHEN igj.antes_janela_12 = 1
+      -- PERÍODO < 12 SEMANAS (4 casos)
+      WHEN igj.antes_janela_12 = 1 AND cia.possui_indicacao_aas = 1 AND pac.tem_prescricao_aas = 1
+        THEN 'Com indicação e prescrito - MANTER PRESCRIÇÃO ATÉ 36 SEMANAS'
+
+      WHEN igj.antes_janela_12 = 1 AND cia.possui_indicacao_aas = 1 AND COALESCE(pac.tem_prescricao_aas,0) = 0
         THEN 'Antes de 12s - FORA PERÍODO INDICADO'
+
+      WHEN igj.antes_janela_12 = 1 AND COALESCE(cia.possui_indicacao_aas,0) = 0 AND pac.tem_prescricao_aas = 1
+        THEN 'Sem indicação e prescrito - SUSPENDER - SEM INDICAÇÃO'
+
+      WHEN igj.antes_janela_12 = 1 AND COALESCE(cia.possui_indicacao_aas,0) = 0 AND COALESCE(pac.tem_prescricao_aas,0) = 0
+        THEN 'Sem indicação'
 
       -- PERÍODO 12-20 SEMANAS (4 casos)
       WHEN igj.dentro_janela_12_20 = 1 AND cia.possui_indicacao_aas = 1 AND pac.tem_prescricao_aas = 1
@@ -1560,12 +1584,15 @@ fatores_risco_pe_adequacao AS (
       WHEN igj.dentro_janela_12_20 = 1 AND cia.possui_indicacao_aas = 1 AND COALESCE(pac.tem_prescricao_aas,0) = 0
         THEN 'Na janela e não prescrito - DEVE INICIAR PRESCRIÇÃO'
 
-      WHEN igj.dentro_janela_12_20 = 1 AND COALESCE(cia.possui_indicacao_aas,0) = 0
+      WHEN igj.dentro_janela_12_20 = 1 AND COALESCE(cia.possui_indicacao_aas,0) = 0 AND pac.tem_prescricao_aas = 1
+        THEN 'Sem indicação e prescrito - SUSPENDER - SEM INDICAÇÃO'
+
+      WHEN igj.dentro_janela_12_20 = 1 AND COALESCE(cia.possui_indicacao_aas,0) = 0 AND COALESCE(pac.tem_prescricao_aas,0) = 0
         THEN 'Sem indicação'
 
       -- PERÍODO > 20 SEMANAS (4 casos)
       WHEN igj.apos_janela_20 = 1 AND cia.possui_indicacao_aas = 1 AND pac.tem_prescricao_aas = 1
-        THEN 'Com indicação e prescrito - MANTER PRESCRIÇÃO'
+        THEN 'Com indicação e prescrito - SUSPENDER QUANDO COMPLETAR 36 SEMANAS'
 
       WHEN igj.apos_janela_20 = 1 AND cia.possui_indicacao_aas = 1 AND COALESCE(pac.tem_prescricao_aas,0) = 0
         THEN 'Com indicação e não prescrito - FALHA CONDUTA / FORA PERÍODO INDICADO'
@@ -1594,6 +1621,56 @@ fatores_risco_pe_adequacao AS (
 -- ========================================
 -- FIM DO BLOCO DE HIPERTENSÃO
 -- ========================================
+
+vacinacao_sincicial AS (
+    WITH vacinacao_sincicial_base AS (
+        SELECT
+            f.id_gestacao,
+            f.data_inicio,
+            f.data_fim_efetiva,
+            v.vacina_aplicacao_data,
+            CEIL(
+                DATE_DIFF(
+                    v.vacina_aplicacao_data,
+                    f.data_inicio,
+                    DAY
+                ) / 7.0
+            ) AS ig_semanas_vacina
+        FROM
+            filtrado f
+            JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
+            -- JOIN `rj-sms.saude_historico_clinico.vacinacao` v
+            JOIN {{ ref('mart_historico_clinico__vacinacao') }} v
+                ON pi.cpf = v.paciente_cpf
+        WHERE
+            -- Filtro de descrição da vacina sincicial
+            (
+                LOWER(v.vacina_descricao) = 'sincicial respiratório a e b (recombinante)'
+                OR LOWER(v.vacina_descricao) = 'vacina vírus sincicial respiratório a e b  recombinante'
+                OR LOWER(v.vacina_descricao) = 'vacina vírus sincicial respiratório a e b (recombinante)'
+            )
+            -- Apenas aplicações dentro do período gestacional (40 semanas a partir do início)
+            AND v.vacina_aplicacao_data BETWEEN f.data_inicio AND DATE_ADD(f.data_inicio, INTERVAL 40 WEEK)
+    ),
+    vacinacao_sincicial_gestacao AS (
+        SELECT
+            id_gestacao,
+            vacina_aplicacao_data,
+            ig_semanas_vacina,
+            ROW_NUMBER() OVER (PARTITION BY id_gestacao ORDER BY vacina_aplicacao_data) AS rn
+        FROM
+            vacinacao_sincicial_base
+    )
+    SELECT
+        id_gestacao,
+        1 AS vacina_sincicial_aplicada,
+        vacina_aplicacao_data AS data_vacina_sincicial,
+        ig_semanas_vacina
+    FROM
+        vacinacao_sincicial_gestacao
+    WHERE
+        rn = 1
+),
 
 incluir_AP AS (
     SELECT pinfo.id_paciente, estab.area_programatica
@@ -1781,6 +1858,7 @@ final AS (
         cp.total_consultas_prenatal,
         0
     ) AS total_consultas_prenatal,
+    COALESCE(csb.total_consultas_saude_bucal, 0) AS total_consultas_saude_bucal,
     COALESCE(
         sp.prescricao_acido_folico,
         'não'
@@ -1789,6 +1867,9 @@ final AS (
         sp.prescricao_carbonato_calcio,
         'não'
     ) AS prescricao_carbonato_calcio,
+    COALESCE(vs.vacina_sincicial_aplicada, 0) AS vacina_sincicial_aplicada,
+    vs.data_vacina_sincicial,
+    vs.ig_semanas_vacina AS ig_vacina_sincicial_semanas,
     CASE
         WHEN ucp.data_ultima_consulta IS NOT NULL THEN DATE_DIFF (
             CURRENT_DATE(),
@@ -1896,6 +1977,7 @@ final AS (
         LEFT JOIN mudanca_equipe me ON f.id_gestacao = me.id_gestacao -- Mudado para id_gestacao
         LEFT JOIN partos_associados pa ON f.id_gestacao = pa.id_gestacao -- Mudado para id_gestacao
         LEFT JOIN consultas_prenatal cp ON f.id_gestacao = cp.id_gestacao
+        LEFT JOIN consultas_saude_bucal csb ON f.id_gestacao = csb.id_gestacao
         LEFT JOIN status_prescricoes sp ON f.id_gestacao = sp.id_gestacao
         LEFT JOIN ultima_consulta_prenatal ucp ON f.id_gestacao = ucp.id_gestacao
         LEFT JOIN visitas_acs_por_gestacao v_acs ON f.id_gestacao = v_acs.id_gestacao
@@ -1903,6 +1985,7 @@ final AS (
         LEFT JOIN maior_pa_por_gestacao pa_max ON f.id_gestacao = pa_max.id_gestacao
         LEFT JOIN categorias_risco_gestacional crg ON f.id_gestacao = crg.id_gestacao
         LEFT JOIN condicoes_flags cf ON f.id_gestacao = cf.id_gestacao -- Nova CTE para flags de condição
+        LEFT JOIN vacinacao_sincicial vs ON f.id_gestacao = vs.id_gestacao
         -- ========================================
         -- NOVOS JOINS DE HIPERTENSÃO
         -- ========================================
@@ -1923,6 +2006,7 @@ final AS (
         ) sis_sol ON f.id_gestacao = sis_sol.id_gestacao
         WHERE 
             f.fase_atual = 'Gestação'
+            AND COALESCE(pi.obito_indicador, FALSE) = FALSE
         --Filtro aplicado no final
         
 )
@@ -1930,4 +2014,5 @@ final AS (
 SELECT
     *
 FROM final
-WHERE fase_atual IN ('Gestação', 'Puerpério')
+WHERE fase_atual IN ('Gestação', 'Puerpério');
+END;
