@@ -43,7 +43,8 @@ with
             dim_paciente.nomes [SAFE_OFFSET(0)] as nome,
             dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
 
-            dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
+            --dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
+            telefones.`telefones`[SAFE_OFFSET(0)].telefone_formatado as telefone,
 
             date_diff(
                 current_date(),
@@ -66,6 +67,9 @@ with
 
             left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
             on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
+
+            left join {{ref("mart_iplanrio__telefones_validos")}} as telefones
+            on pop.paciente_cpf = safe_cast(telefones.cpf as int)
 
         where dim_paciente.sexos [SAFE_OFFSET(0)] != "MASCULINO"
             and not exists(
