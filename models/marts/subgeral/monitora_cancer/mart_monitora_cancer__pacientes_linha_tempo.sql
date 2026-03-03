@@ -98,8 +98,16 @@ with
             fcts.sistema_tipo as tipo,
             fcts.procedimento,
             fcts.cid,
-            fcts.estabelecimento_origem_nome as unidade_solicitante,
-            fcts.estabelecimento_executante_nome as unidade_executante,
+            concat(
+                fcts.id_cnes_unidade_origem,
+                " - ",
+                fcts.estabelecimento_origem_nome
+            ) as unidade_solicitante,
+            concat(
+                fcts.id_cnes_unidade_executante,
+                " - ",
+                fcts.estabelecimento_executante_nome
+            ) as unidade_executante,
             fcts.data_solicitacao,
             fcts.data_autorizacao,
             fcts.data_execucao,
