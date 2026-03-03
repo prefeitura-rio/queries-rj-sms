@@ -39,16 +39,22 @@ with
         select
             pop.paciente_cpf,
             pop.status,
-
-            dim_paciente.nomes [SAFE_OFFSET(0)] as nome,
+            bcadastro.nome,
+            
             dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
 
-            --dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
-            telefones.`telefones`[SAFE_OFFSET(0)].telefone_formatado as telefone,
+            coalesce(
+                telefones.`telefones`[SAFE_OFFSET(0)].telefone_formatado,
+                concat(
+                    coalesce(contato.telefone.ddi, ''),
+                    coalesce(contato.telefone.ddd, ''),
+                    coalesce(contato.telefone.numero, '')
+                )
+            ) as telefone,
 
             date_diff(
                 current_date(),
-                safe_cast(dim_paciente.datas_nascimento [SAFE_OFFSET(0)] as date),
+                bcadastro.nascimento_data,
                 year
             ) as idade,
 
@@ -71,7 +77,11 @@ with
             left join {{ref("mart_iplanrio__telefones_validos")}} as telefones
             on pop.paciente_cpf = safe_cast(telefones.cpf as int)
 
-        where dim_paciente.sexos [SAFE_OFFSET(0)] != "MASCULINO"
+            left join {{ref("raw_bcadastro__cpf")}} as bcadastro
+            on pop.paciente_cpf = bcadastro.cpf_particao
+
+        where bcadastro.sexo != "masculino"
+            and bcadastro.ano_obito is null
             and not exists(
                 select 1
                 from unnest (dim_paciente.anos_obito) as ano
