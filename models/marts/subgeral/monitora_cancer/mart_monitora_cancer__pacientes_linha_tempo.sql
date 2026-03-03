@@ -43,7 +43,7 @@ with
             dim_paciente.nomes [SAFE_OFFSET(0)] as nome,
             dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
 
-            -- dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
+            dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
 
             date_diff(
                 current_date(),
@@ -55,7 +55,7 @@ with
             dim_paciente.clinicas_sf_ap [SAFE_OFFSET(0)] as clinica_sf_ap,
             dim_paciente.clinicas_sf_telefone [SAFE_OFFSET(0)] as clinica_sf_telefone,
             dim_paciente.equipes_sf [SAFE_OFFSET(0)] as equipe_sf,
-            -- dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
+            dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
 
             dsr.dias_sem_resposta as gravidade_score
 
@@ -89,7 +89,9 @@ with
             pop.equipe_sf,
             pop.status,
             pop.gravidade_score,
-            pop.clinica_sf_telefone as telefone,
+            pop.telefone,
+            pop.clinica_sf_telefone as telefone_cf,
+            pop.equipe_sf_telefone as telefone_esf,     
 
             -- dados evento
             fcts.sistema_origem as fonte,
@@ -131,6 +133,8 @@ with
 
             -- contato paciente
             telefone,
+            telefone_cf,
+            telefone_esf,
 
             -- sistemas com eventos do paciente
             struct(
@@ -189,7 +193,9 @@ with
             equipe_sf,
             status,
             gravidade_score,
-            telefone
+            telefone,
+            telefone_cf,
+            telefone_esf
     )
 
 select *
