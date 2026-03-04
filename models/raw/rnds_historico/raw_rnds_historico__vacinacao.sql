@@ -51,7 +51,7 @@ with
             {{ process_null('ENTID_ID') }} as id_cnes,
             {{ process_null('PERFORMED_VACCINE_ACTION_ID') }} as id_vacinacao,
             {{ process_null('LOCAL_UUID') }} as id_global,
-            {{ process_null('Id') }} as id_local,
+            replace({{ process_null('Id') }}, '.0', '') AS id_local,
             {{ process_null('RIA_RNDS_ID') }} as id_rnds,
 
             {{ process_null('CPF_UTENTE') }} as paciente_cpf,
