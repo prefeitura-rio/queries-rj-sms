@@ -15,7 +15,7 @@ with
     -- Seleciona eventos dos últimos 7 dias se for uma execução incremental
     events_from_window as (
         select *
-        from {{ source("brutos_prontuario_vitai_staging", "m_estabelecimento_eventos") }}
+        from {{ source("brutos_prontuario_vitai_staging", "basecentral__m_estabelecimento_eventos") }}
         {% if is_incremental() %} 
             where data_particao > '{{seven_days_ago}}' 
         {% endif %}
@@ -47,7 +47,7 @@ select
     safe_cast(cliente as string) as cliente,
     safe_cast(baseurl as string) as baseurl,
     timestamp_add(datetime(timestamp(datahora), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
-    datetime(timestamp(datalake__imported_at), 'America/Sao_Paulo') as imported_at,
+    datetime(timestamp(datalake_loaded_at), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
     
 from latest_events

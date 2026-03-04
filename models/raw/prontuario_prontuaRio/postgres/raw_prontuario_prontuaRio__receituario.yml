@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__receituario
+    description: "Tabela de registros de receituários emitidos, vinculados ao prontuário e à internação do paciente."
+    columns:
+      - name: gid_receituario
+        description: "ID global único do receituário."
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: gid_boletim
+        description: "ID global único do boletim de atendimento."
+      - name: gid_internacao
+        description: "ID global único da internação."
+      - name: id_receituario
+        description: "Identificador local do receituário."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: id_boletim
+        description: "Identificador local do boletim."
+      - name: id_internacao
+        description: "Identificador local da internação."
+      - name: descricao
+        description: "Conteúdo detalhado das prescrições e orientações do receituário."
+      - name: profissional_cpf
+        description: "CPF do profissional prescritor."
+      - name: profissional_nome
+        description: "Nome do profissional prescritor."
+      - name: data_registro
+        description: "Data e hora em que o receituário foi registrado."
+      - name: descricao_atividade
+        description: "Descrição da atividade ou especialidade do profissional."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

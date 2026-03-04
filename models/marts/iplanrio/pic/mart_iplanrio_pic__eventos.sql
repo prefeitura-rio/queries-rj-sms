@@ -85,6 +85,7 @@ WITH
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE REGEXP_CONTAINS(tipo, r'(?i)visita')
         AND cpf IS NOT NULL AND cpf <> 'NAO TEM'
+        AND cbo_profissional = '515105' -- apenas ACS
     ),
 
     -- CONSULTAS
@@ -94,7 +95,7 @@ WITH
             'Consulta' AS tipo_evento,
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE cpf <> 'NAO TEM' and tipo <> 'Visita Domiciliar'
+        WHERE cpf <> 'NAO TEM' AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
     ),
 
     -- CONSULTAS MÉDICO/ENFERMEIRO
@@ -104,7 +105,7 @@ WITH
             'Consulta - Médico/Enfermeiro' AS tipo_evento,
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE cpf <> 'NAO TEM' and tipo <> 'Visita Domiciliar'
+        WHERE cpf <> 'NAO TEM' AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
         AND (
                 REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"medico")
             OR REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"enfermeiro")
@@ -207,21 +208,21 @@ WITH
             UNION ALL
 
             SELECT
-                nu_cpf_paciente AS cpf,
+                paciente_cpf AS cpf,
                 'Pentavalente', 
-                CASE WHEN ds_dose_vacina LIKE '%eforço%' THEN 'R'
-                    WHEN ds_dose_vacina LIKE '%nica%' THEN 'U'
+                CASE WHEN vacina_dose LIKE '%eforço%' THEN 'R'
+                    WHEN vacina_dose LIKE '%nica%' THEN 'U'
                     ELSE 'D' END,
                 CASE 
-                    WHEN ds_dose_vacina LIKE '%1%' THEN '1'
-                    WHEN ds_dose_vacina LIKE '%2%' THEN '2'
-                    WHEN ds_dose_vacina LIKE '%3%' THEN '3'
-                    WHEN ds_dose_vacina LIKE '%4%' THEN '4'
+                    WHEN vacina_dose LIKE '%1%' THEN '1'
+                    WHEN vacina_dose LIKE '%2%' THEN '2'
+                    WHEN vacina_dose LIKE '%3%' THEN '3'
+                    WHEN vacina_dose LIKE '%4%' THEN '4'
                     ELSE '' END,
-                CAST(dt_vacina AS DATETIME)
+                CAST(vacina_aplicacao_data AS DATETIME)
             FROM {{ ref("raw_sipni__vacinacao") }}
-            WHERE nu_cpf_paciente IS NOT NULL
-            AND ds_vacina IN (
+            WHERE paciente_cpf IS NOT NULL
+            AND vacina_nome IN (
                     'Vacina penta (DTP/HepB/Hib)',
                     'Vacina penta acelular (DTPa/VIP/Hib)',
                     'Vacina hexa (DTPa/HepB/VIP/Hib)'

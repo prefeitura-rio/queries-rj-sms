@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: brutos_rnds_historico_staging
+    database: rj-sms-dev
+    schema: brutos_rnds_historico_staging
+    tables:
+      - name: ap10_rnds_ria_routine_immunization_control
+      - name: ap21_rnds_ria_routine_immunization_control
+      - name: ap22_rnds_ria_routine_immunization_control
+      - name: ap31_rnds_ria_routine_immunization_control
+      - name: ap32_rnds_ria_routine_immunization_control
+      - name: ap33_rnds_ria_routine_immunization_control
+      - name: ap40_rnds_ria_routine_immunization_control
+      - name: ap51_rnds_ria_routine_immunization_control
+      - name: ap52_rnds_ria_routine_immunization_control
+      - name: ap53_rnds_ria_routine_immunization_control

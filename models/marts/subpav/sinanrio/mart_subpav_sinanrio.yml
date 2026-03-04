@@ -1,0 +1,551 @@
+version: 2
+
+models:
+  - name: mart_subpav_sinanrio__familias
+    alias: familias_contatos
+    tags: [subpav, sinanrio, familias]
+    description: |
+      Base para busca rápida de coabitantes/“família” por CPF/CNS.
+
+      Regras principais:
+      - Exclusão de óbito; apenas prontuários com 13/14 dígitos e CNES/CPF válidos.
+      - Deduplicação por CPF usando o registro mais recente por `recency_ts`
+        = COALESCE(source_updated_at, data_ultima_atualizacao_cadastral, data_atualizacao_vinculo_equipe).
+      - `family_key` = prefixo do número do prontuário removendo os 2 últimos dígitos (ID_pessoa)
+        + ':' + CNES. Isso funciona para ESF (AP+AREA+MICRO+FAM+PESSOA) e para Modelo B
+        (CNES+incremental), reduzindo colisões ao incluir o CNES.
+      - Particionamento por `family_bucket` (hash de `family_key`) e cluster por `cpf_int`, `family_key_fp`
+        para lookup/fetch via BigQuery.
+    columns:
+      - name: family_key
+        description: "Chave textual da família: prefixo do prontuário (sem os 2 últimos dígitos) + ':' + CNES."
+      - name: family_key_fp
+        description: "Fingerprint INT64 de `family_key` (usado para filtros/joins eficientes)."
+      - name: family_bucket
+        description: "Partição de `family_key`: MOD(ABS(FARM_FINGERPRINT(family_key)), 2048)."
+      - name: cpf_int
+        description: "CPF numérico (INT64) após dedup por recency."
+      - name: cnes
+        description: "CNES vigente no registro mais recente."
+      - name: ine
+        description: "INE vigente."
+      - name: cpf
+        description: "CPF em string, como recebido do PEP (para exibição)."
+      - name: cns
+        description: "CNS em string."
+      - name: nome
+        description: "Nome do paciente."
+      - name: dt_nascimento
+        description: "Data de nascimento (DATE)."
+      - name: id_sexo
+        description: "Sexo padronizado (macro): 1=M, 2=F, 3=Ignorado."
+      - name: id_raca_cor
+        description: "Raça/cor padronizada (macro): 1=Branca, 2=Preta, 3=Parda, 4=Amarela, 5=Indígena, 9=Ignorado."
+      - name: telefone
+        description: "Telefone conforme PEP."
+      - name: cep
+        description: "CEP do endereço."
+      - name: logradouro
+        description: "Tipo + logradouro (concat)."
+      - name: numero
+        description: "Número do endereço."
+      - name: complemento
+        description: "Complemento do endereço."
+      - name: id_bairro
+        description: "ID do bairro (join por nome normalizado com `plataforma_subpav.principal__bairros`). Pode ser nulo."
+
+  - name: mart_subpav_sinanrio__sintomaticos_respiratorios
+    alias: sintomaticos_respiratorios_dia
+    tags: [subpav, sinanrio, sintomaticos]
+    description: |
+      Extração diária de atendimentos com suspeita/queixa respiratória (sintomáticos),
+      limitada a episódios com `data_particao = ontem` e filtrada por lista de CIDs
+      respiratórios (macro `sinanrio_lista_cids_sintomaticos()`).
+
+      Enriquecimento com cadastro do paciente (CNS, contato, endereço, mapeamento de bairro),
+      e definição de preferências:
+      - CNES final: estabelecimento do atendimento > CNES do cadastro
+      - INE final: equipe do atendimento (quando disponível no profissional) > INE do cadastro
+
+      Regras:
+      - `nao_municipe`: 0 se (cidade nula) OU cidade = "RIO DE JANEIRO"; senão 1.
+      - `id_tb_situacao`: fixo em 1 (Flag SUBPAV : Quando migrado de outras fontes).
+      - Dedup por CPF do dia: mantém o último atendimento (maior `saida_datahora`).
+    columns:
+      - name: cpf
+        description: "CPF do paciente (string, sem máscara). Um por CPF ao dia."
+      - name: cns
+        description: "CNS priorizado (15 dígitos válidos quando disponível)."
+      - name: nome
+        description: "Nome do paciente."
+      - name: dt_nascimento
+        description: "Data de nascimento (DATE)."
+      - name: id_raca_cor
+        description: "Raça/cor padronizada."
+      - name: id_sexo
+        description: "Sexo padronizado."
+      - name: id_escolaridade
+        description: "Escolaridade (reservado; atualmente NULL)."
+      - name: telefone
+        description: "Telefone mais prioritário do cadastro."
+      - name: cep
+        description: "CEP do endereço do cadastro."
+      - name: logradouro
+        description: "Tipo + logradouro (concat normalizada)."
+      - name: numero
+        description: "Número do endereço (string)."
+      - name: complemento
+        description: "Complemento do endereço."
+      - name: id_bairro
+        description: "ID do bairro (join por nome normalizado)."
+      - name: cidade
+        description: "Cidade do endereço (texto do cadastro)."
+      - name: cnes
+        description: "CNES final do atendimento."
+      - name: ine
+        description: "INE final da equipe (quando houver)."
+      - name: nao_municipe
+        description: "Flag 0/1 conforme regra de cidade."
+      - name: n_prontuario
+        description: "Número do prontuário (do cadastro)."
+      - name: cnes_cadastrante
+        description: "CNES do estabelecimento do profissional que lançou o atendimento."
+      - name: cpf_cadastrante
+        description: "CPF do profissional (quando informado)."
+      - name: cns_cadastrante
+        description: "CNS do profissional (quando informado)."
+      - name: id_tb_situacao
+        description: "Situação do caso TB no SINANRIO (fixo 1: Quando migrado de outras fontes)."
+      - name: origem
+        description: "Fornecedor do prontuário no episódio (origem do dado)."
+
+  - name: mart_subpav_sinanrio__resultado_exame
+    alias: resultado_exame
+    tags: [subpav, sinanrio, exames]
+    description: |
+      Mart de resultados de exames do GAL, consolidando:
+      - Fonte: `rj-sms.brutos_gal.exames_laboratoriais`
+      - Escopo: PCR GeneXpert MTB/RIF (`tugexp-pcrtr`) e Baciloscopia Ziehl-Neelsen (`tubb-colzn`)
+
+      Normalizações:
+      - `paciente_cpf`: extrai CPF dos campos de documento e mantém apenas dígitos
+      - `paciente_cns`: somente dígitos
+      - `codigo_amostra`: TRIM (vazio → NULL)
+      - `cnes`: primeiro não vazio entre solicitante → notificação SINAN → lab execução → lab responsável → lab cadastro
+      - `dt_resultado`: primeira data válida entre `data_liberacao`, `data_processamento`,
+        `data_inicio_processamento`, `data_recebimento`, `data_solicitacao`
+      - `id_tipo_exame`: 1 = PCR (tugexp-pcrtr); 2 = Ziehl (tubb-colzn)
+
+      Deduplicação:
+      - Chave natural por dia/tipo: (`paciente_cns`, `id_tipo_exame`, `dt_resultado`)
+      - Mantém o último registro por `loaded_at` (mais recente)
+
+      Filtros finais:
+      - `dt_resultado`, `id_tipo_exame`, `id_resultado` não nulos
+      - `paciente_cns` com 15 dígitos
+    columns:
+      - name: codigo_amostra
+        description: "Código da amostra do GAL (TRIM)."
+      - name: paciente_cpf
+        description: "CPF numérico (quando informado nos documentos do paciente)."
+      - name: paciente_cns
+        description: "CNS (15 dígitos)."
+      - name: cnes
+        description: "CNES consolidado pela ordem de preferência (solicitante → notificação → execução → responsável → cadastro)."
+      - name: id_tipo_exame
+        description: "Tipo do exame: 1=PCR (GeneXpert), 2=Ziehl (Baciloscopia)."
+      - name: id_resultado
+        description: "Classificação do resultado conforme regras de mapeamento SUBPAV (1 a 5)."
+      - name: dt_resultado
+        description: "Data do resultado consolidada a partir dos campos de data do GAL."
+
+  - name: mart_subpav_sinanrio__tb_investiga
+    alias: tb_investiga
+    tags: [subpav, sinanrio, tb]
+    description: |
+      Mart de investigação e acompanhamento de tratamento de tuberculose do SINAN-RIO,
+      extraído da tabela `tb_investiga` do banco `subpav_sinanrio`.
+      Contém todas as colunas originais da tabela de investigação de tuberculose.
+    columns:
+      - name: nu_notificacao
+        description: "Número da notificação (ficha) a que a investigação está vinculada."
+      - name: dt_notificacao
+        description: "Data da notificação original do caso."
+      - name: co_cid
+        description: "Código CID (categoria de três caracteres e subcategoria de quatro caracteres)."
+      - name: co_municipio_notificacao
+        description: "Código do município IBGE – unidade notificadora do caso original."
+      - name: nu_prontuario
+        description: "Número do prontuário do paciente (registro na unidade de saúde)."
+      - name: tp_entrada
+        description: "Tipo de entrada: 1=Caso novo; 2=Recidiva; 3=Reingresso após abandono; 4=Não sabe; 5=Transferência."
+      - name: tp_institucionalizado
+        description: "Situação de institucionalização: 1=Não; 2=Presídio; 3=Asilo; 4=Orfanato; 5=Hospital psiquiátrico; 6=Outro; 9=Ignorado."
+      - name: tp_raio_x
+        description: "Resultado do raio X de tórax: 1=Suspeito; 2=Normal; 3=Outra patologia; 4=Não realizado."
+      - name: tp_turberculinico
+        description: "Teste tuberculínico (PPD): 1=Não reator; 2=Reator fraco; 3=Reator forte; 4=Não realizado."
+      - name: tp_forma
+        description: "Forma clínica da tuberculose: 1=Pulmonar; 2=Extrapulmonar; 3=Pulmonar + Extrapulmonar."
+      - name: tp_extrapulmonar_1
+        description: "Primeira forma extrapulmonar."
+      - name: tp_extrapulmonar_2
+        description: "Segunda forma extrapulmonar."
+      - name: ds_extrapulmonar_outro
+        description: "Descrição da forma extrapulmonar quando 'Outra' é selecionada."
+      - name: st_agravo_aids
+        description: "Agravo associado – Aids (1=Sim; 2=Não; 9=Ignorado)."
+      - name: st_agravo_alcolismo
+        description: "Agravo associado – Alcoolismo (1=Sim; 2=Não; 9=Ignorado)."
+      - name: st_agravo_diabete
+        description: "Agravo associado – Diabetes (1=Sim; 2=Não; 9=Ignorado)."
+      - name: st_agravo_mental
+        description: "Agravo associado – Transtorno mental (1=Sim; 2=Não; 9=Ignorado)."
+      - name: st_agravo_outro
+        description: "Agravo associado – Outro (1=Sim; 2=Não; 9=Ignorado)."
+      - name: ds_agravo_outro
+        description: "Descrição do agravo associado quando 'Outro' é selecionado."
+      - name: st_agravo_drogas
+        description: "Indicador de agravo associado – uso de drogas (quando disponível na ficha)."
+      - name: st_agravo_tabaco
+        description: "Indicador de agravo associado – uso de tabaco (quando disponível na ficha)."
+      - name: st_baciloscopia_escarro
+        description: "Baciloscopia de escarro – 1ª amostra (1=Positiva; 2=Negativa; 3=Não realizada)."
+      - name: st_baciloscopia_escarro2
+        description: "Baciloscopia de escarro – 2ª amostra (1=Positiva; 2=Negativa; 3=Não realizada)."
+      - name: st_baciloscopia_outro
+        description: "Baciloscopia de outro material (1=Positiva; 2=Negativa; 3=Não realizada)."
+      - name: st_baciloscopia_1_mes
+        description: "Baciloscopia de escarro no 1º mês de tratamento."
+      - name: st_baciloscopia_2_mes
+        description: "Baciloscopia de escarro no 2º mês de tratamento."
+      - name: st_baciloscopia_3_mes
+        description: "Baciloscopia de escarro no 3º mês de tratamento."
+      - name: st_baciloscopia_4_mes
+        description: "Baciloscopia de escarro no 4º mês de tratamento."
+      - name: st_baciloscopia_5_mes
+        description: "Baciloscopia de escarro no 5º mês de tratamento."
+      - name: st_baciloscopia_6_mes
+        description: "Baciloscopia de escarro no 6º mês de tratamento."
+      - name: st_bacil_apos_6_mes
+        description: "Indicador de baciloscopia positiva após o 6º mês de tratamento."
+      - name: tp_cultura_escarro
+        description: "Cultura de escarro (1=Positiva; 2=Negativa; 3=Em andamento; 4=Não realizada)."
+      - name: tp_cultura_outro
+        description: "Cultura de outro material (1=Positiva; 2=Negativa; 3=Em andamento; 4=Não realizada)."
+      - name: tp_histopatologia
+        description: "Histopatologia (1=BAAR positivo; 2=Sugestivo de TB; 3=Não sugestivo; 4=Em andamento; 5=Não realizado)."
+      - name: tp_hiv
+        description: "Resultado do teste de HIV (1=Positivo; 2=Negativo; 3=Em andamento; 4=Não realizado)."
+      - name: tp_molecular
+        description: "Resultado de teste molecular para TB (quando disponível)."
+      - name: tp_sensibilidade
+        description: "Resultado de teste de sensibilidade (perfil de resistência)."
+      - name: tp_pcr_escarro
+        description: "Resultado de PCR em amostra de escarro (quando disponível)."
+      - name: dt_inicio_tratamento
+        description: "Data de início do tratamento atual de tuberculose."
+      - name: dt_mudanca_tratamento
+        description: "Data de mudança de esquema de tratamento."
+      - name: tp_tratamento
+        description: "Tipo de tratamento (1=Supervisionado; 2=Autoadministrativo; 9=Ignorado)."
+      - name: tp_tratamento_acompanhamento
+        description: "Tipo de tratamento para acompanhamento."
+      - name: st_droga_rifampicina
+        description: "Uso de Rifampicina no esquema (1=Sim; 2=Não)."
+      - name: st_droga_isoniazida
+        description: "Uso de Isoniazida no esquema (1=Sim; 2=Não)."
+      - name: st_droga_etambutol
+        description: "Uso de Etambutol no esquema (1=Sim; 2=Não)."
+      - name: st_droga_estreptomicina
+        description: "Uso de Estreptomicina no esquema (1=Sim; 2=Não)."
+      - name: st_droga_pirazinamida
+        description: "Uso de Pirazinamida no esquema (1=Sim; 2=Não)."
+      - name: st_droga_etionamida
+        description: "Uso de Etionamida no esquema (1=Sim; 2=Não)."
+      - name: st_droga_outro
+        description: "Uso de outra droga no esquema (1=Sim; 2=Não)."
+      - name: ds_droga_outro
+        description: "Descrição da outra droga utilizada no tratamento."
+      - name: tp_situacao_encerramento
+        description: "Situação do caso no encerramento."
+      - name: tp_situacao_mes_9
+        description: "Situação no 9º mês de tratamento."
+      - name: tp_situacao_mes_12
+        description: "Situação no 12º mês de tratamento."
+      - name: dt_encerramento
+        description: "Data de encerramento do caso."
+      - name: nu_contato
+        description: "Número de contatos registrados para o caso."
+      - name: nu_contato_examinado
+        description: "Número de contatos examinados."
+      - name: nu_contato_identificados
+        description: "Número total de contatos identificados (quando disponível)."
+      - name: tp_antirretroviral_trat
+        description: "Uso de TARV em indivíduos HIV positivos."
+      - name: tp_benef_gov
+        description: "Indicador de recebimento de benefício governamental."
+      - name: tp_pop_liberdade
+        description: "Indica se pertence a população privada de liberdade."
+      - name: tp_pop_rua
+        description: "Indica se pertence à população em situação de rua."
+      - name: tp_pop_saude
+        description: "Indica se é trabalhador(a) da saúde."
+      - name: tp_pop_imigrante
+        description: "Indica se é imigrante."
+      - name: co_uf_atual
+        description: "UF atual do paciente (código IBGE)."
+      - name: co_municipio_atual
+        description: "Município atual do paciente (código IBGE)."
+      - name: co_unidade_saude_atual
+        description: "Código do estabelecimento de saúde atual."
+      - name: nu_notificacao_atual
+        description: "Número da notificação atual (quando há mudança de notificação)."
+      - name: dt_notificacao_atual
+        description: "Data da notificação atual (quando há nova notificação)."
+      - name: nu_prontuario_atual
+        description: "Número do prontuário na unidade atual."
+      - name: tp_transf
+        description: "Tipo de transferência do caso."
+      - name: co_uf_transf
+        description: "UF de destino da transferência."
+      - name: co_municipio_transf
+        description: "Município de destino da transferência."
+      - name: co_uf_residencia_atual
+        description: "UF de residência atual (código IBGE)."
+      - name: co_municipio_residencia_atual
+        description: "Município de residência atual (código IBGE)."
+      - name: co_distrito_residencia_atual
+        description: "Distrito de residência atual (código)."
+      - name: co_bairro_residencia_atual
+        description: "Código do bairro de residência atual."
+      - name: no_bairro_residencia_atual
+        description: "Nome do bairro de residência atual."
+      - name: nu_cep_residencia_atual
+        description: "CEP da residência atual."
+
+  - name: mart_subpav_sinanrio__notificacao
+    alias: notificacao
+    tags: [subpav, sinanrio, tb]
+    description: |
+      Mart de notificações do SINAN-RIO, extraído da tabela `notificacao` do banco `subpav_sinanrio`.
+      Contém as colunas originais da tabela de notificações, com descrições.
+    columns:
+      - name: nu_notificacao
+        description: "Número da notificação (ficha)."
+      - name: dt_notificacao
+        description: "Data da notificação."
+      - name: co_cid
+        description: "Código CID (categoria de três caracteres e subcategoria de quatro caracteres)."
+      - name: co_municipio_notificacao
+        description: "Código do município IBGE – unidade notificadora."
+      - name: co_unidade_notificacao
+        description: "Código do estabelecimento de saúde – unidade notificadora."
+      - name: co_uf_notificacao
+        description: "Código IBGE da unidade da federação – unidade notificadora."
+      - name: dt_diagnostico_sintoma
+        description: "Data dos primeiros sintomas."
+      - name: no_nome_paciente
+        description: "Nome do paciente."
+      - name: dt_nascimento
+        description: "Data de nascimento do paciente."
+      - name: nu_idade
+        description: "Idade do paciente."
+      - name: tp_sexo
+        description: "Sexo do paciente (M, F, I – ignorado)."
+      - name: tp_gestante
+        description: "Situação de gestação (trimestres, não, não se aplica, ignorado)."
+      - name: tp_raca_cor
+        description: "Raça/Cor (Branca, Preta, Amarela, Parda, Indígena, Ignorado)."
+      - name: tp_escolaridade
+        description: "Escolaridade (categorias segundo SINAN)."
+      - name: nu_cartao_sus
+        description: "Número do Cartão SUS do paciente."
+      - name: no_nome_mae
+        description: "Nome da mãe do paciente."
+      - name: co_uf_residencia
+        description: "Código IBGE da unidade da federação – residência."
+      - name: co_municipio_residencia
+        description: "Código IBGE do município – residência."
+      - name: co_distrito_residencia
+        description: "Código IBGE do distrito – residência."
+      - name: co_bairro_residencia
+        description: "Código sequencial do bairro – residência."
+      - name: no_bairro_residencia
+        description: "Nome do bairro de residência."
+      - name: nu_cep_residencia
+        description: "CEP da residência."
+      - name: co_geo_campo_1
+        description: "Código geo campo 1 (georreferenciamento 1)."
+      - name: co_geo_campo_2
+        description: "Código geo campo 2 (georreferenciamento 2)."
+      - name: co_logradouro_residencia
+        description: "Código sequencial do logradouro – residência."
+      - name: no_logradouro_residencia
+        description: "Nome do logradouro de residência."
+      - name: nu_residencia
+        description: "Número da residência."
+      - name: ds_complemento_residencia
+        description: "Complemento da residência."
+      - name: ds_referencia_residencia
+        description: "Ponto de referência da residência."
+      - name: nu_ddd_residencia
+        description: "DDD do telefone de residência."
+      - name: nu_telefone_residencia
+        description: "Telefone da residência."
+      - name: tp_zona_residencia
+        description: "Zona de residência."
+      - name: co_pais_residencia
+        description: "Código do país – residência."
+      - name: dt_investigacao
+        description: "Data da investigação."
+      - name: co_cbo_ocupacao
+        description: "Código da ocupação segundo a CBO."
+      - name: tp_classificacao_final
+        description: "Classificação final do caso."
+      - name: ds_classificacao_final
+        description: "Descrição textual da classificação final."
+      - name: tp_criterio_confirmacao
+        description: "Critério de confirmação/descarte."
+      - name: tp_modo_infeccao
+        description: "Modo provável de infecção."
+      - name: ds_modo_infeccao_outro
+        description: "Descrição de outro modo provável de infecção."
+      - name: tp_local_infeccao
+        description: "Local provável de infecção."
+      - name: ds_local_infeccao_outro
+        description: "Descrição de outro local provável de infecção."
+      - name: tp_autoctone_residencia
+        description: "Indica se o caso é autóctone do município de residência."
+      - name: co_uf_infeccao
+        description: "UF – infecção."
+      - name: co_pais_infeccao
+        description: "País – infecção."
+      - name: co_municipio_infeccao
+        description: "Município – infecção."
+      - name: co_distrito_infeccao
+        description: "Distrito – infecção."
+      - name: co_bairro_infeccao
+        description: "Bairro – infecção."
+      - name: no_bairro_infeccao
+        description: "Nome do bairro de infecção."
+      - name: co_unidade_infeccao
+        description: "Unidade – infecção."
+      - name: no_localidade_infeccao
+        description: "Localidade autóctone."
+      - name: st_doenca_trabalho
+        description: "Indica se a doença está relacionada ao trabalho."
+      - name: tp_evolucao_caso
+        description: "Evolução do caso."
+      - name: ds_evolucao_caso_outro
+        description: "Descrição de outra evolução do caso."
+      - name: dt_obito
+        description: "Data do óbito."
+      - name: dt_encerramento
+        description: "Data de encerramento do caso."
+      - name: ds_semana_notificacao
+        description: "Semana epidemiológica (notificação)."
+      - name: ds_semana_sintoma
+        description: "Semana epidemiológica (sintomas)."
+      - name: ds_chave_fonetica
+        description: "Chave fonética do nome do paciente."
+      - name: ds_soundex
+        description: "Nome criptografado por Soundex."
+      - name: dt_digitacao
+        description: "Data de digitação da notificação."
+      - name: dt_transf_us
+        description: "Data de transferência da unidade de saúde."
+      - name: dt_transf_dm
+        description: "Data de transferência do distrito municipal."
+      - name: dt_transf_sm
+        description: "Data de transferência da secretaria municipal."
+      - name: dt_transf_rm
+        description: "Data de transferência da regional municipal."
+      - name: dt_transf_rs
+        description: "Data de transferência da regional de saúde."
+      - name: dt_transf_se
+        description: "Data de transferência da secretaria estadual."
+      - name: nu_lote_vertical
+        description: "Número de lote vertical."
+      - name: nu_lote_horizontal
+        description: "Número de lote horizontal."
+      - name: tp_duplicidade
+        description: "Indicador de duplicidade."
+      - name: tp_suspeita
+        description: "Subdivisão do agravo."
+      - name: st_vincula
+        description: "Indica se a notificação foi vinculada."
+      - name: tp_fluxo_retorno
+        description: "Situação em relação ao fluxo de retorno."
+      - name: st_modo_transmissao
+        description: "Modo provável de transmissão."
+      - name: tp_veiculo_transmissao
+        description: "Veículo de transmissão."
+      - name: ds_veiculo_transmissao_outro
+        description: "Descrição de outro veículo."
+      - name: tp_local_surto
+        description: "Local inicial de ocorrência do surto."
+      - name: ds_local_outro
+        description: "Descrição de outro local."
+      - name: nu_caso_suspeito
+        description: "Número de casos suspeitos."
+      - name: tp_inquerito
+        description: "Tipo de inquérito."
+      - name: nu_caso_examinado
+        description: "Número de casos examinados."
+      - name: nu_caso_positivo
+        description: "Número de casos positivos."
+      - name: ds_observacao
+        description: "Informações complementares e observações."
+      - name: tp_delimitacao_surto
+        description: "Delimitação do surto."
+      - name: ds_delimitacao_surto_outro
+        description: "Descrição de outra delimitação."
+      - name: st_fluxo_retorno_recebido
+        description: "Indica se foi recebido via fluxo de retorno."
+      - name: ds_identificador_registro
+        description: "Identificador textual adicional."
+      - name: st_importado
+        description: "Indica se o registro foi importado."
+      - name: st_criptografia
+        description: "Indica se o registro está criptografado."
+      - name: tp_sistema
+        description: "Indica se o acesso é local ou web."
+      - name: st_espelho
+        description: "Indicador interno de espelho."
+      - name: ts_codigo1
+        description: "Campo técnico do sistema (reservado)."
+      - name: ts_codigo2
+        description: "Campo técnico do sistema (reservado)."
+      - name: tp_unidad_notificadora_externa
+        description: "Tipo de unidade notificadora externa."
+      - name: co_unidad_notificadora_externa
+        description: "Código da unidade notificadora externa."
+      - name: cpf_notificante
+        description: "CPF do profissional notificante."
+      - name: cpf_paciente
+        description: "CPF do paciente."
+      - name: dnv_paciente
+        description: "Número da DNV do paciente."
+      - name: justificativa_cpf
+        description: "Justificativa para ausência/inconsistência de CPF."
+      - name: lat
+        description: "Latitude."
+      - name: long
+        description: "Longitude."
+      - name: notif_assistente
+        description: "Indicador de notificação assistente."
+      - name: resp_encerramento
+        description: "Responsável pelo encerramento."
+      - name: st_agravo_tabagismo
+        description: "Indicador de agravo tabagismo."
+      - name: st_pcr_escarro
+        description: "Indicador de PCR de escarro."
+      - name: st_agravo_drogas
+        description: "Indicador de agravo uso de drogas."
+      - name: visivel
+        description: "Indicador se o registro é visível na interface."
+      - name: finalizado
+        description: "Indicador se o registro está finalizado."
+      - name: timestamp
+        description: "Timestamp de última atualização do registro na base de origem."

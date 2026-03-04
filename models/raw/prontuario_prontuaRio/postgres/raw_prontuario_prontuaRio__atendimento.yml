@@ -1,0 +1,112 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__atendimento
+    description: "Tabela com informações detalhadas de atendimentos, incluindo prescrições, nutrição e avaliações multiprofissionais."
+    columns:
+      - name: gid_atendimento
+        description: "ID global único do atendimento."
+      - name: gid_paciente
+        description: "ID global único do paciente."
+      - name: id_atendimento
+        description: "Identificador local do atendimento."
+      - name: id_paciente
+        description: "Identificador local do paciente."
+      - name: medico_crm
+        description: "CRM do médico responsável pelo atendimento."
+      - name: id_leito
+        description: "Identificador do leito ocupado."
+      - name: clinica
+        description: "Nome ou especialidade da clínica."
+      - name: recomendacoes
+        description: "Recomendações médicas ou observações gerais."
+      - name: datahora
+        description: "Data e hora exata do registro/atendimento."
+      - name: internacao_data
+        description: "Data de início da internação associada."
+      - name: atendimento_data
+        description: "Data de referência do atendimento."
+      - name: ativo_indicador
+        description: "Indicador se o registro ou atendimento está ativo."
+      - name: id_clinica
+        description: "Identificador local da clínica."
+      - name: enfermaria
+        description: "Identificação da enfermaria."
+      - name: parenteral
+        description: "Informações sobre nutrição ou medicação parenteral."
+      - name: parenteral_status
+        description: "Status da administração parenteral."
+      - name: peso
+        description: "Peso do paciente no momento do atendimento."
+      - name: paren_neo
+        description: "Indicação de nutrição parenteral neonatal."
+      - name: paren_venosa
+        description: "Indicação de acesso venoso para parenteral."
+      - name: paren_neo_status
+        description: "Status da nutrição parenteral neonatal."
+      - name: paren_venosa_status
+        description: "Status do acesso venoso para parenteral."
+      - name: precisa_fono
+        description: "Indicador de necessidade de avaliação fonoaudiológica."
+      - name: precisa_fisio
+        description: "Indicador de necessidade de fisioterapia."
+      - name: obs_fisio
+        description: "Observações da equipe de fisioterapia."
+      - name: obs_fono
+        description: "Observações da equipe de fonoaudiologia."
+      - name: fisio_motora
+        description: "Detalhes sobre a fisioterapia motora."
+      - name: fisio_respiratoria
+        description: "Detalhes sobre a fisioterapia respiratória."
+      - name: fisio_ok_motora
+        description: "Confirmação de realização da fisioterapia motora."
+      - name: avisos_farm
+        description: "Alertas e avisos da farmácia clínica."
+      - name: estatura
+        description: "Estatura (altura) do paciente."
+      - name: sc
+        description: "Superfície corporal calculada."
+      - name: tht
+        description: "Informação técnica (possível Tensão/Hidratação ou similar)."
+      - name: med
+        description: "Informações sobre medicação ou prescrição."
+      - name: hv
+        description: "Hidratação Venosa prescrita."
+      - name: dieta
+        description: "Tipo de dieta prescrita ao paciente."
+      - name: vm
+        description: "Indicador de Ventilação Mecânica."
+      - name: paren_sedacao
+        description: "Informações sobre sedação parenteral."
+      - name: diag
+        description: "Diagnóstico clínico resumido."
+      - name: ig
+        description: "Idade Gestacional (em casos pediátricos/obstétricos)."
+      - name: igc
+        description: "Idade Gestacional Corrigida."
+      - name: precisa_psicologia
+        description: "Indicador de necessidade de acompanhamento psicológico."
+      - name: precisa_nutricao
+        description: "Indicador de necessidade de avaliação nutricional."
+      - name: obs_psicologia
+        description: "Observações da equipe de psicologia."
+      - name: obs_nutricao
+        description: "Observações da equipe de nutrição."
+      - name: psicologia_ok
+        description: "Confirmação de atendimento psicológico realizado."
+      - name: sala
+        description: "Identificação da sala de atendimento."
+      - name: prescricao_data
+        description: "Data da última prescrição médica."
+      - name: precisa_hemo
+        description: "Indicador de necessidade de hemoderivados ou hemodiálise."
+      - name: obs_hemo
+        description: "Observações sobre hematologia/hemodiálise."
+      - name: hemo_ok
+        description: "Confirmação de procedimento hematológico realizado."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Data/hora da carga do dado no sistema."
+      - name: data_particao
+        description: "Data de referência para particionamento."

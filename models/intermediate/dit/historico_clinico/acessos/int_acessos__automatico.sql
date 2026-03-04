@@ -49,19 +49,19 @@ with
             unidades_de_saude.unidade_nome,
             cbo_datasus.descricao as cbo_nome,
             case 
-                when regexp_contains(lower(cbo_datasus.descricao),'^medic')
+                when regexp_contains(lower(cbo_datasus.descricao), '^medic')
                     then 'MÉDICOS'
-                when regexp_contains(lower(cbo_datasus.descricao),'^cirurgiao[ |-|]dentista')
+                when regexp_contains(lower(cbo_datasus.descricao), r'^cirurgiao[\s\-]*dentista')
                     then 'DENTISTAS'
-                when regexp_contains(lower(cbo_datasus.descricao),'psic')
+                when regexp_contains(lower(cbo_datasus.descricao), 'psic')
                     then 'PSICÓLOGOS'
-                when regexp_contains(lower(cbo_datasus.descricao),'fisioterap')
+                when regexp_contains(lower(cbo_datasus.descricao), 'fisioterap')
                     then 'FISIOTERAPEUTAS'
-                when regexp_contains(lower(cbo_datasus.descricao),'nutri[ç|c]')
+                when regexp_contains(lower(cbo_datasus.descricao), 'nutri[çc]')
                     then 'NUTRICIONISTAS'
-                when regexp_contains(lower(cbo_datasus.descricao),'fono')
+                when regexp_contains(lower(cbo_datasus.descricao), 'fonoaudio')
                     then 'FONOAUDIÓLOGOS'
-                when regexp_contains(lower(cbo_datasus.descricao),'farm')
+                when regexp_contains(lower(cbo_datasus.descricao), 'farm')
                     then 'FARMACÊUTICOS'
                 when (
                         (regexp_contains(lower(cbo_datasus.descricao),'enferm')) and 

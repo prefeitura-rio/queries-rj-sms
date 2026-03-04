@@ -2,6 +2,11 @@
     config(
         alias="diario_uniao_filtrado",
         materialized="table",
+        tags=["cdi_vps"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date"
+        }
     )
 }}
 
@@ -15,6 +20,7 @@ with filtros_diario_uniao_prelim as (
     where not (
         starts_with(organizacao_principal, "Ministério da Cultura")
         or starts_with(organizacao_principal, "Ministério do Esporte")
+        or starts_with(organizacao_principal, "Ministério da Educação")
     )
 ),
 -- Diaríos cujo texto não inicia com 'processo'

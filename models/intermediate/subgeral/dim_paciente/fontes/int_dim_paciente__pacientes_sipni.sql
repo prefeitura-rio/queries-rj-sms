@@ -1,16 +1,16 @@
 with pacientes as (
     select  
         -- id
-        safe_cast(nu_cpf_paciente as int) as paciente_cpf,
-        safe_cast(nu_cns_paciente as int) as paciente_cns,
-        safe_cast(no_paciente as string) as paciente_nome, 
-        safe_cast(dt_nascimento_paciente as date) as paciente_data_nascimento,
-        safe_cast(no_mae_paciente as string) as paciente_nome_mae,
+        safe_cast(paciente_cpf as int) as paciente_cpf,
+        safe_cast(paciente_cns as int) as paciente_cns,
+        safe_cast(paciente_nome as string) as paciente_nome, 
+        safe_cast(paciente_nascimento_data as date) as paciente_data_nascimento,
+        safe_cast(paciente_nome_mae as string) as paciente_nome_mae,
         --safe_cast(no_pai_paciente as string) as paciente_nome_pai,
         
         case
-            when tp_sexo_paciente = 'M' then 'MASCULINO'
-            when tp_sexo_paciente = 'F' then 'FEMININO'
+            when paciente_sexo = 'M' then 'Masculino'
+            when paciente_sexo = 'F' then 'Feminino'
             else NULL
         end as paciente_sexo,
 
@@ -52,7 +52,7 @@ with pacientes as (
         */
 
     from {{ ref("raw_sipni__vacinacao") }}
-    where dt_vacina >= TIMESTAMP('2024-01-01 00:00:00')
+    where vacina_aplicacao_data >= "2024-01-01"
 )
 
 select distinct * from pacientes

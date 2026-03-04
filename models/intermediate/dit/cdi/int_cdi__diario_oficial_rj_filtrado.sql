@@ -2,6 +2,11 @@
     config(
         alias="diario_rj_filtrado",
         materialized="table",
+        tags=["cdi_vps"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date"
+        }
     )
 }}
 

@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_sarah_api_staging
+    database: rj-sms
+    schema: brutos_prontuario_sarah_api_staging
+    tables:
+      - name: atendimento_continuo
+     

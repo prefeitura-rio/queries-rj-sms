@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__cen62
+    description: ""
+    columns:
+      - name: gid_prontuario
+        data_type: STRING
+        description: "ID global único do prontuário."
+      - name: gid_clinica
+        data_type: STRING
+        description: "ID global da clínica."
+      - name: gid_leito
+        data_type: STRING
+        description: "ID global do leito."
+      - name: gid_unidade
+        data_type: STRING
+        description: "ID global da unidade hospitalar."
+      - name: id_prontuario
+        data_type: INTEGER
+        description: "Identificador interno do prontuário."
+      - name: internacao_data
+        data_type: DATE
+        description: "Data de início da internação."
+      - name: internacao_hora
+        data_type: TIME
+        description: "Horário da internação."
+      - name: alta_data
+        data_type: DATE
+        description: "Data de liberação ou óbito do paciente."
+      - name: alta_hora
+        data_type: TIME
+        description: "Horário da alta hospitalar."
+      - name: saida_saida
+        data_type: STRING
+        description: "Tipo de desfecho da saída (ex: transferência, domicílio)."
+      - name: alta_motivo
+        data_type: STRING
+        description: "Justificativa clínica para a alta."
+      - name: id_clinica
+        data_type: STRING
+        description: "Código de referência da clínica."
+      - name: id_leito
+        data_type: STRING
+        description: "Código de referência do leito."
+      - name: id_unidade
+        data_type: STRING
+        description: "Código de referência da unidade."
+      - name: alta_cpf
+        data_type: STRING
+        description: "CPF do médico ou profissional que assinou a alta."
+      - name: proc
+        data_type: STRING
+        description: "Código do procedimento realizado."
+      - name: codigo_cid10
+        data_type: STRING
+        description: "Diagnóstico principal codificado pelo CID-10."
+      - name: status
+        data_type: STRING
+        description: "Status do registro (ex: ativo, cancelado)."
+      - name: cnes
+        data_type: STRING
+        description: "Código do Cadastro Nacional de Estabelecimentos de Saúde."
+      - name: loaded_at
+        data_type: STRING
+        description: "Timestamp da ingestão do dado."
+      - name: data_particao
+        data_type: DATE
+        description: "Data utilizada para particionamento físico da tabela."

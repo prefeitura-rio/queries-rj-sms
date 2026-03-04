@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__internacao_cadastro
+    description: "Tabela de dados cadastrais e identificação de pacientes do internados."
+    columns:
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: gid_registro
+        description: "ID global único do registro cadastral."
+      - name: id_registro
+        description: "Identificador local do registro."
+      - name: id_prontuario1
+        description: "Primeiro identificador local do prontuário."
+      - name: paciente_cpf
+        description: "CPF do paciente."
+      - name: paciente_nome
+        description: "Nome completo do paciente."
+      - name: sexo
+        description: "Sexo biológico do paciente."
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: paciente_pai
+        description: "Nome do pai do paciente."
+      - name: paciente_mae
+        description: "Nome da mãe do paciente."
+      - name: paciente_naturalidade
+        description: "Município de nascimento do paciente."
+      - name: paciente_nacionalidade
+        description: "Nacionalidade do paciente."
+      - name: paciente_numero_documento
+        description: "Número do documento de identidade (RG ou outro)."
+      - name: endereco_logradouro
+        description: "Nome da rua/avenida de residência."
+      - name: endereco_numero
+        description: "Número do imóvel."
+      - name: endereco_complemento
+        description: "Complemento do endereço (Apto, Bloco, etc)."
+      - name: endereco_bairro
+        description: "Bairro de residência."
+      - name: endereco_municipio
+        description: "Cidade de residência."
+      - name: endereco_uf
+        description: "Unidade Federativa (Estado) de residência."
+      - name: endereco_cep
+        description: "CEP da residência."
+      - name: paciente_telefone
+        description: "Telefone principal de contato."
+      - name: ultimo_atendimento_data
+        description: "Data da última interação ou atendimento registrado."
+      - name: cadastro_data
+        description: "Data em que o paciente foi cadastrado no sistema."
+      - name: depend
+        description: "Indicador de dependência ou vínculo familiar."
+      - name: id_prontuario2
+        description: "Identificador secundário ou legado do prontuário."
+      - name: obito_data
+        description: "Data de registro do óbito, se aplicável."
+      - name: codcs
+        description: "Código do centro de saúde ou setor de referência."
+      - name: cns
+        description: "Número do Cartão Nacional de Saúde (SUS)."
+      - name: documento_tipo
+        description: "Tipo do documento de identificação apresentado."
+      - name: id_municipio
+        description: "Código IBGE ou interno do município."
+      - name: id_logradouro
+        description: "Código de referência do logradouro no cadastro municipal."
+      - name: cnes
+        description: "Código da unidade de saúde no CNES."
+      - name: loaded_at
+        description: "Timestamp da carga do dado."
+      - name: data_particao
+        description: "Data de referência para particionamento."

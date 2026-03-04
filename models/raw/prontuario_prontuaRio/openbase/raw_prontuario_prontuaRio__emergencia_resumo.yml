@@ -1,0 +1,110 @@
+version: 2
+
+models:
+  - name: raw_prontuario_prontuaRio__emergencia_resumo
+    description: "Tabela de resumo da emergência"
+    columns:
+      - name: gid_boletim
+        description: "ID global único do boletim."
+      - name: gid_prontuario
+        description: "ID global único do prontuário."
+      - name: id_boletim
+        description: "Identificador local do boletim."
+      - name: id_prontuario
+        description: "Identificador local do prontuário."
+      - name: paciente_nome
+        description: "Nome completo do paciente."
+      - name: paciente_sexo
+        description: "Sexo biológico do paciente."
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: paciente_idade
+        description: "Idade do paciente."
+      - name: tipo_idade
+        description: "Unidade da idade (anos, meses ou dias)."
+      - name: naturalidade
+        description: "Cidade de nascimento do paciente."
+      - name: nacionalidade
+        description: "País de origem do paciente."
+      - name: paciente_cpf
+        description: "CPF do paciente."
+      - name: paciente_pai_nome
+        description: "Nome do pai do paciente."
+      - name: paciente_mae_nome
+        description: "Nome da mãe do paciente."
+      - name: paciente_responsavel
+        description: "Nome do responsável legal pelo paciente."
+      - name: paciente_endereco
+        description: "Logradouro da residência."
+      - name: paciente_endereco_numero
+        description: "Número do imóvel."
+      - name: paciente_endereco_complemento
+        description: "Complemento do endereço."
+      - name: paciente_bairro
+        description: "Bairro de residência."
+      - name: paciente_municipio
+        description: "Cidade de residência."
+      - name: paciente_uf
+        description: "Estado (UF) de residência."
+      - name: paciente_cep
+        description: "CEP da residência."
+      - name: paciente_telefone
+        description: "Telefone de contato."
+      - name: setor
+        description: "Setor hospitalar de atendimento."
+      - name: internacao_data
+        description: "Data de início da internação."
+      - name: internacao_hora
+        description: "Hora de início da internação."
+      - name: cid
+        description: "Código Internacional de Doenças principal."
+      - name: estado
+        description: "Estado clínico ou status do registro."
+      - name: origem
+        description: "Procedência do paciente (ex: demanda espontânea, ambulância)."
+      - name: alta_data
+        description: "Data da alta hospitalar."
+      - name: alta_hora
+        description: "Hora da alta hospitalar."
+      - name: motivo
+        description: "Queixa ou motivo do atendimento."
+      - name: tipo_alta
+        description: "Classificação do tipo de alta (ex: cura, óbito, evasão)."
+      - name: medico_responsavel_alta_cpf
+        description: "CPF do médico que realizou a alta."
+      - name: codussai
+        description: "Código de usuário ou sistema relacionado à saída."
+      - name: motivo_atendimento
+        description: "Descrição detalhada do motivo da consulta."
+      - name: caso_policial
+        description: "Indicador se o atendimento envolve ocorrência policial."
+      - name: trauma
+        description: "Indicador se o caso é decorrente de trauma."
+      - name: plano_saude
+        description: "Nome do convênio ou plano de saúde."
+      - name: acidente_trabalho
+        description: "Indicador de acidente de trabalho (CAT)."
+      - name: ambulancia
+        description: "Indicador se o paciente chegou via ambulância."
+      - name: codigo_cid1
+        description: "Código CID secundário (1)."
+      - name: codigo_cid2
+        description: "Código CID secundário (2)."
+      - name: tempobt
+        description: "Tempo de observação ou tratamento."
+      - name: notif
+        description: "Registro de notificação compulsória (1)."
+      - name: notif1
+        description: "Registro de notificação compulsória (2)."
+      - name: notif2
+        description: "Registro de notificação compulsória (3)."
+      - name: diasatest
+        description: "Quantidade de dias de atestado concedidos."
+      - name: codigo_cid10_1
+        description: "Código CID-10 principal detalhado."
+      - name: categoria_cid10_1
+        description: "Categoria da classificação CID-10."
+      - name: compos3
+        description: "Campo de composição de dados técnicos."
+      - name: codigo_cid10_2
+        description: "Código CID-10 secundário detalhado."

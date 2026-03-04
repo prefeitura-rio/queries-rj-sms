@@ -39,15 +39,22 @@ with
         select
             pop.paciente_cpf,
             pop.status,
-
-            dim_paciente.nomes [SAFE_OFFSET(0)] as nome,
+            bcadastro.nome,
+            
             dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
 
-            -- dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
+            coalesce(
+                concat(
+                    coalesce(trim(contato.telefone.ddi), null),
+                    coalesce(trim(contato.telefone.ddd), null),
+                    coalesce(trim(contato.telefone.numero), null)
+                ),
+                telefones.`telefones`[SAFE_OFFSET(0)].telefone_formatado
+            ) as telefone,
 
             date_diff(
                 current_date(),
-                safe_cast(dim_paciente.datas_nascimento [SAFE_OFFSET(0)] as date),
+                bcadastro.nascimento_data,
                 year
             ) as idade,
 
@@ -55,7 +62,7 @@ with
             dim_paciente.clinicas_sf_ap [SAFE_OFFSET(0)] as clinica_sf_ap,
             dim_paciente.clinicas_sf_telefone [SAFE_OFFSET(0)] as clinica_sf_telefone,
             dim_paciente.equipes_sf [SAFE_OFFSET(0)] as equipe_sf,
-            -- dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
+            dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
 
             dsr.dias_sem_resposta as gravidade_score
 
@@ -67,7 +74,14 @@ with
             left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
             on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
 
-        where dim_paciente.sexos [SAFE_OFFSET(0)] != "MASCULINO"
+            left join {{ref("mart_iplanrio__telefones_validos")}} as telefones
+            on pop.paciente_cpf = safe_cast(telefones.cpf as int)
+
+            left join {{ref("raw_bcadastro__cpf")}} as bcadastro
+            on pop.paciente_cpf = bcadastro.cpf_particao
+
+        where bcadastro.sexo != "masculino"
+            and bcadastro.ano_obito is null
             and not exists(
                 select 1
                 from unnest (dim_paciente.anos_obito) as ano
@@ -89,15 +103,25 @@ with
             pop.equipe_sf,
             pop.status,
             pop.gravidade_score,
-            pop.clinica_sf_telefone as telefone,
+            pop.telefone,
+            pop.clinica_sf_telefone as telefone_cf,
+            pop.equipe_sf_telefone as telefone_esf,     
 
             -- dados evento
             fcts.sistema_origem as fonte,
             fcts.sistema_tipo as tipo,
             fcts.procedimento,
             fcts.cid,
-            fcts.estabelecimento_origem_nome as unidade_solicitante,
-            fcts.estabelecimento_executante_nome as unidade_executante,
+            concat(
+                fcts.id_cnes_unidade_origem,
+                " - ",
+                fcts.estabelecimento_origem_nome
+            ) as unidade_solicitante,
+            concat(
+                fcts.id_cnes_unidade_executante,
+                " - ",
+                fcts.estabelecimento_executante_nome
+            ) as unidade_executante,
             fcts.data_solicitacao,
             fcts.data_autorizacao,
             fcts.data_execucao,
@@ -131,6 +155,8 @@ with
 
             -- contato paciente
             telefone,
+            telefone_cf,
+            telefone_esf,
 
             -- sistemas com eventos do paciente
             struct(
@@ -154,6 +180,12 @@ with
                     data_autorizacao,
                     data_execucao,
                     data_resultado,
+
+                    safe_cast(data_solicitacao as string) as data_solicitacao_str,
+                    safe_cast(data_autorizacao as string) as data_autorizacao_str,
+                    safe_cast(data_execucao as string) as data_execucao_str,
+                    safe_cast(data_resultado as string) as data_resultado_str,
+
 
                     array_concat(
                         if(
@@ -189,7 +221,9 @@ with
             equipe_sf,
             status,
             gravidade_score,
-            telefone
+            telefone,
+            telefone_cf,
+            telefone_esf
     )
 
 select *

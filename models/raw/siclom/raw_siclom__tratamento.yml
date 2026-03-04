@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: raw_siclom__tratamento
+    description: "Contém dados de dispensação de medicamentos antirretrovirais para tratamento do HIV."
+    columns:
+      # Unidade Dispensadora
+      - name: unidade_dispensadora
+        description: "Nome da unidade que dispensou o medicamento."
+      - name: unidade_dispensadora_municipio
+        description: "Município da unidade dispensadora."
+      - name: unidade_dispensadora_uf
+        description: "UF da unidade dispensadora."
+      - name: servico_atendimento
+        description: "Tipo de serviço de atendimento."
+      - name: esfera_atendimento
+        description: "Esfera do atendimento (pública ou privada)."
+
+      # Identificação do paciente
+      - name: paciente_cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: "Nome civil do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_genero
+        description: "Gênero autodeclarado pelo paciente."
+
+      # Dados clínicos
+      - name: categoria_usuario
+        description: "Categoria do usuário (ex: Gestante, Criança Exposta)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: idade_gestacional
+        description: "Idade gestacional em semanas, caso aplicável."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_data
+        description: "Data do parto, caso aplicável."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: coinfectado
+        description: "Indica se o paciente possui coinfecções"
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+
+      # Prescrição
+      - name: dispensa_data
+        description: "Data e hora da dispensação do medicamento."
+      - name: mudanca_tratamento
+        description: "Indica se houve mudança no tratamento."
+      - name: esquema
+        description: "Descrição do esquema terapêutico prescrito."
+      - name: duracao
+        description: "Duração do tratamento"
+
+      # Médico prescritor
+      - name: medico_nome
+        description: "Nome do médico prescritor."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: id_conselho
+        description: "Número de registro do médico prescritor em seu conselho de classe (CRM)."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: conselho_uf
+        description: "UF do conselho de classe do médico prescritor."
+
+      # Campos de Controle
+      - name: extraido_em
+        description: "Data/hora de extração do dado da fonte."
+      - name: data_particao
+        description: "Data de partição da tabela, baseada na data de extração."
