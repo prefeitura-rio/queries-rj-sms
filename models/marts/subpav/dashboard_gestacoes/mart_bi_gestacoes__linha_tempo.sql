@@ -614,7 +614,7 @@ condicoes_flags AS (
             CASE
                 WHEN
                     -- cg.cid = 'O16' 
-                    cg.cid = '%O16%'
+                    cg.cid LIKE '%O16%'
                 -- AND cg.data_diagnostico BETWEEN f.data_inicio AND COALESCE(
                 --     f.data_fim_efetiva,
                 --     f.dpp,
@@ -1264,7 +1264,7 @@ dispensacao_aparelho_pa AS (
         -- LEFT JOIN {{ ref('mart_estoque__movimento') }} m
         LEFT JOIN {{ ref('mart_estoque__movimento') }} m
             ON pi.cpf = m.consumo_paciente_cpf -- Campo correto confirmado
-        AND m.id_material IN ('65159513221', '65159506608')
+        AND m.id_material IN ('65159513221', '65159506608', '65155518474', '65155518555')
         AND DATE(m.data_hora_evento) BETWEEN f.data_inicio AND COALESCE(
             f.data_fim_efetiva,
             CURRENT_DATE()
@@ -2013,6 +2013,4 @@ final AS (
 
 SELECT
     *
-FROM final
-WHERE fase_atual IN ('Gestação', 'Puerpério');
-END;
+FROM final;
