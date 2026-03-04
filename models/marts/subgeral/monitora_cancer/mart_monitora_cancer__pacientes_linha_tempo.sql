@@ -81,7 +81,7 @@ with
             on pop.paciente_cpf = bcadastro.cpf_particao
 
         where bcadastro.sexo != "masculino"
-            and bcadastro.ano_obito is null
+            and bcadastro.obito_ano is null
             and not exists(
                 select 1
                 from unnest (dim_paciente.anos_obito) as ano
