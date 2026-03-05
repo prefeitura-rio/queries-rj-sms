@@ -1,0 +1,40 @@
+version: 2
+
+sources:
+  - name: brutos_gdb_sih_staging
+    database: rj-sms
+    schema: brutos_gdb_sih_staging
+    tables:
+
+    - name: TB_HA
+      # TB_HA -> cadastro de hospitais
+
+    - name: TB_GESTOR
+      # TB_GESTOR -> cadastro de gestores
+
+    - name: TB_C_D
+      # TB_C_D -> tabela código-descrição
+
+    - name: TB_HAIH
+      # TB_HAIH -> histórico AIH
+
+    - name: TB_HPA
+      # TB_HPA -> histórico procedimentos
+
+    - name: TB_HRC
+      # TB_HRC -> histórico registro civil
+
+    - name: TB_HALP
+      # TB_HALP -> histórico AIH longa permanência
+
+    - name: TB_PR
+      # TB_PR -> números de processamento
+
+    - name: TB_TETO
+      # TB_TETO -> teto financeiro de gestores
+  
+    - name: TB_TC
+      # TB_TC -> cadastro de terceiros
+
+    - name: TU_PROCEDIMENTO
+      # TU_PROCEDIMENTO -> tipos de procedimentos?
