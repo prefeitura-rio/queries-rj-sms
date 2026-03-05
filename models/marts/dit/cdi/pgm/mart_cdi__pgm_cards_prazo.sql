@@ -21,9 +21,19 @@ SELECT
     ELSE 'Fora do prazo'
   END AS status_prazo,
 
-  -- Métrica de tempo de atendimento
-  DATE_DIFF(SAFE_CAST(data_saida_pgm AS DATE), SAFE_CAST(data_de_entrada AS DATE), DAY) AS tempo_atendimento_dias,
+  CASE
+    WHEN data_de_entrada > CURRENT_DATE() THEN NULL
 
+    WHEN data_saida_pgm > CURRENT_DATE() THEN NULL
+
+    WHEN data_saida_pgm < data_de_entrada THEN NULL
+
+    ELSE DATE_DIFF(
+      data_saida_pgm,
+      data_de_entrada,
+      DAY
+    )
+  END AS tempo_atendimento_dias,
   -- Campos para filtros
   COALESCE(TRIM(cap), 'Não informado') AS cap,
   COALESCE(TRIM(origem), 'Não informado') AS origem,
