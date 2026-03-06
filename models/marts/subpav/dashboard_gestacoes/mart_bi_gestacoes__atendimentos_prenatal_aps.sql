@@ -19,7 +19,7 @@ marcadores_temporais AS (
    data_fim,
    data_fim_efetiva,
    fase_atual
---  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
+--  FROM `rj-sms.projeto_gestacoes.gestacoes`
  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
 
@@ -37,10 +37,7 @@ peso_anterior_dum AS (
      ORDER BY ea.entrada_data DESC  -- Mais próximo da DUM, mas ANTES
    ) AS rn
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
-<<<<<<< feat/combo-5-regras-linha-tempo
 --  FROM `rj-sms.saude_historico_clinico.episodio_assistencial` ea
-=======
->>>>>>> master
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
  WHERE ea.medidas.peso IS NOT NULL
@@ -163,7 +160,6 @@ peso_altura_inicio AS (
    p.entrada_data AS data_peso_inicio,
    p.dias_diferenca AS dias_diferenca_peso_dum,
    p.origem_peso,
-<<<<<<< feat/combo-5-regras-linha-tempo
    a.altura_cm / 100 AS altura_m,
    ROUND(p.peso / NULLIF(POW(a.altura_cm / 100, 2), 0), 1) AS imc_inicio,
    CASE
@@ -172,15 +168,6 @@ peso_altura_inicio AS (
      WHEN ROUND(p.peso / NULLIF(POW(a.altura_cm / 100, 2), 0), 1) < 30 THEN 'Sobrepeso'
      WHEN ROUND(p.peso / NULLIF(POW(a.altura_cm / 100, 2), 0), 1) >= 30 THEN 'Obesidade'
      ELSE NULL
-=======
-   safe_divide(a.altura_cm, 100) AS altura_m,
-   ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) AS imc_inicio,
-   CASE
-     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 18 THEN 'Baixo peso'
-     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 25 THEN 'Eutrófico'
-     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 30 THEN 'Sobrepeso'
-     ELSE 'Obesidade'
->>>>>>> master
    END AS classificacao_imc_inicio
  FROM peso_proximo_inicio p
  JOIN altura_moda_completa a ON p.id_gestacao = a.id_gestacao
@@ -325,12 +312,7 @@ consultas_enriquecidas AS (
 
 
    ag.peso - pai.peso AS ganho_peso_acumulado,
-<<<<<<< feat/combo-5-regras-linha-tempo
    ROUND(ag.peso / NULLIF(POW(pai.altura_m, 2), 0), 1) AS imc_consulta
-=======
-   ROUND(safe_divide(ag.peso, POW(pai.altura_m, 2)), 1) AS imc_consulta
->>>>>>> master
-
 
  FROM atendimentos_gestacao ag
  LEFT JOIN prescricoes_aggregadas presc ON ag.id_hci = presc.id_hci
@@ -382,7 +364,7 @@ SELECT
 FROM consultas_enriquecidas
 where fase_atual = 'Gestação'
 ORDER BY
- data_consulta DESC;
+ data_consulta DESC
 
     
 
