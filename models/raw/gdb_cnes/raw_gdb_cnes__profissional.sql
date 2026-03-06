@@ -45,8 +45,8 @@ renamed as (
         end as sexo,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga,
 
         -- Precisamos usar safe_cast() porque aparece um (01) CPF com letra no meio
         safe_cast({{process_null("CPF_PROF")}} as int64) as cpf_particao

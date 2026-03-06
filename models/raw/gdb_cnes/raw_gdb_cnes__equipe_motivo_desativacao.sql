@@ -1,7 +1,12 @@
 {{
     config(
         alias="equipe_motivo_desativacao",
-        schema= "brutos_gdb_cnes"
+        schema= "brutos_gdb_cnes",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -24,8 +29,8 @@ renamed as (
         cast({{ process_null("DS_MOTIVO_DESATIV") }} as string) as motivo_desativacao,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 

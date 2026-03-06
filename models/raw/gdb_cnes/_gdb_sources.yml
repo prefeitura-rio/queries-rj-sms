@@ -29,3 +29,13 @@ sources:
 
     - name: NFCES053
       # NFCES049 -> equipe_motivo_desativacao
+
+    - name: NFCES056
+      # NFCES056 -> vinculo_estabelecimento
+
+    - name: NFCES057
+      # NFCES057 -> vinculo_empregador
+
+    - name: NFCES058
+      # NFCES058 -> vinculo_detalhe
+
