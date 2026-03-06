@@ -27,15 +27,72 @@ with
         from {{ ref("int_historico_clinico__vacinacao__sipni") }}
     ),
 
-    vacinacoes_dedup as (
+    nomes_vacinas as (
         select *
+        from {{ ref("raw_sheets__vacinas_padronizadas") }}
+    ),
+
+    vacinacoes_nome_tratado as (
+        select
+            * except(vacina_descricao),
+
+            -- Remove prefixos "vacina", "vacina contra", "vc", ...
+            REGEXP_REPLACE(
+                trim({{ process_null("vacina_descricao") }}),
+                r"(?i)^(vacina|vc)\s*(contra(\s*[oa])?)?\s*",
+                ""
+            ) as vacina_descricao
+
         from vacinacoes
+    ),
+
+    vacinacoes_limpeza_inicial as (
+        select
+            v.* except (vacina_dose, vacina_lote),
+
+            {{ proper_vacina_dose("v.vacina_dose") }} as vacina_dose,
+            {{ clean_lote_vacina("v.vacina_lote") }} as vacina_lote,
+
+            coalesce(
+                nomes.nome_para,
+                {{ proper_br("v.vacina_descricao") }}
+             ) as vacina_descricao_padronizada,
+             nomes.sigla as vacina_sigla,
+             nomes.detalhes as vacina_detalhes
+
+        from vacinacoes_nome_tratado as v
+        left join nomes_vacinas as nomes
+            -- Aqui fazemos um pequeno tratamento para aumentar
+            -- as chances de achar um par na planilha
+            on lower(nomes.nome_de) = REGEXP_REPLACE(
+                REGEXP_REPLACE(
+                    lower(v.vacina_descricao),
+                    -- Remove parênteses, vírgulas
+                    r"[,\(\)]",
+                    ""
+                ),
+                -- Remove espaços em branco duplicados
+                r"\s+",
+                " "
+            )
+    ),
+
+    vacinacoes_dedup as (
+        select
+            *
+        from vacinacoes_limpeza_inicial
         qualify row_number() over (
-            partition by id_vacinacao 
-            order by 
-                case 
-                    when origem = 'api' then 1 
-                    when origem = 'historico' then 2 
+            partition by
+                id_cnes,
+                paciente_cpf,
+                vacina_aplicacao_data,
+                vacina_descricao_padronizada,
+                vacina_dose,
+                vacina_lote
+            order by
+                case
+                    when origem = 'api' then 1
+                    when origem = 'historico' then 2
                     when origem = 'sipni' then 3
                     else 4
                 end
@@ -52,20 +109,36 @@ with
             paciente_id_prontuario,
             paciente_cns,
             paciente_cpf,
-            estabelecimento_nome,
-            equipe_nome,
+            {{ proper_estabelecimento("estabelecimento_nome") }} as estabelecimento_nome,
+            {{ proper_br("equipe_nome") }} as equipe_nome,
             profissional_nome,
             profissional_cbo,
             profissional_cns,
             profissional_cpf,
             vacina_descricao,
+            vacina_descricao_padronizada,
+            vacina_sigla,
+            vacina_detalhes,
             vacina_dose,
             vacina_lote,
             vacina_registro_tipo,
-            vacina_estrategia,
+
+            {{ clean_estrategia_vacina("vacina_estrategia") }} as vacina_estrategia,
+
             vacina_diff,
-            vacina_aplicacao_data,
-            vacina_registro_data,
+
+            -- Diversos casos de data de aplicação 1900-01-01
+            if(
+                -- TODO: quando tivermos dados de 1900, atualizar
+                vacina_aplicacao_data > date("1900-01-01"),
+                vacina_aplicacao_data,
+                null
+            ) as vacina_aplicacao_data,
+            if(
+                vacina_registro_data > date("1900-01-01"),
+                vacina_registro_data,
+                null
+            ) as vacina_registro_data,
             paciente_nome,
             paciente_sexo,
             paciente_nascimento_data,
@@ -82,4 +155,3 @@ with
 
 select *
 from final
-
