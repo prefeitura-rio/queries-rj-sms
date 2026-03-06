@@ -473,6 +473,13 @@ models:
             dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
+        gdb_cnes:
+          +tags: ["weekly", "gdb_cnes"]
+          +schema: intermediario_gdb_cnes
+          +labels:
+            dado_publico: sim
+            dado_pessoal: sim
+            dado_sensivel: sim
     marts:
       +materialized: table
       core:
