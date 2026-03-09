@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: mart_subhue_profissional_vinculo
+    description: "Tabela de vínculos de profissionais de saúde, enriquecida com informações do profissional, estabelecimento, ocupação e detalhes do vínculo. Filtra por estabelecimentos com nome e vínculos ativos."
+    columns:
+      - name: id_profissional_cnes
+        description: "ID do profissional no CNES."
+      - name: id
+        description: "Chave substituta gerada a partir de cpf, id_cnes e id_cbo."
+      - name: profissional
+        description: "Struct com informações do profissional."
+        columns:
+          - name: cpf
+            description: "CPF do profissional."
+          - name: cns
+            description: "Cartão Nacional de Saúde do profissional."
+          - name: nome
+            description: "Nome do profissional."
+          - name: conselho_registro
+            description: "Número de registro no conselho profissional."
+          - name: conselho_uf
+            description: "UF do conselho profissional."
+      - name: estabelecimento
+        description: "Struct com informações do estabelecimento."
+        columns:
+          - name: id_cnes
+            description: "ID CNES do estabelecimento."
+          - name: nome
+            description: "Nome do estabelecimento."
+          - name: tipo
+            description: "Tipo do estabelecimento."
+          - name: area_programatica
+            description: "Área programática do estabelecimento."
+      - name: ocupacao
+        description: "Struct com informações da ocupação (CBO)."
+        columns:
+          - name: id_cbo_familia
+            description: "ID da família do CBO."
+          - name: familia
+            description: "Descrição da família do CBO."
+          - name: id_cbo
+            description: "ID do CBO."
+          - name: ocupacao
+            description: "Descrição do CBO."
+      - name: vinculo
+        description: "Struct com informações do vínculo do profissional."
+        columns:
+          - name: carga_horaria_hospitalar
+            description: "Carga horária hospitalar semanal."
+          - name: carga_horaria_ambulatorial
+            description: "Carga horária ambulatorial semanal."
+          - name: carga_horaria_outros
+            description: "Outras cargas horárias semanais."
+          - name: vinculo
+            description: "Descrição do tipo de vínculo."
+          - name: subvinculo
+            description: "Descrição do subtipo de vínculo."
+          - name: vinculacao
+            description: "Descrição da vinculação."
+          - name: conceito
+            description: "Conceito do vínculo."
+          - name: ativo
+            description: "Indica se o vínculo está ativo."
+      - name: atualizado_em
+        description: "Data da última atualização do vínculo na fonte."
+      - name: carregado_em
+        description: "Data da partição do dado carregado."
+      - name: processado_em
+        description: "Data e hora de quando o modelo foi processado."
+      - name: cpf_particao
+        description: "CPF do profissional para particionamento da tabela."
+
+
