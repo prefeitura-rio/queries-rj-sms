@@ -1,6 +1,6 @@
 {{
     config(
-        alias="int_gdb_cnes__vinculo_detalhe",
+        alias="vinculo_detalhe",
         materialized="table",
         tags=["gdb_cnes"]
     )
@@ -11,13 +11,14 @@ with
         select distinct
             id_vinculo,
             id_vinculacao,
-            tipo_vinculo,
-            tipo_subvinculo,
+            id_tipo_vinculo,
+            id_tipo_subvinculo,
             descricao_subvinculo,
             descricao_conceito,
             habilitado, 
             solicita_cnpj
         from {{ ref("raw_gdb_cnes__vinculo_detalhe") }}
+        where data_particao = (select max(data_particao) from {{ ref("raw_gdb_cnes__vinculo_detalhe") }})
     ),
 
     vinculo_empregador as (
@@ -26,6 +27,7 @@ with
             id_tipo_vinculo,
             descricao_vinculo
         from {{ ref("raw_gdb_cnes__vinculo_empregador") }}
+        where data_particao = (select max(data_particao) from {{ ref("raw_gdb_cnes__vinculo_empregador") }})
     ),
 
     vinculo_estabelecimento as (
@@ -33,17 +35,23 @@ with
             id_vinculacao,
             descricao_vinculacao
         from {{ ref("raw_gdb_cnes__vinculo_estabelecimento") }}
+        where data_particao = (select max(data_particao) from {{ ref("raw_gdb_cnes__vinculo_estabelecimento") }})
     )
 
-select distinct
+select
     id_vinculo,
     id_vinculacao,
-    descricao_vinculo as vinculo,
+    id_tipo_vinculo,
+    id_tipo_subvinculo,
+    descricao_vinculo,
     descricao_subvinculo,
     descricao_conceito,
-    descricao_vinculacao as vinculacao,
+    descricao_vinculacao,
     habilitado, 
     solicita_cnpj
 from vinculo
-left join vinculo_empregador using (id_vinculacao)
+left join vinculo_empregador using (id_tipo_vinculo, id_vinculacao)
 left join vinculo_estabelecimento using (id_vinculacao)
+from vinculo v
+left join vinculo_estabelecimento vest on v.id_vinculacao = vest.id_vinculacao
+left join vinculo_empregador ve on v.id_vinculacao = ve.id_vinculacao and v.id_tipo_vinculo = ve.id_tipo_vinculo

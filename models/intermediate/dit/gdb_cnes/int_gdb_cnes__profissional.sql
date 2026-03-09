@@ -1,6 +1,6 @@
 {{
     config(
-        alias="int_gdb_cnes__profissional",
+        alias="profissional",
         materialized="table",
         tags=["gdb_cnes"],
         partition_by={
@@ -15,7 +15,7 @@
 with 
     profissional as (
         select * from {{ ref("raw_gdb_cnes__profissional") }}
-        qualify row_number() over (partition by id_profissional_cnes order by data_carga desc) = 1
+        where data_particao = (select max(data_particao) from {{ ref("raw_gdb_cnes__profissional") }})
     )
 
 select *

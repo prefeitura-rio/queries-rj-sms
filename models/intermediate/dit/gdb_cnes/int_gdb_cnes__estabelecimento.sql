@@ -1,6 +1,6 @@
 {{
     config(
-        alias="int_gdb_cnes__estabelecimento",
+        alias="estabelecimento",
         materialized="table",
         tags=["gdb_cnes"],
         partition_by={
@@ -14,7 +14,7 @@
 with 
     estabelecimento as (
         select * from {{ ref("raw_gdb_cnes__estabelecimento") }}
-        qualify row_number() over (partition by id_unidade order by data_carga desc) = 1
+        where data_particao = (select max(data_particao) from {{ ref("raw_gdb_cnes__estabelecimento") }})
     )
 
 select * from estabelecimento
