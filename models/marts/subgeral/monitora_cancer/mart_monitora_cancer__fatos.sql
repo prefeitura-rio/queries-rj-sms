@@ -337,6 +337,60 @@ with
             and data_solicitacao >= "2021-01-01"
     ),
 
+-- refatorar
+    siscan_histo_mama as (
+        select
+        -- pk
+            "SISCAN" as sistema_origem,
+            "EXAME" as sistema_tipo,
+            safe_cast(protocolo_id as int) as id_sistema_origem,
+
+        -- paciente
+            paciente_cns,
+
+        -- unidades
+            unidade_solicitante_id_cnes as id_cnes_unidade_origem,
+            unidade_prestadora_id_cnes as id_cnes_unidade_executante,
+
+        -- attr,
+            cast(NULL as string) as carater,
+            cast(NULL as string) as cid,
+
+        -- procedimento
+            cast(NULL as string) as procedimento_especialidade,
+            "RESULTADO DE EXAME" as procedimento_tipo,
+            upper(procedimento_cirurgico) as procedimento,
+
+        -- datas
+            data_solicitacao,
+            cast(NULL as date) as data_autorizacao,
+            data_realizacao as data_execucao,
+
+        -- resultados siscan
+            data_liberacao_resultado as data_exame_resultado,
+            case 
+                when lateralidade = "Esquerda" then coalesce(lesao_neoplasico, lesao_benigno)
+                else null
+            end as mama_esquerda_classif_radiologica, 
+            
+            case 
+                when lateralidade = "Direita" then coalesce(lesao_neoplasico, lesao_benigno)
+                else null
+            end as mama_direita_classif_radiologica,
+
+        -- indicadores
+            true as criterio_suspeita,
+
+            case
+                when lesao_neoplasico is not null then true
+                else false
+            end as criterio_diagnostico
+
+        from {{ ref("raw_siscan_web__laudos_histo_mama") }}
+        where 1 = 1
+            and data_solicitacao >= "2021-01-01"
+    ),
+
     fatos as (
         select
             sistema_origem,
@@ -431,6 +485,30 @@ with
             criterio_suspeita,
             criterio_diagnostico
         from siscan
+
+        union all
+
+        select
+            sistema_origem,
+            sistema_tipo,
+            id_sistema_origem,
+            paciente_cns,
+            id_cnes_unidade_origem,
+            id_cnes_unidade_executante,
+            carater,
+            cid,
+            procedimento_especialidade,
+            procedimento_tipo,
+            procedimento,
+            data_solicitacao,
+            data_autorizacao,
+            data_execucao,
+            data_exame_resultado,
+            mama_esquerda_classif_radiologica,
+            mama_direita_classif_radiologica,
+            criterio_suspeita,
+            criterio_diagnostico
+        from siscan_histo_mama
     ),
 
     transforma_fatos as (
