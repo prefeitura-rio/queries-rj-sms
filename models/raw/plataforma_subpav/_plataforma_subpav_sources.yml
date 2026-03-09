@@ -26,4 +26,10 @@ sources:
       - name: subpav_sinanrio__notificacao
       - name: subpav_sinanrio__tb_investiga
       - name: subpav_sinanrio__tb_sintomatico
-
+      - name: subpav_cegonha__agendamento_gestantes
+      - name: subpav_cegonha__gestantes
+      - name: subpav_cegonha__unidades_turnos_horarios
+      - name: subpav_cegonha__unidades_agendamento_vagas
+      - name: subpav_cegonha__unidades_referencia_encaminha
+      - name: subpav_cegonha__horarios
+      - name: subpav_cegonha__visita_gestantes_tipos
