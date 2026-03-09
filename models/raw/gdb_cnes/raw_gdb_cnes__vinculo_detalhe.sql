@@ -32,8 +32,8 @@ renamed as (
         cast({{ process_null("IND_VINC") }} as string) as id_vinculo,
         -- CD_VINCULACAO: FK NFCES057
         cast({{ process_null("CD_VINCULACAO") }} as string) as id_vinculacao,
-        cast({{ process_null("TP_VINCULO") }} as string) as tipo_vinculo,
-        cast({{ process_null("TP_SUBVINCULO") }} as string) as tipo_subvinculo,
+        cast({{ process_null("TP_VINCULO") }} as string) as id_tipo_vinculo,
+        cast({{ process_null("TP_SUBVINCULO") }} as string) as id_tipo_subvinculo,
         cast({{ process_null("DS_SUBVINCULO") }} as string) as descricao_subvinculo,
         cast({{ process_null("DS_CONCEITO") }} as string) as descricao_conceito,
         case
