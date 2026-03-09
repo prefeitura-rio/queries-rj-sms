@@ -36,8 +36,8 @@ with
             {{ remove_accents_upper("raca_cor") }} as raca,
             {{ remove_accents_upper("nome_mae") }} as mae_nome,
             {{ remove_accents_upper("nome_pai") }} as pai_nome,
-            date(data_nascimento) as data_nascimento,
-            date(data_obito) as obito_data,
+            {{ parse_and_filter_future_date("data_nascimento") }} as data_nascimento,
+            {{ parse_and_filter_future_date("data_obito") }} as obito_data,
             {{ remove_accents_upper("obito") }} as obito_indicador,
             updated_at,
             cast(null as string) as id_cnes

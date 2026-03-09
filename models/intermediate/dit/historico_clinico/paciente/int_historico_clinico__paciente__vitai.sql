@@ -40,8 +40,8 @@ with
             {{ remove_accents_upper("raca_cor") }} as raca,
             {{ remove_accents_upper("nome_mae") }} as mae_nome,
             cast(null as string) as pai_nome,
-            date(data_nascimento) as data_nascimento,
-            date(data_obito) as obito_data,
+            {{ parse_and_filter_future_date("data_nascimento") }} as data_nascimento,
+            {{ parse_and_filter_future_date("data_obito") }} as obito_data,
             updated_at,
             gid_estabelecimento as id_cnes  -- use gid to get id_cnes from  rj-sms.brutos_prontuario_vitai.estabelecimento
         from {{ ref("raw_prontuario_vitai__paciente") }}  -- `rj-sms-dev`.`brutos_prontuario_vitai`.`paciente`

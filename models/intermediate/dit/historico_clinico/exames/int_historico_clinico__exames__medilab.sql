@@ -33,15 +33,16 @@ with
             paciente_cns,
             {{ proper_br('paciente_nome') }} as paciente_nome,
             {{ proper_br('paciente_mae_nome') }} as paciente_mae_nome,
-            paciente_data_nascimento,
+            {{ parse_and_filter_future_date('paciente_data_nascimento') }} as paciente_data_nascimento,
 
             id_exame,
             id_laudo,
             exame_nome,
             exame_codigo_sigtap,
-            exame_data,
+            {{ parse_and_filter_future_date('exame_data') }} as exame_data,
+
             laudo_bucket,
-            laudo_data_atualizacao,
+            {{ parse_and_filter_future_date('laudo_data_atualizacao') }} as laudo_data_atualizacao,
 
             {{ proper_br('medico_requisitante') }} as medico_requisitante,
             {{ proper_br('medico_responsavel') }} as medico_responsavel,

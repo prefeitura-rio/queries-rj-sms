@@ -190,4 +190,4 @@ fim as (
 select *
 from fim
 where processo_rio is not null 
-        and orgao is not null
+        and data_de_entrada is not null

@@ -19,7 +19,7 @@ marcadores_temporais AS (
    data_fim,
    data_fim_efetiva,
    fase_atual
---  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
+--  FROM `rj-sms.projeto_gestacoes.gestacoes`
  FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
 ),
 
@@ -37,6 +37,7 @@ peso_anterior_dum AS (
      ORDER BY ea.entrada_data DESC  -- Mais próximo da DUM, mas ANTES
    ) AS rn
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
+--  FROM `rj-sms.saude_historico_clinico.episodio_assistencial` ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
  WHERE ea.medidas.peso IS NOT NULL
@@ -56,7 +57,8 @@ peso_posterior_dum AS (
      PARTITION BY mt.id_gestacao
      ORDER BY ea.entrada_data ASC  -- Mais próximo da DUM, mas DEPOIS
    ) AS rn
- FROM `rj-sms.saude_historico_clinico.episodio_assistencial` ea
+ FROM {{ ref('mart_historico_clinico__episodio') }} ea
+--  FROM `rj-sms.saude_historico_clinico.episodio_assistencial` ea
  JOIN marcadores_temporais mt
    ON ea.paciente.id_paciente = mt.id_paciente
  WHERE ea.medidas.peso IS NOT NULL
@@ -158,62 +160,72 @@ peso_altura_inicio AS (
    p.entrada_data AS data_peso_inicio,
    p.dias_diferenca AS dias_diferenca_peso_dum,
    p.origem_peso,
-   safe_divide(a.altura_cm, 100) AS altura_m,
-   ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) AS imc_inicio,
+   a.altura_cm / 100 AS altura_m,
+   ROUND(p.peso / NULLIF(POW(a.altura_cm / 100, 2), 0), 1) AS imc_inicio,
    CASE
-     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 18 THEN 'Baixo peso'
-     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 25 THEN 'Eutrófico'
-     WHEN ROUND(safe_divide(p.peso, POW(safe_divide(a.altura_cm, 100), 2)), 1) < 30 THEN 'Sobrepeso'
-     ELSE 'Obesidade'
+     WHEN ROUND(p.peso / NULLIF(POW(a.altura_cm / 100, 2), 0), 1) < 18 THEN 'Baixo peso'
+     WHEN ROUND(p.peso / NULLIF(POW(a.altura_cm / 100, 2), 0), 1) < 25 THEN 'Eutrófico'
+     WHEN ROUND(p.peso / NULLIF(POW(a.altura_cm / 100, 2), 0), 1) < 30 THEN 'Sobrepeso'
+     WHEN ROUND(p.peso / NULLIF(POW(a.altura_cm / 100, 2), 0), 1) >= 30 THEN 'Obesidade'
+     ELSE NULL
    END AS classificacao_imc_inicio
  FROM peso_proximo_inicio p
  JOIN altura_moda_completa a ON p.id_gestacao = a.id_gestacao
 ),
 
 
--- -- Atendimentos de pré-natal APS
--- atendimentos_filtrados AS (
---  SELECT
---    ea.id_hci,
---    ea.paciente.id_paciente,
---    ea.entrada_data,
---    ea.estabelecimento.nome AS estabelecimento,
---    ea.estabelecimento.estabelecimento_tipo,
---    ea.profissional_saude_responsavel.nome AS profissional_nome,
---    ea.profissional_saude_responsavel.especialidade AS profissional_categoria,
---    ea.medidas.altura,
---    ea.medidas.peso,
---    ea.medidas.imc,
---    ea.medidas.pressao_sistolica,
---    ea.medidas.pressao_diastolica,
---    ea.motivo_atendimento,
---    ea.desfecho_atendimento,
---   --  c.id AS cid,
---    STRING_AGG(DISTINCT c.id, '; ' ORDER BY c.id) AS cid_string
--- --  FROM {{ ref('mart_historico_clinico__episodio') }} ea,
+-- Episódios já filtrados com tipo_atd_prof_saude calculado por linha (antes do UNNEST/GROUP BY)
+episodios_filtrados_com_tipo AS (
+  SELECT
+    ea.*,
+    CASE
+      WHEN LOWER(COALESCE(ea.profissional_saude_responsavel.especialidade, '')) LIKE '%dentista%'
+        OR LOWER(COALESCE(ea.profissional_saude_responsavel.especialidade, '')) LIKE '%odonto%' THEN 'Saúde Bucal'
+      WHEN ea.profissional_saude_responsavel.especialidade = 'Farmacêutico Hospitalar e Clinico - NASF' THEN 'Farmacêutico'
+      WHEN ea.profissional_saude_responsavel.especialidade IN (
+        'Médico da estratégia de saúde da família',
+        'Enfermeiro da estratégia saúde da família',
+        'Enfermeiro - Modelo B',
+        'Médico Clínico',
+        'Médico Ginecologista e Obstetra - NASF',
+        'Médico Ginecologista - Modelo B',
+        'Médico Clinico - Modelo B',
+        'Enfermeiro obstétrico',
+        'Enfermeiro',
+        'Enfermeiro Obstetrico - Nasf',
+        'Médico Generalista',
+        'Médico de Família e Comunidade'
+      ) THEN 'Médico e Enfermeiro'
+      ELSE 'Outros'
+    END AS tipo_atd_prof_saude
 --  FROM `rj-sms.saude_historico_clinico.episodio_assistencial` ea
---  --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
---   left join UNNEST(ea.condicoes) AS c
---  WHERE ea.subtipo = 'Atendimento SOAP'
---    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
---    AND c.situacao = 'ATIVO'
---   --  AND (c.id = 'Z321' OR c.id LIKE 'Z34%' OR c.id LIKE 'Z35%')
---    AND ea.profissional_saude_responsavel.especialidade IN (
---      'Médico da estratégia de saúde da família',
---      'Enfermeiro da estratégia saúde da família',
---      'Enfermeiro - Modelo B',
---      'Médico Clínico',
---      'Médico Ginecologista e Obstetra - NASF',
---      'Médico Ginecologista - Modelo B',
---      'Médico Clinico - Modelo B',
---      'Enfermeiro obstétrico',
---      'Enfermeiro',
---      'Enfermeiro Obstetrico - Nasf',
---      'Médico Generalista',
---      'Médico de Família e Comunidade'
---    )
---    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14
--- ),
+  FROM {{ ref('mart_historico_clinico__episodio') }} ea
+  WHERE (
+      ea.subtipo = 'Atendimento SOAP'
+      OR ea.subtipo = 'Atendimento Saúde Bucal'
+      OR ea.subtipo LIKE 'Atendimento de Saúde Bucal%'
+    )
+    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
+    AND (
+      ea.profissional_saude_responsavel.especialidade IN (
+        'Médico da estratégia de saúde da família',
+        'Enfermeiro da estratégia saúde da família',
+        'Enfermeiro - Modelo B',
+        'Médico Clínico',
+        'Médico Ginecologista e Obstetra - NASF',
+        'Médico Ginecologista - Modelo B',
+        'Médico Clinico - Modelo B',
+        'Enfermeiro obstétrico',
+        'Enfermeiro',
+        'Enfermeiro Obstetrico - Nasf',
+        'Médico Generalista',
+        'Médico de Família e Comunidade',
+        'Farmacêutico Hospitalar e Clinico - NASF'
+      )
+      OR LOWER(COALESCE(ea.profissional_saude_responsavel.especialidade, '')) LIKE '%dentista%'
+      OR LOWER(COALESCE(ea.profissional_saude_responsavel.especialidade, '')) LIKE '%odonto%'
+    )
+),
 
 -- Atendimentos de pré-natal APS - Refatorado para incluir atendimentos de enfermeiros sem CID
 -- Solução robusta e testada
@@ -226,6 +238,7 @@ SELECT
   ea.estabelecimento.estabelecimento_tipo,
   ea.profissional_saude_responsavel.nome AS profissional_nome,
   ea.profissional_saude_responsavel.especialidade AS profissional_categoria,
+  ANY_VALUE(ea.tipo_atd_prof_saude) AS tipo_atd_prof_saude,
   ANY_VALUE(ea.medidas.altura) AS altura,
   ANY_VALUE(ea.medidas.peso) AS peso,
   ANY_VALUE(ea.medidas.imc) AS imc,
@@ -234,29 +247,8 @@ SELECT
   ANY_VALUE(ea.motivo_atendimento) AS motivo_atendimento,
   ANY_VALUE(ea.desfecho_atendimento) AS desfecho_atendimento,
   STRING_AGG(c.id, ', ' ORDER BY c.id) AS cid_string
-
---   FROM {{ ref('mart_historico_clinico__episodio') }} ea
-FROM {{ ref('mart_historico_clinico__episodio') }} ea
+FROM episodios_filtrados_com_tipo ea
 LEFT JOIN UNNEST(ea.condicoes) AS c
-WHERE ea.subtipo = 'Atendimento SOAP'
-AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
--- AND c.situacao = 'ATIVO'
--- outros filtros
-AND ea.profissional_saude_responsavel.especialidade IN (
-    'Médico da estratégia de saúde da família',
-    'Enfermeiro da estratégia saúde da família',
-    'Enfermeiro - Modelo B',
-    'Médico Clínico',
-    'Médico Ginecologista e Obstetra - NASF',
-    'Médico Ginecologista - Modelo B',
-    'Médico Clinico - Modelo B',
-    'Enfermeiro obstétrico',
-    'Enfermeiro',
-    'Enfermeiro Obstetrico - Nasf',
-    'Médico Generalista',
-    'Médico de Família e Comunidade',
-    'Farmacêutico Hospitalar e Clinico - NASF'
-  )
   GROUP BY 1,2,3,4,5,6,7
 ),
 
@@ -293,7 +285,11 @@ prescricoes_aggregadas AS (
  FROM {{ ref('mart_historico_clinico__episodio') }} ea
 --Ajuste UNNEST (foi retirado a vírgula ao fim da linha acima)
     left join UNNEST(ea.prescricoes) AS p
- WHERE ea.subtipo = 'Atendimento SOAP'
+ WHERE (
+     ea.subtipo = 'Atendimento SOAP'
+     OR ea.subtipo = 'Atendimento Saúde Bucal'
+     OR ea.subtipo LIKE 'Atendimento de Saúde Bucal%'
+   )
    AND LOWER(ea.prontuario.fornecedor) = 'vitacare'
  GROUP BY ea.id_hci
 ),
@@ -316,8 +312,7 @@ consultas_enriquecidas AS (
 
 
    ag.peso - pai.peso AS ganho_peso_acumulado,
-   ROUND(safe_divide(ag.peso, POW(pai.altura_m, 2)), 1) AS imc_consulta
-
+   ROUND(ag.peso / NULLIF(POW(pai.altura_m, 2), 0), 1) AS imc_consulta
 
  FROM atendimentos_gestacao ag
  LEFT JOIN prescricoes_aggregadas presc ON ag.id_hci = presc.id_hci
@@ -362,10 +357,14 @@ SELECT
 
  estabelecimento,
  profissional_nome,
- profissional_categoria
+ profissional_categoria,
+ tipo_atd_prof_saude
 
 
 FROM consultas_enriquecidas
 where fase_atual = 'Gestação'
 ORDER BY
  data_consulta DESC
+
+    
+

@@ -76,7 +76,7 @@ with
             condicoes,
             medidas,
             prescricoes,
-            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string, prescricao_data timestamp>>[] as medicamentos_administrados,
+            array<struct<nome string, quantidade integer, unidade_medida string, uso string, via_administracao string, prescricao_data date>>[] as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
@@ -118,7 +118,7 @@ with
                 cast(null as float64) as temperatura
             ) as medidas,
             prescricoes,
-            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string, prescricao_data timestamp>>[] as medicamentos_administrados,
+            array<struct<nome string, quantidade integer, unidade_medida string, uso string, via_administracao string, prescricao_data date>>[] as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
@@ -193,7 +193,7 @@ with
                     p.id, p.nome, p.posologia as concentracao, p.uso_continuo
                 from unnest(prescricoes) as p
             ) as prescricoes,
-            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string, prescricao_data timestamp>>[] as medicamentos_administrados,
+            array<struct<nome string, quantidade integer, unidade_medida string, uso string, via_administracao string, prescricao_data date>>[] as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,

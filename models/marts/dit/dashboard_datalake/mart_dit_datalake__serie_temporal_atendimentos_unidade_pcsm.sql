@@ -20,13 +20,12 @@ with
     atendimentos as (
         select
             id_atendimento,
-            u.codigo_nacional_estabelecimento_saude as cnes,  
-            data_entrada_atendimento as data_registro
+            codigo_nacional_estabelecimento_saude as cnes,  
+            {{parse_and_filter_future_date('data_entrada_atendimento')}} as data_registro
         from {{ref('raw_pcsm_atendimentos')}} a 
-        left join {{ref('raw_pcsm_unidades_saude')}} u 
-            on u.id_unidade_saude = a.id_unidade_saude
+        left join {{ref('raw_pcsm_unidades_saude')}} using (id_unidade_saude)
         {% if is_incremental() %}
-            where data_entrada_atendimento >= date('{{ last_partition }}')
+            where {{parse_and_filter_future_date('data_entrada_atendimento')}} >= date('{{ last_partition }}')
         {% endif %}
     ),
 
@@ -43,7 +42,7 @@ with
         select
             cnes,
             {{proper_estabelecimento('nome_acentuado')}} as nome,
-            data_registro, 
+            data_registro,
             atendimentos
         from grouped_by_cnes_and_date g
         inner join {{ref('dim_estabelecimento')}} e

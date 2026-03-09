@@ -23,7 +23,7 @@ with
                 ""
             ) as unidade_nome,
             laudo_url,
-            datahora_pedido
+            {{ parse_and_filter_future_datetime('datahora_pedido') }} as datahora_pedido
         from {{ ref('raw_exames_laboratoriais__solicitacoes') }}
     ),
 
@@ -43,7 +43,7 @@ with
                 ),
                 " (SMS"
             )[safe_offset(0)] as medico_solicitante,
-            data_assinatura as datahora_assinatura
+            {{ parse_and_filter_future_datetime('data_assinatura') }} as datahora_assinatura
         from {{ ref('raw_exames_laboratoriais__exames') }}
     ),
 

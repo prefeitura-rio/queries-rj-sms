@@ -201,8 +201,8 @@ with bruto_atendimento as (
             {{ proper_br("atendimento.atendimento_subtipo") }} as subtipo,
 
             -- ENTRADA E SAIDA
-            safe_cast(atendimento.atendimento_medico_datahora as datetime) as entrada_datahora,
-            safe_cast(atendimento.datahora_saida as datetime) as saida_datahora,
+            {{ parse_and_filter_future_datetime('atendimento.atendimento_medico_datahora') }} as entrada_datahora,
+            {{ parse_and_filter_future_datetime('atendimento.datahora_saida') }} as saida_datahora,
 
             --- MOTIVO E DESFECHO
             concat(
@@ -271,7 +271,7 @@ with bruto_atendimento as (
                 datetime(current_timestamp(),'America/Sao_Paulo') as processed_at
             ) as metadados,
 
-            safe_cast(atendimento.datahora_saida as date) as data_particao,
+            {{ parse_and_filter_future_date('atendimento.datahora_saida') }} as data_particao,
             safe_cast(regexp_replace(atendimento.paciente_cpf, r'\D', '') as int64) as cpf_particao
 
         from bruto_atendimento as atendimento
