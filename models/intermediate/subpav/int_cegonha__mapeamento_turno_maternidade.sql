@@ -4,6 +4,7 @@
     materialized = 'table'
 ) }}
 
+-- Recupera, para cada id_turnos_horarios, a vaga e o horário associados ao fluxo da agenda estruturada
 with uth as (
 
     select
@@ -16,6 +17,7 @@ with uth as (
 
 ),
 
+-- Recupera o nome do horário oficial da agenda estruturada
 horarios as (
 
     select
@@ -27,6 +29,7 @@ horarios as (
 
 ),
 
+-- Relaciona a vaga da agenda ao vínculo de referência e encaminhamento
 uav as (
 
     select
@@ -38,6 +41,7 @@ uav as (
 
 ),
 
+-- Recupera, para cada vínculo estrutural, o CNES da maternidade agendada e o CNES da APS de origem
 ure as (
 
     select

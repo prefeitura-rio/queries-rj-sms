@@ -2,11 +2,6 @@
     schema = 'projeto_whatsapp',
     alias = 'cegonha_agendamento_maternidade',
     materialized = 'table',
-    partition_by = {
-        "field": "data_hora_agendamento",
-        "data_type": "datetime",
-        "granularity": "day"
-    },
     cluster_by = ['cpf', 'cnes_maternidade_agendada']
 ) }}
 
@@ -49,7 +44,7 @@ agendamento_base as (
 
 ),
 
--- Dados complementares de agendamento atraves do fluxo manual de agendamento, caso nao tenha informacoes atraves do fluxo de agenda
+-- Dados complementares do agendamento via fluxo manual, utilizados quando não há informações disponíveis na agenda estruturada
 visita_rank as (
 
     select
@@ -64,7 +59,7 @@ visita_rank as (
 
 ),
 
--- Mantém somente um registro de visita por id_agendamento_gestante
+-- Mantém somente um registro de agendamento de visita por id_agendamento_gestante
 visita_base as (
 
     select
@@ -88,69 +83,14 @@ gestantes as (
 
 ),
 
--- Mapeia id_turnos_horarios para os identificadores de vaga e horário da agenda estruturada
-uth as (
-
-    select
-        cast(id_turnos_horario as string) as id_turnos_horarios,
-        any_value(id_unidades_agendamento_vagas) as id_unidades_agendamento_vagas,
-        any_value(id_horario) as id_horario
-    from {{ ref('raw_plataforma_subpav_cegonha__unidades_turnos_horarios') }}
-    where id_turnos_horario is not null
-    group by 1
-
-),
-
--- Recupera o horário do turno a partir do identificador de horário
-horarios as (
-
-    select
-        id_horario,
-        any_value(nme_horario) as horario_turno
-    from {{ ref('raw_plataforma_subpav_cegonha__horarios') }}
-    where id_horario is not null
-    group by 1
-
-),
-
--- Relaciona a vaga da agenda ao vínculo de referência/encaminhamento
-uav as (
-
-    select
-        id_unidades_agendamento_vagas,
-        any_value(id_unidades_referencia_encaminha) as id_unidades_referencia_encaminha
-    from {{ ref('raw_plataforma_subpav_cegonha__unidades_agendamento_vagas') }}
-    where id_unidades_agendamento_vagas is not null
-    group by 1
-
-),
-
--- Recupera o CNES da maternidade agendada no fluxo estruturado a partir da referência da vaga
-ure as (
-
-    select
-        id_unidades_referencia_encaminha,
-        any_value(regexp_replace(cast(num_cnes_referencia as string), r'\.0$', '')) as cnes_maternidade_agendada
-    from {{ ref('raw_plataforma_subpav_cegonha__unidades_referencia_encaminha') }}
-    where id_unidades_referencia_encaminha is not null
-    group by 1
-
-),
-
--- Resolve, no fluxo estruturado, a maternidade agendada e o horário do turno para cada id_turnos_horarios.
+-- Recupera, no fluxo estruturado, a maternidade agendada e o horário do turno para cada id_turnos_horarios
 mapeamento_turno as (
 
     select
-        uth.id_turnos_horarios,
-        ure.cnes_maternidade_agendada,
-        h.horario_turno
-    from uth
-    left join horarios h
-        on h.id_horario = uth.id_horario
-    left join uav
-        on uav.id_unidades_agendamento_vagas = uth.id_unidades_agendamento_vagas
-    left join ure
-        on ure.id_unidades_referencia_encaminha = uav.id_unidades_referencia_encaminha
+        cast(id_turnos_horarios as string) as id_turnos_horarios,
+        cnes_maternidade_agendada,
+        nme_horario as horario_turno
+    from {{ ref('int_cegonha__mapeamento_turno_maternidade') }}
 
 ),
 
@@ -197,11 +137,13 @@ vitai_tel as (
 
 ),
 
+-- Monta a base principal do mart
+-- Resolve a maternidade agendada conforme o fluxo do registro: se existir id_turnos_horarios, usa o fluxo estruturado de agenda para obter o CNES da maternidade e o horário do turno
+-- senão, usa o fluxo manual via visita_gestantes_tipos para obter o CNES da maternidade e o horário da visita
 base as (
 
     select
         a.id_agendamento_gestante,
-        a.id_gestante,
         g.nome,
         g.cpf,
         case
@@ -260,7 +202,6 @@ telefones_explodidos as (
 
     select
         b.id_agendamento_gestante,
-        b.id_gestante,
         b.nome,
         b.cpf,
         b.cnes_maternidade_agendada,
@@ -289,7 +230,7 @@ telefones_deduplicados as (
     select *
     from telefones_explodidos
     qualify row_number() over (
-        partition by id_agendamento_gestante, regexp_replace(telefone, r'\D', '')
+        partition by id_agendamento_gestante, regexp_replace(telefone, r'\D', '') -- remove tudo que nao é digito
         order by prioridade
     ) = 1
 
