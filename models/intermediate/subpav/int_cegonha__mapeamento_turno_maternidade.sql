@@ -42,8 +42,8 @@ ure as (
 
     select
         id_unidades_referencia_encaminha,
-        any_value(regexp_replace(cast(num_cnes_referencia as string), r'\.0$', '')) as cnes_maternidade_agendada,
-        any_value(regexp_replace(cast(num_cnes_encaminha as string), r'\.0$', '')) as cnes_aps_origem
+        any_value(num_cnes_referencia) as cnes_maternidade_agendada,
+        any_value(num_cnes_encaminha) as cnes_aps_origem
     from {{ ref("raw_plataforma_subpav_cegonha__unidades_referencia_encaminha") }}
     where id_unidades_referencia_encaminha is not null
     group by 1
