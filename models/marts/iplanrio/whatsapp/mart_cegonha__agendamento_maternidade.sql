@@ -1,7 +1,13 @@
 {{ config(
     schema = 'projeto_whatsapp',
     alias = 'cegonha_agendamento_maternidade',
-    materialized = 'table'
+    materialized = 'table',
+    partition_by = {
+        "field": "data_hora_agendamento",
+        "data_type": "datetime",
+        "granularity": "day"
+    },
+    cluster_by = ['cpf', 'cnes_maternidade_agendada']
 ) }}
 
 -- Cria um ranking por id_agendamento_gestante para escolher o registro mais recente
@@ -119,7 +125,7 @@ uav as (
 
 ),
 
--- Recupera o CNES da maternidade agendada no fluxo estruturado a partir da referência da vaga.
+-- Recupera o CNES da maternidade agendada no fluxo estruturado a partir da referência da vaga
 ure as (
 
     select
@@ -293,7 +299,6 @@ final as (
 
     select
         id_agendamento_gestante,
-        id_gestante,
         nome,
         cpf,
         cnes_maternidade_agendada,
@@ -314,7 +319,6 @@ final as (
     from telefones_deduplicados
     group by
         id_agendamento_gestante,
-        id_gestante,
         nome,
         cpf,
         cnes_maternidade_agendada,
