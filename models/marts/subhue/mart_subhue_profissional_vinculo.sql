@@ -82,7 +82,6 @@ with
                 descricao_vinculo as vinculo,
                 descricao_subvinculo as subvinculo,
                 descricao_vinculacao as vinculacao,
-                descricao_conceito as conceito,
                 vd.habilitado as ativo
             ) as vinculo,
 

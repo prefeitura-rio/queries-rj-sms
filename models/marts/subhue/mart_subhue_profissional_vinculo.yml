@@ -58,8 +58,6 @@ models:
             description: "Descrição do subtipo de vínculo."
           - name: vinculacao
             description: "Descrição da vinculação."
-          - name: conceito
-            description: "Conceito do vínculo."
           - name: ativo
             description: "Indica se o vínculo está ativo."
       - name: atualizado_em
