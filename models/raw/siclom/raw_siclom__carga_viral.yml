@@ -5,6 +5,8 @@ models:
     description: "Tabela de exames de Carga Viral para HIV do sistema SICLOM. Contém informações sobre o paciente, solicitação, coleta, execução e resultado do exame."
     columns:
       # Identificação do paciente
+      - name: id
+        description: "Identificador único do registro de exame. Leva em conta o cpf, id_amostra_laboratorial e numero_formulario para garantir unicidade."
       - name: id_paciente
         description: "Identificador único do paciente no sistema SICLOM."
         policy_tags:

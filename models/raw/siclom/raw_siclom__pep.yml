@@ -4,6 +4,8 @@ models:
   - name: raw_siclom__pep
     description: "Tabela de dispensação de Profilaxia Pós-Exposição (PEP) ao HIV do sistema SICLOM. Contém informações sobre o paciente, a exposição, o atendimento e a prescrição."
     columns:
+      - name: id
+        description: "Identificador único do registro de exame. Leva em conta o cpf, nome, data de exposição e data de prescrição para garantir unicidade."
       # Identificação do paciente
       - name: paciente_cpf
         description: "CPF do paciente."

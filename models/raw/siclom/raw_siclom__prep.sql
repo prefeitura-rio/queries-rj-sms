@@ -8,12 +8,21 @@
             "data_type": "date",
             "granularity": "month",
         },
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
+        unique_key="id"
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with source as (
     select * from {{source('brutos_siclom_api_staging', 'prep')}}
+    {% if is_incremental() %}
+    where date(data_particao) >= date('{{ last_partition }}')
+    {% endif %}
 ),
+
 
 prep as (
     select 
@@ -54,4 +63,17 @@ prep as (
     from source
 )
 
-select * from prep
+select 
+    {{
+        dbt_utils.generate_surrogate_key(
+            [
+            "paciente_cpf",
+            "paciente_nome",
+            "id_dispensacao",
+            "id_solicitacao",
+            ]            
+        )
+    }} as id,
+    *   
+from prep
+qualify row_number() over (partition by id order by extraido_em desc)=1

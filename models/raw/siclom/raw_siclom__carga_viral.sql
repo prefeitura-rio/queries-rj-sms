@@ -8,19 +8,29 @@
             "data_type": "date",
             "granularity": "month",
         },
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
+        unique_key="id"
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
 
 with
+    source as (
+        select * 
+        from {{ source("brutos_siclom_api_staging", "carga_viral") }}
+        {% if is_incremental() %}
+        where date(data_particao) >= date('{{ last_partition }}')
+        {% endif %}
+    ),
 
-source as (select * from {{ source("brutos_siclom_api_staging", "carga_viral") }}),
     
 carga_viral as (
     select 
         -- Identificação do paciente 
         {{ process_null('cd_pac') }} as id_paciente,
-        {{ process_null('CPF') }} as cpf,
+        {{ process_null('CPF') }} as paciente_cpf,
         {{ process_null('nm_pac') }} as paciente_nome,
         {{ process_null('nm_pac_social') }} as paciente_nome_social,
         {{ process_null('nm_mae') }} as paciente_mae_nome,
@@ -99,5 +109,16 @@ carga_viral as (
     )
 
 select 
+    {{
+        dbt_utils.generate_surrogate_key(
+            [
+                "paciente_cpf",
+                "paciente_nome",
+                "id_amostra_laboratorial",
+                "numero_formulario"
+            ]            
+        )
+    }} as id,
     *
 from carga_viral
+qualify row_number() over (partition by id order by extraido_em desc)=1
