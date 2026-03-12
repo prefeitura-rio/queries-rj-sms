@@ -29,10 +29,7 @@ indice_cns_cpf as (
         regexp_replace(cast(cns_particao as string), r'\D', '') as num_cns_digits,
         any_value(regexp_replace(trim(cast(cpf as string)), r'\D', '')) as cpf_indice
     from {{ ref('mart_historico_clinico_app__indice') }}
-    where cns_particao is not null
-      and cpf is not null
-      and trim(cast(cpf as string)) <> ''
-      and lower(trim(cast(cpf as string))) not in ('none', 'nan')
+    where cns_particao is not null and {{ normalize_null("cpf") }} is not null
     group by 1
 
 ),
