@@ -45,29 +45,13 @@ agendamento_base as (
 ),
 
 -- Dados complementares do agendamento via fluxo manual, utilizados quando não há informações disponíveis na agenda estruturada
-visita_rank as (
+visita_base as (
 
     select
         cast(id_agendamento_gestante as string) as id_agendamento_gestante,
         num_cnes_atendimento as cnes_maternidade_agendada_manual,
-        nme_horario_padronizado as horario_visita,
-        row_number() over (
-            partition by cast(id_agendamento_gestante as string)
-            order by id_visita_gestante_tipo
-        ) as rn
+        nme_horario_padronizado as horario_visita
     from {{ ref('raw_plataforma_subpav_cegonha__visita_gestantes_tipos') }}
-
-),
-
--- Mantém somente um registro de agendamento de visita por id_agendamento_gestante
-visita_base as (
-
-    select
-        id_agendamento_gestante,
-        cnes_maternidade_agendada_manual,
-        horario_visita
-    from visita_rank
-    where rn = 1
 
 ),
 
@@ -111,13 +95,10 @@ vitacare_tel as (
 
     select
         regexp_replace(cast(cpf as string), r'\D', '') as cpf,
-        any_value(nullif(trim(cast(telefone as string)), '')) as telefone
+        any_value({{ normalize_null("trim(cast(telefone as string))") }}) as telefone
     from {{ ref('raw_prontuario_vitacare__paciente') }}
-    where cpf is not null
-      and trim(cast(cpf as string)) <> ''
-      and telefone is not null
-      and trim(cast(telefone as string)) <> ''
-      and lower(trim(cast(telefone as string))) not in ('none', 'nan')
+    where {{ normalize_null("trim(cast(cpf as string))") }} is not null
+      and {{ normalize_null("trim(cast(telefone as string))") }} is not null
     group by 1
 
 ),
@@ -126,13 +107,10 @@ vitai_tel as (
 
     select
         regexp_replace(cast(cpf as string), r'\D', '') as cpf,
-        any_value(nullif(trim(cast(telefone as string)), '')) as telefone
+        any_value({{ normalize_null("trim(cast(telefone as string))") }}) as telefone
     from {{ ref('raw_prontuario_vitai__paciente') }}
-    where cpf is not null
-      and trim(cast(cpf as string)) <> ''
-      and telefone is not null
-      and trim(cast(telefone as string)) <> ''
-      and lower(trim(cast(telefone as string))) not in ('none', 'nan')
+    where {{ normalize_null("trim(cast(cpf as string))") }} is not null
+      and {{ normalize_null("trim(cast(telefone as string))") }} is not null
     group by 1
 
 ),
@@ -218,21 +196,24 @@ telefones_explodidos as (
         struct(b.telefone_vitacare as telefone, 'vitacare' as origem, 2 as prioridade),
         struct(b.telefone_vitai as telefone, 'vitai' as origem, 3 as prioridade)
     ]) as tel
-    where tel.telefone is not null
-      and trim(tel.telefone) <> ''
-      and lower(trim(tel.telefone)) not in ('none', 'nan')
+    where {{ normalize_null("trim(tel.telefone)") }} is not null
 
 ),
 
 -- Remove telefones repetidos dentro do mesmo agendamento, mantendo a origem de maior prioridade
 telefones_deduplicados as (
 
-    select *
+    select
+        *,
+        {{ padroniza_telefone_whatsapp('telefone') }}.telefone_valido_whatsapp as telefone_valido_whatsapp,
+        {{ padroniza_telefone_whatsapp('telefone') }}.motivo_invalidacao_telefone as motivo_invalidacao_telefone
     from telefones_explodidos
-    qualify row_number() over (
-        partition by id_agendamento_gestante, regexp_replace(telefone, r'\D', '') -- remove tudo que nao é digito
-        order by prioridade
-    ) = 1
+    qualify
+        telefone_valido_whatsapp is not null
+        and row_number() over (
+            partition by id_agendamento_gestante, telefone_valido_whatsapp
+            order by prioridade
+        ) = 1
 
 ),
 
@@ -250,8 +231,8 @@ final as (
                 telefone,
                 origem,
                 cast(prioridade as string) as prioridade,
-                {{ padroniza_telefone_whatsapp('telefone') }}.telefone_valido_whatsapp as telefone_valido_whatsapp,
-                {{ padroniza_telefone_whatsapp('telefone') }}.motivo_invalidacao_telefone as motivo_invalidacao_telefone
+                telefone_valido_whatsapp,
+                motivo_invalidacao_telefone
             )
             order by prioridade
         ) as telefones,
