@@ -26,4 +26,13 @@ sources:
       - name: subpav_sinanrio__notificacao
       - name: subpav_sinanrio__tb_investiga
       - name: subpav_sinanrio__tb_sintomatico
-
+      - name: subpav_altas_referenciadas__vw_altas
+        loaded_at_field: datalake_loaded_at
+      - name: subpav_altas_referenciadas__internacoes
+        loaded_at_field: datalake_loaded_at
+      - name: subpav_altas_referenciadas__internacoes_comorbidades
+        loaded_at_field: datalake_loaded_at
+      - name: subpav_altas_referenciadas__internacoes_diagnosticos
+        loaded_at_field: datalake_loaded_at
+      - name: subpav_altas_referenciadas__pacientes
+        loaded_at_field: datalake_loaded_at

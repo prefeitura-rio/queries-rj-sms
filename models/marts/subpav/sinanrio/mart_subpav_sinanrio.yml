@@ -58,106 +58,200 @@ models:
     alias: sintomaticos_respiratorios_dia
     tags: [subpav, sinanrio, sintomaticos]
     description: |
-      Extração diária de atendimentos com suspeita/queixa respiratória (sintomáticos),
-      limitada a episódios com `data_particao = ontem` e filtrada por lista de CIDs
-      respiratórios (macro `sinanrio_lista_cids_sintomaticos()`).
+      Mart diária de sintomáticos respiratórios do SINAN Rio / SUBPAV.
 
-      Enriquecimento com cadastro do paciente (CNS, contato, endereço, mapeamento de bairro),
-      e definição de preferências:
-      - CNES final: estabelecimento do atendimento > CNES do cadastro
-      - INE final: equipe do atendimento (quando disponível no profissional) > INE do cadastro
+      O modelo monta uma lista de pessoas que tiveram, na data de referência processada,
+      algum registro compatível com suspeita respiratória e que ainda não devem ser
+      reapresentadas no fluxo naquele momento.
 
-      Regras:
-      - `nao_municipe`: 0 se (cidade nula) OU cidade = "RIO DE JANEIRO"; senão 1.
-      - `id_tb_situacao`: fixo em 1 (Flag SUBPAV : Quando migrado de outras fontes).
-      - Dedup por CPF do dia: mantém o último atendimento (maior `saida_datahora`).
+      Fontes pesquisadas:
+      - Histórico clínico / prontuário (`mart_historico_clinico__episodio`), filtrando episódios da partição da data de referência.
+      - SISREG (`mart_sisreg__solicitacoes`), considerando solicitações não canceladas da data de referência.
+      - SISARE (`subpav_altas_referenciadas`), considerando internações/altas com diagnósticos ou comorbidades compatíveis na data de referência.
+
+      Regras de identificação do sintomático:
+      - CIDs respiratórios vindos da macro `sinanrio_lista_cids_sintomaticos()`.
+      - Atualmente a regra considera os CIDs utilizados no fluxo de sintomáticos, como Z03.0, Z11.1 e Z20.1.
+      - No SISARE, a regra usa os códigos de diagnóstico/comorbidade `11841`, `11879` e `11907`.
+
+      Enriquecimento cadastral:
+      - Busca cadastro do paciente em `mart_historico_clinico__paciente`.
+      - Prioriza CNS válido de 15 dígitos.
+      - Prioriza endereço e prontuário do sistema Vitacare quando disponíveis.
+      - Faz join com `raw_plataforma_subpav_principal__bairros` para obter `id_bairro` por nome normalizado.
+      - Deriva `cnes`, `ine`, `n_prontuario`, telefone e dados de endereço para deixar o registro pronto para uso na plataforma.
+
+      Regras de priorização e deduplicação:
+      - Se a pessoa aparecer mais de uma vez no mesmo dia, mantém apenas um registro por CPF.
+      - A preferência considera o evento mais recente por `coalesce(saida_datahora, entrada_datahora)` e, em seguida, a prioridade da fonte.
+      - `fonte_prioridade`: 1=episódio/histórico clínico, 2=SISREG, 3=SISARE.
+
+      Regras de exclusão para evitar retrabalho:
+      - Não retorna pacientes já presentes em `raw_plataforma_subpav_sinanrio__tb_sintomatico`
+        dentro da janela móvel de 15 dias (`ts_sint_min` até `ts_ref_fim`).
+      - Não retorna pacientes com notificação compatível em `mart_subpav_sinanrio__notificacao`
+        na janela de 30 dias entre a data do evento e `dt_notificacao`.
+
+      Campos de controle:
+      - `id_tb_situacao`: fixo em 1 na carga base (aguardando coleta de exame(s) / migrado de outras fontes).
+      - `id_origem`: mapeia o sistema principal do registro escolhido.
+      - `dt_referencia`: data processada pelo modelo.
+      - `dt_situacao`: data do evento que gerou a entrada do paciente no fluxo.
+
+      Mapeamento de `id_origem`:
+      - 1=Manual / outros
+      - 2=Vitacare ou Vitahiscare
+      - 3=Vitai
+      - 4=SISREG
+      - 5=SISARE
+      - 6=SMS Rio
+      - 7=PCSM
+      - 8=Sarah
+      - 9=Prontuário
     columns:
       - name: cpf
-        description: "CPF do paciente (string, sem máscara). Um por CPF ao dia."
+        description: "CPF do paciente, sem máscara e com apenas dígitos."
       - name: cns
-        description: "CNS priorizado (15 dígitos válidos quando disponível)."
+        description: "CNS priorizado do paciente, preferindo valor válido com 15 dígitos."
       - name: nome
         description: "Nome do paciente."
       - name: dt_nascimento
-        description: "Data de nascimento (DATE)."
+        description: "Data de nascimento do paciente."
       - name: id_raca_cor
-        description: "Raça/cor padronizada."
+        description: "Raça/cor padronizada pela macro `sinanrio_padronize_raca_cor`."
       - name: id_sexo
-        description: "Sexo padronizado."
+        description: "Sexo padronizado pela macro `sinanrio_padronize_sexo`."
       - name: id_escolaridade
-        description: "Escolaridade (reservado; atualmente NULL)."
+        description: "Campo reservado; atualmente preenchido como NULL."
       - name: telefone
-        description: "Telefone mais prioritário do cadastro."
+        description: "Telefone priorizado do cadastro, normalizado para apenas dígitos e com ajuste de DDD quando necessário."
       - name: cep
-        description: "CEP do endereço do cadastro."
+        description: "CEP do endereço priorizado do paciente."
       - name: logradouro
-        description: "Tipo + logradouro (concat normalizada)."
+        description: "Logradouro final montado pela concatenação de tipo de logradouro e logradouro, com normalização de espaços."
       - name: numero
-        description: "Número do endereço (string)."
+        description: "Número do endereço, retornado como string."
       - name: complemento
-        description: "Complemento do endereço."
+        description: "Complemento do endereço priorizado."
       - name: id_bairro
-        description: "ID do bairro (join por nome normalizado)."
+        description: "ID do bairro obtido por join com `raw_plataforma_subpav_principal__bairros` a partir do nome normalizado do bairro."
       - name: cidade
-        description: "Cidade do endereço (texto do cadastro)."
+        description: "Cidade do endereço priorizado do paciente."
       - name: cnes
-        description: "CNES final do atendimento."
+        description: "CNES final do cadastro/prontuário priorizado para o paciente."
       - name: ine
-        description: "INE final da equipe (quando houver)."
-      - name: nao_municipe
-        description: "Flag 0/1 conforme regra de cidade."
-      - name: n_prontuario
-        description: "Número do prontuário (do cadastro)."
+        description: "INE final da equipe do paciente, quando encontrado."
       - name: cnes_cadastrante
-        description: "CNES do estabelecimento do profissional que lançou o atendimento."
+        description: "CNES do profissional/estabelecimento responsável pelo registro do evento, com fallback para o CNES do estabelecimento do atendimento."
+      - name: nao_municipe
+        description: "Flag 0/1. Vale 0 quando há `id_bairro`, quando a cidade é nula ou quando a cidade se parece com 'RIO DE JANEIRO'; caso contrário, vale 1."
+      - name: n_prontuario
+        description: "Número do prontuário Vitacare priorizado para o paciente."
       - name: cpf_cadastrante
-        description: "CPF do profissional (quando informado)."
+        description: "CPF do profissional responsável pelo registro, quando informado."
       - name: cns_cadastrante
-        description: "CNS do profissional (quando informado)."
+        description: "CNS do profissional responsável pelo registro, quando informado."
       - name: id_tb_situacao
-        description: "Situação do caso TB no SINANRIO (fixo 1: Quando migrado de outras fontes)."
-      - name: origem
-        description: "Fornecedor do prontuário no episódio (origem do dado)."
+        description: "Situação inicial do sintomático na carga base. Atualmente sai fixo como 1."
+      - name: id_origem
+        description: "Código da origem principal do registro selecionado para o sintomático."
+      - name: dt_referencia
+        description: "Data de referência processada pelo modelo."
+      - name: dt_situacao
+        description: "Data do evento que motivou a entrada do paciente na lista de sintomáticos."
 
   - name: mart_subpav_sinanrio__resultado_exame
     alias: resultado_exame
-    tags: [subpav, sinanrio, exames]
+    tags: [subpav, sinanrio, exames, gal]
     description: |
-      Mart de resultados de exames do GAL, consolidando:
-      - Fonte: `rj-sms.brutos_gal.exames_laboratoriais`
-      - Escopo: PCR GeneXpert MTB/RIF (`tugexp-pcrtr`) e Baciloscopia Ziehl-Neelsen (`tubb-colzn`)
+      Mart de resultados laboratoriais de tuberculose oriundos do GAL, padronizada para uso no SINAN Rio / SUBPAV.
 
-      Normalizações:
-      - `paciente_cpf`: extrai CPF dos campos de documento e mantém apenas dígitos
-      - `paciente_cns`: somente dígitos
-      - `codigo_amostra`: TRIM (vazio → NULL)
-      - `cnes`: primeiro não vazio entre solicitante → notificação SINAN → lab execução → lab responsável → lab cadastro
-      - `dt_resultado`: primeira data válida entre `data_liberacao`, `data_processamento`,
-        `data_inicio_processamento`, `data_recebimento`, `data_solicitacao`
-      - `id_tipo_exame`: 1 = PCR (tugexp-pcrtr); 2 = Ziehl (tubb-colzn)
+      Escopo atual de exames:
+      - Baciloscopia Ziehl-Neelsen / BAAR (`tubb-colzn`)
+      - TRM / PCR GeneXpert MTB/RIF (`tugexp-pcrtr`)
+      - Cultura para micobactéria (`tubc-culmb`)
 
-      Deduplicação:
-      - Chave natural por dia/tipo: (`paciente_cns`, `id_tipo_exame`, `dt_resultado`)
-      - Mantém o último registro por `loaded_at` (mais recente)
+      Normalizações de entrada:
+      - `paciente_cpf`: identifica CPF nos campos de documento do paciente e mantém apenas dígitos.
+      - `paciente_cns`: mantém apenas dígitos.
+      - `nome`: nome do paciente em caixa alta.
+      - `codigo_amostra`: aplica TRIM e transforma vazio em NULL.
+      - `cnes`: prioriza, nesta ordem, unidade solicitante, unidade de notificação SINAN,
+        laboratório de execução, laboratório responsável e laboratório de cadastro.
+      - Datas do GAL convertidas para DATE: `dt_resultado`, `dt_coleta`, `dt_liberacao`,
+        `dt_processamento`, `dt_inicio_processamento`, `dt_recebimento`, `dt_solicitacao`.
 
-      Filtros finais:
-      - `dt_resultado`, `id_tipo_exame`, `id_resultado` não nulos
-      - `paciente_cns` com 15 dígitos
+      Domínios utilizados:
+      - `id_tipo_exame`: 1=Baciloscopia, 2=TRM/PCR, 3=Cultura.
+      - `id_resultado`: resultado classificado conforme regras específicas de cada exame,
+        usando os códigos padronizados da plataforma SUBPAV.
+
+      Regras resumidas de classificação:
+      - Baciloscopia (`id_tipo_exame = 1`): mapeia resultados positivos/negativos a partir de sinais como `+`, `++`, `+++`, presença/ausência de BAAR e equivalentes textuais.
+      - TRM/PCR (`id_tipo_exame = 2`): classifica detecção, não detecção, inconclusivo, traços e resistência à rifampicina.
+      - Cultura (`id_tipo_exame = 3`): classifica positivo, negativo, não realizada e em andamento.
+
+      Deduplicação e qualidade:
+      - Deduplica por (`paciente_cns`, `id_tipo_exame`, `dt_resultado`, `codigo_amostra`),
+        mantendo o registro com `loaded_at` mais recente.
+      - Só mantém registros com `dt_resultado`, `id_tipo_exame` e `id_resultado` preenchidos.
+      - Só mantém `paciente_cns` com 15 dígitos e diferente de `000000000000000`.
+
+      Associação com notificação:
+      - Cruza com `mart_subpav_sinanrio__notificacao` por CNS.
+      - Uma notificação é considerada compatível quando `dt_coleta` existe e a diferença
+        entre `dt_coleta` e `dt_diagnostico` (`dt_notificacao`) está entre 0 e 30 dias.
+      - Quando existe mais de uma notificação possível, mantém a mais próxima da coleta e,
+        em empate, a mais recente.
+      - `notificacao_ativa` = 1 quando existe notificação compatível; caso contrário, 0.
+      - `diagnostico` = 0 quando `notificacao_ativa` = 1 (acompanhamento) e 1 quando não há notificação compatível (possível diagnóstico novo).
+      - `n_sinan` recebe o número da notificação associada, quando houver.
+
+      Integração com sintomáticos:
+      - Tenta localizar o sintomático correspondente em `raw_plataforma_subpav_sinanrio__tb_sintomatico`.
+      - Prioriza vínculo por CNS; se não encontrar, usa CPF como fallback.
+      - Em caso de múltiplos registros do mesmo paciente, mantém o sintomático mais recente.
     columns:
       - name: codigo_amostra
-        description: "Código da amostra do GAL (TRIM)."
+        description: "Código da amostra do GAL, com TRIM; vazio vira NULL."
       - name: paciente_cpf
-        description: "CPF numérico (quando informado nos documentos do paciente)."
+        description: "CPF do paciente, com apenas dígitos, quando identificado nos documentos do GAL."
       - name: paciente_cns
-        description: "CNS (15 dígitos)."
+        description: "CNS do paciente, com apenas dígitos. O modelo só mantém CNS válido com 15 dígitos."
+      - name: nome
+        description: "Nome do paciente conforme GAL, em caixa alta."
       - name: cnes
-        description: "CNES consolidado pela ordem de preferência (solicitante → notificação → execução → responsável → cadastro)."
+        description: "CNES consolidado do exame, seguindo a ordem de preferência entre unidade solicitante, notificação e laboratórios."
       - name: id_tipo_exame
-        description: "Tipo do exame: 1=PCR (GeneXpert), 2=Ziehl (Baciloscopia)."
+        description: "Tipo padronizado do exame: 1=Baciloscopia, 2=TRM/PCR, 3=Cultura."
       - name: id_resultado
-        description: "Classificação do resultado conforme regras de mapeamento SUBPAV (1 a 5)."
+        description: "Resultado padronizado do exame conforme regras de classificação por tipo."
       - name: dt_resultado
-        description: "Data do resultado consolidada a partir dos campos de data do GAL."
+        description: "Data do resultado do exame."
+      - name: n_sinan
+        description: "Número da notificação do SINAN associada ao exame, quando houver compatibilidade na janela da coleta."
+      - name: dt_diagnostico
+        description: "Data da notificação associada ao exame, quando encontrada."
+      - name: notificacao_ativa
+        description: "Flag 0/1 indicando se o exame encontrou uma notificação compatível por CNS e janela da coleta."
+      - name: diagnostico
+        description: "Classificação do exame no fluxo: 0=acompanhamento quando há notificação compatível; 1=possível diagnóstico novo quando não há."
+      - name: resultado_texto
+        description: "Texto consolidado do resultado do exame, preservando a leitura original relevante do GAL."
+      - name: dt_coleta
+        description: "Data de coleta do exame."
+      - name: dt_liberacao
+        description: "Data de liberação do exame."
+      - name: dt_processamento
+        description: "Data de processamento do exame."
+      - name: dt_inicio_processamento
+        description: "Data de início do processamento do exame."
+      - name: dt_recebimento
+        description: "Data de recebimento do exame."
+      - name: dt_solicitacao
+        description: "Data de solicitação do exame."
+      - name: id_sintomatico
+        description: "Identificador do sintomático correspondente na plataforma, quando encontrado por CNS ou CPF."
 
   - name: mart_subpav_sinanrio__tb_investiga
     alias: tb_investiga
