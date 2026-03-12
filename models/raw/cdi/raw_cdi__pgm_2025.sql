@@ -13,7 +13,7 @@ SELECT
 
   {{ cdi_parse_date('data_de_entrada', 'processorio__sei', 'processo_judicial') }} AS data_de_entrada,
   {{ cdi_parse_date('data_de_saida', 'processorio__sei', 'processo_judicial') }} AS data_de_saida,
-  {{ cdi_parse_date('data_de_saida_para_pgm', 'processorio__sei', 'processo_judicial') }} AS data_de_saida_para_pgm,
+  {{ cdi_parse_date('data_de_saida_para_pgm', 'processorio__sei', 'processo_judicial') }} AS data_saida_pgm,
   {{ cdi_parse_date('prazo', 'processorio__sei', 'processo_judicial') }} AS prazo,
   {{ cdi_parse_date('mes_ano', 'processorio__sei', 'processo_judicial') }} AS mes_ano,
 
@@ -33,14 +33,14 @@ SELECT
   TRIM({{ normalize_null('cap') }}) AS cap,
   TRIM({{ normalize_null('erro_medico') }}) AS erro_medico,
   TRIM({{ normalize_null('acp') }}) AS acp,
-  TRIM({{ normalize_null('multa_bloqueio_de_verba_indenizacao') }}) AS multa_bloqueio_de_verba_indenizacao,
+  TRIM({{ normalize_null('multa_bloqueio_de_verba_indenizacao') }}) AS tipo_indenizacao,
   SAFE_CAST({{ normalize_null('valor') }} AS FLOAT64) AS valor,
   TRIM({{ normalize_null('mandado_de_prisao') }}) AS mandado_de_prisao,
   TRIM({{ normalize_null('crime_de_desobediencia') }}) AS crime_de_desobediencia,
   REGEXP_REPLACE(TRIM({{ normalize_null('patologia___assunto') }}), r'\s+', ' ') AS patologia_assunto,
   REGEXP_REPLACE(TRIM({{ normalize_null('solicitacao') }}), r'\s+', ' ') AS solicitacao,
-  REGEXP_REPLACE(TRIM({{ normalize_null('sintese_de_solicitacao') }}), r'\s+', ' ') AS sintese_de_solicitacao,
-  {{ normalize_null('setor_responsavel_pela_resposta') }} AS setor_responsavel_pela_resposta,
+  REGEXP_REPLACE(TRIM({{ normalize_null('sintese_de_solicitacao') }}), r'\s+', ' ') AS sintese_solicitacao,
+  {{ normalize_null('setor_responsavel_pela_resposta') }} AS setor_responsavel,
   SAFE_CAST({{ normalize_null('prazo_dias') }} AS INT64) AS prazo_dias,
 
   CASE
