@@ -13,9 +13,9 @@ with agendamento_rank as (
         cast(id_gestante as string) as id_gestante,
         cast(id_turnos_horarios as string) as id_turnos_horarios,
         cast(dta_visita_maternidade as date) as data_agendamento,
-        nullif(trim(cast(tel_contato as string)), '') as telefone_cegonha,
-        nullif(trim(cast(nome_acompanhante as string)), '') as nome_acompanhante,
-        nullif(trim(cast(tel_contato_acompanhante as string)), '') as telefone_acompanhante,
+        cast(tel_contato as string) as telefone_cegonha,
+        cast(nome_acompanhante as string) as nome_acompanhante,
+        cast(tel_contato_acompanhante as string) as telefone_acompanhante,
         row_number() over (
             partition by cast(id_agendamento_gestante as string)
             order by
@@ -49,7 +49,7 @@ visita_rank as (
 
     select
         cast(id_agendamento_gestante as string) as id_agendamento_gestante,
-        nullif(trim(cast(num_cnes_atendimento as string)), '') as cnes_maternidade_agendada_manual,
+        num_cnes_atendimento as cnes_maternidade_agendada_manual,
         nme_horario_padronizado as horario_visita,
         row_number() over (
             partition by cast(id_agendamento_gestante as string)
@@ -98,7 +98,7 @@ mapeamento_turno as (
 estabelecimento as (
 
     select
-        regexp_replace(cast(id_cnes as string), r'\.0$', '') as cnes,
+        cast(id_cnes as string) as cnes,
         any_value(nome_fantasia) as nome_maternidade_agendada
     from {{ ref('raw_gdb_cnes__estabelecimento') }}
     where id_cnes is not null
