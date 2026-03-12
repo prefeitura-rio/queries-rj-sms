@@ -69,6 +69,35 @@ dados_limpos as (
         {{ normalize_null("trim(datalake_loaded_at)") }} as datalake_loaded_at
     from base
 
+),
+
+deduplicado as (
+
+    select *
+    from dados_limpos
+    qualify row_number() over (
+        partition by
+            id_agendamento_gestante,
+            dta_provavel_parto,
+            dta_visita_maternidade,
+            txt_obs,
+            created,
+            modified,
+            id_gestante,
+            id_turnos_horarios,
+            flg_remarcacao,
+            id_user,
+            idade_gestacional,
+            id_agendamento_gestante_remarcacao,
+            id_gestacao_tipo,
+            flg_ativo,
+            situacao_rua,
+            tel_contato,
+            nome_acompanhante,
+            tel_contato_acompanhante
+        order by safe_cast(datalake_loaded_at as timestamp) desc
+    ) = 1
+
 )
 
 select
@@ -91,4 +120,4 @@ select
     nome_acompanhante,
     tel_contato_acompanhante,
     safe_cast(datalake_loaded_at as timestamp) as datalake_loaded_at
-from dados_limpos
+from deduplicado

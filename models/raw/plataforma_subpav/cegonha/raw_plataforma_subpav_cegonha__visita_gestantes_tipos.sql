@@ -31,7 +31,7 @@ base_limpa as (
         safe_cast({{ normalize_null("trim(id_visita_gestante_tipo)") }} as int64) as id_visita_gestante_tipo,
         {{ normalize_null("trim(nme_horario)") }} as nme_horario_raw,
         {{ normalize_null("trim(num_cnes_aps)") }} as num_cnes_aps,
-        {{ normalize_null("trim(num_cnes_atendimento)") }} as num_cnes_atendimento,
+        {{ normalize_null("regexp_replace(trim(num_cnes_atendimento), r'\\.0$', '')") }} as num_cnes_atendimento,
         safe_cast({{ normalize_null("trim(id_agendamento_gestante)") }} as int64) as id_agendamento_gestante,
         safe_cast({{ normalize_null("trim(id_maternidade_tipos_gestante)") }} as int64) as id_maternidade_tipos_gestante,
         safe_cast({{ normalize_null("trim(datalake_loaded_at)") }} as timestamp) as datalake_loaded_at
@@ -106,6 +106,24 @@ tratado as (
     from base_limpa
 ),
 
+deduplicado as (
+
+    select *
+    from tratado
+    qualify row_number() over (
+        partition by
+            id_visita_gestante_tipo,
+            nme_horario_raw,
+            nme_horario_padronizado,
+            num_cnes_aps,
+            num_cnes_atendimento,
+            id_agendamento_gestante,
+            id_maternidade_tipos_gestante
+        order by datalake_loaded_at desc
+    ) = 1
+
+),
+
 final as (
 
     select
@@ -119,7 +137,7 @@ final as (
         id_agendamento_gestante,
         id_maternidade_tipos_gestante,
         datalake_loaded_at
-    from tratado
+    from deduplicado
 
 )
 

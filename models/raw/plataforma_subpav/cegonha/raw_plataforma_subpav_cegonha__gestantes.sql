@@ -45,6 +45,27 @@ dados_limpos as (
         {{ normalize_null("trim(datalake_loaded_at)") }} as datalake_loaded_at
     from base
 
+),
+
+deduplicado as (
+
+    select *
+    from dados_limpos
+    qualify row_number() over (
+        partition by
+            id_gestante,
+            num_cns,
+            cpf,
+            nme_nome,
+            flg_ativo,
+            created,
+            modified,
+            id_user,
+            id_raca_cor,
+            num_cns_video
+        order by safe_cast(datalake_loaded_at as timestamp) desc
+    ) = 1
+
 )
 
 select
@@ -59,4 +80,4 @@ select
     safe_cast(id_raca_cor as int64) as id_raca_cor,
     num_cns_video,
     safe_cast(datalake_loaded_at as timestamp) as datalake_loaded_at
-from dados_limpos
+from deduplicado
