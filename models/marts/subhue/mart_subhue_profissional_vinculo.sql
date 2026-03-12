@@ -87,7 +87,7 @@ with
 
             data_ultima_atualizacao as atualizado_em,
             data_particao as carregado_em,
-            current_datetime() as processado_em,
+            current_datetime('America/Sao_Paulo') as processado_em,
             safe_cast(profissional.cpf as int64) as cpf_particao
         from {{ref("int_gdb_cnes__vinculo")}} v
         left join profissional using(id_profissional_cnes)
@@ -100,9 +100,9 @@ select
     {{
         dbt_utils.generate_surrogate_key(
             [
-                "cpf",
-                "id_cnes",
-                "id_cbo",
+                "profissional.cpf",
+                "estabelecimento.id_cnes",
+                "ocupacao.id_cbo",
             ]
         )
     }} as id,

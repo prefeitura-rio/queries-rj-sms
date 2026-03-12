@@ -52,6 +52,3 @@ select
 from vinculo
 left join vinculo_empregador using (id_tipo_vinculo, id_vinculacao)
 left join vinculo_estabelecimento using (id_vinculacao)
-from vinculo v
-left join vinculo_estabelecimento vest on v.id_vinculacao = vest.id_vinculacao
-left join vinculo_empregador ve on v.id_vinculacao = ve.id_vinculacao and v.id_tipo_vinculo = ve.id_tipo_vinculo
