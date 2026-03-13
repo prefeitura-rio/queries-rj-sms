@@ -34,7 +34,7 @@ SELECT
   TRIM({{ normalize_null('erro_medico') }}) AS erro_medico,
   TRIM({{ normalize_null('acp') }}) AS acp,
   TRIM({{ normalize_null('multa_bloqueio_de_verba_indenizacao') }}) AS tipo_indenizacao,
-  SAFE_CAST({{ normalize_null('valor') }} AS FLOAT64) AS valor,
+  {{ normalize_null('valor') }} AS valor,
   TRIM({{ normalize_null('mandado_de_prisao') }}) AS mandado_de_prisao,
   TRIM({{ normalize_null('crime_de_desobediencia') }}) AS crime_de_desobediencia,
   REGEXP_REPLACE(TRIM({{ normalize_null('patologia___assunto') }}), r'\s+', ' ') AS patologia_assunto,
