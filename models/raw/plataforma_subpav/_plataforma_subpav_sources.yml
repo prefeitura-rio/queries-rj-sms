@@ -33,3 +33,7 @@ sources:
       - name: subpav_cegonha__unidades_referencia_encaminha
       - name: subpav_cegonha__horarios
       - name: subpav_cegonha__visita_gestantes_tipos
+      - name: subpav_altas_referenciadas__gestantes
+      - name: subpav_altas_referenciadas__pacientes
+      - name: subpav_altas_referenciadas__internacoes
+      - name: subpav_altas_referenciadas__desfechos_gestacao
