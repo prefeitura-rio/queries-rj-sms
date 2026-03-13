@@ -12,7 +12,8 @@ with agendamento_rank as (
         cast(id_agendamento_gestante as string) as id_agendamento_gestante,
         cast(id_gestante as string) as id_gestante,
         cast(id_turnos_horarios as string) as id_turnos_horarios,
-        cast(dta_visita_maternidade as date) as data_agendamento,
+        cast(created_at as datetime) as data_hora_criacao_agendamento,
+        cast(dta_visita_maternidade as date) as data_hora_visita_agendamento,
         cast(tel_contato as string) as telefone_cegonha,
         cast(nome_acompanhante as string) as nome_acompanhante,
         cast(tel_contato_acompanhante as string) as telefone_acompanhante,
@@ -25,6 +26,7 @@ with agendamento_rank as (
     from {{ ref('raw_plataforma_subpav_cegonha__agendamento_gestantes') }}
     where id_agendamento_gestante is not null
       and id_gestante is not null
+      and created_at >= datetime_sub(current_datetime('America/Sao_Paulo'), interval 1 year)
 
 ),
 
@@ -35,7 +37,8 @@ agendamento_base as (
         id_agendamento_gestante,
         id_gestante,
         id_turnos_horarios,
-        data_agendamento,
+        data_hora_criacao_agendamento,
+        data_hora_visita_agendamento,
         telefone_cegonha,
         nome_acompanhante,
         telefone_acompanhante
@@ -129,8 +132,9 @@ base as (
             else vb.cnes_maternidade_agendada_manual
         end as cnes_maternidade_agendada,
         e.nome_maternidade_agendada,
+        a.data_hora_criacao_agendamento,
         case
-            when a.data_agendamento is not null
+            when a.data_hora_visita_agendamento is not null
              and (
                 case
                     when a.id_turnos_horarios is not null then mt.horario_turno
@@ -138,7 +142,7 @@ base as (
                 end
              ) is not null
                 then datetime(
-                    a.data_agendamento,
+                    a.data_hora_visita_agendamento,
                     parse_time(
                         '%H:%M',
                         case
@@ -147,10 +151,10 @@ base as (
                         end
                     )
                 )
-            when a.data_agendamento is not null
-                then datetime(a.data_agendamento)
+            when a.data_hora_visita_agendamento is not null
+                then datetime(a.data_hora_visita_agendamento)
             else null
-        end as data_hora_agendamento,
+        end as data_hora_visita_maternidade,
         a.nome_acompanhante,
         a.telefone_acompanhante,
         a.telefone_cegonha,
@@ -184,7 +188,8 @@ telefones_explodidos as (
         b.cpf,
         b.cnes_maternidade_agendada,
         b.nome_maternidade_agendada,
-        b.data_hora_agendamento,
+        b.data_hora_criacao_agendamento,
+        b.data_hora_visita_maternidade,
         b.nome_acompanhante,
         b.telefone_acompanhante,
         tel.telefone,
@@ -203,17 +208,12 @@ telefones_explodidos as (
 -- Remove telefones repetidos dentro do mesmo agendamento, mantendo a origem de maior prioridade
 telefones_deduplicados as (
 
-    select
-        *,
-        {{ padroniza_telefone_whatsapp('telefone') }}.telefone_valido_whatsapp as telefone_valido_whatsapp,
-        {{ padroniza_telefone_whatsapp('telefone') }}.motivo_invalidacao_telefone as motivo_invalidacao_telefone
+    select *
     from telefones_explodidos
-    qualify
-        telefone_valido_whatsapp is not null
-        and row_number() over (
-            partition by id_agendamento_gestante, telefone_valido_whatsapp
-            order by prioridade
-        ) = 1
+    qualify row_number() over (
+        partition by id_agendamento_gestante, regexp_replace(telefone, r'\D', '') -- remove tudo que nao é digito
+        order by prioridade
+    ) = 1
 
 ),
 
@@ -225,14 +225,15 @@ final as (
         cpf,
         cnes_maternidade_agendada,
         nome_maternidade_agendada,
-        data_hora_agendamento,
+        data_hora_criacao_agendamento,
+        data_hora_visita_maternidade,
         array_agg(
             struct(
                 telefone,
                 origem,
                 cast(prioridade as string) as prioridade,
-                telefone_valido_whatsapp,
-                motivo_invalidacao_telefone
+                {{ padroniza_telefone_whatsapp('telefone') }}.telefone_valido_whatsapp as telefone_valido_whatsapp,
+                {{ padroniza_telefone_whatsapp('telefone') }}.motivo_invalidacao_telefone as motivo_invalidacao_telefone
             )
             order by prioridade
         ) as telefones,
@@ -245,7 +246,8 @@ final as (
         cpf,
         cnes_maternidade_agendada,
         nome_maternidade_agendada,
-        data_hora_agendamento,
+        data_hora_criacao_agendamento,
+        data_hora_visita_maternidade,
         nome_acompanhante,
         telefone_acompanhante
 

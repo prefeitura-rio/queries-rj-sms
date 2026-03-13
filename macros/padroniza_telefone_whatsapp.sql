@@ -105,12 +105,11 @@
 
     /* Identifica textos recorrentes que indicam ausência de telefone informado */
     {%- set flag_texto_indefinido -%}
-        {{ clean_name_string(telefone_str) }}
-        in (
+        upper({{ telefone_str }}) in (
             'NAO INFORMADO', 'NAO TEM', 'NAO POSSUI', 'NONE', 'SEM INFORMACAO', 'SEM TELEFONE',
             'NAO TEM CELULAR', 'NAO INFORMOU', 'SEM INF', 'SEM TELEFONE NO MOMENTO', 'SEM CONTATO',
-            'STEL', 'SN', 'X', 'XX', 'XXX', 'XXXX', 'XXXXX', 'XXXXXX', 'XXXXXXX',
-            'XXXXXXXX', 'XXXXXXXXX', 'XXXXXXXXXX', 'XXXXXXXXXXXX', ''
+            'S/TEL', 'S/N', 'SN', '-', 'X', 'XX', 'XXX', 'XXXX', 'XXXXX', 'XXXXXX', 'XXXXXXX',
+            'XXXXXXXX', 'XXXXXXXXX', 'XXXXXXXXXX', 'XXXXXXXXXXXX', '()'
         )
     {%- endset -%}
 
@@ -151,31 +150,28 @@
     struct(
         case
             when {{ telefone_column }} is null then null
-            when
-                {{ flag_telefone_formatado_nulo }}
-                or {{ flag_numero_compartilhado }}
-                or {{ flag_texto_indefinido }}
-                or {{ flag_poucos_digitos }}
-                or {{ flag_todos_digitos_iguais }}
-                or {{ flag_repetidos_8_ou_mais }}
-                or {{ flag_ddd_invalido }}
-                or {{ flag_celular_9d_digito_invalido }}
-                or {{ flag_numero_institucional }}
-                or coalesce({{ flag_telefone_clinica_column }}, false)
-            then null
+            when {{ flag_numero_compartilhado }} then null
+            when {{ flag_texto_indefinido }} then null
+            when {{ flag_poucos_digitos }} then null
+            when {{ flag_todos_digitos_iguais }} then null
+            when {{ flag_repetidos_8_ou_mais }} then null
+            when {{ flag_numero_institucional }} then null
+            when coalesce({{ flag_telefone_clinica_column }}, false) then null
+            when {{ flag_celular_9d_digito_invalido }} then null
+            when {{ flag_ddd_invalido }} then null
+            when {{ flag_telefone_formatado_nulo }} then null
             else {{ telefone_formatado }}
         end as telefone_valido_whatsapp,
 
-        /* Define motivo da invalidação */
         case
             when {{ telefone_column }} is null then null
-            when coalesce({{ flag_telefone_clinica_column }}, false) then 'telefone_clinica'
             when {{ flag_numero_compartilhado }} then 'numero_compartilhado'
             when {{ flag_texto_indefinido }} then 'texto_indefinido'
             when {{ flag_poucos_digitos }} then 'poucos_digitos'
             when {{ flag_todos_digitos_iguais }} then 'todos_digitos_iguais'
             when {{ flag_repetidos_8_ou_mais }} then 'repetidos_8_ou_mais'
             when {{ flag_numero_institucional }} then 'numero_institucional'
+            when coalesce({{ flag_telefone_clinica_column }}, false) then 'telefone_clinica'
             when {{ flag_celular_9d_digito_invalido }} then 'celular_9d_digito_invalido'
             when {{ flag_ddd_invalido }} then 'ddd_invalido'
             when {{ flag_telefone_formatado_nulo }} then 'telefone_formatado_nulo'
