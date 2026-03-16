@@ -17,7 +17,7 @@ with gestantes as (
         dt_parto as data_fim_gestacao,
         id_desfecho_internacao,
         id_desfecho_gestacao
-    from {{ ref('int_sisare__gestantes') }}
+    from {{ ref('int_subpav__sisare_gestantes') }}
     where id_gestante is not null
       and id_paciente is not null
       and id_internacao is not null

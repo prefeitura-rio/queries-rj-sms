@@ -65,7 +65,7 @@ gestantes as (
         cast(id_gestante as string) as id_gestante,
         nme_nome as nome,
         cpf
-    from {{ ref('int_cegonha__gestantes') }}
+    from {{ ref('int_subpav__siscegonha_gestantes') }}
     where id_gestante is not null
 
 ),
@@ -77,7 +77,7 @@ mapeamento_turno as (
         cast(id_turnos_horarios as string) as id_turnos_horarios,
         cnes_maternidade_agendada,
         nme_horario as horario_turno
-    from {{ ref('int_cegonha__mapeamento_turno_maternidade') }}
+    from {{ ref('int_subpav__siscegonha_mapeamento_turno_maternidade') }}
 
 ),
 
@@ -154,7 +154,7 @@ base as (
             when a.data_hora_visita_agendamento is not null
                 then datetime(a.data_hora_visita_agendamento)
             else null
-        end as data_hora_visita_maternidade,
+        end as data_hora_agendamento_visita_maternidade,
         a.nome_acompanhante,
         a.telefone_acompanhante,
         a.telefone_cegonha,
@@ -189,7 +189,7 @@ telefones_explodidos as (
         b.cnes_maternidade_agendada,
         b.nome_maternidade_agendada,
         b.data_hora_criacao_agendamento,
-        b.data_hora_visita_maternidade,
+        b.data_hora_agendamento_visita_maternidade,
         b.nome_acompanhante,
         b.telefone_acompanhante,
         tel.telefone,
@@ -226,7 +226,7 @@ final as (
         cnes_maternidade_agendada,
         nome_maternidade_agendada,
         data_hora_criacao_agendamento,
-        data_hora_visita_maternidade,
+        data_hora_agendamento_visita_maternidade,
         array_agg(
             struct(
                 telefone,
@@ -247,7 +247,7 @@ final as (
         cnes_maternidade_agendada,
         nome_maternidade_agendada,
         data_hora_criacao_agendamento,
-        data_hora_visita_maternidade,
+        data_hora_agendamento_visita_maternidade,
         nome_acompanhante,
         telefone_acompanhante
 

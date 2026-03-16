@@ -1,6 +1,6 @@
 {{ config(
-    schema = 'intermediario_cegonha',
-    alias = 'gestantes',
+    schema = 'intermediario_plataforma_subpav',
+    alias = 'siscegonha_gestantes',
     materialized = 'table'
 ) }}
 

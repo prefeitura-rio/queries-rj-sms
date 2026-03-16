@@ -1,6 +1,6 @@
 {{ config(
-    schema = 'intermediario_cegonha',
-    alias = 'mapeamento_turno_maternidade',
+    schema = 'intermediario_plataforma_subpav',
+    alias = 'siscegonha_mapeamento_turno_maternidade',
     materialized = 'table'
 ) }}
 
