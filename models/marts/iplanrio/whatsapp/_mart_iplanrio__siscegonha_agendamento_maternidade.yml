@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: mart_iplanrio__siscegonha_agendamento_maternidade
+    description: >
+      Tabela do projeto Cegonha Digital com os agendamentos de visita à maternidade realizados
+      através do SisCegonha nos últimos 12 meses, considerando a data de criação do agendamento.
+
+    columns:
+      - name: id_agendamento_gestante
+        description: Identificador único do agendamento da gestante no SisCegonha.
+
+      - name: nome
+        description: Nome da gestante.
+
+      - name: cpf
+        description: CPF da gestante. Pode ser proveniente do cadastro do SisCegonha ou enriquecido através da base da SMS.
+
+      - name: cnes_maternidade_agendada
+        description: CNES da maternidade agendada para a visita.
+
+      - name: nome_maternidade_agendada
+        description: Nome fantasia da maternidade agendada, obtido a partir do CNES.
+
+      - name: data_hora_criacao_agendamento
+        description: Data e hora em que o agendamento foi criado no sistema.
+
+      - name: data_hora_agendamento_visita_maternidade
+        description: Data e hora previstas para a visita à maternidade agendada.
+
+      - name: telefones
+        description: >
+          Lista de telefones associados ao agendamento, priorizados por origem.
+          Cada item contém o telefone original, a origem, a prioridade, o telefone padronizado
+          para WhatsApp e o motivo de invalidação quando aplicável.
+
+      - name: nome_acompanhante
+        description: Nome do acompanhante informado no agendamento.
+
+      - name: telefone_acompanhante
+        description: Telefone do acompanhante informado no agendamento.
