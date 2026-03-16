@@ -434,6 +434,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: ivisa
+      subpav:
+          +schema: intermediario_plataforma_subpav
+          +tags: ["daily", "subpav", "cegonha"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
       cie:
           +tags: ["cie", "daily"]
           +schema: intermediario_cie
