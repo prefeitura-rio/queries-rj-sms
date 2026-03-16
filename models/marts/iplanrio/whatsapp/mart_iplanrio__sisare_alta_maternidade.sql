@@ -33,6 +33,7 @@ internacoes as (
         cast(unidade_atendimento as string) as cnes_maternidade_alta
     from {{ ref('raw_plataforma_subpav_sisare__internacoes') }}
     where id_internacao is not null
+    and dt_saida >= date_trunc(current_date('America/Sao_Paulo'), year)
 
 ),
 
