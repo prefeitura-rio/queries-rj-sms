@@ -229,16 +229,16 @@ final as (
         data_hora_agendamento_visita_maternidade,
         array_agg(
             struct(
-                telefone,
+                telefone as telefone_original,
                 origem,
                 cast(prioridade as string) as prioridade,
                 {{ padroniza_telefone_whatsapp('telefone') }}.telefone_valido_whatsapp as telefone_valido_whatsapp,
                 {{ padroniza_telefone_whatsapp('telefone') }}.motivo_invalidacao_telefone as motivo_invalidacao_telefone
             )
             order by prioridade
-        ) as telefones,
+        ) as telefones_gestante,
         nome_acompanhante,
-        telefone_acompanhante
+        telefone_acompanhante as telefone_acompanhante_original
     from telefones_deduplicados
     group by
         id_agendamento_gestante,
@@ -253,5 +253,19 @@ final as (
 
 )
 
-select *
+select
+    id_agendamento_gestante,
+    nome,
+    cpf,
+    cnes_maternidade_agendada,
+    nome_maternidade_agendada,
+    data_hora_criacao_agendamento,
+    data_hora_agendamento_visita_maternidade,
+    telefones_gestante,
+    nome_acompanhante,
+    struct(
+        telefone_acompanhante_original as telefone_original,
+        {{ padroniza_telefone_whatsapp('telefone_acompanhante_original') }}.telefone_valido_whatsapp as telefone_valido_whatsapp,
+        {{ padroniza_telefone_whatsapp('telefone_acompanhante_original') }}.motivo_invalidacao_telefone as motivo_invalidacao_telefone
+    ) as telefone_acompanhante
 from final
