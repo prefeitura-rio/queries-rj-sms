@@ -26,8 +26,7 @@ with agendamento_rank as (
     from {{ ref('raw_plataforma_subpav_cegonha__agendamento_gestantes') }}
     where id_agendamento_gestante is not null
       and id_gestante is not null
-      and created_at >= datetime_sub(current_datetime('America/Sao_Paulo'), interval 1 year)
-
+      and date(created_at) >= date('2025-01-01') -- filtra pelos dados a partir de 2025
 ),
 
 -- Mantém apenas a linha mais recente de cada agendamento
