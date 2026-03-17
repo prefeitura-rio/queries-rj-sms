@@ -26,8 +26,7 @@ with agendamento_rank as (
     from {{ ref('raw_plataforma_subpav_cegonha__agendamento_gestantes') }}
     where id_agendamento_gestante is not null
       and id_gestante is not null
-      and created_at >= datetime_sub(current_datetime('America/Sao_Paulo'), interval 1 year)
-
+      and date(created_at) >= date('2025-01-01') -- filtra pelos dados a partir de 2025
 ),
 
 -- Mantém apenas a linha mais recente de cada agendamento
@@ -65,7 +64,7 @@ gestantes as (
         cast(id_gestante as string) as id_gestante,
         nme_nome as nome,
         cpf
-    from {{ ref('int_cegonha__gestantes') }}
+    from {{ ref('int_subpav__siscegonha_gestantes') }}
     where id_gestante is not null
 
 ),
@@ -77,19 +76,36 @@ mapeamento_turno as (
         cast(id_turnos_horarios as string) as id_turnos_horarios,
         cnes_maternidade_agendada,
         nme_horario as horario_turno
-    from {{ ref('int_cegonha__mapeamento_turno_maternidade') }}
+    from {{ ref('int_subpav__siscegonha_mapeamento_turno_maternidade') }}
 
 ),
 
 -- Resgata o nome da unidade em que foi agendado através do cnes
-estabelecimento as (
+estabelecimento_base  as (
 
     select
         cast(id_cnes as string) as cnes,
-        any_value(nome_fantasia) as nome_maternidade_agendada
-    from {{ ref('raw_gdb_cnes__estabelecimento') }}
+        any_value(nome_limpo) as nome_maternidade_agendada
+    from {{ ref('int_gdb_cnes__estabelecimento') }}
     where id_cnes is not null
     group by 1
+
+),
+
+-- Inclui fallback temporário para o cnes 2269783 (Hospital Universitário Pedro Ernesto),
+-- pois esse estabelecimento existe no bruto do GDB, mas pode não aparecer no
+-- int_gdb_cnes__estabelecimento por causa do filtro que mantém apenas a data_particao mais recente.
+
+estabelecimento as (
+
+    select *
+    from estabelecimento_base
+
+    union all
+
+    select
+        '2269783' as cnes,
+        'HOSPITAL UNIVERSITARIO PEDRO ERNESTO' as nome_maternidade_agendada
 
 ),
 
@@ -154,7 +170,7 @@ base as (
             when a.data_hora_visita_agendamento is not null
                 then datetime(a.data_hora_visita_agendamento)
             else null
-        end as data_hora_visita_maternidade,
+        end as data_hora_agendamento_visita_maternidade,
         a.nome_acompanhante,
         a.telefone_acompanhante,
         a.telefone_cegonha,
@@ -189,7 +205,7 @@ telefones_explodidos as (
         b.cnes_maternidade_agendada,
         b.nome_maternidade_agendada,
         b.data_hora_criacao_agendamento,
-        b.data_hora_visita_maternidade,
+        b.data_hora_agendamento_visita_maternidade,
         b.nome_acompanhante,
         b.telefone_acompanhante,
         tel.telefone,
@@ -226,19 +242,19 @@ final as (
         cnes_maternidade_agendada,
         nome_maternidade_agendada,
         data_hora_criacao_agendamento,
-        data_hora_visita_maternidade,
+        data_hora_agendamento_visita_maternidade,
         array_agg(
             struct(
-                telefone,
+                telefone as telefone_original,
                 origem,
                 cast(prioridade as string) as prioridade,
                 {{ padroniza_telefone_whatsapp('telefone') }}.telefone_valido_whatsapp as telefone_valido_whatsapp,
                 {{ padroniza_telefone_whatsapp('telefone') }}.motivo_invalidacao_telefone as motivo_invalidacao_telefone
             )
             order by prioridade
-        ) as telefones,
+        ) as telefones_gestante,
         nome_acompanhante,
-        telefone_acompanhante
+        telefone_acompanhante as telefone_acompanhante_original
     from telefones_deduplicados
     group by
         id_agendamento_gestante,
@@ -247,11 +263,25 @@ final as (
         cnes_maternidade_agendada,
         nome_maternidade_agendada,
         data_hora_criacao_agendamento,
-        data_hora_visita_maternidade,
+        data_hora_agendamento_visita_maternidade,
         nome_acompanhante,
         telefone_acompanhante
 
 )
 
-select *
+select
+    id_agendamento_gestante,
+    nome,
+    cpf,
+    cnes_maternidade_agendada,
+    nome_maternidade_agendada,
+    data_hora_criacao_agendamento,
+    data_hora_agendamento_visita_maternidade,
+    telefones_gestante,
+    nome_acompanhante,
+    struct(
+        telefone_acompanhante_original as telefone_original,
+        {{ padroniza_telefone_whatsapp('telefone_acompanhante_original') }}.telefone_valido_whatsapp as telefone_valido_whatsapp,
+        {{ padroniza_telefone_whatsapp('telefone_acompanhante_original') }}.motivo_invalidacao_telefone as motivo_invalidacao_telefone
+    ) as telefone_acompanhante
 from final

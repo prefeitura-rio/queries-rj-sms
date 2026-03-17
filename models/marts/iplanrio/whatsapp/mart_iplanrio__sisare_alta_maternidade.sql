@@ -17,7 +17,7 @@ with gestantes as (
         dt_parto as data_fim_gestacao,
         id_desfecho_internacao,
         id_desfecho_gestacao
-    from {{ ref('int_sisare__gestantes') }}
+    from {{ ref('int_subpav__sisare_gestantes') }}
     where id_gestante is not null
       and id_paciente is not null
       and id_internacao is not null
@@ -33,6 +33,7 @@ internacoes as (
         cast(unidade_atendimento as string) as cnes_maternidade_alta
     from {{ ref('raw_plataforma_subpav_sisare__internacoes') }}
     where id_internacao is not null
+    and dt_saida >= date('2026-01-01')  -- filtra pelos dados a partir de 2026
 
 ),
 
@@ -49,8 +50,8 @@ estabelecimento as (
 
     select
         cast(id_cnes as string) as cnes_maternidade_alta,
-        any_value(nome_fantasia) as nome_maternidade_alta
-    from {{ ref('raw_gdb_cnes__estabelecimento') }}
+        any_value(nome_limpo) as nome_maternidade_alta
+    from {{ ref('int_gdb_cnes__estabelecimento') }}
     where id_cnes is not null
     group by 1
 

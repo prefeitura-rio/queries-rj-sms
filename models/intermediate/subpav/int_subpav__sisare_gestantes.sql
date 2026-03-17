@@ -1,6 +1,6 @@
 {{ config(
-    schema = 'intermediario_sisare',
-    alias = 'gestantes',
+    schema = 'intermediario_plataforma_subpav',
+    alias = 'sisare_gestantes',
     materialized = 'table'
 ) }}
 
