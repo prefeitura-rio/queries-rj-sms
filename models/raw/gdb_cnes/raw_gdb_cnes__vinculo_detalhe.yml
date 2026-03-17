@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__vinculo_detalhe
+    description: "Tabela de detalhe de vínculo do profissional com o estabelecimento de saúde, extraída do GDB-CNES."
+    columns:
+      - name: id_vinculo
+        description: "Identificador único do vínculo."
+      - name: id_vinculacao
+        description: "Chave estrangeira que referencia a tabela de vinculação (NFCES057)."
+      - name: id_tipo_vinculo
+        description: "Identificador do tipo de vínculo do profissional (ex: empregado, autônomo)."
+      - name: id_tipo_subvinculo
+        description: "Identificador do subtipo de vínculo, detalhando o tipo de vínculo principal."
+      - name: descricao_subvinculo
+        description: "Descrição textual do subtipo de vínculo."
+      - name: descricao_conceito
+        description: "Descrição do conceito associado ao vínculo."
+      - name: habilitado
+        description: "Indica se o vínculo está habilitado (S/N)."
+      - name: solicita_cnpj
+        description: "Indica se é solicitado CNPJ para o vínculo (S/N)."
+      - name: data_particao
+        description: "Data da partição dos dados, utilizada para otimização de consultas."
+      - name: data_carga
+        description: "Timestamp da carga dos dados na tabela."
