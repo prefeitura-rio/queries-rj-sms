@@ -81,14 +81,31 @@ mapeamento_turno as (
 ),
 
 -- Resgata o nome da unidade em que foi agendado através do cnes
-estabelecimento as (
+estabelecimento_base  as (
 
     select
         cast(id_cnes as string) as cnes,
-        any_value(nome_fantasia) as nome_maternidade_agendada
-    from {{ ref('raw_gdb_cnes__estabelecimento') }}
+        any_value(nome_limpo) as nome_maternidade_agendada
+    from {{ ref('int_gdb_cnes__estabelecimento') }}
     where id_cnes is not null
     group by 1
+
+),
+
+-- Inclui fallback temporário para o cnes 2269783 (Hospital Universitário Pedro Ernesto),
+-- pois esse estabelecimento existe no bruto do GDB, mas pode não aparecer no
+-- int_gdb_cnes__estabelecimento por causa do filtro que mantém apenas a data_particao mais recente.
+
+estabelecimento as (
+
+    select *
+    from estabelecimento_base
+
+    union all
+
+    select
+        '2269783' as cnes,
+        'HOSPITAL UNIVERSITARIO PEDRO ERNESTO' as nome_maternidade_agendada
 
 ),
 

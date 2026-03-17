@@ -50,8 +50,8 @@ estabelecimento as (
 
     select
         cast(id_cnes as string) as cnes_maternidade_alta,
-        any_value(nome_fantasia) as nome_maternidade_alta
-    from {{ ref('raw_gdb_cnes__estabelecimento') }}
+        any_value(nome_limpo) as nome_maternidade_alta
+    from {{ ref('int_gdb_cnes__estabelecimento') }}
     where id_cnes is not null
     group by 1
 
