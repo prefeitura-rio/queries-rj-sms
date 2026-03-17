@@ -14,7 +14,7 @@ with gestantes as (
         cpf,
         nome,
         telefone as telefone_informado,
-        dt_parto as data_fim_gestacao,
+        dt_parto as data_parto,
         id_desfecho_internacao,
         id_desfecho_gestacao
     from {{ ref('int_subpav__sisare_gestantes') }}
@@ -67,7 +67,7 @@ base as (
         i.data_alta_internacao,
         regexp_replace(i.cnes_maternidade_alta, r'\D', '') as cnes_maternidade_alta,
         e.nome_maternidade_alta,
-        g.data_fim_gestacao,
+        g.data_parto,
         g.id_desfecho_gestacao,
         d.desfecho_gestacao
     from gestantes g
@@ -89,7 +89,7 @@ select
     data_alta_internacao,
     cnes_maternidade_alta,
     nome_maternidade_alta,
-    data_fim_gestacao,
+    data_parto,
     id_desfecho_gestacao,
     desfecho_gestacao
 from base

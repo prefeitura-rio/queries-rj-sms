@@ -47,7 +47,7 @@ models:
         description: >
           Nome fantasia da maternidade obtido através do CNES.
 
-      - name: data_fim_gestacao
+      - name: data_parto
         description: >
           Data do fim da gestacao. Não necessariamente coincide com
           a data_alta_internacao, pois após o parto a paciente pode permanecer internada
