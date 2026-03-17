@@ -1,5 +1,6 @@
 {{
     config(
+        schema = 'intermediario_gdb_cnes',
         alias="estabelecimento",
         materialized="table",
         tags=["gdb_cnes"],
@@ -11,11 +12,45 @@
     )
 }}
 
-with 
-    estabelecimento as (
-        select * from {{ ref("raw_gdb_cnes__estabelecimento") }}
-        where data_particao = (select max(data_particao) from {{ ref("raw_gdb_cnes__estabelecimento") }})
-    )
+with base as (
 
-select * from estabelecimento
+    select
+        * except(data_particao),
+        safe_cast(data_particao as date) as data_particao
+    from {{ ref('raw_gdb_cnes__estabelecimento') }}
 
+),
+
+estabelecimento as (
+
+    select *
+    from base
+    where data_particao = (select max(data_particao) from base)
+
+),
+
+final as (
+
+    select
+        estabelecimento.*,
+
+        regexp_extract(
+            upper(trim(nome_fantasia)),
+            r'^(SMS(?:\s+RIO)?|SES\s+RJ|MS|UFRJ|UERJ\s+HUPE|FIOTEC\s+IFF)\b'
+        ) as sigla,
+
+        nullif(
+            {{ remove_duplicate_whitespace(
+                "trim(regexp_replace(regexp_replace(upper(trim(nome_fantasia)), r'^(SMS(?:\\s+RIO)?|SES\\s+RJ|MS|UFRJ|UERJ\\s+HUPE|FIOTEC\\s+IFF)\\b[\\s\\-–:/]*', ''), r'\\s*-?\\s*AP\\s*\\d{1,2}$', ''))"
+            ) }},
+            ''
+        ) as nome_limpo,
+
+        nullif(trim(id_distrito_sanitario), '') as area_programatica
+
+    from estabelecimento
+
+)
+
+select *
+from final
