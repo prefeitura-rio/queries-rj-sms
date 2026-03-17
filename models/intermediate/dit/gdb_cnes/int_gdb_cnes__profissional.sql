@@ -1,5 +1,6 @@
 {{
     config(
+        schema = 'intermediario_gdb_cnes',
         alias="profissional",
         materialized="table",
         tags=["gdb_cnes"],
