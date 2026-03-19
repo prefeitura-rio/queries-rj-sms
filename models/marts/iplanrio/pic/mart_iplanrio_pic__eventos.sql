@@ -5,11 +5,62 @@
 ) }}
 
 WITH
-    -- Público-alvo atual
+    puerperio_dedup AS (
+        SELECT *
+        FROM (
+            SELECT *,
+                ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_inicio DESC) AS rn
+            FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
+            WHERE fase_atual = 'Puerpério'
+            AND data_fim IS NOT NULL
+            AND data_fim_efetiva IS NOT NULL
+            AND cpf IS NOT NULL
+        )
+        WHERE rn = 1  -- pega só a gestação mais recente, ignora as antigas
+    ),
+
     todas_as_fases AS (
-        SELECT cpf, DATE(inicio) AS inicio_fase, DATE(fim) AS fim_fase, tipo_publico
+        -- Gestação ativa
+        SELECT
+            cpf,
+            data_inicio AS inicio_fase,
+            DATE_ADD(data_inicio, INTERVAL 300 DAY) AS fim_fase,
+            'Gestacao' AS tipo_publico
+        FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
+        WHERE fase_atual = 'Gestação'
+        AND cpf IS NOT NULL
+
+        UNION ALL
+
+        -- Gestação que levou ao puerpério atual
+        SELECT
+            cpf,
+            data_inicio AS inicio_fase,
+            DATE_SUB(data_fim_efetiva, INTERVAL 1 DAY) AS fim_fase,  -- busca eventos ate dia anterior ao parto
+            'Gestacao' AS tipo_publico
+        FROM puerperio_dedup
+
+        UNION ALL
+
+        -- Puerpério atual
+        SELECT
+            cpf,
+            data_fim AS inicio_fase,
+            DATE_ADD(data_fim, INTERVAL 45 DAY) AS fim_fase,
+            'Puerperio' AS tipo_publico
+        FROM puerperio_dedup
+
+        UNION ALL
+
+        -- Infância
+        SELECT
+            cpf,
+            DATE(inicio) AS inicio_fase,
+            DATE(fim) AS fim_fase,
+            'Infancia' AS tipo_publico
         FROM {{ ref("mart_iplanrio_pic__publico_alvo") }}
-        WHERE cpf IS NOT NULL
+        WHERE tipo_publico = 'Infancia'
+        AND cpf IS NOT NULL
     ),
 
     -- VISITAS DOMICILIARES
