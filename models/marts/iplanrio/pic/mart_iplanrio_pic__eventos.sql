@@ -6,74 +6,10 @@
 
 WITH
     -- Público-alvo atual
-    publico_atual AS (          
-        SELECT DISTINCT cpf
+    todas_as_fases AS (
+        SELECT cpf, DATE(inicio) AS inicio_fase, DATE(fim) AS fim_fase, tipo_publico
         FROM {{ ref("mart_iplanrio_pic__publico_alvo") }}
         WHERE cpf IS NOT NULL
-    ),
-
-    -- GESTAÇÃO
-    gestacao_fase AS (
-        SELECT
-            cpf,
-            DATE(data_diagnostico) AS inicio_fase,
-            DATE(
-                IFNULL(
-                    data_diagnostico_seguinte,
-                    DATE_ADD(data_diagnostico, INTERVAL 300 DAY)
-                )
-            ) AS fim_fase,
-            'Gestacao' AS tipo_publico
-        FROM (
-            SELECT *,
-                ROW_NUMBER() OVER (
-                    PARTITION BY cpf ORDER BY data_diagnostico DESC
-                ) AS rn
-            FROM {{ ref('mart_linhas_cuidado__gestacoes') }}
-            WHERE cpf IS NOT NULL
-        )
-        WHERE rn = 1
-    ),
-
-    -- PUERPÉRIO (42 dias após o parto)
-    puerperio_fase AS (
-        SELECT
-            cpf,
-            DATE(data_diagnostico_seguinte) AS inicio_fase,
-            DATE_ADD(DATE(data_diagnostico_seguinte), INTERVAL 42 DAY) AS fim_fase,
-            'Puerperio' AS tipo_publico
-        FROM (
-            SELECT *,
-                ROW_NUMBER() OVER (
-                    PARTITION BY cpf ORDER BY data_diagnostico_seguinte DESC
-                ) AS rn
-            FROM {{ ref('mart_linhas_cuidado__gestacoes') }}
-            WHERE cpf IS NOT NULL
-            AND data_diagnostico_seguinte IS NOT NULL
-            AND CURRENT_DATE() BETWEEN data_diagnostico_seguinte
-                                    AND DATE_ADD(data_diagnostico_seguinte, INTERVAL 42 DAY)
-        )
-        WHERE rn = 1
-    ),
-
-    -- INFÂNCIA 
-    infancia_fase AS (
-        SELECT
-            cpf,
-            DATE(inicio) AS inicio_fase,
-            DATE(fim) AS fim_fase,
-            'Infancia' AS tipo_publico
-        FROM {{ ref("mart_iplanrio_pic__publico_alvo") }}
-        WHERE tipo_publico = 'Infancia'
-        AND cpf IS NOT NULL
-    ),
-
-    todas_as_fases AS (
-        SELECT * FROM gestacao_fase
-        UNION ALL
-        SELECT * FROM puerperio_fase
-        UNION ALL
-        SELECT * FROM infancia_fase
     ),
 
     -- VISITAS DOMICILIARES
@@ -249,10 +185,8 @@ eventos_unificados AS (
         DATE_DIFF(DATE(e.dthr), f.inicio_fase, DAY) AS distancia_dias
     FROM todos_os_eventos e
     JOIN todas_as_fases f
-      ON e.cpf = f.cpf
-     AND DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
-    JOIN publico_atual p
-      ON e.cpf = p.cpf
+        ON e.cpf = f.cpf
+        AND DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
 )
 
 SELECT
