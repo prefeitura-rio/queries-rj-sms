@@ -1,7 +1,12 @@
 {{
     config(
         alias="vinculo",
-        schema= "brutos_gdb_cnes"
+        schema= "brutos_gdb_cnes",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -67,8 +72,8 @@ renamed as (
         cast({{ process_null("USUARIO") }} as string) as usuario_atualizador,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

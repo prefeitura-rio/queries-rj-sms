@@ -9,28 +9,24 @@ WITH
 gestacoes_em_andamento AS (
     SELECT
         cpf,
-        data_diagnostico AS inicio,
-        LEAST(DATE_ADD(data_diagnostico, INTERVAL 300 DAY), CURRENT_DATE()) AS fim,
+        data_inicio AS inicio,
+        LEAST(DATE_ADD(data_inicio, INTERVAL 300 DAY), CURRENT_DATE()) AS fim,
         'Gestacao' AS tipo_publico
-    FROM {{ ref('mart_linhas_cuidado__gestacoes') }}
-    WHERE tipo_transicao = 'Em Andamento'
-      AND data_diagnostico IS NOT NULL
+    FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
+    WHERE fase_atual = 'Gestação'
 ),
 
 -- Puerpério atual (até 42 dias após o parto)
 puerperio_atual AS (
     SELECT
         cpf,
-        data_diagnostico_seguinte AS inicio,
-        DATE_ADD(data_diagnostico_seguinte, INTERVAL 42 DAY) AS fim,
+        data_fim AS inicio,
+        DATE_ADD(data_fim, INTERVAL 45 DAY) AS fim,
         'Puerperio' AS tipo_publico
-    FROM {{ ref('mart_linhas_cuidado__gestacoes') }}
-    WHERE tipo_transicao = 'Encerramento Comprovado'
-      AND data_diagnostico_seguinte IS NOT NULL
-      AND CURRENT_DATE() BETWEEN data_diagnostico_seguinte AND DATE_ADD(data_diagnostico_seguinte, INTERVAL 42 DAY)
+    FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
+    WHERE fase_atual = 'Puerpério'
 ),
 
--- Crianças até 6 anos (fase atual)
 criancas AS (
     SELECT
         cpf,
