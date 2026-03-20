@@ -55,7 +55,8 @@ pep as (
         {{ process_null('st_contraindicacao_esquema') }} as contraindicacao_esquema,
         safe_cast(DATA_DA_DISPENSA as datetime) as dispensa_data,
         {{ process_null('ESQUEMA') }} as esquema,
-        safe_cast(DURACAO as int64) as duracao,
+        safe_cast(DURACAO as float64) as duracao,
+        {{ process_null('TP_PROFISSIONAL') }} as profissional_tipo,
         safe_cast(DATA_DA_PRESCRICAO as datetime) as prescricao_data,
 
         -- Testagem
