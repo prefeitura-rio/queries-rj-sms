@@ -36,7 +36,7 @@
     {%- set telefone_formatado -%}
         case
             /* Caso 1: número com 11 dígitos */
-            /* Estrutura esperada: DDD + número móvel */
+            /* Estrutura esperada: DDD + número celular */
             when length({{ telefone_limpo }}) = 11
                 /* Verifica se o DDD é válido */
                 and {{ ddd_valido }}
@@ -47,41 +47,15 @@
             /* Adiciona o código do país 55 na frente */
             then concat('55', {{ telefone_limpo }})
 
-            /* Caso 2: número com 10 dígitos */
-            /* Estrutura esperada: DDD + número fixo */
-            when length({{ telefone_limpo }}) = 10
-                /* Verifica se o DDD é válido */
-                and {{ ddd_valido }}
-                /* Verifica se o primeiro dígito do identificador local indica telefone fixo */
-                and substr({{ telefone_limpo }}, 3, 1) between '2' and '6'
-                /* Exclui números com todos os dígitos iguais */
-                and not {{ flag_todos_digitos_iguais }}
-            /* Adiciona o código do país 55 na frente */
-            then concat('55', {{ telefone_limpo }})
-
-            /* Caso 3: número já vem com 13 dígitos */
-            /* Estrutura esperada: 55 + DDD + número móvel */
+            /* Caso 2: número já vem com 13 dígitos */
+            /* Estrutura esperada: 55 + DDD + número celular */
             when length({{ telefone_limpo }}) = 13
                 /* Verifica se começa com o código do Brasil 55 */
                 and substr({{ telefone_limpo }}, 1, 2) = '55'
                 /* Verifica se o DDD após o 55 é válido */
                 and regexp_contains(substr({{ telefone_limpo }}, 3, 2), {{ ddd_regex }})
-                /* Verifica se é número móvel */
+                /* Verifica se é número celular */
                 and substr({{ telefone_limpo }}, 5, 1) in ('7', '8', '9')
-                /* Rejeita sequências com todos os dígitos iguais */
-                and not {{ flag_todos_digitos_iguais }}
-            then {{ telefone_limpo }}
-
-            /* Caso 4: número já vem com 12 dígitos */
-            /* Estrutura esperada: 55 + DDD + número fixo */
-            when length({{ telefone_limpo }}) = 12
-                /* Verifica se começa com o código do Brasil */
-                and substr({{ telefone_limpo }}, 1, 2) = '55'
-                /* Verifica se o DDD após o 55 é válido */
-                and regexp_contains(substr({{ telefone_limpo }}, 3, 2), {{ ddd_regex }})
-                /* Verifica se o dígito seguinte indica telefone fixo */
-                and substr({{ telefone_limpo }}, 5, 1) between '2' and '6'
-                /* Exclui números com todos os dígitos iguais */
                 and not {{ flag_todos_digitos_iguais }}
             then {{ telefone_limpo }}
 
@@ -128,15 +102,6 @@
         not {{ ddd_valido }}
     {%- endset -%}
 
-    /* Verifica se o número tem 11 dígitos no formato nacional, mas não tem o dígito 9 como identificador local */
-    {%- set flag_celular_9d_digito_invalido -%}
-        (
-            length({{ telefone_limpo }}) = 11
-            /* Verifica se o primeiro dígito após o DDD não é 9 */
-            and substr({{ telefone_limpo }}, 3, 1) != '9'
-        )
-    {%- endset -%}
-
     /* Detecta números institucionais conhecidos ou prefixos de serviços de atendimento ao público */
     {%- set flag_numero_institucional -%}
         (
@@ -157,7 +122,6 @@
             when {{ flag_repetidos_8_ou_mais }} then null
             when {{ flag_numero_institucional }} then null
             when coalesce({{ flag_telefone_clinica_column }}, false) then null
-            when {{ flag_celular_9d_digito_invalido }} then null
             when {{ flag_ddd_invalido }} then null
             when {{ flag_telefone_formatado_nulo }} then null
             else {{ telefone_formatado }}
@@ -172,7 +136,6 @@
             when {{ flag_repetidos_8_ou_mais }} then 'repetidos_8_ou_mais'
             when {{ flag_numero_institucional }} then 'numero_institucional'
             when coalesce({{ flag_telefone_clinica_column }}, false) then 'telefone_clinica'
-            when {{ flag_celular_9d_digito_invalido }} then 'celular_9d_digito_invalido'
             when {{ flag_ddd_invalido }} then 'ddd_invalido'
             when {{ flag_telefone_formatado_nulo }} then 'telefone_formatado_nulo'
             else null
