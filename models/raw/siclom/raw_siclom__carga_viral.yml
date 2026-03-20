@@ -11,7 +11,7 @@ models:
         description: "Identificador único do paciente no sistema SICLOM."
         policy_tags:
           - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
-      - name: cpf
+      - name: paciente_cpf
         description: "CPF do paciente."
         policy_tags:
           - '{{ var("TAG_CPF") }}'
@@ -39,7 +39,7 @@ models:
         description: "Data de nascimento do paciente."
         policy_tags:
           - '{{ var("TAG_DATA_NASCIMENTO") }}'
-      - name: ds_escolaridade
+      - name: escolaridade
         description: "Escolaridade do paciente."
       - name: raca
         description: "Raça/cor autodeclarada pelo paciente."
@@ -106,7 +106,7 @@ models:
       - name: liberacao_exame_hora
         description: "Hora de liberação do resultado do exame."
       - name: inclusao_data
-        description: "Hora de inclusão do registro no sistema de origem."
+        description: "Data de inclusão do registro no sistema de origem."
 
       # Profissional solicitante
       - name: solicitacao_digitador
