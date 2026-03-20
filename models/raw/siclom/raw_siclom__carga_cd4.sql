@@ -58,7 +58,7 @@ linfocitos_cd4 as (
         -- Avaliação clínica
         {{ process_null('st_dois_ult_cd4_maior_350') }} as dois_ult_cd4_maior_350,
         {{ process_null('estagio_clinico') }} as estagio_clinico,
-        {{ process_null('st_carga_viral_indetectavel') }} as carga_viral_indentectavel,
+        {{ process_null('st_carga_viral_indetectavel') }} as carga_viral_indetectavel,
         {{ process_null('avaliacao_inicial') }} as avaliacao_inicial,
         {{ process_null('mo_pes_assinto_segmento') }} as pessoa_assintomatica_segmento,
         {{ process_null('mo_crianca_adolescente') }} as crianca_adolescente,
