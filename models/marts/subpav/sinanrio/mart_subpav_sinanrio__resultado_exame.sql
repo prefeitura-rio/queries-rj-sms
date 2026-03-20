@@ -11,7 +11,17 @@
     ) 
 }}
 
-with base as (
+{% set gal_date_fields = [
+    ('data_liberacao', 'dt_resultado'),
+    ('data_coleta', 'dt_coleta'),
+    ('data_liberacao', 'dt_liberacao'),
+    ('data_processamento', 'dt_processamento'),
+    ('data_inicio_processamento', 'dt_inicio_processamento'),
+    ('data_recebimento', 'dt_recebimento'),
+    ('data_solicitacao', 'dt_solicitacao')
+] %}
+
+with base_bruta as (
     select
         nullif(
             regexp_replace(
@@ -39,18 +49,14 @@ with base as (
         ) as cnes,
 
         case
-            when tipo_exame = 'tubb-colzn'  then 1
+            when tipo_exame = 'tubb-colzn' then 1
             when tipo_exame = 'tugexp-pcrtr' then 2
             when tipo_exame = 'tubc-culmb' then 3
         end as id_tipo_exame,
 
-        coalesce(safe.parse_date('%d/%m/%Y', data_liberacao), safe.parse_date('%Y-%m-%d', data_liberacao), safe.parse_date('%d-%m-%Y', data_liberacao)) as dt_resultado,
-        coalesce(safe.parse_date('%d/%m/%Y', data_coleta), safe.parse_date('%Y-%m-%d', data_coleta), safe.parse_date('%d-%m-%Y', data_coleta)) as dt_coleta,
-        coalesce(safe.parse_date('%d/%m/%Y', data_liberacao), safe.parse_date('%Y-%m-%d', data_liberacao), safe.parse_date('%d-%m-%Y', data_liberacao)) as dt_liberacao,
-        coalesce(safe.parse_date('%d/%m/%Y', data_processamento), safe.parse_date('%Y-%m-%d', data_processamento), safe.parse_date('%d-%m-%Y', data_processamento)) as dt_processamento,
-        coalesce(safe.parse_date('%d/%m/%Y', data_inicio_processamento), safe.parse_date('%Y-%m-%d', data_inicio_processamento), safe.parse_date('%d-%m-%Y', data_inicio_processamento)) as dt_inicio_processamento,
-        coalesce(safe.parse_date('%d/%m/%Y', data_recebimento), safe.parse_date('%Y-%m-%d', data_recebimento), safe.parse_date('%d-%m-%Y', data_recebimento)) as dt_recebimento,
-        coalesce(safe.parse_date('%d/%m/%Y', data_solicitacao), safe.parse_date('%Y-%m-%d', data_solicitacao), safe.parse_date('%d-%m-%Y', data_solicitacao)) as dt_solicitacao,
+        {% for source_col, target_col in gal_date_fields %}
+        nullif(trim(cast({{ source_col }} as string)), '') as {{ target_col }}_raw{% if not loop.last %},{% endif %}
+        {% endfor %},
 
         upper(tugexp_pcrtr.dna_para_complexo_mycobacterium_tuberculosis) as pcr_dna,
         upper(tugexp_pcrtr.rifampicina)                                  as pcr_rif,
@@ -59,7 +65,40 @@ with base as (
 
         loaded_at
     from {{ ref('raw_gal__exames_laboratoriais') }}
-    where tipo_exame in ('tugexp-pcrtr','tubb-colzn','tubc-culmb')
+    where
+        tipo_exame in ('tugexp-pcrtr','tubb-colzn','tubc-culmb')
+        and regexp_replace(cast(ibge_municipio_solicitante as string), r'\D', '') = '330455'
+),
+
+base as (
+    select
+        paciente_cpf,
+        paciente_cns,
+        nome,
+        codigo_amostra,
+        cnes,
+        id_tipo_exame,
+
+        {% for source_col, target_col in gal_date_fields %}
+        case
+            when {{ target_col }}_raw is null then null
+            when {{ target_col }}_raw in ('0000-00-00', '0000/00/00', '00/00/0000', '00-00-0000') then null
+            when regexp_contains({{ target_col }}_raw, r'^\d{4}-\d{2}-\d{2}$')
+                then safe.parse_date('%Y-%m-%d', {{ target_col }}_raw)
+            when regexp_contains({{ target_col }}_raw, r'^\d{2}/\d{2}/\d{4}$')
+                then safe.parse_date('%d/%m/%Y', {{ target_col }}_raw)
+            when regexp_contains({{ target_col }}_raw, r'^\d{2}-\d{2}-\d{4}$')
+                then safe.parse_date('%d-%m-%Y', {{ target_col }}_raw)
+            else null
+        end as {{ target_col }}{% if not loop.last %},{% endif %}
+        {% endfor %},
+
+        pcr_dna,
+        pcr_rif,
+        ziehl_res,
+        cultura_res,
+        loaded_at
+    from base_bruta
 ),
 
 classificado as (
@@ -202,8 +241,8 @@ notificacao as (
     select
         regexp_replace(nu_cartao_sus, r'\D', '') as nu_cartao_sus,
         nu_notificacao,
-        dt_notificacao as dt_diagnostico,
-        dt_encerramento,
+        safe_cast(dt_notificacao as date) as dt_diagnostico,
+        safe_cast(dt_encerramento as date) as dt_encerramento,
         co_cid,
         tp_classificacao_final
     from {{ ref("mart_subpav_sinanrio__notificacao") }}
@@ -272,7 +311,7 @@ select
         when notificacao_ativa = 1 then 0  -- acompanhamento
         else 1                             -- diagnóstico
     end as diagnostico,
-    resultado_texto,
+    nullif(trim(resultado_texto), '') as resultado_texto,
     dt_coleta,
     dt_liberacao,
     dt_processamento,

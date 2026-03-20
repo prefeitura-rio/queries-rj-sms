@@ -1401,12 +1401,18 @@ models:
       - name: id_tb_situacao
         description: ""
         type: int
-      - name: origem
+      - name: id_origem
         description: ""
-        type: varchar
+        type: int
       - name: created_at
         description: ""
         type: timestamp
+      - name: dt_referencia
+        description: ""
+        type: date
+      - name: dt_situacao
+        description: ""
+        type: date
       - name: datalake_loaded_at
         description: ""
         type: timestamp
