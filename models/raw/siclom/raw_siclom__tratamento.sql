@@ -54,7 +54,7 @@ tratamento as (
 
         -- Médico prescritor
         {{ process_null('nome_medico') }} as medico_nome,
-        {{ process_null('cd_crm') }} as id_conselho,
+        trim({{ process_null('cd_crm') }}) as id_conselho,
         {{ process_null('uf_crm') }} as conselho_uf,
 
         cast(extracted_at as datetime) as extraido_em,
