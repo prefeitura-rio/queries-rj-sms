@@ -91,7 +91,7 @@ models:
         description: "Estágio clínico"
         policy_tags:
           - '{{ var("TAG_DADO_CLINICO") }}'
-      - name: carga_viral_indentectavel
+      - name: carga_viral_indetectavel
         description: "Carga viral indetectável"
         policy_tags:
           - '{{ var("TAG_DADO_CLINICO") }}'
@@ -139,8 +139,6 @@ models:
         description: "Hora de recebimento da amostra"
       - name: exame_execucao_data
         description: "Data de execução do exame"
-      - name: exame_execucao_hora
-        description: "Hora de execução do exame"
       - name: digitacao_data
         description: "Data de digitação"
       - name: digitacao_resultado_data
