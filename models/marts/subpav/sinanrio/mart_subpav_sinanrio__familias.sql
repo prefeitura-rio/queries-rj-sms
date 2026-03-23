@@ -36,7 +36,7 @@ WITH pacientes AS (
         SAFE_CAST(data_ultima_atualizacao_cadastral AS TIMESTAMP),
         SAFE_CAST(data_atualizacao_vinculo_equipe   AS TIMESTAMP)
         ) AS recency_ts
-    FROM {{ ref('raw_prontuario_vitacare__paciente') }}
+    FROM {{ ref('int_prontuario_vitacare__paciente') }}
     ),
 
     pre AS (

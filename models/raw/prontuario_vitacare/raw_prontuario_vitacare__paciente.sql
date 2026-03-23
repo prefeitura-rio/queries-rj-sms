@@ -129,11 +129,7 @@ with
             updated_at_rank
 
         from corrige_cadastro
-    ),
-
-    pacientes_validos as (
-        select * from renomeado where cpf is not null and id_cnes is not null
     )
 
 select *
-from pacientes_validos
+from renomeado

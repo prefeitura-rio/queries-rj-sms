@@ -33,7 +33,7 @@ criancas AS (
         data_nascimento AS inicio,
         DATE_ADD(data_nascimento, INTERVAL 6 YEAR) AS fim,
         'Infancia' AS tipo_publico
-    FROM {{ ref("raw_prontuario_vitacare__paciente") }}
+    FROM {{ ref("int_prontuario_vitacare__paciente") }}
     WHERE data_nascimento > DATE_SUB(CURRENT_DATE(), INTERVAL 6 YEAR)
       AND cpf <> 'NAO TEM'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY source_updated_at DESC) = 1

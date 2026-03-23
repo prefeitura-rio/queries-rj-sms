@@ -17,7 +17,7 @@ with cadastro as (
         mae_nome,
         data_nascimento,
         cpf
-    from {{ ref('raw_prontuario_vitacare__paciente') }}
+    from {{ ref('int_prontuario_vitacare__paciente') }}
 )
 
 select      
