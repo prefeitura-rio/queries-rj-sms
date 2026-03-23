@@ -1,7 +1,7 @@
 {{
     config(
         schema="subpav_vacinacao",
-        alias="pentavalente",
+        alias="pentavalente_ap53",
         materialized="table",
         tags=["daily"],
     )
