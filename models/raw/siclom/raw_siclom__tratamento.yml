@@ -4,6 +4,8 @@ models:
   - name: raw_siclom__tratamento
     description: "Contém dados de dispensação de medicamentos antirretrovirais para tratamento do HIV."
     columns:
+      - name: id
+        description: "Identificador único do registro de exame. Leva em conta o cpf, nome, esquema, data de dispensação e a unidade dispensadora para garantir unicidade."
       # Unidade Dispensadora
       - name: unidade_dispensadora
         description: "Nome da unidade que dispensou o medicamento."

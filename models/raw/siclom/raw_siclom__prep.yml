@@ -4,6 +4,8 @@ models:
   - name: raw_siclom__prep
     description: "Tabela de dispensação de Profilaxia Pré-Exposição (PrEP) ao HIV do sistema SICLOM. Contém informações sobre o paciente, a dispensação, fatores de risco e a prescrição."
     columns:
+      - name: id
+        description: "Identificador único do registro de exame. Leva em conta o cpf, nome, identificador de solicitação e dispensação para garantir unicidade."
       # Controle
       - name: paginacao_total
         description: "Total de registros na paginação da API."

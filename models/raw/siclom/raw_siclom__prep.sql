@@ -8,12 +8,21 @@
             "data_type": "date",
             "granularity": "month",
         },
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
+        unique_key="id"
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with source as (
     select * from {{source('brutos_siclom_api_staging', 'prep')}}
+    {% if is_incremental() %}
+    where date(data_particao) >= date('{{ last_partition }}')
+    {% endif %}
 ),
+
 
 prep as (
     select 
@@ -31,7 +40,7 @@ prep as (
         {{ process_null('st_pub_priv') }} as esfera_atendimento,
 
         -- Identificação do Paciente
-        {{ process_null('cpf') }} as paciente_cpf,
+        {{ process_null('CPF') }} as paciente_cpf,
         {{ process_null('nome_civil') }} as paciente_nome,
         {{ process_null('nome_social') }} as paciente_nome_social,
         {{ process_null('ds_genero') }} as genero,
@@ -46,7 +55,7 @@ prep as (
         {{ process_null('tp_modalidade') }} as modalidade,
         {{ process_null('tp_esquema_prep') }} as esquema_prep,
         safe_cast(qtde_autoteste as int64) as autoteste_quantidade,
-        safe_cast(duracao as int64) as duracao,
+        safe_cast(duracao as float64) as duracao,
         safe_cast(dt_dispensa_sol as datetime) as dispensacao_solicitacao_data,
         
         cast(extracted_at as datetime) as extraido_em,
@@ -54,4 +63,17 @@ prep as (
     from source
 )
 
-select * from prep
+select 
+    {{
+        dbt_utils.generate_surrogate_key(
+            [
+            "paciente_cpf",
+            "paciente_nome",
+            "id_dispensacao",
+            "id_solicitacao",
+            ]            
+        )
+    }} as id,
+    *   
+from prep
+qualify row_number() over (partition by id order by extraido_em desc)=1

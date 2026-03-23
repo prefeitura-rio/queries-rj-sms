@@ -5,6 +5,8 @@ models:
     description: "Tabela de exames de contagem de linfócitos CD4/CD8 do sistema SICLOM."
     columns:
       # Identificação do Paciente
+      - name: id
+        description: "Identificador único do registro de exame. Leva em conta o cpf, id_amostra_laboratorial e numero_formulario para garantir unicidade."
       - name: id_cidadao
         description: "Código do paciente"
         policy_tags:
@@ -61,6 +63,8 @@ models:
       # Dados do Exame
       - name: numero_formulario
         description: "Número do formulário"
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: id_amostra_laboratorial
         description: "Identificação da amostra no laboratório"
         policy_tags:
@@ -87,7 +91,7 @@ models:
         description: "Estágio clínico"
         policy_tags:
           - '{{ var("TAG_DADO_CLINICO") }}'
-      - name: carga_viral_indentectavel
+      - name: carga_viral_indetectavel
         description: "Carga viral indetectável"
         policy_tags:
           - '{{ var("TAG_DADO_CLINICO") }}'
@@ -135,8 +139,6 @@ models:
         description: "Hora de recebimento da amostra"
       - name: exame_execucao_data
         description: "Data de execução do exame"
-      - name: exame_execucao_hora
-        description: "Hora de execução do exame"
       - name: digitacao_data
         description: "Data de digitação"
       - name: digitacao_resultado_data
