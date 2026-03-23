@@ -1631,7 +1631,7 @@ vacinacao_sincicial AS (
     FROM
         filtrado f
         JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
-        JOIN `rj-sms.saude_historico_clinico.vacinacao` v
+        JOIN {{ ref('mart_historico_clinico__vacinacao') }} v
             ON pi.cpf = v.paciente_cpf
     WHERE
         LOWER(v.vacina_descricao) LIKE '%sincicial%a e b%'
