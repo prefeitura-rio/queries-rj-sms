@@ -15,19 +15,22 @@ with estabelecimento as (
     ),
 
     vacinacao as (
+        
         select 
+            v.id_cnes,
             v.paciente_nome,
             v.paciente_cpf,
             v.paciente_cns,
             v.paciente_nascimento_data, 
             v.vacina_descricao,
             v.vacina_dose,
+            v.vacina_lote,
             v.vacina_aplicacao_data,
             v.vacina_registro_data
         from {{ ref("mart_historico_clinico__vacinacao") }} v
         left join estabelecimento e using (id_cnes)
         where 1=1
-        and date_diff(current_date, v.paciente_nascimento_data, year) <= 6
+        and v.paciente_nascimento_data > date_sub(current_date, interval 7 year)
         and v.vacina_descricao like '%penta%'
         and v.vacina_descricao not like '%soro%'
         and v.vacina_descricao not like '%rota%'
