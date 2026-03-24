@@ -48,7 +48,7 @@ with estabelecimento as (
         from {{ ref("mart_historico_clinico__vacinacao") }} v
         inner join pacientes_ap53 p on v.paciente_cpf = p.cpf
         where 1=1
-        and v.paciente_nascimento_data > date_sub(current_date, interval 7 year)
+        and v.paciente_nascimento_data > date_sub(current_date, interval 6 year)
         and v.vacina_descricao like '%penta%'
         and v.vacina_descricao not like '%soro%'
         and v.vacina_descricao not like '%rota%'
