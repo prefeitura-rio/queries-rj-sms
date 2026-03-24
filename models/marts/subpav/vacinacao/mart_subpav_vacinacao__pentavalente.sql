@@ -19,6 +19,7 @@ with estabelecimento as (
             cpf,
             id_cnes
         from {{ ref('raw_prontuario_vitacare__paciente') }}
+        where cpf is not null and id_cnes is not null
     ),
 
     -- no momento, estamos consideramos apenas pacientes com cadastro em unidades da ap 53
