@@ -38,7 +38,7 @@ models:
         data_type: date
 
       - name: vacina_registro_data
-        description: Data/hora em que o registro da vacina foi efetivado no sistema.
+        description: Data em que o registro da vacina foi efetivado no sistema.
         data_type: date
 
       - name: paciente_nome
