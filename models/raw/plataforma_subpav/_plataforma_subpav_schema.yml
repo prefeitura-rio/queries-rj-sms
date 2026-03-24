@@ -1825,3 +1825,132 @@ models:
         type: timestamp
       - name: datalake_loaded_at
         type: timestamp
+
+  - name: raw_plataforma_subpav_sisare__vw_altas
+    description: |
+      Modelo raw contendo os registros da view de altas do SISARE,
+      espelhando a tabela `subpav_altas_referenciadas__vw_altas` da camada staging.
+    columns:
+      - name: id_alta
+        description: ""
+        type: int
+      - name: id_paciente
+        description: ""
+        type: int
+      - name: id_internacao
+        description: ""
+        type: int
+      - name: id_formulario
+        description: ""
+        type: int
+      - name: id_motivo_alta
+        description: ""
+        type: int
+      - name: local_transferencia
+        description: ""
+        type: text
+      - name: motivo_encaminhamento
+        description: ""
+        type: text
+      - name: dt_obito
+        description: ""
+        type: date
+      - name: causa_obito
+        description: ""
+        type: varchar
+      - name: unidade_aps
+        description: ""
+        type: int
+      - name: resumo_recomendacoes
+        description: ""
+        type: text
+      - name: conduta_indicada
+        description: ""
+        type: text
+      - name: gestacao_em_curso
+        description: ""
+        type: char
+      - name: status
+        description: ""
+        type: tinyint
+      - name: created_at
+        description: ""
+        type: timestamp
+      - name: updated_at
+        description: ""
+        type: timestamp
+      - name: urgente
+        description: ""
+        type: tinyint
+      - name: id_user
+        description: ""
+        type: int
+      - name: alta_pendente
+        description: ""
+        type: tinyint
+      - name: cpf_cadastrante
+        description: ""
+        type: char
+      - name: datalake_loaded_at
+        description: ""
+        type: timestamp
+
+  - name: raw_plataforma_subpav_sisare__internacoes_comorbidades
+    description: |
+      Modelo raw contendo os registros de comorbidades vinculadas às internações do SISARE,
+      espelhando a tabela `subpav_altas_referenciadas__internacoes_comorbidades` da camada staging.
+    columns:
+      - name: id_internacao_comorbidade
+        description: ""
+        type: int
+      - name: id_paciente
+        description: ""
+        type: int
+      - name: id_internacao
+        description: ""
+        type: int
+      - name: id_comorbidade
+        description: ""
+        type: int
+      - name: status
+        description: ""
+        type: tinyint
+      - name: created_at
+        description: ""
+        type: timestamp
+      - name: updated_at
+        description: ""
+        type: timestamp
+      - name: datalake_loaded_at
+        description: ""
+        type: timestamp
+
+  - name: raw_plataforma_subpav_sisare__internacoes_diagnosticos
+    description: |
+      Modelo raw contendo os registros de diagnósticos vinculados às internações do SISARE,
+      espelhando a tabela `subpav_altas_referenciadas__internacoes_diagnosticos` da camada staging.
+    columns:
+      - name: id_internacao_diagnostico
+        description: ""
+        type: int
+      - name: id_paciente
+        description: ""
+        type: int
+      - name: id_internacao
+        description: ""
+        type: int
+      - name: id_diagnostico
+        description: ""
+        type: int
+      - name: status
+        description: ""
+        type: tinyint
+      - name: created_at
+        description: ""
+        type: timestamp
+      - name: updated_at
+        description: ""
+        type: timestamp
+      - name: datalake_loaded_at
+        description: ""
+        type: timestamp

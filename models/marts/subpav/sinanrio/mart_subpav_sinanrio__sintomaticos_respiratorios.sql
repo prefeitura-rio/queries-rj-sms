@@ -125,7 +125,7 @@ sisare_altas_ontem as (
 
     with base as (
         select
-            i.id_internacao,
+            safe_cast(i.id_internacao as int64) as id_internacao,
             regexp_replace(pac.cpf, r'\D', '') as cpf,
 
             nullif(
@@ -140,7 +140,6 @@ sisare_altas_ontem as (
                 '0000000'
             ) as cnes_aps,
 
-            -- evento_ts: tenta primeiro DATETIME->TIMESTAMP no fuso RJ (evita interpretar DATETIME como UTC)
             coalesce(
                 timestamp(safe_cast(a.created_at as datetime), p.tz),
                 safe_cast(a.created_at as timestamp),
@@ -164,13 +163,13 @@ sisare_altas_ontem as (
 
             i.datalake_loaded_at
 
-        from {{ source('brutos_plataforma_subpav_staging', 'subpav_altas_referenciadas__internacoes') }} i
+        from {{ ref('raw_plataforma_subpav_sisare__internacoes') }} i
         cross join params p
-        left join {{ source('brutos_plataforma_subpav_staging', 'subpav_altas_referenciadas__pacientes') }} pac
-        on pac.id_paciente = i.id_paciente
-        left join {{ source('brutos_plataforma_subpav_staging', 'subpav_altas_referenciadas__vw_altas') }} a
-        on a.id_internacao = i.id_internacao
-        and (a.status is null or safe_cast(a.status as int64) = 1)
+        left join {{ ref('raw_plataforma_subpav_sisare__pacientes') }} pac
+            on safe_cast(pac.id_paciente as int64) = safe_cast(i.id_paciente as int64)
+        left join {{ ref('raw_plataforma_subpav_sisare__vw_altas') }} a
+            on safe_cast(a.id_internacao as int64) = safe_cast(i.id_internacao as int64)
+            and (a.status is null or safe_cast(a.status as int64) = 1)
         where regexp_contains(regexp_replace(pac.cpf, r'\D', ''), r'^\d{11}$')
         and (i.status is null or safe_cast(i.status as int64) = 1)
     )
@@ -197,14 +196,14 @@ sisare_altas_ontem as (
     and (
         exists (
             select 1
-            from {{ source('brutos_plataforma_subpav_staging', 'subpav_altas_referenciadas__internacoes_comorbidades') }} c
+            from {{ ref('raw_plataforma_subpav_sisare__internacoes_comorbidades') }} c
             where c.id_internacao = b.id_internacao
             and (c.status is null or safe_cast(c.status as int64) = 1)
             and cast(c.id_comorbidade as string) in ('11841','11879','11907')
         )
         or exists (
             select 1
-            from {{ source('brutos_plataforma_subpav_staging', 'subpav_altas_referenciadas__internacoes_diagnosticos') }} d
+            from {{ ref('raw_plataforma_subpav_sisare__internacoes_diagnosticos') }} d
             where d.id_internacao = b.id_internacao
             and (d.status is null or safe_cast(d.status as int64) = 1)
             and cast(d.id_diagnostico as string) in ('11841','11879','11907')
