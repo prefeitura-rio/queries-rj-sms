@@ -532,7 +532,7 @@ models:
       cie:
         alerta_doencas:
           +schema: projeto_alerta_doencas
-          +tags: ["every_30_minutes", "cie", "alerta_doencas"]
+          +tags: ["daily", "cie", "alerta_doencas"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
