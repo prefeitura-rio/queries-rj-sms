@@ -1,9 +1,3 @@
-{{ config(
-    materialized='table',
-    schema='debug_estoque',
-    alias='posicao'
-) }}
-
 with
     -- sources
     estoque_posicao_formato_novo as (
