@@ -221,7 +221,7 @@ with
             sistema_origem,
             data_particao,
             date_diff(
-                current_date('America/Sao_Paulo'), data_carga, day
+                current_date('America/Sao_Paulo'), data_particao, day
             ) as dias_desde_ultima_atualizacao,
             data_carga,
 

@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    schema='debug_estoque',
+    alias='posicao'
+) }}
+
 with
     -- sources
     estoque_posicao_formato_novo as (
@@ -21,11 +27,24 @@ with
             material_descricao,
             material_quantidade,
             armazem,
-            cast(particao_data_posicao as date) as data_particao,
+            cast(metadados.loaded_at as date) as data_particao,
             cast(metadados.updated_at as datetime) as data_replicacao,
             cast(metadados.loaded_at as date) as data_carga
         from estoque_posicao_formato_novo
         where material_quantidade > 0
+        qualify row_number() over (
+        partition by
+            id_cnes,
+            id_lote,
+            id_material,
+            id_atc,
+            lote_status,
+            lote_data_cadastro,
+            lote_data_vencimento,
+            data_particao,
+            data_carga
+        order by data_replicacao desc
+    ) = 1
     )
 
 select *
