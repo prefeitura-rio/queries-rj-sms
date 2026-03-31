@@ -1,5 +1,6 @@
 {{
     config(
+        enabled = false,
         alias="listagem_vacina_v2",
         materialized="table",
     )
