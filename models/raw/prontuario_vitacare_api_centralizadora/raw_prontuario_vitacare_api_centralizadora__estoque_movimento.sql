@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         alias="estoque_movimento",
         partition_by={
             "field": "particao_data_movimento",
