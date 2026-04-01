@@ -52,3 +52,7 @@ models:
         data_type: date
         policy_tags:
           - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: data_particao
+        description: Data da partição dos dados, utilizada para otimização de consultas
+        data_type: date

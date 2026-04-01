@@ -4,6 +4,11 @@
         alias="pentavalente",
         materialized="table",
         tags=["daily"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -45,7 +50,11 @@ with estabelecimento as (
             v.vacina_lote,
             v.vacina_aplicacao_data,
             v.vacina_registro_data,
-            v.origem
+            case 
+                when v.origem in ('historico', 'api', 'continuo') then 'vitacare'
+                else v.origem
+            end as origem,
+            v.vacina_registro_data as data_particao,
         from {{ ref("mart_historico_clinico__vacinacao") }} v
         inner join pacientes_ap53 p on v.paciente_cpf = p.cpf
         where 1=1
