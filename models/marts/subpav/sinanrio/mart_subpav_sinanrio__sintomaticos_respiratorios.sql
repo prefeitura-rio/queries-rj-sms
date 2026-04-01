@@ -57,13 +57,22 @@ episodios_ontem_base as (
 episodios_filtrados as (
     select e.*
     from episodios_ontem_base e
+    cross join params p
     where e.condicoes is not null
-    and exists (
-        select 1
-        from unnest(e.condicoes) cid
-        where substr(regexp_replace(upper(cid.id), r'\.', ''), 1, 4)
-            in unnest({{ sinanrio_lista_cids_sintomaticos() }})
-    )
+        and exists (
+            select 1
+            from unnest(e.condicoes) cid
+            where substr(regexp_replace(upper(cid.id), r'\.', ''), 1, 4)
+                    in unnest({{ sinanrio_lista_cids_sintomaticos() }})
+                and upper(trim(cid.situacao)) = 'ATIVO'
+                and coalesce(
+                    date(timestamp(safe_cast(nullif(trim(cid.data_diagnostico), '') as datetime), p.tz), p.tz),
+                    date(safe_cast(nullif(trim(cid.data_diagnostico), '') as timestamp), p.tz),
+                    safe.parse_date('%Y-%m-%d', nullif(trim(cid.data_diagnostico), '')),
+                    safe.parse_date('%d/%m/%Y', nullif(trim(cid.data_diagnostico), '')),
+                    safe.parse_date('%d-%m-%Y', nullif(trim(cid.data_diagnostico), ''))
+                ) between date_sub(p.data_ref, interval 30 day) and p.data_ref
+        )
 ),
 
 -- =============================
@@ -215,6 +224,57 @@ sisare_altas_ontem as (
         order by b.updated_ts desc, b.id_internacao desc
     ) = 1
 ),
+-- =============================
+-- GAL - Positivos e não notificados/ não sintomatico (ontem)
+-- =============================
+gal_positivos_ontem as (
+    select
+        regexp_replace(r.paciente_cpf, r'\D', '') as cpf,
+        'gal' as prontuario_fornecedor,
+        timestamp(r.dt_resultado, p.tz) as entrada_datahora,
+        timestamp(r.dt_resultado, p.tz) as saida_datahora,
+
+        struct(
+            nullif(
+                lpad(regexp_replace(cast(r.cnes as string), r'\D', ''), 7, '0'),
+                '0000000'
+            ) as id_cnes
+        ) as estabelecimento,
+
+        struct(
+            cast(null as string) as cpf,
+            struct(
+                nullif(
+                    lpad(regexp_replace(cast(r.cnes as string), r'\D', ''), 7, '0'),
+                    '0000000'
+                ) as id_cnes
+            ) as estabelecimento,
+            nullif(
+                lpad(regexp_replace(cast(r.cnes as string), r'\D', ''), 7, '0'),
+                '0000000'
+            ) as id_cnes
+        ) as profissional_saude_responsavel,
+
+        4 as fonte_prioridade
+
+    from {{ ref('mart_subpav_sinanrio__resultado_exame') }} r
+    cross join params p
+    where r.dt_resultado = p.data_ref
+        and r.diagnostico = 1
+        and regexp_contains(regexp_replace(coalesce(r.paciente_cpf, ''), r'\D', ''), r'^\d{11}$')
+        and (
+            (r.id_tipo_exame = 1 and r.id_resultado in (1, 4, 5))  -- baciloscopia positiva
+            or (r.id_tipo_exame = 2 and r.id_resultado in (1, 2))     -- TRM positivo
+            or (r.id_tipo_exame = 3 and r.id_resultado = 1)           -- cultura positiva, se entrar na regra
+        )
+
+    qualify row_number() over (
+        partition by regexp_replace(r.paciente_cpf, r'\D', ''), r.dt_resultado
+        order by
+            case when r.id_tipo_exame = 1 then 1 else 2 end,
+            r.codigo_amostra desc nulls last
+    ) = 1
+),
 
 -- =============================
 -- Unifica fontes de suspeitos
@@ -296,6 +356,17 @@ eventos_suspeitos as (
         profissional_saude_responsavel,
         fonte_prioridade
     from sisare_altas_ontem
+
+    union all
+    select
+        cpf,
+        prontuario_fornecedor,
+        entrada_datahora,
+        saida_datahora,
+        estabelecimento,
+        profissional_saude_responsavel,
+        fonte_prioridade
+    from gal_positivos_ontem
 ),
 
 cpfs_sintomaticos as (
@@ -647,6 +718,7 @@ select
         when 'pcsm' then 7
         when 'sarah' then 8
         when 'prontuario' then 9
+        when 'gal' then 10
         else 1
     end as id_origem,
     p.data_ref                                  as dt_referencia,

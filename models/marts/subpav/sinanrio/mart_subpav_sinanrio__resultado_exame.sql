@@ -70,15 +70,32 @@ with base_bruta as (
         and regexp_replace(cast(ibge_municipio_solicitante as string), r'\D', '') = '330455'
 ),
 
+indice_cns_cpf_base as (
+    select distinct
+        lpad(cast(cns_particao as string), 15, '0') as cns,
+        regexp_replace(cpf, r'\D', '') as cpf
+    from {{ ref('mart_historico_clinico_app__indice') }}
+    where regexp_contains(lpad(cast(cns_particao as string), 15, '0'), r'^\d{15}$')
+        and regexp_contains(regexp_replace(cpf, r'\D', ''), r'^\d{11}$')
+),
+
+indice_cns_cpf_unico as (
+    select
+        cns,
+        min(cpf) as cpf
+    from indice_cns_cpf_base
+    group by 1
+    having count(*) = 1
+),
+
 base as (
     select
-        paciente_cpf,
-        paciente_cns,
-        nome,
-        codigo_amostra,
-        cnes,
-        id_tipo_exame,
-
+        coalesce(b.paciente_cpf, i.cpf) as paciente_cpf,
+        b.paciente_cns,
+        b.nome,
+        b.codigo_amostra,
+        b.cnes,
+        b.id_tipo_exame,
         {% for source_col, target_col in gal_date_fields %}
         case
             when {{ target_col }}_raw is null then null
@@ -92,13 +109,14 @@ base as (
             else null
         end as {{ target_col }}{% if not loop.last %},{% endif %}
         {% endfor %},
-
-        pcr_dna,
-        pcr_rif,
-        ziehl_res,
-        cultura_res,
-        loaded_at
-    from base_bruta
+        b.pcr_dna,
+        b.pcr_rif,
+        b.ziehl_res,
+        b.cultura_res,
+        b.loaded_at
+    from base_bruta b
+    left join indice_cns_cpf_unico i
+        on b.paciente_cns = i.cns
 ),
 
 classificado as (

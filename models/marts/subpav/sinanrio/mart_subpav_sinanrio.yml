@@ -107,7 +107,7 @@ models:
       - 6=SMS Rio
       - 7=PCSM
       - 8=Sarah
-      - 9=Prontuário
+      - 9=ProntuaRio
     columns:
       - name: cpf
         description: "CPF do paciente, sem máscara e com apenas dígitos."
