@@ -44,7 +44,8 @@ with estabelecimento as (
             v.vacina_dose,
             v.vacina_lote,
             v.vacina_aplicacao_data,
-            v.vacina_registro_data
+            v.vacina_registro_data,
+            v.origem
         from {{ ref("mart_historico_clinico__vacinacao") }} v
         inner join pacientes_ap53 p on v.paciente_cpf = p.cpf
         where 1=1
