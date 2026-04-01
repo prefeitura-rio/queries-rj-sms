@@ -5,7 +5,8 @@
             "field": "particao_data_vacinacao",
             "data_type": "date",
             "granularity": "month",
-        }
+        },
+        tags=['daily']
     )
 }}
 

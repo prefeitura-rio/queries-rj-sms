@@ -5,7 +5,7 @@
         materialized="incremental",
         incremental_strategy='merge', 
         unique_key="id",
-        tags=['weekly']
+        tags=['monthly']
     )
 }}
 
