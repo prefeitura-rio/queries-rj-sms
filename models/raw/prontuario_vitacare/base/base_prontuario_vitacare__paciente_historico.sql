@@ -10,7 +10,7 @@
             "data_type": "date",
             "granularity": "day",
         },
-        tags=['weekly']
+        tags=['monthly']
     )
 }}
 {% set seven_days_ago = (
