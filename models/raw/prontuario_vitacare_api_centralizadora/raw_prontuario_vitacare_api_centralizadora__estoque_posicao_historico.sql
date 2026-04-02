@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         alias="estoque_posicao_historico",
         partition_by={
             "field": "particao_data_posicao",
