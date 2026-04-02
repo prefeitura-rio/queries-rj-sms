@@ -1,7 +1,12 @@
 {{
     config(
         alias="numeros_processamento",
-        schema= "brutos_gdb_sih"
+        schema= "brutos_gdb_sih",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -32,7 +37,7 @@ extracted as (
 renamed as (
     select
 
-        cast({{ process_null("PR_CMPT") }} as string) as cmpt,
+        cast({{ process_null("PR_CMPT") }} as string) as competencia,
         cast({{ process_null("PR_NUM") }} as string) as numero,
         cast({{ process_null("trim(PR_DESCRICAO)") }} as string) as descricao,
         cast({{ process_null("PR_VINC_PG_PF") }} as string) as vinculo_pg_pf,
@@ -45,8 +50,8 @@ renamed as (
         cast({{ process_null("PR_ELETIVAS") }} as string) as eletivas,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

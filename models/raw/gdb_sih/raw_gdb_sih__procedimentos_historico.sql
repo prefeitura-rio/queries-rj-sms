@@ -1,7 +1,12 @@
 {{
     config(
         alias="procedimentos_historico",
-        schema= "brutos_gdb_sih"
+        schema= "brutos_gdb_sih",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -59,7 +64,7 @@ renamed as (
         cast({{ process_null("PA_OE_GESTOR") }} as string) as oe_gestor,
         cast({{ process_null("PA_NUM_AIH") }} as string) as numero_aih,
         cast({{ process_null("PA_CNES") }} as string) as id_cnes,
-        cast({{ process_null("PA_CMPT") }} as string) as cmpt,
+        cast({{ process_null("PA_CMPT") }} as string) as competencia,
         cast({{ process_null("PA_SEQ_PRINC") }} as string) as seq_princ,
         cast({{ process_null("PA_INDX") }} as string) as indx,
 
@@ -108,7 +113,7 @@ renamed as (
         cast({{ process_null("PA_GRUPO") }} as string) as grupo,
         cast({{ process_null("PA_SUBGRUPO") }} as string) as subgrupo,
         cast({{ process_null("PA_FO") }} as string) as fo,
-        cast({{ process_null("PA_CMPT_UTI") }} as string) as cmpt_uti,
+        cast({{ process_null("PA_CMPT_UTI") }} as string) as competencia_uti,
         cast({{ process_null("PA_COMPLEXIDADE") }} as string) as complexidade,
         cast({{ process_null("PA_FINANCIAMENTO") }} as string) as financiamento,
         cast({{ process_null("PA_TIPO_FAEC") }} as string) as tipo_faec,
@@ -117,8 +122,8 @@ renamed as (
         cast({{ process_null("PA_SERV_CLA") }} as string) as serv_cla,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

@@ -1,7 +1,12 @@
 {{
     config(
         alias="aih_historico",
-        schema= "brutos_gdb_sih"
+        schema= "brutos_gdb_sih",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 -- Acredito que os backups em `brutos_sih_staging` são dessa tabela  -Avellar
@@ -185,7 +190,7 @@ renamed as (
             else cast({{ process_null("AH_NUM_AIH_PROX") }} as string)
         end as numero_aih_proximo,
         cast({{ process_null("AH_SEQ_AIH5") }} as string) as numero_seq_aih5,
-        cast({{ process_null("AH_CMPT") }} as string) as cmpt,
+        cast({{ process_null("AH_CMPT") }} as string) as competencia,
         cast({{ process_null("AH_OE_AIH") }} as string) as oe_aih,
         cast({{ process_null("AH_OE_GESTOR") }} as string) as oe_gestor,
         cast({{ process_null("AH_OE_REGIONAL") }} as string) as oe_regional,
@@ -364,8 +369,8 @@ renamed as (
         cast({{ process_null("AH_PACIENTE_DADOS_VALIDADOS_CNS") }} as string) as paciente_dados_vaidados_cns,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

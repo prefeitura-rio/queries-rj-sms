@@ -1,7 +1,12 @@
 {{
     config(
         alias="teto",
-        schema= "brutos_gdb_sih"
+        schema= "brutos_gdb_sih",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -31,14 +36,14 @@ renamed as (
         cast({{ process_null("TE_CNES") }} as string) as id_cnes,
         cast({{ process_null("TE_EL_COD") }} as string) as el_codigo,
         cast({{ process_null("TE_COMPLEXIDADE") }} as string) as complexidade,
-        cast({{ process_null("TE_CMPT_INI") }} as string) as data_cmpt_inicio,
-        cast({{ process_null("TE_CMPT_FIM") }} as string) as data_cmpt_fim,
+        cast({{ process_null("TE_CMPT_INI") }} as string) as competencia_inicio,
+        cast({{ process_null("TE_CMPT_FIM") }} as string) as competencia_fim,
         cast({{ process_null("TE_VALOR") }} as string) as valor,
         cast({{ process_null("TE_OE_REGIONAL") }} as string) as oe_regional,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

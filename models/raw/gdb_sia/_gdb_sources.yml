@@ -1,0 +1,52 @@
+version: 2
+
+sources:
+  - name: brutos_gdb_sia_staging
+    database: rj-sms-dev
+    schema: brutos_gdb_sia_staging
+    tables:
+
+    - name: TB_APA
+      # TB_APA -> ?
+
+    - name: TB_BPI
+      # TB_BPI -> ?
+
+    - name: TB_CBO
+      # TB_CBO -> ?
+
+    - name: TB_CFA
+      # TB_CFA -> ?
+
+    - name: TB_CNS
+      # TB_CNS -> ?
+
+    - name: TB_CRD
+      # TB_CFA -> ?
+
+    - name: TB_EQUIPE
+      # TB_EQUIPE -> ?
+
+    - name: TB_ENCERRAMENTO
+      # TB_ENCERRAMENTO -> ?
+
+    - name: TB_FORNEC
+      # TB_FORNEC -> fornecedores?
+
+    - name: TB_IPU
+      # TB_IPU -> ?
+
+    - name: TB_MNT
+      # TB_MNT -> ?
+
+    - name: TB_PRD
+      # TB_PRD -> ?
+
+    - name: TB_RAS
+      # TB_RAS -> ?
+
+    - name: TB_SRV
+      # TB_SRV -> ?
+
+    - name: TB_SS
+      # TB_SS -> ?

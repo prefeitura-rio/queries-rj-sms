@@ -1,7 +1,12 @@
 {{
     config(
         alias="hospitais",
-        schema= "brutos_gdb_sih"
+        schema= "brutos_gdb_sih",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -53,8 +58,8 @@ renamed as (
             else cast({{ process_null("HA_CNPJ_MANTENEDORA") }} as string)
         end as cnpj_mantenedora,
 
-        cast({{ process_null("HA_CMPT_INI") }} as string) as mes_cmpt_inicio,
-        cast({{ process_null("HA_CMPT_FIM") }} as string) as mes_cmpt_fim,
+        cast({{ process_null("HA_CMPT_INI") }} as string) as competencia_inicio,
+        cast({{ process_null("HA_CMPT_FIM") }} as string) as competencia_fim,
 
         cast({{ process_null("HA_UF_COD") }} as string) as codigo_uf,
         cast({{ process_null("HA_MN_COD") }} as string) as codigo_municipio,
@@ -78,8 +83,8 @@ renamed as (
         cast({{ process_null("HA_CAPTACAO") }} as string) as captacao,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

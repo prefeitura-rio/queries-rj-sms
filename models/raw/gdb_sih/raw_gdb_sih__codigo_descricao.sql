@@ -1,7 +1,12 @@
 {{
     config(
         alias="codigo_descricao",
-        schema= "brutos_gdb_sih"
+        schema= "brutos_gdb_sih",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -28,13 +33,13 @@ renamed as (
 
         cast({{ process_null("C_D_COD_TAB") }} as string) as codigo_tabela,
         cast({{ process_null("C_D_COD_ITEM") }} as string) as codigo_item,
-        cast({{ process_null("C_D_CMPT_INI") }} as string) as cmpt_inicio,
-        cast({{ process_null("C_D_CMPT_FIM") }} as string) as cmpt_fim,
+        cast({{ process_null("C_D_CMPT_INI") }} as string) as competencia_inicio,
+        cast({{ process_null("C_D_CMPT_FIM") }} as string) as competencia_fim,
         cast({{ process_null("trim(C_D_DESCRICAO)") }} as string) as descricao,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

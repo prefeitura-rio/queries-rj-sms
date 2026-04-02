@@ -1,7 +1,12 @@
 {{
     config(
         alias="cadastro_terceiros",
-        schema= "brutos_gdb_sih"
+        schema= "brutos_gdb_sih",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -33,16 +38,16 @@ renamed as (
         cast({{ process_null("TC_OE_GESTOR") }} as string) as oe_gestor,
         cast({{ process_null("TC_IDENT") }} as string) as ident,
         cast({{ process_null("TC_DOC") }} as string) as doc,
-        cast({{ process_null("TC_CMPT_INI") }} as string) as data_cmpt_inicio,
-        cast({{ process_null("TC_CMPT_FIM") }} as string) as data_cmpt_fim,
+        cast({{ process_null("TC_CMPT_INI") }} as string) as competencia_inicio,
+        cast({{ process_null("TC_CMPT_FIM") }} as string) as competencia_fim,
         cast({{ process_null("trim(TC_DESCRICAO)") }} as string) as descricao,
         cast({{ process_null("TC_IND_ORIGEM") }} as string) as ind_origem,
         cast({{ process_null("TC_TIPO") }} as string) as tipo,
         cast({{ process_null("TC_CMPT_ACERTO") }} as string) as cmpt_acerto,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

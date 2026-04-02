@@ -1,7 +1,12 @@
 {{
     config(
         alias="registro_civil_historico",
-        schema= "brutos_gdb_sih"
+        schema= "brutos_gdb_sih",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
     )
 }}
 
@@ -39,7 +44,7 @@ renamed as (
         cast({{ process_null("RC_OE_GESTOR") }} as string) as oe_gestor,
         cast({{ process_null("RC_NUM_AIH") }} as string) as numero_aih,
         cast({{ process_null("RC_CNES") }} as string) as id_cnes,
-        cast({{ process_null("RC_CMPT") }} as string) as cmpt,
+        cast({{ process_null("RC_CMPT") }} as string) as competencia,
         cast({{ process_null("RC_SEQ_PRINC") }} as string) as seq_princ,
         cast({{ process_null("RC_INDX") }} as string) as indx,
         cast({{ process_null("RC_NUM_DEC_NASC") }} as string) as numero_dec_nascimento,
@@ -68,8 +73,8 @@ renamed as (
         cast({{ process_null("RC_MATRICULA") }} as string) as matricula,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *
