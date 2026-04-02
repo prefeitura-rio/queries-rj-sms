@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_gdb_sia_staging
-    database: rj-sms-dev
+    database: rj-sms-dev  # FIXME: rj-sms quando tiver em prod
     schema: brutos_gdb_sia_staging
     tables:
 

@@ -49,8 +49,8 @@ renamed as (
         cast({{ process_null("CBO_LOCNAC") }} as string) as locnac,
 
         -- Podem ser usados posteriormente para deduplicação
-        data_particao,
-        _loaded_at as data_carga,
+        safe_cast(data_particao as date) as data_particao,
+        safe_cast(_loaded_at as timestamp) as data_carga
     from extracted
 )
 select *

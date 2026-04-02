@@ -136,6 +136,7 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+
       gdb_cnes:
         +schema: brutos_gdb_cnes
         +tags: ["weekly", "gdb_cnes"]
@@ -143,6 +144,21 @@ models:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: sim
+      gdb_sih:
+        +schema: brutos_gdb_sih
+        +tags: ["gdb_sih"]  # TODO: weekly
+        +labels:
+          dado_publico: sim
+          dado_pessoal: sim
+          dado_sensivel: sim
+      gdb_sia:
+        +schema: brutos_gdb_sia
+        +tags: ["gdb_sia"]  # TODO: weekly
+        +labels:
+          dado_publico: sim
+          dado_pessoal: sim
+          dado_sensivel: sim
+
       geo_pgeo3:
         +schema: brutos_geo_pgeo3
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
