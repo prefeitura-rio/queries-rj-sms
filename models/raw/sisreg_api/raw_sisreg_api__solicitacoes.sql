@@ -40,7 +40,7 @@ with
     from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
     {% if is_incremental() %}
         where 1=1
-            and cast(s.data_particao as date) = (select latest_load_dt from latest_src_partition)
+            and s.data_particao = (select format_date('%Y-%m-%d', latest_load_dt) from latest_src_partition)
     {% endif %}
   ),
 
