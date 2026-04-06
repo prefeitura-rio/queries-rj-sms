@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brutos_gdb_sia_staging
-    database: rj-sms-dev  # FIXME: rj-sms quando tiver em prod
+    database: rj-sms
     schema: brutos_gdb_sia_staging
     tables:
 
@@ -50,3 +50,15 @@ sources:
 
     - name: TB_SS
       # TB_SS -> ?
+
+    - name: TB_UPS
+      # TB_UPS -> ?
+
+    - name: TB_UPSHA
+      # TB_UPSHA -> ?
+
+    - name: TB_VEPE
+      # TB_VEPE -> ?
+
+    - name: TB_VPA
+      # TB_VPA -> ?
