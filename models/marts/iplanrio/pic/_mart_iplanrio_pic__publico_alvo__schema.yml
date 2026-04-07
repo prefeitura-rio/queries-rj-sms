@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: mart_iplanrio_pic__publico_alvo
+    description: >
+      Tabela de público-alvo atual do Programa PIC. Identifica, para cada CPF,
+      a janela vigente de acompanhamento no programa conforme o tipo de público:
+      Gestacao, Puerperio ou Infancia.
+
+      O modelo representa a foto atual do público monitorado e deve conter, para
+      cada pessoa, apenas as fases atualmente elegíveis no programa. Para gestantes,
+      considera a gestação atual. Para puérperas, considera o puerpério atual.
+      Para crianças, considera a janela de acompanhamento da infância até 6 anos.
+
+    columns:
+      - name: cpf
+        description: >
+          CPF da pessoa identificada como público-alvo atual do programa. É a chave
+          de identificação do beneficiário nas integrações com os demais modelos.
+
+      - name: inicio
+        description: >
+          Data de início da janela atual de acompanhamento para o tipo de público.
+          Em Gestacao, corresponde ao início da gestação atual.
+          Em Puerperio, corresponde à data de início do puerpério atual.
+          Em Infancia, corresponde à data de nascimento da criança.
+
+      - name: fim
+        description: >
+          Data final da janela atual de acompanhamento para o tipo de público.
+          Em Gestacao, corresponde ao menor valor entre 300 dias após o início da
+          gestação e a data atual.
+          Em Puerperio, corresponde a 45 dias após a data de início do puerpério.
+          Em Infancia, corresponde a 6 anos após a data de nascimento.
+
+      - name: tipo_publico
+        description: >
+          Classificação do público-alvo atual no programa. Pode assumir os valores
+          Gestacao, Puerperio ou Infancia.
+
+      - name: metadados
+        description: >
+          Estrutura de metadados do modelo contendo a informação de última atualização
+          da tabela no momento da execução.
+
+      - name: metadados.ultima_atualizacao
+        description: >
+          Timestamp de atualização do modelo, indicando quando a linha foi gerada na
+          execução mais recente.

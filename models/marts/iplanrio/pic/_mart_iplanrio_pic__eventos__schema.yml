@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: mart_iplanrio_pic__eventos
+    description: >
+      Tabela analítica de eventos do Programa PIC, construída para apoiar a avaliação
+      dos protocolos aplicáveis ao público-alvo atual. Consolida eventos de saúde
+      associados às fases de Gestação, Puerpério e Infância, permitindo verificar
+      ocorrências dentro da janela temporal relevante de cada fase.
+
+      Para gestantes atuais, considera a janela da gestação atual.
+      Para puérperas atuais, considera tanto a janela da gestação que originou o
+      puerpério atual quanto a janela do puerpério atual, o que é especialmente
+      necessário para avaliação do protocolo de visitas domiciliares.
+      Para crianças, considera a janela de Infância definida no modelo de público-alvo.
+
+      A tabela unifica eventos de visitas domiciliares, consultas, consultas com
+      médico/enfermeiro, testes rápidos e vacinação, vinculando cada evento ao tipo
+      de público e à fase em que ocorreu.
+
+    columns:
+      - name: cpf
+        description: >
+          CPF da pessoa associada ao evento. É a chave de vinculação entre os eventos
+          assistenciais e as fases do público-alvo do PIC.
+
+      - name: tipo_evento
+        description: >
+          Tipo padronizado do evento identificado no prontuário ou em bases
+          complementares. Pode assumir valores como Visita Domiciliar, Consulta,
+          Consulta - Médico/Enfermeiro, Teste rápido - HIV, Teste rápido - Sífilis,
+          Teste rápido - Hepatite B, Teste rápido - Hepatite C e eventos de vacinação.
+
+      - name: data_evento
+        description: >
+          Data em que o evento ocorreu, derivada do datetime original do atendimento,
+          procedimento, teste ou vacinação.
+
+      - name: tipo_publico
+        description: >
+          Fase do público à qual o evento foi associado dentro da janela de análise.
+          Pode assumir os valores Gestacao, Puerperio ou Infancia.
+
+      - name: inicio_fase
+        description: >
+          Data inicial da fase considerada para associação do evento.
+          Em Gestacao, representa o início da gestação analisada.
+          Em Puerperio, representa a data de início do puerpério atual.
+          Em Infancia, representa o início da janela da criança no público-alvo.
+
+      - name: fim_fase
+        description: >
+          Data final da fase considerada para associação do evento.
+          Em Gestacao, representa o fim da janela da gestação.
+          Em Puerperio, representa o fim da janela do puerpério atual.
+          Em Infancia, representa o fim da janela da criança no público-alvo.
+
+      - name: distancia_dias
+        description: >
+          Quantidade de dias entre a data do evento e o início da fase à qual ele foi
+          associado. Pode ser usada para análises temporais e ordenação de eventos
+          dentro de cada janela.
+
+      - name: metadados
+        description: >
+          Estrutura de metadados do modelo contendo a informação de última atualização
+          da tabela no momento da execução.
+
+      - name: metadados.ultima_atualizacao
+        description: >
+          Timestamp de atualização do modelo, indicando quando a linha foi gerada na
+          execução mais recente.
