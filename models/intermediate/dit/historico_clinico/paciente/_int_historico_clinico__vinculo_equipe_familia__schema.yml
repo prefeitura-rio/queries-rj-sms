@@ -1,59 +1,114 @@
 models:
   - name: int_historico_clinico__vinculo_equipe_familia
     description: >
-      Modelo intermediário que consolida o vínculo entre pacientes e suas equipes
-      de família, considerando tanto pacientes com cadastro permanente quanto
-      pacientes temporários elegíveis. A elegibilidade de pacientes temporários
-      é determinada pela presença de mais de 5 consultas com médicos e/ou
-      enfermeiros em acompanhamento contínuo na mesma unidade de saúde.
+      Tabela intermediária que consolida o vínculo entre pacientes e profissionais
+      de equipes de família no HCI. O modelo considera pacientes com id_ine preenchido
+      e situação igual a Ativo, mantendo diretamente pacientes com cadastro permanente
+      e, para pacientes não permanentes, apenas aqueles elegíveis por histórico de
+      mais de 5 consultas consecutivas com médico ou enfermeiro na mesma unidade.
+      O modelo também enriquece CPF faltante do paciente por meio da tabela indice,
+      usando CNS como chave, e gera uma linha por relação profissional-paciente
+      dentro da mesma equipe.
+
     columns:
       - name: id_paciente
-        description: Identificador único do paciente no prontuário.
+        description: Identificador único do paciente na base de prontuário Vitacare.
+
       - name: cpf_paciente
-        description: CPF do paciente, quando disponível. É permitido paciente com CPF nulo.
+        description: >
+          CPF do paciente. Mantém o CPF original do prontuário quando preenchido
+          e, quando ausente, é enriquecido via tabela indice a partir do CNS do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
       - name: cns_paciente
-        description: Cartão Nacional de Saúde do paciente, quando disponível.
+        description: Cartão Nacional de Saúde do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
       - name: nome_paciente
-        description: Nome completo do paciente,
+        description: Nome do paciente formatado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
       - name: mae_nome
-        description: Nome da mãe do paciente,
+        description: Nome da mãe do paciente formatado.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+
       - name: data_nascimento
         description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
       - name: situacao
-        description: "Situação do cadastro do paciente na unidade de saúde. Ex: Ativo, Óbito, Mudou-se área, etc."
+        description: >
+          Situação cadastral do paciente na base de prontuário. O modelo mantém
+          apenas pacientes com situação igual a Ativo.
+
       - name: cadastro_permanente_indicador
         description: >
-          Indica se o paciente possui cadastro permanente (true) ou temporário
-          (false) na unidade de saúde.
-      - name: paciente_cpf_indicador
-        description: Indica se o paciente possui CPF preenchido (true) ou não (false).
+          Indicador que informa se o paciente possui cadastro permanente. Pacientes
+          com valor true entram diretamente no modelo; pacientes com valor false
+          só entram se forem elegíveis pela regra de atendimentos.
+
       - name: id_ine
-        description: Identificador da equipe de saúde da família à qual o paciente está vinculado.
+        description: Identificador da equipe de família à qual o paciente está vinculado.
+
       - name: nome_equipe_familia
-        description: Nome de referência da equipe de saúde da família.
+        description: Nome da equipe de família vinculada ao paciente.
+
       - name: id_cnes
-        description: Código CNES da unidade de saúde à qual o paciente está vinculado.
-      - name: nome_unidade
-        description: Nome da unidade de saúde, formatado e padronizado.
-      - name: cpf_profissional
         description: >
-          CPF do profissional (restrito a médico ou enfermeiro) vinculado à equipe do paciente.
-          Coluna utilizada para clusterização — filtrar por este campo barateia o custo da consulta pelos pacientes vinculados a um profissional.
+          CNES da unidade associado ao vínculo final do paciente. É definido
+          preferencialmente a partir da dimensão de equipe e, na ausência desta
+          informação, a partir do cadastro do paciente.
+
+      - name: nome_unidade
+        description: Nome da unidade de saúde associada ao CNES final do vínculo.
+
+      - name: cpf_profissional
+        description: CPF do profissional de saúde vinculado à equipe do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
       - name: cns_profissional
-        description: Cartão Nacional de Saúde do profissional.
+        description: CNS do profissional de saúde vinculado à equipe do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
       - name: nome_profissional
-        description: Nome completo do profissional.
+        description: Nome do profissional de saúde vinculado à equipe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
       - name: id_profissional_sus
-        description: Identificador do profissional no sistema do SUS.
+        description: Identificador SUS do profissional vinculado à equipe.
+
       - name: tipo_profissional
-        description: "Tipo do profissional vinculado à equipe. Valores possíveis: 'medico' ou 'enfermeiro'."
+        description: Tipo do profissional na equipe (medico ou enfermeiro)
+
       - name: funcionario_ativo_indicador
-        description: Indica se o profissional está ativo (true) ou inativo (false).
+        description: >
+          Indicador que informa se o profissional está ativo, conforme dimensão
+          de profissionais de saúde.
+
       - name: data_atualizacao_vinculo_equipe
-        description: Data da última atualização do vínculo do paciente com a equipe.
+        description: >
+          Data de atualização do vínculo do paciente com a equipe de família.
+          É utilizada como um dos critérios de priorização na deduplicação do vínculo.
+
       - name: data_ultima_atualizacao_cadastral
-        description: Data da última atualização cadastral do paciente.
+        description: >
+          Data da última atualização cadastral do paciente, utilizada como critério
+          de priorização na deduplicação do vínculo.
+
       - name: source_updated_at
-        description: Timestamp da última atualização do registro na origem.
+        description: >
+          Data de atualização do registro na fonte original, utilizada como critério
+          adicional de ordenação na deduplicação.
+
       - name: updated_at_rank
-        description: Ranking de atualização utilizado como critério de desempate na deduplicação de vínculos.
+        description: >
+          Campo auxiliar de ordenação para priorização do registro mais recente
+          na deduplicação do vínculo paciente-equipe.

@@ -8,12 +8,8 @@
 }}
 
 with
-    -- Seleciona os atendimentos com CNES e data válidos e prepara os campos
-    -- usados para identificar paciente, unidade e profissional
     atendimentos_elegiveis as (
-
         select
-            nullif(trim(cast(id_prontuario_global as string)), '') as id_paciente_atendimento,
             {{ process_null('cpf') }} as cpf_paciente,
             {{ process_null('cnes_unidade') }} as id_cnes,
             datahora_inicio as data_atendimento,
@@ -26,53 +22,35 @@ with
 
     ),
 
-    atendimentos_com_chave_paciente as (
-
-        select
-            coalesce(
-                id_paciente_atendimento,
-                cpf_paciente
-            ) as chave_paciente,
-            id_cnes,
-            data_atendimento,
-            cbo_3,
-            cbo_4,
-            cbo_descricao
-        from atendimentos_elegiveis
-        where coalesce(
-                id_paciente_atendimento,
-                cpf_paciente
-              ) is not null
-
-    ),
-
-    -- Ordena os atendimentos por paciente ao longo do tempo e também por paciente+unidade para identificar blocos contínuos na mesma unidade
+    -- Ordena os atendimentos por paciente ao longo do tempo e também por paciente+unidade
+    -- para identificar blocos contínuos de atendimento na mesma unidade
     atendimentos_ordenados as (
 
         select
-            chave_paciente,
+            cpf_paciente,
             id_cnes,
             data_atendimento,
             cbo_3,
             cbo_4,
             cbo_descricao,
             row_number() over (
-                partition by chave_paciente
+                partition by cpf_paciente
                 order by data_atendimento
             ) as rn_geral,
             row_number() over (
-                partition by chave_paciente, id_cnes
+                partition by cpf_paciente, id_cnes
                 order by data_atendimento
             ) as rn_unidade
-        from atendimentos_com_chave_paciente
+        from atendimentos_elegiveis
 
     ),
 
-    -- Agrupa os atendimentos em sequências contínuas na mesma unidade e conta, dentro de cada bloco, quantos atendimentos foram com médico/enfermeiro
+    -- Agrupa os atendimentos em sequências contínuas na mesma unidade e conta,
+    -- dentro de cada bloco, quantos atendimentos foram realizados com médico/enfermeiro
     sequencias_consultas as (
 
         select
-            chave_paciente,
+            cpf_paciente,
             id_cnes,
             rn_geral - rn_unidade as grupo_sequencia,
             countif(
@@ -85,19 +63,20 @@ with
 
     ),
 
-    -- Mantém apenas os pacientes temporários que tiveram mais de 5 consultas com médico/enfermeiro em uma sequência contínua na mesma unidade
+    -- Mantém apenas os pacientes temporários que tiveram mais de 5 consultas
+    -- com médico/enfermeiro em uma sequência contínua na mesma unidade
     pacientes_temporarios_elegiveis as (
 
         select distinct
-            chave_paciente,
+            cpf_paciente,
             id_cnes
         from sequencias_consultas
         where qtd_consultas_seguidas > 5
 
     ),
 
+    -- Base de pacientes com vínculo de equipe preenchido, mantém apenas pacientes com situacao 'Ativo',
     paciente_base as (
-
         select
             p.id as id_paciente,
             {{ process_null('p.id_cnes') }} as id_cnes,
@@ -113,41 +92,54 @@ with
             p.data_atualizacao_vinculo_equipe,
             p.data_ultima_atualizacao_cadastral,
             p.source_updated_at,
-            p.updated_at_rank,
-            coalesce(
-                nullif(trim(cast(p.id as string)), ''),
-                {{ process_null('p.cpf') }},
-                {{ process_null('p.cns') }}
-            ) as chave_paciente
+            p.updated_at_rank
         from {{ ref('raw_prontuario_vitacare__paciente') }} p
         where {{ process_null('p.id_ine') }} is not null
+          and p.situacao = 'Ativo'
 
     ),
 
-    -- Mantém os pacientes elegíveis: cadastro permanente entra direto; temporários só entram se forem elegíveis pela regra das consultas
+    -- Mantém os pacientes elegíveis:
+    -- 1) cadastro permanente entra direto
+    -- 2) temporários entram apenas se forem elegíveis pela regra das consultas
     pacientes_elegiveis as (
 
         select
             p.*
         from paciente_base p
         left join pacientes_temporarios_elegiveis t
-            on p.chave_paciente = t.chave_paciente
+            on p.cpf_paciente = t.cpf_paciente
            and p.id_cnes = t.id_cnes
         where p.cadastro_permanente_indicador = true
-           or t.chave_paciente is not null
+           or t.cpf_paciente is not null
 
     ),
 
-    -- Cria a flag que indica se o paciente possui CPF preenchido
-    paciente_com_flag as (
+    -- Busca CNS que possui CPF preenchido para enriquecer pacientes sem CPF.
+    indice_cpf as (
 
         select
-            *,
-            case
-                when cpf_paciente is not null then true
-                else false
-            end as paciente_cpf_indicador
-        from pacientes_elegiveis
+            cast(cns_particao as string) as cns_paciente,
+            {{ process_null('cpf') }} as cpf_indice
+        from {{ ref('indice') }}
+        where cns_particao is not null
+          and {{ process_null('cpf') }} is not null
+        qualify row_number() over (
+            partition by cast(cns_particao as string)
+            order by {{ process_null('cpf') }}
+        ) = 1
+
+    ),
+
+    -- Enriquece os pacientes elegíveis que nao tem CPF cadastrado via CNS
+    pacientes_elegiveis_enriquecidos as (
+
+        select
+            p.* except (cpf_paciente),
+            coalesce(p.cpf_paciente, i.cpf_indice) as cpf_paciente
+        from pacientes_elegiveis p
+        left join indice_cpf i
+            on p.cns_paciente = i.cns_paciente
 
     ),
 
@@ -156,7 +148,7 @@ with
     ultimo_vinculo_paciente as (
 
         select *
-        from paciente_com_flag
+        from pacientes_elegiveis_enriquecidos
         qualify row_number() over (
             partition by id_paciente, id_ine
             order by
@@ -223,17 +215,16 @@ with
         select *
         from profissionais_equipe_enriquecido
         where id_ine is not null
-          and cpf_profissional is not null
+        and cpf_profissional is not null
         qualify row_number() over (
             partition by id_ine, cpf_profissional
             order by
-                funcionario_ativo_indicador desc nulls last,
-                tipo_profissional
+                funcionario_ativo_indicador desc nulls last
         ) = 1
 
     ),
 
-    -- Enriquece o paciente com informações da equipe e da unidade
+    -- Enriquece o paciente com informações da equipe e da unidade.
     equipe_enriquecida as (
 
         select
@@ -244,7 +235,6 @@ with
             {{ proper_br('p.mae_nome') }} as mae_nome,
             p.data_nascimento,
             p.situacao,
-            p.paciente_cpf_indicador,
             p.id_ine,
             {{ proper_br('e.nome_referencia') }} as nome_equipe_familia,
             coalesce(e.id_cnes, p.id_cnes) as id_cnes,
@@ -262,7 +252,7 @@ with
 
     ),
 
-
+    -- Gera uma linha por relação profissional-paciente dentro da equipe.
     profissional_paciente as (
 
         select
@@ -273,7 +263,6 @@ with
             ee.mae_nome,
             ee.data_nascimento,
             ee.situacao,
-            ee.paciente_cpf_indicador,
             pe.id_ine,
             ee.nome_equipe_familia,
             ee.id_cnes,
@@ -304,7 +293,6 @@ select
     data_nascimento,
     situacao,
     cadastro_permanente_indicador,
-    paciente_cpf_indicador,
     id_ine,
     nome_equipe_familia,
     id_cnes,
