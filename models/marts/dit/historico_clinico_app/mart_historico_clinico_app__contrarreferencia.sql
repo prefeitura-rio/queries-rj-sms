@@ -19,7 +19,21 @@ with source as (
     cr.estabelecimento.nome as estabelecimento,
 
     cr.profissional.nome as profissional_nome,
-    cr.profissional.cargo as profissional_cargo,
+    INITCAP(
+      REGEXP_REPLACE(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(
+            REGEXP_REPLACE(lower(cr.profissional.cargo), r"^medico\s*", ""),
+            r"\bcirurgiao\b",
+            "cirurgião"
+          ),
+          r"\bfonoaudiologo\b",
+          "fonoaudiólogo"
+        ),
+        r"\b\s+[e\-]\s+\b",  -- De "xxxx e xxxx" ou "xxxx - xxxx"
+        "/"                  -- Para "xxxx/xxxx"
+      )
+    ) as profissional_cargo,
 
     cr.contrarreferencia.numero as documento_numero,
     cr.contrarreferencia.datahora as documento_datahora,
