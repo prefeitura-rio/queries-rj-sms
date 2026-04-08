@@ -1,5 +1,6 @@
 {{
     config(
+        schema = "brutos_prontuario_vitacare",
         alias="paciente",
         materialized="table",
         tags=['daily']
@@ -69,7 +70,7 @@ with
             -- Outras Chaves
             {{ remove_accents_upper("id_cnes") }} as id_cnes,
             numero_prontuario,
-            {{ remove_accents_upper("cpf") }} as cpf,
+            {{ clean_numeric("cpf") }} as cpf,
             {{ remove_accents_upper("cns") }} as cns,
 
             -- Informações Pessoais
@@ -87,7 +88,7 @@ with
             -- Informações Cadastrais
             situacao,
             cadastro_permanente_indicador,
-            {{ validate_cpf(remove_accents_upper("cpf")) }} as cpf_valido_indicador,
+            {{ validate_cpf(clean_numeric("cpf")) }} as cpf_valido_indicador,
             timestamp_add(datetime(timestamp(data_cadastro_inicial), 'America/Sao_Paulo'),interval 3 hour) as data_cadastro_inicial,
             timestamp_add(datetime(timestamp(data_ultima_atualizacao_cadastral), 'America/Sao_Paulo'),interval 3 hour) data_ultima_atualizacao_cadastral,
 
@@ -129,11 +130,7 @@ with
             updated_at_rank
 
         from corrige_cadastro
-    ),
-
-    pacientes_validos as (
-        select * from renomeado where cpf is not null and id_cnes is not null
     )
 
 select *
-from pacientes_validos
+from renomeado
