@@ -117,18 +117,12 @@ with
 
     -- Busca CNS que possui CPF preenchido para enriquecer pacientes sem CPF.
     indice_cpf as (
-
         select
             cast(cns_particao as string) as cns_paciente,
-            {{ process_null('cpf') }} as cpf_indice
-        from {{ ref('indice') }}
+            cpf as cpf_indice
+        from {{ ref('mart_historico_clinico_app__indice') }}
         where cns_particao is not null
-          and {{ process_null('cpf') }} is not null
-        qualify row_number() over (
-            partition by cast(cns_particao as string)
-            order by {{ process_null('cpf') }}
-        ) = 1
-
+        and cpf is not null
     ),
 
     -- Enriquece os pacientes elegíveis que nao tem CPF cadastrado via CNS
