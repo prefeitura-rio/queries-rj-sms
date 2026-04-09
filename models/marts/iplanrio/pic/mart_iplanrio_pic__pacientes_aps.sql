@@ -121,11 +121,6 @@ enderecos_dedup as (
                 updated_at_rank desc
         ) as rn
     from base
-    where endereco_logradouro is not null
-       or endereco_cep is not null
-       or endereco_bairro is not null
-       or endereco_municipio is not null
-       or endereco_estado is not null
 
 ),
 
