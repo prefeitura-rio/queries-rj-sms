@@ -22,7 +22,8 @@ models:
 
       - name: obito_indicador
         description: >
-          Indicador de óbito do paciente, conforme informado na base de origem do prontuário.
+          Indicador de óbito do paciente conforme informado na base de origem.
+          Valor `true` indica registro de óbito.
 
       - name: dados_contato
         description: >
