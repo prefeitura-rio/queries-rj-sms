@@ -137,7 +137,7 @@ with source as (
         when not flag_tem_med
           then null
         -- Se temos hipótese
-        when flag_tem_med
+        when flag_tem_hip
           then trim(REGEXP_EXTRACT(
             resumo,
             r"\[MEDICAMENTOS EM USO\]([^$]+)\[HIPÓTESE DIAGNÓSTICA\]"
