@@ -4,19 +4,21 @@ models:
   - name: mart_iplanrio_pic__pacientes_aps
     description: >
       Tabela do projeto PIC que consolida os dados cadastrais dos pacientes
-      ativos provenientes da APS no prontuário Vitacare. A tabela reúne o identificador
-      do paciente, indicador de óbito, dados de contato, endereço mais recente e o
-      conjunto de clínicas às quais o paciente está vinculado, com as respectivas
+      ativos provenientes do prontuario de atenção primaria. A tabela reúne o CPF do
+      paciente, a lista de CNS associados ao seu cadastro, indicador de óbito,
+      dados de contato, endereço mais recente e o conjunto de clínicas às quais 
+      o paciente está vinculado, com as respectivas
       informações de equipe de família associadas.
 
     columns:
       - name: cpf
         description: >
-          CPF do paciente, utilizado como identificador principal do registro na tabela.
+          CPF do paciente.
 
       - name: cns
         description: >
-          Cartão Nacional de Saúde do paciente.
+          Lista dos Cartões Nacionais de Saúde associados ao CPF do paciente nos
+          registros ativos da base de origem.
 
       - name: obito_indicador
         description: >
@@ -37,39 +39,40 @@ models:
 
       - name: endereco
         description: >
-          Estrutura com o endereço mais recente disponível do paciente dentre os registros ativos.
+          Estrutura com os dados do endereço selecionado a partir do registro mais recente
+          disponível do paciente.
 
       - name: endereco.cep
         description: >
-          CEP do endereço mais recente do paciente.
+          CEP do endereço do paciente.
 
       - name: endereco.tipo_logradouro
         description: >
-          Tipo de logradouro do endereço mais recente do paciente.
+          Tipo de logradouro do endereço do paciente.
 
       - name: endereco.logradouro
         description: >
-          Nome do logradouro do endereço mais recente do paciente.
+          Nome do logradouro do endereço do paciente.
 
       - name: endereco.numero
         description: >
-          Número do endereço mais recente do paciente.
+          Número do endereço do paciente.
 
       - name: endereco.complemento
         description: >
-          Complemento do endereço mais recente do paciente.
+          Complemento do endereço do paciente.
 
       - name: endereco.bairro
         description: >
-          Bairro do endereço mais recente do paciente.
+          Bairro do endereço do paciente.
 
       - name: endereco.municipio
         description: >
-          Município do endereço mais recente do paciente.
+          Município do endereço do paciente.
 
       - name: endereco.estado
         description: >
-          Unidade federativa do endereço mais recente do paciente.
+          Unidade federativa do endereço do paciente.
 
       - name: clinicas_cadastro_ativo
         description: >
