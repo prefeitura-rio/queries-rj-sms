@@ -26,8 +26,7 @@ with
             cast(metadados.loaded_at as date) as data_carga
         from estoque_posicao_formato_novo
         where material_quantidade > 0
-    )
-    qualify row_number() over (
+        qualify row_number() over (
             partition by
                 id_cnes,
                 id_lote,
@@ -41,6 +40,7 @@ with
                 armazem
             order by data_replicacao desc
         ) = 1
+    )
 
 select *
 from final
