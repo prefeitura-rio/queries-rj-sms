@@ -36,7 +36,8 @@ with
                 lote_data_cadastro,
                 lote_data_vencimento,
                 data_particao,
-                data_carga
+                data_carga,
+                armazem
             order by data_replicacao desc
         ) = 1
     )
