@@ -129,11 +129,38 @@ with
             fcts.data_exame_resultado as data_resultado,
             fcts.mama_esquerda_classif_radiologica,
             fcts.mama_direita_classif_radiologica,
-            fcts.evento_status
+            fcts.evento_status,
+            (
+                select max(d)
+                from unnest([
+                    fcts.data_solicitacao,
+                    fcts.data_autorizacao,
+                    fcts.data_execucao,
+                    fcts.data_exame_resultado
+                ]) as d
+            ) as data_referencia_evento
 
         from enriquece_populacao_interesse as pop
             left join {{ref("mart_monitora_cancer__fatos")}} as fcts
             on pop.paciente_cpf = fcts.paciente_cpf
+    ),
+
+    eventos_com_proximo as (
+        select
+            *,
+            date_diff(
+                lead(data_referencia_evento) over (
+                    partition by cpf_particao
+                    order by
+                        data_solicitacao,
+                        data_autorizacao,
+                        data_execucao,
+                        data_resultado
+                ),
+                data_referencia_evento,
+                day
+            ) as dias_proximo_evento
+        from eventos
     ),
 
     paciente_linha_tempo as (
@@ -201,7 +228,9 @@ with
                             [],
                             [concat("Mama Direita ", mama_direita_classif_radiologica)]
                         )
-                    ) as resultados
+                    ) as resultados,
+
+                    dias_proximo_evento
                 )
 
                 order by
@@ -211,7 +240,7 @@ with
                     data_resultado
             ) as eventos
 
-        from eventos
+        from eventos_com_proximo
         group by
             cpf_particao,
             cpf,
