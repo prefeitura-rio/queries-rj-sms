@@ -35,6 +35,7 @@ with
         -- attr
             solicitacao_risco as carater,
             cid_solicitacao as cid,
+            fcts.solicitacao_status as evento_status,
 
         -- proced
             sheets.especialidade as procedimento_especialidade,
@@ -116,6 +117,7 @@ with
         -- attr
             carater,
             cid,
+            cast(NULL as string) as evento_status,
 
         -- procedimento
             coalesce(especialidade_solicitado, especialidade_regulado) as procedimento_especialidade,
@@ -233,6 +235,7 @@ with
         -- attr
             carater,
             cid,
+            cast(NULL as string) as evento_status,
 
         -- procedimento
             procedimento_especialidade,
@@ -287,6 +290,7 @@ with
         -- attr,
             mamografia_rastreamento_tipo as carater,
             cast(NULL as string) as cid,
+            cast(NULL as string) as evento_status,
 
         -- procedimento
             cast(NULL as string) as procedimento_especialidade,
@@ -355,6 +359,7 @@ with
         -- attr,
             cast(NULL as string) as carater,
             cast(NULL as string) as cid,
+            cast(NULL as string) as evento_status,
 
         -- procedimento
             cast(NULL as string) as procedimento_especialidade,
@@ -401,6 +406,7 @@ with
             id_cnes_unidade_executante,
             carater,
             cid,
+            evento_status,
             procedimento_especialidade,
             procedimento_tipo,
             procedimento,
@@ -425,6 +431,7 @@ with
             id_cnes_unidade_executante,
             carater,
             cid,
+            evento_status,
             procedimento_especialidade,
             procedimento_tipo,
             procedimento,
@@ -449,6 +456,7 @@ with
             id_cnes_unidade_executante,
             carater,
             cid,
+            evento_status,
             procedimento_especialidade,
             procedimento_tipo,
             procedimento,
@@ -473,6 +481,7 @@ with
             id_cnes_unidade_executante,
             carater,
             cid,
+            evento_status,
             procedimento_especialidade,
             procedimento_tipo,
             procedimento,
@@ -497,6 +506,7 @@ with
             id_cnes_unidade_executante,
             carater,
             cid,
+            evento_status,
             procedimento_especialidade,
             procedimento_tipo,
             procedimento,
@@ -521,6 +531,7 @@ with
             id_cnes_unidade_executante,
             upper(carater) as carater,
             left(cid, 3) as cid,
+            evento_status,
             procedimento_especialidade,
             procedimento_tipo,
             {{ clean_proced_name("procedimento") }} as procedimento,
@@ -590,7 +601,7 @@ with
             on safe_cast(id_cnes_unidade_origem as int) = safe_cast(estabs_origem.id_cnes as int)
 
             left join {{ref("dim_estabelecimento_sus_rio_historico")}} as estabs_exec
-            on safe_cast(id_cnes_unidade_origem as int) = safe_cast(estabs_exec.id_cnes as int)
+            on safe_cast(id_cnes_unidade_executante as int) = safe_cast(estabs_exec.id_cnes as int)
 
         where 1 = 1
             and estabs_origem.ano_competencia = 2025 and estabs_origem.mes_competencia = 6
@@ -616,6 +627,7 @@ with
             procedimento,
             carater,
             cid,
+            evento_status,
             cid_descricao,
             cid_capitulo_descricao,
 

@@ -21,6 +21,7 @@ with
         select
             paciente_cpf,
             case
+                when max(case when sistema_origem = 'SER' then 1 else 0 end) = 1 then 'Em tratamento na UNACON'
                 when max(cast(criterio_diagnostico as int64)) = 1 then 'DIAGNOSTICO'
                 else 'SUSPEITA'
             end as status
@@ -127,7 +128,8 @@ with
             fcts.data_execucao,
             fcts.data_exame_resultado as data_resultado,
             fcts.mama_esquerda_classif_radiologica,
-            fcts.mama_direita_classif_radiologica
+            fcts.mama_direita_classif_radiologica,
+            fcts.evento_status
 
         from enriquece_populacao_interesse as pop
             left join {{ref("mart_monitora_cancer__fatos")}} as fcts
@@ -151,7 +153,6 @@ with
             -- qualificadores gerais
             status,
             gravidade_score,
-            count(*) as procedimentos_n,
 
             -- contato paciente
             telefone,
@@ -170,6 +171,7 @@ with
                 struct(
                     fonte,
                     tipo,
+                    evento_status,
                     procedimento,
                     cid,
 
