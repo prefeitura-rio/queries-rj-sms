@@ -21,7 +21,7 @@ with
         select
             paciente_cpf,
             case
-                when max(case when sistema_origem = 'SER' then 1 else 0 end) = 1 then 'Em tratamento na UNACON'
+                when max(case when sistema_origem = 'SER' then 1 else 0 end) = 1 then 'UNACON'
                 when max(cast(criterio_diagnostico as int64)) = 1 then 'DIAGNOSTICO'
                 else 'SUSPEITA'
             end as status
