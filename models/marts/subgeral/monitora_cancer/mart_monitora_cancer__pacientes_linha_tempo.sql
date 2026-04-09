@@ -152,6 +152,7 @@ with
                 lead(data_referencia_evento) over (
                     partition by cpf_particao
                     order by
+                        data_referencia_evento,
                         data_solicitacao,
                         data_autorizacao,
                         data_execucao,
@@ -169,6 +170,7 @@ with
             lag(data_referencia_evento) over (
                 partition by cpf_particao
                 order by
+                    data_referencia_evento,
                     data_solicitacao,
                     data_autorizacao,
                     data_execucao,
@@ -193,6 +195,7 @@ with
             ) over (
                 partition by cpf_particao
                 order by
+                    data_referencia_evento,
                     data_solicitacao,
                     data_autorizacao,
                     data_execucao,
@@ -221,6 +224,7 @@ with
         qualify row_number() over (
             partition by cpf_particao
             order by
+                data_referencia_evento,
                 data_solicitacao,
                 data_autorizacao,
                 data_execucao,
@@ -237,6 +241,7 @@ with
         qualify row_number() over (
             partition by cpf_particao
             order by
+                data_referencia_evento desc,
                 data_solicitacao desc,
                 data_autorizacao desc,
                 data_execucao desc,
