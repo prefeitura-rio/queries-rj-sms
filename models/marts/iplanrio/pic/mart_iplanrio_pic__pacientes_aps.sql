@@ -25,7 +25,6 @@ pacientes as (
 
     select
         cpf,
-        cns,
         telefone,
         email,
         obito_indicador,
@@ -42,6 +41,16 @@ pacientes as (
                 updated_at_rank desc
         ) as rn
     from base
+
+),
+
+cns_lista as (
+
+    select
+        cpf,
+        array_agg(distinct cns ignore nulls order by cns) as cns
+    from base
+    group by cpf
 
 ),
 
@@ -128,7 +137,7 @@ final as (
 
     select
         p.cpf,
-        p.cns,
+        cns_lista.cns,
         p.obito_indicador,
         struct(
             p.telefone,
@@ -138,6 +147,7 @@ final as (
         c.clinicas_cadastro_ativo,
         cast(p.cpf as int64) as cpf_particao
     from pacientes p
+    left join cns_lista using (cpf)
     left join clinicas_ativas c using (cpf)
     left join enderecos_dedup e
         on p.cpf = e.cpf
