@@ -49,7 +49,7 @@ with
         qualify row_number() over (
             partition by codigo_solicitacao
             order by
-                date(safe_cast(data_atualizacao as timestamp), 'America/Sao_Paulo') desc nulls last
+                safe_cast(data_atualizacao as datetime) desc nulls last
         ) = 1
     ),
 
@@ -60,16 +60,14 @@ with
 
             -- Identificação básica da solicitação
             {{ process_null("codigo_solicitacao") }} as solicitacao_id,
-            safe_cast(
-                {{ process_null("data_solicitacao") }} as timestamp
+            timestamp(
+                safe_cast({{ process_null("data_solicitacao") }} as datetime), 'America/Sao_Paulo'
             ) as data_solicitacao,
 
-            date(safe_cast(
-                {{ process_null("data_atualizacao") }} as timestamp), 'America/Sao_Paulo'
-            ) as data_atualizacao,
+            date(safe_cast({{ process_null("data_atualizacao") }} as datetime)) as data_atualizacao,
 
-            safe_cast(
-                {{ process_null("data_cancelamento") }} as timestamp
+            timestamp(
+                safe_cast({{ process_null("data_cancelamento") }} as datetime), 'America/Sao_Paulo'
             ) as data_cancelamento,
 
             -- Status e classificação
@@ -174,8 +172,8 @@ with
             {{ process_null("nome_perfil_cancelamento") }} as perfil_cancelamento,
 
             -- Preferências da solicitação
-            safe_cast(
-                {{ process_null("data_desejada") }} as timestamp
+            timestamp(
+                safe_cast({{ process_null("data_desejada") }} as datetime), 'America/Sao_Paulo'
             ) as data_desejada,
             lpad(
                 {{ process_null("codigo_unidade_desejada") }}, 7, '0'
@@ -187,8 +185,8 @@ with
             lpad({{ process_null("cpf_usuario") }}, 11, '0') as paciente_cpf,
             lpad({{ process_null("cns_usuario") }}, 15, '0') as paciente_cns,
             {{ clean_name_string(process_null("no_usuario")) }} as paciente_nome,
-            safe_cast(
-                {{ process_null("dt_nascimento_usuario") }} as timestamp
+            timestamp(
+                safe_cast({{ process_null("dt_nascimento_usuario") }} as datetime), 'America/Sao_Paulo'
             ) as paciente_dt_nasc,
             {{ clean_name_string(process_null("sexo_usuario")) }} as paciente_sexo,
             {{ clean_name_string(process_null("no_mae_usuario")) }}
@@ -221,7 +219,7 @@ with
             json_value(laudo_json_transformed, '$[0].tipo_descricao') as laudo_descricao_tp,
             json_value(laudo_json_transformed, '$[0].situacao') as laudo_situacao,
             json_value(laudo_json_transformed, '$[0].observacao') as laudo_observacao,
-            safe_cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
+            timestamp(safe_cast(json_value(laudo_json_transformed, '$[0].data_observacao') as datetime), 'America/Sao_Paulo') as laudo_data_observacao,
 
             -- Dados do operador autorizador
             {{ clean_name_string(process_null("nome_operador_autorizador")) }}
@@ -268,14 +266,14 @@ with
 
             -- Dados da marcação
             {{ process_null("codigo_marcacao") }} as marcacao_id,
-            safe_cast(
-                {{ process_null("data_marcacao") }} as timestamp
+            timestamp(
+                safe_cast({{ process_null("data_marcacao") }} as datetime), 'America/Sao_Paulo'
             ) as data_marcacao,
-            safe_cast(
-                {{ process_null("data_aprovacao") }} as timestamp
+            timestamp(
+                safe_cast({{ process_null("data_aprovacao") }} as datetime), 'America/Sao_Paulo'
             ) as data_aprovacao,
-            safe_cast(
-                {{ process_null("data_confirmacao") }} as timestamp
+            timestamp(
+                safe_cast({{ process_null("data_confirmacao") }} as datetime), 'America/Sao_Paulo'
             ) as data_confirmacao,
             {{ process_null("marcacao_executada") }} as marcacao_executada,
             case
@@ -307,8 +305,8 @@ with
             {{ clean_name_string(process_null("descricao_cid_agendado")) }}
             as cid_agendado,
 
-            -- Metadado SMS 
-            date(safe_cast({{ process_null("data_extracao") }} as timestamp), 'America/Sao_Paulo') as data_extracao
+            -- Metadado SMS
+            date(safe_cast({{ process_null("data_extracao") }} as datetime)) as data_extracao
 
 
         from dedup_batch
