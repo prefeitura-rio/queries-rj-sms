@@ -163,6 +163,84 @@ with
         from eventos
     ),
 
+    eventos_com_lag as (
+        select
+            *,
+            lag(data_referencia_evento) over (
+                partition by cpf_particao
+                order by
+                    data_solicitacao,
+                    data_autorizacao,
+                    data_execucao,
+                    data_resultado
+            ) as data_referencia_evento_anterior
+        from eventos_com_proximo
+    ),
+
+    eventos_com_run as (
+        select
+            *,
+            sum(
+                case
+                    when data_referencia_evento_anterior is null then 1
+                    when date_diff(
+                        data_referencia_evento,
+                        data_referencia_evento_anterior,
+                        day
+                    ) > 180 then 1
+                    else 0
+                end
+            ) over (
+                partition by cpf_particao
+                order by
+                    data_solicitacao,
+                    data_autorizacao,
+                    data_execucao,
+                    data_resultado
+                rows between unbounded preceding and current row
+            ) as run_id
+        from eventos_com_lag
+    ),
+
+    run_starts as (
+        select
+            cpf_particao,
+            run_id,
+            min(data_solicitacao) as run_start_data
+        from eventos_com_run
+        group by cpf_particao, run_id
+    ),
+
+    primeira_ser_info as (
+        select
+            cpf_particao,
+            data_solicitacao as primeira_ser_data,
+            run_id as primeira_ser_run_id
+        from eventos_com_run
+        where fonte = 'SER'
+        qualify row_number() over (
+            partition by cpf_particao
+            order by
+                data_solicitacao,
+                data_autorizacao,
+                data_execucao,
+                data_resultado
+        ) = 1
+    ),
+
+    tempo_total_por_paciente as (
+        select
+            psi.cpf_particao,
+            cast(
+                date_diff(psi.primeira_ser_data, rs.run_start_data, day)
+                as int64
+            ) as tempo_total
+        from primeira_ser_info as psi
+        join run_starts as rs
+            on psi.cpf_particao = rs.cpf_particao
+            and psi.primeira_ser_run_id = rs.run_id
+    ),
+
     paciente_linha_tempo as (
         select
             -- pk
@@ -238,9 +316,13 @@ with
                     data_autorizacao,
                     data_execucao,
                     data_resultado
-            ) as eventos
+            ) as eventos,
+
+            any_value(ttp.tempo_total) as tempo_total
 
         from eventos_com_proximo
+        left join tempo_total_por_paciente as ttp
+            using (cpf_particao)
         group by
             cpf_particao,
             cpf,
