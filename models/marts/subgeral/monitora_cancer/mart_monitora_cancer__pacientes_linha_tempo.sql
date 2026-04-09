@@ -228,17 +228,60 @@ with
         ) = 1
     ),
 
+    ultimo_evento_por_paciente as (
+        select
+            cpf_particao,
+            data_referencia_evento as ultima_data_referencia,
+            run_id as ultimo_run_id
+        from eventos_com_run
+        qualify row_number() over (
+            partition by cpf_particao
+            order by
+                data_solicitacao desc,
+                data_autorizacao desc,
+                data_execucao desc,
+                data_resultado desc
+        ) = 1
+    ),
+
     tempo_total_por_paciente as (
+        -- patients with a SER event: count from run start to first SER date
         select
             psi.cpf_particao,
-            cast(
-                date_diff(psi.primeira_ser_data, rs.run_start_data, day)
-                as int64
+            nullif(
+                cast(
+                    date_diff(psi.primeira_ser_data, rs.run_start_data, day)
+                    as int64
+                ),
+                0
             ) as tempo_total
         from primeira_ser_info as psi
         join run_starts as rs
             on psi.cpf_particao = rs.cpf_particao
             and psi.primeira_ser_run_id = rs.run_id
+
+        union all
+
+        -- patients without SER event: count from last event's reference date
+        -- to today (Brazil). the 180-day restart only applies between actual
+        -- event facts (handled by run_id); today is just the endpoint.
+        select
+            uep.cpf_particao,
+            nullif(
+                cast(
+                    date_diff(
+                        current_date('America/Sao_Paulo'),
+                        uep.ultima_data_referencia,
+                        day
+                    )
+                    as int64
+                ),
+                0
+            ) as tempo_total
+        from ultimo_evento_por_paciente as uep
+        left join primeira_ser_info as psi
+            on uep.cpf_particao = psi.cpf_particao
+        where psi.cpf_particao is null
     ),
 
     paciente_linha_tempo as (
