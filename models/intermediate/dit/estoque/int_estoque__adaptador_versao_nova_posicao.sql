@@ -27,6 +27,20 @@ with
         from estoque_posicao_formato_novo
         where material_quantidade > 0
     )
+    qualify row_number() over (
+            partition by
+                id_cnes,
+                id_lote,
+                id_material,
+                id_atc,
+                lote_status,
+                lote_data_cadastro,
+                lote_data_vencimento,
+                data_particao,
+                data_carga,
+                armazem
+            order by data_replicacao desc
+        ) = 1
 
 select *
 from final
