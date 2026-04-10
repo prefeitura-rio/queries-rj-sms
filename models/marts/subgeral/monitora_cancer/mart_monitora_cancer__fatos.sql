@@ -19,6 +19,8 @@
   )
 }}
 
+{% set last_partition = get_last_partition_date( this ) %}
+
 {% set cnes_competencia %}
   (select struct(max(ano_competencia) as ano, max(mes_competencia) as mes)
    from {{ ref('dim_estabelecimento_sus_rio_historico') }})
@@ -28,35 +30,35 @@ with
     fontes_unificadas as (
         select * from {{ ref("int_monitora_cancer__sisreg") }}
         {% if is_incremental() %}
-        where data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+        where data_solicitacao >= '{{ last_partition }}'
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__ser_ambulatorial") }}
         {% if is_incremental() %}
-        where data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+        where data_solicitacao >= '{{ last_partition }}'
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__ser_internacoes") }}
         {% if is_incremental() %}
-        where data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+        where data_solicitacao >= '{{ last_partition }}'
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan") }}
         {% if is_incremental() %}
-        where data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+        where data_solicitacao >= '{{ last_partition }}'
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
         {% if is_incremental() %}
-        where data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+        where data_solicitacao >= '{{ last_partition }}'
         {% endif %}
     ),
 
