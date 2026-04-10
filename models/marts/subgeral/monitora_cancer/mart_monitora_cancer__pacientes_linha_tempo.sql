@@ -21,6 +21,7 @@ with
         select
             paciente_cpf,
             case
+                when max(case when sistema_origem = 'SER' then 1 else 0 end) = 1 then 'UNACON'
                 when max(cast(criterio_diagnostico as int64)) = 1 then 'DIAGNOSTICO'
                 else 'SUSPEITA'
             end as status
@@ -127,11 +128,165 @@ with
             fcts.data_execucao,
             fcts.data_exame_resultado as data_resultado,
             fcts.mama_esquerda_classif_radiologica,
-            fcts.mama_direita_classif_radiologica
+            fcts.mama_direita_classif_radiologica,
+            fcts.evento_status,
+            (
+                select max(d)
+                from unnest([
+                    fcts.data_solicitacao,
+                    fcts.data_autorizacao,
+                    fcts.data_execucao,
+                    fcts.data_exame_resultado
+                ]) as d
+            ) as data_referencia_evento
 
         from enriquece_populacao_interesse as pop
             left join {{ref("mart_monitora_cancer__fatos")}} as fcts
             on pop.paciente_cpf = fcts.paciente_cpf
+    ),
+
+    eventos_com_proximo as (
+        select
+            *,
+            date_diff(
+                lead(data_referencia_evento) over (
+                    partition by cpf_particao
+                    order by
+                        data_referencia_evento,
+                        data_solicitacao,
+                        data_autorizacao,
+                        data_execucao,
+                        data_resultado
+                ),
+                data_referencia_evento,
+                day
+            ) as dias_proximo_evento
+        from eventos
+    ),
+
+    eventos_com_lag as (
+        select
+            *,
+            lag(data_referencia_evento) over (
+                partition by cpf_particao
+                order by
+                    data_referencia_evento,
+                    data_solicitacao,
+                    data_autorizacao,
+                    data_execucao,
+                    data_resultado
+            ) as data_referencia_evento_anterior
+        from eventos_com_proximo
+    ),
+
+    eventos_com_run as (
+        select
+            *,
+            sum(
+                case
+                    when data_referencia_evento_anterior is null then 1
+                    when date_diff(
+                        data_referencia_evento,
+                        data_referencia_evento_anterior,
+                        day
+                    ) > 180 then 1
+                    else 0
+                end
+            ) over (
+                partition by cpf_particao
+                order by
+                    data_referencia_evento,
+                    data_solicitacao,
+                    data_autorizacao,
+                    data_execucao,
+                    data_resultado
+                rows between unbounded preceding and current row
+            ) as run_id
+        from eventos_com_lag
+    ),
+
+    run_starts as (
+        select
+            cpf_particao,
+            run_id,
+            min(data_solicitacao) as run_start_data
+        from eventos_com_run
+        group by cpf_particao, run_id
+    ),
+
+    primeira_ser_info as (
+        select
+            cpf_particao,
+            data_solicitacao as primeira_ser_data,
+            run_id as primeira_ser_run_id
+        from eventos_com_run
+        where fonte = 'SER'
+        qualify row_number() over (
+            partition by cpf_particao
+            order by
+                data_referencia_evento,
+                data_solicitacao,
+                data_autorizacao,
+                data_execucao,
+                data_resultado
+        ) = 1
+    ),
+
+    ultimo_evento_por_paciente as (
+        select
+            cpf_particao,
+            data_referencia_evento as ultima_data_referencia,
+            run_id as ultimo_run_id
+        from eventos_com_run
+        qualify row_number() over (
+            partition by cpf_particao
+            order by
+                data_referencia_evento desc,
+                data_solicitacao desc,
+                data_autorizacao desc,
+                data_execucao desc,
+                data_resultado desc
+        ) = 1
+    ),
+
+    tempo_total_por_paciente as (
+        -- patients with a SER event: count from run start to first SER date
+        select
+            psi.cpf_particao,
+            nullif(
+                cast(
+                    date_diff(psi.primeira_ser_data, rs.run_start_data, day)
+                    as int64
+                ),
+                0
+            ) as tempo_total
+        from primeira_ser_info as psi
+        join run_starts as rs
+            on psi.cpf_particao = rs.cpf_particao
+            and psi.primeira_ser_run_id = rs.run_id
+
+        union all
+
+        -- patients without SER event: count from last event's reference date
+        -- to today (Brazil). the 180-day restart only applies between actual
+        -- event facts (handled by run_id); today is just the endpoint.
+        select
+            uep.cpf_particao,
+            nullif(
+                cast(
+                    date_diff(
+                        current_date('America/Sao_Paulo'),
+                        uep.ultima_data_referencia,
+                        day
+                    )
+                    as int64
+                ),
+                0
+            ) as tempo_total
+        from ultimo_evento_por_paciente as uep
+        left join primeira_ser_info as psi
+            on uep.cpf_particao = psi.cpf_particao
+        where psi.cpf_particao is null
     ),
 
     paciente_linha_tempo as (
@@ -151,7 +306,6 @@ with
             -- qualificadores gerais
             status,
             gravidade_score,
-            count(*) as procedimentos_n,
 
             -- contato paciente
             telefone,
@@ -170,6 +324,7 @@ with
                 struct(
                     fonte,
                     tipo,
+                    evento_status,
                     procedimento,
                     cid,
 
@@ -199,7 +354,9 @@ with
                             [],
                             [concat("Mama Direita ", mama_direita_classif_radiologica)]
                         )
-                    ) as resultados
+                    ) as resultados,
+
+                    dias_proximo_evento
                 )
 
                 order by
@@ -207,9 +364,13 @@ with
                     data_autorizacao,
                     data_execucao,
                     data_resultado
-            ) as eventos
+            ) as eventos,
 
-        from eventos
+            any_value(ttp.tempo_total) as tempo_total
+
+        from eventos_com_proximo
+        left join tempo_total_por_paciente as ttp
+            using (cpf_particao)
         group by
             cpf_particao,
             cpf,
