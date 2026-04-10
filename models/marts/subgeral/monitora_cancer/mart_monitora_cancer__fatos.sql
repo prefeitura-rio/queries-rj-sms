@@ -3,6 +3,8 @@
 {{
   config(
     enabled=true,
+    materialized='incremental',
+    incremental_strategy='merge',
     schema="projeto_monitora_cancer",
     alias="fatos",
     unique_key=['sistema_origem', 'id_sistema_origem'],
@@ -11,9 +13,9 @@
       "data_type": "date",
       "granularity": "month",
     },
-cluster_by = ['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
-on_schema_change = 'sync_all_columns'
-)
+    cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
+    on_schema_change='sync_all_columns'
+  )
 }}
 
 {% set data_inicio_monitoramento = "2021-01-01" %}
@@ -80,6 +82,9 @@ with
             on safe_cast(fcts.id_procedimento_sisreg as int) = safe_cast(sheets.id_procedimento as int)
         where 1 = 1
             and data_solicitacao >= "{{ data_inicio_monitoramento }}"
+            {% if is_incremental() %}
+            and data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+            {% endif %}
             and fcts.procedimento in (
                 "MAMOGRAFIA BILATERAL",
                 "MAMOGRAFIA  DIAGNOSTICA",
@@ -161,6 +166,9 @@ with
         from {{ ref("raw_ser_metabase__ambulatorial") }}
         where 1 = 1
             and data_solicitacao >= "{{ data_inicio_monitoramento }}"
+            {% if is_incremental() %}
+            and data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+            {% endif %}
             and (
                 procedimento_solicitado in (
                     "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)",
@@ -269,6 +277,9 @@ with
         from {{ ref("raw_ser_metabase__internacoes") }}
         where 1 = 1
             and data_solicitacao >= "{{ data_inicio_monitoramento }}"
+            {% if is_incremental() %}
+            and data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+            {% endif %}
             and procedimento in (
                 "DRENAGEM DE ABSCESSO DE MAMA",
                 "SEGMENTECTOMIA/QUADRANTECTOMIA/SETORECTOMIA DE MAMA EM ONCOLOGIA",
@@ -346,6 +357,9 @@ with
         from {{ ref("raw_siscan_web__laudos") }}
         where 1 = 1
             and data_solicitacao >= "{{ data_inicio_monitoramento }}"
+            {% if is_incremental() %}
+            and data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+            {% endif %}
     ),
 
 -- refatorar
@@ -403,6 +417,9 @@ with
         from {{ ref("raw_siscan_web__laudos_histo_mama") }}
         where 1 = 1
             and data_solicitacao >= "{{ data_inicio_monitoramento }}"
+            {% if is_incremental() %}
+            and data_solicitacao >= (select date_trunc(max(data_solicitacao), month) from {{ this }})
+            {% endif %}
     ),
 
     fatos as (

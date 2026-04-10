@@ -1,0 +1,218 @@
+version: 2
+
+models:
+  - name: mart_monitora_cancer__fatos
+    description: >
+      Fatos longos de eventos relacionados ao monitoramento de câncer de mama.
+      Granularidade: 1 linha por (sistema_origem, id_sistema_origem).
+      Cobertura: SISREG (regulação ambulatorial), SER (regulação estadual ambulatorial),
+      SISCAN (laudos radiológicos e histopatológicos).
+      Janela temporal: data_solicitacao >= 2021-01-01.
+    meta:
+      owner: "SUBGERAL/CR/NTI"
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - sistema_origem
+            - id_sistema_origem
+          name: mart_monitora_cancer__fatos__sistema_origem_id_sistema_origem__unique_combination_of_columns
+
+    columns:
+
+      # ── chave primária ───────────────────────────────────────────────────────
+      - name: sistema_origem
+        description: >
+          Sistema de origem do evento. Identifica a fonte primária do registro
+          (ex.: SISREG, SER, SISCAN).
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__sistema_origem__not_null
+          - accepted_values:
+              values: ["SISREG", "SER", "SISCAN"]
+              name: mart_monitora_cancer__fatos__sistema_origem__accepted_values
+
+      - name: id_sistema_origem
+        description: >
+          Identificador único do registro dentro do sistema de origem.
+          Combinado com sistema_origem forma a chave primária da tabela.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__id_sistema_origem__not_null
+
+      # ── identificação do paciente ─────────────────────────────────────────────
+      - name: paciente_cpf
+        description: CPF da paciente. Obtido por lookup CNS→CPF; quando ausente,
+          utiliza o CPF proveniente diretamente do SISREG como fallback.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: paciente_cns
+        description: Cartão Nacional de Saúde (CNS) da paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      # ── tipo do sistema ────────────────────────────────────────────────────────
+      - name: sistema_tipo
+        description: Classificação funcional do sistema de origem (ex.: REGULACAO, EXAME).
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__sistema_tipo__not_null
+          - accepted_values:
+              values: ["REGULACAO", "EXAME"]
+              name: mart_monitora_cancer__fatos__sistema_tipo__accepted_values
+
+      # ── qualificação do procedimento ──────────────────────────────────────────
+      - name: procedimento_especialidade
+        description: Especialidade médica associada ao procedimento.
+
+      - name: procedimento_tipo
+        description: Tipo do procedimento (ex.: RESULTADO DE EXAME, CONSULTA).
+
+      - name: procedimento
+        description: Descrição padronizada do procedimento realizado ou solicitado.
+
+      - name: carater
+        description: >
+          Caráter da solicitação, indicando a urgência ou tipo de atendimento
+          (ex.: ELETIVO, URGÊNCIA).
+
+      - name: cid
+        description: Código CID-10 (3 caracteres) associado à solicitação.
+
+      - name: evento_status
+        description: Status do evento no sistema de origem (ex.: AGENDADO, CANCELADO, EXECUTADO).
+
+      - name: cid_descricao
+        description: Descrição textual da categoria CID-10.
+
+      - name: cid_capitulo_descricao
+        description: Descrição do capítulo CID-10 ao qual o código pertence.
+
+      # ── datas ─────────────────────────────────────────────────────────────────
+      - name: data_solicitacao
+        description: Data em que o procedimento foi solicitado. Coluna de particionamento da tabela.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__data_solicitacao__not_null
+
+      - name: data_autorizacao
+        description: Data em que a solicitação foi autorizada ou agendada.
+
+      - name: data_execucao
+        description: Data em que o procedimento foi efetivamente realizado.
+
+      - name: tempo_espera
+        description: >
+          Dias entre a solicitação e a execução do procedimento.
+          Valores negativos e zeros são convertidos para NULL
+          (proteção via NULLIF + GREATEST).
+
+      # ── resultados de exame (SISCAN) ───────────────────────────────────────────
+      - name: data_exame_resultado
+        description: Data de liberação do laudo do exame no SISCAN.
+
+      - name: mama_esquerda_resultado
+        description: >
+          Resultado do exame para a mama esquerda. Para laudos radiológicos (SISCAN),
+          contém a classificação BI-RADS. Para laudos histopatológicos (SISCAN Histo),
+          contém o resultado do tecido neoplásico ou benigno.
+
+      - name: mama_direita_resultado
+        description: >
+          Resultado do exame para a mama direita. Para laudos radiológicos (SISCAN),
+          contém a classificação BI-RADS. Para laudos histopatológicos (SISCAN Histo),
+          contém o resultado do tecido neoplásico ou benigno.
+
+      # ── indicadores ───────────────────────────────────────────────────────────
+      - name: indicador_procedimento_executado
+        description: Indica se o procedimento foi executado (SIM) ou não (NAO).
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__indicador_procedimento_executado__not_null
+          - accepted_values:
+              values: ["SIM", "NAO"]
+              name: mart_monitora_cancer__fatos__indicador_procedimento_executado__accepted_values
+
+      - name: indicador_procedimento_execucao_passada
+        description: >
+          Indica se a data de execução é anterior à data atual (SIM) ou não (NAO).
+          Útil para distinguir procedimentos futuros agendados.
+        data_tests:
+          - accepted_values:
+              values: ["SIM", "NAO"]
+              name: mart_monitora_cancer__fatos__indicador_procedimento_execucao_passada__accepted_values
+
+      - name: criterio_suspeita
+        description: >
+          TRUE quando o evento classifica a paciente como suspeita de câncer de mama
+          (ex.: mamografia com achados BI-RADS 4/5, biópsia solicitada).
+          Para laudos histopatológicos, sempre FALSE — o evento vai direto ao diagnóstico.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__criterio_suspeita__not_null
+          - accepted_values:
+              values: [true, false]
+              name: mart_monitora_cancer__fatos__criterio_suspeita__accepted_values
+
+      - name: criterio_diagnostico
+        description: >
+          TRUE quando o evento confirma diagnóstico de câncer de mama
+          (ex.: BI-RADS 6, lesão neoplásica em histopatológico, consulta oncológica de 1ª vez).
+          Casos puramente benignos (lesao_benigno sem lesao_neoplasico) resultam em FALSE.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__criterio_diagnostico__not_null
+          - accepted_values:
+              values: [true, false]
+              name: mart_monitora_cancer__fatos__criterio_diagnostico__accepted_values
+
+      # ── unidade solicitante ────────────────────────────────────────────────────
+      - name: id_cnes_unidade_origem
+        description: Código CNES da unidade que originou / solicitou o evento.
+
+      - name: estabelecimento_origem_nome
+        description: Nome fantasia da unidade solicitante.
+
+      - name: estabelecimento_origem_esfera
+        description: Esfera administrativa da unidade solicitante (municipal, estadual, federal).
+
+      - name: estabelecimento_origem_ap
+        description: Área Programática (AP) da unidade solicitante.
+
+      - name: estabelecimento_origem_bairro
+        description: Bairro da unidade solicitante.
+
+      - name: estabelecimento_origem_tipo
+        description: Tipo da unidade solicitante conforme classificação alternativa da SMS.
+
+      - name: estabelecimento_origem_tipo_agrupado
+        description: Classificação agrupada do tipo da unidade solicitante.
+
+      - name: estabelecimento_origem_sms_indicador
+        description: Indicador booleano se a unidade solicitante pertence à rede SMS-Rio.
+
+      # ── unidade executante ─────────────────────────────────────────────────────
+      - name: id_cnes_unidade_executante
+        description: Código CNES da unidade que executou ou executará o procedimento.
+
+      - name: estabelecimento_executante_nome
+        description: Nome fantasia da unidade executante.
+
+      - name: estabelecimento_executante_esfera
+        description: Esfera administrativa da unidade executante.
+
+      - name: estabelecimento_executante_ap
+        description: Área Programática (AP) da unidade executante.
+
+      - name: estabelecimento_executante_bairro
+        description: Bairro da unidade executante.
+
+      - name: estabelecimento_executante_tipo
+        description: Tipo da unidade executante conforme classificação alternativa da SMS.
+
+      - name: estabelecimento_executante_tipo_agrupado
+        description: Classificação agrupada do tipo da unidade executante.
+
+      - name: estabelecimento_sms_indicador
+        description: Indicador booleano se a unidade executante pertence à rede SMS-Rio.
