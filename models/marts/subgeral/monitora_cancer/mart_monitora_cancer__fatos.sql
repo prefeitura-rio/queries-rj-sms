@@ -49,7 +49,7 @@ with
 
         union all
 
-        --select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
+        select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
         --{% if is_incremental() %}
         --where data_solicitacao >= '{{ last_partition }}'
         --{% endif %}
