@@ -18,6 +18,11 @@ on_schema_change = 'sync_all_columns'
 
 {% set data_inicio_monitoramento = "2021-01-01" %}
 
+{% set cnes_competencia %}
+  (select struct(max(ano_competencia) as ano, max(mes_competencia) as mes)
+   from {{ ref('dim_estabelecimento_sus_rio_historico') }})
+{% endset %}
+
 with
     sisreg as (
         select
@@ -406,6 +411,7 @@ with
             sistema_tipo,
             id_sistema_origem,
             paciente_cns,
+            safe_cast(paciente_cpf as int) as paciente_cpf_sisreg,
             id_cnes_unidade_origem,
             id_cnes_unidade_executante,
             carater,
@@ -431,6 +437,7 @@ with
             sistema_tipo,
             id_sistema_origem,
             paciente_cns,
+            cast(NULL as int) as paciente_cpf_sisreg,
             id_cnes_unidade_origem,
             id_cnes_unidade_executante,
             carater,
@@ -456,6 +463,7 @@ with
             sistema_tipo,
             id_sistema_origem,
             paciente_cns,
+            cast(NULL as int) as paciente_cpf_sisreg,
             id_cnes_unidade_origem,
             id_cnes_unidade_executante,
             carater,
@@ -481,6 +489,7 @@ with
             sistema_tipo,
             id_sistema_origem,
             paciente_cns,
+            cast(NULL as int) as paciente_cpf_sisreg,
             id_cnes_unidade_origem,
             id_cnes_unidade_executante,
             carater,
@@ -506,6 +515,7 @@ with
             sistema_tipo,
             id_sistema_origem,
             paciente_cns,
+            cast(NULL as int) as paciente_cpf_sisreg,
             id_cnes_unidade_origem,
             id_cnes_unidade_executante,
             carater,
@@ -531,6 +541,7 @@ with
             sistema_tipo,
             id_sistema_origem,
             paciente_cns,
+            paciente_cpf_sisreg,
             id_cnes_unidade_origem,
             id_cnes_unidade_executante,
             upper(carater) as carater,
@@ -555,7 +566,8 @@ with
 
     enriquece_cpf as (
         select
-            safe_cast(cns_cpf.cpf as int) as paciente_cpf,
+            -- CPF via lookup CNS→CPF; fallback para o CPF direto do SISREG quando disponível
+            coalesce(safe_cast(cns_cpf.cpf as int), paciente_cpf_sisreg) as paciente_cpf,
             transforma_fatos.*
 
         from transforma_fatos
@@ -608,8 +620,10 @@ with
             on safe_cast(id_cnes_unidade_executante as int) = safe_cast(estabs_exec.id_cnes as int)
 
         where 1 = 1
-            and estabs_origem.ano_competencia = 2025 and estabs_origem.mes_competencia = 6
-            and estabs_exec.ano_competencia = 2025 and estabs_exec.mes_competencia = 6
+            and estabs_origem.ano_competencia = ({{ cnes_competencia }}).ano
+            and estabs_origem.mes_competencia = ({{ cnes_competencia }}).mes
+            and estabs_exec.ano_competencia = ({{ cnes_competencia }}).ano
+            and estabs_exec.mes_competencia = ({{ cnes_competencia }}).mes
     ),
 
     final as (
