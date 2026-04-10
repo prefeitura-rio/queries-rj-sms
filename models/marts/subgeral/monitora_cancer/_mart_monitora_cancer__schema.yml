@@ -9,7 +9,7 @@ models:
       SISCAN (laudos radiológicos e histopatológicos).
       Janela temporal: data_solicitacao >= 2021-01-01.
     meta:
-      owner: "SUBGERAL/CR/NTI"
+      owner: "SMS/SUBGERAL/CR/NTI"
 
     data_tests:
       - dbt_utils.unique_combination_of_columns:
