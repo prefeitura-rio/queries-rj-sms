@@ -16,6 +16,8 @@ on_schema_change = 'sync_all_columns'
 )
 }}
 
+{% set data_inicio_monitoramento = "2021-01-01" %}
+
 with
     sisreg as (
         select
@@ -50,8 +52,8 @@ with
 
         -- resultados siscan
             cast(NULL as date) as data_exame_resultado,
-            cast(NULL as string) as mama_esquerda_classif_radiologica,
-            cast(NULL as string) as mama_direita_classif_radiologica,
+            cast(NULL as string) as mama_esquerda_resultado,
+            cast(NULL as string) as mama_direita_resultado,
 
         -- indicadores
             case
@@ -72,7 +74,7 @@ with
             left join {{ ref("raw_sheets__assistencial_procedimento") }} as sheets
             on safe_cast(fcts.id_procedimento_sisreg as int) = safe_cast(sheets.id_procedimento as int)
         where 1 = 1
-            and data_solicitacao >= "2021-01-01"
+            and data_solicitacao >= "{{ data_inicio_monitoramento }}"
             and fcts.procedimento in (
                 "MAMOGRAFIA BILATERAL",
                 "MAMOGRAFIA  DIAGNOSTICA",
@@ -133,8 +135,8 @@ with
 
         -- resultados siscan
             cast(NULL as date) as data_exame_resultado,
-            cast(NULL as string) as mama_esquerda_classif_radiologica,
-            cast(NULL as string) as mama_direita_classif_radiologica,
+            cast(NULL as string) as mama_esquerda_resultado,
+            cast(NULL as string) as mama_direita_resultado,
 
         -- indicadores
             false as criterio_suspeita,
@@ -153,7 +155,7 @@ with
 
         from {{ ref("raw_ser_metabase__ambulatorial") }}
         where 1 = 1
-            and data_solicitacao >= "2021-01-01"
+            and data_solicitacao >= "{{ data_inicio_monitoramento }}"
             and (
                 procedimento_solicitado in (
                     "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)",
@@ -252,8 +254,8 @@ with
 
         -- resultados siscan
             cast(NULL as date) as data_exame_resultado,
-            cast(NULL as string) as mama_esquerda_classif_radiologica,
-            cast(NULL as string) as mama_direita_classif_radiologica,
+            cast(NULL as string) as mama_esquerda_resultado,
+            cast(NULL as string) as mama_direita_resultado,
 
         -- indicadores
             false as criterio_suspeita,
@@ -261,7 +263,7 @@ with
 
         from {{ ref("raw_ser_metabase__internacoes") }}
         where 1 = 1
-            and data_solicitacao >= "2021-01-01"
+            and data_solicitacao >= "{{ data_inicio_monitoramento }}"
             and procedimento in (
                 "DRENAGEM DE ABSCESSO DE MAMA",
                 "SEGMENTECTOMIA/QUADRANTECTOMIA/SETORECTOMIA DE MAMA EM ONCOLOGIA",
@@ -308,8 +310,8 @@ with
 
         -- resultados siscan
             data_liberacao_resultado as data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
+            mama_esquerda_classif_radiologica as mama_esquerda_resultado,
+            mama_direita_classif_radiologica as mama_direita_resultado,
 
         -- indicadores
             case
@@ -338,7 +340,7 @@ with
 
         from {{ ref("raw_siscan_web__laudos") }}
         where 1 = 1
-            and data_solicitacao >= "2021-01-01"
+            and data_solicitacao >= "{{ data_inicio_monitoramento }}"
     ),
 
 -- refatorar
@@ -376,15 +378,17 @@ with
             case 
                 when lateralidade = "Esquerda" then coalesce(lesao_neoplasico, lesao_benigno)
                 else null
-            end as mama_esquerda_classif_radiologica, 
+            end as mama_esquerda_resultado, 
             
             case 
                 when lateralidade = "Direita" then coalesce(lesao_neoplasico, lesao_benigno)
                 else null
-            end as mama_direita_classif_radiologica,
+            end as mama_direita_resultado,
 
         -- indicadores
-            true as criterio_suspeita,
+            -- casos benignos (sem neoplasia) não entram na população monitorada;
+            -- quando há neoplasia, o evento é direto ao diagnóstico (sem etapa de suspeita)
+            false as criterio_suspeita,
 
             case
                 when lesao_neoplasico is not null then true
@@ -393,7 +397,7 @@ with
 
         from {{ ref("raw_siscan_web__laudos_histo_mama") }}
         where 1 = 1
-            and data_solicitacao >= "2021-01-01"
+            and data_solicitacao >= "{{ data_inicio_monitoramento }}"
     ),
 
     fatos as (
@@ -414,8 +418,8 @@ with
             data_autorizacao,
             data_execucao,
             data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
+            mama_esquerda_resultado,
+            mama_direita_resultado,
             criterio_suspeita,
             criterio_diagnostico
         from sisreg
@@ -439,8 +443,8 @@ with
             data_autorizacao,
             data_execucao,
             data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
+            mama_esquerda_resultado,
+            mama_direita_resultado,
             criterio_suspeita,
             criterio_diagnostico
         from ser_ambulatorial
@@ -464,8 +468,8 @@ with
             data_autorizacao,
             data_execucao,
             data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
+            mama_esquerda_resultado,
+            mama_direita_resultado,
             criterio_suspeita,
             criterio_diagnostico
         from ser_internacoes
@@ -489,8 +493,8 @@ with
             data_autorizacao,
             data_execucao,
             data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
+            mama_esquerda_resultado,
+            mama_direita_resultado,
             criterio_suspeita,
             criterio_diagnostico
         from siscan
@@ -514,8 +518,8 @@ with
             data_autorizacao,
             data_execucao,
             data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
+            mama_esquerda_resultado,
+            mama_direita_resultado,
             criterio_suspeita,
             criterio_diagnostico
         from siscan_histo_mama
@@ -540,10 +544,10 @@ with
             data_execucao,
         if(data_execucao is not null, "SIM", "NAO") as indicador_procedimento_executado,
         if(data_execucao < current_date(), "SIM", "NAO") as indicador_procedimento_execucao_passada,
-        date_diff(data_execucao, data_solicitacao, day) as tempo_espera,
+        nullif(greatest(0, date_diff(data_execucao, data_solicitacao, day)), 0) as tempo_espera,
         data_exame_resultado,
-        mama_esquerda_classif_radiologica,
-        mama_direita_classif_radiologica,
+        mama_esquerda_resultado,
+        mama_direita_resultado,
         criterio_suspeita,
         criterio_diagnostico
         from fatos
@@ -639,8 +643,8 @@ with
 
         -- resultados siscan
             data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
+            mama_esquerda_resultado,
+            mama_direita_resultado,
 
         -- indicadores
             indicador_procedimento_executado,

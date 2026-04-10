@@ -127,8 +127,8 @@ with
             fcts.data_autorizacao,
             fcts.data_execucao,
             fcts.data_exame_resultado as data_resultado,
-            fcts.mama_esquerda_classif_radiologica,
-            fcts.mama_direita_classif_radiologica,
+            fcts.mama_esquerda_resultado,
+            fcts.mama_direita_resultado,
             fcts.evento_status,
             (
                 select max(d)
@@ -344,15 +344,15 @@ with
 
                     array_concat(
                         if(
-                            mama_esquerda_classif_radiologica is null,
+                            mama_esquerda_resultado is null,
                             [],
-                            [concat("Mama Esquerda ", mama_esquerda_classif_radiologica)]
+                            [concat("Mama Esquerda ", mama_esquerda_resultado)]
                         ),
 
                         if(
-                            mama_direita_classif_radiologica is null,
+                            mama_direita_resultado is null,
                             [],
-                            [concat("Mama Direita ", mama_direita_classif_radiologica)]
+                            [concat("Mama Direita ", mama_direita_resultado)]
                         )
                     ) as resultados,
 
