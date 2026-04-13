@@ -93,6 +93,13 @@ models:
     raw:
       +materialized: table
       +tags: "raw"
+      iplan:
+        +schema: brutos_iplanrio
+        +tags: "daily"
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       aplicacao_hci:
         +schema: brutos_aplicacao_hci
         +tags: "daily"
