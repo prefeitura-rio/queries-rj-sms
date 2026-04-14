@@ -26,7 +26,6 @@ WITH
                 ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_inicio DESC) AS rn
             FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
             WHERE fase_atual = 'Puerpério'
-            AND data_fim IS NOT NULL
             AND data_fim_efetiva IS NOT NULL
             AND cpf IS NOT NULL
         )
@@ -57,8 +56,8 @@ WITH
         -- Puerpério atual
         SELECT
             cpf,
-            data_fim AS inicio_fase,
-            DATE_ADD(data_fim, INTERVAL 45 DAY) AS fim_fase,
+            data_fim_efetiva AS inicio_fase,
+            DATE_ADD(data_fim_efetiva, INTERVAL 45 DAY) AS fim_fase,
             'Puerperio' AS tipo_publico
         FROM puerperio_dedup
 
