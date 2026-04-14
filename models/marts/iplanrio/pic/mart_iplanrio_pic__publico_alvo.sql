@@ -36,12 +36,12 @@ gestacoes_em_andamento AS (
 puerperio_atual AS (
     SELECT
         cpf,
-        data_fim AS inicio,
-        DATE_ADD(data_fim, INTERVAL 45 DAY) AS fim,
+        data_fim_efetiva AS inicio, -- data_fim_efetiva é data de encerramento do CID quando houver; caso contrário, data_inicio + 300 dias, como encerramento automático da gestação.
+        DATE_ADD(data_fim_efetiva, INTERVAL 45 DAY) AS fim,
         'Puerperio' AS tipo_publico
     FROM gestacoes_base
     WHERE fase_atual = 'Puerpério'
-      AND data_fim IS NOT NULL
+      AND data_fim_efetiva IS NOT NULL
     QUALIFY ROW_NUMBER() OVER (
         PARTITION BY cpf
         ORDER BY data_inicio DESC, data_fim DESC, data_fim_efetiva DESC
