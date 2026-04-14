@@ -9,3 +9,4 @@
 
 select *
 from {{ source('iplanrio_intermediario_rmi_conversas', 'resposta_disparo') }}
+where lower(nome_hsm) like '%puerpera%'

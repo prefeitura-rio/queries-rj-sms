@@ -9,3 +9,4 @@
 
 select *
 from {{ source('iplanrio_rmi_conversas', 'chatbot') }}
+where lower(hsm.nome_campanha) = 'sms-puerpera'
