@@ -3,6 +3,7 @@
         schema="brutos_sheets",
         alias="seguranca_destinatarios",
         tags=["informes-seguranca", "daily"],
+        meta={"owner": "avellar"}
     )
 }}
 
