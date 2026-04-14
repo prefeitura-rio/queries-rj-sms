@@ -146,6 +146,7 @@ models:
       gdb_cnes:
         +schema: brutos_gdb_cnes
         +tags: ["weekly", "gdb_cnes"]
+        +meta: {"owner": "avellar"}
         +labels:
           dado_publico: sim
           dado_pessoal: sim
@@ -196,13 +197,27 @@ models:
           dado_pessoal: sim
           dado_sensivel: nao
           dominio: subgeral
+
+      ##################
+      ## CDI
+      # Planilhas
+      cdi:
+        +schema: brutos_cdi
+        +tags: ["daily", "cdi", "cdi-4hours"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      # VPS
       diario_oficial:
         +schema: brutos_diario_oficial
-        +tags: "daily"
+        +tags: ["daily"]
+        +meta: {"owner": "avellar"}
         +labels:
           dado_publico: sim
           dado_pessoal: nao
           dado_sensivel: nao
+
       monitoramento:
         +schema: gerenciamento__historico_clinico__logs
         +tags: "daily"
@@ -262,6 +277,9 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: subpav
+
+      ##################
+      ## Prontuários
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare"]
@@ -326,6 +344,7 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+
       bcadastro:
         +schema: brutos_bcadastro
         +tags: "bcadastro"
@@ -355,6 +374,9 @@ models:
           dado_pessoal: nao
           dado_sensivel: nao
           dominio: subgeral
+
+      ##################
+      ## Sistemas
       sih:
         +schema: brutos_sih
         +tags: ["sih", "subgeral"]
@@ -390,6 +412,9 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+
+      ##################
+      ## Exames
       exames_laboratoriais:
         +schema: brutos_exames_laboratoriais
         +tags: ["exames_laboratoriais"]
@@ -404,6 +429,7 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+
       projeto_c34:
         +schema: projeto_c34
         +tags: ["weekly", "subgeral", "projeto_c34"]
@@ -412,15 +438,9 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
 
-      cdi:
-        +schema: brutos_cdi
-        +tags: ["daily", "cdi", "cdi-4hours"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: sim
-          dado_sensivel: sim
-      
 
+    ##########################################################################
+    ##########################################################################
     intermediate:
       +materialized: ephemeral
       iplanrio:
@@ -495,6 +515,10 @@ models:
             dado_publico: sim
             dado_pessoal: sim
             dado_sensivel: sim
+
+
+    ##########################################################################
+    ##########################################################################
     marts:
       +materialized: table
       core:
@@ -818,7 +842,7 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
-            dominio: subgeral          
+            dominio: subgeral
 
 data_tests:
   rj_sms:
