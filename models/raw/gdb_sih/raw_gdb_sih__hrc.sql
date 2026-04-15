@@ -1,6 +1,6 @@
 {{
     config(
-        alias="registro_civil_historico",
+        alias="hrc",
         schema= "brutos_gdb_sih",
         partition_by={
             "field": "data_particao",

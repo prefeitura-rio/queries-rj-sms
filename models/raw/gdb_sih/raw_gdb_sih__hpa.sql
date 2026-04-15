@@ -1,6 +1,6 @@
 {{
     config(
-        alias="procedimentos_historico",
+        alias="hpa",
         schema= "brutos_gdb_sih",
         partition_by={
             "field": "data_particao",
@@ -12,7 +12,6 @@
 
 with source as (
     select * from {{ source('brutos_gdb_sih_staging', 'TB_HPA') }}
-    tablesample system (5 percent) --fixme
 ),
 extracted as (
     select

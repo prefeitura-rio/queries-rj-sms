@@ -92,7 +92,7 @@ renamed as (
         cast({{ process_null("APA_GESTOR") }} as string) as gestor,
         cast({{ process_null("APA_CONDIC") }} as string) as condic,
         cast({{ process_null("APA_UID") }} as string) as uid,
-        cast({{ process_null("APA_NUM") }} as string) as num,
+        cast({{ process_null("APA_NUM") }} as string) as numero_apac,
         cast({{ process_null("APA_EMISSA") }} as string) as emissa,
         cast({{ process_null("APA_DTINIC") }} as string) as data_inicio,
         cast({{ process_null("APA_DTFIM") }} as string) as data_fim,
@@ -137,7 +137,7 @@ renamed as (
         cast({{ process_null("APA_DTSOL") }} as string) as data_solicitacao,
         cast({{ process_null("APA_DTAUT") }} as string) as data_autorizacao, --?
         cast({{ process_null("APA_CODEMI") }} as string) as codigo_emi,
-        cast({{ process_null("APA_CATEND") }} as string) as catend,
+        cast({{ process_null("APA_CATEND") }} as string) as carater_atendimento,
         cast({{ process_null("APA_APACAN") }} as string) as apacan,
         cast({{ process_null("APA_RACA") }} as string) as raca,
         cast({{ process_null("trim(APA_NOMERE)") }} as string) as re_nome,

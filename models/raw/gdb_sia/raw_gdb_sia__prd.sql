@@ -91,12 +91,12 @@ renamed as (
         cast({{ process_null("PRD_PA") }} as string) as pa,
         cast({{ process_null("PRD_CBO") }} as string) as cbo,
         cast({{ process_null("PRD_IDADE") }} as string) as idade,
-        cast({{ process_null("PRD_QT_P") }} as int64) as p_quantidade,
-        cast({{ process_null("PRD_QT_A") }} as int64) as a_quantidade,
-        cast({{ process_null("PRD_VL_P") }} as float64) as p_valor,
-        cast({{ process_null("PRD_VL_A") }} as float64) as a_valor,
+        cast({{ process_null("PRD_QT_P") }} as int64) as quantidade_produzida,
+        cast({{ process_null("PRD_QT_A") }} as int64) as quantidade_aprovada,
+        cast({{ process_null("PRD_VL_P") }} as float64) as valor_produzido,  -- quanto a unidade fez
+        cast({{ process_null("PRD_VL_A") }} as float64) as valor_aprovado,  -- quanto pagou de fato
         cast({{ process_null("PRD_MVM") }} as string) as mvm,
-        cast({{ process_null("PRD_ORG") }} as string) as org,
+        cast({{ process_null("PRD_ORG") }} as string) as origem,
         cast({{ process_null("PRD_FLPA") }} as string) as fl_pa,
         cast({{ process_null("PRD_FLCBO") }} as string) as fl_cbo,
         cast({{ process_null("PRD_FLCA") }} as string) as fl_ca,
@@ -108,7 +108,7 @@ renamed as (
         cast({{ process_null("PRD_RMS") }} as string) as rms,
         cast({{ process_null("PRD_CNPJ") }} as string) as cnpj,
         cast({{ process_null("PRD_NFIS") }} as string) as nfis,
-        cast({{ process_null("PRD_RESID") }} as string) as resid,
+        cast({{ process_null("PRD_RESID") }} as string) as paciente_municipio_residencia,
         cast({{ process_null("trim(PRD_RUB)") }} as string) as rub,
         cast({{ process_null("PRD_CPX") }} as string) as cpx,
         cast({{ process_null("PRD_TPFIN") }} as string) as tpfin,
@@ -124,13 +124,13 @@ renamed as (
         cast({{ process_null("PRD_CNSPCN") }} as string) as paciente_cns,
         cast({{ process_null("PRD_CPFPCT") }} as string) as paciente_cpf,
         safe.parse_date("%Y%m%d", {{ process_null("PRD_DTINI") }}) as data_inicio,
-        safe.parse_date("%Y%m%d", {{ process_null("PRD_DTREA") }}) as data_realizacao, --?
+        safe.parse_date("%Y%m%d", {{ process_null("PRD_DTREA") }}) as data_realizacao,
         cast({{ process_null("PRD_SRV") }} as string) as srv,
         cast({{ process_null("PRD_CSF") }} as string) as csf,
         cast({{ process_null("PRD_EQUIP") }} as string) as equipe,
-        cast({{ process_null("PRD_VL_FED") }} as float64) as fed_valor,
-        cast({{ process_null("PRD_VL_LOC") }} as float64) as loc_valor,
-        cast({{ process_null("PRD_VL_INC") }} as float64) as inc_valor,
+        cast({{ process_null("PRD_VL_FED") }} as float64) as fed_valor, -- valor federal
+        cast({{ process_null("PRD_VL_LOC") }} as float64) as loc_valor,  -- valor local
+        cast({{ process_null("PRD_VL_INC") }} as float64) as inc_valor,  -- ...incremento? soma dos dois?
         cast({{ process_null("PRD_RUBFED") }} as string) as rubfed,
         cast({{ process_null("PRD_LREX") }} as string) as lrex,
         cast({{ process_null("trim(PRD_INE)") }} as string) as ine,

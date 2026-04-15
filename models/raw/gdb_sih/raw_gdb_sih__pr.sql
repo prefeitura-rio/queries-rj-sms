@@ -1,6 +1,6 @@
 {{
     config(
-        alias="numeros_processamento",
+        alias="pr",
         schema= "brutos_gdb_sih",
         partition_by={
             "field": "data_particao",

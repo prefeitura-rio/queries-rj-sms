@@ -1,6 +1,6 @@
 {{
     config(
-        alias="aih_longa_permanencia_historico",
+        alias="halp",
         schema= "brutos_gdb_sih",
         partition_by={
             "field": "data_particao",

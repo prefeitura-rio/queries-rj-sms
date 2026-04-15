@@ -118,12 +118,12 @@ renamed as (
         end as sexo,
 
         cast({{ process_null("BPI_IBGE") }} as string) as ibge,
-        
+
         safe.parse_date("%Y%m%d", {{ process_null("BPI_DTATEN") }}) as data_atendimento, --?
 
         cast({{ process_null("BPI_CID") }} as string) as cid,
-        cast({{ process_null("BPI_CATEN") }} as string) as caten, -- codigo_atendimento?
-        cast({{ process_null("BPI_NAUT") }} as string) as naut,
+        cast({{ process_null("BPI_CATEN") }} as string) as carater_atendimento,
+        cast({{ process_null("BPI_NAUT") }} as string) as numero_autorizacao,
         cast({{ process_null("BPI_QT_P") }} as string) as qt_p, -- quantidade de pacientes/atendimentos?
         cast({{ process_null("BPI_QT_A") }} as string) as qt_a,
         cast({{ process_null("BPI_IDADE") }} as int64) as idade,

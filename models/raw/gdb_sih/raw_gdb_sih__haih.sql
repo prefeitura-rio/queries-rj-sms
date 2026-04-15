@@ -1,6 +1,6 @@
 {{
     config(
-        alias="aih_historico",
+        alias="haih",
         schema= "brutos_gdb_sih",
         partition_by={
             "field": "data_particao",
@@ -196,7 +196,7 @@ renamed as (
         cast({{ process_null("AH_OE_REGIONAL") }} as string) as oe_regional,
         cast({{ process_null("AH_CNES") }} as string) as id_cnes,
         cast({{ process_null("AH_MUN_HOSP") }} as string) as municipio_hospital,
-        cast({{ process_null("AH_DT_EMISSAO") }} as string) as data_emissao,
+        cast({{ process_null("AH_DT_EMISSAO") }} as string) as data_emissao,  -- data de emissão da RH, meio "inventado"
         cast({{ process_null("AH_DT_INTERNACAO") }} as string) as data_internacao,
         cast({{ process_null("AH_DT_SAIDA") }} as string) as data_saida,
         cast({{ process_null("AH_PROC_SOLICITADO") }} as string) as procedimento_solicitado,

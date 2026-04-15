@@ -1,6 +1,6 @@
 {{
     config(
-        alias="cadastro_terceiros",
+        alias="tc",
         schema= "brutos_gdb_sih",
         partition_by={
             "field": "data_particao",

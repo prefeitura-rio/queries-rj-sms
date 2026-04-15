@@ -18,6 +18,9 @@ sources:
     - name: TB_HAIH
       # TB_HAIH -> histórico AIH
 
+    - name: TB_HERR
+      # TB_HERR -> "erros" mas não exatamente?
+
     - name: TB_HPA
       # TB_HPA -> histórico procedimentos
 
