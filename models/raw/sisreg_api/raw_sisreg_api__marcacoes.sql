@@ -33,7 +33,9 @@ with
 
     sisreg as (
         select
-            s.*,
+            s.* except (data_atualizacao),
+            cast({{ process_null("data_atualizacao") }} as timestamp) as data_atualizacao,
+
             safe.parse_json(replace(s.laudo, "'", '"')) as laudo_json_transformed
 
         from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
@@ -49,7 +51,7 @@ with
         qualify row_number() over (
             partition by codigo_solicitacao
             order by
-                safe_cast(data_atualizacao as datetime) desc nulls last
+                data_atualizacao desc nulls last
         ) = 1
     ),
 
@@ -60,15 +62,11 @@ with
 
             -- Identificação básica da solicitação
             {{ process_null("codigo_solicitacao") }} as solicitacao_id,
-            timestamp(
-                safe_cast({{ process_null("data_solicitacao") }} as datetime), 'America/Sao_Paulo'
-            ) as data_solicitacao,
+            cast({{ process_null("data_solicitacao") }} as timestamp) as data_solicitacao,
 
-            date(safe_cast({{ process_null("data_atualizacao") }} as datetime)) as data_atualizacao,
+            date(data_atualizacao, "America/Sao_Paulo") as data_atualizacao,
 
-            timestamp(
-                safe_cast({{ process_null("data_cancelamento") }} as datetime), 'America/Sao_Paulo'
-            ) as data_cancelamento,
+            cast({{ process_null("data_cancelamento") }} as timestamp) as data_cancelamento,
 
             -- Status e classificação
             {{ process_null("status_solicitacao") }} as solicitacao_status,
@@ -172,9 +170,7 @@ with
             {{ process_null("nome_perfil_cancelamento") }} as perfil_cancelamento,
 
             -- Preferências da solicitação
-            timestamp(
-                safe_cast({{ process_null("data_desejada") }} as datetime), 'America/Sao_Paulo'
-            ) as data_desejada,
+            cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
             lpad(
                 {{ process_null("codigo_unidade_desejada") }}, 7, '0'
             ) as unidade_desejada_id,
@@ -219,7 +215,7 @@ with
             json_value(laudo_json_transformed, '$[0].tipo_descricao') as laudo_descricao_tp,
             json_value(laudo_json_transformed, '$[0].situacao') as laudo_situacao,
             json_value(laudo_json_transformed, '$[0].observacao') as laudo_observacao,
-            timestamp(safe_cast(json_value(laudo_json_transformed, '$[0].data_observacao') as datetime), 'America/Sao_Paulo') as laudo_data_observacao,
+            cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
 
             -- Dados do operador autorizador
             {{ clean_name_string(process_null("nome_operador_autorizador")) }}
@@ -266,15 +262,9 @@ with
 
             -- Dados da marcação
             {{ process_null("codigo_marcacao") }} as marcacao_id,
-            timestamp(
-                safe_cast({{ process_null("data_marcacao") }} as datetime), 'America/Sao_Paulo'
-            ) as data_marcacao,
-            timestamp(
-                safe_cast({{ process_null("data_aprovacao") }} as datetime), 'America/Sao_Paulo'
-            ) as data_aprovacao,
-            timestamp(
-                safe_cast({{ process_null("data_confirmacao") }} as datetime), 'America/Sao_Paulo'
-            ) as data_confirmacao,
+            cast({{ process_null("data_marcacao") }} as timestamp) as data_marcacao,
+            cast({{ process_null("data_aprovacao") }} as timestamp) as data_aprovacao,
+            cast({{ process_null("data_confirmacao") }} as timestamp) as data_confirmacao,
             {{ process_null("marcacao_executada") }} as marcacao_executada,
             case
                 when {{ process_null("st_falta_registrada") }} = "1"
@@ -306,7 +296,8 @@ with
             as cid_agendado,
 
             -- Metadado SMS
-            date(safe_cast({{ process_null("data_extracao") }} as datetime)) as data_extracao
+            -- `data_extracao` vem sem fuso; i.e. '2000-01-01T00:00:00.000000'
+            date(cast({{ process_null("data_extracao") }} as datetime)) as data_extracao
 
 
         from dedup_batch
