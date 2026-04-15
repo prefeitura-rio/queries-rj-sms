@@ -83,8 +83,7 @@ WITH
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE REGEXP_CONTAINS(tipo, r'(?i)visita')
           AND cpf IS NOT NULL
-          AND cpf <> 'NAO TEM'
-          AND cbo_profissional = '515105' -- apenas ACS
+          AND cbo_profissional IN ('515105', '322255') -- ACS e Técnico de Agente Comunitário
     ),
 
     -- CONSULTAS
