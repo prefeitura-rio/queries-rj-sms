@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: atendimento
+  - name: raw_prontuario_mv__atendimento
     description: "Tabela de atendimentos do Prontuário MV. Contém informações básicas sobre o atendimento e o paciente, extraídas do contínuo de paciente."
     columns:
       - name: id_atendimento

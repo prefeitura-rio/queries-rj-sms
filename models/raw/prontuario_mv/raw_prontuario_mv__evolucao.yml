@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: evolucao
+  - name: raw_prontuario_mv__evolucao
     description: "Tabela de evolução do paciente do Prontuário MV. Contém registros sobre o acompanhamento clínico do paciente."
     columns:
       - name: id_atendimento

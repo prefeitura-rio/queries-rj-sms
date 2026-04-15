@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: bam
+  - name: raw_prontuario_mv__bam
     description: "Tabela de Boletim de Atendimento Médico (BAM) do Prontuário MV. Contém informações detalhadas do atendimento médico."
     columns:
       - name: id_atendimento

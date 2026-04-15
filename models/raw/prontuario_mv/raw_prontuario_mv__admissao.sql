@@ -264,7 +264,7 @@ admissao as (
         {{ process_null('ds_justificativa_banho') }} as banho_justificativa,
         {{ process_null('profilaxia_inicial') }} as profilaxia_inicial,
         {{ process_null('sn_crede') }} as crede,
-        {{ process_null('sn_vitamina_k') }} as vit_k,
+        {{ process_null('sn_vit_k') }} as vitamina_k,
         {{ process_null('sn_vacina_hep_b') }} as vacina_hepatite_b,
         {{ process_null('exame_fisico_rn') }} as exame_fisico_recem_nascido,
         {{ process_null('encaminhamento_pos_nacimento') }} as encaminhamento_pos_nacimento,

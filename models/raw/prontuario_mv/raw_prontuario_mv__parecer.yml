@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: parecer
+  - name: raw_prontuario_mv__parecer
     description: "Tabela de pareceres médicos do Prontuário MV. Contém solicitações e respostas de pareceres entre profissionais e especialidades."
     columns:
       - name: id_atendimento

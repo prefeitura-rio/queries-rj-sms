@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: admissao_neo_natal
+  - name: raw_prontuario_mv__admissao
     description: "Tabela de admissão neonatal do Prontuário MV. Contém informações detalhadas sobre a mãe, gestação, parto e o recém-nascido."
     columns:
       - name: id_atendimento

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: anamnese
+  - name: raw_prontuario_mv__anamnese
     description: "Tabela de anamnese do Prontuário MV. Contém o registro da entrevista inicial com o paciente, incluindo queixas, histórico, exame físico e conduta."
     columns:
       - name: id_atendimento

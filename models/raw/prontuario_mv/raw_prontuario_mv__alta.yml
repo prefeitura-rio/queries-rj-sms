@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: alta
+  - name: raw_prontuario_mv__alta
     description: "Tabela de alta do Prontuário MV. Contém informações sobre a alta médica do paciente, incluindo diagnósticos, procedimentos e orientações."
     columns:
       - name: id_atendimento
