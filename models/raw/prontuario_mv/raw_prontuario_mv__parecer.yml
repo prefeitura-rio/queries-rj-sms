@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: parecer
+    description: "Tabela de pareceres médicos do Prontuário MV. Contém solicitações e respostas de pareceres entre profissionais e especialidades."
+    columns:
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: estabelecimento_nome
+        description: "Nome do estabelecimento de atendimento."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento original."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento (ex: AMBULATORIAL, INTERNAÇÃO, URGÊNCIA)."
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento original."
+      - name: profissional_nome
+        description: "Nome do profissional de saúde que emitiu o parecer."
+      - name: paciente_nome
+        description: "Nome do paciente."
+      - name: paciente_cpf
+        description: "CPF do paciente."
+      - name: paciente_cns
+        description: "CNS do paciente."
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: paciente_mae_nome
+        description: "Nome da mãe do paciente."
+      - name: solicitacao_parecer_datahora
+        description: "Data e hora da solicitação do parecer."
+      - name: solicitante_nome
+        description: "Nome do profissional que solicitou o parecer."
+      - name: especialidade_requisitada
+        description: "Especialidade para a qual o parecer foi solicitado."
+      - name: solicitado_nome
+        description: "Nome do profissional a quem o parecer foi solicitado."
+      - name: parecer_situacao
+        description: "Situação atual do parecer (ex: Atendido, Pendente)."
+      - name: solicitacao_justificativa
+        description: "Justificativa para a solicitação do parecer."
+      - name: parecer_descricao
+        description: "Descrição do parecer."
+      - name: parecer_datahora
+        description: "Data e hora em que o parecer foi emitido."
+      - name: servico
+        description: "Serviço relacionado ao parecer."
+      - name: cid
+        description: "Código CID relacionado ao parecer."
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."

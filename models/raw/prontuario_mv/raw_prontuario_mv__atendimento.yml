@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: atendimento
+    description: "Tabela de atendimentos do Prontuário MV. Contém informações básicas sobre o atendimento e o paciente, extraídas do contínuo de paciente."
+    columns:
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento (ex: AMBULATORIAL, INTERNAÇÃO, URGÊNCIA)."
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento."
+      - name: paciente_nome
+        description: "Nome do paciente."
+      - name: paciente_cns
+        description: "CNS do paciente."
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: paciente_mae_nome
+        description: "Nome da mãe do paciente."
+      - name: recem_nascido_hora_nascimento
+        description: "Hora de nascimento para recém-nascidos."
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."

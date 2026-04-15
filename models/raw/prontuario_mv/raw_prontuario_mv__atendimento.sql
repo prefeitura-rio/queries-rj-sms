@@ -42,17 +42,22 @@ paciente_renomeado as (
         {{ process_null('numero_atendimento') }} as id_atendimento,
         {{ process_null('id_cnes') }} as id_cnes,
         safe.parse_datetime('%Y/%m/%d %H:%M:%S', data_atendimento) as atendimento_datahora,
-        {{ process_null('tipoAtendimento') }} as atendimento_tipo,
+        case 
+            when tipoAtendimento like 'A' then 'AMBULATORIAL'
+            when tipoAtendimento like 'B' then 'BUSCA ATIVA'
+            when tipoAtendimento like 'E' then 'EXTERNO'
+            when tipoAtendimento like 'H' then 'HOME CARE'
+            when tipoAtendimento like 'I' then 'INTERNAÇÃO'
+            when tipoAtendimento like 'S' then 'SUS - AIH'
+            when tipoAtendimento like 'U' then 'URGÊNCIA'
+            else tipoAtendimento
+        end as atendimento_tipo,
         {{ process_null('especialidadeAtendimento') }} as atendimento_especialidade,
 
         -- Paciente
         {{ process_null('nome_paciente') }} as paciente_nome,
         {{ process_null('cns_paciente') }} as paciente_cns,
-        {{ process_null('nome_social_paciente') }} as paciente        json_extract_scalar(data, '$.numero_atendimento') as numero_atendimento,
-        json_extract_scalar(data, '$.numero_atendimento') as numero_atendimento,
-        json_extract_scalar(data, '$.numero_atendimento') as numero_atendimento,
-        json_extract_scalar(data, '$.numero_atendimento') as numero_atendimento,
-        json_extract_scalar(data, '$.numero_atendimento') as numero_atendimento,_nome_social,
+        {{ process_null('nome_social_paciente') }} as paciente_nome_social,
         safe.parse_date('%Y/%m/%d', data_nascimento_paciente) as paciente_data_nascimento,
         {{ process_null('sexo_paciente') }} as paciente_sexo,
         {{ process_null('pcd') }} as paciente_pcd,

@@ -1,0 +1,84 @@
+version: 2
+
+models:
+  - name: bam
+    description: "Tabela de Boletim de Atendimento Médico (BAM) do Prontuário MV. Contém informações detalhadas do atendimento médico."
+    columns:
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: estabelecimento_nome
+        description: "Nome do estabelecimento de atendimento."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento (ex: AMBULATORIAL, INTERNAÇÃO, URGÊNCIA)."
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento."
+      - name: profissional_nome
+        description: "Nome do profissional de saúde."
+      - name: fechamento_datahora
+        description: "Data e hora de fechamento do boletim."
+      - name: paciente_nome
+        description: "Nome do paciente."
+      - name: paciente_cpf
+        description: "CPF do paciente."
+      - name: paciente_cns
+        description: "CNS do paciente."
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: paciente_mae_nome
+        description: "Nome da mãe do paciente."
+      - name: paciente_alergia
+        description: "Descrição de alergias do paciente."
+      - name: queixa_principal
+        description: "Queixa principal do paciente."
+      - name: queixa_medica
+        description: "Queixa médica detalhada."
+      - name: historia_doenca_atual
+        description: "História da doença atual."
+      - name: historia_doenca_pregressa
+        description: "História de doenças pregressas."
+      - name: historia_social
+        description: "História social do paciente."
+      - name: medicamento_uso_continuo
+        description: "Descrição de medicamentos de uso contínuo."
+      - name: exame_fisico
+        description: "Resultados do exame físico geral."
+      - name: exame_fisico_especifico
+        description: "Resultados do exame físico específico."
+      - name: pressao_arterial_sistolica
+        description: "Pressão arterial sistólica em mmHg."
+      - name: pressao_arterial_diastolica
+        description: "Pressão arterial diastólica em mmHg."
+      - name: frequencia_cardiaca
+        description: "Frequência cardíaca em batimentos por minuto."
+      - name: frequencia_respiratoria
+        description: "Frequência respiratória em movimentos por minuto."
+      - name: temperatura
+        description: "Temperatura corporal em graus Celsius."
+      - name: saturacao_oxigenio
+        description: "Saturação de oxigênio (SpO2) em porcentagem."
+      - name: hipotese_diagnostica
+        description: "Hipótese diagnóstica."
+      - name: exames_complementares
+        description: "Descrição de exames complementares."
+      - name: conduta_proposta
+        description: "Conduta ou procedimento proposto."
+      - name: destino_paciente
+        description: "Destino do paciente após o atendimento."
+      - name: risco_suicidio
+        description: "Indicador de risco de suicídio."
+      - name: classificacao_risco
+        description: "Classificação de risco do paciente."
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."

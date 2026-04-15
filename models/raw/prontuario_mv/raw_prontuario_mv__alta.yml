@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: alta
+    description: "Tabela de alta do Prontuário MV. Contém informações sobre a alta médica do paciente, incluindo diagnósticos, procedimentos e orientações."
+    columns:
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: estabelecimento_nome
+        description: "Nome do estabelecimento de atendimento."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento inicial."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento"
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento."
+      - name: profissional_nome
+        description: "Nome do profissional de saúde que deu a alta."
+      - name: cid_principal
+        description: "Código CID principal da alta."
+      - name: cid_principal_ativo
+        description: "CID principal ativo."
+      - name: cid_principal_inativo
+        description: "CID principal inativo."
+      - name: procedimentos_realizados
+        description: "Descrição dos procedimentos realizados durante o atendimento."
+      - name: resultados_obtidos
+        description: "Descrição dos resultados obtidos."
+      - name: medicamentos_utilizados
+        description: "Descrição dos medicamentos utilizados."
+      - name: evolucao_paciente
+        description: "Descrição da evolução do paciente."
+      - name: paciente_nome
+        description: "Nome do paciente."
+      - name: paciente_cpf
+        description: "CPF do paciente."
+      - name: paciente_cns
+        description: "CNS do paciente."
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: alta_medica_datahora
+        description: "Data e hora da alta médica."
+      - name: alta_datahora_fechamento
+        description: "Data e hora de fechamento do registro de alta."
+      - name: dias_internado
+        description: "Número de dias que o paciente ficou internado."
+      - name: local_transferencia
+        description: "Local para onde o paciente foi transferido, se aplicável."
+      - name: plano_alta_orientacao_nutricionista
+        description: "Orientações de nutrição no plano de alta."
+      - name: plano_alta_orientacao_enfermagem
+        description: "Orientações de enfermagem no plano de alta."
+      - name: plano_alta_orientacao_fisioterapia
+        description: "Orientações de fisioterapia no plano de alta."
+      - name: plano_alta_orientacao_psicologia
+        description: "Orientações de psicologia no plano de alta."
+      - name: orientacao_medica
+        description: "Orientações médicas para a alta."
+      - name: necessidade_retorno
+        description: "Indicador da necessidade de retorno."
+      - name: retorno_agendado_nao
+        description: "Indicador se o retorno não foi agendado."
+      - name: retorno_agendado_sim
+        description: "Indicador se o retorno foi agendado."
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."

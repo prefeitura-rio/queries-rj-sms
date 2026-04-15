@@ -142,12 +142,20 @@ admissao as (
 
         -- Atendimento
         safe.parse_datetime('%Y/%m/%d %H:%M:%S', data_atendimento) as atendimento_datahora,
-        {{ process_null('tipoAtendimento') }} as atendimento_tipo,
+        case 
+            when tipoAtendimento like 'A' then 'AMBULATORIAL'
+            when tipoAtendimento like 'B' then 'BUSCA ATIVA'
+            when tipoAtendimento like 'E' then 'EXTERNO'
+            when tipoAtendimento like 'H' then 'HOME CARE'
+            when tipoAtendimento like 'I' then 'INTERNAÇÃO'
+            when tipoAtendimento like 'S' then 'SUS - AIH'
+            when tipoAtendimento like 'U' then 'URGÊNCIA'
+            else tipoAtendimento
+        end as atendimento_tipo,
         {{ process_null('especialidadeAtendimento') }} as atendimento_especialidade,
         {{ process_null('profissional_saude_nome') }} as profissional_nome,
         {{ process_null('diagnostico_primario') }} as diagnostico_primario,
         {{ process_null('diagnostico_secundario') }} as diagnostico_secundario,
-        --{{ process_null('data_hora_fechamento') }} as fechamento_datahora,
         safe.parse_datetime('%Y/%m/%d %H:%M:%S', data_hora_fechamento) as data_hora_fechamento,
 
         -- Paciente (Mãe/Gestante)
@@ -187,7 +195,7 @@ admissao as (
         safe.parse_date('%d/%m/%Y', data_hiv) as exame_data_hiv,
         {{ process_null('usg') }} as exame_usg,
         {{ process_null('data_usg') }} as exame_usg_data,
-        {{ process_null('outras_sorologias') }} as exame_outras_sorologias,
+        {{ process_null('outras_sorologias') }} as outras_sorologias,
         {{ process_null('volume') }} as volume,
 
         -- Parto
@@ -205,7 +213,7 @@ admissao as (
         -- Recém-nascido (RN)
         {{ process_null('paciente_nome_rn') }} as recem_nascido_nome,
         {{ process_null('tp_sexo_rn') }} as recem_nascido_sexo,
-        {{ process_null('hr_nascimento_rn') }} as recem_nascido_hora_nascimento,
+        {{ process_null('hr_nascimento_rn') }} as recem_nascido_parto_datahora,
         {{ process_null('vl_peso_rn') }} as recem_nascido_peso,
         {{ process_null('vl_altura_rn') }} as recem_nascido_altura,
         {{ process_null('vl_perimetro_cefalico_rn') }} as recem_nascido_perimetro_cefalico,
@@ -256,7 +264,7 @@ admissao as (
         {{ process_null('ds_justificativa_banho') }} as banho_justificativa,
         {{ process_null('profilaxia_inicial') }} as profilaxia_inicial,
         {{ process_null('sn_crede') }} as crede,
-        {{ process_null('sn_vit_k') }} as vit_k,
+        {{ process_null('sn_vitamina_k') }} as vit_k,
         {{ process_null('sn_vacina_hep_b') }} as vacina_hepatite_b,
         {{ process_null('exame_fisico_rn') }} as exame_fisico_recem_nascido,
         {{ process_null('encaminhamento_pos_nacimento') }} as encaminhamento_pos_nacimento,

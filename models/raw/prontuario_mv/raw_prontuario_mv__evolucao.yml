@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: evolucao
+    description: "Tabela de evolução do paciente do Prontuário MV. Contém registros sobre o acompanhamento clínico do paciente."
+    columns:
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: estabelecimento_nome
+        description: "Nome do estabelecimento de atendimento."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento de evolução."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento (ex: AMBULATORIAL, INTERNAÇÃO, URGÊNCIA)."
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento."
+      - name: profissional_nome
+        description: "Nome do profissional de saúde."
+      - name: paciente_nome
+        description: "Nome do paciente."
+      - name: paciente_cpf
+        description: "CPF do paciente."
+      - name: paciente_cns
+        description: "CNS do paciente."
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: paciente_mae_nome
+        description: "Nome da mãe do paciente."
+      - name: diagnostico_cid
+        description: "Código CID do diagnóstico."
+      - name: resumo_internacao
+        description: "Resumo da internação."
+      - name: avaliacao_exames_fisicos
+        description: "Avaliação dos exames físicos."
+      - name: conduta_adotada
+        description: "Conduta adotada na evolução."
+      - name: planejamento_terapeutico
+        description: "Planejamento terapêutico."
+      - name: metas_tratamento
+        description: "Metas do tratamento."
+      - name: protocolos
+        description: "Protocolos aplicados."
+      - name: previsao_alta
+        description: "Previsão de alta."
+      - name: previsao_alta_setor_data
+        description: "Data de previsão de alta do setor."
+      - name: objetivo_enfermagem
+        description: "Objetivo da enfermagem."
+      - name: objetivo_nutricao
+        description: "Objetivo da nutrição."
+      - name: objetivo_outros
+        description: "Outros objetivos."
+      - name: profilaxia_medicamento
+        description: "Indicador de profilaxia com medicamento."
+      - name: profilaxia_deambulacao
+        description: "Indicador de profilaxia com deambulação."
+      - name: profilaxia_mecanica
+        description: "Indicador de profilaxia mecânica."
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."

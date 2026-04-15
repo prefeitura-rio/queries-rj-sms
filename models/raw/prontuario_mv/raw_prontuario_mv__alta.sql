@@ -62,7 +62,16 @@ alta_renomeado as (
         {{ process_null('id_cnes') }} as id_cnes,
         {{ process_null('unidade_atendimento_nome') }} as estabelecimento_nome,
         safe.parse_datetime('%Y/%m/%d %H:%M:%S', data_atendimento) as atendimento_datahora,
-        {{ process_null('tipoAtendimento') }} as atendimento_tipo,
+        case 
+            when tipoAtendimento like 'A' then 'Ambulatorial'
+            when tipoAtendimento like 'B' then 'Busca Ativa'
+            when tipoAtendimento like 'E' then 'Externo'
+            when tipoAtendimento like 'H' then 'Home Care'
+            when tipoAtendimento like 'I' then 'Internação'
+            when tipoAtendimento like 'S' then 'SUS - AIH'
+            when tipoAtendimento like 'U' then 'Urgência'
+            else tipoAtendimento
+        end as atendimento_tipo,
         {{ process_null('especialidadeAtendimento') }} as atendimento_especialidade,
         {{ process_null('profissional_saude_nome') }} as profissional_nome,
         {{ process_null('cid_principal') }} as cid_principal,
