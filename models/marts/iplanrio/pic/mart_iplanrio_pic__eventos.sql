@@ -88,6 +88,8 @@ WITH
     ),
 
     -- CONSULTAS
+    -- Considera apenas consultas realizadas por médico ou enfermeiro,
+    -- pois este é o conceito de consulta utilizado pelos protocolos do PIC.
     consultas AS (
         SELECT
             cpf,
@@ -95,24 +97,11 @@ WITH
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE cpf IS NOT NULL
-          AND cpf <> 'NAO TEM'
-          AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
-    ),
-
-    -- CONSULTAS MÉDICO/ENFERMEIRO
-    consultas_medico_enfermeiro AS (
-        SELECT
-            cpf,
-            'Consulta - Médico/Enfermeiro' AS tipo_evento,
-            COALESCE(datahora_fim, datahora_inicio) AS dthr
-        FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE cpf IS NOT NULL
-          AND cpf <> 'NAO TEM'
-          AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
-          AND (
+        AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
+        AND (
                 REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"medico")
-             OR REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"enfermeiro")
-          )
+            OR REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"enfermeiro")
+        )
     ),
 
     -- TESTES RÁPIDOS
@@ -257,8 +246,6 @@ WITH
         SELECT * FROM visitas_domiciliares
         UNION ALL
         SELECT * FROM consultas
-        UNION ALL
-        SELECT * FROM consultas_medico_enfermeiro
         UNION ALL
         SELECT * FROM vacinacoes
         UNION ALL

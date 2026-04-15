@@ -58,7 +58,7 @@ select
     id_prontuario_local,
     id_prontuario_global,
     id_hci,
-    cpf,
+    {{ clean_numeric("cpf") }} as cpf,
     cnes_unidade,
     cns_profissional,
     cpf_profissional,
