@@ -22,37 +22,42 @@
 {% set last_partition = get_last_partition_date( this ) %}
 
 {% set cnes_competencia %}
-  (select struct(max(ano_competencia) as ano, max(mes_competencia) as mes)
-   from {{ ref('dim_estabelecimento_sus_rio_historico') }})
+  (select as struct
+      div(max_comp, 100) as ano,
+      mod(max_comp, 100) as mes
+   from (
+     select max(ano_competencia * 100 + mes_competencia) as max_comp
+     from {{ ref('dim_estabelecimento_sus_rio_historico') }}
+   ))
 {% endset %}
 
 with
     fontes_unificadas as (
         select * from {{ ref("int_monitora_cancer__sisreg") }}
-        --{% if is_incremental() %}
-        --where data_solicitacao >= '{{ last_partition }}'
-        --{% endif %}
+        {% if is_incremental() %}
+        where data_solicitacao >= '{{ last_partition }}'
+        {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__ser_ambulatorial") }}
-        --{% if is_incremental() %}
-        --where data_solicitacao >= '{{ last_partition }}'
-        --{% endif %}
+        {% if is_incremental() %}
+        where data_solicitacao >= '{{ last_partition }}'
+        {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan") }}
-        --{% if is_incremental() %}
-        --where data_solicitacao >= '{{ last_partition }}'
-        --{% endif %}
+        {% if is_incremental() %}
+        where data_solicitacao >= '{{ last_partition }}'
+        {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
-        --{% if is_incremental() %}
-        --where data_solicitacao >= '{{ last_partition }}'
-        --{% endif %}
+        {% if is_incremental() %}
+        where data_solicitacao >= '{{ last_partition }}'
+        {% endif %}
     ),
 
     transforma as (

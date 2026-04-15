@@ -107,6 +107,7 @@ models:
               name: mart_monitora_cancer__fatos__criterio_suspeita__not_null
           - accepted_values:
               values: [true, false]
+              quote: false
               name: mart_monitora_cancer__fatos__criterio_suspeita__accepted_values
 
       - name: criterio_diagnostico
@@ -119,6 +120,7 @@ models:
               name: mart_monitora_cancer__fatos__criterio_diagnostico__not_null
           - accepted_values:
               values: [true, false]
+              quote: false
               name: mart_monitora_cancer__fatos__criterio_diagnostico__accepted_values
 
       # ── unidade solicitante ────────────────────────────────────────────────────
