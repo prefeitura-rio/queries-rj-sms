@@ -1,5 +1,7 @@
 -- noqa: disable=LT08
 
+{% set episodio_gap_dias = var('episodio_gap_dias', 180) %}
+
 {{
   config(
     enabled=true,
@@ -44,19 +46,31 @@ with
             
             dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
 
+            -- DDI é opcional: substituído por '' para não propagar NULL no concat.
+            -- DDD e número precisam estar presentes para montar o telefone.
             coalesce(
-                concat(
-                    coalesce(trim(contato.telefone.ddi), null),
-                    coalesce(trim(contato.telefone.ddd), null),
-                    coalesce(trim(contato.telefone.numero), null)
+                if(
+                    trim(contato.telefone.ddd) is not null
+                    and trim(contato.telefone.numero) is not null,
+                    concat(
+                        ifnull(trim(contato.telefone.ddi), ''),
+                        trim(contato.telefone.ddd),
+                        trim(contato.telefone.numero)
+                    ),
+                    null
                 ),
                 telefones.`telefones`[SAFE_OFFSET(0)].telefone_formatado
             ) as telefone,
 
-            date_diff(
-                current_date(),
-                bcadastro.nascimento_data,
-                year
+            -- Idade médica: subtrai 1 se o aniversário ainda não ocorreu no ano corrente.
+            -- date_diff com YEAR compara apenas o componente do ano (YEAR(a) - YEAR(b)),
+            -- o que superestima a idade em até 1 ano antes do aniversário.
+            date_diff(current_date('America/Sao_Paulo'), bcadastro.nascimento_data, year)
+            - if(
+                format_date('%m%d', current_date('America/Sao_Paulo'))
+                < format_date('%m%d', bcadastro.nascimento_data),
+                1,
+                0
             ) as idade,
 
             dim_paciente.clinicas_sf [SAFE_OFFSET(0)] as clinica_sf,
@@ -189,7 +203,7 @@ with
                         data_referencia_evento,
                         data_referencia_evento_anterior,
                         day
-                    ) > 180 then 1
+                    ) > {{ episodio_gap_dias }} then 1
                     else 0
                 end
             ) over (
