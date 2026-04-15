@@ -835,7 +835,7 @@ models:
             dado_pessoal: nao
             dado_sensivel: nao
 
-        projeto_monitora_cancer:
+        monitora_cancer:
           +schema: projeto_monitora_cancer
           +tags: ["daily", "subgeral", "monitora_cancer"]
           +labels:
