@@ -15,8 +15,12 @@ models:
     columns:
       - name: paciente_cpf
         description: CPF do paciente com 11 dígitos (zeros à esquerda quando necessário).
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
       - name: cpf_particao
         description: CPF como inteiro, usado como chave de partição.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
       - name: sistema_origem
         description: Nome do sistema do qual o registro foi extraído.
         data_tests:
@@ -63,21 +67,33 @@ models:
     columns:
       - name: cpf
         description: CPF do paciente em string com 11 dígitos (zeros à esquerda).
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
         data_tests:
           - not_null
           - unique
       - name: cpf_particao
         description: CPF como inteiro, chave de partição da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
         data_tests:
           - not_null
       - name: nome
         description: Nome do paciente, escolhido pela regra de prioridade entre fontes.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: nome_mae
         description: Nome da mãe do paciente, escolhido pela regra de prioridade entre fontes.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
       - name: nome_social
         description: Nome social do paciente, escolhido pela regra de prioridade entre fontes.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: data_nascimento
         description: Data de nascimento do paciente, escolhida pela regra de prioridade entre fontes.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: sexo
         description: Sexo do paciente (FEMININO, MASCULINO), escolhido pela regra de prioridade entre fontes.
       - name: raca_cor
@@ -100,14 +116,24 @@ models:
         description: Total de registros (linhas em cadastros) que se referem a este paciente.
       - name: cns_lista
         description: Lista de CNS (cartão SUS) já vistos para este paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
       - name: nomes
         description: Lista de variações do nome do paciente já vistas em qualquer sistema.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: nomes_mae
         description: Lista de variações do nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
       - name: nomes_sociais
         description: Lista de variações do nome social do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: datas_nascimento
         description: Lista de datas de nascimento já vistas (em string) — útil para detectar discrepâncias entre sistemas.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: sexos
         description: Lista de valores de sexo já vistos (FEMININO, MASCULINO).
       - name: racas_cores
