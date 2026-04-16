@@ -1,0 +1,116 @@
+version: 2
+
+models:
+  - name: pacientes_subgeral__cadastros
+    description: |
+      União canônica dos cadastros de pacientes nos sistemas transacionais.
+      Cada linha é um paciente em um sistema (sisreg, siscan, hci, minha_saude, etc.),
+      já com cpf padronizado (com zeros à esquerda) e CNS resolvido quando aplicável.
+      Cada sistema contribui com no máximo 1 linha por paciente: o registro mais recente
+      daquela fonte (deduplicado nos modelos intermediários por data_atualizacao).
+
+      Fontes excluídas desta união (usadas apenas para enriquecimento em dim_paciente):
+      - receita_federal (bcadastro): tabela muito grande; não são pacientes, são cidadãos.
+      - profissionais_cnes: cadastro de profissionais de saúde, não de pacientes.
+    columns:
+      - name: paciente_cpf
+        description: CPF do paciente com 11 dígitos (zeros à esquerda quando necessário).
+      - name: cpf_particao
+        description: CPF como inteiro, usado como chave de partição.
+      - name: sistema_origem
+        description: Nome do sistema do qual o registro foi extraído.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - sisreg
+                - siscan
+                - ser_internacoes
+                - ser_ambulatorial
+                - sih
+                - minha_saude
+                - tea
+                - fibromialgia
+                - sipni
+                - hci
+      - name: data_atualizacao
+        description: |
+          Data que indica a recência do registro do paciente naquela fonte. A semântica
+          varia por sistema:
+          - minha_saude: data real de atualização do cadastro no CADSUS (ultimaatualizacaocadsus).
+          - sisreg, siscan, ser_*, sih, sipni, tea, fibromialgia: data do evento mais recente
+            do paciente naquele sistema (proxy).
+          - hci = NULL. não tem uma data de atualização por paciente semanticamente útil.
+            a priorização é garantida por ordem fixa em pacientes_subgeral__dim_paciente.
+
+  - name: pacientes_subgeral__dim_paciente
+    description: |
+      Dimensão de paciente consolidada a partir de todos os sistemas. Uma linha por CPF,
+      com atributos escalares prontos para uso operacional (busca ativa, contato, ficha do
+      paciente) e arrays de histórico para auditoria. Materializada como tabela porque a
+      lógica de consolidação é cara para reprocessar a cada consulta (tag: weekly).
+
+      Regras de seleção dos campos escalares:
+      - Atributos pessoais (nome, nome_mae, nome_social, data_nascimento, sexo, raca_cor,
+        obito_ano): prioridade fixa receita_federal (bcadastro) > hci > minha_saude > resto,
+        com desempate pela data_atualizacao mais recente. Cada campo é escolhido de forma
+        INDEPENDENTE. Se a fonte vencedora tiver NULL naquele campo, o valor cai para a
+        próxima fonte da ordem. Consequência: dois campos do mesmo paciente podem vir de
+        fontes diferentes, sempre escolhendo o melhor disponível.
+      - Vínculo APS (clinica_sf, clinica_sf_ap, clinica_sf_telefone, equipe_sf,
+        equipe_sf_telefone): SEMPRE do HCI. Pacientes que não aparecem no HCI ficam com
+        esses campos NULL (esperado).
+    columns:
+      - name: cpf
+        description: CPF do paciente em string com 11 dígitos (zeros à esquerda).
+        data_tests:
+          - not_null
+          - unique
+      - name: cpf_particao
+        description: CPF como inteiro, chave de partição da tabela.
+        data_tests:
+          - not_null
+      - name: nome
+        description: Nome do paciente, escolhido pela regra de prioridade entre fontes.
+      - name: nome_mae
+        description: Nome da mãe do paciente, escolhido pela regra de prioridade entre fontes.
+      - name: nome_social
+        description: Nome social do paciente, escolhido pela regra de prioridade entre fontes.
+      - name: data_nascimento
+        description: Data de nascimento do paciente, escolhida pela regra de prioridade entre fontes.
+      - name: sexo
+        description: Sexo do paciente (FEMININO, MASCULINO), escolhido pela regra de prioridade entre fontes.
+      - name: raca_cor
+        description: Raça/cor do paciente, escolhida pela regra de prioridade entre fontes.
+      - name: obito_ano
+        description: Ano de óbito do paciente, escolhido pela regra de prioridade entre fontes. NULL para pacientes vivos.
+      - name: clinica_sf
+        description: Clínica de saúde da família vinculada ao paciente. Sempre do HCI; NULL quando o paciente não está no HCI.
+      - name: clinica_sf_ap
+        description: Área Programática (AP) da clínica de saúde da família. Sempre do HCI.
+      - name: clinica_sf_telefone
+        description: Telefone da clínica de saúde da família. Sempre do HCI.
+      - name: equipe_sf
+        description: Equipe de saúde da família vinculada ao paciente. Sempre do HCI.
+      - name: equipe_sf_telefone
+        description: Telefone da equipe de saúde da família. Sempre do HCI.
+      - name: sistemas_origem
+        description: Lista de sistemas onde este paciente aparece.
+      - name: n_registros
+        description: Total de registros (linhas em cadastros) que se referem a este paciente.
+      - name: cns_lista
+        description: Lista de CNS (cartão SUS) já vistos para este paciente.
+      - name: nomes
+        description: Lista de variações do nome do paciente já vistas em qualquer sistema.
+      - name: nomes_mae
+        description: Lista de variações do nome da mãe do paciente.
+      - name: nomes_sociais
+        description: Lista de variações do nome social do paciente.
+      - name: datas_nascimento
+        description: Lista de datas de nascimento já vistas (em string) — útil para detectar discrepâncias entre sistemas.
+      - name: sexos
+        description: Lista de valores de sexo já vistos (FEMININO, MASCULINO).
+      - name: racas_cores
+        description: Lista de valores de raça/cor já vistos.
+      - name: anos_obito
+        description: Lista de anos de óbito declarados em qualquer sistema. Se não for vazia, considere o paciente como óbito.

@@ -9,25 +9,19 @@ with pacientes as (
 
         safe_cast(paciente_sexo as string) as paciente_sexo,
 
-        /*        
-        safe_cast(paciente_uf_nascimento as string) as paciente_uf_nascimento,
-        safe_cast(paciente_municipio_nascimento as string) as paciente_municipio_nascimento,
+        safe_cast(paciente_telefone as string) as paciente_telefone,
 
-        safe_cast(paciente_complemento_residencia as string) as paciente_complemento_residencia,
-        safe_cast(paciente_numero_residencia as string) as paciente_numero_residencia,
-        safe_cast(paciente_cep_residencia as string) as paciente_cep_residencia,
-        safe_cast(paciente_endereco_residencia as string) as paciente_endereco_residencia,
-        safe_cast(paciente_tp_logradouro_residencia as string) as paciente_tp_logradouro_residencia,
-        safe_cast(paciente_bairro_residencia as string) as paciente_bairro_residencia,
-        safe_cast(paciente_municipio_residencia as string) as paciente_municipio_residencia,
-        safe_cast(paciente_uf_residencia as string) as paciente_uf_residencia,
-        */
+        -- proxy de atualização cadastral: data da última solicitação do paciente no SISREG.
+        -- não é data de atualização do cadastro, mas indica que o paciente estava ativo no sistema.
+        safe_cast(data_solicitacao as timestamp) as data_atualizacao
 
-        safe_cast(paciente_telefone as string) as paciente_telefone
-    
     from {{ ref("mart_sisreg__solicitacoes") }}
     where data_solicitacao >= TIMESTAMP('2024-01-01 00:00:00')
 )
 
-select distinct * from pacientes
--- paciente_sexo: MASCULINO, FEMININO
+select * from pacientes
+-- para cada paciente, mantém apenas o registro da solicitação mais recente.
+qualify row_number() over (
+    partition by coalesce(safe_cast(paciente_cpf as string), safe_cast(paciente_cns as string))
+    order by data_atualizacao desc
+) = 1

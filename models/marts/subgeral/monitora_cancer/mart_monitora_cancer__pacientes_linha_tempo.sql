@@ -37,14 +37,15 @@ with
         group by paciente_cpf
     ),
 
-    -- to do: pegar o registro mais recente ao invés de safe_offset(0)
     enriquece_populacao_interesse as (
         select
             pop.paciente_cpf,
             pop.status,
             bcadastro.nome,
-            
-            dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
+
+            -- raça/cor escolhida pela regra de prioridade definida em pacientes_subgeral__dim_paciente:
+            -- bcadastro > hci > minha_saude > resto, com fallback automático quando o vencedor é NULL.
+            dim_paciente.raca_cor as raca_cor,
 
             -- DDI é opcional: substituído por '' para não propagar NULL no concat.
             -- DDD e número precisam estar presentes para montar o telefone.
@@ -73,11 +74,15 @@ with
                 0
             ) as idade,
 
-            dim_paciente.clinicas_sf [SAFE_OFFSET(0)] as clinica_sf,
-            dim_paciente.clinicas_sf_ap [SAFE_OFFSET(0)] as clinica_sf_ap,
-            dim_paciente.clinicas_sf_telefone [SAFE_OFFSET(0)] as clinica_sf_telefone,
-            dim_paciente.equipes_sf [SAFE_OFFSET(0)] as equipe_sf,
-            dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
+            -- vínculo APS sempre vem do HCI (cadastro consolidado da APS). pacientes que
+            -- não estão no HCI ficam com esses campos NULL. todos os campos vêm do MESMO
+            -- registro do HCI — elimina o desalinhamento do SAFE_OFFSET(0) anterior entre
+            -- arrays paralelos.
+            dim_paciente.clinica_sf as clinica_sf,
+            dim_paciente.clinica_sf_ap as clinica_sf_ap,
+            dim_paciente.clinica_sf_telefone as clinica_sf_telefone,
+            dim_paciente.equipe_sf as equipe_sf,
+            dim_paciente.equipe_sf_telefone as equipe_sf_telefone,
 
             dsr.dias_sem_resposta as gravidade_score
 
