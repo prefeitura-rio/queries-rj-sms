@@ -97,10 +97,7 @@ WITH
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE cpf IS NOT NULL
         AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
-        AND (
-                REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"medico")
-            OR REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"enfermeiro")
-        )
+        AND REGEXP_CONTAINS(REGEXP_REPLACE(NORMALIZE_AND_CASEFOLD(cbo_descricao_profissional, NFKD), r'\pM',''), r'medico|enfermeiro')
     ),
 
     -- TESTES RÁPIDOS
