@@ -2,8 +2,8 @@
     config(
         alias="vacina", 
         materialized="incremental",
-        unique_key = ['id_prontuario_global', 'cod_vacina'],
-        cluster_by= ['id_prontuario_global', 'cod_vacina'],
+        unique_key = ['id_prontuario_global', 'id_vacinacao'],
+        cluster_by= ['id_prontuario_global', 'id_vacinacao'],
         schema="brutos_prontuario_vitacare_historico",
         partition_by={
             "field": "data_particao",
@@ -37,7 +37,7 @@ WITH
         SELECT
             *
         FROM source_vacinas 
-        qualify row_number() over (partition by id_prontuario_global, cod_vacina order by extracted_at desc) = 1
+        qualify row_number() over (partition by id_prontuario_global, id order by extracted_at desc) = 1
     ),
 
     fato_vacinas AS (
