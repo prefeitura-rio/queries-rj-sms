@@ -56,7 +56,7 @@ with
             cpf_particao,
         from {{ ref("int_historico_clinico__episodio__vitai") }}
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            WHERE DATE(metadados.imported_at) >= (SELECT MAX(data_particao) FROM {{ this }})
         {% endif %}
         union all
         select
@@ -84,7 +84,7 @@ with
             cpf_particao,
         from {{ ref("int_historico_clinico__episodio__vitacare") }}
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            WHERE DATE(metadados.imported_at) >= (SELECT MAX(data_particao) FROM {{ this }})
         {% endif %}
         union all
         select
@@ -126,7 +126,7 @@ with
             cpf_particao
         from {{ref("int_historico_clinico__episodio__pcsm")}}
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            WHERE DATE(metadados.imported_at) >= (SELECT MAX(data_particao) FROM {{ this }})
         {% endif %}
         union all
         select 
@@ -154,7 +154,7 @@ with
             cpf_particao
         from {{ref("int_historico_clinico__episodio__prontuaRio")}}
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            WHERE DATE(metadados.imported_at) >= (SELECT MAX(data_particao) FROM {{ this }})
         {% endif %}
         -- ... (union all anterior)
         union all
@@ -201,7 +201,7 @@ with
             cpf_particao
         from {{ ref("int_historico_clinico__episodio__sarah") }} -- Ajuste para o nome real do seu ref
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            WHERE DATE(metadados.imported_at) >= (SELECT MAX(data_particao) FROM {{ this }})
         {% endif %}
     ),
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
