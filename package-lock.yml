@@ -1,18 +1,26 @@
 packages:
-  - package: dbt-labs/dbt_utils
-    version: 1.3.0
-  - package: metaplane/dbt_expectations
-    version: 0.10.9
-  - package: tnightengale/dbt_meta_testing
-    version: 0.3.6
-  - package: elementary-data/elementary
-    version: 0.19.1
-  - package: godatadriven/dbt_date
-    version: 0.14.2
-  - package: data-mie/dbt_profiler
-    version: 0.8.4
-  - package: dbt-labs/audit_helper
-    version: 0.12.1
-  - package: bqbooster/dbt_bigquery_monitoring
-    version: 0.20.4
-sha1_hash: a4fb399d6c894144ba07079c4f8e4bcef151bd72
+  - name: dbt_utils
+    package: dbt-labs/dbt_utils
+    version: 1.3.3
+  - name: dbt_bigquery_monitoring
+    package: bqbooster/dbt_bigquery_monitoring
+    version: 0.26.0
+  - name: dbt_expectations
+    package: metaplane/dbt_expectations
+    version: 0.10.10
+  - git: https://github.com/tnightengale/dbt-meta-testing.git
+    name: dbt_meta_testing
+    revision: 3cb9f0d453df4490bec52d02b7158be803a8187e
+  - name: elementary
+    package: elementary-data/elementary
+    version: 0.23.1
+  - name: dbt_date
+    package: godatadriven/dbt_date
+    version: 0.17.2
+  - name: dbt_profiler
+    package: data-mie/dbt_profiler
+    version: 1.0.0
+  - name: audit_helper
+    package: dbt-labs/audit_helper
+    version: 0.13.0
+sha1_hash: 32ee394e7a49e605c405c2af636ebcfa8c75ec25

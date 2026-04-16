@@ -1,0 +1,1716 @@
+22:27:25  Running with dbt=1.11.8
+22:27:36  [WARNING][CustomKeyInConfigDeprecation]: Deprecated functionality
+Custom key `rj_sms` found in `config` at path `rj_sms` in file
+`/mnt/c/Users/matheus/GitHub/queries-rj-sms/dbt_project.yml`. Custom config keys
+should move into the `config.meta`.
+22:27:36  Registered adapter: bigquery=1.11.1
+22:27:52  Unable to do partial parsing because of a version mismatch
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `meta` as a top-level property of `models[0]` in file
+`models/marts/subgeral/monitora_cancer/_mart_monitora_cancer__schema.yml`. The
+`meta` top-level property should be moved into the `config` of `models[0]`.
+22:27:59  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 41, column 9 in file
+`models/marts/subhue/mart_subhue_paciente.yml`
+22:27:59  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `columns` found at `models[0].columns[2]` in file
+`models/marts/subhue/mart_subhue_profissional_vinculo.yml`. This may mean the
+key is a typo, or is simply not a key supported by the object.
+22:27:59  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `columns` found at `models[0].columns[3]` in file
+`models/marts/subhue/mart_subhue_profissional_vinculo.yml`. This may mean the
+key is a typo, or is simply not a key supported by the object.
+22:27:59  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `columns` found at `models[0].columns[4]` in file
+`models/marts/subhue/mart_subhue_profissional_vinculo.yml`. This may mean the
+key is a typo, or is simply not a key supported by the object.
+22:27:59  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `columns` found at `models[0].columns[5]` in file
+`models/marts/subhue/mart_subhue_profissional_vinculo.yml`. This may mean the
+key is a typo, or is simply not a key supported by the object.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `alias` as a top-level property of `models[0]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `alias` top-level
+property should be moved into the `config` of `models[0]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `tags` as a top-level property of `models[0]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `tags` top-level
+property should be moved into the `config` of `models[0]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `alias` as a top-level property of `models[1]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `alias` top-level
+property should be moved into the `config` of `models[1]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `tags` as a top-level property of `models[1]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `tags` top-level
+property should be moved into the `config` of `models[1]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `alias` as a top-level property of `models[2]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `alias` top-level
+property should be moved into the `config` of `models[2]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `tags` as a top-level property of `models[2]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `tags` top-level
+property should be moved into the `config` of `models[2]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `alias` as a top-level property of `models[3]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `alias` top-level
+property should be moved into the `config` of `models[3]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `tags` as a top-level property of `models[3]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `tags` top-level
+property should be moved into the `config` of `models[3]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `alias` as a top-level property of `models[4]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `alias` top-level
+property should be moved into the `config` of `models[4]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `tags` as a top-level property of `models[4]` in file
+`models/marts/subpav/sinanrio/mart_subpav_sinanrio.yml`. The `tags` top-level
+property should be moved into the `config` of `models[4]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[0]` in file
+`models/raw/estoque_central_tpc/_estoque_central_tpc_sources.yml`. The
+`freshness` top-level property should be moved into the `config` of
+`sources[0].tables[0]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[0]` in
+file `models/raw/estoque_central_tpc/_estoque_central_tpc_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[0]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[0]` in file
+`models/raw/exames_laboratoriais/_exames_laboratoriais_sources.yml`. The
+`freshness` top-level property should be moved into the `config` of
+`sources[0].tables[0]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[0]` in
+file `models/raw/exames_laboratoriais/_exames_laboratoriais_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[0]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[1]` in file
+`models/raw/exames_laboratoriais/_exames_laboratoriais_sources.yml`. The
+`freshness` top-level property should be moved into the `config` of
+`sources[0].tables[1]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[1]` in
+file `models/raw/exames_laboratoriais/_exames_laboratoriais_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[1]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[2]` in file
+`models/raw/exames_laboratoriais/_exames_laboratoriais_sources.yml`. The
+`freshness` top-level property should be moved into the `config` of
+`sources[0].tables[2]`.
+22:27:59  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[2]` in
+file `models/raw/exames_laboratoriais/_exames_laboratoriais_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[2]`.
+22:28:00  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'loaded_at_field' in "<unicode string>", line 30, column 9 in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[0]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[0]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[0]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[0]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[1]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[1]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[1]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[1]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[2]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[2]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[2]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[2]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[3]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[3]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[3]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[3]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[4]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[4]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[4]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[4]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[5]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[5]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[5]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[5]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[6]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[6]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[6]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[6]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[7]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[7]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[7]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[7]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[8]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[8]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[8]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[8]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[9]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[9]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[9]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[9]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[10]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[10]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[10]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[10]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[11]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[11]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[11]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[11]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[12]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[12]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[12]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[12]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[13]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[13]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[13]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[13]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[14]` in file
+`models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[14]`.
+22:28:00  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[14]` in
+file `models/raw/informes_vitacare/_informes_vitacare_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[14]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[6]` in file
+`models/raw/plataforma_smsrio/_plataforma_smsrio_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[6]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[6]` in
+file `models/raw/plataforma_smsrio/_plataforma_smsrio_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[6]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[7]` in file
+`models/raw/plataforma_smsrio/_plataforma_smsrio_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[7]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[7]` in
+file `models/raw/plataforma_smsrio/_plataforma_smsrio_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[7]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[8]` in file
+`models/raw/plataforma_smsrio/_plataforma_smsrio_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[8]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[8]` in
+file `models/raw/plataforma_smsrio/_plataforma_smsrio_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[8]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[0]` in
+file `models/raw/plataforma_subpav/_plataforma_subpav_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[0]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[1]` in
+file `models/raw/plataforma_subpav/_plataforma_subpav_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[1]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[2]` in
+file `models/raw/plataforma_subpav/_plataforma_subpav_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[2]`.
+22:28:01  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[3]` in
+file `models/raw/plataforma_subpav/_plataforma_subpav_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[3]`.
+22:28:02  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0]` in file
+`models/raw/prescricao/_prescricao__sources.yml`. The `freshness` top-level
+property should be moved into the `config` of `sources[0]`.
+22:28:02  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0]` in file
+`models/raw/prescricao/_prescricao__sources.yml`. The `loaded_at_field`
+top-level property should be moved into the `config` of `sources[0]`.
+22:28:02  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[1]` in file
+`models/raw/prescricao/_prescricao__sources.yml`. The `freshness` top-level
+property should be moved into the `config` of `sources[1]`.
+22:28:02  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[1]` in file
+`models/raw/prescricao/_prescricao__sources.yml`. The `loaded_at_field`
+top-level property should be moved into the `config` of `sources[1]`.
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 64, column 9 in file
+`models/raw/projeto_c34/_projeto_c34_schema.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 65, column 9 in file
+`models/raw/projeto_c34/_projeto_c34_schema.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 66, column 9 in file
+`models/raw/projeto_c34/_projeto_c34_schema.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'quote' in "<unicode string>", line 67, column 9 in file
+`models/raw/projeto_c34/_projeto_c34_schema.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 62, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_acolhimento.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 63, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_acolhimento.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 64, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_acolhimento.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 71, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_acolhimento.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 72, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_acolhimento.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 73, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_acolhimento.yml`
+22:28:02  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `_data_tests` found at `models[0].columns[0]` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_acolhimento.yml`. This may
+mean the key is a typo, or is simply not a key supported by the object.
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 29, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_articulacoes.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 30, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_articulacoes.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 31, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_articulacoes.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 32, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:02  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 33, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 34, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 47, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 48, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 49, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 53, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 54, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 55, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 83, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 84, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 85, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 101, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 102, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 103, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 134, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 135, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 136, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 164, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 165, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 169, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 170, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 171, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 175, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 176, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 190, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 191, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 192, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 196, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 197, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 198, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 202, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 203, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 204, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 208, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 209, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 210, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 238, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 239, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 240, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 247, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 248, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 249, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 253, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 254, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 255, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 259, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 260, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 261, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 265, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 266, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 267, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 274, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 275, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 276, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 280, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 281, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 282, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 292, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 293, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 294, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:03  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 304, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 305, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 306, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 310, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 311, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 312, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 337, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 338, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 339, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 361, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 362, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 363, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 367, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 368, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 369, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 382, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 383, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 384, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 424, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 425, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 426, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 445, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 446, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'name' in "<unicode string>", line 450, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 451, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 452, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`
+22:28:04  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `datate` found at `models[0].columns[45]` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`. This may
+mean the key is a typo, or is simply not a key supported by the object.
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 54, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_unidades_saude.yml`
+22:28:04  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 55, column 9 in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_unidades_saude.yml`
+22:28:04  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `-name` found at `models[0].columns[12]` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_unidades_saude.yml`. This
+may mean the key is a typo, or is simply not a key supported by the object.
+22:28:04  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0]` in file
+`models/raw/prontuario_carioca_saude_mental/_pcsm__sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0]`.
+22:28:06  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0]` in file
+`models/raw/prontuario_carioca_saude_mental/_pcsm__sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0]`.
+22:28:06  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[1]` in file
+`models/raw/prontuario_carioca_saude_mental/_pcsm__sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[1]`.
+22:28:06  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[1]` in file
+`models/raw/prontuario_carioca_saude_mental/_pcsm__sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[1]`.
+22:28:06  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[0]` in file
+`models/raw/prontuario_vitacare_api/_prontuario_vitacare_api_sources.yml`. The
+`freshness` top-level property should be moved into the `config` of
+`sources[0].tables[0]`.
+22:28:06  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[0]` in
+file `models/raw/prontuario_vitacare_api/_prontuario_vitacare_api_sources.yml`.
+The `loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[0]`.
+22:28:06  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[1]` in file
+`models/raw/prontuario_vitacare_api/_prontuario_vitacare_api_sources.yml`. The
+`freshness` top-level property should be moved into the `config` of
+`sources[0].tables[1]`.
+22:28:06  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[1]` in
+file `models/raw/prontuario_vitacare_api/_prontuario_vitacare_api_sources.yml`.
+The `loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[1]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[2]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[2]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[2]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[2]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[3]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[3]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[3]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[3]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[4]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[4]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[4]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[4]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[6]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[6]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[6]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[6]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[8]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[8]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[8]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[8]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[10]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[10]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[10]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[10]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[12]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[12]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[12]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[12]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[13]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[13]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[13]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[13]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[14]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[14]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[14]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[14]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[15]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[15]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[15]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[15]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[17]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[17]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[17]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[17]`.
+22:28:07  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[19]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[19]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[19]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[19]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[21]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[21]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[21]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[21]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[23]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[23]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[23]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[23]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[25]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[25]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[25]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[25]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[29]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[29]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[29]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[29]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[31]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[31]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[31]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[31]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[33]` in file
+`models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The `freshness`
+top-level property should be moved into the `config` of `sources[0].tables[33]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[33]` in
+file `models/raw/prontuario_vitai/_prontuario_vitai_sources.yml`. The
+`loaded_at_field` top-level property should be moved into the `config` of
+`sources[0].tables[33]`.
+22:28:08  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'data_type' in "<unicode string>", line 157, column 9 in file
+`models/raw/sheets/_sheets_schema.yml`
+22:28:08  [WARNING][DuplicateYAMLKeysDeprecation]: Deprecated functionality
+Duplicate key 'description' in "<unicode string>", line 513, column 9 in file
+`models/raw/sih/_sih_schema.yml`
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[0]` in file
+`models/raw/sisreg_api/_sisreg_api__sources.yml`. The `freshness` top-level
+property should be moved into the `config` of `sources[0].tables[0]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[0]` in
+file `models/raw/sisreg_api/_sisreg_api__sources.yml`. The `loaded_at_field`
+top-level property should be moved into the `config` of `sources[0].tables[0]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `freshness` as a top-level property of `sources[0].tables[1]` in file
+`models/raw/sisreg_api/_sisreg_api__sources.yml`. The `freshness` top-level
+property should be moved into the `config` of `sources[0].tables[1]`.
+22:28:08  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `loaded_at_field` as a top-level property of `sources[0].tables[1]` in
+file `models/raw/sisreg_api/_sisreg_api__sources.yml`. The `loaded_at_field`
+top-level property should be moved into the `config` of `sources[0].tables[1]`.
+22:28:08  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `config` found at `macros[0]` in file
+`macros/subpav/sinanrio_utils_schema.yml`. This may mean the key is a typo, or
+is simply not a key supported by the object.
+22:28:08  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `config` found at `macros[1]` in file
+`macros/subpav/sinanrio_utils_schema.yml`. This may mean the key is a typo, or
+is simply not a key supported by the object.
+22:28:08  [WARNING][CustomKeyInObjectDeprecation]: Deprecated functionality
+Custom key `config` found at `macros[2]` in file
+`macros/subpav/sinanrio_utils_schema.yml`. This may mean the key is a typo, or
+is simply not a key supported by the object.
+22:28:25  [WARNING][CustomKeyInConfigDeprecation]: Deprecated functionality
+Custom key `severity` found in `config` in file `models/intermediate/dit/gerenci
+amento/historico_clinico/int_gerenciamento__historico_clinico__paciente_contagem
+.sql`. Custom config keys should move into the `config.meta`.
+22:28:34  [WARNING][CustomKeyInConfigDeprecation]: Deprecated functionality
+Custom key `strategy` found in `config` in file
+`models/raw/sisreg_web/raw_sisreg_web__oferta_programada.sql`. Custom config
+keys should move into the `config.meta`.
+22:28:39  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `where` as a top-level property of `data_tests.not_null.where` in file
+`models/marts/cie/vacinacao/mart_cie__vacinacao.yml`. The `where` top-level
+property should be moved into the `config` of `data_tests.not_null.where`.
+22:28:39  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/marts/cie/vacinacao/mart_cie__vacinacao.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:39  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `where` as a top-level property of `data_tests.not_null.where` in file
+`models/marts/cie/vacinacao/mart_cie__vacinacao.yml`. The `where` top-level
+property should be moved into the `config` of `data_tests.not_null.where`.
+22:28:40  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'dim_estabelecimento_sus_rio_historico' in package 'rj_sms'
+(models/marts/core/dimensions/rio/_dimensions_rio_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:40  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'dim_leito_sus_rio_historico' in package 'rj_sms'
+(models/marts/core/dimensions/rio/_dimensions_rio_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:40  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'dim_habilitacao_sus_rio_historico' in package 'rj_sms'
+(models/marts/core/dimensions/rio/_dimensions_rio_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:40  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'dim_equipamento_sus_rio_historico' in package 'rj_sms'
+(models/marts/core/dimensions/rio/_dimensions_rio_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:40  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'dim_profissional_sus_rio_historico' in package 'rj_sms'
+(models/marts/core/dimensions/rio/_dimensions_rio_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_mean_to_be_between` defined on
+'mart_estoque__posicao_atual' in package 'rj_sms'
+(models/marts/dit/estoque/_mart_estoque_schema.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `assert_relacionamento_tabelas` defined on
+'mart_historico_clinico__episodio' in package 'rj_sms'
+(models/marts/dit/historico_clinico/_mart_historico_clinico_schema.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'mart_cnes_subgeral__leitos_mrj_sus' in package 'rj_sms'
+(models/marts/subgeral/cnes_subgeral/_mart_cnes_subgeral__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'mart_cnes_subgeral__habilitacoes_mrj_sus' in package 'rj_sms'
+(models/marts/subgeral/cnes_subgeral/_mart_cnes_subgeral__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'mart_cnes_subgeral__equipamentos_mrj_sus' in package 'rj_sms'
+(models/marts/subgeral/cnes_subgeral/_mart_cnes_subgeral__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_table_row_count_to_equal_other_table` defined on
+'mart_cnes_subgeral__profissionais_mrj_sus' in package 'rj_sms'
+(models/marts/subgeral/cnes_subgeral/_mart_cnes_subgeral__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'mart_monitora_cancer__fatos' in package 'rj_sms'
+(models/marts/subgeral/monitora_cancer/_mart_monitora_cancer__schema.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'mart_monitora_cancer__fatos' in package 'rj_sms'
+(models/marts/subgeral/monitora_cancer/_mart_monitora_cancer__schema.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'mart_monitora_cancer__fatos' in package 'rj_sms'
+(models/marts/subgeral/monitora_cancer/_mart_monitora_cancer__schema.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'mart_monitora_cancer__fatos' in package 'rj_sms'
+(models/marts/subgeral/monitora_cancer/_mart_monitora_cancer__schema.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_monitora_cancer__fatos' in package 'rj_sms'
+(models/marts/subgeral/monitora_cancer/_mart_monitora_cancer__schema.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_value_lengths_to_equal` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_value_lengths_to_equal` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_values_to_be_between` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_value_lengths_to_equal` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_values_to_be_between` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_values_to_be_between` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.expression_is_true` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.expression_is_true` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.expression_is_true` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.expression_is_true` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.expression_is_true` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.expression_is_true` defined on
+'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_monitora_reg__monitor_vagas_ambulatoriais' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_monitora_reg__monitor_retornos' in package 'rj_sms'
+(models/marts/subgeral/monitora_reg/_mart_monitora_reg__schema.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_subgeral__completude_cpf_paciente' in package 'rj_sms' (models/
+marts/subgeral/reports/prontuarios_reports/_mart_prontuarios_reports__schema.yml
+). Arguments to generic tests should be nested under the `arguments` property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_subgeral__completude_cpf_atendimento' in package 'rj_sms' (mode
+ls/marts/subgeral/reports/prontuarios_reports/_mart_prontuarios_reports__schema.
+yml). Arguments to generic tests should be nested under the `arguments`
+property.
+22:28:41  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on
+'mart_sisreg_reports__oferta_programada__anomalia_procedimento_estabelecimento'
+in package 'rj_sms' (models/marts/subgeral/reports/sisreg_reports/_mart_sisreg_r
+eports__oferta_programada__anomalia_procedimento_estabelecimento_schema.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_sisreg_reports__oferta_programada__anomalia_profissional' in
+package 'rj_sms' (models/marts/subgeral/reports/sisreg_reports/_mart_sisreg_repo
+rts__oferta_programada__anomalia_profissional_schema.yml). Arguments to generic
+tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_sisreg_reports__oferta_programada__sobreposicao_escalas' in
+package 'rj_sms' (models/marts/subgeral/reports/sisreg_reports/_mart_sisreg_repo
+rts__oferta_programada__sobreposicao_escalas_schema.yml). Arguments to generic
+tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'mart_sisreg__unidades' in package 'rj_sms'
+(models/marts/subgeral/sisreg/_mart_sisreg__schema.yml). Arguments to generic
+tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'mart_sisreg__unidades' in package 'rj_sms'
+(models/marts/subgeral/sisreg/_mart_sisreg__schema.yml). Arguments to generic
+tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_sisreg__unidades' in package 'rj_sms'
+(models/marts/subgeral/sisreg/_mart_sisreg__schema.yml). Arguments to generic
+tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships` defined on
+'mart_sisreg__procedimentos' in package 'rj_sms'
+(models/marts/subgeral/sisreg/_mart_sisreg__schema.yml). Arguments to generic
+tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.accepted_range` defined on
+'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'mart_tme__procedimento_mensal' in package 'rj_sms'
+(models/marts/subgeral/tempo_medio_espera/_mart_tme__schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:42  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_sum_to_be_between` defined on
+'raw_estoque_central_tpc__estoque_posicao' in package 'rj_sms'
+(models/raw/estoque_central_tpc/_estoque_central_tpc_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:43  [WARNING]: Did not find matching node for patch with name 'raw_plataforma_subpav_sinan__tuberculose_sinan' in the 'models' section of file 'models/raw/plataforma_subpav/_plataforma_subpav_schema.yml'
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prescricao/raw_prescricao_atendimentos.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prescricao/raw_prescricao_atendimentos.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prescricao/raw_prescricao_materiais.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prescricao/raw_prescricao_materiais.yml`. The `severity` top-level
+property should be moved into the `config` of `data_tests.unique.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prescricao/raw_prescricao_material_prescricao.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prescricao/raw_prescricao_medicamentos.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prescricao/raw_prescricao_medicamentos.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prescricao/raw_prescricao_medicos.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prescricao/raw_prescricao_medicos.yml`. The `severity` top-level
+property should be moved into the `config` of `data_tests.unique.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prescricao/raw_prescricao_pacientes.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prescricao/raw_prescricao_pacientes.yml`. The `severity` top-level
+property should be moved into the `config` of `data_tests.unique.severity`.
+22:28:43  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prescricao/raw_prescricao_prescricoes.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prescricao/raw_prescricao_prescricoes.yml`. The `severity` top-level
+property should be moved into the `config` of `data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prescricao/raw_prescricao_unidades_saude.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prescricao/raw_prescricao_unidades_saude.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'raw_projeto_c34__cpfs_fuzzy_match' in package 'rj_sms'
+(models/raw/projeto_c34/_projeto_c34_schema.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:44  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'raw_projeto_c34__cns_fuzzy_match' in package 'rj_sms'
+(models/raw/projeto_c34/_projeto_c34_schema.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_articulacoes.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_articulacoes.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_atendimentos.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_atendimentos.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_beneficios.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_beneficios.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_ciclos_tratamento_paci
+entes.yml`. The `severity` top-level property should be moved into the `config`
+of `data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_ciclos_tratamento_pacientes
+.yml`. The `severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_comorbidades.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_comorbidades.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_deficiencias.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_deficiencias.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_drogas.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_drogas.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_equipes.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_equipes.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_equipes_clinica_famili
+a.yml`. The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_equipes_clinica_famili
+a.yml`. The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_local_unidade_saude.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_local_unidade_saude.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_matriciamentos.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_matriciamentos.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_pacientes.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:44  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_servico_residencial_te
+rapeutico.yml`. The `severity` top-level property should be moved into the
+`config` of `data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_servico_residencial_terapeu
+tico.yml`. The `severity` top-level property should be moved into the `config`
+of `data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_servico_residencial_te
+rapeutico_pacientes.yml`. The `severity` top-level property should be moved into
+the `config` of `data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_servico_residencial_terapeu
+tico_pacientes.yml`. The `severity` top-level property should be moved into the
+`config` of `data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_atendimentos.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_atendimentos.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_atividades.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_atividades.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_encaminhamentos.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_encaminhamentos.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_saida_acolhiment
+o.yml`. The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_saida_acolhimento.yml
+`. The `severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_unidade_saude.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_unidade_saude.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_vinculo_trabalho
+.yml`. The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipos_vinculo_trabalho.yml`
+. The `severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipo_local_unidade_sau
+de.yml`. The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_tipo_local_unidade_saude.ym
+l`. The `severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.not_null.severity` in
+file `models/raw/prontuario_carioca_saude_mental/raw_pcsm_unidades_saude.yml`.
+The `severity` top-level property should be moved into the `config` of
+`data_tests.not_null.severity`.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of `data_tests.unique.severity` in file
+`models/raw/prontuario_carioca_saude_mental/raw_pcsm_unidades_saude.yml`. The
+`severity` top-level property should be moved into the `config` of
+`data_tests.unique.severity`.
+22:28:45  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships` defined on
+'raw_prontuario_vitacare__estoque_posicao' in package 'rj_sms'
+(models/raw/prontuario_vitacare/_prontuario_vitacare_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:45  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships` defined on
+'raw_prontuario_vitacare__estoque_movimento' in package 'rj_sms'
+(models/raw/prontuario_vitacare/_prontuario_vitacare_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:45  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_values_to_be_between` defined on
+'raw_prontuario_vitacare__estoque_movimento' in package 'rj_sms'
+(models/raw/prontuario_vitacare/_prontuario_vitacare_schema.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:45  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `where` as a top-level property of
+`data_tests.dbt_utils.unique_combination_of_columns.where` in file
+`models/raw/prontuario_vitacare_api/raw_prontuario_vitacare_api__cadastro.yml`.
+The `where` top-level property should be moved into the `config` of
+`data_tests.dbt_utils.unique_combination_of_columns.where`.
+22:28:45  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'raw_prontuario_vitacare_api__cadastro' in package 'rj_sms'
+(models/raw/prontuario_vitacare_api/raw_prontuario_vitacare_api__cadastro.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:46  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships` defined on
+'raw_prontuario_vitacare_api_centralizadora__estoque_movimento' in package
+'rj_sms' (models/raw/prontuario_vitacare_api_centralizadora/raw_prontuario_vitac
+are_api_centralizadora__estoque_movimento.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:46  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_values_to_be_between` defined on
+'raw_prontuario_vitacare_api_centralizadora__estoque_movimento' in package
+'rj_sms' (models/raw/prontuario_vitacare_api_centralizadora/raw_prontuario_vitac
+are_api_centralizadora__estoque_movimento.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:46  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships` defined on
+'raw_prontuario_vitacare_api_centralizadora__estoque_posicao' in package
+'rj_sms' (models/raw/prontuario_vitacare_api_centralizadora/raw_prontuario_vitac
+are_api_centralizadora__estoque_posicao.yml). Arguments to generic tests should
+be nested under the `arguments` property.
+22:28:46  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.recency` defined on
+'raw_prontuario_vitai__alta' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__alta.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:46  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.recency` defined on
+'raw_prontuario_vitai__atendimento' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__atendimento.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:46  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.recency` defined on
+'raw_prontuario_vitai__boletim' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__boletim.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.recency` defined on
+'raw_prontuario_vitai__diagnostico' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__diagnostico.yml). Arguments
+to generic tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships` defined on
+'raw_prontuario_vitai__estoque_movimento' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__estoque_movimento.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test
+`dbt_expectations.expect_column_values_to_be_between` defined on
+'raw_prontuario_vitai__estoque_movimento' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__estoque_movimento.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'raw_prontuario_vitai__estoque_movimento' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__estoque_movimento.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships` defined on
+'raw_prontuario_vitai__estoque_posicao' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__estoque_posicao.yml).
+Arguments to generic tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.recency` defined on
+'raw_prontuario_vitai__internacao' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__internacao.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.recency` defined on
+'raw_prontuario_vitai__paciente' in package 'rj_sms'
+(models/raw/prontuario_vitai/raw_prontuario_vitai__paciente.yml). Arguments to
+generic tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships` defined on
+'raw_sheets__material_cobertura_programas' in package 'rj_sms'
+(models/raw/sheets/_sheets_schema.yml). Arguments to generic tests should be
+nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'raw_siscan_web__laudos' in package 'rj_sms'
+(models/raw/siscan_web/_siscan_web__schema.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'raw_siscan_web__laudos' in package 'rj_sms'
+(models/raw/siscan_web/_siscan_web__schema.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `accepted_values` defined on
+'raw_siscan_web__laudos' in package 'rj_sms'
+(models/raw/siscan_web/_siscan_web__schema.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'raw_sisreg_api__marcacoes' in package 'rj_sms'
+(models/raw/sisreg_api/_sisreg_api__schema.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'raw_sisreg_api__solicitacoes' in package 'rj_sms'
+(models/raw/sisreg_api/_sisreg_api__schema.yml). Arguments to generic tests
+should be nested under the `arguments` property.
+22:28:47  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of
+`data_tests.elementary.volume_anomalies.severity` in file
+`models/raw/sisreg_api_log/_sisreg_api_log__schema.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.elementary.volume_anomalies.severity`.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `elementary.volume_anomalies` defined on
+'raw_sisreg_api_log__logs' in package 'rj_sms'
+(models/raw/sisreg_api_log/_sisreg_api_log__schema.yml). Arguments to generic
+tests should be nested under the `arguments` property.
+22:28:47  [WARNING][PropertyMovedToConfigDeprecation]: Deprecated functionality
+Found `severity` as a top-level property of
+`data_tests.elementary.volume_anomalies.severity` in file
+`models/raw/sisreg_api_log/_sisreg_api_log__schema.yml`. The `severity`
+top-level property should be moved into the `config` of
+`data_tests.elementary.volume_anomalies.severity`.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `elementary.volume_anomalies` defined on
+'raw_sisreg_api_log__logs' in package 'rj_sms'
+(models/raw/sisreg_api_log/_sisreg_api_log__schema.yml). Arguments to generic
+tests should be nested under the `arguments` property.
+22:28:47  [WARNING][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `dbt_utils.unique_combination_of_columns`
+defined on 'raw_sisreg_web__oferta_programada' in package 'rj_sms'
+(models/raw/sisreg_web/_sisreg_schema.yml). Arguments to generic tests should be
+nested under the `arguments` property.
+22:28:50  [WARNING]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 3 unused configuration paths:
+- models.rj_sms.marts.subpav.farmacia
+- models.rj_sms.intermediate.iplanrio.whatsapp
+- models.rj_sms.raw.iplan
+22:28:53  Found 764 models, 347 data tests, 447 sources, 2239 macros
+22:28:53  
+22:28:53  Concurrency: 10 threads (target='ci')
+22:28:53  
+22:30:22  [WARNING][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- CustomKeyInConfigDeprecation: 3 occurrences
+- PropertyMovedToConfigDeprecation: 176 occurrences
+- DuplicateYAMLKeysDeprecation: 106 occurrences
+- CustomKeyInObjectDeprecation: 10 occurrences
+- MissingArgumentsPropertyInGenericTestDeprecation: 79 occurrences

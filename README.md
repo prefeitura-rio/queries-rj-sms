@@ -11,7 +11,7 @@ Administrador: **[Pedro Marques](https://github.com/TanookiVerde)**
 |------------|--------|-------------|
 | **Python** | 3.10.x | Windows: Baixe o instalador https://www.python.org/downloads/release/python-3109/ |
 | **Poetry** | 1.7.1  | `pip install poetry==1.7.1` |
-| **dbt-core** + **dbt-bigquery** |  | `pip install dbt-core dbt-bigquery` |
+| **dbt-core** + **dbt-bigquery** |  |  |
 | **Recce** | | Ferramenta para checar a diferença entre os dados em diversos ambientes <br> |
 | **Git** | | Windows: Baixe o instalador https://git-scm.com/downloads/win |
 

@@ -40,12 +40,12 @@ jobs:
         path: |
           ~/.cache/pip
           ~/.cache/pypoetry
-        key: ${{ runner.os }}-pip-poetry-${{ 'dbt-core--dbt-bigquery--setuptools' }}
+        key: ${{ runner.os }}-pip-poetry-${{ 'dbt-core1.11--dbt-bigquery1.11--setuptools82' }}
         restore-keys: |
           ${{ runner.os }}-pip-poetry-
 
     - name: Install dbt
-      run:  pip install dbt-core dbt-bigquery setuptools
+      run:  pip install "dbt-core~=1.11" "dbt-bigquery~=1.11" "setuptools~=82"
 
     # Cache das dependências do dbt
     - uses: actions/cache@v5

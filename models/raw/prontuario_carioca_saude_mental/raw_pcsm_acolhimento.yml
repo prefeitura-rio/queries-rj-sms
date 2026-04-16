@@ -53,7 +53,7 @@ models:
       - name: leito_extra
         description: "Booleano que indica que o acolhimento foi feito em um leito extra. S indica que foi feito, N indica que não foi feito."
         data_type: string
-        name: descricao_leito_extra
+      - name: descricao_leito_extra
         description: "Descrição que indica que o acolhimento foi feito em um leito extra. S indica que foi feito, N indica que não foi feito."
         data_type: string
       - name: turno_acolhimento
