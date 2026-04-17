@@ -26,7 +26,6 @@ WITH
                 ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_inicio DESC) AS rn
             FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
             WHERE fase_atual = 'Puerpério'
-            AND data_fim IS NOT NULL
             AND data_fim_efetiva IS NOT NULL
             AND cpf IS NOT NULL
         )
@@ -57,8 +56,8 @@ WITH
         -- Puerpério atual
         SELECT
             cpf,
-            data_fim AS inicio_fase,
-            DATE_ADD(data_fim, INTERVAL 45 DAY) AS fim_fase,
+            data_fim_efetiva AS inicio_fase,
+            DATE_ADD(data_fim_efetiva, INTERVAL 45 DAY) AS fim_fase,
             'Puerperio' AS tipo_publico
         FROM puerperio_dedup
 
@@ -84,11 +83,12 @@ WITH
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE REGEXP_CONTAINS(tipo, r'(?i)visita')
           AND cpf IS NOT NULL
-          AND cpf <> 'NAO TEM'
-          AND cbo_profissional = '515105' -- apenas ACS
+          AND cbo_profissional IN ('515105', '322255') -- ACS e Técnico de Agente Comunitário
     ),
 
     -- CONSULTAS
+    -- Considera apenas consultas realizadas por médico ou enfermeiro,
+    -- pois este é o conceito de consulta utilizado pelos protocolos do PIC.
     consultas AS (
         SELECT
             cpf,
@@ -96,24 +96,8 @@ WITH
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE cpf IS NOT NULL
-          AND cpf <> 'NAO TEM'
-          AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
-    ),
-
-    -- CONSULTAS MÉDICO/ENFERMEIRO
-    consultas_medico_enfermeiro AS (
-        SELECT
-            cpf,
-            'Consulta - Médico/Enfermeiro' AS tipo_evento,
-            COALESCE(datahora_fim, datahora_inicio) AS dthr
-        FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE cpf IS NOT NULL
-          AND cpf <> 'NAO TEM'
-          AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
-          AND (
-                REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"medico")
-             OR REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"enfermeiro")
-          )
+        AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
+        AND REGEXP_CONTAINS(REGEXP_REPLACE(NORMALIZE_AND_CASEFOLD(cbo_descricao_profissional, NFKD), r'\pM',''), r'medico|enfermeiro')
     ),
 
     -- TESTES RÁPIDOS
@@ -258,8 +242,6 @@ WITH
         SELECT * FROM visitas_domiciliares
         UNION ALL
         SELECT * FROM consultas
-        UNION ALL
-        SELECT * FROM consultas_medico_enfermeiro
         UNION ALL
         SELECT * FROM vacinacoes
         UNION ALL
