@@ -19,6 +19,7 @@ models:
           - not_null:
               name: raw_prontuario_vitacare_api_centralizadora__estoque_posicao__id__not_null
               config:
+                where: safe_cast(particao_data_posicao as date) = current_date('America/Sao_Paulo')
                 severity: warn
                 warn_if: ">1000"
 
@@ -35,6 +36,7 @@ models:
           - not_null:
               name: raw_prontuario_vitacare_api_centralizadora__estoque_posicao__id_surrogate__not_null
               config:
+                where: safe_cast(particao_data_posicao as date) = current_date('America/Sao_Paulo')
                 severity: warn
                 warn_if: ">1000"
 
