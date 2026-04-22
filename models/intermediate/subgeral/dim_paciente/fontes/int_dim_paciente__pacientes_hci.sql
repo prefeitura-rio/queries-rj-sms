@@ -10,7 +10,6 @@ with pacientes as (
             upper(dados.nome_social) as paciente_nome_social,
             upper(dados.genero) as paciente_sexo,
             upper(dados.raca) as paciente_racacor,
-            --upper(dados.pai_nome) as paciente_nome_pai,
 
             extract(year from dados.obito_data) as paciente_obito_ano,
 
@@ -20,24 +19,6 @@ with pacientes as (
 
             upper(equipe_saude_familia [SAFE_OFFSET(0)].nome) as equipe_sf,
             equipe_saude_familia [SAFE_OFFSET(0)].telefone as equipe_sf_telefone
-
-            /* to-do arrays: 
-            endereco.complemento as paciente_complemento_residencia,
-            ebdereco.numero as paciente_numero_residencia,
-            endereco.cep as paciente_cep_residencia,
-            endereco.logradouro as paciente_endereco_residencia,
-            enereco.tipo_logradouro as paciente_tp_logradouro_residencia,
-            endereco.bairro as paciente_bairro_residencia,
-            endereco.cidade as paciente_municipio_residencia,
-            endereco.estado as paciente_uf_residencia,
-
-            contato.telefone.ddd,
-            contato.telefone.valor,
-            contato.email.valor,       
-
-            equipe_saude_familia.id_ine,
-            equipe_saude_familia.clinica_familia.id_cnes,
-            */
 
         from {{ ref("mart_historico_clinico__paciente") }}
         left join {{ ref("dim_estabelecimento") }} as estabs
@@ -57,17 +38,23 @@ with pacientes as (
             p.paciente_nome_social,
             p.paciente_sexo,
             p.paciente_racacor,
-            --p.paciente_nome_pai,
             paciente_obito_ano,
             p.clinica_sf_ap,
             p.clinica_sf,
             p.equipe_sf,
             p.equipe_sf_telefone,
-            p.clinica_sf_telefone
+            p.clinica_sf_telefone,
+
+            -- HCI é um snapshot consolidado: cada paciente aparece uma única vez, já deduplicado
+            -- upstream. Não há "data de atualização por paciente" observável aqui.
+            -- A prioridade do HCI é garantida pela ordem fixa de sistemas, não por data.
+            cast(null as timestamp) as data_atualizacao
         from pacientes p
             left join unnest (p.paciente_cns_array) as cns_item
     )
 
-select distinct * from pacientes_cns_unnested
--- sexo: feminino, masculino
--- racacor: parda, preta, branca, amarela
+select * from pacientes_cns_unnested
+qualify row_number() over (
+    partition by coalesce(safe_cast(paciente_cpf as string), safe_cast(paciente_cns as string))
+    order by paciente_cns nulls last
+) = 1
