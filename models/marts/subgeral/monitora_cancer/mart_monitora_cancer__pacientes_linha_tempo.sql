@@ -262,7 +262,7 @@ with
     ),
 
     tempo_total_por_paciente as (
-        -- patients with a SER event: count from run start to first SER date
+        -- pacientes que estão na uncacon têm seu tempo de jornada pausada
         select
             psi.cpf_particao,
             nullif(
@@ -279,7 +279,7 @@ with
 
         union all
 
-        -- patients without SER event: count from the run start to today (Brazil).
+        -- tempo de jornada do paciente: primeiro evento da run até o dia atual
         select
             uep.cpf_particao,
             nullif(
