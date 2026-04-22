@@ -131,15 +131,15 @@ with
             fcts.procedimento,
             fcts.cid,
             concat(
-                fcts.id_cnes_unidade_origem,
-                " - ",
-                fcts.estabelecimento_origem_nome
+                coalesce(fcts.id_cnes_unidade_origem, 'CNES ?'),
+                ' - ',
+                coalesce(fcts.estabelecimento_origem_nome, 'Estabelecimento não identificado')
             ) as unidade_solicitante,
-            concat(
-                fcts.id_cnes_unidade_executante,
-                " - ",
-                fcts.estabelecimento_executante_nome
-            ) as unidade_executante,
+             concat(
+                coalesce(fcts.id_cnes_unidade_executante, 'CNES ?'),
+                ' - ',
+                coalesce(fcts.estabelecimento_executante_nome, 'Estabelecimento não identificado')
+            ) as unidade_executante,       
             fcts.data_solicitacao,
             fcts.data_autorizacao,
             fcts.data_execucao,
