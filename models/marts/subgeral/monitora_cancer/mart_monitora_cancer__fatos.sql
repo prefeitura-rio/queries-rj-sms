@@ -35,28 +35,28 @@ with
     fontes_unificadas as (
         select * from {{ ref("int_monitora_cancer__sisreg") }}
         {% if is_incremental() %}
-        where data_solicitacao >= '{{ last_partition }}'
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval 12 month)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__ser_ambulatorial") }}
         {% if is_incremental() %}
-        where data_solicitacao >= '{{ last_partition }}'
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval 12 month)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan") }}
         {% if is_incremental() %}
-        where data_solicitacao >= '{{ last_partition }}'
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval 12 month)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
         {% if is_incremental() %}
-        where data_solicitacao >= '{{ last_partition }}'
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval 12 month)
         {% endif %}
     ),
 
