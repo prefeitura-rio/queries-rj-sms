@@ -3,7 +3,6 @@
 -- Responsável pelo UNION das fontes intermediárias + enriquecimento de CPF e estabelecimento.
 {{
   config(
-    enabled=true,
     materialized='incremental',
     incremental_strategy='merge',
     schema="projeto_monitora_cancer",

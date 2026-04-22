@@ -2,7 +2,6 @@
 -- Calcula o numero de dias sem resposta para o ultimo evento do paciente relacionado ao monitoramento do cancer de mama
 {{
   config(
-    enabled=true,
     schema="projeto_monitora_cancer",
     alias="pacientes_dias_sem_resposta",
     partition_by={
