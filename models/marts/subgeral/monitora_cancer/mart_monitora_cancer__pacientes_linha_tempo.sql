@@ -16,6 +16,8 @@ on_schema_change = 'sync_all_columns'
 )
 }}
 
+-- event_order: data_referencia_evento, data_solicitacao, data_autorizacao, data_execucao, data_resultado
+
 with
     populacao_interesse as (
         select
@@ -156,38 +158,25 @@ with
             on pop.paciente_cpf = fcts.paciente_cpf
     ),
 
-    eventos_com_proximo as (
+    eventos_com_janela as (
         select
             *,
             date_diff(
-                lead(data_referencia_evento) over (
-                    partition by cpf_particao
-                    order by
-                        data_referencia_evento,
-                        data_solicitacao,
-                        data_autorizacao,
-                        data_execucao,
-                        data_resultado
-                ),
+                lead(data_referencia_evento) over evento_order,
                 data_referencia_evento,
                 day
-            ) as dias_proximo_evento
+            ) as dias_proximo_evento,
+            lag(data_referencia_evento) over evento_order as data_referencia_evento_anterior
         from eventos
-    ),
-
-    eventos_com_lag as (
-        select
-            *,
-            lag(data_referencia_evento) over (
+            window evento_order as (
                 partition by cpf_particao
-                order by
+                order by -- event_order
                     data_referencia_evento,
                     data_solicitacao,
                     data_autorizacao,
                     data_execucao,
                     data_resultado
-            ) as data_referencia_evento_anterior
-        from eventos_com_proximo
+            )
     ),
 
     eventos_com_run as (
@@ -203,17 +192,17 @@ with
                     ) > {{ episodio_gap_dias }} then 1
                     else 0
                 end
-            ) over (
+            ) over (evento_order rows between unbounded preceding and current row) as run_id
+        from eventos_com_janela
+            window evento_order as (
                 partition by cpf_particao
-                order by
+                order by -- event_order
                     data_referencia_evento,
                     data_solicitacao,
                     data_autorizacao,
                     data_execucao,
                     data_resultado
-                    rows between unbounded preceding and current row
-            ) as run_id
-        from eventos_com_lag
+            )
     ),
 
     run_starts as (
@@ -232,15 +221,16 @@ with
             run_id as primeira_ser_run_id
         from eventos_com_run
         where fonte = 'SER'
-            qualify row_number() over (
+            qualify row_number() over evento_order = 1
+            window evento_order as (
                 partition by cpf_particao
-                order by
+                order by -- event_order
                     data_referencia_evento,
                     data_solicitacao,
                     data_autorizacao,
                     data_execucao,
                     data_resultado
-            ) = 1
+            )
     ),
 
     ultimo_evento_por_paciente as (
@@ -250,43 +240,28 @@ with
             run_id as ultimo_run_id,
             date_diff(current_date('America/Sao_Paulo'), data_referencia_evento, day) as gravidade_score
         from eventos_com_run
-            qualify row_number() over (
+            qualify row_number() over evento_order_desc = 1
+            window evento_order_desc as (
                 partition by cpf_particao
-                order by
+                order by -- event_order desc
                     data_referencia_evento desc,
                     data_solicitacao desc,
                     data_autorizacao desc,
                     data_execucao desc,
                     data_resultado desc
-            ) = 1
+            )
     ),
 
     tempo_total_por_paciente as (
-        -- pacientes que estão na uncacon têm seu tempo de jornada pausada
-        select
-            psi.cpf_particao,
-            nullif(
-                cast(
-                    date_diff(psi.primeira_ser_data, rs.run_start_data, day)
-                    as int64
-                ),
-                0
-            ) as tempo_total
-        from primeira_ser_info as psi
-            join run_starts as rs
-            on psi.cpf_particao = rs.cpf_particao
-            and psi.primeira_ser_run_id = rs.run_id
-
-        union all
-
-        -- tempo de jornada do paciente: primeiro evento da run até o dia atual
+        -- pacientes com SER: tempo do início da run do SER até o primeiro evento SER
+        -- pacientes sem SER: tempo do início da última run até o dia atual
         select
             uep.cpf_particao,
             nullif(
                 cast(
                     date_diff(
-                        current_date('America/Sao_Paulo'),
-                        rs.run_start_data,
+                        if(psi.cpf_particao is not null, psi.primeira_ser_data, current_date('America/Sao_Paulo')),
+                        if(psi.cpf_particao is not null, rs_ser.run_start_data, rs_ultimo.run_start_data),
                         day
                     )
                     as int64
@@ -294,12 +269,14 @@ with
                 0
             ) as tempo_total
         from ultimo_evento_por_paciente as uep
-            join run_starts as rs
-            on uep.cpf_particao = rs.cpf_particao
-            and uep.ultimo_run_id = rs.run_id
+            join run_starts as rs_ultimo
+            on uep.cpf_particao = rs_ultimo.cpf_particao
+            and uep.ultimo_run_id = rs_ultimo.run_id
             left join primeira_ser_info as psi
             on uep.cpf_particao = psi.cpf_particao
-        where psi.cpf_particao is null
+            left join run_starts as rs_ser
+            on psi.cpf_particao = rs_ser.cpf_particao
+            and psi.primeira_ser_run_id = rs_ser.run_id
     ),
 
     paciente_linha_tempo as (
@@ -318,7 +295,7 @@ with
 
             -- qualificadores gerais
             status,
-            any_value(uep.gravidade_score) as gravidade_score,
+            any_value (uep.gravidade_score) as gravidade_score,
 
             -- contato paciente
             telefone,
@@ -381,11 +358,11 @@ with
 
             any_value (ttp.tempo_total) as tempo_total
 
-        from eventos_com_proximo
+        from eventos_com_janela
             left join tempo_total_por_paciente as ttp
-            using (cpf_particao)
+        using (cpf_particao)
             left join ultimo_evento_por_paciente as uep
-            using (cpf_particao)
+        using (cpf_particao)
         group by
             cpf_particao,
             cpf,
