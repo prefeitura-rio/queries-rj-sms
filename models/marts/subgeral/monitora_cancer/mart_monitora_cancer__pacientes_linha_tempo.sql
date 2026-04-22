@@ -58,7 +58,7 @@ with
                     ),
                     null
                 ),
-                telefones.`telefones`[SAFE_OFFSET(0)].telefone_formatado
+                telefones.`telefones` [SAFE_OFFSET(0) ].telefone_formatado
             ) as telefone,
 
             -- Idade médica: subtrai 1 se o aniversário ainda não ocorreu no ano corrente.
@@ -66,23 +66,23 @@ with
             -- o que superestima a idade em até 1 ano antes do aniversário.
             date_diff(current_date('America/Sao_Paulo'), bcadastro.nascimento_data, year)
             - if(
-                format_date('%m%d', current_date('America/Sao_Paulo'))
-                < format_date('%m%d', bcadastro.nascimento_data),
-                1,
-                0
-            ) as idade,
+            format_date('%m%d', current_date('America/Sao_Paulo'))
+            < format_date('%m%d', bcadastro.nascimento_data),
+            1,
+            0
+        ) as idade,
 
             -- vínculo APS sempre vem do HCI (cadastro consolidado da APS). pacientes que
             -- não estão no HCI ficam com esses campos NULL. todos os campos vêm do MESMO
             -- registro do HCI — elimina o desalinhamento do SAFE_OFFSET(0) anterior entre
             -- arrays paralelos.
-            dim_paciente.clinica_sf as clinica_sf,
-            dim_paciente.clinica_sf_ap as clinica_sf_ap,
-            dim_paciente.clinica_sf_telefone as clinica_sf_telefone,
-            dim_paciente.equipe_sf as equipe_sf,
-            dim_paciente.equipe_sf_telefone as equipe_sf_telefone,
+        dim_paciente.clinica_sf as clinica_sf,
+        dim_paciente.clinica_sf_ap as clinica_sf_ap,
+        dim_paciente.clinica_sf_telefone as clinica_sf_telefone,
+        dim_paciente.equipe_sf as equipe_sf,
+        dim_paciente.equipe_sf_telefone as equipe_sf_telefone,
 
-            dsr.dias_sem_resposta as gravidade_score
+        dsr.dias_sem_resposta as gravidade_score
 
         from populacao_interesse as pop
 
@@ -123,7 +123,7 @@ with
             pop.gravidade_score,
             pop.telefone,
             pop.clinica_sf_telefone as telefone_cf,
-            pop.equipe_sf_telefone as telefone_esf,     
+            pop.equipe_sf_telefone as telefone_esf,
 
             -- dados evento
             fcts.sistema_origem as fonte,
@@ -135,11 +135,11 @@ with
                 ' - ',
                 coalesce(fcts.estabelecimento_origem_nome, 'Estabelecimento não identificado')
             ) as unidade_solicitante,
-             concat(
+            concat(
                 coalesce(fcts.id_cnes_unidade_executante, 'CNES ?'),
                 ' - ',
                 coalesce(fcts.estabelecimento_executante_nome, 'Estabelecimento não identificado')
-            ) as unidade_executante,       
+            ) as unidade_executante,
             fcts.data_solicitacao,
             fcts.data_autorizacao,
             fcts.data_execucao,
@@ -149,7 +149,7 @@ with
             fcts.evento_status,
             (
                 select max(d)
-                from unnest([
+                from unnest ([
                     fcts.data_solicitacao,
                     fcts.data_autorizacao,
                     fcts.data_execucao,
@@ -217,7 +217,7 @@ with
                     data_autorizacao,
                     data_execucao,
                     data_resultado
-                rows between unbounded preceding and current row
+                    rows between unbounded preceding and current row
             ) as run_id
         from eventos_com_lag
     ),
@@ -238,15 +238,15 @@ with
             run_id as primeira_ser_run_id
         from eventos_com_run
         where fonte = 'SER'
-        qualify row_number() over (
-            partition by cpf_particao
-            order by
-                data_referencia_evento,
-                data_solicitacao,
-                data_autorizacao,
-                data_execucao,
-                data_resultado
-        ) = 1
+            qualify row_number() over (
+                partition by cpf_particao
+                order by
+                    data_referencia_evento,
+                    data_solicitacao,
+                    data_autorizacao,
+                    data_execucao,
+                    data_resultado
+            ) = 1
     ),
 
     ultimo_evento_por_paciente as (
@@ -255,15 +255,15 @@ with
             data_referencia_evento as ultima_data_referencia,
             run_id as ultimo_run_id
         from eventos_com_run
-        qualify row_number() over (
-            partition by cpf_particao
-            order by
-                data_referencia_evento desc,
-                data_solicitacao desc,
-                data_autorizacao desc,
-                data_execucao desc,
-                data_resultado desc
-        ) = 1
+            qualify row_number() over (
+                partition by cpf_particao
+                order by
+                    data_referencia_evento desc,
+                    data_solicitacao desc,
+                    data_autorizacao desc,
+                    data_execucao desc,
+                    data_resultado desc
+            ) = 1
     ),
 
     tempo_total_por_paciente as (
@@ -278,7 +278,7 @@ with
                 0
             ) as tempo_total
         from primeira_ser_info as psi
-        join run_starts as rs
+            join run_starts as rs
             on psi.cpf_particao = rs.cpf_particao
             and psi.primeira_ser_run_id = rs.run_id
 
@@ -301,7 +301,7 @@ with
                 0
             ) as tempo_total
         from ultimo_evento_por_paciente as uep
-        left join primeira_ser_info as psi
+            left join primeira_ser_info as psi
             on uep.cpf_particao = psi.cpf_particao
         where psi.cpf_particao is null
     ),
@@ -383,11 +383,11 @@ with
                     data_resultado
             ) as eventos,
 
-            any_value(ttp.tempo_total) as tempo_total
+            any_value (ttp.tempo_total) as tempo_total
 
         from eventos_com_proximo
-        left join tempo_total_por_paciente as ttp
-            using (cpf_particao)
+            left join tempo_total_por_paciente as ttp
+        using (cpf_particao)
         group by
             cpf_particao,
             cpf,
