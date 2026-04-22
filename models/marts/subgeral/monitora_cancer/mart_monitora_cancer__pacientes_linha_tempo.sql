@@ -49,12 +49,12 @@ with
             -- DDD e número precisam estar presentes para montar o telefone.
             coalesce(
                 if(
-                    trim(contato.telefone.ddd) is not null
-                    and trim(contato.telefone.numero) is not null,
+                    trim(bcadastro.contato.telefone.ddd) is not null
+                    and trim(bcadastro.contato.telefone.numero) is not null,
                     concat(
-                        ifnull(trim(contato.telefone.ddi), ''),
-                        trim(contato.telefone.ddd),
-                        trim(contato.telefone.numero)
+                        ifnull(trim(bcadastro.contato.telefone.ddi), ''),
+                        trim(bcadastro.contato.telefone.ddd),
+                        trim(bcadastro.contato.telefone.numero)
                     ),
                     null
                 ),
