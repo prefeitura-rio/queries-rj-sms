@@ -4,7 +4,6 @@
 
 {{
   config(
-    enabled=true,
     schema="projeto_monitora_cancer",
     alias="pacientes_linha_tempo",
     partition_by={
