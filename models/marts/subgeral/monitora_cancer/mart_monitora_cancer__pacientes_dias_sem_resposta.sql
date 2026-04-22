@@ -5,7 +5,6 @@
     enabled=true,
     schema="projeto_monitora_cancer",
     alias="pacientes_dias_sem_resposta",
-    unique_key=['paciente_cpf'],
     partition_by={
       "field": "data_ultimo_evento",
       "data_type": "date",

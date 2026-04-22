@@ -7,7 +7,6 @@
     enabled=true,
     schema="projeto_monitora_cancer",
     alias="pacientes_linha_tempo",
-    unique_key=['cpf_particao'],
     partition_by={
         "field": "cpf_particao",
         "data_type": "int64",
