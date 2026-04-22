@@ -41,7 +41,15 @@ with source as (
 
     cr.avaliacao.conduta,
     cr.avaliacao.seguimento,
-    cr.avaliacao.resumo,
+    -- Só queremos passar resumo se os outros campos
+    -- não foram automaticamente detectados
+    if(
+      cr.avaliacao.historia_doenca_atual is null
+      and cr.avaliacao.medicamentos_em_uso is null
+      and cr.avaliacao.hipotese_diagnostica is null,
+      cr.avaliacao.resumo,
+      null
+    ) as resumo,
     cr.avaliacao.historia_doenca_atual,
     cr.avaliacao.medicamentos_em_uso,
     cr.avaliacao.hipotese_diagnostica,

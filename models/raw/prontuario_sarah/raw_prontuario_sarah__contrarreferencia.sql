@@ -60,7 +60,10 @@ with source as (
             json_extract_scalar(doc_cr, '$.dados.encaminhamento') as encaminhamento,
 
             json_extract_scalar(doc_cr, '$.dados.problema') as problema,
-            json_extract_scalar(doc_cr, '$.dados.motivo_coicide') as motivo_coicide,
+            coalesce(
+                json_extract_scalar(doc_cr, '$.dados.motivo_coicide'),  -- Atualmente mandam assim
+                json_extract_scalar(doc_cr, '$.dados.motivo_coincide')  -- Por precaução caso um dia consertem
+            ) as motivo_coincide,
 
             json_extract_scalar(doc_cr, '$.profissional.nome') as profissional_nome,
             json_extract_scalar(doc_cr, '$.profissional.cpf') as profissional_cpf,
@@ -103,7 +106,7 @@ with source as (
             safe_cast({{ process_null('encaminhamento') }} as string) as encaminhamento,
 
             safe_cast({{ process_null('problema') }} as boolean) as flag_problema,
-            safe_cast({{ process_null('motivo_coicide') }} as boolean) as flag_motivo_coincide,
+            safe_cast({{ process_null('motivo_coincide') }} as boolean) as flag_motivo_coincide,
 
             safe_cast({{ process_null('profissional_nome') }} as string) as profissional_nome,
             safe_cast({{ process_null('profissional_cpf') }} as string) as profissional_cpf,

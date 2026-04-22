@@ -762,7 +762,7 @@ models:
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: historia_doenca_atual
-        description: História da Doença Atual (HPA)
+        description: História da Doença Atual (HDA)
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: medicamentos_em_uso

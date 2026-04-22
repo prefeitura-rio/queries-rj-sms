@@ -998,11 +998,11 @@ models:
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: contrarreferencia.numero
-        description: Número identificador da contrarrferência
+        description: Número identificador da contrarreferência
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: contrarreferencia.datahora
-        description: Data e hora de emissão da contrarrferência
+        description: Data e hora de emissão da contrarreferência
       - name: contrarreferencia.pdf_uri
         description: URI do Google Cloud Storage (gs://) contendo a contrarreferência em PDF
         policy_tags:
@@ -1012,15 +1012,15 @@ models:
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: avaliacao.motivo
-        description: "" # ?
+        description: ""  # (campo parece vir sempre nulo)
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: avaliacao.impressao
-        description: "" # ?
+        description: ""  # (campo parece vir sempre nulo)
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: avaliacao.resultados
-        description: "" # ?
+        description: ""  # (campo parece vir sempre nulo)
         policy_tags:
           - '{{ var ("TAG_DADO_CLINICO") }}'
       - name: avaliacao.conduta
