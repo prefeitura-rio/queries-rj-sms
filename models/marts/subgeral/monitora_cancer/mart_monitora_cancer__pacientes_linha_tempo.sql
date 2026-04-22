@@ -80,17 +80,12 @@ with
         dim_paciente.clinica_sf_ap as clinica_sf_ap,
         dim_paciente.clinica_sf_telefone as clinica_sf_telefone,
         dim_paciente.equipe_sf as equipe_sf,
-        dim_paciente.equipe_sf_telefone as equipe_sf_telefone,
-
-        dsr.dias_sem_resposta as gravidade_score
+        dim_paciente.equipe_sf_telefone as equipe_sf_telefone
 
         from populacao_interesse as pop
 
             left join {{ref("pacientes_subgeral__dim_paciente")}} as dim_paciente
             on pop.paciente_cpf = dim_paciente.cpf_particao
-
-            left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
-            on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
 
             left join {{ref("mart_iplanrio__telefones_validos")}} as telefones
             on pop.paciente_cpf = safe_cast(telefones.cpf as int)
@@ -120,7 +115,6 @@ with
             pop.clinica_sf as cf,
             pop.equipe_sf,
             pop.status,
-            pop.gravidade_score,
             pop.telefone,
             pop.clinica_sf_telefone as telefone_cf,
             pop.equipe_sf_telefone as telefone_esf,
@@ -253,7 +247,8 @@ with
         select
             cpf_particao,
             data_referencia_evento as ultima_data_referencia,
-            run_id as ultimo_run_id
+            run_id as ultimo_run_id,
+            date_diff(current_date('America/Sao_Paulo'), data_referencia_evento, day) as gravidade_score
         from eventos_com_run
             qualify row_number() over (
                 partition by cpf_particao
@@ -284,16 +279,14 @@ with
 
         union all
 
-        -- patients without SER event: count from last event's reference date
-        -- to today (Brazil). the 180-day restart only applies between actual
-        -- event facts (handled by run_id); today is just the endpoint.
+        -- patients without SER event: count from the run start to today (Brazil).
         select
             uep.cpf_particao,
             nullif(
                 cast(
                     date_diff(
                         current_date('America/Sao_Paulo'),
-                        uep.ultima_data_referencia,
+                        rs.run_start_data,
                         day
                     )
                     as int64
@@ -301,6 +294,9 @@ with
                 0
             ) as tempo_total
         from ultimo_evento_por_paciente as uep
+            join run_starts as rs
+            on uep.cpf_particao = rs.cpf_particao
+            and uep.ultimo_run_id = rs.run_id
             left join primeira_ser_info as psi
             on uep.cpf_particao = psi.cpf_particao
         where psi.cpf_particao is null
@@ -322,7 +318,7 @@ with
 
             -- qualificadores gerais
             status,
-            gravidade_score,
+            any_value(uep.gravidade_score) as gravidade_score,
 
             -- contato paciente
             telefone,
@@ -387,7 +383,9 @@ with
 
         from eventos_com_proximo
             left join tempo_total_por_paciente as ttp
-        using (cpf_particao)
+            using (cpf_particao)
+            left join ultimo_evento_por_paciente as uep
+            using (cpf_particao)
         group by
             cpf_particao,
             cpf,
@@ -398,7 +396,6 @@ with
             cf,
             equipe_sf,
             status,
-            gravidade_score,
             telefone,
             telefone_cf,
             telefone_esf
