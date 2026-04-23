@@ -3,7 +3,6 @@
 -- Responsável pelo UNION das fontes intermediárias + enriquecimento de CPF e estabelecimento.
 {{
   config(
-    enabled=true,
     materialized='incremental',
     incremental_strategy='merge',
     schema="projeto_monitora_cancer",
@@ -21,42 +20,38 @@
 
 {% set last_partition = get_last_partition_date( this ) %}
 
-{% set cnes_competencia %}
-  (select as struct
-      div(max_comp, 100) as ano,
-      mod(max_comp, 100) as mes
-   from (
-     select max(ano_competencia * 100 + mes_competencia) as max_comp
-     from {{ ref('dim_estabelecimento_sus_rio_historico') }}
-   ))
-{% endset %}
-
 with
+    cnes_competencia_atual as (
+        select ano_competencia as ano, mes_competencia as mes
+        from {{ ref('dim_estabelecimento_sus_rio_historico') }}
+        qualify row_number() over (order by ano_competencia desc, mes_competencia desc) = 1
+    ),
+
     fontes_unificadas as (
         select * from {{ ref("int_monitora_cancer__sisreg") }}
         {% if is_incremental() %}
-        where data_solicitacao >= '{{ last_partition }}'
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval 6 month)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__ser_ambulatorial") }}
         {% if is_incremental() %}
-        where data_solicitacao >= '{{ last_partition }}'
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval 6 month)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan") }}
         {% if is_incremental() %}
-        where data_solicitacao >= '{{ last_partition }}'
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval 6 month)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
         {% if is_incremental() %}
-        where data_solicitacao >= '{{ last_partition }}'
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval 6 month)
         {% endif %}
     ),
 
@@ -102,17 +97,17 @@ with
 
         from enriquece_cpf
 
+            cross join cnes_competencia_atual
+
             left join {{ ref("dim_estabelecimento_sus_rio_historico") }} as estabs_origem
             on safe_cast(id_cnes_unidade_origem as int) = safe_cast(estabs_origem.id_cnes as int)
+                and estabs_origem.ano_competencia = cnes_competencia_atual.ano
+                and estabs_origem.mes_competencia = cnes_competencia_atual.mes
 
             left join {{ ref("dim_estabelecimento_sus_rio_historico") }} as estabs_exec
             on safe_cast(id_cnes_unidade_executante as int) = safe_cast(estabs_exec.id_cnes as int)
-
-        where 1 = 1
-            and estabs_origem.ano_competencia = ({{ cnes_competencia }}).ano
-            and estabs_origem.mes_competencia = ({{ cnes_competencia }}).mes
-            and estabs_exec.ano_competencia = ({{ cnes_competencia }}).ano
-            and estabs_exec.mes_competencia = ({{ cnes_competencia }}).mes
+                and estabs_exec.ano_competencia = cnes_competencia_atual.ano
+                and estabs_exec.mes_competencia = cnes_competencia_atual.mes
     ),
 
     final as (

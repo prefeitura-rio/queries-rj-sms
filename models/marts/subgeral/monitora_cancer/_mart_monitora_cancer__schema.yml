@@ -136,3 +136,123 @@ models:
 
       - name: estabelecimento_executante_nome
         description: Nome fantasia da unidade executante.
+
+  - name: mart_monitora_cancer__pacientes_linha_tempo
+    description: >
+      Linha do tempo de cada paciente da população-alvo de monitoramento de
+      câncer de mama. Reúne, em uma única linha por paciente, os dados de
+      identificação, contato, vínculo com a APS e um array ordenado de eventos
+      (solicitações, autorizações, execuções e resultados). Inclui também
+      indicadores derivados: status da paciente, gravidade (dias desde o último
+      evento) e tempo total (dias até a UNACON para pacientes com SER, ou dias
+      desde o início da última sequência de eventos para pacientes sem SER).
+      Granularidade: 1 linha por paciente (cpf_particao).
+    meta:
+      owner: "SMS/SUBGERAL/CR/NTI"
+
+    columns:
+
+      # ── chave primária ────────────────────────────────────────────────────────
+      - name: cpf_particao
+        description: >
+          CPF da paciente em formato numérico (int64). Usado como chave
+          primária e campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: mart_monitora_cancer__pacientes_linha_tempo__cpf_particao__unique
+          - not_null:
+              name: mart_monitora_cancer__pacientes_linha_tempo__cpf_particao__not_null
+
+      - name: cpf
+        description: >
+          CPF da paciente em formato texto, com 11 dígitos e zeros à esquerda
+          quando necessário.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      # ── identificação da paciente ─────────────────────────────────────────────
+      - name: nome
+        description: Nome completo da paciente, obtido do cadastro base (bcadastro).
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: raca_cor
+        description: >
+          Raça/cor autodeclarada da paciente. Consolidada a partir de múltiplas
+          fontes (bcadastro, HCI, Minha Saúde) segundo a regra de prioridade
+          definida em pacientes_subgeral__dim_paciente.
+
+      - name: idade
+        description: >
+          Idade médica da paciente em anos completos, calculada na data de
+          execução do modelo. Considera se o aniversário já ocorreu no ano
+          corrente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      # ── vínculo com a APS ─────────────────────────────────────────────────────
+      - name: ap
+        description: Área de Planejamento (AP) da clínica da família vinculada à paciente no HCI.
+
+      - name: cf
+        description: Nome da clínica da família (CF) vinculada à paciente no HCI.
+
+      - name: equipe_sf
+        description: Nome da equipe de Saúde da Família vinculada à paciente no HCI.
+
+      # ── qualificadores clínicos ───────────────────────────────────────────────
+      - name: status
+        description: >
+          Classificação da paciente no monitoramento:
+          "UNACON" quando há pelo menos um evento vindo do SER (regulação para oncologia);
+          "DIAGNOSTICO" quando há evento com critério de diagnóstico confirmado;
+          "SUSPEITA" nos demais casos da população-alvo.
+
+      - name: gravidade_score
+        description: >
+          Número de dias entre a data de referência do último evento da
+          paciente e a data atual. Valores maiores indicam pacientes sem
+          movimentação recente e, portanto, potencialmente mais críticas de
+          acompanhar.
+
+      - name: tempo_total
+        description: >
+          Tempo, em dias, de percurso da paciente até a regulação oncológica:
+          para pacientes com SER, vai do início do episódio (sequência de
+          eventos) que contém o primeiro SER até a data desse primeiro SER;
+          para pacientes sem SER, vai do início do último episódio até a data
+          atual. Retorna NULL quando o cálculo resulta em zero.
+
+      # ── contato ───────────────────────────────────────────────────────────────
+      - name: telefone
+        description: >
+          Telefone pessoal da paciente. Preferência: telefone do bcadastro
+          (DDI + DDD + número); caso ausente, usa o primeiro telefone válido
+          do mart_iplanrio__telefones_validos.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: telefone_cf
+        description: Telefone institucional da clínica da família vinculada à paciente.
+
+      - name: telefone_esf
+        description: Telefone institucional da equipe de Saúde da Família vinculada à paciente.
+
+      # ── fontes de eventos ─────────────────────────────────────────────────────
+      - name: fontes
+        description: >
+          Struct de flags booleanos indicando em quais sistemas a paciente tem
+          eventos registrados. Campos: siscan (exames), ser (regulação
+          oncológica), sisreg (regulação ambulatorial).
+
+      # ── eventos ───────────────────────────────────────────────────────────────
+      - name: eventos
+        description: >
+          Array ordenado de structs com todos os eventos da paciente, do mais
+          antigo ao mais recente. Cada struct contém: sistema de origem (fonte),
+          tipo de evento, status, procedimento, CID, unidade solicitante,
+          unidade executante, datas (solicitação, autorização, execução,
+          resultado) em formato date e string, resultados dos exames das mamas
+          e o intervalo em dias até o próximo evento (dias_proximo_evento).
