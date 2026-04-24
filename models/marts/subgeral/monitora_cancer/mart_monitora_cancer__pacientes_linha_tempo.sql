@@ -16,92 +16,94 @@ on_schema_change = 'sync_all_columns'
 
 select
     -- pk
-    cpf_particao,
-    cpf,
+    ev.cpf_particao,
+    ev.cpf,
 
     -- id paciente
-    nome,
-    raca_cor,
-    idade,
-    ap,
-    cf,
-    equipe_sf,
+    ev.nome,
+    ev.raca_cor,
+    ev.idade,
+    ev.ap,
+    ev.cf,
+    ev.equipe_sf,
 
     -- qualificadores gerais
-    status,
-    any_value (gravidade_score) as gravidade_score,
-    any_value (gestante) as gestante,
+    ev.status,
+    coalesce(any_value(grv.gravidade_score), 0) as gravidade_score,
+    any_value (ev.gestante) as gestante,
 
     -- contato paciente
-    telefone,
-    telefone_cf,
-    telefone_esf,
+    ev.telefone,
+    ev.telefone_cf,
+    ev.telefone_esf,
 
     -- sistemas com eventos do paciente
     struct(
-        logical_or(fonte = 'SISCAN') as siscan,
-        logical_or(fonte = 'SER') as ser,
-        logical_or(fonte = 'SISREG') as sisreg
+        logical_or(ev.fonte = 'SISCAN') as siscan,
+        logical_or(ev.fonte = 'SER') as ser,
+        logical_or(ev.fonte = 'SISREG') as sisreg
     ) as fontes,
 
     -- eventos
     array_agg (
         struct(
-            fonte,
-            tipo,
-            evento_status,
-            procedimento,
-            cid,
+            ev.fonte,
+            ev.tipo,
+            ev.evento_status,
+            ev.procedimento,
+            ev.cid,
 
-            unidade_solicitante,
-            unidade_executante,
+            ev.unidade_solicitante,
+            ev.unidade_executante,
 
-            data_solicitacao,
-            data_autorizacao,
-            data_execucao,
-            data_resultado,
+            ev.data_solicitacao,
+            ev.data_autorizacao,
+            ev.data_execucao,
+            ev.data_resultado,
 
-            safe_cast(data_solicitacao as string) as data_solicitacao_str,
-            safe_cast(data_autorizacao as string) as data_autorizacao_str,
-            safe_cast(data_execucao as string) as data_execucao_str,
-            safe_cast(data_resultado as string) as data_resultado_str,
+            safe_cast(ev.data_solicitacao as string) as data_solicitacao_str,
+            safe_cast(ev.data_autorizacao as string) as data_autorizacao_str,
+            safe_cast(ev.data_execucao as string) as data_execucao_str,
+            safe_cast(ev.data_resultado as string) as data_resultado_str,
 
             array_concat(
                 if(
-                    mama_esquerda_resultado is null,
+                    ev.mama_esquerda_resultado is null,
                     [],
-                    [concat("Mama Esquerda ", mama_esquerda_resultado)]
+                    [concat("Mama Esquerda ", ev.mama_esquerda_resultado)]
                 ),
                 if(
-                    mama_direita_resultado is null,
+                    ev.mama_direita_resultado is null,
                     [],
-                    [concat("Mama Direita ", mama_direita_resultado)]
+                    [concat("Mama Direita ", ev.mama_direita_resultado)]
                 )
             ) as resultados,
 
-            dias_proximo_evento
+            ev.dias_proximo_evento
         )
 
         order by
-            data_solicitacao,
-            data_autorizacao,
-            data_execucao,
-            data_resultado
+            ev.data_solicitacao,
+            ev.data_autorizacao,
+            ev.data_execucao,
+            ev.data_resultado
     ) as eventos,
 
-    any_value (tempo_total) as tempo_total
+    any_value (ev.tempo_total) as tempo_total
 
-from {{ ref("int_monitora_cancer__eventos_episodios") }}
+from {{ ref("int_monitora_cancer__eventos_episodios") }} as ev
+    left join {{ ref("mart_monitora_cancer__gravidade") }} as grv
+    on ev.cpf_particao = grv.cpf_particao
 group by
-    cpf_particao,
-    cpf,
-    nome,
-    raca_cor,
-    idade,
-    ap,
-    cf,
-    equipe_sf,
-    status,
-    telefone,
-    telefone_cf,
-    telefone_esf
+    ev.cpf_particao,
+    ev.cpf,
+    ev.nome,
+    ev.raca_cor,
+    ev.idade,
+    ev.ap,
+    ev.cf,
+    ev.equipe_sf,
+    ev.status,
+    ev.telefone,
+    ev.telefone_cf,
+    ev.telefone_esf

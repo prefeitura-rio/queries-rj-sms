@@ -212,9 +212,14 @@ models:
 
       - name: gravidade_score
         description: >
-          Número de dias entre a data de referência do último evento da
-          paciente e a data atual. Valores maiores indicam pacientes sem
-          movimentação recente e, portanto, potencialmente mais críticas de
+          Soma de "dias de atraso" da paciente, calculada em
+          mart_monitora_cancer__gravidade. Para cada subscore (par
+          trigger/expected/threshold), conta-se quantos dias o desfecho
+          esperado atrasou após o evento gatilho, descontando a folga do
+          threshold. O total é multiplicado por 2 quando a paciente é
+          gestante. Pacientes sem nenhum trigger no run atual recebem 0.
+          Valores maiores indicam pacientes com mais atrasos acumulados na
+          linha de cuidado e, portanto, potencialmente mais críticas de
           acompanhar.
 
       - name: tempo_total
@@ -262,3 +267,70 @@ models:
           unidade executante, datas (solicitação, autorização, execução,
           resultado) em formato date e string, resultados dos exames das mamas
           e o intervalo em dias até o próximo evento (dias_proximo_evento).
+
+  - name: mart_monitora_cancer__gravidade
+    description: >
+      Score de gravidade da paciente no monitoramento de câncer de mama,
+      calculado como a soma dos "dias de atraso" entre cada evento gatilho
+      (trigger) e o respectivo desfecho esperado (expected outcome) — descontada
+      a folga do threshold de cada subscore — multiplicada por 2 se a paciente
+      for gestante. Considera apenas eventos do RUN ATUAL (último episódio de
+      cuidado) de cada paciente.
+
+      Subscores atualmente implementados:
+        1. SISCAN mamografia Cat 0/4/5 → SISREG ultrassonografia ou biópsia,
+           threshold 10 dias.
+        2. SISCAN mamografia Cat 6 → qualquer evento SER, threshold 5 dias.
+        3. SISCAN biópsia neoplásica → qualquer evento SER, threshold 5 dias.
+
+      Convenções de data: trigger_date = data_referencia_evento (MAX das 4
+      datas do evento); expected_date = COALESCE(data_execucao, data_autorizacao).
+      Eventos esperados ainda só com data_solicitacao não zeram o atraso.
+
+      Granularidade: 1 linha por paciente (cpf_particao). Apenas pacientes
+      com pelo menos um trigger no run atual estão presentes.
+    meta:
+      owner: "SMS/SUBGERAL/CR/NTI"
+
+    columns:
+      - name: cpf_particao
+        description: >
+          CPF da paciente em formato numérico (int64). Chave primária e
+          campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: mart_monitora_cancer__gravidade__cpf_particao__unique
+          - not_null:
+              name: mart_monitora_cancer__gravidade__cpf_particao__not_null
+
+      - name: gravidade_score
+        description: >
+          Score final, em "dias de atraso", já com o multiplicador de gestante
+          aplicado. Igual a gravidade_score_base * 2 quando gestante = TRUE,
+          caso contrário igual a gravidade_score_base.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__gravidade__gravidade_score__not_null
+
+      - name: gravidade_score_base
+        description: >
+          Soma das parcelas de dias_atraso de todos os subscores, ANTES da
+          multiplicação por gestante. Útil para auditoria e comparação direta
+          entre pacientes gestantes e não-gestantes.
+
+      - name: gestante
+        description: >
+          TRUE quando a paciente está atualmente gestante (mesma fonte usada
+          em mart_monitora_cancer__pacientes_linha_tempo). Aciona o
+          multiplicador 2x sobre gravidade_score_base.
+
+      - name: gravidade_breakdown
+        description: >
+          Array de structs detalhando cada parcela do score, ordenado por
+          data_trigger desc. Cada struct contém: subscore (identificador
+          textual do par trigger/expected), data_trigger (data de referência
+          do evento gatilho), data_expected (data de execução/autorização do
+          desfecho esperado encontrado, ou NULL quando ainda não aconteceu)
+          e dias_atraso (parcela contribuída por aquele trigger ao score).
