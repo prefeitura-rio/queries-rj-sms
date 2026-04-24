@@ -36,6 +36,7 @@ with
             pop.telefone,
             pop.clinica_sf_telefone as telefone_cf,
             pop.equipe_sf_telefone as telefone_esf,
+            pop.gestante,
 
             -- dados evento
             fcts.sistema_origem as fonte,
@@ -207,6 +208,7 @@ select
     ev.telefone,
     ev.telefone_cf,
     ev.telefone_esf,
+    ev.gestante,
 
     ev.fonte,
     ev.tipo,

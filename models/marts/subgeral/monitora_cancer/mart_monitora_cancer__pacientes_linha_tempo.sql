@@ -30,6 +30,7 @@ select
     -- qualificadores gerais
     status,
     any_value (gravidade_score) as gravidade_score,
+    any_value (gestante) as gestante,
 
     -- contato paciente
     telefone,

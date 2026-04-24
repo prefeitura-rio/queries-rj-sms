@@ -23,6 +23,12 @@ with
                 or criterio_diagnostico = true
             )
         group by paciente_cpf
+    ),
+
+    gestantes_ativas as (
+        select distinct cpf
+        from {{ ref("mart_bi_gestacoes__gestacoes") }}
+        where fase_atual = 'Gestação'
     )
 
 select
@@ -69,7 +75,9 @@ dim_paciente.clinica_sf as clinica_sf,
 dim_paciente.clinica_sf_ap as clinica_sf_ap,
 dim_paciente.clinica_sf_telefone as clinica_sf_telefone,
 dim_paciente.equipe_sf as equipe_sf,
-dim_paciente.equipe_sf_telefone as equipe_sf_telefone
+dim_paciente.equipe_sf_telefone as equipe_sf_telefone,
+
+    gest.cpf is not null as gestante
 
 from populacao_interesse as pop
 
@@ -81,6 +89,9 @@ from populacao_interesse as pop
 
     left join {{ref("raw_bcadastro__cpf")}} as bcadastro
     on pop.paciente_cpf = bcadastro.cpf_particao
+
+    left join gestantes_ativas as gest
+    on lpad(safe_cast(pop.paciente_cpf as string), 11, '0') = gest.cpf
 
 where bcadastro.sexo != "masculino"
     and bcadastro.obito_ano is null

@@ -225,6 +225,12 @@ models:
           para pacientes sem SER, vai do início do último episódio até a data
           atual. Retorna NULL quando o cálculo resulta em zero.
 
+      - name: gestante
+        description: >
+          TRUE quando a paciente está atualmente gestante segundo
+          mart_bi_gestacoes__gestacoes (fase_atual = 'Gestação'); FALSE caso
+          contrário.
+
       # ── contato ───────────────────────────────────────────────────────────────
       - name: telefone
         description: >
