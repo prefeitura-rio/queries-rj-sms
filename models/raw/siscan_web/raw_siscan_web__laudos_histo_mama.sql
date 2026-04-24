@@ -8,7 +8,7 @@
     incremental_strategy='merge',
     unique_key='protocolo_id',
     partition_by={
-      "field": "data_particao",
+      "field": "data_solicitacao",
       "data_type": "date",
       "granularity": "month",
     },
@@ -119,9 +119,7 @@ transformed as (
         {{ clean_name_string("profissional_responsavel_nome") }} as profissional_responsavel_nome,
 
         -- metadados
-        parse_timestamp('%Y-%m-%d %H:%M:%E6S', data_extracao) as data_extracao,
-        parse_date('%d/%m/%Y', data_realizacao) as data_particao
-
+        parse_timestamp('%Y-%m-%d %H:%M:%E6S', data_extracao) as data_extracao
     from source_norm
 )
 

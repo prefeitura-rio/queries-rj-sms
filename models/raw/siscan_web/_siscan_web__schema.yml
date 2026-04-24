@@ -230,9 +230,3 @@ models:
         quote: true
         data_tests:
           - not_null
-      - name: data_particao
-        description: Data utilizada para particionamento (Equivalente a data de realização do exame).
-        data_type: date
-        quote: true
-        data_tests:
-          - not_null
