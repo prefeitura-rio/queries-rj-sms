@@ -5,6 +5,15 @@
 -- com dados cadastrais (nome, idade, raça/cor, telefone) e de vínculo APS
 -- (clínica, equipe, telefones institucionais).
 -- Granularidade: 1 linha por paciente_cpf.
+--
+-- Regras de exclusão aplicadas aqui:
+--   (i) Óbito (cadastral): filtro direto via bcadastro.obito_ano IS NULL e
+--       dim_paciente.anos_obito (fonte de verdade: bcadastro → HCI).
+--   (ii)-(v) Exclusões derivadas do histórico de eventos (último evento
+--       mamografia Cat 1/2, duas mamografias Cat 3, biópsia sem lesão, SER
+--       antigo) são centralizadas em int_monitora_cancer__exclusoes e
+--       aplicadas abaixo via anti-join. Consulte aquele modelo para a
+--       documentação completa de cada regra.
 
 with
     populacao_interesse as (
@@ -23,6 +32,12 @@ with
                 or criterio_diagnostico = true
             )
         group by paciente_cpf
+    ),
+
+    gestantes_ativas as (
+        select distinct cpf
+        from {{ ref("mart_bi_gestacoes__gestacoes") }}
+        where fase_atual = 'Gestação'
     )
 
 select
@@ -63,24 +78,28 @@ select
 
     -- vínculo APS sempre vem do HCI (cadastro consolidado da APS). pacientes que
     -- não estão no HCI ficam com esses campos NULL. todos os campos vêm do MESMO
-    -- registro do HCI — elimina o desalinhamento do SAFE_OFFSET(0) anterior entre
-    -- arrays paralelos.
-dim_paciente.clinica_sf as clinica_sf,
-dim_paciente.clinica_sf_ap as clinica_sf_ap,
-dim_paciente.clinica_sf_telefone as clinica_sf_telefone,
-dim_paciente.equipe_sf as equipe_sf,
-dim_paciente.equipe_sf_telefone as equipe_sf_telefone
+    -- registro do HCI
+    dim_paciente.clinica_sf as clinica_sf,
+    dim_paciente.clinica_sf_ap as clinica_sf_ap,
+    dim_paciente.clinica_sf_telefone as clinica_sf_telefone,
+    dim_paciente.equipe_sf as equipe_sf,
+    dim_paciente.equipe_sf_telefone as equipe_sf_telefone,
+
+    gest.cpf is not null as gestante
 
 from populacao_interesse as pop
 
-    left join {{ref("pacientes_subgeral__dim_paciente")}} as dim_paciente
-    on pop.paciente_cpf = dim_paciente.cpf_particao
+left join {{ref("pacientes_subgeral__dim_paciente")}} as dim_paciente
+on pop.paciente_cpf = dim_paciente.cpf_particao
 
-    left join {{ref("mart_iplanrio__telefones_validos")}} as telefones
-    on pop.paciente_cpf = safe_cast(telefones.cpf as int)
+left join {{ref("mart_iplanrio__telefones_validos")}} as telefones
+on pop.paciente_cpf = safe_cast(telefones.cpf as int)
 
-    left join {{ref("raw_bcadastro__cpf")}} as bcadastro
-    on pop.paciente_cpf = bcadastro.cpf_particao
+left join {{ref("raw_bcadastro__cpf")}} as bcadastro
+on pop.paciente_cpf = bcadastro.cpf_particao
+
+left join gestantes_ativas as gest
+on lpad(safe_cast(pop.paciente_cpf as string), 11, '0') = gest.cpf
 
 where bcadastro.sexo != "masculino"
     and bcadastro.obito_ano is null
@@ -88,4 +107,11 @@ where bcadastro.sexo != "masculino"
         select 1
         from unnest (dim_paciente.anos_obito) as ano
         where ano is not null
+    )
+    -- anti-join: o paciente permanece na população-alvo somente
+    -- se não existir um registro correspondente em int_monitora_cancer__exclusoes
+    and not exists(
+        select 1
+        from {{ ref("int_monitora_cancer__exclusoes") }} as excl
+        where excl.paciente_cpf = pop.paciente_cpf
     )

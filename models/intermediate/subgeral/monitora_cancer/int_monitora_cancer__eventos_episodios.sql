@@ -1,11 +1,12 @@
 -- noqa: disable=LT08
 
 -- Eventos de monitoramento de câncer de mama em forma longa, com janelas
--- temporais (dias_proximo_evento) e agregados por paciente (tempo_total,
--- gravidade_score) broadcast em cada linha.
+-- temporais (dias_proximo_evento), identificador de episódio (run_id) e
+-- agregado por paciente (tempo_total) broadcast em cada linha.
 --
 -- Episódios ("runs"): sequências consecutivas de eventos cujos gaps entre
 -- data_referencia_evento não excedem `episodio_gap_dias` (default 180 dias).
+-- O run_id incrementa a cada gap > episodio_gap_dias dentro do mesmo paciente.
 --
 -- tempo_total:
 --   - pacientes com SER: dias do início da run que contém o primeiro SER até
@@ -36,6 +37,7 @@ with
             pop.telefone,
             pop.clinica_sf_telefone as telefone_cf,
             pop.equipe_sf_telefone as telefone_esf,
+            pop.gestante,
 
             -- dados evento
             fcts.sistema_origem as fonte,
@@ -58,6 +60,7 @@ with
             fcts.data_exame_resultado as data_resultado,
             fcts.mama_esquerda_resultado,
             fcts.mama_direita_resultado,
+            fcts.criterio_diagnostico,
             fcts.evento_status,
             (
                 select max(d)
@@ -121,6 +124,11 @@ with
             )
     ),
 
+    -- "Início" da run = data de solicitação do primeiro evento da sequência.
+    -- A sequência (run) é definida pelas fronteiras em data_referencia_evento
+    -- (gaps > episodio_gap_dias quebram a run); aqui usamos a data_solicitacao
+    -- mais antiga dentro da run como marcador de quando a paciente entrou
+    -- naquele percurso de cuidado.
     run_starts as (
         select
             cpf_particao,
@@ -153,8 +161,7 @@ with
         select
             cpf_particao,
             data_referencia_evento as ultima_data_referencia,
-            run_id as ultimo_run_id,
-            date_diff(current_date('America/Sao_Paulo'), data_referencia_evento, day) as gravidade_score
+            run_id as ultimo_run_id
         from eventos_com_run
             qualify row_number() over evento_order_desc = 1
             window evento_order_desc as (
@@ -207,6 +214,7 @@ select
     ev.telefone,
     ev.telefone_cf,
     ev.telefone_esf,
+    ev.gestante,
 
     ev.fonte,
     ev.tipo,
@@ -220,15 +228,16 @@ select
     ev.data_autorizacao,
     ev.data_execucao,
     ev.data_resultado,
+    ev.data_referencia_evento,
 
     ev.mama_esquerda_resultado,
     ev.mama_direita_resultado,
+    ev.criterio_diagnostico,
 
     ev.dias_proximo_evento,
+    ev.run_id,
 
-    ttp.tempo_total,
-    uep.gravidade_score
+    ttp.tempo_total
 
-from eventos_com_janela as ev
+from eventos_com_run as ev
     left join tempo_total_por_paciente as ttp using (cpf_particao)
-    left join ultimo_evento_por_paciente as uep using (cpf_particao)
