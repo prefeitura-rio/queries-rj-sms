@@ -224,11 +224,11 @@ models:
 
       - name: tempo_total
         description: >
-          Tempo, em dias, de percurso da paciente até a regulação oncológica:
-          para pacientes com SER, vai do início do episódio (sequência de
-          eventos) que contém o primeiro SER até a data desse primeiro SER;
-          para pacientes sem SER, vai do início do último episódio até a data
-          atual. Retorna NULL quando o cálculo resulta em zero.
+          Tempo, em dias, de percurso da paciente até a entrada em UNACON
+          através do SER. Caso a paciente não tenha entrado, o cálculo é
+          feito até o dia atual. A data do início do percurso é a data de
+          solicitação do primeiro evento em uma sequência de eventos com
+          intervalo entre eles menor ou igual a 180 dias.
 
       - name: gestante
         description: >
@@ -258,6 +258,21 @@ models:
           eventos registrados. Campos: siscan (exames), ser (regulação
           oncológica), sisreg (regulação ambulatorial).
 
+      - name: fontes.siscan
+        description: >
+          TRUE quando a paciente possui ao menos um evento originado do SISCAN
+          (laudos radiológicos ou histopatológicos de mama).
+
+      - name: fontes.ser
+        description: >
+          TRUE quando a paciente possui ao menos um evento originado do SER
+          (regulação estadual ambulatorial ou internações em oncologia).
+
+      - name: fontes.sisreg
+        description: >
+          TRUE quando a paciente possui ao menos um evento originado do SISREG
+          (regulação ambulatorial municipal).
+
       # ── eventos ───────────────────────────────────────────────────────────────
       - name: eventos
         description: >
@@ -265,8 +280,92 @@ models:
           antigo ao mais recente. Cada struct contém: sistema de origem (fonte),
           tipo de evento, status, procedimento, CID, unidade solicitante,
           unidade executante, datas (solicitação, autorização, execução,
-          resultado) em formato date e string, resultados dos exames das mamas
-          e o intervalo em dias até o próximo evento (dias_proximo_evento).
+          resultado) em formato date e string, resultados dos exames das mamas,
+          o intervalo em dias até o próximo evento (dias_proximo_evento) e o
+          identificador do episódio (jornada_id) ao qual o evento pertence —
+          episódios são sequências consecutivas de eventos cujos gaps entre
+          data_referencia_evento não excedem 180 dias; o id incrementa a cada
+          gap maior, dentro de um mesmo paciente.
+
+      - name: eventos.fonte
+        description: Sistema de origem do evento (SISREG, SER ou SISCAN).
+
+      - name: eventos.tipo
+        description: >
+          Classificação funcional do sistema de origem do evento
+          (REGULACAO ou EXAME).
+
+      - name: eventos.evento_status
+        description: >
+          Status do evento no sistema de origem (ex.: AGENDADO, AUTORIZADO,
+          CANCELADO, EXECUTADO).
+
+      - name: eventos.procedimento
+        description: Descrição padronizada do procedimento solicitado ou executado.
+
+      - name: eventos.cid
+        description: Código CID-10 (3 caracteres) associado ao evento.
+
+      - name: eventos.unidade_solicitante
+        description: >
+          Unidade de saúde que solicitou o evento, no formato
+          "<CNES> - <nome do estabelecimento>". Quando o CNES ou o nome não
+          estão disponíveis, é utilizado o texto "CNES ?" ou
+          "Estabelecimento não identificado", respectivamente.
+
+      - name: eventos.unidade_executante
+        description: >
+          Unidade de saúde que executou (ou executará) o evento, no formato
+          "<CNES> - <nome do estabelecimento>". Mesmas regras de preenchimento
+          de unidade_solicitante quando há campos ausentes.
+
+      - name: eventos.data_solicitacao
+        description: Data em que o evento foi solicitado, em formato date.
+
+      - name: eventos.data_autorizacao
+        description: Data em que o evento foi autorizado ou agendado, em formato date.
+
+      - name: eventos.data_execucao
+        description: Data em que o evento foi efetivamente executado, em formato date.
+
+      - name: eventos.data_resultado
+        description: >
+          Data de liberação do laudo/resultado do evento, em formato date
+          (aplicável a laudos do SISCAN).
+
+      - name: eventos.data_solicitacao_str
+        description: >
+          Mesmo valor de eventos.data_solicitacao, convertido para string
+          (útil em ferramentas que não preservam o tipo date no consumo).
+
+      - name: eventos.data_autorizacao_str
+        description: Mesmo valor de eventos.data_autorizacao, convertido para string.
+
+      - name: eventos.data_execucao_str
+        description: Mesmo valor de eventos.data_execucao, convertido para string.
+
+      - name: eventos.data_resultado_str
+        description: Mesmo valor de eventos.data_resultado, convertido para string.
+
+      - name: eventos.resultados
+        description: >
+          Array de strings com os resultados dos exames de mama no formato
+          "Mama Esquerda <resultado>" e/ou "Mama Direita <resultado>". Vazio
+          quando o evento não produz laudo de mama.
+
+      - name: eventos.dias_proximo_evento
+        description: >
+          Intervalo, em dias, entre a data de referência deste evento
+          (MAX das datas de solicitação, autorização, execução e resultado) e
+          a data de referência do próximo evento cronológico da mesma paciente.
+          NULL no último evento da paciente.
+
+      - name: eventos.jornada_id
+        description: >
+          Identificador do episódio de cuidado (jornada) ao qual o evento
+          pertence. Episódios são sequências consecutivas de eventos da mesma
+          paciente cujo intervalo entre datas de referência não excede 180
+          dias; o id incrementa a cada gap maior, reiniciando por paciente.
 
   - name: mart_monitora_cancer__gravidade
     description: >

@@ -79,7 +79,8 @@ select
                 )
             ) as resultados,
 
-            ev.dias_proximo_evento
+            ev.dias_proximo_evento,
+            ev.run_id as jornada_id
         )
 
         order by

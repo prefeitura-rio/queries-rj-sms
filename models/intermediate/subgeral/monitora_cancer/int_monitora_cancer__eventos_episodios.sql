@@ -124,6 +124,11 @@ with
             )
     ),
 
+    -- "Início" da run = data de solicitação do primeiro evento da sequência.
+    -- A sequência (run) é definida pelas fronteiras em data_referencia_evento
+    -- (gaps > episodio_gap_dias quebram a run); aqui usamos a data_solicitacao
+    -- mais antiga dentro da run como marcador de quando a paciente entrou
+    -- naquele percurso de cuidado.
     run_starts as (
         select
             cpf_particao,
