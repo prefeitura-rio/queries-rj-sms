@@ -4,22 +4,22 @@ models:
     columns:
       - name: id
         description: 'Código da competência'
-        type: bigint
+        data_type: bigint
       - name: ds_competencia
         description: 'Descrição da competência'
-        type: varchar
+        data_type: varchar
       - name: dt_final
         description: 'Data Final da competência'
-        type: date
+        data_type: date
       - name: created_at
         description: 'Data de criação do registro'
-        type: timestamp
+        data_type: timestamp
       - name: updated_at
         description: 'Data da última atualização do registro na SUBPAV'
-        type: timestamp
+        data_type: timestamp
       - name: base_final
         description: 'Status da base da competência: 0-Parcial/1-Final'
-        type: tinyint
+        data_type: tinyint
 
   - name: raw_plataforma_subpav_cnes__equipes
     description: |
@@ -28,85 +28,85 @@ models:
     columns:
       - name: id
         description: "Sequencial da Equipe - Col: SEQ_EQUIPE"
-        type: bigint
+        data_type: bigint
       - name: ine
         description: "Código da Equipe (Identificador Nacional de Equipe - INE) - Col: CO_EQUIPE"
-        type: int
+        data_type: int
       - name: cod_area
         description: "Código da Área da Equipe - Col: COD_AREA"
-        type: int
+        data_type: int
       - name: nm_referencia
         description: "Nome de Referência da Equipe - Col: NM_REFERENCIA"
-        type: varchar
+        data_type: varchar
       - name: dt_ativacao
         description: "Data de Ativação da Equipe - Col: DT_ATIVACAO"
-        type: date
+        data_type: date
       - name: dt_desativacao
         description: "Data de Desativação da Equipe - Col: DT_DESATIVACAO"
-        type: date
+        data_type: date
       - name: tp_pop_assist_quilomb
         description: "Atende População Assistida Quilombolas - Col: TP_POP_ASSIST_QUILOMB"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_assent
         description: "Atende População Assistida Assentados - Col: TP_POP_ASSIST_ASSENT"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_geral
         description: "Atende População Assistida Geral - Col: TP_POP_ASSIST_GERAL"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_escola
         description: "Atende População Assistida Escola - Col: TP_POP_ASSIST_ESCOLA"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_pronasci
         description: "Atende População Assistida Pronasci - Col: TP_POP_ASSIST_PRONASCI"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_indigena
         description: "Atende População Assistida Indígena - Col: TP_POP_ASSIST_INDIGENA"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_ribeirinha
         description: "Atende População Assistida Ribeirinha - Col: TP_POP_ASSIST_RIBEIRINHA"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_situacao_rua
         description: "Atende População Assistida em Situação de Rua - Col: TP_POP_ASSIST_SITUACAO_RUA"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_priv_liberdade
         description: "Atende População Assistida Privada de Liberdade - Col: TP_POP_ASSIST_PRIV_LIBERDADE"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_conflito_lei
         description: "Atende População Assistida Com Transtorno Mental em Conflito com a Lei - Col: TP_POP_ASSIST_CONFLITO_LEI"
-        type: tinyint
+        data_type: tinyint
       - name: tp_pop_assist_adol_conf_lei
         description: "Atende População Assistida Adolescente em Conflito com a Lei - Col: TP_POP_ASSIST_ADOL_CONF_LEI"
-        type: tinyint
+        data_type: tinyint
       - name: co_prof_sus_preceptor
         description: "Código do profissional Preceptor na equipe - Col: CO_PROF_SUS_PRECEPTOR"
-        type: varchar
+        data_type: varchar
       - name: dt_atualiza
         description: "Data da Última Atualização do Registro no CNES - Col: DATA_ATU"
-        type: date
+        data_type: date
       - name: competencia_id
         description: "Competência de registro"
-        type: bigint
+        data_type: bigint
       - name: unidade_id
         description: "Código do Estabelecimento de Saúde - Col: UNIDADE_ID"
-        type: bigint
+        data_type: bigint
       - name: tipo_equipe_id
         description: "Tipo de Equipe - Col: TP_EQUIPE"
-        type: bigint
+        data_type: bigint
       - name: subtipo_equipe_id
         description: "FK da tabela TABELA DE SUBTIPOS DE EQUIPES - NFCES095 (1-Convencional e 3-Mais Medicos)"
-        type: bigint
+        data_type: bigint
       - name: motivo_desativacao_equipe_id
         description: "FK da tabela TABELA DE MOTIVOS DE DESATIVAÇÃO DA EQUIPE - NFCES053"
-        type: bigint
+        data_type: bigint
       - name: tipo_desativacao_id
         description: "FK  da tabela TABELA DE TIPOS DE DESATIVAÇÃO DA EQUIPE - NFCES050"
-        type: bigint
+        data_type: bigint
       - name: created_at
         description: "Data de criação do registro"
-        type: timestamp
+        data_type: timestamp
       - name: updated_at
         description: "Data da última atualização do registro na SUBPAV"
-        type: timestamp
+        data_type: timestamp
 
   - name: raw_plataforma_subpav_cnes__unidades
     description: |
@@ -114,58 +114,58 @@ models:
     columns:
       - name: id
         description: 'Identificador incremental'
-        type: bigint
+        data_type: bigint
       - name: cnes
         description: 'Código Nacional do Estabelecimento de Saúde - Col: CNES'
-        type: int
+        data_type: int
       - name: ap
         description: 'Código do Distrito Sanitário (AP: área programática) - Col: DIST_SANIT'
-        type: int
+        data_type: int
       - name: nome_fanta
         description: 'Nome Fantasia - Col: NOME_FANTA'
-        type: varchar
+        data_type: varchar
       - name: r_social
         description: 'Razão Social - Col: R_SOCIAL'
-        type: varchar
+        data_type: varchar
       - name: dt_atualiza
         description: 'Data da Última Atualização do Registro - Col: DATA_ATU'
-        type: date
+        data_type: date
       - name: tp_gestao
         description: 'Tipo de Gestão - Col: TP_GESTAO - Valores: M – Municipal, E – Estadual, D – Dupla, S – Sem Gestão'
-        type: varchar
+        data_type: varchar
       - name: tp_estab_sempre_aberto
         description: 'Funcionamento do estabelecimento :indica se fica sempre aberto / Ininterrupto 0 Não - 1 Sim'
-        type: tinyint
+        data_type: tinyint
       - name: dt_inaugura
         description: 'Data de inauguração da unidade, não migrado do CNES'
-        type: date
+        data_type: date
       - name: tipo_unidade_id
         description: 'Tipo de Estabelecimento - Col:TP_UNID_ID'
-        type: bigint
+        data_type: bigint
       - name: cod_turnat_id
         description: 'Código do Turno de Atendimento - Col: COD_TURNAT'
-        type: bigint
+        data_type: bigint
       - name: motivo_desativacao_unidade_id
         description: 'Código do Motivo de Desativação do Estabelecimento - Col: CD_MOTIVO_DESAB'
-        type: bigint
+        data_type: bigint
       - name: natureza_juridica_id
         description: 'Código da Natureza Jurídica do Estabelecimento - Col: CO_NATUREZA_JUR'
-        type: bigint
+        data_type: bigint
       - name: tipo_estabelecimento_id
         description: 'Código do Tipo de Estabelecimento - Col: CO_TIPO_ESTABELECIMENTO'
-        type: bigint
+        data_type: bigint
       - name: atividade_principal_id
         description: 'Código da Atividade Principal - Col: CO_ATIVIDADE_PRINCIPAL'
-        type: bigint
+        data_type: bigint
       - name: prof_diretor_id
         description: 'CPF do Diretor Clínico ou  Gerente / Administrador - Col: CPFDIRETORCLINICO'
-        type: bigint
+        data_type: bigint
       - name: created_at
         description: 'Data de criação do registro'
-        type: timestamp
+        data_type: timestamp
       - name: updated_at
         description: 'Data da última atualização do registro na SUBPAV'
-        type: timestamp
+        data_type: timestamp
 
   - name: raw_plataforma_subpav_principal__bairros
     description: |
@@ -173,645 +173,646 @@ models:
     columns:
       - name: id
         description: 'Identificador único - Bairros do MRJ.'
-        type: int
+        data_type: int
       - name: descricao
         description: 'Nome do Bairro.'
-        type: varchar
+        data_type: varchar
       - name: cod_ra
         description: 'Identificador único - Região Administrativa.'
-        type: int
+        data_type: int
       - name: regiao_adm
         description: 'Região administrativa.'
-        type: varchar
+        data_type: varchar
       - name: area_plane
         description: 'Area de Planejamento - Divisão administrativa.'
-        type: int
+        data_type: int
       - name: aps
         description: 'Área de Planejamento de Saúde. Subdivisão das áreas de planejamento.'
-        type: int
+        data_type: int
 
+  # FIXME: tabela não adicionada
   - name: raw_plataforma_subpav_sinan__tuberculose_sinan
     description: |
       Modelo contendo dados de tuberculose do sistema legado SINAN Rio.
     columns:
       - name: id
         description: ''
-        type: int
+        data_type: int
       - name: nu_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: dt_notificacao
         description: ''
-        type: date
+        data_type: date
       - name: co_cid
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_municipio_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ap_res
         description: ''
-        type: char
+        data_type: char
       - name: chave_unica
         description: ''
-        type: varchar
+        data_type: varchar
       - name: cnes_not
         description: ''
-        type: char
+        data_type: char
       - name: ap_not
         description: ''
-        type: char
+        data_type: char
       - name: cnes_res
         description: ''
-        type: char
+        data_type: char
       - name: cod_area_res
         description: ''
-        type: char
+        data_type: char
       - name: cod_microa_res
         description: ''
-        type: char
+        data_type: char
       - name: co_bairro_infeccao
         description: ''
-        type: int
+        data_type: int
       - name: co_bairro_residencia
         description: ''
-        type: int
+        data_type: int
       - name: co_bairro_residencia_atual
         description: ''
-        type: decimal
+        data_type: decimal
       - name: co_cbo_ocupacao
         description: ''
-        type: decimal
+        data_type: decimal
       - name: co_distrito_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_distrito_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_distrito_residencia_atual
         description: ''
-        type: decimal
+        data_type: decimal
       - name: co_geo_campo_1
         description: ''
-        type: int
+        data_type: int
       - name: co_geo_campo_2
         description: ''
-        type: int
+        data_type: int
       - name: co_logradouro_residencia
         description: ''
-        type: int
+        data_type: int
       - name: co_municipio_atual
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_municipio_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_municipio_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_municipio_residencia_atual
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_municipio_transf
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_pais_infeccao
         description: ''
-        type: int
+        data_type: int
       - name: co_pais_residencia
         description: ''
-        type: char
+        data_type: char
       - name: co_uf_atual
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_uf_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_uf_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_uf_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_uf_residencia_atual
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_uf_transf
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_unidade_infeccao
         description: ''
-        type: int
+        data_type: int
       - name: co_unidade_notificacao
         description: ''
-        type: int
+        data_type: int
       - name: co_unidade_saude_atual
         description: ''
-        type: decimal
+        data_type: decimal
       - name: cpf_mae
         description: ''
-        type: int
+        data_type: int
       - name: cpf_notificante
         description: ''
-        type: varchar
+        data_type: varchar
       - name: cpf_paciente
         description: ''
-        type: char
+        data_type: char
       - name: dnv_paciente
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_agravo_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_chave_fonetica
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_classificacao_final
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_complemento_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_delimitacao_surto_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_droga_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_evolucao_caso_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_extrapulmonar_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_identificador_registro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_local_infeccao_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_local_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_modo_infeccao_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_observacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_referencia_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_semana_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_semana_sintoma
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_soundex
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_veiculo_transmissao_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: dt_alteracao
         description: ''
-        type: date
+        data_type: date
       - name: dt_diagnostico_sintoma
         description: ''
-        type: date
+        data_type: date
       - name: dt_digitacao
         description: ''
-        type: date
+        data_type: date
       - name: dt_encerramento
         description: ''
-        type: date
+        data_type: date
       - name: dt_inicio_tratamento
         description: ''
-        type: date
+        data_type: date
       - name: dt_investigacao
         description: ''
-        type: date
+        data_type: date
       - name: dt_mudanca_tratamento
         description: ''
-        type: date
+        data_type: date
       - name: dt_nascimento
         description: ''
-        type: date
+        data_type: date
       - name: dt_notificacao_atual
         description: ''
-        type: date
+        data_type: date
       - name: dt_obito
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_dm
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_rm
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_rs
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_se
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_sm
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_us
         description: ''
-        type: date
+        data_type: date
       - name: finalizado
         description: ''
-        type: int
+        data_type: int
       - name: justificativa
         description: ''
-        type: varchar
+        data_type: varchar
       - name: justificativa_paciente
         description: ''
-        type: varchar
+        data_type: varchar
       - name: lat
         description: ''
-        type: char
+        data_type: char
       - name: lng
         description: ''
-        type: char
+        data_type: char
       - name: nome_ub_not
         description: ''
-        type: varchar
+        data_type: varchar
       - name: notif_assistente
         description: ''
-        type: varchar
+        data_type: varchar
       - name: no_bairro_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: no_bairro_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: no_bairro_residencia_atual
         description: ''
-        type: varchar
+        data_type: varchar
       - name: no_localidade_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: no_logradouro_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: no_nome_mae
         description: ''
-        type: varchar
+        data_type: varchar
       - name: no_nome_paciente
         description: ''
-        type: varchar
+        data_type: varchar
       - name: soundex_busca
         description: ''
-        type: varchar
+        data_type: varchar
       - name: soundex_busca2
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_cartao_sus
         description: ''
-        type: char
+        data_type: char
       - name: nu_caso_examinado
         description: ''
-        type: int
+        data_type: int
       - name: nu_caso_positivo
         description: ''
-        type: int
+        data_type: int
       - name: nu_caso_suspeito
         description: ''
-        type: int
+        data_type: int
       - name: nu_cep_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_cep_residencia_atual
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_contato
         description: ''
-        type: decimal
+        data_type: decimal
       - name: nu_contato_examinado
         description: ''
-        type: decimal
+        data_type: decimal
       - name: nu_contato_identificados
         description: ''
-        type: decimal
+        data_type: decimal
       - name: nu_ddd_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_idade
         description: ''
-        type: int
+        data_type: int
       - name: nu_lote_horizontal
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_lote_vertical
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_notificacao_atual
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_prontuario
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_prontuario_atual
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_telefone_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: situacao_de_rua
         description: ''
-        type: int
+        data_type: int
       - name: st_agravo_aids
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_agravo_alcolismo
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_agravo_diabete
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_agravo_drogas
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_agravo_mental
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_agravo_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_agravo_tabaco
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_agravo_tabagismo
         description: ''
-        type: int
+        data_type: int
       - name: st_baciloscopia_1_mes
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_2_mes
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_3_mes
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_4_mes
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_5_mes
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_6_mes
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_escarro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_escarro2
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_bacil_apos_6_mes
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_criptografia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_doenca_trabalho
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_droga_estreptomicina
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_droga_etambutol
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_droga_etionamida
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_droga_isoniazida
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_droga_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_droga_pirazinamida
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_droga_rifampicina
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_espelho
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_fluxo_retorno_recebido
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_importado
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_modo_transmissao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_pcr_escarro
         description: ''
-        type: int
+        data_type: int
       - name: st_vincula
         description: ''
-        type: varchar
+        data_type: varchar
       - name: timestamp
         description: ''
-        type: timestamp
+        data_type: timestamp
       - name: tp_cpf
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_antirretroviral_trat
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_autoctone_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_benef_gov
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_classificacao_final
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_criterio_confirmacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_cultura_escarro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_cultura_justificativa
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_cultura_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_delimitacao_surto
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_duplicidade
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_entrada
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_escolaridade
         description: ''
-        type: char
+        data_type: char
       - name: tp_evolucao_caso
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_extrapulmonar_1
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_extrapulmonar_2
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_fluxo_retorno
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_forma
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_gestante
         description: ''
-        type: char
+        data_type: char
       - name: tp_histopatologia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_hiv
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_inquerito
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_institucionalizado
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_local_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_local_surto
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_modo_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_molecular
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_pcr_escarro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_pop_imigrante
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_pop_liberdade
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_pop_saude
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_pop_rua
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_raca_cor
         description: ''
-        type: char
+        data_type: char
       - name: tp_raio_x
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_sensibilidade
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_sexo
         description: ''
-        type: char
+        data_type: char
       - name: tp_sistema
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_situacao_encerramento
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_situacao_mes_12
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_situacao_mes_9
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_suspeita
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_transf
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_tratamento
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_tratamento_acompanhamento
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_turberculinico
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_veiculo_transmissao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_zona_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ts_codigo1
         description: ''
-        type: text
+        data_type: text
       - name: ts_codigo2
         description: ''
-        type: text
+        data_type: text
       - name: inv_unidade
         description: ''
-        type: varchar
+        data_type: varchar
       - name: inv_cod_unidade
         description: ''
-        type: varchar
+        data_type: varchar
       - name: inv_id_user
         description: ''
-        type: int
+        data_type: int
       - name: inv_nome
         description: ''
-        type: varchar
+        data_type: varchar
       - name: inv_funcao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: visivel
         description: ''
-        type: int
+        data_type: int
       - name: equipe
         description: ''
-        type: varchar
+        data_type: varchar
       - name: unidade_res
         description: ''
-        type: varchar
+        data_type: varchar
       - name: resp_encerramento
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_unidad_notificadora_externa
         description: ''
-        type: decimal
+        data_type: decimal
       - name: co_unidad_notificadora_externa
         description: ''
-        type: char
+        data_type: char
 
   - name: raw_plataforma_subpav_sinanrio__notificacao
     description: >
@@ -1304,112 +1305,112 @@ models:
     columns:
       - name: id
         description: ""
-        type: int
+        data_type: int
       - name: id_sintomatico
         description: ""
-        type: int
+        data_type: int
       - name: cpf
         description: ""
-        type: varchar
+        data_type: varchar
       - name: cns
         description: ""
-        type: varchar
+        data_type: varchar
       - name: nome
         description: ""
-        type: varchar
+        data_type: varchar
       - name: dt_nascimento
         description: ""
-        type: date
+        data_type: date
       - name: id_raca_cor
         description: ""
-        type: int
+        data_type: int
       - name: id_sexo
         description: ""
-        type: int
+        data_type: int
       - name: id_escolaridade
         description: ""
-        type: int
+        data_type: int
       - name: telefone
         description: ""
-        type: varchar
+        data_type: varchar
       - name: cep
         description: ""
-        type: varchar
+        data_type: varchar
       - name: logradouro
         description: ""
-        type: varchar
+        data_type: varchar
       - name: numero
         description: ""
-        type: varchar
+        data_type: varchar
       - name: complemento
         description: ""
-        type: varchar
+        data_type: varchar
       - name: id_bairro
         description: ""
-        type: int
+        data_type: int
       - name: cidade
         description: ""
-        type: varchar
+        data_type: varchar
       - name: cnes
         description: ""
-        type: varchar
+        data_type: varchar
       - name: ine
         description: ""
-        type: varchar
+        data_type: varchar
       - name: nao_municipe
         description: ""
-        type: tinyint
+        data_type: tinyint
       - name: n_prontuario
         description: ""
-        type: varchar
+        data_type: varchar
       - name: n_sinan
         description: ""
-        type: varchar
+        data_type: varchar
       - name: id_bac_1
         description: ""
-        type: int
+        data_type: int
       - name: dt_bac_1
         description: ""
-        type: date
+        data_type: date
       - name: id_bac_2
         description: ""
-        type: int
+        data_type: int
       - name: dt_bac_2
         description: ""
-        type: date
+        data_type: date
       - name: id_trmtb
         description: ""
-        type: int
+        data_type: int
       - name: dt_trmtb
         description: ""
-        type: date
+        data_type: date
       - name: id_rx_torax
         description: ""
-        type: int
+        data_type: int
       - name: obs
         description: ""
-        type: text
+        data_type: text
       - name: cnes_cadastrante
         description: ""
-        type: varchar
+        data_type: varchar
       - name: cpf_cadastrante
         description: ""
-        type: varchar
+        data_type: varchar
       - name: cns_cadastrante
         description: ""
-        type: varchar
+        data_type: varchar
       - name: id_tb_situacao
         description: ""
-        type: int
+        data_type: int
       - name: origem
         description: ""
-        type: varchar
+        data_type: varchar
       - name: created_at
         description: ""
-        type: timestamp
+        data_type: timestamp
       - name: datalake_loaded_at
         description: ""
-        type: timestamp
+        data_type: timestamp
 
   - name: raw_plataforma_subpav_sinanrio_legado__notificacao
     description: |
@@ -1420,340 +1421,340 @@ models:
     columns:
       - name: id
         description: ''
-        type: int
+        data_type: int
       - name: nu_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: dt_notificacao
         description: ''
-        type: date
+        data_type: date
       - name: co_cid
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_municipio_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_unidade_notificacao
         description: ''
-        type: numeric
+        data_type: numeric
       - name: co_uf_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: dt_diagnostico_sintoma
         description: ''
-        type: date
+        data_type: date
       - name: no_nome_paciente
         description: ''
-        type: varchar
+        data_type: varchar
       - name: dt_nascimento
         description: ''
-        type: date
+        data_type: date
       - name: nu_idade
         description: ''
-        type: numeric
+        data_type: numeric
       - name: tp_sexo
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_gestante
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_raca_cor
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_escolaridade
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_cartao_sus
         description: ''
-        type: varchar
+        data_type: varchar
       - name: no_nome_mae
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_uf_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_municipio_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_distrito_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_bairro_residencia
         description: ''
-        type: numeric
+        data_type: numeric
       - name: no_bairro_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_cep_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_geo_campo_1
         description: ''
-        type: numeric
+        data_type: numeric
       - name: co_geo_campo_2
         description: ''
-        type: numeric
+        data_type: numeric
       - name: co_logradouro_residencia
         description: ''
-        type: numeric
+        data_type: numeric
       - name: no_logradouro_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_complemento_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_referencia_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_ddd_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_telefone_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_zona_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_pais_residencia
         description: ''
-        type: numeric
+        data_type: numeric
       - name: dt_investigacao
         description: ''
-        type: date
+        data_type: date
       - name: co_cbo_ocupacao
         description: ''
-        type: numeric
+        data_type: numeric
       - name: tp_classificacao_final
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_classificacao_final
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_criterio_confirmacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_modo_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_modo_infeccao_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_local_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_local_infeccao_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_autoctone_residencia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_uf_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_pais_infeccao
         description: ''
-        type: numeric
+        data_type: numeric
       - name: co_municipio_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_distrito_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_bairro_infeccao
         description: ''
-        type: numeric
+        data_type: numeric
       - name: no_bairro_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: co_unidade_infeccao
         description: ''
-        type: numeric
+        data_type: numeric
       - name: no_localidade_infeccao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_doenca_trabalho
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_evolucao_caso
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_evolucao_caso_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: dt_obito
         description: ''
-        type: date
+        data_type: date
       - name: dt_encerramento
         description: ''
-        type: date
+        data_type: date
       - name: ds_semana_notificacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_semana_sintoma
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_chave_fonetica
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_soundex
         description: ''
-        type: varchar
+        data_type: varchar
       - name: dt_digitacao
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_us
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_dm
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_sm
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_rm
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_rs
         description: ''
-        type: date
+        data_type: date
       - name: dt_transf_se
         description: ''
-        type: date
+        data_type: date
       - name: nu_lote_vertical
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_lote_horizontal
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_duplicidade
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_suspeita
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_vincula
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_fluxo_retorno
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_modo_transmissao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_veiculo_transmissao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_veiculo_transmissao_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_local_surto
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_local_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_caso_suspeito
         description: ''
-        type: numeric
+        data_type: numeric
       - name: tp_inquerito
         description: ''
-        type: varchar
+        data_type: varchar
       - name: nu_caso_examinado
         description: ''
-        type: numeric
+        data_type: numeric
       - name: nu_caso_positivo
         description: ''
-        type: numeric
+        data_type: numeric
       - name: ds_observacao
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_delimitacao_surto
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_delimitacao_surto_outro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_fluxo_retorno_recebido
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ds_identificador_registro
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_importado
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_criptografia
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_sistema
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_espelho
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ts_codigo1
         description: ''
-        type: varchar
+        data_type: varchar
       - name: ts_codigo2
         description: ''
-        type: varchar
+        data_type: varchar
       - name: tp_unidad_notificadora_externa
         description: ''
-        type: numeric
+        data_type: numeric
       - name: co_unidad_notificadora_externa
         description: ''
-        type: varchar
+        data_type: varchar
       - name: cpf_notificante
         description: ''
-        type: varchar
+        data_type: varchar
       - name: cpf_paciente
         description: ''
-        type: varchar
+        data_type: varchar
       - name: dnv_paciente
         description: ''
-        type: varchar
+        data_type: varchar
       - name: justificativa_cpf
         description: ''
-        type: varchar
+        data_type: varchar
       - name: lat
         description: ''
-        type: varchar
+        data_type: varchar
       - name: long
         description: ''
-        type: varchar
+        data_type: varchar
       - name: notif_assistente
         description: ''
-        type: char
+        data_type: char
       - name: resp_encerramento
         description: ''
-        type: varchar
+        data_type: varchar
       - name: st_agravo_tabagismo
         description: ''
-        type: char
+        data_type: char
       - name: st_pcr_escarro
         description: ''
-        type: char
+        data_type: char
       - name: tp_cultura_justificativa
         description: ''
-        type: varchar
+        data_type: varchar
       - name: visivel
         description: ''
-        type: int
+        data_type: int
       - name: finalizado
         description: ''
-        type: int
+        data_type: int
       - name: timestamp
         description: ''
-        type: timestamp
+        data_type: timestamp
       - name: datalake_loaded_at
         description: ''
-        type: timestamp
+        data_type: timestamp
 
   - name: raw_plataforma_subpav_sinanrio_legado__tb_investiga
     description: |
@@ -1762,60 +1763,60 @@ models:
       com o schema do SINAN Rio (novo) `tb_investiga`.
     columns:
       - name: nu_notificacao
-        type: varchar
+        data_type: varchar
       - name: dt_notificacao
-        type: date
+        data_type: date
       - name: co_cid
-        type: varchar
+        data_type: varchar
       - name: co_municipio_notificacao
-        type: varchar
+        data_type: varchar
       - name: nu_prontuario
-        type: varchar
+        data_type: varchar
       - name: tp_entrada
-        type: varchar
+        data_type: varchar
       - name: tp_institucionalizado
-        type: varchar
+        data_type: varchar
       - name: tp_raio_x
-        type: varchar
+        data_type: varchar
       - name: tp_turberculinico
-        type: varchar
+        data_type: varchar
       - name: tp_forma
-        type: varchar
+        data_type: varchar
       - name: tp_extrapulmonar_1
-        type: varchar
+        data_type: varchar
       - name: tp_extrapulmonar_2
-        type: varchar
+        data_type: varchar
       - name: ds_extrapulmonar_outro
-        type: varchar
+        data_type: varchar
       - name: st_agravo_aids
-        type: varchar
+        data_type: varchar
       - name: st_agravo_alcolismo
-        type: varchar
+        data_type: varchar
       - name: st_agravo_diabete
-        type: varchar
+        data_type: varchar
       - name: st_agravo_mental
-        type: varchar
+        data_type: varchar
       - name: st_agravo_outro
-        type: varchar
+        data_type: varchar
       - name: ds_agravo_outro
-        type: varchar
+        data_type: varchar
       - name: st_baciloscopia_escarro
-        type: varchar
+        data_type: varchar
       - name: tp_cultura_escarro
-        type: varchar
+        data_type: varchar
       - name: tp_hiv
-        type: varchar
+        data_type: varchar
       - name: dt_inicio_tratamento
-        type: date
+        data_type: date
       - name: tp_tratamento
-        type: varchar
+        data_type: varchar
       - name: dt_encerramento
-        type: date
+        data_type: date
       - name: tp_situacao_encerramento
-        type: varchar
+        data_type: varchar
       - name: tp_pcr_escarro
-        type: varchar
+        data_type: varchar
       - name: timestamp
-        type: timestamp
+        data_type: timestamp
       - name: datalake_loaded_at
-        type: timestamp
+        data_type: timestamp

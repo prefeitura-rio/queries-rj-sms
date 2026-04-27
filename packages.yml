@@ -1,17 +1,43 @@
 packages:
   - package: dbt-labs/dbt_utils
-    version: 1.3.0
-  - package: metaplane/dbt_expectations
-    version: 0.10.9
-  - package: tnightengale/dbt_meta_testing
-    version: 0.3.6
-  - package: elementary-data/elementary
-    version: 0.19.1
-  - package: godatadriven/dbt_date
-    version: 0.14.2
-  - package: data-mie/dbt_profiler
-    version: 0.8.4
-  - package: dbt-labs/audit_helper
-    version: 0.12.1
+    version: [">=1.3.3", "<2.0.0"]
+    # `dbt_utils.(...)`
+    # https://github.com/dbt-labs/dbt-utils
+
   - package: bqbooster/dbt_bigquery_monitoring
-    version: 0.20.4
+    version: [">=0.26.0", "<1.0.0"]
+    # Datasets 'gerenciamento__(...)'
+    # https://github.com/bqbooster/dbt-bigquery-monitoring
+
+  - package: metaplane/dbt_expectations
+    version: [">=0.10.10", "<1.0.0"]
+    # `dbt_expectations.expect_(...)`
+    # https://github.com/metaplane/dbt-expectations
+
+  # TODO: trocar pra pacote normal quando lançar
+  # - package: tnightengale/dbt_meta_testing
+  #   version: [">=0.4.0", "<1.0.0"]
+  - git: "https://github.com/tnightengale/dbt-meta-testing.git"
+    revision: "0.4.0" 
+    # dbt_project.yml: required_tests, required_docs
+    # https://github.com/tnightengale/dbt-meta-testing
+
+  - package: elementary-data/elementary
+    version: [">=0.23.1", "<1.0.0"]
+    # `elementary.(...)`
+    # https://docs.elementary-data.com/data-tests/dbt/dbt-package
+
+  - package: godatadriven/dbt_date
+    version: [">=0.17.2", "<1.0.0"]
+    # `dbt_date.(...)`
+    # https://github.com/godatadriven/dbt-date
+
+  - package: data-mie/dbt_profiler  # ?
+    version: [">=1.0.0", "<2.0.0"]
+    # $ dbt run-operation print_profile(...)
+    # https://github.com/data-mie/dbt-profiler
+
+  - package: dbt-labs/audit_helper  # ?
+    version: [">=0.13.0", "<1.0.0"]
+    # `audit_helper.(...)`
+    # https://github.com/dbt-labs/dbt-audit-helper

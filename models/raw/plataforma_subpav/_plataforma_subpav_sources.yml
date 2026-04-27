@@ -7,20 +7,24 @@ sources:
     tables:
       - name: subpav_cnes__equipes
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
-        freshness:
-          error_after: {count: 30, period: day}
+        config:
+          freshness:
+            error_after: {count: 30, period: day}
       - name: subpav_cnes__competencias
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
-        freshness:
-          error_after: {count: 30, period: day}
+        config:
+          freshness:
+            error_after: {count: 30, period: day}
       - name: subpav_cnes__unidades
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
-        freshness:
-          error_after: {count: 30, period: day}
+        config:
+          freshness:
+            error_after: {count: 30, period: day}
       - name: subpav_principal__bairros
         loaded_at_field: "CAST(_loaded_at AS TIMESTAMP)"
-        freshness:
-          error_after: {count: 30, period: day}
+        config:
+          freshness:
+            error_after: {count: 30, period: day}
       - name: views_ipp__Unidades_OSA
       - name: subpav_sinan__tuberculose_sinan
       - name: subpav_sinanrio__notificacao

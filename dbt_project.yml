@@ -71,6 +71,9 @@ vars:
   gcp_bigquery_audit_logs_dataset: 'gerenciamento__custos'
   gcp_bigquery_audit_logs_table: 'dbt_bigquery_audit_logs'
 
+  # metaplane/dbt_expectations
+  'dbt_date:time_zone': 'America/Sao_Paulo'
+
 query-comment:
   comment: '{{ dbt_bigquery_monitoring.get_query_comment(node) }}'
   job-label: True # Use query comment JSON as job labels
@@ -87,9 +90,11 @@ models:
   dbt_bigquery_monitoring:
     +schema: "gerenciamento__dbt_bigquery_monitoring"
   rj_sms:
-    # all models should have unique and not null
-    +required_tests: { "unique.*|not_null": 2 }
-    +required_docs: true
+    +meta:
+      # [Ref] https://hub.getdbt.com/tnightengale/dbt_meta_testing/0.4.0/
+      # all models should have unique and not null
+      +required_tests: { "unique.*|not_null": 2 }
+      +required_docs: true
     raw:
       +materialized: table
       +tags: "raw"
