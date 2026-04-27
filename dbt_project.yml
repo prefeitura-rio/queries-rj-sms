@@ -250,6 +250,7 @@ models:
           dado_sensivel: nao
           dominio: estoque
       sisvisa:
+        +enabled: false
         +schema: brutos_sisvisa
         +tags: ["daily", "sisvisa", "ivisa"]
         +labels:
@@ -470,6 +471,7 @@ models:
             dado_sensivel: sim
             dominio: iplanrio
       ivisa:
+          +enabled: false
           +schema: intermediario_empreendimentos_cariocas
           +tags: ["daily", "ivisa", "empreendimentos"]
           +labels:
@@ -687,6 +689,7 @@ models:
             dado_sensivel: sim
       ivisa:
         empreendimentos_cariocas:
+          +enabled: false
           +schema: projeto_empreendimentos_cariocas
           +tags: ["daily", "ivisa", "empreendimentos"]
           +labels:

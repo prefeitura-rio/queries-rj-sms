@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         alias="cnpj",
         materialized="table",
         cluster_by="situacao",
