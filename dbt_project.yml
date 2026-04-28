@@ -96,6 +96,7 @@ models:
       iplan:
         +schema: brutos_iplanrio
         +tags: "daily"
+        +meta: {"owner": "karen"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -220,6 +221,7 @@ models:
       cdi:
         +schema: brutos_cdi
         +tags: ["daily", "cdi", "cdi-4hours"]
+        +meta: {"owner": "karen"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -308,6 +310,7 @@ models:
       prontuario_vitacare_api:
         +schema: brutos_prontuario_vitacare_api
         +tags: ["vitacare", "daily", "vitacare_api"]
+        +meta: {"owner": "karen"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -464,6 +467,7 @@ models:
         whatsapp:
           +materialized: table
           +tags: ["daily", "iplanrio", "whatsapp"]
+          +meta: {"owner": "karen"}
           +schema: intermediario_whatsapp
           +labels:
             dado_publico: nao
@@ -482,6 +486,7 @@ models:
       subpav:
           +schema: intermediario_plataforma_subpav
           +tags: ["daily", "subpav", "cegonha"]
+          +meta: {"owner": "karen"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -711,6 +716,7 @@ models:
         whatsapp:
           +tags: ["daily", "iplanrio", "whatsapp"]
           +schema: projeto_whatsapp
+          +meta: {"owner": "karen"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -719,6 +725,7 @@ models:
         pic:
           +schema: projeto_pic
           +tags: ["daily", "iplanrio", "pic"]
+          +meta: {"owner": "karen"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -727,6 +734,7 @@ models:
         paciente:
           +schema: projeto_paciente
           +tags: ["daily", "iplanrio", "paciente"]
+          +meta: {"owner": "karen"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
