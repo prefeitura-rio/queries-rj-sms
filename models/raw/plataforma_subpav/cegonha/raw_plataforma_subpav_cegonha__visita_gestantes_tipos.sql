@@ -1,7 +1,8 @@
 {{ config(
     schema = 'brutos_plataforma_subpav',
     alias = 'visita_gestantes_tipos',
-    materialized = 'table'
+    materialized = 'table',
+    meta={"owner": "karen"}
 ) }}
 
 with source as (

@@ -2,7 +2,9 @@
     config(
         materialized = 'table',
         schema = 'intermediario_cdi',
-        alias = 'equipe_tutela_coletiva'
+        alias = 'equipe_tutela_coletiva',
+        meta={"owner": "karen"}
+
     ) 
 }}
 

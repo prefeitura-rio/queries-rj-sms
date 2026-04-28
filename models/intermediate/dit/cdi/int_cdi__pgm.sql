@@ -1,7 +1,9 @@
-{{ config(
-  schema = "intermediario_cdi",
-  alias  = "pgm",
-  materialized = "table"
+{{ 
+    config(
+        schema = "intermediario_cdi",
+        alias  = "pgm",
+        materialized = "table",
+        meta={"owner": "karen"}
 ) }}
 
 WITH base AS (

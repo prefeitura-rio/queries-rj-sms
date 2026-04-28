@@ -1,7 +1,8 @@
 {{ config(
   schema = "projeto_cdi",
   alias  = "pgm_distribuicao_sexo",
-  materialized = "table"
+  materialized = "table",
+  meta={"owner": "karen"}
 ) }}
 
 SELECT

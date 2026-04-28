@@ -2,6 +2,7 @@
   config(
     alias = "ficha_a_anonimizada",
     materialized = "table",
+    meta={"owner": "karen"}
   )
 }}
 
