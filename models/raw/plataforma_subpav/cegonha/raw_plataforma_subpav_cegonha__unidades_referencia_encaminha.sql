@@ -1,7 +1,8 @@
 {{ config( 
     schema = 'brutos_plataforma_subpav',
     alias = 'unidades_referencia_encaminha',
-    materialized = 'table'
+    materialized = 'table',
+    meta={"owner": "karen"}
 ) }}
 
 with source as (
