@@ -662,6 +662,15 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+
+        projeto_ocis:
+          +schema: projeto_ocis
+          +tags: ["projeto_ocis"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+
         gerenciamento:
           +tags: "daily"
         historico_clinico:
