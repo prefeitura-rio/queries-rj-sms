@@ -59,7 +59,7 @@ with
             {{ process_null('cpf_cadastrante') }}                       AS cpf_cadastrante,
             {{ process_null('cns_cadastrante') }}                       AS cns_cadastrante,
             SAFE_CAST({{ process_null('id_tb_situacao') }} AS INT64)    AS id_tb_situacao,
-            {{ process_null('origem') }}                                AS origem,
+            {{ process_null('id_origem') }}                             AS origem,
 
             SAFE_CAST({{ process_null('created_at') }} AS TIMESTAMP)    AS created_at,
             SAFE_CAST({{ process_null('datalake_loaded_at') }} AS TIMESTAMP) AS datalake_loaded_at
