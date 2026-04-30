@@ -445,7 +445,9 @@ with
                             endereco.rank,
                             "vitacare" as sistema,
                             1 as merge_order
-                        from vitacare_tb, unnest(endereco) as endereco  -- Expandindo os elementos da array struct de endereço
+                        from vitacare_tb,
+                            -- Expandindo os elementos da array struct de endereço
+                            unnest(endereco) as endereco
                         union all
                         select
                             cpf,
@@ -585,13 +587,7 @@ with
     paciente_dados as (
         select
             cpfs.cpf,
-            {{
-            dbt_utils.generate_surrogate_key(
-                    [
-                        "cpfs.cpf",
-                    ]
-                )
-            }} as id_paciente,
+            {{ dbt_utils.generate_surrogate_key([ "cpfs.cpf" ]) }} as id_paciente,
             case
                 when sm.cpf is not null
                 then sm.nome
@@ -690,12 +686,12 @@ with
                     -- Só queremos `nome_social` se não for igual a `nome`
                     -- ainda que falte um ou outro sobrenome
                     when starts_with(nome, nome_social)
-                    then null
+                        then null
                     when {{ is_same_name("nome", "nome_social") }}
-                    then null
+                        then null
                     -- O campo de nome social às vezes é usado como nome da mãe
-                    when {{ is_same_name("mae_nome", "nome_social" )}}
-                    then null
+                    when {{ is_same_name("mae_nome", "nome_social" ) }}
+                        then null
                     else nome_social
                 end as nome_social,
                 data_nascimento,
@@ -714,7 +710,7 @@ with
     -- -- FINAL JOIN: Joins all the data previously processed, creating the
     -- -- integrated table of the patients.
     paciente_integrado as (
-        select  
+        select
             pd.cpf,
             cns.cns,
             pd.dados,
@@ -736,7 +732,6 @@ with
             pd.dados.nome is not null
             -- AND pd.dados.data_nascimento IS NOT NULL
             and pd.dados.cpf_valido_indicador is true
-
     )
 
 select *
