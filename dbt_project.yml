@@ -277,6 +277,7 @@ models:
       plataforma_subpav:
         +schema: brutos_plataforma_subpav
         +tags: ["plataforma_subpav", "daily"]
+        +meta: {"owner": "dayaners"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -767,6 +768,7 @@ models:
         sinanrio:
           +schema: projeto_sinanrio
           +tags: ["daily", "subpav", "sinanrio"]
+          +meta: {"owner": "dayaners"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
