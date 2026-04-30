@@ -6,12 +6,18 @@ with pacientes as (
         safe_cast(paciente_nome as string) as paciente_nome,
         safe_cast(paciente_data_nascimento as date) as paciente_data_nascimento,
 
-        --safe_cast(mun.nome_municipio as string) as paciente_municipio_residencia
-        
+        -- proxy de atualização cadastral: data da solicitação de internação mais recente no SER.
+        safe_cast(data_solicitacao as timestamp) as data_atualizacao
+
     from {{ ref("raw_ser_metabase__internacoes") }}
     left join {{ref("raw_sheets__municipios_rio")}} as mun
     on id_paciente_municipio_ibge = safe_cast(mun.cod_ibge_6 as int)
     where data_solicitacao >= "2024-01-01"
 )
 
-select distinct * from pacientes
+select * from pacientes
+-- SER internações não tem cpf; particiona por cns.
+qualify row_number() over (
+    partition by paciente_cns
+    order by data_atualizacao desc
+) = 1

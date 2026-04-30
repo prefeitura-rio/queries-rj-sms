@@ -5,14 +5,27 @@
 ) }}
 
 WITH
+    gestacao_dedup AS (
+        SELECT *
+        FROM (
+            SELECT
+                *,
+                ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_inicio DESC) AS rn
+            FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
+            WHERE fase_atual = 'Gestação'
+              AND cpf IS NOT NULL
+        )
+        WHERE rn = 1  -- pega só a gestação atual mais recente por cpf
+    ),
+
     puerperio_dedup AS (
         SELECT *
         FROM (
-            SELECT *,
+            SELECT
+                *,
                 ROW_NUMBER() OVER (PARTITION BY cpf ORDER BY data_inicio DESC) AS rn
             FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
             WHERE fase_atual = 'Puerpério'
-            AND data_fim IS NOT NULL
             AND data_fim_efetiva IS NOT NULL
             AND cpf IS NOT NULL
         )
@@ -24,11 +37,9 @@ WITH
         SELECT
             cpf,
             data_inicio AS inicio_fase,
-            DATE_ADD(data_inicio, INTERVAL 300 DAY) AS fim_fase,
+            LEAST(DATE_ADD(data_inicio, INTERVAL 300 DAY), CURRENT_DATE()) AS fim_fase,
             'Gestacao' AS tipo_publico
-        FROM {{ ref('mart_bi_gestacoes__gestacoes') }}
-        WHERE fase_atual = 'Gestação'
-        AND cpf IS NOT NULL
+        FROM gestacao_dedup
 
         UNION ALL
 
@@ -45,8 +56,8 @@ WITH
         -- Puerpério atual
         SELECT
             cpf,
-            data_fim AS inicio_fase,
-            DATE_ADD(data_fim, INTERVAL 45 DAY) AS fim_fase,
+            data_fim_efetiva AS inicio_fase,
+            DATE_ADD(data_fim_efetiva, INTERVAL 45 DAY) AS fim_fase,
             'Puerperio' AS tipo_publico
         FROM puerperio_dedup
 
@@ -71,32 +82,22 @@ WITH
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE REGEXP_CONTAINS(tipo, r'(?i)visita')
-        AND cpf IS NOT NULL AND cpf <> 'NAO TEM'
-        AND cbo_profissional = '515105' -- apenas ACS
+          AND cpf IS NOT NULL
+          AND cbo_profissional IN ('515105', '322255') -- ACS e Técnico de Agente Comunitário
     ),
 
     -- CONSULTAS
+    -- Considera apenas consultas realizadas por médico ou enfermeiro,
+    -- pois este é o conceito de consulta utilizado pelos protocolos do PIC.
     consultas AS (
         SELECT
             cpf,
             'Consulta' AS tipo_evento,
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE cpf <> 'NAO TEM' AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
-    ),
-
-    -- CONSULTAS MÉDICO/ENFERMEIRO
-    consultas_medico_enfermeiro AS (
-        SELECT
-            cpf,
-            'Consulta - Médico/Enfermeiro' AS tipo_evento,
-            COALESCE(datahora_fim, datahora_inicio) AS dthr
-        FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE cpf <> 'NAO TEM' AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
-        AND (
-                REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"medico")
-            OR REGEXP_CONTAINS(normalize_and_casefold(cbo_descricao_profissional, NFKD), r"enfermeiro")
-        )
+        WHERE cpf IS NOT NULL
+        AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
+        AND REGEXP_CONTAINS(REGEXP_REPLACE(NORMALIZE_AND_CASEFOLD(cbo_descricao_profissional, NFKD), r'\pM',''), r'medico|enfermeiro')
     ),
 
     -- TESTES RÁPIDOS
@@ -119,52 +120,66 @@ WITH
             '0214010074','0214010082',
             '0214010090','0214010104'
         )
-        AND a.patient_cpf IS NOT NULL AND TRIM(a.patient_cpf) <> ''
+          AND a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
 
         UNION ALL
 
         SELECT
             a.patient_cpf AS cpf,
-            'Teste rápido - HIV',
-            CAST(t.loaded_at AS DATETIME)
+            'Teste rápido - HIV' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
         FROM {{ ref("raw_prontuario_vitacare_historico__testerapido") }} t
         JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a USING(id_prontuario_global)
         WHERE a.patient_cpf IS NOT NULL
-        AND COALESCE(t.resultado_teste_hiv1, t.resultado_teste_hiv1_positivo,
-                    t.resultado_teste_hiv2, t.resultado_teste_hiv2_positivo) IS NOT NULL
+          AND COALESCE(
+                t.resultado_teste_hiv1,
+                t.resultado_teste_hiv1_positivo,
+                t.resultado_teste_hiv2,
+                t.resultado_teste_hiv2_positivo
+          ) IS NOT NULL
 
         UNION ALL
 
         SELECT
             a.patient_cpf AS cpf,
-            'Teste rápido - Sífilis',
-            CAST(t.loaded_at AS DATETIME)
+            'Teste rápido - Sífilis' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
         FROM {{ ref("raw_prontuario_vitacare_historico__testerapido") }} t
         JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a USING(id_prontuario_global)
         WHERE a.patient_cpf IS NOT NULL
-        AND COALESCE(t.resultado_teste_sifilis, t.resultado_teste_sifilis_positivo) IS NOT NULL
+          AND COALESCE(
+                t.resultado_teste_sifilis,
+                t.resultado_teste_sifilis_positivo
+          ) IS NOT NULL
 
         UNION ALL
 
         SELECT
             a.patient_cpf AS cpf,
-            'Teste rápido - Hepatite B',
-            CAST(t.loaded_at AS DATETIME)
+            'Teste rápido - Hepatite B' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
         FROM {{ ref("raw_prontuario_vitacare_historico__testerapido") }} t
         JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a USING(id_prontuario_global)
         WHERE a.patient_cpf IS NOT NULL
-        AND COALESCE(t.resultado_teste_hepatite_b, t.resultado_teste_hepatite_b_positivo) IS NOT NULL
+          AND COALESCE(
+                t.resultado_teste_hepatite_b,
+                t.resultado_teste_hepatite_b_positivo
+          ) IS NOT NULL
 
         UNION ALL
 
         SELECT
             a.patient_cpf AS cpf,
-            'Teste rápido - Hepatite C',
-            CAST(t.loaded_at AS DATETIME)
+            'Teste rápido - Hepatite C' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
         FROM {{ ref("raw_prontuario_vitacare_historico__testerapido") }} t
         JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a USING(id_prontuario_global)
         WHERE a.patient_cpf IS NOT NULL
-        AND COALESCE(t.resultado_teste_hepatite_c, t.resultado_teste_hepatite_c_positivo) IS NOT NULL
+          AND COALESCE(
+                t.resultado_teste_hepatite_c,
+                t.resultado_teste_hepatite_c_positivo
+          ) IS NOT NULL
     ),
 
     -- VACINAS
@@ -174,71 +189,81 @@ WITH
             CONCAT('Vacina - ', imuno, ' - ', tipo, ordem) AS tipo_evento,
             dthr
         FROM (
-            SELECT 
+            SELECT
                 a.patient_cpf AS cpf,
                 'Pentavalente' AS imuno,
-                CASE WHEN dose LIKE '%eforço%' THEN 'R'
+                CASE
+                    WHEN dose LIKE '%eforço%' THEN 'R'
                     WHEN dose LIKE '%nica%' THEN 'U'
-                    ELSE 'D' END AS tipo,
-                CASE 
+                    ELSE 'D'
+                END AS tipo,
+                CASE
                     WHEN dose LIKE '%1%' THEN '1'
                     WHEN dose LIKE '%2%' THEN '2'
                     WHEN dose LIKE '%3%' THEN '3'
                     WHEN dose LIKE '%4%' THEN '4'
-                    ELSE '' END AS ordem,
+                    ELSE ''
+                END AS ordem,
                 CAST(v.data_aplicacao AS DATETIME) AS dthr
             FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v
             JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a USING(id_prontuario_global)
             WHERE LOWER(normalize_and_casefold(v.dose, NFKD)) NOT IN ('dose unica', 'outro')
-            AND v.cod_vacina IN ('DTP/HB/Hib', 'Hexa')
+              AND v.cod_vacina IN ('DTP/HB/Hib', 'Hexa')
 
             UNION ALL
 
             SELECT
                 paciente_cpf AS cpf,
-                'Pentavalente', 
-                CASE WHEN vacina_dose LIKE '%eforço%' THEN 'R'
+                'Pentavalente',
+                CASE
+                    WHEN vacina_dose LIKE '%eforço%' THEN 'R'
                     WHEN vacina_dose LIKE '%nica%' THEN 'U'
-                    ELSE 'D' END,
-                CASE 
+                    ELSE 'D'
+                END AS tipo,
+                CASE
                     WHEN vacina_dose LIKE '%1%' THEN '1'
                     WHEN vacina_dose LIKE '%2%' THEN '2'
                     WHEN vacina_dose LIKE '%3%' THEN '3'
                     WHEN vacina_dose LIKE '%4%' THEN '4'
-                    ELSE '' END,
-                CAST(vacina_aplicacao_data AS DATETIME)
+                    ELSE ''
+                END AS ordem,
+                CAST(vacina_aplicacao_data AS DATETIME) AS dthr
             FROM {{ ref("raw_sipni__vacinacao") }}
             WHERE paciente_cpf IS NOT NULL
-            AND vacina_nome IN (
+              AND vacina_nome IN (
                     'Vacina penta (DTP/HepB/Hib)',
                     'Vacina penta acelular (DTPa/VIP/Hib)',
                     'Vacina hexa (DTPa/HepB/VIP/Hib)'
-            )
+              )
         )
     ),
 
-todos_os_eventos AS (
-    SELECT * FROM visitas_domiciliares
-    UNION ALL SELECT * FROM consultas
-    UNION ALL SELECT * FROM consultas_medico_enfermeiro
-    UNION ALL SELECT * FROM vacinacoes
-    UNION ALL SELECT * FROM testes_rapidos
-),
+    todos_os_eventos AS (
+        SELECT * FROM visitas_domiciliares
+        UNION ALL
+        SELECT * FROM consultas
+        UNION ALL
+        SELECT * FROM vacinacoes
+        UNION ALL
+        SELECT * FROM testes_rapidos
+    ),
 
-eventos_unificados AS (
-    SELECT
-        e.cpf,
-        e.tipo_evento,
-        DATE(e.dthr) AS data_evento,
-        f.tipo_publico,
-        f.inicio_fase,
-        f.fim_fase,
-        DATE_DIFF(DATE(e.dthr), f.inicio_fase, DAY) AS distancia_dias
-    FROM todos_os_eventos e
-    JOIN todas_as_fases f
-        ON e.cpf = f.cpf
-        AND DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
-)
+    eventos_unificados AS (
+        SELECT
+            e.cpf,
+            e.tipo_evento,
+            DATE(e.dthr) AS data_evento,
+            f.tipo_publico,
+            f.inicio_fase,
+            f.fim_fase,
+            DATE_DIFF(DATE(e.dthr), f.inicio_fase, DAY) AS distancia_dias
+        FROM todos_os_eventos e
+        JOIN todas_as_fases f
+          ON e.cpf = f.cpf
+         AND DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
+        -- esse join por janela garante que a puérpera atual possa ter eventos tanto
+        -- da gestação que originou o puerpério atual quanto do próprio puerpério
+    )
 
 SELECT
     *,

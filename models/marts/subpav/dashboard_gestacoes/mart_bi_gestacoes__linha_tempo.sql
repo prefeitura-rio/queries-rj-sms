@@ -1623,53 +1623,20 @@ fatores_risco_pe_adequacao AS (
 -- ========================================
 
 vacinacao_sincicial AS (
-    WITH vacinacao_sincicial_base AS (
-        SELECT
-            f.id_gestacao,
-            f.data_inicio,
-            f.data_fim_efetiva,
-            v.vacina_aplicacao_data,
-            CEIL(
-                DATE_DIFF(
-                    v.vacina_aplicacao_data,
-                    f.data_inicio,
-                    DAY
-                ) / 7.0
-            ) AS ig_semanas_vacina
-        FROM
-            filtrado f
-            JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
-            -- JOIN `rj-sms.saude_historico_clinico.vacinacao` v
-            JOIN {{ ref('mart_historico_clinico__vacinacao') }} v
-                ON pi.cpf = v.paciente_cpf
-        WHERE
-            -- Filtro de descrição da vacina sincicial
-            (
-                LOWER(v.vacina_descricao) = 'sincicial respiratório a e b (recombinante)'
-                OR LOWER(v.vacina_descricao) = 'vacina vírus sincicial respiratório a e b  recombinante'
-                OR LOWER(v.vacina_descricao) = 'vacina vírus sincicial respiratório a e b (recombinante)'
-            )
-            -- Apenas aplicações dentro do período gestacional (40 semanas a partir do início)
-            AND v.vacina_aplicacao_data BETWEEN f.data_inicio AND DATE_ADD(f.data_inicio, INTERVAL 40 WEEK)
-    ),
-    vacinacao_sincicial_gestacao AS (
-        SELECT
-            id_gestacao,
-            vacina_aplicacao_data,
-            ig_semanas_vacina,
-            ROW_NUMBER() OVER (PARTITION BY id_gestacao ORDER BY vacina_aplicacao_data) AS rn
-        FROM
-            vacinacao_sincicial_base
-    )
     SELECT
-        id_gestacao,
+        f.id_gestacao,
         1 AS vacina_sincicial_aplicada,
-        vacina_aplicacao_data AS data_vacina_sincicial,
-        ig_semanas_vacina
+        v.vacina_aplicacao_data AS data_vacina_sincicial,
+        CEIL(DATE_DIFF(v.vacina_aplicacao_data, f.data_inicio, DAY) / 7.0) AS ig_semanas_vacina
     FROM
-        vacinacao_sincicial_gestacao
+        filtrado f
+        JOIN pacientes_info pi ON f.id_paciente = pi.id_paciente
+        JOIN {{ ref('mart_historico_clinico__vacinacao') }} v
+            ON pi.cpf = v.paciente_cpf
     WHERE
-        rn = 1
+        LOWER(v.vacina_descricao) LIKE '%sincicial%a e b%'
+        AND v.vacina_aplicacao_data BETWEEN f.data_inicio AND DATE_ADD(f.data_inicio, INTERVAL 40 WEEK)
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY f.id_gestacao ORDER BY v.vacina_aplicacao_data) = 1
 ),
 
 incluir_AP AS (

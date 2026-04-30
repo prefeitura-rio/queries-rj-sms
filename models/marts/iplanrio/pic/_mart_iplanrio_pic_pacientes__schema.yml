@@ -1,0 +1,123 @@
+version: 2
+
+models:
+  - name: mart_iplanrio_pic__pacientes_aps
+    description: >
+      Tabela do projeto PIC que consolida os dados cadastrais dos pacientes
+      ativos provenientes do prontuario de atenção primaria. A tabela reúne o CPF do
+      paciente, a lista de CNS associados ao seu cadastro, indicador de óbito,
+      dados de contato, endereço mais recente e o conjunto de clínicas às quais 
+      o paciente está vinculado, com as respectivas
+      informações de equipe de família associadas.
+
+    columns:
+      - name: cpf
+        description: >
+          CPF do paciente.
+
+      - name: cns
+        description: >
+          Lista dos Cartões Nacionais de Saúde associados ao CPF do paciente nos
+          registros ativos da base de origem.
+
+      - name: obito_indicador
+        description: >
+          Indicador de óbito do paciente conforme informado na base de origem.
+          Valor `true` indica registro de óbito.
+
+      - name: dados_contato
+        description: >
+          Estrutura com os dados de contato do paciente selecionados a partir do registro
+          ativo mais recente.
+
+      - name: dados_contato.telefone
+        description: >
+          Telefone do paciente informado no cadastro ativo mais recente.
+
+      - name: dados_contato.email
+        description: >
+          E-mail do paciente informado no cadastro ativo mais recente.
+
+      - name: endereco
+        description: >
+          Estrutura com os dados do endereço selecionado a partir do registro mais recente
+          disponível do paciente.
+
+      - name: endereco.cep
+        description: >
+          CEP do endereço do paciente.
+
+      - name: endereco.tipo_logradouro
+        description: >
+          Tipo de logradouro do endereço do paciente.
+
+      - name: endereco.logradouro
+        description: >
+          Nome do logradouro do endereço do paciente.
+
+      - name: endereco.numero
+        description: >
+          Número do endereço do paciente.
+
+      - name: endereco.complemento
+        description: >
+          Complemento do endereço do paciente.
+
+      - name: endereco.bairro
+        description: >
+          Bairro do endereço do paciente.
+
+      - name: endereco.municipio
+        description: >
+          Município do endereço do paciente.
+
+      - name: endereco.estado
+        description: >
+          Unidade federativa do endereço do paciente.
+
+      - name: clinicas_cadastro_ativo
+        description: >
+          Lista de clínicas associadas ao paciente em cadastros com situação ativa,
+          com os respectivos dados cadastrais da clínica e as informações da equipe
+          de família vinculada àquela clínica.
+
+      - name: clinicas_cadastro_ativo.id_cnes
+        description: >
+          CNES da clínica vinculada ao paciente.
+
+      - name: clinicas_cadastro_ativo.situacao
+        description: >
+          Situação cadastral do vínculo do paciente com a clínica na base de origem.
+
+      - name: clinicas_cadastro_ativo.cadastro_permanente_indicador
+        description: >
+          Indicador que informa se o vínculo do paciente com a clínica é proveniente
+          de cadastro permanente.
+
+      - name: clinicas_cadastro_ativo.data_cadastro_inicial
+        description: >
+          Data do cadastro inicial associada ao vínculo do paciente com a clínica.
+
+      - name: clinicas_cadastro_ativo.data_ultima_atualizacao_cadastral
+        description: >
+          Data da última atualização cadastral associada ao vínculo do paciente com a clínica.
+
+      - name: clinicas_cadastro_ativo.equipe_familia
+        description: >
+          Estrutura com os dados da equipe de família associada à clínica do paciente.
+
+      - name: clinicas_cadastro_ativo.equipe_familia.equipe_familia_indicador
+        description: >
+          Indicador que informa se há equipe de família associada ao vínculo da clínica.
+
+      - name: clinicas_cadastro_ativo.equipe_familia.id_ine
+        description: >
+          Identificador INE da equipe de família associada à clínica do paciente.
+
+      - name: clinicas_cadastro_ativo.equipe_familia.data_atualizacao_vinculo_equipe
+        description: >
+          Data de atualização do vínculo do paciente com a equipe de família associada à clínica.
+
+      - name: cpf_particao
+        description: >
+          CPF do paciente convertido para inteiro, utilizado como campo de particionamento da tabela.

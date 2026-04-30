@@ -7,7 +7,7 @@
 
 with base as (
     select *
-    from {{ ref('raw_prontuario_vitacare__paciente') }}
+    from {{ ref('int_prontuario_vitacare__paciente') }}
 
 ),
 

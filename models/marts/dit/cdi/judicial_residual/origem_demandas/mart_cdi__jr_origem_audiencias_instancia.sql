@@ -1,7 +1,8 @@
 {{ config(
   schema = "projeto_cdi",
   alias  = "jr_origem_audiencias_instancia",
-  materialized = "table"
+  materialized = "table",
+  meta={"owner": "karen"}
 ) }}
 
 WITH classificada AS (

@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         alias="ficha_a_v2",
         materialized="table",
     )

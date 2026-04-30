@@ -52,6 +52,10 @@ pacientes as (
         updated_at as updated_at_paciente,
         datalake_loaded_at as datalake_loaded_at_paciente
     from {{ ref('raw_plataforma_subpav_sisare__pacientes') }}
+    qualify row_number() over (
+        partition by id_paciente
+        order by datalake_loaded_at desc, updated_at desc
+    ) = 1
 
 ),
 

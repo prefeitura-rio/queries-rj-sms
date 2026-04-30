@@ -25,7 +25,7 @@ base_telefones AS (
     TRIM(telefone) AS telefone,
     data_ultima_atualizacao_cadastral,
     'vitacare' AS origem
-  FROM {{ ref("raw_prontuario_vitacare__paciente") }}
+  FROM {{ ref("int_prontuario_vitacare__paciente") }}
   WHERE telefone IS NOT NULL AND telefone != ''
 
   UNION ALL

@@ -1,0 +1,63 @@
+{{
+    config(
+        schema="app_historico_clinico",
+        alias="contrarreferencia",
+        materialized="table",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
+    )
+}}
+
+with source as (
+  select
+
+    cr.id_hci,
+
+    cr.estabelecimento.nome as estabelecimento,
+
+    cr.profissional.nome as profissional_nome,
+    INITCAP(
+      REGEXP_REPLACE(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(
+            REGEXP_REPLACE(lower(cr.profissional.cargo), r"^medico\s*", ""),
+            r"\bcirurgiao\b",
+            "cirurgião"
+          ),
+          r"\bfonoaudiologo\b",
+          "fonoaudiólogo"
+        ),
+        r"\b\s+[e\-]\s+\b",  -- De "xxxx e xxxx" ou "xxxx - xxxx"
+        "/"                  -- Para "xxxx/xxxx"
+      )
+    ) as profissional_cargo,
+
+    cr.contrarreferencia.numero as documento_numero,
+    cr.contrarreferencia.datahora as documento_datahora,
+    cr.contrarreferencia.pdf_uri as documento_uri,
+
+    cr.avaliacao.conduta,
+    cr.avaliacao.seguimento,
+    -- Só queremos passar resumo se os outros campos
+    -- não foram automaticamente detectados
+    if(
+      cr.avaliacao.historia_doenca_atual is null
+      and cr.avaliacao.medicamentos_em_uso is null
+      and cr.avaliacao.hipotese_diagnostica is null,
+      cr.avaliacao.resumo,
+      null
+    ) as resumo,
+    cr.avaliacao.historia_doenca_atual,
+    cr.avaliacao.medicamentos_em_uso,
+    cr.avaliacao.hipotese_diagnostica,
+
+    safe_cast(cr.paciente.cpf as int64) as cpf_particao
+
+  from {{ ref("mart_historico_clinico__contrarreferencia") }} as cr
+)
+
+select *
+from source

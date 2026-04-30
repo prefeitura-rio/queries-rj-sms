@@ -23,7 +23,7 @@ cidadaos_no_pep as (
     upper(pai_nome) as nome_pai,
     sexo,
     id_cnes
-  from {{ ref('raw_prontuario_vitacare__paciente') }}
+  from {{ ref('int_prontuario_vitacare__paciente') }}
 ),
 
 cidadaos_no_pep_avaliados as (

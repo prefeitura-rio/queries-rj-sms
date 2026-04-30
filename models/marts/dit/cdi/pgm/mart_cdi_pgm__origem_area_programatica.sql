@@ -1,7 +1,8 @@
 {{ config(
   schema = "mart_cdi",
   alias  = "pgm_origem_area_programatica",
-  materialized = "table"
+  materialized = "table",
+  meta={"owner": "karen"}
 ) }}
 
 WITH base AS (

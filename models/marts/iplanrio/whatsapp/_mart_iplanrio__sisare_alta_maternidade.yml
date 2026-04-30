@@ -3,9 +3,11 @@ version: 2
 models:
   - name: mart_iplanrio__sisare_alta_maternidade
     description: >
-      Tabela do projeto Cegonha Digital que consolida eventos hospitalares de parto e aborto
-      registrados no SISARE, com dados de contato da gestante validados para disparo via WhatsApp.
-      Contempla exclusivamente internações do ano vigente cujo desfecho foi Aborto (1) ou Parto (3).
+          Tabela do projeto Cegonha Digital que consolida eventos hospitalares de parto e aborto
+          registrados no SISARE, com dados de contato da gestante validados para disparo via WhatsApp.
+          Contempla exclusivamente internações do ano vigente cujo desfecho foi Aborto (1) ou Parto (3).
+          Para cada gestante, os telefones são consolidados a partir do próprio SISARE e enriquecidos
+          com os prontuários da SMS (Vitacare e Vitai), sendo armazenados em um array ordenado por prioridade.
     columns:
       - name: cpf
         description: >
@@ -15,21 +17,19 @@ models:
         description: >
           Nome completo da gestante conforme cadastro no SISARE.
 
-      - name: telefone_informado
+      - name: telefones_gestante
         description: >
-          Telefone bruto registrado no cadastro da paciente no SISARE.
-
-      - name: telefone_valido_whatsapp
-        description: >
-          Telefone validado e padronizado no formato 55DDD9XXXXXXXX para disparo no whatsapp. Nulo quando o número
-          não atende aos critérios de validade para disparo via WhatsApp.
-
-      - name: motivo_invalidacao_telefone
-        description: >
-          Motivo pelo qual o telefone foi considerado inválido. Valores possíveis:
-          poucos_digitos, ddd_invalido, todos_digitos_iguais, numero_institucional,
-          celular_9d_digito_invalido, texto_indefinido, numero_compartilhado,
-          telefone_formatado_nulo. Nulo quando o telefone é válido.
+          Array de structs com os telefones da gestante consolidados a partir de múltiplas origens,
+          ordenados por prioridade. Cada elemento contém:
+          - telefone_original: número bruto conforme registrado na origem.
+          - origem: fonte do telefone. Valores possíveis: sisare, vitacare, vitai.
+          - prioridade: ordem de preferência do telefone (1 = sisare, 2 = vitacare, 3 = vitai).
+          - telefone_valido_whatsapp: telefone validado e padronizado no formato 55DDD9XXXXXXXX
+            para disparo via WhatsApp. Nulo quando o número não atende aos critérios de validade.
+          - motivo_invalidacao_telefone: motivo pelo qual o telefone foi considerado inválido.
+            Valores possíveis: poucos_digitos, ddd_invalido, todos_digitos_iguais,
+            numero_institucional, texto_indefinido, numero_compartilhado, telefone_formatado_nulo.
+            Nulo quando o telefone é válido.
 
       - name: data_alta_internacao
         description: >

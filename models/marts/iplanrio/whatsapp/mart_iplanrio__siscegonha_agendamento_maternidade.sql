@@ -115,7 +115,7 @@ vitacare_tel as (
     select
         regexp_replace(cast(cpf as string), r'\D', '') as cpf,
         any_value({{ normalize_null("trim(cast(telefone as string))") }}) as telefone
-    from {{ ref('raw_prontuario_vitacare__paciente') }}
+    from {{ ref('int_prontuario_vitacare__paciente') }}
     where {{ normalize_null("trim(cast(cpf as string))") }} is not null
       and {{ normalize_null("trim(cast(telefone as string))") }} is not null
     group by 1

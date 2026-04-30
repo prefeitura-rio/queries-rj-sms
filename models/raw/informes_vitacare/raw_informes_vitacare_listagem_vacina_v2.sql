@@ -2,6 +2,7 @@
     config(
         alias="listagem_vacina_v2",
         materialized="table",
+        enabled=false
     )
 }}
 

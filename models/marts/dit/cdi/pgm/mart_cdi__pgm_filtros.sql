@@ -1,7 +1,8 @@
 {{ config(
   schema = "projeto_cdi",
   alias  = "pgm_filtros",
-  materialized = "table"
+  materialized = "table",
+  meta={"owner": "karen"}
 ) }}
 
 WITH base AS (

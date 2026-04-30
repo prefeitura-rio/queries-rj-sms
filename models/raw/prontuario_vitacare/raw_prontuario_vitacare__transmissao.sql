@@ -1,6 +1,7 @@
 {{
     config(
         alias="transmissao",
+        tags=['daily']
     )
 }}
 

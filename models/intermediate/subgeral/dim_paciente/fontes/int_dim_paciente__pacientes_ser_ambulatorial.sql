@@ -7,11 +7,17 @@ with pacientes as (
         safe_cast(paciente_data_nascimento as date) as paciente_data_nascimento,
 
         safe_cast(paciente_sexo as string) as paciente_sexo,
-        --safe_cast(paciente_municipio as string) as paciente_municipio_residencia
-        
+
+        -- proxy de atualização cadastral: data da solicitação ambulatorial mais recente no SER.
+        safe_cast(data_solicitacao as timestamp) as data_atualizacao
+
     from {{ ref ("raw_ser_metabase__ambulatorial") }}
     where data_solicitacao >= "2024-01-01"
 )
 
-select distinct * from pacientes
--- paciente_sexo: MASCULINO, FEMININO, NULL
+select * from pacientes
+-- SER ambulatorial não tem cpf; particiona por cns.
+qualify row_number() over (
+    partition by paciente_cns
+    order by data_atualizacao desc
+) = 1

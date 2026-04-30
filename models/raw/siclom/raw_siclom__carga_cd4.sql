@@ -8,13 +8,21 @@
             "data_type": "date",
             "granularity": "month",
         },
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
+        unique_key="id"
     )
 }}
 
-with 
+{% set last_partition = get_last_partition_date(this) %}
 
+with
 source as (
     select * from {{ source('brutos_siclom_api_staging', 'carga_cd4') }}
+    {% if is_incremental() %}
+        -- Filtra os dados de origem para processar apenas a partir da última partição existente na tabela de destino.
+        where date(data_particao) >= date('{{ last_partition }}')
+    {% endif %}
 ),
 
 linfocitos_cd4 as (
@@ -50,7 +58,7 @@ linfocitos_cd4 as (
         -- Avaliação clínica
         {{ process_null('st_dois_ult_cd4_maior_350') }} as dois_ult_cd4_maior_350,
         {{ process_null('estagio_clinico') }} as estagio_clinico,
-        {{ process_null('st_carga_viral_indetectavel') }} as carga_viral_indentectavel,
+        {{ process_null('st_carga_viral_indetectavel') }} as carga_viral_indetectavel,
         {{ process_null('avaliacao_inicial') }} as avaliacao_inicial,
         {{ process_null('mo_pes_assinto_segmento') }} as pessoa_assintomatica_segmento,
         {{ process_null('mo_crianca_adolescente') }} as crianca_adolescente,
@@ -114,5 +122,16 @@ linfocitos_cd4 as (
 )
 
 select 
-    *
+    {{
+        dbt_utils.generate_surrogate_key(
+            [
+                "paciente_cpf",
+                "paciente_nome",
+                "id_amostra_laboratorial",
+                "numero_formulario"
+            ]            
+        )
+    }} as id,
+    *,
 from linfocitos_cd4
+qualify row_number() over (partition by id order by extraido_em desc)=1

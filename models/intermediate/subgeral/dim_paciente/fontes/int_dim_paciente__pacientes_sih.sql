@@ -21,28 +21,23 @@ with pacientes as (
             else NULL 
         end as paciente_racacor,
 
-        /*
-        safe_cast(paciente_mun_origem as string) as paciente_municipio_nascimento,
-        safe_cast(paciente_complemento as string) as paciente_complemento,
-        safe_cast(paciente_numero as string) as paciente_numero,
-        safe_cast(paciente_logradouro as string) as paciente_endereco_residencia,
-        safe_cast(paciente_cep as string) as paciente_cep,
-        safe_cast(paciente_tipo_logradouro as string) as paciente_tp_logradouro_residencia,
-        safe_cast(paciente_bairro as string) as paciente_bairro,
-        safe_cast(mun.nome_municipio as string) as paciente_municipio,
-        safe_cast(paciente_uf as string) as paciente_uf,
-        */
-
         concat(
             coalesce(paciente_tel_ddd, ''),
             coalesce(paciente_tel_num, '')
-        ) as paciente_telefone
-        
+        ) as paciente_telefone,
+
+        -- proxy de atualização cadastral: data de emissão do AIH mais recente.
+        -- escolhemos data_emissao (e não data_internacao) porque representa o momento
+        -- em que o paciente foi registrado no AIH, mais próximo de "cadastro atualizado".
+        safe_cast(data_emissao as timestamp) as data_atualizacao
+
     from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}
     left join {{ref("raw_sheets__municipios_rio")}} as mun
     on safe_cast(paciente_municipio as int) = safe_cast(mun.cod_ibge_6 as int)
 )
 
-select distinct * from pacientes
--- paciente_sexo: I, -, M, F
--- paciente_racacor: 0,1,2,3,4,5,99
+select * from pacientes
+qualify row_number() over (
+    partition by coalesce(safe_cast(paciente_cpf as string), safe_cast(paciente_cns as string))
+    order by data_atualizacao desc
+) = 1
