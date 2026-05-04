@@ -1,6 +1,6 @@
 {{
     config(
-        alias="recem_nascido",
+        alias="dtw__recem_nascido",
         materialized="incremental",
         unique_key="gid",
         tags=["every_30_min"],
@@ -8,7 +8,8 @@
             "field": "data_particao", 
             "data_type": "date", 
             "granularity": "day"
-        }
+        },
+        meta={"owner": "herian"}
     )
 }}
 
