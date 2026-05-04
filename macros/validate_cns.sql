@@ -65,7 +65,8 @@ case
           else 11 - mod(soma, 11)
         end as digito_verificador
       from (
-        -- (1) Obtém PIS, calcula somatório tal qual no CNS provisório
+        -- (1) Obtém PIS, calcula somatório tal qual no CNS provisório,
+        --     mas somente dos primeiros 11 dígitos
         select
           substr({{ cns }}, 1, 11) as pis,
           -- Aqui precisamos de safe_cast() ao invés de cast() mesmo já
@@ -83,10 +84,6 @@ case
             + safe_cast(substr({{ cns }}, 9, 1) as INT64) * 7
             + safe_cast(substr({{ cns }}, 10, 1) as INT64) * 6
             + safe_cast(substr({{ cns }}, 11, 1) as INT64) * 5
-            + safe_cast(substr({{ cns }}, 12, 1) as INT64) * 4
-            + safe_cast(substr({{ cns }}, 13, 1) as INT64) * 3
-            + safe_cast(substr({{ cns }}, 14, 1) as INT64) * 2
-            + safe_cast(substr({{ cns }}, 15, 1) as INT64)
           ) as soma
       )
     )
