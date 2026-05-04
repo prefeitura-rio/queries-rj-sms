@@ -53,6 +53,7 @@ calc AS (
     *,
     CASE
       WHEN data_retorno IS NULL OR data_entrada IS NULL THEN NULL
+      WHEN data_retorno < data_entrada THEN NULL
       ELSE DATE_DIFF(data_retorno, data_entrada, DAY)
     END AS dias_atendimento,
 
