@@ -73,7 +73,7 @@ with
             id_cnes_unidade_executante,
             left(cid, 3) as cid,
             evento_status,
-            {{ clean_proced_name("procedimento") }} as procedimento,
+            procedimento,
             data_solicitacao,
             data_autorizacao,
             data_execucao,
