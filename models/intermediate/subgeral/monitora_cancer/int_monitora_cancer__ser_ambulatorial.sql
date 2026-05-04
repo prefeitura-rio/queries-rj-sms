@@ -17,7 +17,7 @@ select
 
 -- qualificacao
     cid,
-    cast(NULL as string) as evento_status,
+    solicitacao_estado as evento_status,
     coalesce(procedimento_regulado, procedimento_solicitado) as procedimento,
 
 -- datas

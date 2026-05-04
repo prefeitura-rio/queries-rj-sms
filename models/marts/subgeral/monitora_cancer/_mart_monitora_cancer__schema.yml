@@ -381,6 +381,15 @@ models:
            threshold 10 dias.
         2. SISCAN mamografia Cat 6 → qualquer evento SER, threshold 5 dias.
         3. SISCAN biópsia neoplásica → qualquer evento SER, threshold 5 dias.
+        4. SISREG biópsia → progresso entre datas intra-evento,
+           threshold 20 dias por leg (legs: solicitacao→autorizacao,
+           autorizacao→execucao).
+        5. SER status "PENDENTE" → atualização do status da solicitação,
+           threshold 10 dias.
+        6. SER status "EM FILA" → atualização do status da solicitação,
+           threshold 60 dias.
+        7. SER status de falha ("CHEGADA NAO CONFIRMADA", "CANCELADA")
+           → nova solicitação SER, threshold 10 dias.
 
       Convenções de data: trigger_date = data_referencia_evento (MAX das 4
       datas do evento); expected_date = COALESCE(data_execucao, data_autorizacao).
