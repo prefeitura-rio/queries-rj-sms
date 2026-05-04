@@ -18,6 +18,26 @@
 
 {% set episodio_gap_dias = var('episodio_gap_dias', 180) %}
 
+-- Materializado como `table` para compartilhar computações entre
+-- mart_monitora_cancer__gravidade e mart_monitora_cancer__pacientes_linha_tempo,
+-- evitando trabalho repetido.
+-- Antes, como ephemeral, era inlinado 12 vezes em gravidade.
+-- Particionado por cpf_particao para pruning em consultas pontuais.
+-- Clusterizado por ['fonte', 'procedimento'] para acelerar filtros nos subscores de gravidade.
+{{
+    config(
+        materialized="table",
+        schema="projeto_monitora_cancer",
+        tags=["daily", "subgeral", "monitora_cancer"],
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
+        cluster_by=["fonte", "procedimento"],
+    )
+}}
+
 -- event_order: data_referencia_evento, data_solicitacao, data_autorizacao, data_execucao, data_resultado
 
 with
