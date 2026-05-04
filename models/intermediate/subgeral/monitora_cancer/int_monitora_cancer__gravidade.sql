@@ -68,6 +68,7 @@ with
             evento_status,
             data_solicitacao,
             data_autorizacao,
+            data_execucao,
             data_referencia_evento,
             coalesce(data_execucao, data_autorizacao) as data_expected,
             gestante
