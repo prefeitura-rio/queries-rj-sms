@@ -10,6 +10,7 @@
             "data_type": "date",
             "granularity": "day",
         },
+        meta={"owner": "herian"}
     )
 }}
 with 
