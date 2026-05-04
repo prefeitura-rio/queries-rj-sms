@@ -23,7 +23,7 @@ with
     events_from_window as (
         select *
         from {{ source("brutos_prontuario_vitai_staging", "dtw__fat_recem_nascido_eventos") }}
-        {% if is_incremental() %} where data_particao > '{{seven_days_ago}}' {% endif %}
+        {% if is_incremental() %} where data_particao >= '{{seven_days_ago}}' {% endif %}
     ),
     -- Ranqueia os eventos por frescor dentro de cada grupo
     events_ranked_by_freshness as (
@@ -85,6 +85,6 @@ select
     safe_cast(data_registro as datetime) as registro_datahora,
     safe_cast(created_at as datetime) as created_at,
     safe_cast(updated_at as datetime) as updated_at,
-    safe_cast(datalake_loaded_at as datetime) as imported_at,
+    datetime(safe_cast(datalake_loaded_at as timestamp), 'America/Sao_Paulo') as imported_at,
     safe_cast(data_particao as date) as data_particao
 from latest_events
