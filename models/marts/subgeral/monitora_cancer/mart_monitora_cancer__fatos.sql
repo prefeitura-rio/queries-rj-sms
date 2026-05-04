@@ -13,6 +13,7 @@
       "data_type": "date",
       "granularity": "month",
     },
+    incremental_predicates=['DBT_INTERNAL_DEST.data_solicitacao >= date_sub(current_date(), interval 6 month)'],
     cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
     on_schema_change='sync_all_columns'
   )
