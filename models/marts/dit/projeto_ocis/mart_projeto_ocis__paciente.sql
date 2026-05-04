@@ -27,11 +27,13 @@ with sarah_atendimento as (
         "upper(regexp_replace(normalize(paciente_nome, NFD), r'[^\p{Letter}]', ''))",
         "paciente_data_nascimento"
       ])
-    }} as nome_nasc_id,
+    }} as paciente_id,
     upper(paciente_nome) as nome,
     paciente_data_nascimento as data_nascimento,
     "sarah" as prontuario
   from {{ ref("raw_prontuario_sarah__atendimento") }}
+  where (paciente_nome is not null)
+    and (paciente_data_nascimento is not null)
 ),
 
 medilab_exames as (
@@ -51,11 +53,13 @@ medilab_exames as (
         "upper(regexp_replace(normalize(paciente_nome, NFD), r'[^\p{Letter}]', ''))",
         "paciente_data_nascimento"
       ])
-    }} as nome_nasc_id,
+    }} as paciente_id,
     upper(paciente_nome) as nome,
     paciente_data_nascimento as data_nascimento,
     "medilab" as prontuario
   from {{ ref("raw_medilab__exames") }}
+  where (paciente_nome is not null)
+    and (paciente_data_nascimento is not null)
   -- TODO: Múltiplos pacientes distintos parecem estar vindo
   -- com mesmo CNS no MediLab; algo a ser investigado mais a fundo
 ),
@@ -71,7 +75,7 @@ cpf_existe as (
 
     coalesce(s.nome, m.nome) as nome,
     coalesce(s.data_nascimento, m.data_nascimento) as data_nascimento,
-    coalesce(s.nome_nasc_id, m.nome_nasc_id) as nome_nasc_id,
+    coalesce(s.paciente_id, m.paciente_id) as paciente_id,
     if(
       s.prontuario is not null and m.prontuario is not null,
       "ambos",
@@ -81,7 +85,7 @@ cpf_existe as (
   full outer join medilab_exames as m
     using (cpf)
   where cpf is not null
-  group by cpf, nome_nasc_id, nome, data_nascimento, prontuario
+  group by cpf, paciente_id, nome, data_nascimento, prontuario
 ),
 
 -- Em seguida, pegamos os sem CPF mas com CNS preenchido
@@ -92,7 +96,7 @@ cns_existe as (
 
     coalesce(s.nome, m.nome) as nome,
     coalesce(s.data_nascimento, m.data_nascimento) as data_nascimento,
-    coalesce(s.nome_nasc_id, m.nome_nasc_id) as nome_nasc_id,
+    coalesce(s.paciente_id, m.paciente_id) as paciente_id,
     if(
       s.prontuario is not null and m.prontuario is not null,
       "ambos",
@@ -124,12 +128,12 @@ cns_com_cpf as (
 
     orig.nome,
     orig.data_nascimento,
-    orig.nome_nasc_id,
+    orig.paciente_id,
     any_value(orig.prontuario)
   from cns_existe as orig
   left join mapeamento_cpf_cns as mp
     on (orig.cns = mp.valor_cns)
-  group by nome_nasc_id, nome, data_nascimento
+  group by paciente_id, nome, data_nascimento
 ),
 
 
@@ -141,7 +145,7 @@ todos_com_cpf as (
   )
   where cpf is not null
   qualify row_number() over (
-    partition by nome_nasc_id, cpf
+    partition by paciente_id, cpf
     order by cpf asc
   ) = 1
 ),
@@ -162,7 +166,7 @@ dados_completos as (
     p.dados.genero,
     upper(p.dados.mae_nome) as mae_nome,
 
-    t.nome_nasc_id,
+    t.paciente_id,
     t.prontuario,
     t.fonte
   from todos_com_cpf as t
