@@ -18,6 +18,17 @@ with
             safe_cast(cod_recurso_regulado as int) as id_procedimento_regulado
         from {{ ref("raw_ser_metabase__ambulatorial") }}
         where data_solicitacao >= "{{ data_inicio_monitoramento }}"
+            -- Filtro por id_procedimento da seed (fonte de verdade da inclusão).
+            -- safe_cast(... as int): cod_recurso_* é STRING no source; o cast
+            -- normaliza eventuais zeros à esquerda para casar com o INT da seed.
+            and (
+                safe_cast(cod_recurso_solicitado as int) in (
+                    select id_procedimento from procedimentos
+                )
+                or safe_cast(cod_recurso_regulado as int) in (
+                    select id_procedimento from procedimentos
+                )
+            )
     ),
 
     enriquecido as (
@@ -34,8 +45,6 @@ with
                 on base.id_procedimento_solicitado = ps.id_procedimento
             left join procedimentos as pr
                 on base.id_procedimento_regulado = pr.id_procedimento
-        where ps.id_procedimento is not null
-            or pr.id_procedimento is not null
     )
 
 select

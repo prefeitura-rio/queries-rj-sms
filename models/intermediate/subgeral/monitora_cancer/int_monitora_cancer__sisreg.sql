@@ -1,6 +1,17 @@
 -- Eventos de procedimentos de mama extraídos do SISREG (regulação ambulatorial)
 {% set data_inicio_monitoramento = "2021-01-01" %}
 
+-- Sobre o JOIN em id_procedimento_sisreg:
+-- mart_sisreg__solicitacoes une duas CTEs (`solicitacoes` e `marcacoes`) que
+-- entregam id_procedimento_sisreg em FORMATOS DIFERENTES:
+--   • raw_sisreg_api__marcacoes      → STRING zero-padded para 7 chars (ex.: "0703716")
+--   • raw_sisreg_api__solicitacoes   → STRING sem padding         (ex.: "703716")
+-- Para casar com o INT da seed, usamos safe_cast(... as int) na coluna source.
+-- Custo: o cast envolve a chave de cluster (id_procedimento_sisreg é a 3ª
+-- chave de cluster_by) e zera cluster pruning desse predicado. Mantido por
+-- correção até o upstream normalizar (issue: padronizar lpad em
+-- raw_sisreg_api__solicitacoes.procedimento_id).
+
 with
     procedimentos as (
         select
@@ -15,6 +26,11 @@ with
         select *
         from {{ ref("mart_sisreg__solicitacoes") }}
         where data_solicitacao >= "{{ data_inicio_monitoramento }}"
+            -- Pushdown do filtro de id_procedimento para o scan da fonte:
+            -- reduz o row count que entra nos joins/transformações downstream.
+            and safe_cast(id_procedimento_sisreg as int) in (
+                select id_procedimento from procedimentos
+            )
     )
 
 select
