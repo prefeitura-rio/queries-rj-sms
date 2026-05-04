@@ -102,4 +102,4 @@ models:
       - name: imported_at
         description: "Data e hora de importação para o datalake."
       - name: data_particao
-        description: "Data da partição dos dados."
+        description: "Data da partição dos dados. É data de carregamento dos dados no datalake, não necessariamente a data do evento."
