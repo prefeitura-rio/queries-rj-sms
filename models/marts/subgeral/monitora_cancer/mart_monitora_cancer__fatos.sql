@@ -1,6 +1,12 @@
 -- noqa: disable=LT08
 -- Fatos unificados do monitoramento de câncer de mama.
 -- Responsável pelo UNION das fontes intermediárias + enriquecimento de CPF e estabelecimento.
+
+-- Lookback empírico: p99 do date_diff(data_solicitacao, data_execucao) sobre todas
+-- as solicitações no sisreg (histórico) em 04/05/2026.
+-- Cobre eventos cuja execução chega tardiamente após a solicitação.
+{% set lookback_dias = 464 %}
+
 {{
   config(
     materialized='incremental',
@@ -13,7 +19,7 @@
       "data_type": "date",
       "granularity": "month",
     },
-    incremental_predicates=['DBT_INTERNAL_DEST.data_solicitacao >= date_sub(current_date(), interval 6 month)'],
+    incremental_predicates=['DBT_INTERNAL_DEST.data_solicitacao >= date_sub(current_date(), interval ' ~ lookback_dias ~ ' day)'],
     cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
     on_schema_change='sync_all_columns'
   )
@@ -31,28 +37,28 @@ with
     fontes_unificadas as (
         select * from {{ ref("int_monitora_cancer__sisreg") }}
         {% if is_incremental() %}
-        where data_solicitacao >= date_sub('{{ last_partition }}', interval 6 month)
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__ser_ambulatorial") }}
         {% if is_incremental() %}
-        where data_solicitacao >= date_sub('{{ last_partition }}', interval 6 month)
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan") }}
         {% if is_incremental() %}
-        where data_solicitacao >= date_sub('{{ last_partition }}', interval 6 month)
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
         {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
         {% if is_incremental() %}
-        where data_solicitacao >= date_sub('{{ last_partition }}', interval 6 month)
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
         {% endif %}
     ),
 
