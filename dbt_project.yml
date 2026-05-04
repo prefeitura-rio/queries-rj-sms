@@ -156,6 +156,7 @@ models:
       gdb_sih:
         +schema: brutos_gdb_sih
         +tags: ["gdb_sih"]  # TODO: weekly
+        +meta: {"owner": "avellar"}
         +labels:
           dado_publico: sim
           dado_pessoal: sim
@@ -163,6 +164,7 @@ models:
       gdb_sia:
         +schema: brutos_gdb_sia
         +tags: ["gdb_sia"]  # TODO: weekly
+        +meta: {"owner": "avellar"}
         +labels:
           dado_publico: sim
           dado_pessoal: sim

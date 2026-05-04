@@ -4,6 +4,7 @@
         alias="municipios_brasil",
         materialized="table",
         tags=["monthly"],
+        meta={"owner": "avellar"}
     )
 }}
 

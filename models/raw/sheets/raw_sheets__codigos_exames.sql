@@ -3,6 +3,7 @@
         schema="brutos_sheets",
         alias="codigos_exames",
         tags=["monthly"],
+        meta={"owner": "avellar"}
     )
 }}
 
