@@ -84,6 +84,7 @@ select
         )
 
         order by
+            ev.data_referencia_evento,
             ev.data_solicitacao,
             ev.data_autorizacao,
             ev.data_execucao,

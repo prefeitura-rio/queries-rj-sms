@@ -1,6 +1,52 @@
 -- Eventos de procedimentos de mama extraídos do SER (regulação estadual ambulatorial)
 {% set data_inicio_monitoramento = "2021-01-01" %}
 
+with
+    procedimentos as (
+        select
+            id_procedimento,
+            procedimento,
+            safe_cast(criterio_suspeita as bool) as criterio_suspeita,
+            safe_cast(criterio_diagnostico as bool) as criterio_diagnostico
+        from {{ ref("procedimentos_ser") }}
+    ),
+
+    base as (
+        select
+            *,
+            safe_cast(cod_recurso_solicitado as int) as id_procedimento_solicitado,
+            safe_cast(cod_recurso_regulado as int) as id_procedimento_regulado
+        from {{ ref("raw_ser_metabase__ambulatorial") }}
+        where data_solicitacao >= "{{ data_inicio_monitoramento }}"
+            -- Filtro por id_procedimento da seed (fonte de verdade da inclusão).
+            -- safe_cast(... as int): cod_recurso_* é STRING no source; o cast
+            -- normaliza eventuais zeros à esquerda para casar com o INT da seed.
+            and (
+                safe_cast(cod_recurso_solicitado as int) in (
+                    select id_procedimento from procedimentos
+                )
+                or safe_cast(cod_recurso_regulado as int) in (
+                    select id_procedimento from procedimentos
+                )
+            )
+    ),
+
+    enriquecido as (
+        select
+            base.*,
+            ps.procedimento as procedimento_solicitado_seed,
+            ps.criterio_suspeita as suspeita_solicitado,
+            ps.criterio_diagnostico as diagnostico_solicitado,
+            pr.procedimento as procedimento_regulado_seed,
+            pr.criterio_suspeita as suspeita_regulado,
+            pr.criterio_diagnostico as diagnostico_regulado
+        from base
+            left join procedimentos as ps
+                on base.id_procedimento_solicitado = ps.id_procedimento
+            left join procedimentos as pr
+                on base.id_procedimento_regulado = pr.id_procedimento
+    )
+
 select
 -- pk
     "SER" as sistema_origem,
@@ -17,8 +63,8 @@ select
 
 -- qualificacao
     cid,
-    cast(NULL as string) as evento_status,
-    coalesce(procedimento_regulado, procedimento_solicitado) as procedimento,
+    solicitacao_estado as evento_status,
+    coalesce(procedimento_regulado_seed, procedimento_solicitado_seed) as procedimento,
 
 -- datas
     data_solicitacao,
@@ -31,82 +77,9 @@ select
     cast(NULL as string) as mama_direita_resultado,
 
 -- indicadores
-    false as criterio_suspeita,
-    case
-        when
-        procedimento_solicitado in (
-            "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)"
-        )
-        or
-        procedimento_regulado in (
-            "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)"
-        )
-        then true
-        else false
-    end as criterio_diagnostico
+    coalesce(suspeita_solicitado, false)
+        or coalesce(suspeita_regulado, false) as criterio_suspeita,
+    coalesce(diagnostico_solicitado, false)
+        or coalesce(diagnostico_regulado, false) as criterio_diagnostico
 
-from {{ ref("raw_ser_metabase__ambulatorial") }}
-where 1 = 1
-    and data_solicitacao >= "{{ data_inicio_monitoramento }}"
-    and (
-        procedimento_solicitado in (
-            "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)",
-            "RESSONÂNCIA MAGNÉTICA DE MAMA",
-            "BIÓPSIA DE MAMA GUIADA POR USG",
-            "AMBULATÓRIO 1ª VEZ EM CIRURGIA PLÁSTICA REPARADORA - MAMA (ONCOLOGIA)",
-            "MAMOGRAFIA BILATERAL",
-            "BIÓPSIA DE MAMA POR ULTRASSONOGRAFIA",
-            "BIÓPSIA GUIADA POR MAMOGRAFIA",
-            "CORE BIOPSIA DE MAMA",
-            "RESSONÂNCIA MAGNÉTICA DE MAMA-ONCOLOGIA",
-            "ULTRA-SONOGRAFIA DOPPLER DE MAMAS",
-            "ULTRASSONOGRAFIA DE MAMA (FEMININA E MASCULINA)",
-            "MASTOLOGIA (RETORNO)",
-            "CREG BL AMBULATÓRIO 1ª VEZ - MASTOLOGIA",
-            "MAMOGRAFIA - BILATERAL",
-            "BIOPSIA DE MAMA POR PAAF",
-            "AMBULATÓRIO 1ª VEZ - MASTOLOGIA",
-            "AMBULATÓRIO 1ª VEZ EM MASTOLOGIA - LESÃO IMPALPÁVEL (ONCOLOGIA)",
-            "CONSULTA EM MASTOLOGIA",
-            "MAMOGRAFIA DE RASTREIO",
-            "ULTRASSONOGRAFIA - MAMAS",
-            "BIÓPSIA DE MAMA POR ESTEREOTAXIA / MAMOTOMIA",
-            "CONSULTA EM GINECOLOGIA - MASTOLOGIA",
-            "BIÓPSIA DE MAMA - LESÃO PALPÁVEL",
-            "ULTRASSONOGRAFIA DE MAMA COM DOPPLER",
-            "CORE BIÓPSIA DE MAMA",
-            "PROCEDIMENTOS DIAGNÓSTICOS GUIADOS POR USG (MAMA) (DESATIVADO)",
-            "ULTRASSONOGRAFIA DE MAMAS BILATERAL",
-            "BIÓPSIA DE MAMA POR ULTRASSONOGRAFIA"
-        ) or
-        procedimento_regulado in (
-            "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)",
-            "RESSONÂNCIA MAGNÉTICA DE MAMA",
-            "BIÓPSIA DE MAMA GUIADA POR USG",
-            "AMBULATÓRIO 1ª VEZ EM CIRURGIA PLÁSTICA REPARADORA - MAMA (ONCOLOGIA)",
-            "MAMOGRAFIA BILATERAL",
-            "BIÓPSIA DE MAMA POR ULTRASSONOGRAFIA",
-            "BIÓPSIA GUIADA POR MAMOGRAFIA",
-            "CORE BIOPSIA DE MAMA",
-            "RESSONÂNCIA MAGNÉTICA DE MAMA-ONCOLOGIA",
-            "ULTRA-SONOGRAFIA DOPPLER DE MAMAS",
-            "ULTRASSONOGRAFIA DE MAMA (FEMININA E MASCULINA)",
-            "MASTOLOGIA (RETORNO)",
-            "CREG BL AMBULATÓRIO 1ª VEZ - MASTOLOGIA",
-            "MAMOGRAFIA - BILATERAL",
-            "BIOPSIA DE MAMA POR PAAF",
-            "AMBULATÓRIO 1ª VEZ - MASTOLOGIA",
-            "AMBULATÓRIO 1ª VEZ EM MASTOLOGIA - LESÃO IMPALPÁVEL (ONCOLOGIA)",
-            "CONSULTA EM MASTOLOGIA",
-            "MAMOGRAFIA DE RASTREIO",
-            "ULTRASSONOGRAFIA - MAMAS",
-            "BIÓPSIA DE MAMA POR ESTEREOTAXIA / MAMOTOMIA",
-            "CONSULTA EM GINECOLOGIA - MASTOLOGIA",
-            "BIÓPSIA DE MAMA - LESÃO PALPÁVEL",
-            "ULTRASSONOGRAFIA DE MAMA COM DOPPLER",
-            "CORE BIÓPSIA DE MAMA",
-            "PROCEDIMENTOS DIAGNÓSTICOS GUIADOS POR USG (MAMA) (DESATIVADO)",
-            "ULTRASSONOGRAFIA DE MAMAS BILATERAL",
-            "BIÓPSIA DE MAMA POR ULTRASSONOGRAFIA"
-        )
-    )
+from enriquecido
