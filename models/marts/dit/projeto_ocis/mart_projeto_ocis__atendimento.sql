@@ -50,7 +50,14 @@ with sarah_atendimento as (
   where (paciente_nome is not null)
     and (paciente_data_nascimento is not null)
     and (cid_principal is not null)
+),
+paciente_existe as (
+  select
+    a.*
+  from {{ ref("mart_projeto_ocis__paciente") }} as p
+  inner join sarah_atendimento as a
+    using (paciente_id)
 )
 
 select *
-from sarah_atendimento
+from paciente_existe

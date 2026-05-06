@@ -10,8 +10,22 @@
 -- Queremos uma tabela com 1 entrada para cada paciente
 -- que apareça ou no Sarah ou no MediLab
 
-with sarah_atendimento as (
-  select distinct
+with sarah_pacientes as (
+  select
+
+    json_value(data, "$.paciente.cpf") as paciente_cpf,
+    json_value(data, "$.paciente.cns") as paciente_cns,
+    json_value(data, "$.paciente.nome") as paciente_nome,
+    date(
+      json_value(data, "$.paciente.data_nascimento")
+    ) as paciente_data_nascimento,
+
+  from {{ source("brutos_prontuario_sarah_api_staging", "atendimento_continuo") }}
+  where source_id != "string"
+  qualify row_number() over (partition by source_id order by datalake_loaded_at desc) = 1
+),
+sarah_pacientes_tratados as (
+  select
     if(
       {{ validate_cpf("safe_cast(paciente_cpf as string)") }},
       cast(paciente_cpf as string),
@@ -30,8 +44,9 @@ with sarah_atendimento as (
     }} as paciente_id,
     upper(paciente_nome) as nome,
     paciente_data_nascimento as data_nascimento,
+
     "sarah" as prontuario
-  from {{ ref("raw_prontuario_sarah__atendimento") }}
+  from sarah_pacientes
   where (paciente_nome is not null)
     and (paciente_data_nascimento is not null)
 ),
@@ -81,7 +96,7 @@ cpf_existe as (
       "ambos",
       coalesce(s.prontuario, m.prontuario)
     ) as prontuario
-  from sarah_atendimento as s
+  from sarah_pacientes_tratados as s
   full outer join medilab_exames as m
     using (cpf)
   where cpf is not null
@@ -102,7 +117,7 @@ cns_existe as (
       "ambos",
       coalesce(s.prontuario, m.prontuario)
     ) as prontuario
-  from sarah_atendimento as s
+  from sarah_pacientes_tratados as s
   full outer join medilab_exames as m
     using (cns)
   where
@@ -152,26 +167,31 @@ todos_com_cpf as (
 
 dados_completos as (
   select
-    cpf,
+    t.paciente_id,
+
+    t.cpf,
     -- Deduplica lista de CNS
     array(
       select distinct c
       from unnest(t.cns) as c
     ) as cns,
-    upper(p.dados.nome) as nome_oficial,
+    coalesce(b.nome_social, b.nome) as nome_oficial,
     t.nome as nome_original,
-    p.dados.data_nascimento as data_nascimento_oficial,
+    b.nascimento_data as data_nascimento_oficial,
     t.data_nascimento as data_nascimento_original,
-    p.dados.raca,
-    p.dados.genero,
-    upper(p.dados.mae_nome) as mae_nome,
+    concat("raca-fake-", floor(5*rand())) as raca,
+    if(
+      b.sexo = "não informado",
+      null,
+      b.sexo
+    ) as sexo,
+    upper(b.mae_nome) as mae_nome,
 
-    t.paciente_id,
     t.prontuario,
     t.fonte
   from todos_com_cpf as t
-  left join {{ ref("mart_historico_clinico__paciente") }} as p
-    using (cpf)
+  left join {{ ref("raw_bcadastro__cpf") }} as b
+    on (cast(t.cpf as INT64) = b.cpf_particao)
 )
 
 select *

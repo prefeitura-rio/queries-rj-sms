@@ -24,7 +24,14 @@ with medilab_exames as (
   from {{ ref("raw_medilab__exames") }}
   where (paciente_nome is not null)
     and (paciente_data_nascimento is not null)
+),
+paciente_existe as (
+  select
+    e.*
+  from {{ ref("mart_projeto_ocis__paciente") }} as p
+  inner join medilab_exames as e
+    using (paciente_id)
 )
 
 select *
-from medilab_exames
+from paciente_existe
