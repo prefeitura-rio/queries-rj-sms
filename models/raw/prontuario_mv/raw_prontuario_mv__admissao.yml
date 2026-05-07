@@ -4,8 +4,10 @@ models:
   - name: raw_prontuario_mv__admissao
     description: "Tabela de admissão neonatal do Prontuário MV. Contém informações detalhadas sobre a mãe, gestação, parto e o recém-nascido."
     columns:
+      - name: id_hci
+        description: "Identificador único para o atendimento gerada na materialização do DBT. Combinação de id_atendimento e id_cnes para garantir unicidade." 
       - name: id_atendimento
-        description: "Identificador único do atendimento."
+        description: "Identificador único do atendimento gerada pelo sistema MV."
       - name: id_cnes
         description: "Identificador CNES do estabelecimento de saúde."
       - name: estabelecimento_nome
@@ -226,3 +228,5 @@ models:
         description: "Data e hora de carregamento dos dados no Datalake."
       - name: updated_at
         description: "Data e hora de atualização dos dados na origem."
+      - name: data_particao
+        description: "Data utilizada para particionamento dos dados, neste caso é a data de carregamento no Data Lake."

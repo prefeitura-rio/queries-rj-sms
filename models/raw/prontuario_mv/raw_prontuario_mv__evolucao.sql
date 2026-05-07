@@ -1,8 +1,15 @@
 {{
     config(
         alias="evolucao",
-        materialized="table",
+        materialized="incremental",
         schema='brutos_prontuario_mv',
+        unique_key = "id_hci",
+        incremental_strategy="insert_overwrite",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
         tags=['mv']
     )
 }}
@@ -12,6 +19,9 @@ with
 source as (
     select *
     from {{ source("brutos_prontuario_mv_api_staging", "evolucao_continuo") }}
+    {% if is_incremental() %}
+        where TIMESTAMP_TRUNC(datalake_loaded_at, DAY) >= TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+    {% endif %}
 ),
 
 evolucao_json as (
@@ -106,11 +116,16 @@ evolucao_renomeado as (
 
         -- Metadados
         datetime(datalake_loaded_at, 'America/Sao_Paulo') as loaded_at,
-        parse_datetime('%Y/%m/%d %H:%M:%S', source_updated_at) as updated_at
-
+        parse_datetime('%Y/%m/%d %H:%M:%S', source_updated_at) as updated_at,
+        cast(datalake_loaded_at as date) as data_particao
     from evolucao_json
+),
+
+evolucao_deduplicado as (
+    select *
+    from evolucao_renomeado
+    qualify row_number() over (partition by id_atendimento, id_cnes order by updated_at desc) = 1
 )
 
 select *
-from evolucao_renomeado
-qualify row_number() over (partition by id_atendimento, id_cnes order by updated_at desc) = 1
+from evolucao_deduplicado

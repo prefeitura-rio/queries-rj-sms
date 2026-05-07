@@ -1,8 +1,15 @@
 {{
     config(
         alias="bam",
-        materialized="table",
+        materialized="incremental",
         schema='brutos_prontuario_mv',
+        incremental_strategy="insert_overwrite",
+        unique_key = "id_hci",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
         tags=['mv']
     )
 }}
@@ -13,6 +20,9 @@ with
 source as (
     select * 
     from {{ source("brutos_prontuario_mv_api_staging", "bam_continuo") }}   
+    {% if is_incremental() %}
+        where TIMESTAMP_TRUNC(datalake_loaded_at, DAY) >= TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+    {% endif %}
 ),
 
 bam_json as (
@@ -119,10 +129,19 @@ bam_renomeado as (
 
         -- Metadados
         datetime(datalake_loaded_at, 'America/Sao_Paulo') as loaded_at,
-        parse_datetime('%Y/%m/%d', source_updated_at) as updated_at
+        parse_datetime('%Y/%m/%d', source_updated_at) as updated_at,
+        cast(datalake_loaded_at as date) as data_particao
     from bam_json
+),
+
+bam_deduplicado as (
+    select *
+    from bam_renomeado
+    qualify row_number() over (partition by id_atendimento, id_cnes order by updated_at desc) = 1
+
 )
 
-select *
-from bam_renomeado
-qualify row_number() over (partition by id_atendimento, id_cnes order by updated_at desc) = 1
+select 
+    {{ dbt_utils.generate_surrogate_key(['id_atendimento', 'id_cnes']) }} as id_hci,
+    *
+from bam_deduplicado

@@ -1,9 +1,16 @@
 {{
     config(
         alias="admissao_neo_natal",
-        materialized="table",
-        schema='brutos_prontuario_mv',
-        tags=['mv']
+        materialized="incremental",
+        schema="brutos_prontuario_mv",
+        unique_key = "id_hci",
+        tags=['mv'],
+        incremental_strategy="insert_overwrite",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
 
@@ -13,6 +20,10 @@ with
 source as (
     select * 
     from {{ source("brutos_prontuario_mv_api_staging", "admissao_continuo") }}
+    {% if is_incremental() %}
+    where
+        TIMESTAMP_TRUNC(datalake_loaded_at, DAY) >= TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+    {% endif %}
 ),
 
 admissao as (
@@ -273,11 +284,21 @@ admissao as (
 
         -- Metadados
         datetime(datalake_loaded_at, 'America/Sao_Paulo') as loaded_at,
-        parse_datetime('%Y/%m/%d %H:%M:%S', source_updated_at) as updated_at
+        parse_datetime('%Y/%m/%d %H:%M:%S', source_updated_at) as updated_at,
+        cast(datalake_loaded_at as date) as data_particao
     from admissao
+    qualify row_number() over (partition by id_atendimento, id_cnes order by updated_at desc) = 1
     )
 
     select 
-        * 
+        {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "id_cnes",
+                        "id_atendimento"
+                    ]
+                )
+            }} as id_hci,
+        *
     from admissao_renomeado
-    qualify row_number() over (partition by id_atendimento, id_cnes order by updated_at desc) = 1
+   

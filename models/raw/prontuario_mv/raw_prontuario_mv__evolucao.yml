@@ -4,6 +4,8 @@ models:
   - name: raw_prontuario_mv__evolucao
     description: "Tabela de evolução do paciente do Prontuário MV. Contém registros sobre o acompanhamento clínico do paciente."
     columns:
+      - name: id_hci
+        description: "Identificador único para o atendimento gerada na materialização do DBT. Combinação de id_atendimento e id_cnes para garantir unicidade."
       - name: id_atendimento
         description: "Identificador único do atendimento."
       - name: id_cnes
@@ -68,3 +70,5 @@ models:
         description: "Data e hora de carregamento dos dados no Datalake."
       - name: updated_at
         description: "Data e hora de atualização dos dados na origem."
+      - name: data_particao
+        description: "Data utilizada para particionamento dos dados, neste caso é a data de carregamento no Data Lake."
