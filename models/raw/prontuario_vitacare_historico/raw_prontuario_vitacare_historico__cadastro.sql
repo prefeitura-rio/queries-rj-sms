@@ -28,14 +28,19 @@ WITH
     ),
 
 
-      -- Using window function to deduplicate pacientes
     pacientes_deduplicados AS (
         SELECT
             *
         FROM (
             SELECT
                 *,
-                ROW_NUMBER() OVER (PARTITION BY cpf, id_cnes ORDER BY dataatualizacaocadastro DESC, cadastropermanente DESC) AS rn
+                ROW_NUMBER() OVER (
+                    PARTITION BY id_cnes, ut_id
+                    ORDER BY
+                        SAFE_CAST(dataatualizacaocadastro AS DATETIME) DESC,
+                        SAFE_CAST(dataatualizacaovinculoequipe AS DATETIME) DESC,
+                        SAFE_CAST(extracted_at AS DATETIME) DESC
+                ) AS rn
             FROM source_pacientes
         )
         WHERE rn = 1
