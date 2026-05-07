@@ -36,24 +36,24 @@ vacinacoes_bkp as (
     e.area_programatica,
     e.id_cnes,
     v.id_vacinacao, 
-    cast(v.data_registro as date) as vacina_registro_data, 
-    v.data_aplicacao as vacina_aplicacao_data,
-    lower({{remove_accents_upper("v.tipo_registro")}}) as vacina_registro_tipo
+    cast(v.vacina_registro_data as date) as vacina_registro_data, 
+    v.vacina_aplicacao_data as vacina_aplicacao_data,
+    lower({{remove_accents_upper("v.vacina_tipo_registro")}}) as vacina_registro_tipo
   FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v
     LEFT JOIN {{ ref("dim_estabelecimento") }} e on v.id_cnes = e.id_cnes
   WHERE
-    v.tipo_registro not in ('Não aplicavel', 'Não aplicada') and
+    v.vacina_tipo_registro not in ('Não aplicavel', 'Não aplicada') and
     (
-      (v.data_registro between '2025-08-04' and '2025-10-10' and e.area_programatica = '10') or
-      (v.data_registro between '2025-08-04' and '2025-10-10' and e.area_programatica = '21') or
-      (v.data_registro between '2025-06-16' and '2025-09-24' and e.area_programatica = '22') or
-      (v.data_registro between '2025-06-30' and '2025-10-11' and e.area_programatica = '31') or
-      (v.data_registro between '2025-08-11' and '2025-10-11' and e.area_programatica = '32') or
-      (v.data_registro between '2025-08-11' and '2025-10-14' and e.area_programatica = '33') or
-      (v.data_registro between '2025-08-18' and '2025-10-17' and e.area_programatica = '40') or
-      (v.data_registro between '2025-08-18' and '2025-10-18' and e.area_programatica = '51') or
-      (v.data_registro between '2025-08-25' and '2025-10-18' and e.area_programatica = '52') or
-      (v.data_registro between '2025-08-25' and '2025-10-18' and e.area_programatica = '53')
+      (v.vacina_registro_data between '2025-08-04' and '2025-10-10' and e.area_programatica = '10') or
+      (v.vacina_registro_data between '2025-08-04' and '2025-10-10' and e.area_programatica = '21') or
+      (v.vacina_registro_data between '2025-06-16' and '2025-09-24' and e.area_programatica = '22') or
+      (v.vacina_registro_data between '2025-06-30' and '2025-10-11' and e.area_programatica = '31') or
+      (v.vacina_registro_data between '2025-08-11' and '2025-10-11' and e.area_programatica = '32') or
+      (v.vacina_registro_data between '2025-08-11' and '2025-10-14' and e.area_programatica = '33') or
+      (v.vacina_registro_data between '2025-08-18' and '2025-10-17' and e.area_programatica = '40') or
+      (v.vacina_registro_data between '2025-08-18' and '2025-10-18' and e.area_programatica = '51') or
+      (v.vacina_registro_data between '2025-08-25' and '2025-10-18' and e.area_programatica = '52') or
+      (v.vacina_registro_data between '2025-08-25' and '2025-10-18' and e.area_programatica = '53')
     )
 ),
 

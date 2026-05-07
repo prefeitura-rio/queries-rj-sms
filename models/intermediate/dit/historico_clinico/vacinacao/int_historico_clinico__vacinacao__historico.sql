@@ -55,14 +55,14 @@ with
             a.profissional_cbo,
             a.profissional_cns,
             a.profissional_cpf,
-            lower(v.nome_vacina) as vacina_descricao,
-            lower({{ remove_accents_upper("replace(replace(v.dose, 'º', ''), 'ª', '')") }}) as vacina_dose,
-            v.lote as vacina_lote,
-            lower({{ remove_accents_upper('v.tipo_registro') }}) as vacina_registro_tipo,
-            lower(v.estrategia_imunizacao) as vacina_estrategia,
-            v.diff as vacina_diff,
-            v.data_aplicacao  as vacina_aplicacao_data,
-            safe_cast(v.data_registro as date) as vacina_registro_data,
+            lower(v.vacina_nome) as vacina_descricao,
+            lower({{ remove_accents_upper("replace(replace(v.vacina_dose, 'º', ''), 'ª', '')") }}) as vacina_dose,
+            v.vacina_lote as vacina_lote,
+            lower({{ remove_accents_upper('v.vacina_tipo_registro') }}) as vacina_registro_tipo,
+            lower(v.vacina_estrategia_imunizacao) as vacina_estrategia,
+            v.vacina_diferenca_dias as vacina_diff,
+            v.vacina_aplicacao_data  as vacina_aplicacao_data,
+            safe_cast(v.vacina_registro_data as date) as vacina_registro_data,
             {{ proper_br('p.nome')}} as paciente_nome,
             lower(p.sexo) as paciente_sexo,
             p.data_nascimento as paciente_nascimento_data,
@@ -72,10 +72,10 @@ with
             safe_cast(p.data_cadastro as date) as paciente_cadastro_data,
             p.obito as paciente_obito,
             safe_cast(v.loaded_at as datetime) as loaded_at,
-            safe_cast(v.data_registro as date) as particao_registro_vacinacao
+            safe_cast(v.vacina_registro_data as date) as particao_registro_vacinacao
         from vacina v
         left join atendimento a
-            on v.id_prontuario_global = a.id_prontuario_global
+            on v.id_global = a.id_prontuario_global
         left join paciente p
             on a.id_cadastro = p.id_global
         left join estabelecimento e
@@ -85,7 +85,6 @@ with
 select 
     *
 from casted_normalized
-
 
 
 

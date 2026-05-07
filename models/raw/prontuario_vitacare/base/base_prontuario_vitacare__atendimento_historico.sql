@@ -141,21 +141,21 @@ with
     ),
     dim_vacinas as (
         select
-            id_prontuario_global,
+            id_global as id_prontuario_global,
             to_json_string(
                 array_agg(
                     struct(
-                        nome_vacina,
-                        cod_vacina,
-                        dose,
-                        lote,
-                        data_aplicacao as datahora_aplicacao,
-                        data_registro as datahora_registro,
-                        diff,
-                        calendario_vacinal_atualizado,
+                        vacina_nome as nome_vacina,
+                        vacina_codigo as cod_vacina,
+                        vacina_dose as dose,
+                        vacina_lote as lote,
+                        vacina_aplicacao_data as datahora_aplicacao,
+                        vacina_registro_data as datahora_registro,
+                        vacina_diferenca_dias as diff,
+                        vacina_calendario_atualizado as calendario_vacinal_atualizado,
                         "" as dose_vtc,
-                        tipo_registro,
-                        estrategia_imunizacao
+                        vacina_tipo_registro as tipo_registro,
+                        vacina_estrategia_imunizacao as estrategia_imunizacao
                     )
                 )
             ) as vacinas
@@ -163,7 +163,7 @@ with
         {% if is_incremental() %} 
         where data_particao >= {{ partitions_to_replace }} 
         {% endif %}
-        group by id_prontuario_global
+        group by id_global
     ),
     dim_prescricoes as (
         select

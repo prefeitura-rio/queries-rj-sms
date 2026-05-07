@@ -193,22 +193,23 @@ WITH
                 a.patient_cpf AS cpf,
                 'Pentavalente' AS imuno,
                 CASE
-                    WHEN dose LIKE '%eforço%' THEN 'R'
-                    WHEN dose LIKE '%nica%' THEN 'U'
+                    WHEN vacina_dose LIKE '%eforço%' THEN 'R'
+                    WHEN vacina_dose LIKE '%nica%' THEN 'U'
                     ELSE 'D'
                 END AS tipo,
                 CASE
-                    WHEN dose LIKE '%1%' THEN '1'
-                    WHEN dose LIKE '%2%' THEN '2'
-                    WHEN dose LIKE '%3%' THEN '3'
-                    WHEN dose LIKE '%4%' THEN '4'
+                    WHEN vacina_dose LIKE '%1%' THEN '1'
+                    WHEN vacina_dose LIKE '%2%' THEN '2'
+                    WHEN vacina_dose LIKE '%3%' THEN '3'
+                    WHEN vacina_dose LIKE '%4%' THEN '4'
                     ELSE ''
                 END AS ordem,
-                CAST(v.data_aplicacao AS DATETIME) AS dthr
+                CAST(v.vacina_aplicacao_data AS DATETIME) AS dthr
             FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v
-            JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a USING(id_prontuario_global)
-            WHERE LOWER(normalize_and_casefold(v.dose, NFKD)) NOT IN ('dose unica', 'outro')
-              AND v.cod_vacina IN ('DTP/HB/Hib', 'Hexa')
+            JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a
+                ON v.id_global = a.id_prontuario_global
+            WHERE LOWER(normalize_and_casefold(v.vacina_dose, NFKD)) NOT IN ('dose unica', 'outro')
+              AND v.vacina_codigo IN ('DTP/HB/Hib', 'Hexa')
 
             UNION ALL
 

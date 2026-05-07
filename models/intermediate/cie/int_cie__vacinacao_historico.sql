@@ -25,10 +25,12 @@ with
         from {{ ref('raw_prontuario_vitacare_historico__vacina') }}
     ),
 
-    atendimento as (
+    profissional as (
         select 
             * 
-        from {{ ref('raw_prontuario_vitacare_historico__acto') }}
+        from {{ ref('raw_prontuario_vitacare_historico__profissional') }}
+        qualify row_number() over( partition by id_global order by loaded_at desc
+        ) = 1
     ),
 
     paciente as (
@@ -41,46 +43,45 @@ with
 
     casted_normalized as (
         select 
-            v.id_vacinacao,
-            v.id_cnes,
-            p.codigo_equipe as id_equipe,
-            p.ine_equipe as id_ine_equipe,
-            p.microarea as id_microarea,
-            p.npront as paciente_id_prontuario,
-            p.cns as paciente_cns,
-            p.cpf as paciente_cpf,
+            va.id_vacinacao,
+            va.id_cnes,
+            pa.codigo_equipe as id_equipe,
+            pa.ine_equipe as id_ine_equipe,
+            pa.microarea as id_microarea,
+            pa.npront as paciente_id_prontuario,
+            pa.cns as paciente_cns,
+            pa.cpf as paciente_cpf,
             e.nome_limpo as estabelecimento_nome,
-            lower(p.equipe) as equipe_nome,
-            {{ proper_br('a.profissional_nome')}} as profissional_nome,
-            a.profissional_cbo,
-            a.profissional_cns,
-            a.profissional_cpf,
-            lower(v.nome_vacina) as vacina_descricao,
-            lower({{ remove_accents_upper("replace(replace(v.dose, 'º', ''), 'ª', '')") }}) as vacina_dose,
-            v.lote as vacina_lote,
-            lower({{ remove_accents_upper('v.tipo_registro') }}) as vacina_registro_tipo,
-            lower(v.estrategia_imunizacao) as vacina_estrategia,
-            v.diff as vacina_diff,
-            v.data_aplicacao  as vacina_aplicacao_data,
-            safe_cast(v.data_registro as date) as vacina_registro_data,
-            {{ proper_br('p.nome')}} as paciente_nome,
-            lower(p.sexo) as paciente_sexo,
-            p.data_nascimento as paciente_nascimento_data,
-            p.nome_mae as paciente_nome_mae,
+            lower(pa.equipe) as equipe_nome,
+            {{ proper_br('pr.profissional_nome')}} as profissional_nome,
+            pr.profissional_cbo,
+            pr.profissional_cns,
+            pr.profissional_cpf,
+            lower(va.vacina_nome) as vacina_descricao,
+            lower({{ remove_accents_upper("replace(replace(va.vacina_dose, 'º', ''), 'ª', '')") }}) as vacina_dose,
+            va.vacina_lote as vacina_lote,
+            lower({{ remove_accents_upper('va.vacina_tipo_registro') }}) as vacina_registro_tipo,
+            lower(va.vacina_estrategia_imunizacao) as vacina_estrategia,
+            va.vacina_diferenca_dias as vacina_diff,
+            va.vacina_aplicacao_data  as vacina_aplicacao_data,
+            safe_cast(va.vacina_registro_data as date) as vacina_registro_data,
+            {{ proper_br('pa.nome')}} as paciente_nome,
+            lower(pa.sexo) as paciente_sexo,
+            pa.data_nascimento as paciente_nascimento_data,
+            pa.nome_mae as paciente_nome_mae,
             safe_cast(null as date) as paciente_mae_nascimento_data,
-            p.situacao_usuario as paciente_situacao,
-            safe_cast(p.data_cadastro as date) as paciente_cadastro_data,
-            p.obito as paciente_obito,
-            safe_cast(v.loaded_at as datetime) as loaded_at,
-            safe_cast(v.data_aplicacao as date) as particao_aplicacao_vacinacao
-        from vacina v
-        left join atendimento a
-            on v.id_prontuario_global = a.id_prontuario_global
-        left join paciente p
-            on a.ut_id = p.id_local
-            and a.id_cnes = p.id_cnes
+            pa.situacao_usuario as paciente_situacao,
+            safe_cast(pa.data_cadastro as date) as paciente_cadastro_data,
+            pa.obito as paciente_obito,
+            safe_cast(va.loaded_at as datetime) as loaded_at,
+            safe_cast(va.vacina_aplicacao_data as date) as particao_aplicacao_vacinacao
+        from vacina va
+        left join profissional pr
+            on va.id_profissional = pr.id_global
+        left join paciente pa
+            on va.id_cadastro = pa.id_global
         left join estabelecimento e
-            on v.id_cnes = e.id_cnes
+            on va.id_cnes = e.id_cnes
     )
 
 select 
