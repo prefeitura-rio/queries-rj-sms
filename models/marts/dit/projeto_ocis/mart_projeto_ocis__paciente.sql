@@ -44,7 +44,7 @@ sarah_pacientes_tratados as (
     }} as paciente_id,
     upper(paciente_nome) as nome,
     paciente_data_nascimento as data_nascimento,
-
+    cast(null as string) as nome_mae,
     "sarah" as prontuario
   from sarah_pacientes
   where (paciente_nome is not null)
@@ -71,6 +71,7 @@ medilab_exames as (
     }} as paciente_id,
     upper(paciente_nome) as nome,
     paciente_data_nascimento as data_nascimento,
+    upper({{ remove_invalid_names("paciente_mae_nome") }}) as nome_mae,
     "medilab" as prontuario
   from {{ ref("raw_medilab__exames") }}
   where (paciente_nome is not null)
@@ -88,9 +89,10 @@ cpf_existe as (
       array_agg(m.cns ignore nulls)
     ) as cns,
 
+    coalesce(s.paciente_id, m.paciente_id) as paciente_id,
     coalesce(s.nome, m.nome) as nome,
     coalesce(s.data_nascimento, m.data_nascimento) as data_nascimento,
-    coalesce(s.paciente_id, m.paciente_id) as paciente_id,
+    coalesce(s.nome_mae, m.nome_mae) as nome_mae,
     if(
       s.prontuario is not null and m.prontuario is not null,
       "ambos",
@@ -100,7 +102,7 @@ cpf_existe as (
   full outer join medilab_exames as m
     using (cpf)
   where cpf is not null
-  group by cpf, paciente_id, nome, data_nascimento, prontuario
+  group by cpf, paciente_id, nome, data_nascimento, nome_mae, prontuario
 ),
 
 -- Em seguida, pegamos os sem CPF mas com CNS preenchido
@@ -109,9 +111,10 @@ cns_existe as (
     cast(null as string) as cpf,
     cns,
 
+    coalesce(s.paciente_id, m.paciente_id) as paciente_id,
     coalesce(s.nome, m.nome) as nome,
     coalesce(s.data_nascimento, m.data_nascimento) as data_nascimento,
-    coalesce(s.paciente_id, m.paciente_id) as paciente_id,
+    coalesce(s.nome_mae, m.nome_mae) as nome_mae,
     if(
       s.prontuario is not null and m.prontuario is not null,
       "ambos",
@@ -141,14 +144,15 @@ cns_com_cpf as (
     -- Agrupa possíveis múltiplos CNS's da pessoa
     array_agg(distinct orig.cns) as cns,
 
+    orig.paciente_id,
     orig.nome,
     orig.data_nascimento,
-    orig.paciente_id,
+    orig.nome_mae,
     any_value(orig.prontuario)
   from cns_existe as orig
   left join mapeamento_cpf_cns as mp
     on (orig.cns = mp.valor_cns)
-  group by paciente_id, nome, data_nascimento
+  group by paciente_id, nome, data_nascimento, nome_mae
 ),
 
 
@@ -176,7 +180,10 @@ dados_completos as (
       from unnest(t.cns) as c
     ) as cns_paciente,
     t.nome as nm_paciente,
-    upper(b.mae_nome) as nm_mae_paciente,
+    coalesce(
+      upper(b.mae_nome),
+      t.nome_mae
+    ) as nm_mae_paciente,
     if(
       b.sexo = "não informado",
       null,
