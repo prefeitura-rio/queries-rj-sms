@@ -9,43 +9,40 @@
 
 with sarah_atendimento as (
   select distinct
-    to_hex(sha1(atendimento_numero)) as atendimento_id,
+    to_hex(sha1(atendimento_numero)) as id_atendimento,
     {{
       dbt_utils.generate_surrogate_key([
         "upper(regexp_replace(normalize(paciente_nome, NFD), r'[^\p{Letter}]', ''))",
         "paciente_data_nascimento"
       ])
-    }} as paciente_id,
+    }} as id_paciente,
 
     concat(
       atendimento_tipo,
       " - ",
       atendimento_subtipo
-    ) as atendimento_tipo,
+    ) as ds_tipo_atendimento,
 
     -- Arredonda datetime ao minuto mais próximo
     datetime_trunc(
       datetime_add(datahora_entrada, interval 30 second),
       minute
-    ) as datahora_entrada,
+    ) as data_entrada,
     datetime_trunc(
       datetime_add(datahora_saida, interval 30 second),
       minute
-    ) as datahora_saida,
+    ) as data_alta,
 
-    if(
-      profissional_cns is null,
-      null,
-      to_hex(sha1(profissional_cns))
-    ) as profissional_id,
-    profissional_cbo,
+    profissional_nome as nm_medico_responsavel,
+    profissional_cns as cns_medico_responsavel,
+    profissional_cbo as cbo_medico_responsavel,
 
-    encaminhamento,
+    encaminhamento as ds_motivo_alta,
 
-    cid_principal,
-    cid_secundario,
+    cid_principal as diagnostico_principal,
+    cid_secundario as diagnostico_secundario,
 
-    "sarah" as prontuario
+    "sarah" as _prontuario_fonte
   from {{ ref("raw_prontuario_sarah__atendimento") }}
   where (paciente_nome is not null)
     and (paciente_data_nascimento is not null)
@@ -56,7 +53,7 @@ paciente_existe as (
     a.*
   from {{ ref("mart_projeto_ocis__paciente") }} as p
   inner join sarah_atendimento as a
-    using (paciente_id)
+    using (id_paciente)
 )
 
 select *

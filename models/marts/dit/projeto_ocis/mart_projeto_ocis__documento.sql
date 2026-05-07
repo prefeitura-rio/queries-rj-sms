@@ -38,16 +38,14 @@ tratado as (
         "upper(regexp_replace(normalize(paciente_nome, NFD), r'[^\p{Letter}]', ''))",
         "paciente_data_nascimento"
       ])
-    }} as paciente_id,
+    }} as id_paciente,
 
-    if(
-      profissional_cns is null,
-      null,
-      to_hex(sha1(profissional_cns))
-    ) as id_profissional_responsavel,
-    profissional_cbo as cbo_profissional_responsavel,
-
-    to_hex(sha1(documento_numero)) as numero_registro,
+    
+    {{
+      dbt_utils.generate_surrogate_key([
+        "documento_numero", "documento_tipo"
+      ])
+    }} as id_registro,
     date(datetime(documento_datahora)) as data_registro,
 
     case
@@ -75,9 +73,12 @@ tratado as (
     end as tipo_registro,
 
     documento_tipo as titulo_documento,
+    documento_dados as descricao_conteudo,
 
-    documento_dados as conteudo
+    {{ process_null("profissional_cns") }} as cns_profissional_responsavel,
+    profissional_cbo as cbo_profissional_responsavel,
 
+    "sarah" as _prontuario_fonte
   from documentos
   where (paciente_nome is not null)
     and (paciente_data_nascimento is not null)
@@ -88,7 +89,7 @@ paciente_existe as (
     t.*
   from {{ ref("mart_projeto_ocis__paciente") }} as p
   inner join tratado as t
-    using (paciente_id)
+    using (id_paciente)
 )
 
 select *

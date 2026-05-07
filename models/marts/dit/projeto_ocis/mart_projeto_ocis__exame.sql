@@ -14,13 +14,13 @@ with medilab_exames as (
         "upper(regexp_replace(normalize(paciente_nome, NFD), r'[^\p{Letter}]', ''))",
         "paciente_data_nascimento"
       ])
-    }} as paciente_id,
+    }} as id_paciente,
 
-    exame_codigo_sigtap,
-    exame_nome,
-    exame_data,
+    exame_codigo_sigtap as id_exame,
+    exame_nome as nm_exame,
+    exame_data as data_execucao,
 
-    "medilab" as prontuario
+    "medilab" as _prontuario_fonte
   from {{ ref("raw_medilab__exames") }}
   where (paciente_nome is not null)
     and (paciente_data_nascimento is not null)
@@ -30,7 +30,7 @@ paciente_existe as (
     e.*
   from {{ ref("mart_projeto_ocis__paciente") }} as p
   inner join medilab_exames as e
-    using (paciente_id)
+    using (id_paciente)
 )
 
 select *

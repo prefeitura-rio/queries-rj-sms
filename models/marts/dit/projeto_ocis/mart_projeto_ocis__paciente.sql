@@ -167,28 +167,39 @@ todos_com_cpf as (
 
 dados_completos as (
   select
-    t.paciente_id,
+    t.paciente_id as id_paciente,
 
-    t.cpf,
+    t.cpf as cpf_paciente,
     -- Deduplica lista de CNS
     array(
       select distinct c
       from unnest(t.cns) as c
-    ) as cns,
-    coalesce(b.nome_social, b.nome) as nome_oficial,
-    t.nome as nome_original,
-    b.nascimento_data as data_nascimento_oficial,
-    t.data_nascimento as data_nascimento_original,
-    concat("raca-fake-", floor(5*rand())) as raca,
+    ) as cns_paciente,
+    t.nome as nm_paciente,
+    upper(b.mae_nome) as nm_mae_paciente,
     if(
       b.sexo = "não informado",
       null,
       b.sexo
-    ) as sexo,
-    upper(b.mae_nome) as mae_nome,
+    ) as sexo_paciente,
+    t.data_nascimento as data_nascimento_paciente,
+    concat("raca-fake-", floor(5*rand())) as ds_raca_paciente,
 
-    t.prontuario,
-    t.fonte
+    (b.nome is not null) as _rf_cpf_existe,
+    if(
+      b.nome is not null,
+      upper(regexp_replace(normalize(b.nome, NFD), r'[^\p{Letter}]', ''))
+      = upper(regexp_replace(normalize(t.nome, NFD), r'[^\p{Letter}]', '')),
+      null
+    ) as _rf_cpf_mesmo_nome,
+    if(
+      b.nome is not null,
+      b.nascimento_data = t.data_nascimento,
+      null
+    ) as _rf_cpf_mesmo_nascimento,
+
+    t.prontuario as _prontuario_fonte,
+    t.fonte as _campo_fonte
   from todos_com_cpf as t
   left join {{ ref("raw_bcadastro__cpf") }} as b
     on (cast(t.cpf as INT64) = b.cpf_particao)
