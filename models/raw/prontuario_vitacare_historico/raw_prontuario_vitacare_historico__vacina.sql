@@ -49,7 +49,7 @@ with
      vacina_dedup as (
         select
             *
-        FROM vacina_source 
+        from vacina_source 
         qualify row_number() over (partition by id_cnes, acto_id, id order by extracted_at desc) = 1
     ),
 
@@ -92,6 +92,7 @@ with
             {{ process_null('foi_aplicada') }} as vacina_foi_aplicada,
             {{ process_null('justificativa') }} as vacina_justificativa,
 
+            -- Metadata
             cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             cast({{ process_null('data_particao') }} as date) as data_particao,
             
