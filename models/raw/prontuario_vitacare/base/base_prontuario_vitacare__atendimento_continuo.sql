@@ -26,11 +26,12 @@ with
         where {{process_null('payload_cnes')}} is not null
         {% if is_incremental() %}
         and
-            TIMESTAMP_TRUNC(datalake_loaded_at, DAY) > TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+            timestamp_trunc(datalake_loaded_at, day) > timestamp(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
         {% endif %}
     ),
+
     bruto_atendimento_eventos_ranqueados as (
-        select *,
+        select *
         from bruto_atendimento_continuo_com_repeticao
         qualify
             row_number() over (partition by id_prontuario_global order by datalake_loaded_at desc) = 1
@@ -44,6 +45,19 @@ with
 
             -- Chaves
             patient_cpf as cpf_paciente,
+
+            json_extract_scalar(data, "$.ut_id") as id_paciente_local,
+
+            case
+                when nullif(payload_cnes, '') is not null
+                    and nullif(json_extract_scalar(data, "$.ut_id"), '') is not null
+                then concat(
+                    nullif(payload_cnes, ''),
+                    '.',
+                    nullif(json_extract_scalar(data, "$.ut_id"), '')
+                )
+            end as id_paciente,
+
             payload_cnes as cnes_unidade,
 
             -- Profissional
@@ -92,19 +106,22 @@ with
             safe_cast(source_updated_at as datetime) as updated_at,
             safe_cast(datalake_loaded_at as datetime) as loaded_at,
             safe_cast(
-                safe_cast(json_extract_scalar(data, "$.datahora_fim_atendimento")as datetime)
-                as date) as data_particao,
+                safe_cast(json_extract_scalar(data, "$.datahora_fim_atendimento") as datetime)
+                as date
+            ) as data_particao
 
         from bruto_atendimento_eventos_ranqueados
     )
-select id_prontuario_local,
-            id_prontuario_global,
-            {{
-                dbt_utils.generate_surrogate_key(
-                    [
-                        "id_prontuario_global",
-                    ]
-                )
-            }} as id_hci,
-            * except (id_prontuario_local,id_prontuario_global),
+
+select
+    id_prontuario_local,
+    id_prontuario_global,
+    {{
+        dbt_utils.generate_surrogate_key(
+            [
+                "id_prontuario_global",
+            ]
+        )
+    }} as id_hci,
+    * except (id_prontuario_local, id_prontuario_global)
 from atendimento_continuo

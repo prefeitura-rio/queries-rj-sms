@@ -58,6 +58,10 @@ select
     id_prontuario_local,
     id_prontuario_global,
     id_hci,
+
+    id_paciente,
+    id_paciente_local,
+
     {{ clean_numeric("cpf") }} as cpf,
     cnes_unidade,
     cns_profissional,
@@ -70,9 +74,9 @@ select
     nome_equipe_profissional,
     tipo,
     eh_coleta,
-    timestamp_add(datetime(timestamp(datahora_marcacao), 'America/Sao_Paulo'),interval 3 hour) as datahora_marcacao,
-    timestamp_add(datetime(timestamp(datahora_inicio), 'America/Sao_Paulo'),interval 3 hour) as datahora_inicio,
-    timestamp_add(datetime(timestamp(datahora_fim), 'America/Sao_Paulo'),interval 3 hour) as datahora_fim,
+    timestamp_add(datetime(timestamp(datahora_marcacao), 'America/Sao_Paulo'), interval 3 hour) as datahora_marcacao,
+    timestamp_add(datetime(timestamp(datahora_inicio), 'America/Sao_Paulo'), interval 3 hour) as datahora_inicio,
+    timestamp_add(datetime(timestamp(datahora_fim), 'America/Sao_Paulo'), interval 3 hour) as datahora_fim,
     soap_subjetivo_motivo,
     soap_objetivo_descricao,
     soap_avaliacao_observacoes,
@@ -86,8 +90,8 @@ select
     vacinas,
     indicadores,
     encaminhamentos,
-    timestamp_add(datetime(timestamp(updated_at), 'America/Sao_Paulo'),interval 3 hour) as updated_at,
-    timestamp_add(datetime(timestamp(loaded_at), 'America/Sao_Paulo'),interval 3 hour) as loaded_at,
+    timestamp_add(datetime(timestamp(updated_at), 'America/Sao_Paulo'), interval 3 hour) as updated_at,
+    timestamp_add(datetime(timestamp(loaded_at), 'America/Sao_Paulo'), interval 3 hour) as loaded_at,
     data_particao,
     origem
 from atendimentos_unicos
