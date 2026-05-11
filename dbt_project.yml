@@ -598,6 +598,13 @@ models:
             dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
+        hackathon_anthropic:
+          +schema: hackathon_anthropic
+          +tags: ["hackathon_anthropic"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
       cie:
         alerta_doencas:
           +schema: projeto_alerta_doencas
