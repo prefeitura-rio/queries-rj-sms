@@ -370,41 +370,8 @@ models:
       # ── pendências atuais ─────────────────────────────────────────────────────
       - name: pendencia_atual
         description: >
-          Array de rótulos textuais (pode ser vazio) com as pendências atuais
-          da paciente, calculadas em int_monitora_cancer__pendencias. Todas as
-          pendências SISREG/SER são avaliadas sobre o ÚLTIMO evento da linha
-          do tempo da paciente; pendências de "Outros" se baseiam apenas em
-          status e tempo_total.
-
-          Famílias e regras:
-            • SISREG — exigem que o último evento da linha do tempo seja do
-              SISREG:
-                - "Pendente de autorização SISREG": evento tem
-                  data_solicitacao mas não tem data_autorizacao.
-                - "Pendente de realização SISREG": evento tem
-                  data_autorizacao mas não tem data_execucao.
-                - "Aguardando execução SISREG": evento tem data_execucao
-                  preenchida e ainda no futuro (data_execucao > hoje).
-                - "Devolvido SISREG": evento_status like '%DEVOLVID%'.
-                - "Falta SISREG": evento_status like '%FALT%'.
-            • SER — exigem que o último evento da linha do tempo seja do SER:
-                - "Pendente de autorização SER": evento tem data_solicitacao
-                  mas não tem data_autorizacao.
-                - "Pendente de realização SER": evento tem data_autorizacao
-                  mas não tem data_execucao.
-                - "Aguardando execução SER": evento tem data_execucao
-                  preenchida e ainda no futuro (data_execucao > hoje).
-                - "Procedimento cancelado SER": evento_status = 'CANCELADA'.
-                - "Falta SER": evento_status = 'CHEGADA_NAO_CONFIRMADA'.
-            • Outros — mesma situação (paciente com diagnóstico que ainda não
-              entrou em UNACON) em níveis de gravidade crescentes. Apenas o
-              nível MAIS GRAVE é emitido (exclusivos entre si):
-                - "Prazo legal para início de tratamento ultrapassado":
-                  status = 'DIAGNOSTICO' e tempo_total >= 60.
-                - "Prazo para início de tratamento próximo do limite legal":
-                  status = 'DIAGNOSTICO' e 45 <= tempo_total < 60.
-                - "Pendente de solicitação para UNACON":
-                  status = 'DIAGNOSTICO' e tempo_total < 45.
+          Lista de rótulos (possivelmente vazia) com as pendências atuais da
+          paciente, calculadas em int_monitora_cancer__pendencias.
 
   - name: mart_monitora_cancer__gravidade
     description: >
