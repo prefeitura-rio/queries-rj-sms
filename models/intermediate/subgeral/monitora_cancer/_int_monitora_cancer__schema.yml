@@ -1,58 +1,50 @@
 version: 2
 
-seeds:
-  - name: procedimentos_ser
+models:
+  - name: int_monitora_cancer__parametros_ser
     description: >
       Procedimentos do SER (regulação estadual ambulatorial) considerados de
       interesse para o monitoramento de câncer de mama. Cada linha mapeia um
       cod_recurso do SER (id_procedimento) ao nome amigável e aos critérios
       clínicos (suspeita / diagnóstico).
-      Usada por int_monitora_cancer__ser_ambulatorial como fonte de verdade
+      Usado por int_monitora_cancer__ser_ambulatorial como fonte de verdade
       para inclusão e classificação dos eventos.
-    config:
-      column_types:
-        id_procedimento: INT64
-        procedimento: STRING
-        criterio_suspeita: BOOL
-        criterio_diagnostico: BOOL
     columns:
       - name: id_procedimento
         description: Código do recurso (cod_recurso_solicitado / cod_recurso_regulado) no SER.
+        data_type: int64
         data_tests:
           - unique:
-              name: procedimentos_ser__id_procedimento__unique
+              name: int_monitora_cancer__parametros_ser__id_procedimento__unique
           - not_null:
-              name: procedimentos_ser__id_procedimento__not_null
+              name: int_monitora_cancer__parametros_ser__id_procedimento__not_null
       - name: procedimento
         description: Nome do procedimento em formato amigável (usado como label final no mart).
+        data_type: string
         data_tests:
           - not_null:
-              name: procedimentos_ser__procedimento__not_null
+              name: int_monitora_cancer__parametros_ser__procedimento__not_null
       - name: criterio_suspeita
         description: TRUE se o procedimento, isoladamente, classifica o evento como suspeita.
+        data_type: bool
         data_tests:
           - not_null:
-              name: procedimentos_ser__criterio_suspeita__not_null
+              name: int_monitora_cancer__parametros_ser__criterio_suspeita__not_null
       - name: criterio_diagnostico
         description: TRUE se o procedimento, isoladamente, classifica o evento como diagnóstico.
+        data_type: bool
         data_tests:
           - not_null:
-              name: procedimentos_ser__criterio_diagnostico__not_null
+              name: int_monitora_cancer__parametros_ser__criterio_diagnostico__not_null
 
-  - name: procedimentos_sisreg
+  - name: int_monitora_cancer__parametros_sisreg
     description: >
       Procedimentos do SISREG (regulação ambulatorial municipal) considerados
       de interesse para o monitoramento de câncer de mama. Cada linha mapeia
       um id_procedimento do SISREG ao nome amigável e aos critérios clínicos
       (suspeita / diagnóstico).
-      Usada por int_monitora_cancer__sisreg como fonte de verdade para
+      Usado por int_monitora_cancer__sisreg como fonte de verdade para
       inclusão e classificação dos eventos.
-    config:
-      column_types:
-        id_procedimento: INT64
-        procedimento: STRING
-        criterio_suspeita: BOOL
-        criterio_diagnostico: BOOL
     columns:
       - name: id_procedimento
         description: >
@@ -61,23 +53,27 @@ seeds:
           esquerda (a coluna fonte tem formato misto: "0703716" em
           marcacoes e "703716" em solicitacoes; o JOIN no modelo intermediário
           usa safe_cast as INT para reconciliar).
+        data_type: int64
         data_tests:
           - unique:
-              name: procedimentos_sisreg__id_procedimento__unique
+              name: int_monitora_cancer__parametros_sisreg__id_procedimento__unique
           - not_null:
-              name: procedimentos_sisreg__id_procedimento__not_null
+              name: int_monitora_cancer__parametros_sisreg__id_procedimento__not_null
       - name: procedimento
         description: Nome do procedimento em formato amigável (usado como label final no mart).
+        data_type: string
         data_tests:
           - not_null:
-              name: procedimentos_sisreg__procedimento__not_null
+              name: int_monitora_cancer__parametros_sisreg__procedimento__not_null
       - name: criterio_suspeita
         description: TRUE se o procedimento, isoladamente, classifica o evento como suspeita.
+        data_type: bool
         data_tests:
           - not_null:
-              name: procedimentos_sisreg__criterio_suspeita__not_null
+              name: int_monitora_cancer__parametros_sisreg__criterio_suspeita__not_null
       - name: criterio_diagnostico
         description: TRUE se o procedimento, isoladamente, classifica o evento como diagnóstico.
+        data_type: bool
         data_tests:
           - not_null:
-              name: procedimentos_sisreg__criterio_diagnostico__not_null
+              name: int_monitora_cancer__parametros_sisreg__criterio_diagnostico__not_null

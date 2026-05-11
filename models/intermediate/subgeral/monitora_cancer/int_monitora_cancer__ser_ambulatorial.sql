@@ -3,12 +3,8 @@
 
 with
     procedimentos as (
-        select
-            id_procedimento,
-            procedimento,
-            safe_cast(criterio_suspeita as bool) as criterio_suspeita,
-            safe_cast(criterio_diagnostico as bool) as criterio_diagnostico
-        from {{ ref("procedimentos_ser") }}
+        select *
+        from {{ ref("int_monitora_cancer__parametros_ser") }}
     ),
 
     base as (
@@ -18,9 +14,9 @@ with
             safe_cast(cod_recurso_regulado as int) as id_procedimento_regulado
         from {{ ref("raw_ser_metabase__ambulatorial") }}
         where data_solicitacao >= "{{ data_inicio_monitoramento }}"
-            -- Filtro por id_procedimento da seed (fonte de verdade da inclusão).
+            -- Filtro por id_procedimento dos parâmetros (fonte de verdade da inclusão).
             -- safe_cast(... as int): cod_recurso_* é STRING no source; o cast
-            -- normaliza eventuais zeros à esquerda para casar com o INT da seed.
+            -- normaliza eventuais zeros à esquerda para casar com o INT da fonte.
             and (
                 safe_cast(cod_recurso_solicitado as int) in (
                     select id_procedimento from procedimentos
