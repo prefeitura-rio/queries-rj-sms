@@ -1,28 +1,4 @@
 id_procedimento,procedimento,criterio_suspeita,criterio_diagnostico
-560,Ambulatório de Primeira Vez - Mastologia,0,0
-1035,Ambulatório de Primeira Vez - Mastologia - Oncologia,0,1
-1047,Ambulatório de Primeira Vez - Cirurgia Plástica Reparadora - Mama - Oncologia,0,0
-1049,Ambulatório de Primeira Vez - Mastologia - Oncologia - Lesão Impalpável,0,0
-1619,Biópsia de Mama - Lesão Palpável,0,0
-1843,Biópsia de Mama Guiada por Ultrassonografia,0,0
-2032,Biópsia de Mama por Estereotaxia,0,0
-2030,Biópsia de Mama por PAAF,0,0
-1381,Bióposia de Mama por Ultrassonografia,0,0
-550,Biópsia Guiada por Mamografia,0,0
-1616,Consulta em Mastologia,0,0
-1997,Biópsia de Mama - Core,0,0
-2009,Biópsia de Mama - Core,0,0
-863,Ambulatório de Primeira Vez - Mastologia - CREG BL,0,0
-2011,Mamografia Bilateral,0,0
-1617,Mamografia Bilateral,0,0
-1382,Mamografia de Rastreio,0,0
-708,Consulta em Mastologia - Retorno,0,0
-548,Procedimentos Diagnósticos guiados por Ultrassonografia - Mama,0,0
-1937,Ressonância Magnética de Mama - Oncologia,0,0
-2079,Ressonância Magnética de Mama - Oncologia,0,0
-1662,Ultrassonografia de Mamas - Doppler,0,0
-1836,Ultrassonografia de Mamas,0,0
-1893,Ultrassonografia de Mamas - Feminina e Masculina,0,0
-1894,Ultrassonografia de Mamas - Doppler,0,0
-1618,Ultrassonografia de Mamas Bilateral,0,0
-1455,Ultrassonografia de Mamas Bilateral,0,0
+560,Consulta em Mastologia,0,0
+1035,Consulta em Mastologia (Oncologia),0,1
+1049,Consulta em Mastologia (Oncologia),0,0
