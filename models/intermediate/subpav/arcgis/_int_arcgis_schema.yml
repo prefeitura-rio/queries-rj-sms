@@ -1,0 +1,261 @@
+version: 2
+
+models:
+  - name: int_arcgis__osa_equipes_territorio
+    description: >
+      Modelo intermediário com a versão vigente das áreas territoriais de equipes
+      e áreas sem cobertura ESF do Onde Ser Atendido. O modelo consome o histórico
+      versionado da camada OSA_Poli extraída do ArcGIS FeatureServer, seleciona
+      a última versão com status loaded e converte a geometria GeoJSON para o tipo
+      GEOGRAPHY no BigQuery.
+
+      A estratégia de histórico é baseada em snapshot completo por versão. A coluna
+      data_versao representa apenas a data da extração e não identifica uma versão
+      única. A versão vigente deve ser identificada por versao_id, layer_hash e
+      data_extracao.
+
+      Geometrias inválidas no GeoJSON original são convertidas com make_valid => true.
+      Quando a correção é necessária e bem-sucedida, geometry_corrigida recebe true.
+
+    columns:
+      - name: versao_id
+        description: Identificador determinístico do snapshot da camada ArcGIS usado no modelo.
+        data_tests:
+          - not_null
+
+      - name: data_versao
+        description: >
+          Data da extração associada ao snapshot. Não deve ser usada como chave única
+          de versão, pois múltiplas alterações podem ocorrer no mesmo dia.
+
+      - name: data_extracao
+        description: >
+          Timestamp da extração da camada ArcGIS. É utilizado para ordenar as versões
+          e selecionar a versão vigente.
+        data_tests:
+          - not_null
+
+      - name: layer_hash
+        description: >
+          Hash da camada completa. Todos os registros do mesmo snapshot compartilham
+          o mesmo layer_hash.
+        data_tests:
+          - not_null
+
+      - name: objectid
+        description: Identificador da feição na camada ArcGIS.
+        data_tests:
+          - not_null
+
+      - name: cnes
+        description: Código CNES da unidade associada à área territorial.
+        data_tests:
+          - not_null
+
+      - name: ine_original
+        description: >
+          Valor original tratado do código INE informado na camada ArcGIS. Quando
+          igual a 0, indica área sem cobertura de Equipe de Saúde da Família.
+
+      - name: ine
+        description: >
+          Código INE da Equipe de Saúde da Família. Fica nulo quando ine_original
+          é igual a 0, pois esse caso representa área sem cobertura ESF.
+
+      - name: tipo_cobertura_esf
+        description: >
+          Classificação da cobertura territorial. AREA_COM_COBERTURA_ESF indica
+          área vinculada a equipe ESF. AREA_SEM_COBERTURA_ESF indica área com
+          ine_original igual a 0, sem cobertura de Equipe de Saúde da Família.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - AREA_COM_COBERTURA_ESF
+                - AREA_SEM_COBERTURA_ESF
+
+      - name: geometry_corrigida
+        description: >
+          Indica se a geometria original apresentou falha de conversão direta para
+          GEOGRAPHY e precisou ser corrigida com make_valid => true.
+
+      - name: geometry
+        description: >
+          Geometria territorial em formato GEOGRAPHY, corrigida quando necessário
+          com make_valid => true.
+        data_tests:
+          - not_null
+
+      - name: area_km2
+        description: Área da geometria em quilômetros quadrados.
+
+      - name: perimetro_km
+        description: Perímetro da geometria em quilômetros.
+
+  - name: int_arcgis__hci_paciente_vinculo_equipe
+    description: >
+      Modelo intermediário que extrai do mart de pacientes do Histórico Clínico
+      Integrado o vínculo administrativo do paciente com Equipe de Saúde da Família,
+      utilizando os dados de equipe_saude_familia provenientes do VitaCare.
+
+      O modelo retorna uma linha por CPF com o melhor vínculo ESF disponível,
+      priorizando o menor rank informado na estrutura de equipe e, em seguida,
+      a data mais recente de atualização do vínculo.
+
+      Este modelo não representa residência geográfica do paciente no território,
+      pois o cadastro consolidado do HCI não possui latitude e longitude. Ele
+      representa o vínculo administrativo do cadastro com CNES e INE.
+
+    columns:
+      - name: cpf
+        description: CPF do paciente no HCI.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: nome
+        description: Nome principal do paciente conforme consolidação do HCI.
+
+      - name: data_nascimento
+        description: Data de nascimento do paciente conforme consolidação do HCI.
+
+      - name: cnes_vinculo
+        description: >
+          CNES da unidade de Saúde da Família associada ao vínculo ESF do paciente,
+          extraído de equipe_saude_familia.clinica_familia.id_cnes.
+        data_tests:
+          - not_null
+
+      - name: ine_vinculo
+        description: >
+          INE da Equipe de Saúde da Família associada ao vínculo do paciente,
+          extraído de equipe_saude_familia.id_ine e normalizado sem zeros à esquerda.
+        data_tests:
+          - not_null
+
+      - name: nome_equipe_vinculo
+        description: Nome da equipe ESF associada ao paciente no HCI.
+
+      - name: nome_unidade_vinculo
+        description: Nome da unidade de Saúde da Família associada ao vínculo do paciente.
+
+      - name: datahora_ultima_atualizacao_vinculo
+        description: Data e hora da última atualização do vínculo ESF no dado de origem.
+
+      - name: rank_vinculo
+        description: >
+          Rank do vínculo ESF informado na estrutura de equipe_saude_familia.
+          É utilizado na deduplicação para escolha do melhor vínculo por CPF.
+
+  - name: int_arcgis__osa_cadastros_vinculados_area
+    description: >
+      Modelo intermediário que estima a carga de cadastrados vinculados a cada
+      área territorial do Onde Ser Atendido, cruzando a camada vigente de áreas
+      OSA com o vínculo administrativo CNES/INE dos pacientes do Histórico Clínico
+      Integrado.
+
+      Este modelo mede a quantidade de pacientes cadastrados vinculados a cada
+      equipe/área por CNES e INE. Ele não representa a população residente dentro
+      do polígono, pois o cadastro consolidado do HCI não possui latitude e
+      longitude. A análise espacial por residência dependerá de uma etapa futura
+      de georreferenciamento de endereços.
+
+      A classificação de carga vinculada utiliza o parâmetro municipal de 3.500
+      cadastrados por equipe. Valores acima desse parâmetro indicam possível
+      sobrecarga administrativa da equipe.
+      
+      Observação metodológica: a unidade de análise deste modelo é a equipe
+      territorial consolidada. Quando a camada OSA possui mais de uma feição
+      para a mesma combinação CNES/INE, as geometrias são consolidadas com
+      ST_UNION_AGG, preservando os objectids originais e a quantidade de
+      polígonos de origem. A contagem de cadastrados vinculados é deduplicada
+      por CPF no modelo de vínculo HCI.
+
+    columns:
+      - name: versao_id
+        description: Identificador do snapshot da camada OSA utilizado no cálculo.
+        data_tests:
+          - not_null
+
+      - name: layer_hash
+        description: Hash da versão da camada OSA utilizada no cálculo.
+        data_tests:
+          - not_null
+
+      - name: ap
+        description: Área Programática associada à área territorial.
+
+      - name: cnes
+        description: CNES da unidade associada à área territorial.
+        data_tests:
+          - not_null
+
+      - name: ine
+        description: >
+          INE da equipe ESF associada à área territorial. Fica nulo em áreas sem
+          cobertura ESF.
+
+      - name: ine_original
+        description: >
+          Valor original tratado do INE na camada OSA. Quando igual a 0, representa
+          área sem cobertura ESF.
+
+      - name: tipo_cobertura_esf
+        description: >
+          Classificação da área quanto à cobertura de Equipe de Saúde da Família.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - AREA_COM_COBERTURA_ESF
+                - AREA_SEM_COBERTURA_ESF
+
+      - name: nome_area
+        description: Nome da área/equipe conforme camada OSA.
+
+      - name: nome_unidade
+        description: Nome da unidade de saúde associada à área conforme camada OSA.
+
+      - name: area_km2
+        description: Área territorial em quilômetros quadrados.
+
+      - name: qtd_cadastrados_vinculados
+        description: >
+          Quantidade de pacientes distintos do HCI vinculados administrativamente
+          à área por CNES e INE.
+
+      - name: parametro_municipal_cadastros_equipe
+        description: >
+          Parâmetro municipal de referência para quantidade de cadastrados por
+          equipe, definido como 3.500 pessoas vinculadas.
+
+      - name: diferenca_parametro_municipal
+        description: >
+          Diferença entre a quantidade de cadastrados vinculados à equipe e o
+          parâmetro municipal de 3.500 cadastrados. Valores positivos indicam
+          quantidade acima do parâmetro.
+
+      - name: razao_parametro_municipal
+        description: >
+          Razão entre a quantidade de cadastrados vinculados e o parâmetro
+          municipal de 3.500 cadastrados. Valores acima de 1 indicam quantidade
+          superior ao parâmetro.
+
+      - name: densidade_cadastrados_vinculados_km2
+        description: >
+          Quantidade de cadastrados vinculados por quilômetro quadrado da área
+          territorial.
+
+      - name: classificacao_carga_vinculada
+        description: >
+          Classificação da carga vinculada da área/equipe em relação ao parâmetro
+          municipal de 3.500 cadastrados por equipe.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - AREA_SEM_COBERTURA_ESF
+                - ACIMA_PARAMETRO_MUNICIPAL
+                - NO_LIMITE_PARAMETRO_MUNICIPAL
+                - DENTRO_PARAMETRO_MUNICIPAL
+                - SEM_CADASTROS_VINCULADOS

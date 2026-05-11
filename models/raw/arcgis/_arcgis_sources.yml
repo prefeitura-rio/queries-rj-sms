@@ -7,11 +7,114 @@ sources:
     tables:
       - name: arcgis_layer_versions
         description: >
-          Tabela de controle das extrações de camadas ArcGIS FeatureServer,
-          contendo hash da camada, status da execução, metadados da camada
-          e informações da tabela histórica carregada.
+          Tabela staging de controle das extrações de camadas ArcGIS
+          gerada pelo pipeline de extract/load.
 
       - name: osa__equipes_historico
         description: >
-          Histórico versionado das feições territoriais de equipes do sistema
-          Onde Ser Atendido, extraídas da camada OSA_Poli do ArcGIS FeatureServer.
+          Tabela staging com o histórico versionado das feições territoriais
+          de equipes do Onde Ser Atendido, extraídas do ArcGIS FeatureServer.
+models:
+  - name: raw_arcgis__layer_versions
+    description: >
+      Tabela de controle das execuções de extração de camadas ArcGIS.
+      Cada linha representa uma execução do pipeline para uma camada, podendo
+      indicar uma nova versão carregada ou uma execução sem alteração de conteúdo.
+      A identificação de uma versão efetivamente carregada deve ser feita por
+      versao_id, layer_hash e data_extracao, considerando apenas registros com
+      status = 'loaded'.
+
+    columns:
+      - name: versao_id
+        description: >
+          Identificador determinístico da versão da camada ArcGIS, calculado a
+          partir do endpoint, layer_id e layer_hash. Deve ser usado como chave
+          de versão em conjunto com layer_hash.
+
+      - name: layer_hash
+        description: >
+          Hash da camada completa, calculado a partir dos hashes individuais das
+          features. É utilizado para detectar se houve alteração real no conteúdo
+          da camada entre execuções do pipeline.
+
+      - name: data_extracao
+        description: >
+          Data e hora exata da execução do pipeline que consultou a camada
+          ArcGIS. Deve ser usada para ordenar as versões e identificar a versão
+          carregada mais recente.
+
+      - name: status
+        description: >
+          Status da execução do pipeline. O valor 'loaded' indica que uma nova
+          versão da camada foi persistida na tabela histórica. O valor
+          'skipped_no_change' indica que a camada foi consultada, mas o conteúdo
+          era idêntico à última versão carregada.
+
+      - name: dataset_id
+        description: >
+          Dataset de destino configurado para a camada extraída.
+
+      - name: table_id
+        description: >
+          Tabela histórica de destino associada à camada extraída.
+
+  - name: raw_arcgis__osa_equipes_historico
+    description: >
+      Histórico versionado das feições territoriais de equipes do sistema
+      Onde Ser Atendido, extraídas da camada OSA_Poli do ArcGIS FeatureServer.
+      A tabela segue estratégia de snapshot completo por versão: sempre que o
+      conteúdo da camada muda, todas as features da nova versão são persistidas.
+      Portanto, múltiplas versões carregadas em uma mesma data podem gerar mais
+      de um conjunto completo de registros para a mesma data_versao.
+
+    columns:
+      - name: versao_id
+        description: >
+          Identificador determinístico da versão da camada. Cada nova versão
+          carregada possui um versao_id próprio e deve ser usada junto com
+          layer_hash para identificar o snapshot completo da camada.
+
+      - name: data_versao
+        description: >
+          Data da extração associada ao snapshot da camada. Esta coluna não é
+          identificador único de versão, pois mais de uma alteração pode ocorrer
+          no mesmo dia. Para identificar uma versão específica, utilizar
+          versao_id, layer_hash e data_extracao.
+
+      - name: data_extracao
+        description: >
+          Data e hora exata em que a camada foi extraída do ArcGIS. Deve ser
+          usada para ordenar snapshots quando houver múltiplas versões na mesma
+          data_versao.
+
+      - name: layer_hash
+        description: >
+          Hash da camada completa na versão carregada. Todos os registros de um
+          mesmo snapshot compartilham o mesmo layer_hash.
+
+      - name: feature_hash
+        description: >
+          Hash calculado a partir dos atributos e da geometria de uma feature.
+          Permite identificar alterações em uma feição específica entre versões
+          da camada.
+
+      - name: objectid
+        description: >
+          Identificador da feature na camada ArcGIS.
+
+      - name: cnes
+        description: >
+          Código CNES da unidade associada à área territorial da equipe ou área
+          de cobertura.
+
+      - name: cod_ine
+        description: >
+          Código INE informado na camada ArcGIS. Quando igual a 0, representa
+          área sem cobertura de Equipe de Saúde da Família. Valores nulos devem
+          ser tratados como inconsistência da camada e podem ser ignorados no
+          consumo principal.
+
+      - name: geometry_geojson
+        description: >
+          Geometria da feature em formato GeoJSON. A conversão para o tipo
+          GEOGRAPHY deve ocorrer nas camadas intermediate ou mart.

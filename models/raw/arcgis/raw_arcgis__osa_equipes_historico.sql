@@ -15,7 +15,11 @@ with source as (
 renamed as (
     select
         cast(versao_id as string) as versao_id,
+
+        -- Data de referência da extração; não identifica uma versão única.
         safe_cast(data_versao as date) as data_versao,
+
+        -- Timestamp usado para ordenar múltiplas versões no mesmo dia.
         safe_cast(data_extracao as timestamp) as data_extracao,
 
         cast(endpoint_url as string) as endpoint_url,
