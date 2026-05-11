@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: arcgis_staging
+    database: rj-sms-dev
+    schema: brutos_arcgis_staging
+    tables:
+      - name: arcgis_layer_versions
+        description: >
+          Tabela de controle das extrações de camadas ArcGIS FeatureServer,
+          contendo hash da camada, status da execução, metadados da camada
+          e informações da tabela histórica carregada.
+
+      - name: osa__equipes_historico
+        description: >
+          Histórico versionado das feições territoriais de equipes do sistema
+          Onde Ser Atendido, extraídas da camada OSA_Poli do ArcGIS FeatureServer.
