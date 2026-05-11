@@ -4,10 +4,10 @@ models:
   - name: raw_prontuario_vitacare_historico__vacina
     description: Tabela contendo informações históricas de vacinações do prontuário Vitacare.
     columns:
-      - name: id_global
+      - name: id_pronturario_global
         description: Identificador global único do atendimento/prontuário, formado pelo CNES e pelo identificador local do atendimento.
 
-      - name: id_local
+      - name: id_pronturario_local
         description: Identificador local do atendimento.
 
       - name: id_cadastro
@@ -29,40 +29,40 @@ models:
           - not_null:
               name: raw_prontuario_vitacare_historico__vacina__id_vacinacao__not_null
 
-      - name: vacina_nome
+      - name: nome_vacina
         description: Nome da vacina registrada.
 
-      - name: vacina_codigo
+      - name: cod_vacina
         description: Código da vacina registrada.
 
-      - name: vacina_dose
+      - name: dose
         description: Dose da vacina, como primeira dose, segunda dose, reforço ou dose única.
 
-      - name: vacina_lote
+      - name: lote
         description: Número do lote da vacina.
 
-      - name: vacina_aplicacao_data
+      - name: data_aplicacao
         description: Data de aplicação da vacina.
 
-      - name: vacina_registro_data
+      - name: data_registro
         description: Data de registro da vacina.
 
-      - name: vacina_diferenca_dias
+      - name: diff
         description: Diferença em dias entre o registro e aplicação da vacina.
 
-      - name: vacina_calendario_atualizado
+      - name: calendario_vacinal_atualizado
         description: Indica se o calendário vacinal está atualizado.
 
-      - name: vacina_tipo_registro
+      - name: tipo_registro
         description: Tipo de registro da vacina.
 
-      - name: vacina_estrategia_imunizacao
+      - name: estrategia_imunizacao
         description: Estratégia de imunização utilizada.
 
-      - name: vacina_foi_aplicada
+      - name: foi_aplicada
         description: Indica se a vacina foi aplicada.
 
-      - name: vacina_justificativa
+      - name: justificativa
         description: Justificativa relacionada à aplicação ou não aplicação da vacina.
 
       - name: loaded_at
