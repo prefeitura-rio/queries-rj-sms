@@ -2,41 +2,71 @@ version: 2
 
 models:
   - name: raw_prontuario_vitacare_historico__vacina
-    description: Tabela contendo informações detalhadas sobre as vacinas aplicadas nos pacientes, incluindo dados da vacina, dose, lote e datas de aplicação e registro.
+    description: Tabela contendo informações históricas de vacinações do prontuário Vitacare.
     columns:
-      - name: id_prontuario_global
-        description: Identificador global único do prontuário do paciente.
-      - name: id_prontuario_local
-        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+      - name: id_global
+        description: Identificador global único do atendimento/prontuário, formado pelo CNES e pelo identificador local do atendimento.
+
+      - name: id_local
+        description: Identificador local do atendimento.
+
+      - name: id_cadastro
+        description: Identificador global do cadastro do paciente, formado pelo CNES e pelo identificador local do cadastro.
+
+      - name: id_profissional
+        description: Identificador global do profissional, formado pelo CNES e pelo identificador local do profissional.
+
       - name: id_cnes
-        description: Código CNES da unidade de saúde onde a vacina foi aplicada.
+        description: Código CNES da unidade de saúde onde a vacina foi registrada.
+
       - name: id_vacinacao
-        description: Identificador único da vacinação concatenado com o CNES.
-      - name: nome_vacina
-        description: Nome da vacina aplicada.
-      - name: cod_vacina
-        description: Código da vacina aplicada.
-      - name: dose
-        description: Dose da vacina (exemplo 1ª dose, 2ª dose, reforço).
-      - name: lote
+        description: Identificador global único da vacinação, formado pelo CNES e pelo identificador local do registro de vacinação.
+        data_tests:
+          - unique:
+              name: raw_prontuario_vitacare_historico__vacina__id__unique
+              config:
+                where: data_particao = current_date('America/Sao_Paulo')
+          - not_null:
+              name: raw_prontuario_vitacare_historico__vacina__id_vacinacao__not_null
+
+      - name: vacina_nome
+        description: Nome da vacina registrada.
+
+      - name: vacina_codigo
+        description: Código da vacina registrada.
+
+      - name: vacina_dose
+        description: Dose da vacina, como primeira dose, segunda dose, reforço ou dose única.
+
+      - name: vacina_lote
         description: Número do lote da vacina.
-      - name: data_aplicacao
-        description: Data em que a vacina foi aplicada.
-      - name: data_registro
-        description: Data e hora do registro da aplicação da vacina, ajustada para o fuso horário de São Paulo.
-      - name: diff
-        description: Campo genérico para diferença ou identificador adicional, sem descrição específica clara.
-      - name: calendario_vacinal_atualizado
-        description: Indica se o calendário vacinal do paciente está atualizado.
-      - name: tipo_registro
+
+      - name: vacina_aplicacao_data
+        description: Data de aplicação da vacina.
+
+      - name: vacina_registro_data
+        description: Data de registro da vacina.
+
+      - name: vacina_diferenca_dias
+        description: Diferença em dias entre o registro e aplicação da vacina.
+
+      - name: vacina_calendario_atualizado
+        description: Indica se o calendário vacinal está atualizado.
+
+      - name: vacina_tipo_registro
         description: Tipo de registro da vacina.
-      - name: estrategia_imunizacao
-        description: Estratégia de imunização utilizada (exemplo rotina, campanha).
-      - name: foi_aplicada
-        description: Indica se a vacina foi de fato aplicada.
-      - name: justificativa
-        description: Justificativa para a aplicação ou não aplicação da vacina.
+
+      - name: vacina_estrategia_imunizacao
+        description: Estratégia de imunização utilizada.
+
+      - name: vacina_foi_aplicada
+        description: Indica se a vacina foi aplicada.
+
+      - name: vacina_justificativa
+        description: Justificativa relacionada à aplicação ou não aplicação da vacina.
+
       - name: loaded_at
-        description: Timestamp de quando o registro foi carregado no sistema.
+        description: Data e hora em que o registro foi extraído/carregado no datalake.
+
       - name: data_particao
-        description: Data de partição dos dados, baseada no campo loaded_at.
+        description: Data de partição dos dados, derivada do campo loaded_at.
