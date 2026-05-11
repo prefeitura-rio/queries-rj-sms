@@ -82,11 +82,15 @@ with
             {{ process_null('dose') }} as dose,
             {{ process_null('lote') }} as lote,
 
-            cast(substr({{ process_null('data_aplicacao') }}, 1, 10) as date) as data_aplicacao,
+            case
+                when cast(substr({{ process_null('data_aplicacao') }}, 1, 10) as date) <= date '1900-01-01'
+                    then null
+                else cast(substr({{ process_null('data_aplicacao') }}, 1, 10) as date)
+            end as data_aplicacao,
             cast(substr({{ process_null('data_registro') }}, 1, 10) as date) as data_registro,
             {{ process_null("replace(diff, '.0', '')") }} as diff,
 
-            cast({{ process_null('calendario_vacinal_atualizado') }}as boolean) as calendario_vacinal_atualizado,
+            {{ process_null('calendario_vacinal_atualizado') }} as calendario_vacinal_atualizado,
             {{ process_null('tipo_registro') }} as tipo_registro,
             {{ process_null('estrategia_imunizacao') }} as estrategia_imunizacao,
             {{ process_null('foi_aplicada') }} as foi_aplicada,
