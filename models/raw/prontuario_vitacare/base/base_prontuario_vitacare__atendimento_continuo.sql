@@ -73,7 +73,8 @@ with
             json_extract_scalar(data, "$.profissional.equipe.nome") as nome_equipe_profissional,
 
             -- Dados da Consulta
-            json_extract_scalar(data, "$.tipo_consulta") as tipo,
+            json_extract_scalar(data, "$.tipo_consulta") as tipo_consulta,
+            json_extract_scalar(data, "$.tipo_atendimento") as tipo_atendimento,
             json_extract_scalar(data, "$.eh_coleta") as eh_coleta,
             safe_cast(
                 {{ process_null("json_extract_scalar(data, '$.datahora_marcacao_atendimento')") }} as datetime
