@@ -475,6 +475,20 @@ models:
         description: Data e hora da importação dos dados para o datalake.
   - name: raw_prontuario_vitacare__atendimento
     columns:
+      - name: id_paciente_global
+        description: >
+          Identificador global do paciente no VitaCare, construído a partir da composição
+          entre o CNES da unidade e o identificador local do paciente na unidade.
+          No atendimento histórico, corresponde ao campo id_paciente_global. No atendimento
+          contínuo, é construído como payload_cnes concatenado ao ut_id extraído do JSON
+          do atendimento. Esse campo permite identificar pacientes sem CPF diretamente
+          na tabela de atendimentos.
+
+      - name: id_paciente_local
+        description: >
+          Identificador local do paciente no VitaCare, correspondente ao ut_id. Esse campo
+          identifica o paciente dentro da unidade de saúde, mas não deve ser utilizado
+          isoladamente como chave global, pois o mesmo ut_id pode existir em diferentes CNES.
       - name: id_hci
         description: Identificador do Histórico Clínico Integrado.
         data_type: string
@@ -1018,7 +1032,7 @@ models:
               config:
                 severity: warn
                 warn_if: ">100"
-      - name: id_paciente
+      - name: id_paciente_global
         description: Identificador único do paciente utilizado para ligar tabelas no datalake.
       - name: id_paciente_vitacare
         description: Identificador único do paciente no sistema.

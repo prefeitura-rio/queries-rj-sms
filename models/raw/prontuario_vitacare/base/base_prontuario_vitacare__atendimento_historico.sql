@@ -36,7 +36,7 @@ with
             -- Chaves
             nullif(patient_cpf, 'NAO TEM') as cpf,
             ut_id as id_paciente_local,
-            id_cadastro as id_paciente,
+            id_paciente_global,
             id_cnes as cnes_unidade,
 
             -- Profissional

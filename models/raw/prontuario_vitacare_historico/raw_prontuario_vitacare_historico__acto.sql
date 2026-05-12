@@ -59,7 +59,7 @@ WITH
                 id_cnes,
                 '.',
                 ut_id
-            ) as id_cadastro,
+            ) as id_paciente_global,
 
             -- ------------------------
             -- DEPRECATED

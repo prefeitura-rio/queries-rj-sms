@@ -59,7 +59,7 @@ select
     id_prontuario_global,
     id_hci,
 
-    id_paciente,
+    id_paciente_global,
     id_paciente_local,
 
     {{ clean_numeric("cpf") }} as cpf,

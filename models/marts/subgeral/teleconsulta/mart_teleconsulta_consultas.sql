@@ -73,7 +73,7 @@ with
             age.loaded_at
         from {{ ref("raw_prontuario_vitacare_historico__agendamento") }} age
             left join dedup_profissional prof on prof.id_global = age.id_profissional
-            left join dedup_paciente cad on cad.id_global = age.id_cadastro
+            left join dedup_paciente cad on cad.id_global = age.id_paciente_global
         where
             tipo_atendimento = 'TELECONSULTA'
     ),
@@ -117,7 +117,7 @@ with
             acto.loaded_at
         from
             {{ ref("raw_prontuario_vitacare_historico__acto") }} acto
-            left join dedup_paciente cad on cad.id_global = acto.id_cadastro
+            left join dedup_paciente cad on cad.id_global = acto.id_paciente_global
         where
             tipo_atendimento = 'TELECONSULTA'
     ),
