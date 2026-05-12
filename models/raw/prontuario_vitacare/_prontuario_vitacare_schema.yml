@@ -575,8 +575,13 @@ models:
         data_type: string
         quote: true
 
-      - name: tipo
-        description: Tipo de atendimento.
+      - name: tipo_consulta
+        description: Tipo da consulta realizada no atendimento.
+        data_type: string
+        quote: true
+      
+      - name: tipo_atendimento
+        description: Tipo de atendimento realizado.
         data_type: string
         quote: true
 

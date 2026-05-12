@@ -51,7 +51,8 @@ with
             profissional_equipe_nome as nome_equipe_profissional,
 
             -- Dados da Consulta
-            tipo_consulta as tipo,
+            tipo_consulta,
+            tipo_atendimento,
             eh_coleta,
             datahora_marcacao_atendimento as datahora_marcacao,
             datahora_inicio_atendimento as datahora_inicio,

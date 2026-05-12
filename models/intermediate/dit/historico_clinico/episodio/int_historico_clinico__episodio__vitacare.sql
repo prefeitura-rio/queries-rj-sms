@@ -357,7 +357,7 @@ with
                         json_extract_scalar(
                             json_extract(vacinas, '$[0]'), '$.nome_vacina'
                         )
-                    else nullif(tipo, '')
+                    else nullif(tipo_consulta, '')
                 end as string
             ) as subtipo,
 
