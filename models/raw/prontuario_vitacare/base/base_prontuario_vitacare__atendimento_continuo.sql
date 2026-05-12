@@ -56,7 +56,7 @@ with
                     '.',
                     nullif(json_extract_scalar(data, "$.ut_id"), '')
                 )
-            end as id_paciente_local,
+            end as id_paciente_global,
 
             payload_cnes as cnes_unidade,
 
