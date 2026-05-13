@@ -909,23 +909,6 @@ data_tests:
     +store_failures: true
     +schema: gerenciamento__dbt_test_audit
 
-seeds:
-  rj_sms:
-    subgeral:
-      monitora_cancer:
-        +schema: projeto_monitora_cancer
-        +tags: ["weekly", "subgeral", "monitora_cancer"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
-          dominio: subgeral
-        +column_types:
-          id_procedimento: INT64
-          procedimento: STRING
-          criterio_suspeita: BOOL
-          criterio_diagnostico: BOOL
-
 flags:
   require_explicit_package_overrides_for_builtin_materializations: False
   source_freshness_run_project_hooks: True

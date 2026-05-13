@@ -6,7 +6,7 @@
 -- entregam id_procedimento_sisreg em FORMATOS DIFERENTES:
 --   • raw_sisreg_api__marcacoes      → STRING zero-padded para 7 chars (ex.: "0703716")
 --   • raw_sisreg_api__solicitacoes   → STRING sem padding         (ex.: "703716")
--- Para casar com o INT da seed, usamos safe_cast(... as int) na coluna source.
+-- Para casar com o INT dos parâmetros, usamos safe_cast(... as int) na coluna source.
 -- Custo: o cast envolve a chave de cluster (id_procedimento_sisreg é a 3ª
 -- chave de cluster_by) e zera cluster pruning desse predicado. Mantido por
 -- correção até o upstream normalizar (issue: padronizar lpad em
@@ -14,12 +14,8 @@
 
 with
     procedimentos as (
-        select
-            id_procedimento,
-            procedimento,
-            safe_cast(criterio_suspeita as bool) as criterio_suspeita,
-            safe_cast(criterio_diagnostico as bool) as criterio_diagnostico
-        from {{ ref("procedimentos_sisreg") }}
+        select *
+        from {{ ref("int_monitora_cancer__parametros_sisreg") }}
     ),
 
     base as (

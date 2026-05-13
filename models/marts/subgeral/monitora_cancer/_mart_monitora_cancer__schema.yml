@@ -367,6 +367,12 @@ models:
           paciente cujo intervalo entre datas de referência não excede 180
           dias; o id incrementa a cada gap maior, reiniciando por paciente.
 
+      # ── pendências atuais ─────────────────────────────────────────────────────
+      - name: pendencia_atual
+        description: >
+          Lista de rótulos (possivelmente vazia) com as pendências atuais da
+          paciente, calculadas em int_monitora_cancer__pendencias.
+
   - name: mart_monitora_cancer__gravidade
     description: >
       Score de gravidade da paciente no monitoramento de câncer de mama,

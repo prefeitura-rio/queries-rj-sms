@@ -91,11 +91,16 @@ select
             ev.data_resultado
     ) as eventos,
 
-    any_value (ev.tempo_total) as tempo_total
+    any_value (ev.tempo_total) as tempo_total,
+
+    -- pendências atuais (1 array por paciente, calculado em int_monitora_cancer__pendencias)
+    any_value (pend.pendencia_atual) as pendencia_atual
 
 from {{ ref("int_monitora_cancer__eventos_episodios") }} as ev
     left join {{ ref("mart_monitora_cancer__gravidade") }} as grv
     on ev.cpf_particao = grv.cpf_particao
+    left join {{ ref("int_monitora_cancer__pendencias") }} as pend
+    on ev.cpf_particao = pend.cpf_particao
 group by
     ev.cpf_particao,
     ev.cpf,
