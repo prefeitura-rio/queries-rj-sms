@@ -112,12 +112,12 @@ bam_renomeado as (
         -- Exame Físico e Sinais Vitais
         {{ process_null('exame_fisico') }} as exame_fisico,
         {{ process_null('ds_exame_fisico_especifico') }} as exame_fisico_especifico,
-        safe_cast({{ process_null('sinal_vital_pas') }} as int64) as pressao_arterial_sistolica,
-        safe_cast({{ process_null('sinal_vital_pad') }} as int64) as pressao_arterial_diastolica,
-        safe_cast({{ process_null('sinal_vital_fc') }} as int64) as frequencia_cardiaca,
-        safe_cast({{ process_null('sinal_vital_fr') }} as int64) as frequencia_respiratoria,
+        safe_cast({{ process_null('sinal_vital_pas') }} as float64) as pressao_arterial_sistolica,
+        safe_cast({{ process_null('sinal_vital_pad') }} as float64) as pressao_arterial_diastolica,
+        safe_cast({{ process_null('sinal_vital_fc') }} as float64) as frequencia_cardiaca,
+        safe_cast({{ process_null('sinal_vital_fr') }} as float64) as frequencia_respiratoria,
         safe_cast({{ process_null('sinal_vital_tax') }} as float64) as temperatura,
-        safe_cast({{ process_null('sinal_vital_spo2') }} as int64) as saturacao_oxigenio,
+        safe_cast({{ process_null('sinal_vital_spo2') }} as float64) as saturacao_oxigenio,
 
         -- Diagnóstico e Conduta
         {{ process_null('hipotese_diagnotica') }} as hipotese_diagnostica,
