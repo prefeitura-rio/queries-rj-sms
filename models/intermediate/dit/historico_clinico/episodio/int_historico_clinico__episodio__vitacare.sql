@@ -361,6 +361,8 @@ with
                 end as string
             ) as subtipo,
 
+            atendimento.tipo_atendimento as tipo_demanda,
+
             -- Entrada e Saída
             {{ parse_and_filter_future_date('datahora_inicio') }} as entrada_datahora,
             {{ parse_and_filter_future_date('datahora_fim') }} as saida_datahora,
