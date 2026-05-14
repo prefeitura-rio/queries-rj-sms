@@ -33,9 +33,9 @@
             "field": "cpf_particao",
             "data_type": "int64",
             "range": {"start": 0, "end": 100000000000, "interval": 34722222},
-        },
-        cluster_by=["fonte", "procedimento"],
-    )
+},
+cluster_by = ["fonte", "procedimento"],
+)
 }}
 
 -- event_order: data_referencia_evento, data_solicitacao, data_autorizacao, data_execucao, data_resultado

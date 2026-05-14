@@ -29,7 +29,7 @@ select
 
     -- qualificadores gerais
     ev.status,
-    coalesce(any_value(grv.gravidade_score), 0) as gravidade_score,
+    coalesce(any_value (grv.gravidade_score), 0) as gravidade_score,
     any_value (ev.gestante) as gestante,
 
     -- contato paciente
