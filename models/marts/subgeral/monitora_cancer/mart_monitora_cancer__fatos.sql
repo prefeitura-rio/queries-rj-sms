@@ -21,11 +21,11 @@
       "data_type": "date",
       "granularity": "month",
     },
-incremental_predicates=[
+incremental_predicates = [
   "DBT_INTERNAL_DEST.data_solicitacao >= date_sub(date('" ~ last_partition ~ "'), interval " ~ lookback_dias ~ " day)"
 ],
-cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
-on_schema_change='sync_all_columns'
+cluster_by = ['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
+on_schema_change = 'sync_all_columns'
 )
 }}
 
@@ -35,7 +35,7 @@ with
     dim_estabelecimento_atual as (
         select id_cnes, nome_fantasia
         from {{ ref('dim_estabelecimento_sus_rio_historico') }}
-        qualify rank() over (order by ano_competencia desc, mes_competencia desc) = 1
+            qualify rank() over (order by ano_competencia desc, mes_competencia desc) = 1
     ),
 
     fontes_unificadas as (
