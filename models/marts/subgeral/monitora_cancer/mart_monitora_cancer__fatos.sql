@@ -21,7 +21,9 @@
       "data_type": "date",
       "granularity": "month",
     },
-incremental_predicates=["DBT_INTERNAL_DEST.data_solicitacao >= date_sub('" ~ last_partition ~ "', interval " ~ lookback_dias ~ " day)"],
+incremental_predicates=[
+  "DBT_INTERNAL_DEST.data_solicitacao >= date_sub(date('" ~ last_partition ~ "'), interval " ~ lookback_dias ~ " day)"
+],
 cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
 on_schema_change='sync_all_columns'
 )
