@@ -39,9 +39,7 @@ models:
       - name: limite_dias_solicitacao_autorizacao
         description: >
           Limite em dias entre data_solicitacao e data_autorizacao para o
-          procedimento estar dentro do prazo de regulação. Como o SER não
-          possui etapa de autorização separada, o valor é 0 para todos os
-          procedimentos.
+          procedimento estar dentro do prazo de regulação.
         data_type: int64
         data_tests:
           - not_null:
