@@ -36,6 +36,33 @@ models:
         data_tests:
           - not_null:
               name: int_monitora_cancer__parametros_ser__criterio_diagnostico__not_null
+      - name: limite_dias_solicitacao_autorizacao
+        description: >
+          Limite em dias entre data_solicitacao e data_autorizacao para o
+          procedimento estar dentro do prazo de regulação. Como o SER não
+          possui etapa de autorização separada, o valor é 0 para todos os
+          procedimentos.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__limite_dias_solicitacao_autorizacao__not_null
+      - name: limite_dias_autorizacao_execucao
+        description: >
+          Limite em dias entre data_autorizacao e data_execucao para o
+          procedimento estar dentro do prazo de regulação.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__limite_dias_autorizacao_execucao__not_null
+      - name: limite_dias_regulacao
+        description: >
+          Limite total em dias entre data_solicitacao e data_execucao para o
+          procedimento estar dentro do prazo de regulação. Calculado como
+          limite_dias_solicitacao_autorizacao + limite_dias_autorizacao_execucao.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__limite_dias_regulacao__not_null
 
   - name: int_monitora_cancer__parametros_sisreg
     description: >
@@ -77,3 +104,28 @@ models:
         data_tests:
           - not_null:
               name: int_monitora_cancer__parametros_sisreg__criterio_diagnostico__not_null
+      - name: limite_dias_solicitacao_autorizacao
+        description: >
+          Limite em dias entre data_solicitacao e data_autorizacao para o
+          procedimento estar dentro do prazo de regulação.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__limite_dias_solicitacao_autorizacao__not_null
+      - name: limite_dias_autorizacao_execucao
+        description: >
+          Limite em dias entre data_autorizacao e data_execucao para o
+          procedimento estar dentro do prazo de regulação.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__limite_dias_autorizacao_execucao__not_null
+      - name: limite_dias_regulacao
+        description: >
+          Limite total em dias entre data_solicitacao e data_execucao para o
+          procedimento estar dentro do prazo de regulação. Calculado como
+          limite_dias_solicitacao_autorizacao + limite_dias_autorizacao_execucao.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__limite_dias_regulacao__not_null
