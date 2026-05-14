@@ -79,6 +79,10 @@ select
                 )
             ) as resultados,
 
+            ev.atraso_solicitacao_autorizacao,
+            ev.atraso_autorizacao_execucao,
+            ev.atraso_regulacao,
+
             ev.dias_proximo_evento,
             ev.run_id as jornada_id
         )
