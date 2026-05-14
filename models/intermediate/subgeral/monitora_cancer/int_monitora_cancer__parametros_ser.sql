@@ -14,5 +14,5 @@ from unnest([
         false as criterio_diagnostico
     ),
     struct(1035, 'Consulta em Mastologia (Oncologia)', false, true),
-    struct(1049, 'Consulta em Mastologia (Oncologia)', false, false)
+    struct(1049, 'Consulta em Mastologia (Oncologia)', false, true)
 ])
