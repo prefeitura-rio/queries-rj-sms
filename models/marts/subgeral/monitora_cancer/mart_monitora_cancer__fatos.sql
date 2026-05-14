@@ -7,6 +7,8 @@
 -- Cobre eventos cuja execução chega tardiamente após a solicitação.
 {% set lookback_dias = 464 %}
 
+{% set last_partition = get_last_partition_date( this ) %}
+
 {{
   config(
     materialized='incremental',
@@ -19,13 +21,11 @@
       "data_type": "date",
       "granularity": "month",
     },
-    incremental_predicates=['DBT_INTERNAL_DEST.data_solicitacao >= date_sub(current_date(), interval ' ~ lookback_dias ~ ' day)'],
+    incremental_predicates=["DBT_INTERNAL_DEST.data_solicitacao >= date_sub('" ~ last_partition ~ "', interval " ~ lookback_dias ~ " day)"],
     cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
     on_schema_change='sync_all_columns'
   )
 }}
-
-{% set last_partition = get_last_partition_date( this ) %}
 
 with
     cnes_competencia_atual as (
