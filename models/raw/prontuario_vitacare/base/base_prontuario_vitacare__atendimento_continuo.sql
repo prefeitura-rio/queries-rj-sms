@@ -52,9 +52,9 @@ with
                 when nullif(payload_cnes, '') is not null
                     and nullif(json_extract_scalar(data, "$.ut_id"), '') is not null
                 then concat(
-                    nullif(payload_cnes, ''),
+                    payload_cnes,
                     '.',
-                    nullif(json_extract_scalar(data, "$.ut_id"), '')
+                    json_extract_scalar(data, "$.ut_id")
                 )
             end as id_paciente_global,
 
