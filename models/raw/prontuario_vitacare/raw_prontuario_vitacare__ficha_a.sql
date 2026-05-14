@@ -6,7 +6,7 @@
     )
 }}
 
--- dbt run --select raw_prontuario_vitacare__paciente
+
 with
     ficha_a as (
         select *, 'historico' as tipo,

@@ -35,7 +35,11 @@ WITH
                 id_local
             ) AS id,
 
-            -- Outras Chaves
+            -- chave identificadora para pacientes sem cpf
+            -- cnes + ut id = id_paciente_global
+            -- ut_id = id_paciente_local
+            id_global as id_paciente_global,
+            id_local as id_paciente_local,
             id_cnes,
             id_local,
             npront AS numero_prontuario,
@@ -89,7 +93,7 @@ WITH
             ine_equipe AS codigo_ine_equipe_saude,
             safe_cast(data_atualizacao_vinculo_equipe as timestamp) AS data_atualizacao_vinculo_equipe,
 
-            
+
             DATE(SAFE_CAST(loaded_at AS DATETIME)) AS data_particao,
             safe_cast(data_cadastro as timestamp) as source_created_at,
             safe_cast(data_atualizacao_cadastro as timestamp) as source_updated_at,

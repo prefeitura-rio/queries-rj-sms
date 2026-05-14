@@ -3,8 +3,8 @@
         schema="brutos_prontuario_vitacare_staging",
         alias="_base_paciente_continuo",
         materialized="incremental",
-        incremental_strategy='merge', 
-        unique_key="id",
+        incremental_strategy='merge',
+        unique_key="id_paciente_global",
         tags=['daily']
     )
 }}
@@ -16,39 +16,60 @@
 with
 
     source as (
-        select *, 
-            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id,
-            greatest(safe_cast(source_updated_at as timestamp),
-            safe_cast(json_extract_scalar(data, "$.dataCadastro") as timestamp),
-            safe_cast(json_extract_scalar(data, "$.dataAtualizacaoCadastro") as timestamp),
-            safe_cast(json_extract_scalar(data, "$.dataAtualizacaoVinculoEquipe") as timestamp),
-            safe_cast(nullif(json_extract_scalar(data, "$.dataCadastro"),'') as timestamp)
+        select
+            *,
+
+            -- O identificador local do paciente vem no payload data.id. 
+            -- É uma chave local pois em unidades diferentes podem existir pacientes com o mesmo id, 
+            -- por isso a chave global do paciente é composta pelo cnes da unidade + o id local do paciente.
+            -- O source_id não deve ser usado como chave local em muitos casos vem nulo,
+            -- nos casos em que o source_id vem preenchido, ele é igual ao data.id, então utiliza-se o data.id como chave local do paciente.
+            json_extract_scalar(data, "$.id") as id_paciente_local,
+
+            -- Chave global do paciente:
+            -- CNES da unidade + identificador local do paciente.
+            concat(
+                nullif(payload_cnes, ''),
+                '.',
+                nullif(json_extract_scalar(data, "$.id"), '')
+            ) as id_paciente_global,
+
+            greatest(
+                safe_cast(source_updated_at as timestamp),
+                safe_cast(json_extract_scalar(data, "$.dataCadastro") as timestamp),
+                safe_cast(json_extract_scalar(data, "$.dataAtualizacaoCadastro") as timestamp),
+                safe_cast(json_extract_scalar(data, "$.dataAtualizacaoVinculoEquipe") as timestamp),
+                safe_cast(nullif(json_extract_scalar(data, "$.dataCadastro"), '') as timestamp)
             ) as updated_at_rank
+
         from {{ source("brutos_prontuario_vitacare_api_staging", "paciente_continuo") }}
-        where {{process_null('payload_cnes')}} is not null
+        where {{ process_null('payload_cnes') }} is not null
+
         {% if is_incremental() %}
-        and TIMESTAMP_TRUNC(datalake_loaded_at, DAY) > TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+        and timestamp_trunc(datalake_loaded_at, day) > timestamp(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
         {% endif %}
     ),
-    
+
     latest_events as (
         select
             *
         from source
-        where {{process_null('payload_cnes')}} is not null
-        qualify 
-            row_number() over (partition by id order by updated_at_rank desc) = 1
-        
+        where id_paciente_global is not null
+        qualify
+            row_number() over (
+                partition by id_paciente_global
+                order by updated_at_rank desc
+            ) = 1
     ),
 
     paciente_continuo as (
         select
             -- PK
-            cast(id as string) as id,
+            id_paciente_global,
 
             -- Outras chaves
             json_extract_scalar(data, "$.cnes") as id_cnes,
-            json_extract_scalar(data, "$.id") as id_local,
+            id_paciente_local,
             json_extract_scalar(data, "$.nPront") as numero_prontuario,
             json_extract_scalar(data, "$.cpf") as cpf,
             json_extract_scalar(data, "$.dnv") as dnv,
@@ -59,8 +80,8 @@ with
             json_extract_scalar(data, "$.nome") as nome,
             json_extract_scalar(data, "$.nomeSocial") as nome_social,
             json_extract_scalar(data, "$.nomeMae") as nome_mae,
-            json_extract_scalar(data, "$.nomePai") as nome_pai, 
-            case           
+            json_extract_scalar(data, "$.nomePai") as nome_pai,
+            case
                 when json_extract_scalar(data, "$.obito") = 'true' then true
                 when json_extract_scalar(data, "$.obito") = 'false' then false
                 else null
@@ -72,17 +93,17 @@ with
 
             -- Informações Cadastrais
             safe_cast(null as string) as situacao,  -- #TODO: Pedir para vitacare essa informação
-            case 
-                when json_extract_scalar(data, "$.cadastroPermanente") = 'true' then true 
-                when json_extract_scalar(data, "$.cadastroPermanente") = 'false' then false 
-                else null 
+            case
+                when json_extract_scalar(data, "$.cadastroPermanente") = 'true' then true
+                when json_extract_scalar(data, "$.cadastroPermanente") = 'false' then false
+                else null
             end as cadastro_permanente,
             safe_cast(json_extract_scalar(data, "$.dataCadastro") as timestamp) as data_cadastro,
             safe_cast(json_extract_scalar(data, "$.dataAtualizacaoCadastro") as timestamp) as data_atualizacao_cadastro,
-            
+
             -- Nascimento
             json_extract_scalar(data, "$.nacionalidade") as nacionalidade,
-            safe_cast( 
+            safe_cast(
                 safe_cast(json_extract_scalar(data, "$.dataNascimento") as datetime)
                 as date
             ) as data_nascimento,
@@ -110,17 +131,17 @@ with
             json_extract_scalar(data, "$.codigoEquipe") as codigo_equipe_saude,
             json_extract_scalar(data, "$.ineEquipe") as codigo_ine_equipe_saude,
             safe_cast(json_extract_scalar(data, "$.dataAtualizacaoVinculoEquipe") as timestamp) as data_atualizacao_vinculo_equipe,
-            
+
             -- Metadata columns
             safe_cast(
                 safe_cast(json_extract_scalar(data, "$.dataCadastro") as datetime)
-                as date) as data_particao,
-            safe_cast(nullif(json_extract_scalar(data, "$.dataCadastro"),'') as timestamp) as source_created_at,
+                as date
+            ) as data_particao,
+            safe_cast(nullif(json_extract_scalar(data, "$.dataCadastro"), '') as timestamp) as source_created_at,
             updated_at_rank as source_updated_at,
             safe_cast(null as timestamp) as datalake_imported_at,
             updated_at_rank
         from latest_events
     )
-select * 
+select *
 from paciente_continuo
-    
