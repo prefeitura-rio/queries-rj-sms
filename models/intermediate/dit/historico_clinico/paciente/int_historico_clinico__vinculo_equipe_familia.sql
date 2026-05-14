@@ -78,7 +78,7 @@ with
     -- Base de pacientes com vínculo de equipe preenchido, mantém apenas pacientes com situacao 'Ativo',
     paciente_base as (
         select
-            p.id as id_paciente,
+            p.id_paciente_global as id_paciente,
             {{ process_null('p.id_cnes') }} as id_cnes,
             {{ process_null('p.cpf') }} as cpf_paciente,
             {{ process_null('p.cns') }} as cns_paciente,
