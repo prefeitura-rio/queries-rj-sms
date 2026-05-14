@@ -35,7 +35,10 @@ with
             ps.criterio_diagnostico as diagnostico_solicitado,
             pr.procedimento as procedimento_regulado_seed,
             pr.criterio_suspeita as suspeita_regulado,
-            pr.criterio_diagnostico as diagnostico_regulado
+            pr.criterio_diagnostico as diagnostico_regulado,
+            coalesce(pr.limite_dias_solicitacao_autorizacao, ps.limite_dias_solicitacao_autorizacao) as limite_dias_solicitacao_autorizacao,
+            coalesce(pr.limite_dias_autorizacao_execucao, ps.limite_dias_autorizacao_execucao) as limite_dias_autorizacao_execucao,
+            coalesce(pr.limite_dias_regulacao, ps.limite_dias_regulacao) as limite_dias_regulacao
         from base
             left join procedimentos as ps
                 on base.id_procedimento_solicitado = ps.id_procedimento
@@ -76,6 +79,31 @@ select
     coalesce(suspeita_solicitado, false)
         or coalesce(suspeita_regulado, false) as criterio_suspeita,
     coalesce(diagnostico_solicitado, false)
-        or coalesce(diagnostico_regulado, false) as criterio_diagnostico
+        or coalesce(diagnostico_regulado, false) as criterio_diagnostico,
+
+-- atraso (severidade 0-3) por etapa da regulação.
+-- Regra: 0 se interval < limite; 1 se >= limite; 2 se >= limite + 10; 3 se >= limite + 20.
+-- NULL quando alguma das datas envolvidas estiver ausente.
+    case
+        when date_diff(data_agendamento, data_solicitacao, day) is null then null
+        when date_diff(data_agendamento, data_solicitacao, day) >= limite_dias_solicitacao_autorizacao + 20 then 3
+        when date_diff(data_agendamento, data_solicitacao, day) >= limite_dias_solicitacao_autorizacao + 10 then 2
+        when date_diff(data_agendamento, data_solicitacao, day) >= limite_dias_solicitacao_autorizacao then 1
+        else 0
+    end as atraso_solicitacao_autorizacao,
+    case
+        when date_diff(data_execucao, data_agendamento, day) is null then null
+        when date_diff(data_execucao, data_agendamento, day) >= limite_dias_autorizacao_execucao + 20 then 3
+        when date_diff(data_execucao, data_agendamento, day) >= limite_dias_autorizacao_execucao + 10 then 2
+        when date_diff(data_execucao, data_agendamento, day) >= limite_dias_autorizacao_execucao then 1
+        else 0
+    end as atraso_autorizacao_execucao,
+    case
+        when date_diff(data_execucao, data_solicitacao, day) is null then null
+        when date_diff(data_execucao, data_solicitacao, day) >= limite_dias_regulacao + 20 then 3
+        when date_diff(data_execucao, data_solicitacao, day) >= limite_dias_regulacao + 10 then 2
+        when date_diff(data_execucao, data_solicitacao, day) >= limite_dias_regulacao then 1
+        else 0
+    end as atraso_regulacao
 
 from enriquecido

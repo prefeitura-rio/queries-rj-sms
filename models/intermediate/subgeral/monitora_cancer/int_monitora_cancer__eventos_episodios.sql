@@ -33,9 +33,9 @@
             "field": "cpf_particao",
             "data_type": "int64",
             "range": {"start": 0, "end": 100000000000, "interval": 34722222},
-        },
-        cluster_by=["fonte", "procedimento"],
-    )
+},
+cluster_by = ["fonte", "procedimento"],
+)
 }}
 
 -- event_order: data_referencia_evento, data_solicitacao, data_autorizacao, data_execucao, data_resultado
@@ -82,6 +82,9 @@ with
             fcts.mama_direita_resultado,
             fcts.criterio_diagnostico,
             fcts.evento_status,
+            fcts.atraso_solicitacao_autorizacao,
+            fcts.atraso_autorizacao_execucao,
+            fcts.atraso_regulacao,
             (
                 select max(d)
                 from unnest ([
@@ -253,6 +256,10 @@ select
     ev.mama_esquerda_resultado,
     ev.mama_direita_resultado,
     ev.criterio_diagnostico,
+
+    ev.atraso_solicitacao_autorizacao,
+    ev.atraso_autorizacao_execucao,
+    ev.atraso_regulacao,
 
     ev.dias_proximo_evento,
     ev.run_id,

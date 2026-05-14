@@ -45,7 +45,12 @@ select
     case
         when lesao_neoplasico is not null then true
         else false
-    end as criterio_diagnostico
+    end as criterio_diagnostico,
+
+-- apenas para SER/SISREG
+    cast(NULL as int64) as atraso_solicitacao_autorizacao,
+    cast(NULL as int64) as atraso_autorizacao_execucao,
+    cast(NULL as int64) as atraso_regulacao
 
 from {{ ref("raw_siscan_web__laudos_histo_mama") }}
 where 1 = 1

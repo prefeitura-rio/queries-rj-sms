@@ -5,14 +5,18 @@
 -- Usado por int_monitora_cancer__ser_ambulatorial como fonte de verdade
 -- para inclusão e classificação dos eventos.
 
-select *
+select
+    *,
+    limite_dias_solicitacao_autorizacao + limite_dias_autorizacao_execucao as limite_dias_regulacao
 from unnest([
     struct(
         560 as id_procedimento,
         'Consulta em Mastologia' as procedimento,
         false as criterio_suspeita,
-        false as criterio_diagnostico
+        false as criterio_diagnostico,
+        0 as limite_dias_solicitacao_autorizacao,
+        60 as limite_dias_autorizacao_execucao
     ),
-    struct(1035, 'Consulta em Mastologia (Oncologia)', false, true),
-    struct(1049, 'Consulta em Mastologia (Oncologia)', false, false)
+    struct(1035, 'Consulta em Mastologia (Oncologia)', false, true, 0, 60),
+    struct(1049, 'Consulta em Mastologia (Oncologia)', false, true, 0, 60)
 ])

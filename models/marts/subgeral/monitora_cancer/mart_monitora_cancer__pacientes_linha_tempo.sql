@@ -29,7 +29,7 @@ select
 
     -- qualificadores gerais
     ev.status,
-    coalesce(any_value(grv.gravidade_score), 0) as gravidade_score,
+    coalesce(any_value (grv.gravidade_score), 0) as gravidade_score,
     any_value (ev.gestante) as gestante,
 
     -- contato paciente
@@ -78,6 +78,10 @@ select
                     [concat("Mama Direita ", ev.mama_direita_resultado)]
                 )
             ) as resultados,
+
+            ev.atraso_solicitacao_autorizacao,
+            ev.atraso_autorizacao_execucao,
+            ev.atraso_regulacao,
 
             ev.dias_proximo_evento,
             ev.run_id as jornada_id
