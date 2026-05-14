@@ -35,6 +35,8 @@ with
 
             -- Chaves
             nullif(patient_cpf, 'NAO TEM') as cpf,
+            ut_id as id_paciente_local,
+            id_paciente_global,
             id_cnes as cnes_unidade,
 
             -- Profissional
@@ -49,7 +51,8 @@ with
             profissional_equipe_nome as nome_equipe_profissional,
 
             -- Dados da Consulta
-            tipo_consulta as tipo,
+            tipo_consulta,
+            tipo_atendimento,
             eh_coleta,
             datahora_marcacao_atendimento as datahora_marcacao,
             datahora_inicio_atendimento as datahora_inicio,
@@ -64,7 +67,7 @@ with
 
             -- Metadados
             safe_cast(datahora_fim_atendimento as datetime) as updated_at,
-            safe_cast(loaded_at as datetime) as loaded_at,
+            safe_cast(loaded_at as datetime) as loaded_at
         from
             {{ ref("raw_prontuario_vitacare_historico__acto") }}
             as atendimentos
@@ -73,20 +76,21 @@ with
         {% if is_incremental() %} 
         where atendimentos.data_particao >=  {{ partitions_to_replace }}
         {% endif %}
-            
     ),
+
     dim_alergias as (
         select
             id_prontuario_global,
             to_json_string(
                 array_agg(struct(alergias_anamnese_descricao as descricao))
             ) as alergias
-        from {{ref("raw_prontuario_vitacare_historico__alergia") }}
+        from {{ ref("raw_prontuario_vitacare_historico__alergia") }}
         {% if is_incremental() %} 
         where data_particao >= {{ partitions_to_replace }} 
         {% endif %}
         group by id_prontuario_global
     ),
+
     dim_condicoes as (
         select
             id_prontuario_global,
@@ -99,30 +103,33 @@ with
         {% endif %}
         group by id_prontuario_global
     ),
+
     dim_encaminhamentos as (
         select
             id_prontuario_global,
             to_json_string(
                 array_agg(struct(encaminhamento_especialidade as descricao))
             ) as encaminhamentos
-        from{{ ref("raw_prontuario_vitacare_historico__encaminhamento")}}
+        from {{ ref("raw_prontuario_vitacare_historico__encaminhamento") }}
         {% if is_incremental() %} 
         where data_particao >= {{ partitions_to_replace }} 
         {% endif %}
         group by id_prontuario_global
     ),
+
     dim_indicadores as (
         select
             id_prontuario_global,
             to_json_string(
                 array_agg(struct(indicadores_nome as nome, valor))
             ) as indicadores
-        from {{ ref("raw_prontuario_vitacare_historico__indicador")}}
+        from {{ ref("raw_prontuario_vitacare_historico__indicador") }}
         {% if is_incremental() %} 
         where data_particao >= {{ partitions_to_replace }} 
         {% endif %}
         group by id_prontuario_global
     ),
+
     dim_exames as (
         select
             id_prontuario_global,
@@ -139,6 +146,7 @@ with
         {% endif %}
         group by id_prontuario_global
     ),
+
     dim_vacinas as (
         select
             id_prontuario_global,
@@ -165,6 +173,7 @@ with
         {% endif %}
         group by id_prontuario_global
     ),
+
     dim_prescricoes as (
         select
             id_prontuario_global,
@@ -185,6 +194,7 @@ with
         {% endif %}
         group by id_prontuario_global
     ),
+
     dim_procedimentos_clinicos as (
         select
             id_prontuario_global,
@@ -192,7 +202,7 @@ with
                 array_agg(
                     struct(
                         co_procedimento,
-                        no_procedimento AS procedimento_clinico
+                        no_procedimento as procedimento_clinico
                     )
                 )
             ) as procedimentos_clinicos
@@ -206,9 +216,7 @@ with
     atendimentos_eventos_historicos as (
         select
             atendimentos.* except (updated_at, loaded_at),
-
-
-            dim_procedimentos_clinicos.procedimentos_clinicos AS soap_plano_procedimentos_clinicos,
+            dim_procedimentos_clinicos.procedimentos_clinicos as soap_plano_procedimentos_clinicos,
             dim_prescricoes.prescricoes,
             dim_condicoes.condicoes,
             dim_exames.exames_solicitados,
@@ -219,7 +227,6 @@ with
             atendimentos.updated_at,
             atendimentos.loaded_at,
             safe_cast(atendimentos.datahora_fim as date) as data_particao
-
         from fato_atendimento as atendimentos
         left join dim_alergias using (id_prontuario_global)
         left join dim_condicoes using (id_prontuario_global)
