@@ -82,7 +82,7 @@ with
             safe_cast(
                 {{ process_null("json_extract_scalar(data, '$.datahora_inicio_atendimento')") }} as datetime
             ) as datahora_inicio,
-            safe_cast(
+            cast(
                 {{ process_null("json_extract_scalar(data, '$.datahora_fim_atendimento')") }} as datetime
             ) as datahora_fim,
 
@@ -106,8 +106,8 @@ with
             -- Metadados
             safe_cast(source_updated_at as datetime) as updated_at,
             safe_cast(datalake_loaded_at as datetime) as loaded_at,
-            safe_cast(
-                safe_cast(json_extract_scalar(data, "$.datahora_fim_atendimento") as datetime)
+            cast(
+                cast(json_extract_scalar(data, "$.datahora_fim_atendimento") as datetime)
                 as date
             ) as data_particao
 
