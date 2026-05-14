@@ -62,7 +62,10 @@ with
             habilitacao_mes_fim,
             ano_competencia,
             mes_competencia,
-            parse_date('%Y-%m-%d', map.data_particao) as data_particao,
+            -- data_particao determinística (não depende de left join
+            -- contra tabela de referência)
+            -- usa diretamente o snapshot mais atual
+            parse_date('%Y-%m-%d', (select versao from versao_atual)) as data_particao,
 
         from {{ ref("int_habilitacao_sus_rio_historico__brutos_filtrados") }} as hab
         left join dim_estabelecimentos_sus_rio_historico as estabs using(ano_competencia, mes_competencia, id_cnes)
