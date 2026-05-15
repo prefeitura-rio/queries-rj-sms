@@ -78,7 +78,8 @@ with
     -- Base de pacientes com vínculo de equipe preenchido, mantém apenas pacientes com situacao 'Ativo',
     paciente_base as (
         select
-            p.id_paciente_global as id_paciente,
+            p.id_paciente_global,
+            p.id_paciente_local,
             {{ process_null('p.id_cnes') }} as id_cnes,
             {{ process_null('p.cpf') }} as cpf_paciente,
             {{ process_null('p.cns') }} as cns_paciente,
@@ -144,7 +145,7 @@ with
         select *
         from pacientes_elegiveis_enriquecidos
         qualify row_number() over (
-            partition by id_paciente, id_ine
+            partition by id_paciente_global, id_ine
             order by
                 cadastro_permanente_indicador desc,
                 data_atualizacao_vinculo_equipe desc nulls last,
@@ -222,7 +223,8 @@ with
     equipe_enriquecida as (
 
         select
-            p.id_paciente,
+            p.id_paciente_global,
+            p.id_paciente_local,
             p.cpf_paciente,
             p.cns_paciente,
             {{ proper_br('p.nome_paciente') }} as nome_paciente,
@@ -250,7 +252,8 @@ with
     profissional_paciente as (
 
         select
-            ee.id_paciente,
+            ee.id_paciente_global,
+            ee.id_paciente_local,
             ee.cpf_paciente,
             ee.cns_paciente,
             ee.nome_paciente,
@@ -279,7 +282,8 @@ with
     )
 
 select
-    id_paciente,
+    id_paciente_global,
+    id_paciente_local,
     cpf_paciente,
     cns_paciente,
     nome_paciente,
