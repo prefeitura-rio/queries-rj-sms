@@ -55,6 +55,11 @@ cadastros_por_unidade as (
     territorio_social,
     vulnerabilidade_social,
 
+    upper(tipo_logradouro) as endereco_tipo_logradouro,
+    upper(logradouro) as endereco_logradouro,
+    upper(cep) as endereco_cep,
+    upper(bairro) as endereco_bairro,
+
     updated_at as updated_at
   from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
   where
@@ -99,12 +104,16 @@ cadastros_com_endereco as (
   select 
     cadastros.*,
     concat(
-      COALESCE(endereco_tipo_logradouro, ''),
-      COALESCE(endereco_logradouro, ''),
-      COALESCE(endereco_numero, ''),
-      COALESCE(endereco_complemento, ''),
-      COALESCE(endereco_cep, ''),
-      COALESCE(endereco_bairro, '')
+      COALESCE(enderecos_por_pessoa.endereco_tipo_logradouro, cadastros.endereco_tipo_logradouro, ''),
+      ' ',
+      COALESCE(enderecos_por_pessoa.endereco_logradouro, cadastros.endereco_logradouro, ''),
+      ' ',
+      COALESCE(enderecos_por_pessoa.endereco_numero, ''),
+      ' - ',
+      COALESCE(enderecos_por_pessoa.endereco_cep, cadastros.endereco_cep, ''),
+      ' - ',
+      COALESCE(enderecos_por_pessoa.endereco_bairro, cadastros.endereco_bairro, ''),
+      ' - RIO DE JANEIRO, RJ'
     ) as endereco
   from cadastros
     left join enderecos_por_pessoa using (paciente_id)
