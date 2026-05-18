@@ -66,6 +66,7 @@ cadastros_por_unidade as (
 enderecos as (
   select 
     replace({{process_null('cpf')}},'.0','') as paciente_id,
+    id,
     upper(tipoLogradouro) as endereco_tipo_logradouro, 
     upper(logradouro) as endereco_logradouro, 
     upper(numLogradouro) as endereco_numero, 
@@ -103,7 +104,7 @@ cadastros_com_endereco as (
       COALESCE(endereco_numero, ''),
       COALESCE(endereco_complemento, ''),
       COALESCE(endereco_cep, ''),
-      COALESCE(endereco_bairro, ''),
+      COALESCE(endereco_bairro, '')
     ) as endereco
   from cadastros
     left join enderecos_por_pessoa using (paciente_id)
@@ -164,7 +165,7 @@ pacientes_randomizados as (
 enderecos_randomizados as (
   select
     equipe_id,
-    endereco
+    endereco,
     row_number() over (
       partition by equipe_id
       order by rand()
