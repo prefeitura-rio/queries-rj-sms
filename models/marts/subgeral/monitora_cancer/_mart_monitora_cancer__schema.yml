@@ -269,15 +269,18 @@ models:
 
       - name: gravidade_score
         description: >
-          Soma de "dias de atraso" da paciente, calculada em
-          mart_monitora_cancer__gravidade. Para cada subscore (par
-          trigger/expected/threshold), conta-se quantos dias o desfecho
-          esperado atrasou após o evento gatilho, descontando a folga do
-          threshold. O total é multiplicado por 2 quando a paciente é
-          gestante. Pacientes sem nenhum trigger no run atual recebem 0.
-          Valores maiores indicam pacientes com mais atrasos acumulados na
-          linha de cuidado e, portanto, potencialmente mais críticas de
-          acompanhar.
+          Score de gravidade (FLOAT64) da paciente, calculado em
+          mart_monitora_cancer__gravidade. Cada trigger só gera subscore
+          enquanto o desfecho esperado ainda NÃO chegou — quando o expected
+          acontece, o trigger é desativado e some do score. Para triggers
+          ativos: dias_atraso = max(0, date_diff(hoje, trigger) - threshold)
+          e subscore_valor = coalesce(risco_trigger, 1)
+                           * 2 ^ (min(dias_atraso, 90) / dias_dobrar_subscore).
+          O score é a soma dos valores dos subscores ativos da paciente,
+          multiplicada por 2 quando a paciente é gestante. Pacientes sem
+          nenhum trigger ativo no run atual recebem 0. Valores maiores
+          indicam pacientes com mais atrasos acumulados na linha de cuidado
+          e, portanto, potencialmente mais críticas de acompanhar.
 
       - name: tempo_total
         description: >
@@ -466,14 +469,28 @@ models:
 
   - name: mart_monitora_cancer__gravidade
     description: >
-      Score de gravidade da paciente no monitoramento de câncer de mama,
-      calculado como a soma dos "dias de atraso" entre cada evento gatilho
-      (trigger) e o respectivo desfecho esperado (expected outcome) — descontada
-      a folga do threshold de cada subscore — multiplicada por 2 se a paciente
-      for gestante. Considera apenas eventos do RUN ATUAL (último episódio de
-      cuidado) de cada paciente.
+      Score de gravidade da paciente no monitoramento de câncer de mama.
+      Cada trigger só gera subscore enquanto o desfecho esperado (expected)
+      ainda NÃO chegou — quando o expected acontece, o trigger é desativado
+      e não aparece no breakdown. Para triggers ativos:
+      dias_atraso = max(0, date_diff(hoje, trigger) - threshold) e
+      subscore_valor = coalesce(risco_trigger, 1)
+                     * 2 ^ (min(dias_atraso, teto_atraso) / dias_dobrar_subscore),
+      via macro monitora_cancer_subscore. O fator de risco multiplica
+      diretamente o subscore conforme o risco do evento gatilho (escala
+      1..4); triggers sem risco mapeado recebem fator 1. Antes da soma, cada
+      subscore é normalizado para (0, 1] via macro
+      monitora_cancer_subscore_normalizado:
+      subscore_valor_normalizado = subscore_valor
+                                 / ( max_risco * 2 ^ (teto_atraso / dias_dobrar_subscore) ).
+      O score final é a SOMA dos subscores NORMALIZADOS de todos os triggers
+      ativos da paciente, multiplicada por 2 se ela for gestante. Considera
+      apenas eventos do RUN ATUAL (último episódio de cuidado) de cada
+      paciente.
 
-      Subscores atualmente implementados:
+      Subscores atualmente implementados (thresholds parametrizados no topo
+      de int_monitora_cancer__gravidade.sql; dias_dobrar_subscore = threshold
+      em todos):
         1. SISCAN mamografia Cat 0/4/5 → SISREG ultrassonografia ou biópsia,
            threshold 10 dias.
         2. SISCAN mamografia Cat 6 → qualquer evento SER, threshold 5 dias.
@@ -488,12 +505,16 @@ models:
         7. SER status de falha ("CHEGADA NAO CONFIRMADA", "CANCELADA")
            → nova solicitação SER, threshold 10 dias.
 
-      Convenções de data: trigger_date = data_referencia_evento (MAX das 4
-      datas do evento); expected_date = COALESCE(data_execucao, data_autorizacao).
-      Eventos esperados ainda só com data_solicitacao não zeram o atraso.
+      Mecanismo de desativação:
+        • Cross-evento (1, 2, 3, 7): NOT EXISTS contra a CTE de expected.
+          Quando aparece qualquer expected ≥ trigger (> em 7), o trigger some.
+        • Intra-evento legs (4): WHERE direto exigindo a data do desfecho
+          do leg = NULL.
+        • Intra-evento "stuck" (5, 6): WHERE no evento_status — quando o
+          status muda, a linha some naturalmente.
 
       Granularidade: 1 linha por paciente (cpf_particao). Apenas pacientes
-      com pelo menos um trigger no run atual estão presentes.
+      com pelo menos um trigger ativo no run atual estão presentes.
     meta:
       owner: "SMS/SUBGERAL/CR/NTI"
 
@@ -512,18 +533,25 @@ models:
 
       - name: gravidade_score
         description: >
-          Score final, em "dias de atraso", já com o multiplicador de gestante
-          aplicado. Igual a gravidade_score_base * 2 quando gestante = TRUE,
-          caso contrário igual a gravidade_score_base.
+          Score final (FLOAT64), em soma de subscores NORMALIZADOS, já com o
+          multiplicador de gestante aplicado. Igual a gravidade_score_base * 2
+          quando gestante = TRUE, caso contrário igual a gravidade_score_base.
         data_tests:
           - not_null:
               name: mart_monitora_cancer__gravidade__gravidade_score__not_null
 
       - name: gravidade_score_base
         description: >
-          Soma das parcelas de dias_atraso de todos os subscores, ANTES da
-          multiplicação por gestante. Útil para auditoria e comparação direta
-          entre pacientes gestantes e não-gestantes.
+          Soma dos subscores NORMALIZADOS
+          (subscore_valor_normalizado = subscore_valor
+                                      / ( max_risco
+                                          * 2 ^ (teto_atraso / dias_dobrar_subscore) ))
+          de todos os triggers ATIVOS de todos os subscores, ANTES da
+          multiplicação por gestante. Tipo FLOAT64. Cada trigger ativo
+          contribui com um valor em (0, 1] — perto de 0 quando o atraso é
+          pequeno e o risco baixo, próximo de 1 quando o atraso satura em
+          teto_atraso e risco_trigger = max_risco. Útil para auditoria e
+          comparação direta entre pacientes gestantes e não-gestantes.
 
       - name: gestante
         description: >
@@ -533,9 +561,17 @@ models:
 
       - name: gravidade_breakdown
         description: >
-          Array de structs detalhando cada parcela do score, ordenado por
-          data_trigger desc. Cada struct contém: subscore (identificador
-          textual do par trigger/expected), data_trigger (data de referência
-          do evento gatilho), data_expected (data de execução/autorização do
-          desfecho esperado encontrado, ou NULL quando ainda não aconteceu)
-          e dias_atraso (parcela contribuída por aquele trigger ao score).
+          Array de structs detalhando cada subscore ATIVO que compõe o score,
+          ordenado por data_trigger desc. Triggers cujo expected já chegou
+          não aparecem aqui (foram desativados). Cada struct contém:
+          subscore (identificador textual do par trigger/expected),
+          data_trigger (data de referência do evento gatilho), dias_atraso
+          (dias desde o trigger até hoje, descontado o threshold, com piso
+          0 e teto-limitado em teto_atraso pela fórmula do subscore),
+          dias_dobrar_subscore (parâmetro da fórmula exponencial — a cada N
+          dias de atraso, o termo exponencial dobra), risco_trigger (risco
+          do evento gatilho, 1..4 ou NULL — alimenta o fator de risco
+          coalesce(risco_trigger, 1)), subscore_valor (valor BRUTO do
+          subscore para aquele trigger) e subscore_valor_normalizado (valor
+          do subscore dividido pelo máximo teórico — em (0, 1], é o que
+          entra na soma do gravidade_score).
