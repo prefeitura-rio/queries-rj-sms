@@ -50,7 +50,16 @@ select
 -- apenas para SER/SISREG
     cast(NULL as int64) as atraso_solicitacao_autorizacao,
     cast(NULL as int64) as atraso_autorizacao_execucao,
-    cast(NULL as int64) as atraso_regulacao
+    cast(NULL as int64) as atraso_regulacao,
+
+-- risco (float64): derivado do grau histológico (agressividade do tumor).
+-- I = 2.0, II = 3.0, III = 4.0; demais valores e ausência = NULL.
+    case upper(trim(grau_histologico))
+        when 'I' then 2.0
+        when 'II' then 3.0
+        when 'III' then 4.0
+        else null
+    end as risco
 
 from {{ ref("raw_siscan_web__laudos_histo_mama") }}
 where 1 = 1

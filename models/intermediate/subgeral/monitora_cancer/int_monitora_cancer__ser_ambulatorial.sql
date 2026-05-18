@@ -104,6 +104,14 @@ select
         when date_diff(data_execucao, data_solicitacao, day) >= limite_dias_regulacao + 10 then 2
         when date_diff(data_execucao, data_solicitacao, day) >= limite_dias_regulacao then 1
         else 0
-    end as atraso_regulacao
+    end as atraso_regulacao,
+
+-- risco (float64): prioridade do SER convertida para numérico.
+-- Casos inválidos (ex.: string 'nan' ou texto não numérico) viram NULL.
+-- Subquery + unnest garante uma única avaliação do safe_cast por linha.
+    (
+        select if(is_nan(p), null, p)
+        from unnest([safe_cast(prioridade as float64)]) as p
+    ) as risco
 
 from enriquecido

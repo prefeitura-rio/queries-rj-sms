@@ -161,6 +161,25 @@ models:
               quote: false
               name: mart_monitora_cancer__fatos__atraso_regulacao__accepted_values
 
+      # ── risco ────────────────────────────────────────────────────────────────
+      - name: risco
+        description: >
+          Score numérico (int) de risco do evento, normalizado entre sistemas
+          de origem na camada intermediária (int_monitora_cancer__*). Quanto maior
+          o valor, maior o risco. Mapeamento por fonte:
+          (SISREG) AZUL=1, VERDE=2, AMARELO=3, VERMELHO=4;
+          (SER) prioridade convertida diretamente para float64 — valores não
+          numéricos (ex.: "nan") viram NULL;
+          (SISCAN Mamografia) BI-RADS 1/2=1, 0/3=2, 4=3, 5/6=4; quando
+          há resultado nas duas mamas, retém-se o maior risco;
+          (SISCAN Histo Mama) grau histológico I=2, II=3, III=4.
+          NULL quando o evento não tem informação de risco mapeada.
+        data_tests:
+          - accepted_values:
+              values: [1.0, 2.0, 3.0, 4.0]
+              quote: false
+              name: mart_monitora_cancer__fatos__risco__accepted_values
+
       # ── unidade solicitante ────────────────────────────────────────────────────
       - name: id_cnes_unidade_origem
         description: Código CNES da unidade que originou / solicitou o evento.
@@ -319,6 +338,7 @@ models:
           tipo de evento, status, procedimento, CID, unidade solicitante,
           unidade executante, datas (solicitação, autorização, execução,
           resultado) em formato date e string, resultados dos exames das mamas,
+          severidades de atraso, score de risco (float64) normalizado por sistema,
           o intervalo em dias até o próximo evento (dias_proximo_evento) e o
           identificador do episódio (jornada_id) ao qual o evento pertence —
           episódios são sequências consecutivas de eventos cujos gaps entre
@@ -409,6 +429,20 @@ models:
           Severidade (0-3) do atraso entre data_solicitacao e data_execucao
           (tempo total de regulação). NULL para SISCAN e quando alguma das
           datas está ausente.
+
+      - name: eventos.risco
+        description: >
+          Score numérico (float64) de risco do evento, normalizado entre sistemas
+          de origem na camada intermediária. Quanto maior o valor, maior o risco.
+          Mapeamento por fonte:
+          (SISREG) AZUL=1.0, VERDE=2.0, AMARELO=3.0, VERMELHO=4.0;
+          (SER) prioridade convertida diretamente para float64 — valores não
+          numéricos (ex.: "nan") viram NULL;
+          (SISCAN Mamografia) BI-RADS 1/2=1.0, 0/3=2.0, 4=3.0, 5/6=4.0; quando
+          há resultado nas duas mamas, retém-se o maior risco;
+          (SISCAN Histo Mama) grau histológico I=1.0, II=2.0, III=3.0.
+          NULL quando o evento não tem informação de risco mapeada. Validação
+          do domínio é coberta pelo accepted_values em mart_monitora_cancer__fatos.risco.
 
       - name: eventos.dias_proximo_evento
         description: >

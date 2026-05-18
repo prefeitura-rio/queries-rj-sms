@@ -83,6 +83,8 @@ select
             ev.atraso_autorizacao_execucao,
             ev.atraso_regulacao,
 
+            ev.risco,
+
             ev.dias_proximo_evento,
             ev.run_id as jornada_id
         )

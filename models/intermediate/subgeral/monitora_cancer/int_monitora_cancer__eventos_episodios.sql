@@ -85,6 +85,7 @@ with
             fcts.atraso_solicitacao_autorizacao,
             fcts.atraso_autorizacao_execucao,
             fcts.atraso_regulacao,
+            fcts.risco,
             (
                 select max(d)
                 from unnest ([
@@ -260,6 +261,7 @@ select
     ev.atraso_solicitacao_autorizacao,
     ev.atraso_autorizacao_execucao,
     ev.atraso_regulacao,
+    ev.risco,
 
     ev.dias_proximo_evento,
     ev.run_id,
