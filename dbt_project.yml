@@ -322,6 +322,7 @@ models:
       prontuario_vitacare_api_centralizadora:
         +schema: brutos_prontuario_vitacare_api_centralizadora
         +tags: ["vitacare", "daily", "vitacare_api_centralizadora"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -330,6 +331,7 @@ models:
       prontuario_vitacare_historico:
         +schema: brutos_prontuario_vitacare_historico
         +tags: ["vitacare", "vitacare_historico"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -374,6 +376,7 @@ models:
       prontuario_sarah:
         +schema: brutos_prontuario_sarah
         +tags: ["sarah", "daily"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -452,7 +455,8 @@ models:
       ## Exames
       exames_laboratoriais:
         +schema: brutos_exames_laboratoriais
-        +tags: ["exames_laboratoriais"]
+        +tags: ["exames_laboratoriais", "daily"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -460,6 +464,7 @@ models:
       medilab:
         +schema: brutos_medilab
         +tags: ["daily", "medilab"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -625,6 +630,7 @@ models:
         vacinacao:
           +schema: projeto_cie_vacinacao
           +tags: ["cie", "daily"]
+          +meta: {"owner": "daniel"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -684,6 +690,15 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+
+        projeto_ocis:
+          +schema: projeto_ocis
+          +tags: ["projeto_ocis"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+
         gerenciamento:
           +tags: "daily"
         historico_clinico:
@@ -899,23 +914,6 @@ data_tests:
     +severity: error
     +store_failures: true
     +schema: gerenciamento__dbt_test_audit
-
-seeds:
-  rj_sms:
-    subgeral:
-      monitora_cancer:
-        +schema: projeto_monitora_cancer
-        +tags: ["weekly", "subgeral", "monitora_cancer"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
-          dominio: subgeral
-        +column_types:
-          id_procedimento: INT64
-          procedimento: STRING
-          criterio_suspeita: BOOL
-          criterio_diagnostico: BOOL
 
 flags:
   require_explicit_package_overrides_for_builtin_materializations: False

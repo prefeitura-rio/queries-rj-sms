@@ -1,0 +1,46 @@
+version: 2
+models:
+  - name: mart_projeto_ocis__atendimento
+    description: >
+      Informações sobre atendimentos relevantes ao projeto.
+      Somente possui atendimentos cujos pacientes estão presentes
+      na tabela de pacientes.
+    columns:
+
+      - name: id_atendimento
+        description: >
+          Identificador único do atendimento.
+      - name: id_paciente
+        description: >
+          Identificador do paciente, a ser cruzado com a
+          tabela de pacientes.
+      - name: ds_tipo_atendimento
+        description: >
+          Descrição do tipo de atendimento.
+      - name: data_entrada
+        description: >
+          Data de entrada do paciente.
+      - name: data_alta
+        description: >
+          Data de saída do paciente.
+      - name: nm_medico_responsavel
+        description: >
+          Nome do profissional responsável pelo atendimento.
+      - name: cns_medico_responsavel
+        description: >
+          CNS do profissional responsável pelo atendimento.
+      - name: cbo_medico_responsavel
+        description: >
+          CBO do profissional responsável pelo atendimento.
+      - name: ds_motivo_alta
+        description: >
+          Descrição do motivo de alta.
+      - name: diagnostico_principal
+        description: >
+          CID10 do diagnóstico principal.
+      - name: diagnostico_secundario
+        description: >
+          CID10 do diagnóstico secundário.
+      - name: _prontuario_fonte
+        description: >
+          Nome do prontuário de onde as informações foram obtidas.

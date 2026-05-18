@@ -123,6 +123,44 @@ models:
               quote: false
               name: mart_monitora_cancer__fatos__criterio_diagnostico__accepted_values
 
+      # ── atraso ────────────────────────────────────────────────────────────────
+      - name: atraso_solicitacao_autorizacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_autorizacao,
+          comparada ao limite do procedimento em int_monitora_cancer__parametros_*.
+          0 = dentro do prazo; 1 = >= limite; 2 = >= limite + 10; 3 = >= limite + 20.
+          NULL para eventos SISCAN (não há parâmetro de regulação) e quando
+          alguma das datas está ausente.
+        data_tests:
+          - accepted_values:
+              values: [0, 1, 2, 3]
+              quote: false
+              name: mart_monitora_cancer__fatos__atraso_solicitacao_autorizacao__accepted_values
+
+      - name: atraso_autorizacao_execucao
+        description: >
+          Severidade (0-3) do atraso entre data_autorizacao e data_execucao,
+          comparada ao limite do procedimento em int_monitora_cancer__parametros_*.
+          Mesma regra de atraso_solicitacao_autorizacao. NULL para SISCAN
+          e quando alguma das datas está ausente.
+        data_tests:
+          - accepted_values:
+              values: [0, 1, 2, 3]
+              quote: false
+              name: mart_monitora_cancer__fatos__atraso_autorizacao_execucao__accepted_values
+
+      - name: atraso_regulacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_execucao
+          (tempo total de regulação), comparada a limite_dias_regulacao do
+          procedimento em int_monitora_cancer__parametros_*. Mesma regra dos
+          demais atrasos. NULL para SISCAN e quando alguma das datas está ausente.
+        data_tests:
+          - accepted_values:
+              values: [0, 1, 2, 3]
+              quote: false
+              name: mart_monitora_cancer__fatos__atraso_regulacao__accepted_values
+
       # ── unidade solicitante ────────────────────────────────────────────────────
       - name: id_cnes_unidade_origem
         description: Código CNES da unidade que originou / solicitou o evento.
@@ -353,6 +391,25 @@ models:
           "Mama Esquerda <resultado>" e/ou "Mama Direita <resultado>". Vazio
           quando o evento não produz laudo de mama.
 
+      - name: eventos.atraso_solicitacao_autorizacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_autorizacao,
+          conforme o limite definido em int_monitora_cancer__parametros_*.
+          0 = dentro do prazo; 1 = >= limite; 2 = >= limite + 10; 3 = >= limite + 20.
+          NULL para eventos SISCAN e quando alguma das datas está ausente.
+
+      - name: eventos.atraso_autorizacao_execucao
+        description: >
+          Severidade (0-3) do atraso entre data_autorizacao e data_execucao.
+          Mesma regra de eventos.atraso_solicitacao_autorizacao. NULL para
+          SISCAN e quando alguma das datas está ausente.
+
+      - name: eventos.atraso_regulacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_execucao
+          (tempo total de regulação). NULL para SISCAN e quando alguma das
+          datas está ausente.
+
       - name: eventos.dias_proximo_evento
         description: >
           Intervalo, em dias, entre a data de referência deste evento
@@ -366,6 +423,12 @@ models:
           pertence. Episódios são sequências consecutivas de eventos da mesma
           paciente cujo intervalo entre datas de referência não excede 180
           dias; o id incrementa a cada gap maior, reiniciando por paciente.
+
+      # ── pendências atuais ─────────────────────────────────────────────────────
+      - name: pendencia_atual
+        description: >
+          Lista de rótulos (possivelmente vazia) com as pendências atuais da
+          paciente, calculadas em int_monitora_cancer__pendencias.
 
   - name: mart_monitora_cancer__gravidade
     description: >

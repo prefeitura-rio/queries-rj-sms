@@ -114,7 +114,10 @@ with
 
             p.ano_competencia,
             p.mes_competencia,
-            parse_date('%Y-%m-%d', tipo_vinculo.data_particao) as data_particao
+            -- data_particao determinística (não depende de left join
+            -- contra tabela de referência)
+            -- usa diretamente o snapshot mais atual
+            parse_date('%Y-%m-%d', (select versao from versao_atual)) as data_particao
 
         from profissionais_mrj as p
         left join

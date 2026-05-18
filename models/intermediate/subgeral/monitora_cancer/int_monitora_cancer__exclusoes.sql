@@ -31,10 +31,16 @@
 --   (ii)  MAMOGRAFIA_BIRADS_1_OU_2       — último = mamografia Cat 1/2.
 --   (iii) MAMOGRAFIA_BIRADS_3_EM_DOIS    — últimos 2 = mamografia Cat 3.
 --   (iv)  BIOPSIA_SEM_LESAO              — último = biópsia sem lesão.
---   (v)   SER_ANTIGO                     — último = SER há ≥ N meses.
+--   (v)   SER_ANTIGO                     — último = SER em status terminal
+--                                          (CHEGADA_CONFIRMADA / CANCELADA / ALTA)
+--                                          há tempo suficiente sem novo evento.
 
--- Janela, em meses, usada na regra (v). Parametrizado via var do dbt.
-{% set exclusao_ser_meses = var('exclusao_ser_meses', 6) %}
+-- Janelas, em meses, usadas na regra (v). Parametrizadas via vars do dbt.
+-- A janela depende do evento_status do último evento SER:
+--   • CHEGADA_CONFIRMADA / CANCELADA → exclusao_ser_chegada_cancelada_meses
+--   • ALTA                           → exclusao_ser_alta_meses
+{% set exclusao_ser_chegada_cancelada_meses = var('exclusao_ser_chegada_cancelada_meses', 6) %}
+{% set exclusao_ser_alta_meses = var('exclusao_ser_alta_meses', 3) %}
 
 
 with
@@ -44,6 +50,7 @@ with
             paciente_cpf,
             sistema_origem,
             procedimento,
+            evento_status,
             mama_esquerda_resultado,
             mama_direita_resultado,
 
@@ -149,11 +156,21 @@ with
             mama_esquerda_resultado is null
             and mama_direita_resultado is null as sem_lesao,
 
-            -- Evento com data de referência há {{ exclusao_ser_meses }} meses ou mais.
-            data_referencia_evento <= date_sub(
-                current_date('America/Sao_Paulo'),
-                interval {{ exclusao_ser_meses }} month
-            ) as evento_antigo
+            -- Evento SER em status terminal há tempo suficiente sem novo evento.
+            -- A janela depende do status; demais status nunca disparam exclusão.
+            case
+                when evento_status in ('CHEGADA_CONFIRMADA', 'CANCELADA')
+                    then data_referencia_evento <= date_sub(
+                        current_date('America/Sao_Paulo'),
+                        interval {{ exclusao_ser_chegada_cancelada_meses }} month
+                    )
+                when evento_status = 'ALTA'
+                    then data_referencia_evento <= date_sub(
+                        current_date('America/Sao_Paulo'),
+                        interval {{ exclusao_ser_alta_meses }} month
+                    )
+                else false
+            end as ser_em_status_e_idade_de_exclusao
         from eventos_ranqueados
     ),
 
@@ -204,19 +221,17 @@ with
 
         union all
 
-        -- (v) último evento = SER há {{ exclusao_ser_meses }} meses ou mais.
-        --
-        -- TODO: refinar por evento_status quando SER ambulatorial expuser
-        -- essa coluna (hoje NULL). A regra-alvo é:
-        --   • 'chegada confirmada' / 'cancelada' → excluir após 6 meses
-        --   • 'alta'                            → excluir após 3 meses
-        --   • demais status                     → NÃO excluir
+        -- (v) último evento = SER em status terminal há tempo suficiente:
+        --   • CHEGADA_CONFIRMADA / CANCELADA → ≥ {{ exclusao_ser_chegada_cancelada_meses }} meses
+        --   • ALTA                           → ≥ {{ exclusao_ser_alta_meses }} meses
+        --   • demais status (EM_FILA, CHEGADA_NAO_CONFIRMADA, PENDENTE,
+        --     AGENDADA)                      → NÃO excluem
         select
             paciente_cpf,
             'SER_ANTIGO' as motivo_exclusao
         from ultimo
         where eh_ser
-            and evento_antigo
+            and ser_em_status_e_idade_de_exclusao
     )
 
 select

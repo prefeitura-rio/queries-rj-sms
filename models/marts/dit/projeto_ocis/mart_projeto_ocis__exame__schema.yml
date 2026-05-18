@@ -1,0 +1,25 @@
+version: 2
+models:
+  - name: mart_projeto_ocis__exame
+    description: >
+      Informações sobre exames relevantes ao projeto.
+      Somente possui procedimentos cujos pacientes estão presentes
+      na tabela de pacientes.
+    columns:
+
+      - name: id_paciente
+        description: >
+          Identificador do paciente, gerado a partir
+          de nome e data de nascimento. Presumivelmente único.
+      - name: id_exame
+        description: >
+          Identificador único do exame.
+      - name: nm_exame
+        description: >
+          Nome do procedimento realizado.
+      - name: data_execucao
+        description: >
+          Data de execução do procedimento.
+      - name: _prontuario_fonte
+        description: >
+          Nome do prontuário de onde as informações foram obtidas.

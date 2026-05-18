@@ -81,7 +81,7 @@ WITH
             'Visita Domiciliar' AS tipo_evento,
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-        WHERE REGEXP_CONTAINS(tipo, r'(?i)visita')
+        WHERE REGEXP_CONTAINS(tipo_consulta, r'(?i)visita')
           AND cpf IS NOT NULL
           AND cbo_profissional IN ('515105', '322255') -- ACS e Técnico de Agente Comunitário
     ),
@@ -96,7 +96,7 @@ WITH
             COALESCE(datahora_fim, datahora_inicio) AS dthr
         FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
         WHERE cpf IS NOT NULL
-        AND NOT REGEXP_CONTAINS(tipo, r'(?i)visita')
+        AND NOT REGEXP_CONTAINS(tipo_consulta, r'(?i)visita')
         AND REGEXP_CONTAINS(REGEXP_REPLACE(NORMALIZE_AND_CASEFOLD(cbo_descricao_profissional, NFKD), r'\pM',''), r'medico|enfermeiro')
     ),
 

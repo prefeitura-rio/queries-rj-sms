@@ -28,13 +28,13 @@ atendimentos as (
       {{proper_br('nome_profissional')}} as nome,
       cbo_descricao_profissional as cargo
     ) as profissional,
-    tipo as tipo_atendimento,
+    tipo_consulta as tipo_atendimento,
     datahora_fim as horario_atendimento,
     unidades.nome_unidade as unidade_nome,
     unidades.telefone_unidade as unidade_telefone
   FROM {{ ref('raw_prontuario_vitacare__atendimento') }} as atend
     inner join unidades on unidades.id_cnes = atend.cnes_unidade
-  WHERE tipo not in (
+  WHERE tipo_consulta not in (
     'Gestão de Arquivo de Enfermagem',
     'Gestão de Ficheiro de Enfermagem',
     'Ficha da Aula')

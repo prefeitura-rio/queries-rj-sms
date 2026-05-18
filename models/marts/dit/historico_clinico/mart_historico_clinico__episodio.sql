@@ -28,6 +28,7 @@ with
             cpf as paciente_cpf,
             tipo,
             subtipo,
+            cast(null as string) as tipo_demanda,
             entrada_datahora,
             saida_datahora,
             exames_realizados,
@@ -71,6 +72,7 @@ with
             cpf as paciente_cpf,
             tipo,
             subtipo,
+            tipo_demanda,
             entrada_datahora,
             saida_datahora,
             array(
@@ -104,6 +106,7 @@ with
             cpf as paciente_cpf,
             tipo,
             subtipo,
+            cast(null as string) as tipo_demanda,
             entrada_datahora,
             saida_datahora,
             array(
@@ -151,6 +154,7 @@ with
             cpf as paciente_cpf,
             tipo,
             subtipo,
+            cast(null as string) as tipo_demanda,
             entrada_datahora,
             saida_datahora,
             array(
@@ -184,6 +188,7 @@ with
             cpf as paciente_cpf,
             tipo,
             subtipo,
+            cast(null as string) as tipo_demanda,
             entrada_datahora,
             saida_datahora,
             array(
@@ -330,6 +335,7 @@ with
             deduped.paciente,
             deduped.tipo,
             deduped.subtipo,
+            deduped.tipo_demanda,
             cast(deduped.entrada_datahora as date) as entrada_data,
             deduped.entrada_datahora,
             deduped.saida_datahora,

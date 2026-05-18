@@ -7,19 +7,19 @@
 }}
 
 with source as (
-    select 
-        * 
+    select
+        *
     from {{ source("brutos_prontuario_sarah_api_staging", "atendimento_continuo") }}
     where source_id != 'string' -- filtro para remover registro de teste
     qualify row_number() over (partition by source_id order by datalake_loaded_at desc) = 1
 ),
 
     atendimento_filtrado as (
-        select 
+        select
             source_id,
             doc as doc_atendimento
         from source,
-        unnest(json_extract_array(data, '$.documentos')) AS doc
+        unnest(json_extract_array(data, '$.documentos')) as doc
         where json_value(doc, '$.tipo') = 'ATENDIMENTO MÉDICO'
     ),
 

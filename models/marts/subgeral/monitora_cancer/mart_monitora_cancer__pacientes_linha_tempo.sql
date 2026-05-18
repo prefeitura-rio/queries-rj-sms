@@ -29,7 +29,7 @@ select
 
     -- qualificadores gerais
     ev.status,
-    coalesce(any_value(grv.gravidade_score), 0) as gravidade_score,
+    coalesce(any_value (grv.gravidade_score), 0) as gravidade_score,
     any_value (ev.gestante) as gestante,
 
     -- contato paciente
@@ -79,6 +79,10 @@ select
                 )
             ) as resultados,
 
+            ev.atraso_solicitacao_autorizacao,
+            ev.atraso_autorizacao_execucao,
+            ev.atraso_regulacao,
+
             ev.dias_proximo_evento,
             ev.run_id as jornada_id
         )
@@ -91,11 +95,16 @@ select
             ev.data_resultado
     ) as eventos,
 
-    any_value (ev.tempo_total) as tempo_total
+    any_value (ev.tempo_total) as tempo_total,
+
+    -- pendências atuais (1 array por paciente, calculado em int_monitora_cancer__pendencias)
+    any_value (pend.pendencia_atual) as pendencia_atual
 
 from {{ ref("int_monitora_cancer__eventos_episodios") }} as ev
     left join {{ ref("mart_monitora_cancer__gravidade") }} as grv
     on ev.cpf_particao = grv.cpf_particao
+    left join {{ ref("int_monitora_cancer__pendencias") }} as pend
+    on ev.cpf_particao = pend.cpf_particao
 group by
     ev.cpf_particao,
     ev.cpf,

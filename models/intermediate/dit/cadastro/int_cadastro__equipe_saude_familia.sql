@@ -9,7 +9,7 @@ with
 
     quantitativo_atendimentos_vitacare as (
         select
-            id_cadastro,
+            id_paciente_global,
             count(*) as quantidade_atendimentos
         from {{ ref("raw_prontuario_vitacare_historico__acto") }}
         where datahora_fim_atendimento > DATETIME_SUB(CURRENT_DATETIME(), INTERVAL 1 YEAR)
@@ -30,7 +30,7 @@ with
 
             greatest(updated_at, data_atualizacao_cadastro, data_atualizacao_vinculo_equipe) as updated_at
         from {{ ref("raw_prontuario_vitacare_historico__cadastro") }} c
-            left join quantitativo_atendimentos_vitacare q on q.id_cadastro = c.id_global
+            left join quantitativo_atendimentos_vitacare q on q.id_paciente_global = c.id_global
         where cadastro_permanente = true and situacao_usuario = 'Ativo' and ine_equipe is not null
     )
 select *

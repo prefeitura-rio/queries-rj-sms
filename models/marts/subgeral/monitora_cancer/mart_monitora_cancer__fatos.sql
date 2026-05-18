@@ -7,6 +7,8 @@
 -- Cobre eventos cuja execução chega tardiamente após a solicitação.
 {% set lookback_dias = 464 %}
 
+{% set last_partition = get_last_partition_date( this ) %}
+
 {{
   config(
     materialized='incremental',
@@ -19,47 +21,49 @@
       "data_type": "date",
       "granularity": "month",
     },
-    incremental_predicates=['DBT_INTERNAL_DEST.data_solicitacao >= date_sub(current_date(), interval ' ~ lookback_dias ~ ' day)'],
-    cluster_by=['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
-    on_schema_change='sync_all_columns'
-  )
+incremental_predicates = [
+  "DBT_INTERNAL_DEST.data_solicitacao >= date_sub(date('" ~ last_partition ~ "'), interval " ~ lookback_dias ~ " day)"
+],
+cluster_by = ['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
+on_schema_change = 'sync_all_columns'
+)
 }}
 
-{% set last_partition = get_last_partition_date( this ) %}
-
 with
-    cnes_competencia_atual as (
-        select ano_competencia as ano, mes_competencia as mes
+    -- Snapshot da última competência do dim de estabelecimentos.
+    -- Não usa modelo DIM da DIT pois temos mais unidades.
+    dim_estabelecimento_atual as (
+        select id_cnes, nome_fantasia
         from {{ ref('dim_estabelecimento_sus_rio_historico') }}
-        qualify row_number() over (order by ano_competencia desc, mes_competencia desc) = 1
+            qualify rank() over (order by ano_competencia desc, mes_competencia desc) = 1
     ),
 
     fontes_unificadas as (
         select * from {{ ref("int_monitora_cancer__sisreg") }}
-        {% if is_incremental() %}
+            {% if is_incremental() %}
         where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
-        {% endif %}
+            {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__ser_ambulatorial") }}
-        {% if is_incremental() %}
+            {% if is_incremental() %}
         where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
-        {% endif %}
+            {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan") }}
-        {% if is_incremental() %}
+            {% if is_incremental() %}
         where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
-        {% endif %}
+            {% endif %}
 
         union all
 
         select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
-        {% if is_incremental() %}
+            {% if is_incremental() %}
         where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
-        {% endif %}
+            {% endif %}
     ),
 
     transforma as (
@@ -81,7 +85,10 @@ with
             mama_esquerda_resultado,
             mama_direita_resultado,
             criterio_suspeita,
-            criterio_diagnostico
+            criterio_diagnostico,
+            atraso_solicitacao_autorizacao,
+            atraso_autorizacao_execucao,
+            atraso_regulacao
         from fontes_unificadas
     ),
 
@@ -104,17 +111,11 @@ with
 
         from enriquece_cpf
 
-            cross join cnes_competencia_atual
-
-            left join {{ ref("dim_estabelecimento_sus_rio_historico") }} as estabs_origem
+            left join dim_estabelecimento_atual as estabs_origem
             on safe_cast(id_cnes_unidade_origem as int) = safe_cast(estabs_origem.id_cnes as int)
-                and estabs_origem.ano_competencia = cnes_competencia_atual.ano
-                and estabs_origem.mes_competencia = cnes_competencia_atual.mes
 
-            left join {{ ref("dim_estabelecimento_sus_rio_historico") }} as estabs_exec
+            left join dim_estabelecimento_atual as estabs_exec
             on safe_cast(id_cnes_unidade_executante as int) = safe_cast(estabs_exec.id_cnes as int)
-                and estabs_exec.ano_competencia = cnes_competencia_atual.ano
-                and estabs_exec.mes_competencia = cnes_competencia_atual.mes
     ),
 
     final as (
@@ -147,6 +148,11 @@ with
         -- indicadores
             criterio_suspeita,
             criterio_diagnostico,
+
+        -- atraso (severidade 0-3)
+            atraso_solicitacao_autorizacao,
+            atraso_autorizacao_execucao,
+            atraso_regulacao,
 
         -- unidade solicitante
             id_cnes_unidade_origem,
