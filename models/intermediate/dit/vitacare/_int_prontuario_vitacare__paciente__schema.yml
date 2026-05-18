@@ -7,19 +7,22 @@ models:
       contendo apenas registros com CPF e CNES preenchidos.
 
     columns:
-      - name: id
+      - name: id_paciente_global
         description: Identificador único do paciente.
         data_tests:
           - unique:
-              name: int_prontuario_vitacare__paciente__id__unique
+              name: int_prontuario_vitacare__paciente__id_paciente_global__unique
               config:
                 severity: warn
                 warn_if: ">1000"
           - not_null:
-              name: int_prontuario_vitacare__paciente__id__not_null
+              name: int_prontuario_vitacare__paciente__id_paciente_global__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
+
+      - name: id_paciente_local
+        description: Identificador do paciente, único na unidade.
 
       - name: id_cnes
         description: Número CNES da unidade de saúde onde o paciente é atendido.
