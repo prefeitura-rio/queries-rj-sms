@@ -55,17 +55,34 @@ cadastros_por_unidade as (
     territorio_social,
     vulnerabilidade_social,
 
-    upper(tipo_logradouro) as endereco_tipo_logradouro,
-    upper(logradouro) as endereco_logradouro,
-    upper(cep) as endereco_cep,
-    upper(bairro) as endereco_bairro,
-
     updated_at as updated_at
   from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
   where
     ap = '22'
     and cpf is not null
     and ine_equipe is not null
+),
+
+enderecos as (
+  select 
+    replace({{process_null('cpf')}},'.0','') as paciente_id,
+    upper(tipoLogradouro) as endereco_tipo_logradouro, 
+    upper(logradouro) as endereco_logradouro, 
+    upper(numLogradouro) as endereco_numero, 
+    upper(complementoLogradouro) as endereco_complemento, 
+    nullif(replace({{process_null('cep')}},'.0',''),'0') as endereco_cep,
+    upper(bairro) as endereco_bairro
+  from {{source('brutos_hackathon_anthropic','enderecos_completo')}}
+  where {{process_null('cpf')}} is not null
+),
+
+enderecos_por_pessoa as (
+  select *
+  from enderecos
+  qualify row_number() over (
+    partition by paciente_id
+    order by id desc
+  ) = 1
 ),
 
 cadastros as (
@@ -77,6 +94,21 @@ cadastros as (
   ) = 1
 ),
 
+cadastros_com_endereco as (
+  select 
+    cadastros.*,
+    concat(
+      COALESCE(endereco_tipo_logradouro, ''),
+      COALESCE(endereco_logradouro, ''),
+      COALESCE(endereco_numero, ''),
+      COALESCE(endereco_complemento, ''),
+      COALESCE(endereco_cep, ''),
+      COALESCE(endereco_bairro, ''),
+    ) as endereco
+  from cadastros
+    left join enderecos_por_pessoa using (paciente_id)
+),
+
 gestacoes as (
   select
     cpf as paciente_id,
@@ -86,7 +118,7 @@ gestacoes as (
   where
     cpf is not null
     and cpf in (
-      select paciente_id from cadastros
+      select paciente_id from cadastros_com_endereco
     )
     and (
       extract(year from data_inicio) = 2025
@@ -113,7 +145,7 @@ condicoes as (
     d.condicao is not null as diabetico,
     g.ultima_gestacao_mes_inicio,
     g.ultima_gestacao_mes_fim
-  from cadastros c 
+  from cadastros_com_endereco c 
     left join hipertensos h using (paciente_id)
     left join diabeticos d using (paciente_id)
     left join ultima_gestacao_do_paciente g using (paciente_id)
@@ -126,21 +158,18 @@ pacientes_randomizados as (
       partition by equipe_id
       order by rand()
     ) as endereco_random_id
-  from cadastros
+  from cadastros_com_endereco
 ),
 
 enderecos_randomizados as (
   select
     equipe_id,
-    endereco_tipo_logradouro,
-    endereco_logradouro,
-    endereco_cep,
-    endereco_bairro,
+    endereco
     row_number() over (
       partition by equipe_id
       order by rand()
     ) as endereco_random_id
-  from cadastros
+  from cadastros_com_endereco
 )
 
 select
@@ -161,10 +190,7 @@ select
   condicoes.ultima_gestacao_mes_inicio,
   condicoes.ultima_gestacao_mes_fim,
 
-  e.endereco_tipo_logradouro,
-  e.endereco_logradouro,
-  e.endereco_cep,
-  e.endereco_bairro
+  e.endereco
 
 from pacientes_randomizados p
   left join condicoes
