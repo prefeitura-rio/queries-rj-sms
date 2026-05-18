@@ -3,6 +3,7 @@
         schema = "brutos_prontuario_vitacare",
         alias="paciente",
         materialized="table",
+        cluster_by=["id_paciente_global", "cpf", "cns"],
         tags=['daily']
     )
 }}
