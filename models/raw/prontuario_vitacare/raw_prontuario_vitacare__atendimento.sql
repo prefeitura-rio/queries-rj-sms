@@ -4,7 +4,7 @@
         materialized="incremental",
         incremental_strategy='merge', 
         unique_key=['id_hci'],
-        cluster_by="cpf",
+        cluster_by=["id_paciente_global", "cpf"],
         partition_by={
             "field": "data_particao",
             "data_type": "date",

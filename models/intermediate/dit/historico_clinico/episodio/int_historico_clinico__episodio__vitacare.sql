@@ -434,7 +434,13 @@ with
             on atendimento.id_prontuario_global = dim_prescricoes_atribuidas.fk_atendimento
     ),
 
-    episodios_validos as (select * from fato_atendimento where id_hci is not null)
+    episodios_validos as (
+    select *
+    from fato_atendimento
+    where id_hci is not null
+      and cpf is not null
+      and trim(cpf) != ''
+    )
 
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- Finalização
