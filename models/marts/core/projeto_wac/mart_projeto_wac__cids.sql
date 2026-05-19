@@ -25,7 +25,7 @@ condicoes_atribuidas as (
     INNER JOIN {{ ref('raw_prontuario_vitacare_historico__acto') }} a using (id_prontuario_global)
     WHERE 
         a.patient_cpf is not null AND
-        a.patient_cpf in (select patient_id from cadastros)
+        a.patient_cpf in (select paciente_id from cadastros)
 ),
 
 condicoes_do_paciente as (

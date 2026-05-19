@@ -1,6 +1,6 @@
 {{
     config(
-        alias="urgencia_emergencia"
+        alias="internacoes"
     )
 }}
 
@@ -18,7 +18,7 @@ cadastros as (
 
 select
   SHA256(p.cpf) as paciente_id,
-  b.atendimento_tipo,
+  trim(b.atendimento_tipo) as atendimento_tipo,
   b.data_entrada as atendido_em
 from {{ ref('raw_prontuario_vitai__boletim') }} b
   inner join {{ ref('raw_prontuario_vitai__paciente') }} p
@@ -26,4 +26,4 @@ from {{ ref('raw_prontuario_vitai__boletim') }} b
 where
   p.cpf in (select paciente_id from cadastros)
   and p.cpf is not null 
-  and b.data_entrada between '2025-01-01' and '2025-12-31'
+  and trim(b.atendimento_tipo) in ('INTERNACAO')

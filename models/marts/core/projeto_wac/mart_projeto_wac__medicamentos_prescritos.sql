@@ -7,7 +7,7 @@ with
 
 cadastros as (
   select
-    cpf as paciente_id,
+    cpf as paciente_id
   from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
   where
     id_cnes = '2280787'
@@ -25,4 +25,4 @@ FROM {{ ref('raw_prontuario_vitacare_historico__prescricao') }} p
   INNER JOIN {{ ref('raw_prontuario_vitacare_historico__acto') }} a using (id_prontuario_global)
 WHERE 
   a.patient_cpf is not null AND
-  a.patient_cpf in (select patient_id from cadastros)
+  a.patient_cpf in (select paciente_id from cadastros)

@@ -9,6 +9,8 @@ with
 cadastros_por_unidade as (
   select
     cpf as paciente_id,
+    ine_equipe as equipe_id,
+    
     date_diff(date(current_date()), date(data_nascimento), year) as idade,
     sexo,
     raca_cor,
@@ -29,7 +31,7 @@ cadastros as (
     partition by paciente_id
     order by updated_at desc
   ) = 1
-),
+)
 
 select
   sha256(paciente_id) as paciente_id,

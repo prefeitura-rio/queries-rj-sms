@@ -610,6 +610,13 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+        projeto_wac:
+          +schema: projeto_wac
+          +tags: ["projeto_wac"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
       cie:
         alerta_doencas:
           +schema: projeto_alerta_doencas
