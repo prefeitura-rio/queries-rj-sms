@@ -40,7 +40,6 @@ WHERE
         'TGO',
         'GGT',
         'VHS',
-        'RESULTADO TSH CONFIRMAÇÃO',
         'T4L',
         'CALCULO DO HEMOGRAMA'
     )
