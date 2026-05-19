@@ -12,13 +12,14 @@ with
     -- ------------------------------------------------------------------------------------------------
     pacientes_base as (
         select distinct
-            id_aih as id_base,
+            id_hash as id_base,
             paciente_cpf as cpf_base,
             {{ clean_name_string("upper(paciente_nome)") }} as nome_base,
             {{ clean_name_string("upper(paciente_mae_nome)") }} as nome_mae_base,
             cast(paciente_data_nascimento as date) as data_nascimento_base,
         from {{ ref("raw_sih__autorizacoes_internacoes_hospitalares") }}
     ),
+
     pacientes_hci as (
         select
             safe_cast(cpf as string) as cpf_fonte,
@@ -31,6 +32,7 @@ with
             and dados.mae_nome is not null
             and dados.data_nascimento is not null
     ),
+
     -- ------------------------------------------------------------------------------------------------
     -- Identificando Casos
     -- ------------------------------------------------------------------------------------------------
@@ -41,6 +43,7 @@ with
         where
             cpf_base is not null
     ),
+
     caso_2_sem_cpf_com_dados_fuzzy as (
         select
             *
@@ -53,6 +56,7 @@ with
                 and data_nascimento_base is not null
             )
     ),
+
     caso_3_sem_cpf_sem_dados_suficientes as (
         select
             *
@@ -65,6 +69,7 @@ with
                 or data_nascimento_base is null
             )
     ),
+
     -- ------------------------------------------------------------------------------------------------
     -- Processando Casos
     -- ------------------------------------------------------------------------------------------------
@@ -102,21 +107,25 @@ with
             (
                 {{ calculate_lev("nome_base", "nome_fonte") }} + 
                 {{ calculate_lev("nome_mae_base", "nome_mae_fonte") }}
-            )/2 as score_lev,
+            ) / 2 as score_lev,
+
             (
                 {{ calculate_jaccard("nome_base", "nome_fonte") }} + 
                 {{ calculate_jaccard("nome_mae_base", "nome_mae_fonte") }}
-            )/2 as score_jac,
+            ) / 2 as score_jac,
+
             (
                 {{ calculate_lev("nome_base", "nome_fonte") }} + 
-                {{ calculate_lev("nome_mae_base", "nome_mae_fonte") }} + 
+                {{ calculate_lev("nome_mae_base", "nome_fonte") }} + 
                 {{ calculate_jaccard("nome_base", "nome_fonte") }} + 
                 {{ calculate_jaccard("nome_mae_base", "nome_mae_fonte") }}
-            )/4 as score_final
+            ) / 4 as score_final
 
         from caso_2_sem_cpf_com_dados_fuzzy
-            left join pacientes_hci on data_nascimento_base = data_nascimento_fonte
+        left join pacientes_hci
+            on data_nascimento_base = data_nascimento_fonte
     ),
+
     caso_2_sem_cpf_com_dados_ranked as (
         select
             *,
@@ -131,6 +140,7 @@ with
             end as tipo_linkage
         from caso_2_sem_cpf_com_dados_scores
     ),
+
     caso_2_sem_cpf_com_dados_resultados as (
         select
             id_base,
@@ -163,7 +173,7 @@ with
             id_base,
             cast(null as string) as id_paciente,
             'dados-insuficientes' as tipo_linkage,
-            null as score_final,
+            cast(null as float64) as score_final,
 
             nome_base,
             nome_mae_base,
@@ -176,6 +186,7 @@ with
             cast(null as string) as cpf_fonte
         from caso_3_sem_cpf_sem_dados_suficientes
     ),
+
     -- ------------------------------------------------------------------------------------------------
     -- Unindo Casos
     -- ------------------------------------------------------------------------------------------------
@@ -185,8 +196,27 @@ with
         select * from caso_2_sem_cpf_com_dados_resultados
         union all
         select * from caso_3_sem_cpf_sem_dados_suficientes_resultados
+    ),
+
+    casos_unidos_deduplicados as (
+        select *
+        from casos_unidos
+        qualify row_number() over (
+            partition by id_base
+            order by
+                case tipo_linkage
+                    when 'chave-cpf' then 1
+                    when 'match-exato' then 2
+                    when 'match-fuzzy' then 3
+                    when 'dados-insuficientes' then 4
+                    else 99
+                end,
+                case when score_final is null then 1 else 0 end,
+                score_final asc,
+                id_paciente
+        ) = 1
     )
 
 select *
-from casos_unidos
+from casos_unidos_deduplicados
 order by tipo_linkage, score_final asc
