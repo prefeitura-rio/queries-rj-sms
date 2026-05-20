@@ -8,8 +8,8 @@ with
 
 cadastros as (
   select
-    cpf as paciente_id,
-  from {{source('brutos_hackathon_anthropic','localizacao')}}
+    cpf
+  from {{ref('mart_hackathon_anthropic__elegiveis')}}
 )
 
 select
@@ -20,7 +20,7 @@ select
 from {{ ref('raw_prontuario_vitacare_historico__acto') }}
 where
   tipo_consulta = 'Visita Domiciliar'
-  and patient_cpf in (select paciente_id from cadastros)
+  and patient_cpf in (select cpf from cadastros)
   and datahora_fim_atendimento between '2025-01-01' and '2025-12-31'
   and patient_cpf is not null
   and profissional_equipe_cod_ine is not null

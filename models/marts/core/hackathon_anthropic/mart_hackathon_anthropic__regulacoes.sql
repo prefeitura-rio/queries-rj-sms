@@ -8,8 +8,8 @@ with
 
 cadastros as (
   select
-    cpf as paciente_id,
-  from {{source('brutos_hackathon_anthropic','localizacao')}}
+    cpf
+  from {{ref('mart_hackathon_anthropic__elegiveis')}}
 )
 
 select
@@ -18,6 +18,6 @@ select
   data_marcacao
 from {{ ref('raw_sisreg_api__marcacoes') }}
 where
-  paciente_cpf in (select paciente_id from cadastros)
+  paciente_cpf in (select cpf from cadastros)
   and data_marcacao between '2025-01-01' and '2025-12-31'
   and paciente_cpf is not null
