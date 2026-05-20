@@ -187,3 +187,4 @@ from pacientes_randomizados p
   left join enderecos_randomizados e
     on p.equipe_id = e.equipe_id
     and p.endereco_random_id = e.endereco_random_id
+where e.endereco_score > 0

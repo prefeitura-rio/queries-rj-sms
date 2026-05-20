@@ -9,11 +9,9 @@ with
 cadastros as (
   select
     cpf as paciente_id,
-  from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
+  from {{source('brutos_hackathon_anthropic','localizacao')}}
   where
-    ap = '22'
-    and cpf is not NULL
-    and ine_equipe is not NULL
+    score > 0
 )
 
 select

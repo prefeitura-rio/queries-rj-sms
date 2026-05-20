@@ -6,10 +6,12 @@
 
 with
 
-unidades_da_22 as (
-  select id_cnes
-  from {{ ref('dim_estabelecimento') }}
-  where area_programatica = '22'
+cadastros as (
+  select
+    cpf as paciente_id,
+  from {{source('brutos_hackathon_anthropic','localizacao')}}
+  where
+    score > 0
 )
 
 select
@@ -18,6 +20,6 @@ select
   data_marcacao
 from {{ ref('raw_sisreg_api__marcacoes') }}
 where
-  unidade_solicitante_id in (select id_cnes from unidades_da_22)
+  paciente_cpf in (select paciente_id from cadastros)
   and data_solicitacao between '2025-01-01' and '2025-12-31'
   and paciente_cpf is not null
