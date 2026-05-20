@@ -160,8 +160,8 @@ enderecos_randomizados as (
 )
 
 select
-  sha256(p.paciente_id) as paciente_id,
-  sha256(p.equipe_id) as equipe_id,
+  {{ anonimize('p.paciente_id', "'hackathon_anthropic'") }} as paciente_id,
+  {{ anonimize('p.equipe_id', "'hackathon_anthropic'") }} as equipe_id,
 
   p.age,
   p.sexo,

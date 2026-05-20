@@ -5,9 +5,9 @@
 }}
 
 select
-  SHA256(profissional_cpf) as profissional_id,
-  SHA256(profissional_equipe_cod_ine) as equipe_id,
-  SHA256(patient_cpf) as paciente_id,
+  {{ anonimize('profissional_cpf', "'hackathon_anthropic'") }} as profissional_id,
+  {{ anonimize('profissional_equipe_cod_ine', "'hackathon_anthropic'") }} as equipe_id,
+  {{ anonimize('patient_cpf', "'hackathon_anthropic'") }} as paciente_id,
   datahora_fim_atendimento as visitado_em
 from {{ ref('raw_prontuario_vitacare_historico__acto') }}
 where
