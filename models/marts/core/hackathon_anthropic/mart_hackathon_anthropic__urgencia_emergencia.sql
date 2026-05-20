@@ -8,7 +8,7 @@ with
 
 cadastros as (
   select
-    cpf
+    original.cpf
   from {{ref('mart_hackathon_anthropic__elegiveis')}}
 )
 

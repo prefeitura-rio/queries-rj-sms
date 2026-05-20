@@ -32,7 +32,7 @@ diabeticos as (
     and a.patient_cpf is not null
 ),
 
-cadastros_com_endereco as (
+cadastros_elegiveis as (
   select *
   from {{ ref('mart_hackathon_anthropic__elegiveis') }}
 ),
@@ -46,7 +46,7 @@ gestacoes as (
   where
     cpf is not null
     and cpf in (
-      select paciente_id from cadastros_com_endereco
+      select paciente_id from cadastros_elegiveis
     )
     and (
       extract(year from data_inicio) = 2025
@@ -73,62 +73,33 @@ condicoes as (
     d.condicao is not null as diabetico,
     g.ultima_gestacao_mes_inicio,
     g.ultima_gestacao_mes_fim
-  from cadastros_com_endereco c 
+  from cadastros_elegiveis c 
     left join hipertensos h using (paciente_id)
     left join diabeticos d using (paciente_id)
     left join ultima_gestacao_do_paciente g using (paciente_id)
-),
-
-pacientes_randomizados as (
-  select
-    *,
-    row_number() over (
-      partition by equipe_id
-      order by rand()
-    ) as endereco_random_id
-  from cadastros_com_endereco
-),
-
-enderecos_randomizados as (
-  select
-    equipe_id,
-    endereco_latitude,
-    endereco_longitude,
-    endereco_score,
-    row_number() over (
-      partition by equipe_id
-      order by rand()
-    ) as endereco_random_id
-  from cadastros_com_endereco
 )
 
 select
   distinct
-  p.paciente_id,
-  p.equipe_id,
-  p.unidade_id,
+  c.paciente_id,
+  c.equipe_id,
+  c.unidade_id,
 
-  p.faixa_etaria,
-  p.sexo,
-  p.raca_cor,
-  p.nacionalidade,
-  p.escolaridade,
-  p.territorio_social,
-  p.vulnerabilidade_social,
+  faixa_etaria,
+  sexo,
+  raca_cor,
+  escolaridade,
+  territorio_social,
+  vulnerabilidade_social,
+
+  ST_X(c.endereco) as endereco_longitude,
+  ST_Y(c.endereco) as endereco_latitude,
 
   coalesce(condicoes.hipertenso, false) as hipertenso,
   coalesce(condicoes.diabetico, false) as diabetico,
 
   condicoes.ultima_gestacao_mes_inicio,
-  condicoes.ultima_gestacao_mes_fim,
+  condicoes.ultima_gestacao_mes_fim
 
-  e.endereco_longitude,
-  e.endereco_latitude,
-  e.endereco_score
-
-from pacientes_randomizados p
-  left join condicoes
-    using (paciente_id)
-  left join enderecos_randomizados e
-    on p.equipe_id = e.equipe_id
-    and p.endereco_random_id = e.endereco_random_id
+from cadastros_elegiveis c
+  left join condicoes using (paciente_id)
