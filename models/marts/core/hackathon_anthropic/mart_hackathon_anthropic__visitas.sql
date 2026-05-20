@@ -10,8 +10,6 @@ cadastros as (
   select
     cpf as paciente_id,
   from {{source('brutos_hackathon_anthropic','localizacao')}}
-  where
-    score > 0
 )
 
 select
