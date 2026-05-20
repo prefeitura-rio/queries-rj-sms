@@ -31,7 +31,7 @@ atendimentos_vitai as (
 
 boletins_vitai as (
   select
-    SHA256(p.cpf) as paciente_id,
+    {{ anonimize('p.cpf', "'projeto_wac'") }} as paciente_id,
     upper(trim(b.atendimento_tipo)) as atendimento_tipo,
     cid_codigo,
     b.data_entrada as atendido_em
@@ -40,19 +40,19 @@ boletins_vitai as (
     inner join atendimentos_vitai a on b.gid = a.gid_boletim
   where
     p.cpf in (select paciente_id from cadastros)
-    and p.cpf is not null 
+    and p.cpf is not null
     and trim(b.atendimento_tipo) in ('INTERNACAO','EMERGENCIA')
 ),
 
 atendimentos_vitacare as (
-    SELECT 
-      sha256(a.patient_cpf) as paciente_id,
+    SELECT
+      {{ anonimize('a.patient_cpf', "'projeto_wac'") }} as paciente_id,
       upper(a.tipo_atendimento) as atendimento_tipo,
       c.cod_cid10 as cid_codigo,
       a.datahora_fim_atendimento as atendido_em
     FROM {{ ref('raw_prontuario_vitacare_historico__condicao') }} c
     INNER JOIN {{ ref('raw_prontuario_vitacare_historico__acto') }} a using (id_prontuario_global)
-    WHERE 
+    WHERE
         a.patient_cpf is not null AND
         a.patient_cpf in (select paciente_id from cadastros)
 )

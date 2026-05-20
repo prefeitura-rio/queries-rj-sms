@@ -23,12 +23,12 @@ valores as (
   where indicadores_nome in ('IMC','Pressão arterial diastólica','Pressão Arterial Sistólica')
 )
 
-SELECT 
-    sha256(paciente_id) as paciente_id, 
+SELECT
+    {{ anonimize('paciente_id', "'projeto_wac'") }} as paciente_id,
     indicadores_nome as nome,
     valor,
     registrado_em
 FROM valores
-WHERE 
+WHERE
     paciente_id is not null and
     paciente_id in (select paciente_id from cadastros)

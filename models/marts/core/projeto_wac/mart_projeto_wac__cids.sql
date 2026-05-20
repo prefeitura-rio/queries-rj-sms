@@ -38,7 +38,7 @@ condicoes_do_paciente as (
 )
 
 select
-    sha256(paciente_id) as paciente_id,
+    {{ anonimize('paciente_id', "'projeto_wac'") }} as paciente_id,
     cod_cid10 as cid,
     data_diagnostico
 from condicoes_do_paciente

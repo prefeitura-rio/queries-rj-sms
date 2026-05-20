@@ -27,6 +27,7 @@ clean-targets: # directories to be removed by `dbt clean`
 vars:
   # Internal variables
   DBT_USER: "{{ env_var('DBT_USER', 'dev_fantasma') }}"
+  HASH_SECRET: "{{ env_var('HASH_SECRET') }}"
   
   # Policy tags
   #  Free access:

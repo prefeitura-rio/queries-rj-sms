@@ -16,8 +16,8 @@ cadastros as (
     and ine_equipe is not NULL
 )
 
-SELECT 
-    sha256(s.paciente_cpf) as paciente_id, 
+SELECT
+    {{ anonimize('s.paciente_cpf', "'projeto_wac'") }} as paciente_id,
     descricao_apoio as nome_exame,
     r.resultado,
     r.unidade,
@@ -25,7 +25,7 @@ SELECT
 FROM  {{ref('raw_exames_laboratoriais__resultados')}} r
   inner join {{ref('raw_exames_laboratoriais__exames')}} e on r.id_exame = e.id
   inner join  {{ref('raw_exames_laboratoriais__solicitacoes')}} s on e.id_solicitacao = s.id
-WHERE 
+WHERE
     s.paciente_cpf is not null and
     s.paciente_cpf in (select paciente_id from cadastros) and 
     descricao_apoio in (

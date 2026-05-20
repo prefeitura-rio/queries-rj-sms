@@ -15,14 +15,14 @@ cadastros as (
     and ine_equipe is not NULL
 )
 
-SELECT 
-  sha256(a.patient_cpf) as paciente_id,
+SELECT
+  {{ anonimize('a.patient_cpf', "'projeto_wac'") }} as paciente_id,
   medicamento_nome,
   posologia,
   quantidade,
-  uso_continuado 
+  uso_continuado
 FROM {{ ref('raw_prontuario_vitacare_historico__prescricao') }} p
   INNER JOIN {{ ref('raw_prontuario_vitacare_historico__acto') }} a using (id_prontuario_global)
-WHERE 
+WHERE
   a.patient_cpf is not null AND
   a.patient_cpf in (select paciente_id from cadastros)

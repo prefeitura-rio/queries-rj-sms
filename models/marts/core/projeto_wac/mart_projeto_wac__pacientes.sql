@@ -34,8 +34,8 @@ cadastros as (
 )
 
 select
-  sha256(paciente_id) as paciente_id,
-  sha256(equipe_id) as equipe_id,
+  {{ anonimize('paciente_id', "'projeto_wac'") }} as paciente_id,
+  {{ anonimize('equipe_id', "'projeto_wac'") }} as equipe_id,
 
   idade,
   sexo,
