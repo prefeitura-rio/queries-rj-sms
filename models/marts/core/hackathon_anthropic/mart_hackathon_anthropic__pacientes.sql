@@ -55,11 +55,6 @@ cadastros_por_unidade as (
     territorio_social,
     vulnerabilidade_social,
 
-    upper(tipo_logradouro) as endereco_tipo_logradouro,
-    upper(logradouro) as endereco_logradouro,
-    upper(cep) as endereco_cep,
-    upper(bairro) as endereco_bairro,
-
     updated_at as updated_at
   from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
   where
@@ -68,27 +63,16 @@ cadastros_por_unidade as (
     and ine_equipe is not null
 ),
 
-enderecos as (
-  select 
-    replace({{process_null('cpf')}},'.0','') as paciente_id,
-    id,
-    upper(tipoLogradouro) as endereco_tipo_logradouro, 
-    upper(logradouro) as endereco_logradouro, 
-    upper(numLogradouro) as endereco_numero, 
-    upper(complementoLogradouro) as endereco_complemento, 
-    nullif(replace({{process_null('cep')}},'.0',''),'0') as endereco_cep,
-    upper(bairro) as endereco_bairro
-  from {{source('brutos_hackathon_anthropic','enderecos_completo')}}
-  where {{process_null('cpf')}} is not null
-),
-
 enderecos_por_pessoa as (
-  select *
-  from enderecos
-  qualify row_number() over (
-    partition by paciente_id
-    order by id desc
-  ) = 1
+  select 
+    cpf as paciente_id,
+    latitude as endereco_latitude,
+    longitude as endereco_longitude,
+    score as endereco_score
+  from {{source('brutos_hackathon_anthropic','localizacao')}}
+  where 
+    {{process_null('cpf')}} is not null and 
+    latitude is not null
 ),
 
 cadastros as (
@@ -103,18 +87,9 @@ cadastros as (
 cadastros_com_endereco as (
   select 
     cadastros.*,
-    concat(
-      COALESCE(enderecos_por_pessoa.endereco_tipo_logradouro, cadastros.endereco_tipo_logradouro, ''),
-      ' ',
-      COALESCE(enderecos_por_pessoa.endereco_logradouro, cadastros.endereco_logradouro, ''),
-      ' ',
-      COALESCE(enderecos_por_pessoa.endereco_numero, ''),
-      ' - ',
-      COALESCE(enderecos_por_pessoa.endereco_cep, cadastros.endereco_cep, ''),
-      ' - ',
-      COALESCE(enderecos_por_pessoa.endereco_bairro, cadastros.endereco_bairro, ''),
-      ' - RIO DE JANEIRO, RJ'
-    ) as endereco
+    enderecos_por_pessoa.endereco_latitude,
+    enderecos_por_pessoa.endereco_longitude,
+    enderecos_por_pessoa.endereco_score
   from cadastros
     left join enderecos_por_pessoa using (paciente_id)
 ),
@@ -174,7 +149,9 @@ pacientes_randomizados as (
 enderecos_randomizados as (
   select
     equipe_id,
-    endereco,
+    endereco_latitude,
+    endereco_longitude,
+    endereco_score,
     row_number() over (
       partition by equipe_id
       order by rand()
@@ -200,7 +177,9 @@ select
   condicoes.ultima_gestacao_mes_inicio,
   condicoes.ultima_gestacao_mes_fim,
 
-  e.endereco
+  e.endereco_longitude,
+  e.endereco_latitude,
+  e.endereco_score
 
 from pacientes_randomizados p
   left join condicoes

@@ -15,7 +15,6 @@ unidades_da_22 as (
 select
   SHA256(paciente_cpf) as paciente_id,
   coalesce(procedimento_sigtap, procedimento_interno) as procedimento,
-  data_solicitacao,
   data_marcacao
 from {{ ref('raw_sisreg_api__marcacoes') }}
 where

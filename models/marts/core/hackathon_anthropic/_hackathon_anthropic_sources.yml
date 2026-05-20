@@ -6,3 +6,4 @@ sources:
     schema: brutos_hackathon_anthropic
     tables:
       - name: enderecos_completo
+      - name: localizacao
