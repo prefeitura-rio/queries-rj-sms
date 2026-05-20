@@ -21,5 +21,5 @@ select
 from {{ ref('raw_sisreg_api__marcacoes') }}
 where
   paciente_cpf in (select paciente_id from cadastros)
-  and data_solicitacao between '2025-01-01' and '2025-12-31'
+  and data_marcacao between '2025-01-01' and '2025-12-31'
   and paciente_cpf is not null
