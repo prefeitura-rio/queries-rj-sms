@@ -13,20 +13,21 @@ cadastros_por_unidade as (
     ine_equipe as equipe_id,
 
     case
-      when date_diff(date(current_date()), date(data_nascimento), year) < 2 then '0-2'
-      when date_diff(date(current_date()), date(data_nascimento), year) < 6 then '3-6'
-      when date_diff(date(current_date()), date(data_nascimento), year) < 13 then '7-13'
-      when date_diff(date(current_date()), date(data_nascimento), year) < 18 then '14-18'
+      when date_diff(date(current_date()), date(data_nascimento), year) < 6 then '0-6'
+      when date_diff(date(current_date()), date(data_nascimento), year) < 18 then '6-18'
       when date_diff(date(current_date()), date(data_nascimento), year) < 45 then '19-45'
       when date_diff(date(current_date()), date(data_nascimento), year) < 65 then '45-65'
       else '66+'
     end as faixa_etaria,
 
     sexo,
-    raca_cor,
-    escolaridade,
-    territorio_social,
-    vulnerabilidade_social,
+
+    case
+      when raca_cor in ('Branca', 'Parda', 'Preta') then raca_cor
+      else 'Outros'
+    end as raca_cor,
+
+    ifnull(territorio_social or vulnerabilidade_social,false) as situacao_vulnerabilidade,
 
     updated_at as updated_at
   from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
@@ -131,9 +132,7 @@ cadastros_com_endereco_ruidoso as (
     faixa_etaria,
     sexo,
     raca_cor,
-    escolaridade,
-    territorio_social,
-    vulnerabilidade_social,
+    situacao_vulnerabilidade,
 
     ST_GEOGPOINT(endereco_longitude, endereco_latitude) as endereco_original,
     ST_GEOGPOINT(endereco_longitude_com_ruido, endereco_latitude_com_ruido) as endereco_ruidoso
@@ -170,9 +169,7 @@ SELECT
   faixa_etaria,
   sexo,
   raca_cor,
-  escolaridade,
-  territorio_social,
-  vulnerabilidade_social,
+  situacao_vulnerabilidade,
 
   e.endereco_ruidoso as endereco,
 

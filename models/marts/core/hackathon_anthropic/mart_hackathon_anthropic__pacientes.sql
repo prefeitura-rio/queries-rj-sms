@@ -84,9 +84,7 @@ select
   faixa_etaria,
   sexo,
   raca_cor,
-  escolaridade,
-  territorio_social,
-  vulnerabilidade_social,
+  situacao_vulnerabilidade,
 
   ST_X(c.endereco) as endereco_longitude,
   ST_Y(c.endereco) as endereco_latitude,
