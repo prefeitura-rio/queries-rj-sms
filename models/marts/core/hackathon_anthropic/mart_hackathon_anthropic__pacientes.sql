@@ -46,7 +46,7 @@ gestacoes as (
   where
     cpf is not null
     and cpf in (
-      select paciente_id from cadastros_elegiveis
+      select original.cpf from cadastros_elegiveis
     )
     and (
       extract(year from data_inicio) = 2025
