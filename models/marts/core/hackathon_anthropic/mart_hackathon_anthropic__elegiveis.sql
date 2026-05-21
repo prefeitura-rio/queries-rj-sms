@@ -182,7 +182,7 @@ SELECT
     p.unidade_id as cnes,
     p.endereco_original as endereco,
     p.endereco_ruidoso as endereco_ruidoso,
-    {{ random_int('p.paciente_id', 30, "'hackathon_anthropic'") }} as shift_dias
+    {{ random_int('p.paciente_id', 7, "'hackathon_anthropic'") }} as shift_dias
   ) as original
 
 FROM pacientes_randomizados p
