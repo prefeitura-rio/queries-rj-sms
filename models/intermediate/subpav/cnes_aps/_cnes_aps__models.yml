@@ -1,0 +1,293 @@
+version: 2
+
+models:
+  - name: int_subpav_cnes_aps__unidades
+    description: >
+      Modelo intermediário de unidades do CNES APS. Consolida os estabelecimentos
+      a partir da raw LFCES004, enriquecendo com tabelas auxiliares de tipo de unidade,
+      motivo de desativação, natureza jurídica e CNES válidos. Mantém o universo completo
+      de estabelecimentos municipais, incluindo unidades públicas e privadas, para permitir
+      usos futuros além do Panorama APS. Para reprodução do quadro de Unidades APS do Panorama SUBPAV,
+      utilizar a flag is_unidade_aps_panorama.
+
+      Regra de classificação de unidade APS para o Panorama:
+      CF: unidade ativa, município Rio, esfera municipal, tipo de unidade básico e nome contendo
+      CF ou Clínica da Família.
+      CMS: unidade ativa, município Rio, esfera municipal e nome contendo CMS ou Centro Municipal
+      de Saúde, sem exigir tipo_unidade_id 1/2, para contemplar unidades como SMS CMS Manoel
+      Arthur Villaboim.
+      CSE: unidade ativa, município Rio, tipo de unidade básico e nome contendo CSE ou Centro
+      Saúde Escola, permitindo CSE federal como FIOCRUZ/ENSP/CSE Germano Sinval Faria.
+      A classificação ampla tipo_unidade_sms é mantida para exploração, mas os indicadores do
+      Panorama devem usar is_unidade_aps_panorama.
+    columns:
+      - name: cnes
+        description: "Código Nacional do Estabelecimento de Saúde, normalizado com 7 dígitos."
+
+      - name: unidade_id_original
+        description: "Identificador original do estabelecimento no CNES."
+
+      - name: nome_fanta
+        description: "Nome fantasia do estabelecimento."
+
+      - name: nome_fanta_upper
+        description: "Nome fantasia em letras maiúsculas, usado nas regras de classificação por nome."
+
+      - name: razao_social
+        description: "Razão social do estabelecimento."
+
+      - name: ap
+        description: "Área Programática normalizada em formato inteiro: 10, 21, 22, 31, 32, 33, 40, 51, 52 ou 53. Valores não reconhecidos recebem null."
+
+      - name: ap_formatada
+        description: "Área Programática formatada com ponto: 1.0, 2.1, 2.2, 3.1, 3.2, 3.3, 4.0, 5.1, 5.2 ou 5.3."
+
+      - name: ap_original
+        description: "Valor original do distrito sanitário/Área Programática informado no CNES."
+
+      - name: cod_municipio_cnes
+        description: "Código do município do estabelecimento obtido da LFCES057, quando disponível."
+
+      - name: cod_municipio_gestor
+        description: "Código do município gestor informado na LFCES004."
+
+      - name: is_municipio_rio
+        description: "Flag indicando se o estabelecimento pertence ao município do Rio de Janeiro, considerando o município da LFCES057 e, como fallback, o município gestor da LFCES004."
+
+      - name: tipo_unidade_sms
+        description: >
+          Classificação SMS do tipo de unidade, derivada de nome fantasia, tipo de unidade,
+          esfera administrativa e exceções documentadas. Possíveis valores incluem SMS, CAP,
+          CF, CMS, CSE, CAPSIII, CAPSI, CAPS, POLICLINICA, UPA, CER, HOSPITAL e OUTROS.
+
+      - name: is_unidade_aps_panorama
+        description: >
+          Flag oficial para reprodução do quadro de Unidades APS do Panorama CNES.
+          Considera unidades ativas do município do Rio classificadas como CF, CMS ou CSE,
+          com regras específicas por tipo: CF exige esfera municipal e tipo básico; CMS exige
+          esfera municipal e nome compatível; CSE permite unidade federal desde que tenha tipo
+          básico e nome compatível. Validada em 2026-04 contra o Panorama legado, com
+          UNIDADE_APS = 241, CF = 135, CMS = 103 e CSE = 3.
+
+      - name: is_unidade_aps
+        description: >
+          Flag ampla indicando se a classificação tipo_unidade_sms é CF, CMS ou CSE.
+          Esta flag serve para exploração geral da base, mas não deve ser usada para
+          reproduzir o quadro de Unidades APS do Panorama.
+
+      - name: is_clinica_familia
+        description: "Flag indicando se a unidade foi classificada como Clínica da Família."
+
+      - name: is_centro_municipal_saude
+        description: "Flag indicando se a unidade foi classificada como Centro Municipal de Saúde."
+
+      - name: is_centro_saude_escola
+        description: "Flag indicando se a unidade foi classificada como Centro de Saúde Escola."
+
+      - name: tipo_unidade_id
+        description: "Código do tipo de unidade/estabelecimento no CNES."
+
+      - name: tipo_unidade_descricao
+        description: "Descrição do tipo de unidade obtida da tabela auxiliar NFCES010."
+
+      - name: tipo_unidade_federal_id
+        description: "Código federal do tipo de unidade, quando informado."
+
+      - name: tipo_estabelecimento_id
+        description: "Código do tipo de estabelecimento."
+
+      - name: atividade_principal_id
+        description: "Código da atividade principal do estabelecimento."
+
+      - name: tipo_abrangencia_id
+        description: "Código da abrangência Telessaúde do estabelecimento."
+
+      - name: nivel_atencao_id
+        description: >
+          Identificador do nível de atenção. Valor 1 para Atenção Primária, 2 para Atenção
+          Secundária, 3 para Atenção Terciária, 4 para Gestão e null quando não classificado.
+
+      - name: nivel_atencao
+        description: "Descrição do nível de atenção: ATENCAO_PRIMARIA, ATENCAO_SECUNDARIA, ATENCAO_TERCIARIA, GESTAO ou NAO_CLASSIFICADO."
+
+      - name: natureza_juridica_id
+        description: "Código da natureza jurídica do estabelecimento."
+
+      - name: natureza_juridica
+        description: "Descrição da natureza jurídica obtida da tabela auxiliar NFCES085."
+
+      - name: esfera_administrativa_id
+        description: >
+          Esfera administrativa derivada da natureza jurídica. Valor 1 para federal,
+          2 para estadual, 3 para municipal, 4 para privada/demais e null quando não classificado.
+          A natureza jurídica 1031 é tratada como municipal.
+
+      - name: unidade_ativa
+        description: "Flag indicando se a unidade está ativa no CNES. Valor 1 quando não há motivo de desativação/desabilitação na LFCES004; caso contrário, 0."
+
+      - name: motivo_desativacao_unidade_id
+        description: "Código do motivo de desativação/desabilitação do estabelecimento."
+
+      - name: motivo_desativacao_unidade
+        description: "Descrição do motivo de desativação/desabilitação da unidade obtida da tabela auxiliar NFCES049."
+
+      - name: motivo_desativacao_cnes_id
+        description: "Código do motivo de desativação do estabelecimento obtido da LFCES057."
+
+      - name: status
+        description: "Controle interno do registro no CNES."
+
+      - name: status_movimento
+        description: "Status de movimentação do estabelecimento no CNES."
+
+      - name: status_estabelecimento_cnes
+        description: "Status do estabelecimento obtido da LFCES057."
+
+      - name: tipo_gestao_id
+        description: "Tipo de gestão informado na LFCES004."
+
+      - name: tipo_gestao_cnes
+        description: "Tipo de gestão do estabelecimento obtido da LFCES057."
+
+      - name: sigla_gestao
+        description: "Sigla da UF gestora do estabelecimento."
+
+      - name: competencia_cnes
+        description: "Competência informada na LFCES057 para o CNES."
+
+      - name: estrutura_estabelecimento
+        description: "Tipo de estrutura do estabelecimento obtido da LFCES057."
+
+      - name: logradouro
+        description: "Logradouro do endereço do estabelecimento."
+
+      - name: numero
+        description: "Número do endereço do estabelecimento."
+
+      - name: complemento
+        description: "Complemento do endereço do estabelecimento."
+
+      - name: bairro
+        description: "Bairro do endereço do estabelecimento."
+
+      - name: cep
+        description: "Código de Endereçamento Postal do estabelecimento."
+
+      - name: latitude
+        description: "Latitude do endereço do estabelecimento, quando informada."
+
+      - name: longitude
+        description: "Longitude do endereço do estabelecimento, quando informada."
+
+      - name: telefone
+        description: "Telefone do estabelecimento."
+
+      - name: fax
+        description: "Fax do estabelecimento."
+
+      - name: email
+        description: "E-mail do estabelecimento."
+
+      - name: url
+        description: "URL do estabelecimento."
+
+      - name: turno_atendimento_id
+        description: "Código do turno de atendimento do estabelecimento."
+
+      - name: tipo_estab_sempre_aberto
+        description: "Valor original que indica se o estabelecimento funciona sempre aberto."
+
+      - name: estab_sempre_aberto
+        description: "Flag indicando se o estabelecimento funciona sempre aberto. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: possui_conexao_internet_original
+        description: "Valor original que indica se o estabelecimento possui conexão com internet."
+
+      - name: possui_conexao_internet
+        description: "Flag indicando se o estabelecimento possui conexão com internet. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: contrato_formalizado_original
+        description: "Valor original que indica se o estabelecimento possui contrato formalizado com o SUS."
+
+      - name: contrato_formalizado
+        description: "Flag indicando se o estabelecimento possui contrato formalizado com o SUS. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: coworking_original
+        description: "Valor original que indica se o estabelecimento funciona em regime de coworking."
+
+      - name: coworking
+        description: "Flag indicando se o estabelecimento funciona em regime de coworking. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pessoa_fisica_juridica_id
+        description: "Indica se o estabelecimento é pessoa física ou jurídica."
+
+      - name: nivel_dependencia_id
+        description: "Identificador da situação/dependência do estabelecimento."
+
+      - name: cnpj
+        description: "CNPJ do estabelecimento, normalizado com 14 dígitos."
+
+      - name: cnpj_mantenedora
+        description: "CNPJ da mantenedora, normalizado com 14 dígitos."
+
+      - name: cpf_diretor_clinico
+        description: "CPF do diretor clínico ou gerente/administrador, normalizado com 11 dígitos."
+
+      - name: registro_diretor_clinico
+        description: "Registro no conselho de classe do diretor clínico."
+
+      - name: dt_atualiza
+        description: "Data da última atualização do registro no CNES."
+
+      - name: dt_expedicao
+        description: "Data de expedição do alvará da Vigilância Sanitária."
+
+      - name: dt_validade_licenca_sanitaria
+        description: "Data de validade do licenciamento sanitário."
+
+      - name: dt_validacao
+        description: "Data/hora de validação do registro."
+
+      - name: dt_atualiza_geo
+        description: "Data de atualização das coordenadas geográficas."
+
+      - name: dt_atualizacao_origem
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: dt_cmtp_inicio
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: dt_cmtp_fim
+        description: "Data final de competência."
+
+      - name: usuario_atualizacao
+        description: "Último usuário que atualizou o registro."
+
+      - name: usuario_em_uso
+        description: "Controle interno referente ao usuário em uso."
+
+      - name: usuario_geo
+        description: "Usuário responsável pela atualização das coordenadas geográficas."
+
+      - name: checksum
+        description: "Campo de controle/checksum do CNES."
+
+      - name: competencia_mes
+        description: "Competência da base CNES no formato AAAA-MM."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada raw/staging."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
