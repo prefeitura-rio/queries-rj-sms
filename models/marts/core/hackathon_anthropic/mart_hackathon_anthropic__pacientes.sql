@@ -8,7 +8,7 @@ with
 
 hipertensos as (
   select distinct
-    a.patient_cpf as paciente_id,
+    a.patient_cpf as cpf,
     'hipertenso' as condicao
   from {{ ref('raw_prontuario_vitacare_historico__condicao') }} c
     inner join {{ ref('raw_prontuario_vitacare_historico__acto') }} a
@@ -21,7 +21,7 @@ hipertensos as (
 
 diabeticos as (
   select distinct
-    a.patient_cpf as paciente_id,
+    a.patient_cpf as cpf,
     'diabetico' as condicao
   from {{ ref('raw_prontuario_vitacare_historico__condicao') }} c
     inner join {{ ref('raw_prontuario_vitacare_historico__acto') }} a
@@ -39,9 +39,8 @@ cadastros_elegiveis as (
 
 gestacoes as (
   select
-    cpf as paciente_id,
-    data_inicio,
-    data_fim_efetiva
+    cpf,
+    data_inicio
   from {{ ref('mart_bi_gestacoes__gestacoes') }}
   where
     cpf is not null
@@ -50,17 +49,16 @@ gestacoes as (
     )
     and (
       extract(year from data_inicio) = 2025
-      or extract(year from data_fim_efetiva) = 2025
     )
 ),
 
 ultima_gestacao_do_paciente as (
   select 
-    paciente_id,
+    cpf,
     format_date('%Y-%m', data_inicio) as ultima_gestacao_mes_inicio
   from gestacoes
   qualify row_number() over (
-    partition by paciente_id
+    partition by cpf
     order by data_inicio desc
   ) = 1
 ),
@@ -72,9 +70,9 @@ condicoes as (
     d.condicao is not null as diabetico,
     g.ultima_gestacao_mes_inicio,
   from cadastros_elegiveis c 
-    left join hipertensos h using (paciente_id)
-    left join diabeticos d using (paciente_id)
-    left join ultima_gestacao_do_paciente g using (paciente_id)
+    left join hipertensos h on h.cpf = c.original.cpf
+    left join diabeticos d on d.cpf = c.original.cpf
+    left join ultima_gestacao_do_paciente g on g.cpf = c.original.cpf
 )
 
 select
