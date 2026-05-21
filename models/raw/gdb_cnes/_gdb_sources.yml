@@ -5,37 +5,53 @@ sources:
     database: rj-sms
     schema: brutos_gdb_cnes_staging
     tables:
+      - name: LFCES004
+        description: "Estabelecimentos de saúde."
 
-    - name: LFCES004
-      # LFCES004 -> estabelecimento
+      - name: LFCES018
+        description: "Profissionais."
 
-    - name: LFCES018
-      # LFCES018 -> profissional
+      - name: LFCES021
+        description: "Vínculos do profissional no estabelecimento / carga horária."
 
-    - name: LFCES021
-      # LFCES021 -> vinculo
+      - name: LFCES037
+        description: "Equipes."
 
-    - name: LFCES038
-      # LFCES038 -> equipe_profissionais
+      - name: LFCES038
+        description: "Profissionais das equipes."
 
-    - name: LFCES037
-      # LFCES037 -> equipe
+      - name: LFCES057
+        description: "CNES válidos."
 
-    - name: NFCES046
-      # NFCES046 -> equipe_tipo
+      - name: LFCES098
+        description: "Horário de funcionamento do estabelecimento."
 
-    - name: NFCES049
-      # NFCES049 -> estabelecimento_motivo_desabilitacao
+      - name: NFCES010
+        description: "Tipo de estabelecimento / tipo de unidade."
 
-    - name: NFCES053
-      # NFCES049 -> equipe_motivo_desativacao
+      - name: NFCES026
+        description: "CBO / atividade profissional."
 
-    - name: NFCES056
-      # NFCES056 -> vinculo_estabelecimento
+      - name: NFCES046
+        description: "Tipo de equipe."
 
-    - name: NFCES057
-      # NFCES057 -> vinculo_empregador
+      - name: NFCES049
+        description: "Motivo de desabilitação do estabelecimento."
 
-    - name: NFCES058
-      # NFCES058 -> vinculo_detalhe
+      - name: NFCES053
+        description: "Motivo de desativação da equipe."
 
+      - name: NFCES056
+        description: "Vínculo do estabelecimento."
+
+      - name: NFCES057
+        description: "Vínculo do empregador."
+
+      - name: NFCES058
+        description: "Detalhe do vínculo profissional."
+
+      - name: NFCES085
+        description: "Natureza jurídica."
+
+      - name: NFCES090
+        description: "Grupo/tipo de equipe."
