@@ -91,11 +91,11 @@ enderecos_com_ruido_calculado as (
     *,
 
     -- Raio máximo do ruído em metros
-    50.0 as raio_maximo_ruido_metros,
+    100.0 as raio_maximo_ruido_metros,
 
     -- Distância aleatória dentro do círculo de raio 50m.
     -- O sqrt garante distribuição mais uniforme dentro da área do círculo.
-    sqrt(ruido_u1) * 70.0 as ruido_distancia_metros,
+    sqrt(ruido_u1) * 100.0 as ruido_distancia_metros,
 
     -- Ângulo aleatório entre 0 e 2π
     2 * acos(-1) * ruido_u2 as ruido_angulo_radianos
@@ -181,7 +181,8 @@ SELECT
     p.equipe_id as ine,
     p.unidade_id as cnes,
     p.endereco_original as endereco,
-    p.endereco_ruidoso as endereco_ruidoso
+    p.endereco_ruidoso as endereco_ruidoso,
+    {{ random_int('p.paciente_id', 30, "'hackathon_anthropic'") }} as shift_dias
   ) as original
 
 FROM pacientes_randomizados p

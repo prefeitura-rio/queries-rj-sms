@@ -57,8 +57,7 @@ gestacoes as (
 ultima_gestacao_do_paciente as (
   select 
     paciente_id,
-    format_date('%Y-%m', data_inicio) as ultima_gestacao_mes_inicio,
-    format_date('%Y-%m', data_fim_efetiva) as ultima_gestacao_mes_fim
+    format_date('%Y-%m', data_inicio) as ultima_gestacao_mes_inicio
   from gestacoes
   qualify row_number() over (
     partition by paciente_id
@@ -72,7 +71,6 @@ condicoes as (
     h.condicao is not null as hipertenso,
     d.condicao is not null as diabetico,
     g.ultima_gestacao_mes_inicio,
-    g.ultima_gestacao_mes_fim
   from cadastros_elegiveis c 
     left join hipertensos h using (paciente_id)
     left join diabeticos d using (paciente_id)
@@ -98,8 +96,7 @@ select
   coalesce(condicoes.hipertenso, false) as hipertenso,
   coalesce(condicoes.diabetico, false) as diabetico,
 
-  condicoes.ultima_gestacao_mes_inicio,
-  condicoes.ultima_gestacao_mes_fim
+  condicoes.ultima_gestacao_mes_inicio
 
 from cadastros_elegiveis c
   left join condicoes using (paciente_id)
