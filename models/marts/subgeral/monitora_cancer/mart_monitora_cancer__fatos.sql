@@ -88,7 +88,8 @@ with
             criterio_diagnostico,
             atraso_solicitacao_autorizacao,
             atraso_autorizacao_execucao,
-            atraso_regulacao
+            atraso_regulacao,
+            safe_cast(risco as int) as risco
         from fontes_unificadas
     ),
 
@@ -153,6 +154,9 @@ with
             atraso_solicitacao_autorizacao,
             atraso_autorizacao_execucao,
             atraso_regulacao,
+
+        -- risco do evento (1-4 ou NULL); mapeamento por sistema feito nos int_*
+            risco,
 
         -- unidade solicitante
             id_cnes_unidade_origem,

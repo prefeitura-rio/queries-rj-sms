@@ -41,6 +41,7 @@ with
             base.id_cnes_unidade_executante,
             base.cid_solicitacao,
             base.solicitacao_status,
+            base.solicitacao_risco,
             proc.procedimento,
             safe_cast(base.data_solicitacao as date) as data_solicitacao,
             safe_cast(base.data_autorizacao as date) as data_autorizacao,
@@ -111,6 +112,16 @@ select
         when date_diff(data_execucao, data_solicitacao, day) >= limite_dias_regulacao + 10 then 2
         when date_diff(data_execucao, data_solicitacao, day) >= limite_dias_regulacao then 1
         else 0
-    end as atraso_regulacao
+    end as atraso_regulacao,
+
+-- risco (float64): mapeia o risco da solicitação do SISREG em escala numérica.
+-- AZUL = 1.0 (menor), VERDE = 2.0, AMARELO = 3.0, VERMELHO = 4.0 (maior); demais = NULL.
+    case upper(trim(solicitacao_risco))
+        when 'AZUL' then 1.0
+        when 'VERDE' then 2.0
+        when 'AMARELO' then 3.0
+        when 'VERMELHO' then 4.0
+        else null
+    end as risco
 
 from enriquecido
