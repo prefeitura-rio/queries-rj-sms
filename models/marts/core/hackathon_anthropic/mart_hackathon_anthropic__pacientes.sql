@@ -68,7 +68,7 @@ condicoes as (
     c.paciente_id,
     h.condicao is not null as hipertenso,
     d.condicao is not null as diabetico,
-    g.ultima_gestacao_mes_inicio,
+    g.ultima_gestacao_mes_inicio is not null as gestacao,
   from cadastros_elegiveis c 
     left join hipertensos h on h.cpf = c.original.cpf
     left join diabeticos d on d.cpf = c.original.cpf
@@ -91,8 +91,7 @@ select
 
   coalesce(condicoes.hipertenso, false) as hipertenso,
   coalesce(condicoes.diabetico, false) as diabetico,
-
-  condicoes.ultima_gestacao_mes_inicio
+  coalesce(condicoes.gestacao, false) as gestacao
 
 from cadastros_elegiveis c
   left join condicoes using (paciente_id)
