@@ -155,7 +155,7 @@ with
             atraso_autorizacao_execucao,
             atraso_regulacao,
 
-        -- risco do evento (float64, 1.0-4.0 ou NULL); mapeamento por sistema feito nos int_*
+        -- risco do evento (1-4 ou NULL); mapeamento por sistema feito nos int_*
             risco,
 
         -- unidade solicitante
