@@ -140,25 +140,109 @@ cadastros_com_endereco_ruidoso as (
   from enderecos_anonimizados
 ),
 
-pacientes_randomizados as (
+-- Contar pacientes por equipe para filtrar equipes pequenas
+contagem_por_equipe as (
+  select
+    equipe_id,
+    count(*) as total_pacientes
+  from cadastros_com_endereco_ruidoso
+  group by 1
+),
+
+-- Filtrar apenas equipes com pelo menos 2000 pacientes
+equipes_elegiveis as (
+  select equipe_id
+  from contagem_por_equipe
+  where total_pacientes >= 2000
+),
+
+-- Filtrar cadastros para incluir apenas equipes elegíveis
+cadastros_filtrados as (
+  select c.*
+  from cadastros_com_endereco_ruidoso c
+  inner join equipes_elegiveis e using (equipe_id)
+),
+
+-- Criar lista única de equipes originais para mapeamento
+equipes_originais as (
+  select
+    equipe_id,
+    row_number() over (order by equipe_id) as posicao_original
+  from (select distinct equipe_id from cadastros_filtrados)
+),
+
+-- Criar lista de equipes destino embaralhada (mesma lista de IDs, mas em ordem aleatória)
+equipes_destino as (
+  select
+    equipe_id as equipe_id_destino,
+    row_number() over (order by farm_fingerprint(concat(cast(equipe_id as string), '|hackathon_anthropic|shuffle'))) as posicao_destino
+  from (select distinct equipe_id from cadastros_filtrados)
+),
+
+-- Mapear 1:1 cada equipe original para uma equipe destino
+-- Garantindo que cada equipe destino recebe exatamente uma equipe original
+mapeamento_equipes as (
+  select
+    o.equipe_id as equipe_id_original,
+    d.equipe_id_destino
+  from equipes_originais o
+  inner join equipes_destino d on o.posicao_original = d.posicao_destino
+),
+
+-- Sample de 2000 pacientes por equipe
+pacientes_sampled as (
   select
     *,
     row_number() over (
       partition by equipe_id
       order by rand()
-    ) as endereco_random_id
-  from cadastros_com_endereco_ruidoso
+    ) as rn
+  from cadastros_filtrados
+  qualify rn <= 2000
 ),
 
-enderecos_randomizados as (
+-- Criar pool de endereços por equipe ORIGINAL (antes do remapeamento)
+-- Cada equipe terá até 2000 endereços disponíveis
+pool_enderecos_por_equipe_original as (
   select
-    equipe_id,
+    equipe_id as equipe_id_original,
     endereco_ruidoso,
     row_number() over (
       partition by equipe_id
       order by rand()
-    ) as endereco_random_id
-  from cadastros_com_endereco_ruidoso
+    ) as endereco_id
+  from pacientes_sampled
+),
+
+-- Aplicar mapeamento de equipes
+pacientes_com_equipe_randomizada as (
+  select
+    p.paciente_id,
+    m.equipe_id_destino as equipe_id,
+    p.unidade_id,
+    p.faixa_etaria,
+    p.sexo,
+    p.raca_cor,
+    p.situacao_vulnerabilidade,
+    p.endereco_original,
+    p.equipe_id as equipe_id_original,  -- guardar a equipe original para referência
+    row_number() over (
+      partition by m.equipe_id_destino
+      order by rand()
+    ) as endereco_random_id  -- posição do paciente na nova equipe
+  from pacientes_sampled p
+  inner join mapeamento_equipes m on p.equipe_id = m.equipe_id_original
+),
+
+-- Para cada equipe destino, criar pool de endereços disponíveis
+-- Os endereços vêm da equipe ORIGINAL correspondente
+pool_enderecos_por_equipe_destino as (
+  select
+    m.equipe_id_destino as equipe_id,
+    pe.endereco_ruidoso,
+    pe.endereco_id
+  from pool_enderecos_por_equipe_original pe
+  inner join mapeamento_equipes m on pe.equipe_id_original = m.equipe_id_original
 )
 
 SELECT
@@ -175,14 +259,14 @@ SELECT
 
   struct(
     p.paciente_id as cpf,
-    p.equipe_id as ine,
+    p.equipe_id_original as ine,  -- usar equipe original no struct
     p.unidade_id as cnes,
     p.endereco_original as endereco,
-    p.endereco_ruidoso as endereco_ruidoso,
+    e.endereco_ruidoso as endereco_ruidoso,  -- endereço vem da equipe destino
     {{ random_int('p.paciente_id', 7, "'hackathon_anthropic'") }} as shift_dias
   ) as original
 
-FROM pacientes_randomizados p
-  left join enderecos_randomizados e
+FROM pacientes_com_equipe_randomizada p
+  left join pool_enderecos_por_equipe_destino e
     on p.equipe_id = e.equipe_id
-    and p.endereco_random_id = e.endereco_random_id
+    and p.endereco_random_id = e.endereco_id

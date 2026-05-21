@@ -1,6 +1,6 @@
 {{
     config(
-        alias="visitas"
+        alias="profissional"
     )
 }}
 
@@ -15,22 +15,17 @@ constantes as (
 elegiveis as (
   select
     original.cpf,
-    original.shift_dias
+    original.shift_dias,
+    equipe_id,
+    unidade_id
   from {{ ref('mart_hackathon_anthropic__elegiveis') }}
 ),
 
-visitas_com_ordem as (
+casos as (
   select
     {{ anonimize('profissional_cpf', "'hackathon_anthropic'") }} as profissional_id,
-    {{ anonimize('a.patient_cpf', "'hackathon_anthropic'") }} as paciente_id,
-    date_add(date(a.datahora_fim_atendimento), interval e.shift_dias day) as visitado_em,
-    datetime_add(a.datahora_fim_atendimento, interval e.shift_dias day) as datahora_visita,
-    row_number() over (
-      partition by
-        {{ anonimize('profissional_cpf', "'hackathon_anthropic'") }},
-        date_add(date(a.datahora_fim_atendimento), interval e.shift_dias day)
-      order by datetime_add(a.datahora_fim_atendimento, interval e.shift_dias day)
-    ) as ordem_visita_dia
+    e.equipe_id,
+    e.unidade_id
   from {{ ref('raw_prontuario_vitacare_historico__acto') }} a
     inner join elegiveis e on a.patient_cpf = e.cpf
     cross join constantes
@@ -39,11 +34,34 @@ visitas_com_ordem as (
     and a.patient_cpf is not null
     and a.profissional_equipe_cod_ine is not null
     and date_add(date(a.datahora_fim_atendimento), interval e.shift_dias day) between (select data_minima from constantes) and (select data_maxima from constantes)
+),
+
+contagem_por_profissional_equipe as (
+  select
+    profissional_id,
+    equipe_id,
+    unidade_id,
+    count(*) as total_atendimentos
+  from casos
+  group by 1, 2, 3
+),
+
+equipe_mais_comum_por_profissional as (
+  select
+    profissional_id,
+    equipe_id,
+    unidade_id,
+    total_atendimentos
+  from contagem_por_profissional_equipe
+  qualify row_number() over (
+    partition by profissional_id
+    order by total_atendimentos desc, equipe_id
+  ) = 1
 )
 
 select
-  profissional_id,
-  paciente_id,
-  visitado_em,
-  ordem_visita_dia
-from visitas_com_ordem
+    distinct
+    profissional_id,
+    equipe_id,
+    unidade_id
+from equipe_mais_comum_por_profissional
