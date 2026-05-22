@@ -1,8 +1,9 @@
 {{
     config(
-        materialized="view",
+        materialized="table",
         schema="brutos_iplanrio",
-        alias="resposta_disparo"
+        alias="resposta_disparo",
+        tags=['daily']
     )
 }}
 

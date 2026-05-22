@@ -1,8 +1,9 @@
 {{
     config(
-        materialized="view",
+        materialized="table",
         schema="brutos_iplanrio",
-        alias="chatbot"
+        alias="chatbot",
+        tags=['daily']
     )
 }}
 
