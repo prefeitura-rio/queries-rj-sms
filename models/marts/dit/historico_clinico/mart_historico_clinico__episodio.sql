@@ -360,3 +360,4 @@ with
 
 select *
 from final
+where paciente_cpf is not null
