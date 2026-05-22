@@ -1,5 +1,16 @@
 version: 2
 
+sources:
+  - name: projeto_whatsapp
+    database: rj-sms
+    schema: projeto_whatsapp
+    tables:
+      - name: excecao_disparo_puerperas
+        description: >
+          Tabela de exceções operacionais para inclusão manual de puérperas na régua de disparos
+          do projeto Cegonha Digital. Possui o mesmo schema da tabela sisare_alta_maternidade
+          para permitir união no modelo final sem expor dados pessoais no repositório.
+
 models:
   - name: mart_iplanrio__sisare_alta_maternidade
     description: >
