@@ -291,3 +291,325 @@ models:
 
       - name: _source_file
         description: "Arquivo GDB de origem do registro."
+
+  - name: int_subpav_cnes_aps__equipes
+    description: >
+      Modelo intermediário de equipes do CNES APS. Consolida os registros da LFCES037,
+      enriquecendo com unidade, tipo de equipe e motivo de desativação. Mantém a leitura
+      ampla do CNES e cria flags específicas para reprodução do Panorama CNES.
+
+      O modelo possui regras temporais para lidar com a mudança de tipologia do CNES:
+      até 2020-04, equipes EACS são consideradas como ESF incompleta no Panorama histórico;
+      a partir de 2020-05, o cálculo de APS passa a considerar ESF, EAP e ECR conforme a
+      tipologia vigente. Para evitar ambiguidade, o modelo separa flags amplas do CNES
+      de flags específicas de Panorama.
+
+      Flags principais:
+      is_equipe_aps_painel representa a regra da tipologia atual do painel.
+      is_equipe_aps_historico representa a regra adequada para série histórica completa.
+      is_esf_panorama_historico representa o campo ESF do Panorama, incluindo EACS no
+      período antigo.
+      is_eacs_panorama_historico representa o campo EACS apenas no período em que ele é
+      exibido separadamente no Panorama histórico.
+      is_eapp_panorama remove duplicidades de equipes prisionais PSIC.
+      is_emad_panorama remove registros fora do recorte do Panorama, preservando is_emad
+      como leitura ampla do CNES.
+
+      Ressalva histórica: as competências 2020-05, 2020-06 e 2020-07 possuem raw LFCES037
+      incompleta na fonte atualmente disponível. Portanto, essas competências não conseguem
+      reproduzir integralmente o legado apenas por regra de transformação.
+
+    columns:
+      - name: ine
+        description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
+
+      - name: cnes
+        description: "Código Nacional do Estabelecimento de Saúde vinculado à equipe."
+
+      - name: unidade_id_original
+        description: "Identificador original da unidade no CNES, usado para relacionamento com a tabela de unidades."
+
+      - name: nome_unidade
+        description: "Nome fantasia da unidade vinculada à equipe."
+
+      - name: ap
+        description: "Área Programática normalizada da unidade vinculada à equipe."
+
+      - name: ap_formatada
+        description: "Área Programática formatada com ponto: 1.0, 2.1, 2.2, 3.1, 3.2, 3.3, 4.0, 5.1, 5.2 ou 5.3."
+
+      - name: is_municipio_rio
+        description: "Flag indicando se a unidade vinculada à equipe pertence ao município do Rio de Janeiro."
+
+      - name: cod_mun
+        description: "Código do município informado originalmente na LFCES037."
+
+      - name: cod_area
+        description: "Código da área da equipe informado originalmente na LFCES037."
+
+      - name: seq_equipe
+        description: "Sequencial da equipe informado originalmente na LFCES037."
+
+      - name: nm_referencia
+        description: "Nome de referência da equipe."
+
+      - name: tipo_equipe_id
+        description: "Código do tipo de equipe no CNES."
+
+      - name: tipo_equipe_descricao
+        description: "Descrição do tipo de equipe obtida da tabela auxiliar NFCES046."
+
+      - name: grupo_equipe_id
+        description: "Código do grupo de equipe obtido da tabela auxiliar NFCES046."
+
+      - name: subtipo_equipe_id
+        description: "Código do subtipo de equipe informado na LFCES037."
+
+      - name: classificacao_equipe
+        description: >
+          Classificação ampla da equipe segundo agrupamento CNES, sem aplicação das regras
+          temporais do Panorama. Possíveis valores incluem ESF, EACS, ESB, ECR, EAP,
+          ENASF, EAPP, EMAD, EMAP e OUTROS.
+
+      - name: classificacao_equipe_temporal
+        description: >
+          Classificação da equipe considerando as regras temporais de tipologia CNES,
+          especialmente a distinção entre período anterior e posterior a 2020-05.
+
+      - name: classificacao_equipe_painel
+        description: >
+          Classificação baseada na tipologia atual do painel, usada principalmente para
+          interpretação das equipes do período recente.
+
+      - name: equipe_ativa
+        description: "Flag indicando se a equipe está ativa. Valor 1 quando dt_desativacao é nula; caso contrário, 0."
+
+      - name: is_esf
+        description: >
+          Flag ampla indicando se a equipe é classificada como ESF segundo a regra temporal
+          do CNES. No período antigo, considera tipos ESF históricos; no período atual,
+          considera tipo de equipe 70.
+
+      - name: is_esf_panorama_historico
+        description: >
+          Flag específica para reprodução do campo ESF do Panorama na série histórica.
+          Até 2020-04, considera ESF, EACS e ECR conforme regra do legado histórico.
+          A partir de 2020-05, considera apenas ESF.
+
+      - name: is_eacs
+        description: "Flag ampla indicando se a equipe é classificada como EACS segundo o CNES."
+
+      - name: is_eacs_panorama_historico
+        description: >
+          Flag específica para reprodução do campo EACS no Panorama histórico.
+          Recebe 1 apenas para equipes EACS em competências anteriores a 2020-05;
+          no período atual, o campo EACS do Panorama deve permanecer 0.
+
+      - name: is_esb
+        description: >
+          Flag indicando se a equipe é classificada como Equipe de Saúde Bucal,
+          considerando a regra temporal do CNES.
+
+      - name: is_ecr
+        description: >
+          Flag indicando se a equipe é classificada como Equipe de Consultório na Rua,
+          considerando a regra temporal do CNES.
+
+      - name: is_enasf
+        description: >
+          Flag indicando se a equipe é classificada como ENASF/NASF,
+          considerando a regra temporal do CNES.
+
+      - name: is_eap
+        description: >
+          Flag indicando se a equipe é classificada como Equipe de Atenção Primária,
+          considerando a regra temporal do CNES.
+
+      - name: is_eapp
+        description: >
+          Flag ampla indicando se a equipe é classificada como Equipe de Atenção Primária
+          Prisional segundo o CNES.
+
+      - name: is_eapp_panorama
+        description: >
+          Flag específica para reprodução do campo EAPP do Panorama. Para tipo_equipe_id 74,
+          remove equipes cujo nome de referência contém PSIC, evitando contagem duplicada
+          das equipes prisionais. Preserva is_eapp como leitura ampla do CNES.
+
+      - name: is_emad
+        description: "Flag ampla indicando se a equipe é classificada como EMAD segundo o CNES."
+
+      - name: is_emad_panorama
+        description: >
+          Flag específica para reprodução do campo EMAD do Panorama. Considera EMAD municipal
+          ou unidades com nome iniciado por SMS PADI, preservando is_emad como leitura ampla
+          do CNES.
+
+      - name: is_emap
+        description: "Flag indicando se a equipe é classificada como EMAP segundo o CNES."
+
+      - name: is_equipe_aps_painel
+        description: >
+          Flag para regra atual do painel, considerando equipes dos tipos 70, 76 e 73
+          como equipes APS. Não deve ser usada isoladamente para série histórica antiga.
+
+      - name: is_equipe_aps_cobertura
+        description: >
+          Flag para cálculo de cobertura APS no período recente, considerando equipes dos
+          tipos 70, 76 e 73.
+
+      - name: is_equipe_aps_historico
+        description: >
+          Flag oficial para contagem histórica do campo APS. Até 2020-04, considera ESF,
+          EACS e ECR. A partir de 2020-05, considera ESF, EAP e ECR.
+
+      - name: is_aps
+        description: >
+          Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES.
+          Esta flag é exploratória e não deve substituir is_equipe_aps_historico nos
+          indicadores do Panorama.
+
+      - name: tipo_unidade_sms
+        description: "Classificação SMS da unidade vinculada à equipe."
+
+      - name: is_unidade_aps_panorama
+        description: "Flag da unidade vinculada indicando se ela entra no quadro de Unidades APS do Panorama."
+
+      - name: motivo_desativacao_equipe_id
+        description: "Código do motivo de desativação da equipe."
+
+      - name: motivo_desativacao_equipe
+        description: "Descrição do motivo de desativação da equipe obtida da tabela auxiliar NFCES053."
+
+      - name: tipo_desativacao_id
+        description: "Código do tipo de desativação da equipe."
+
+      - name: dt_ativacao
+        description: "Data de ativação da equipe."
+
+      - name: dt_desativacao
+        description: "Data de desativação da equipe."
+
+      - name: dt_atualiza
+        description: "Data da última atualização do registro da equipe no CNES."
+
+      - name: pop_assist_quilomb_original
+        description: "Valor original indicando população assistida quilombola."
+
+      - name: pop_assist_assent_original
+        description: "Valor original indicando população assistida de assentamento."
+
+      - name: pop_assist_geral_original
+        description: "Valor original indicando população assistida geral."
+
+      - name: pop_assist_escola_original
+        description: "Valor original indicando população assistida escolar."
+
+      - name: pop_assist_pronasci_original
+        description: "Valor original indicando população assistida PRONASCI."
+
+      - name: pop_assist_indigena_original
+        description: "Valor original indicando população assistida indígena."
+
+      - name: pop_assist_ribeirinha_original
+        description: "Valor original indicando população assistida ribeirinha."
+
+      - name: pop_assist_situacao_rua_original
+        description: "Valor original indicando população em situação de rua."
+
+      - name: pop_assist_priv_liberdade_original
+        description: "Valor original indicando população privada de liberdade."
+
+      - name: pop_assist_conflito_lei_original
+        description: "Valor original indicando população em conflito com a lei."
+
+      - name: pop_assist_adol_conf_lei_original
+        description: "Valor original indicando adolescente em conflito com a lei."
+
+      - name: pop_assist_quilomb
+        description: "Flag tratada indicando população assistida quilombola. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_assent
+        description: "Flag tratada indicando população assistida de assentamento. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_geral
+        description: "Flag tratada indicando população assistida geral. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_escola
+        description: "Flag tratada indicando população assistida escolar. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_pronasci
+        description: "Flag tratada indicando população assistida PRONASCI. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_indigena
+        description: "Flag tratada indicando população assistida indígena. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_ribeirinha
+        description: "Flag tratada indicando população assistida ribeirinha. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_situacao_rua
+        description: "Flag tratada indicando população em situação de rua. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_priv_liberdade
+        description: "Flag tratada indicando população privada de liberdade. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_conflito_lei
+        description: "Flag tratada indicando população em conflito com a lei. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: pop_assist_adol_conf_lei
+        description: "Flag tratada indicando adolescente em conflito com a lei. Valor 1 para sim, 0 para não e null quando não informado."
+
+      - name: cnes_unidade_odontologica_movel
+        description: "CNES da Unidade Odontológica Móvel vinculada à equipe, quando informado."
+
+      - name: carga_horaria_ambulatorial_uom
+        description: "Carga horária ambulatorial da Unidade Odontológica Móvel."
+
+      - name: co_prof_sus_preceptor
+        description: "Código do profissional SUS preceptor."
+
+      - name: cnes_preceptor
+        description: "CNES do estabelecimento preceptor."
+
+      - name: usuario_atualizacao
+        description: "Usuário responsável pela atualização do registro."
+
+      - name: status_movimento
+        description: "Status de movimentação do registro da equipe."
+
+      - name: nu_seq_processo
+        description: "Número sequencial do processo associado ao registro da equipe."
+
+      - name: periodo_regra_calculo
+        description: >
+          Período de regra utilizado para classificação temporal:
+          ATE_2020_04, 2020_05_A_2021_05 ou 2021_06_EM_DIANTE.
+
+      - name: dt_atualizacao_origem
+        description: "Data de atualização do registro na origem."
+
+      - name: dt_cmtp_inicio
+        description: "Data inicial de competência do registro."
+
+      - name: dt_cmtp_fim
+        description: "Data final de competência do registro."
+
+      - name: competencia_mes
+        description: "Competência da base CNES no formato AAAA-MM."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+      - name: loaded_at
+        description: "Timestamp de carga do registro na camada raw/staging."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."

@@ -2,8 +2,14 @@
     config(
         schema = 'intermediario_plataforma_subpav',
         alias = 'cnes_aps__unidades',
-        materialized="table",
-        tags=["subpav", "cnes_aps"]
+        materialized = "table",
+        partition_by = {
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
+        cluster_by = ["cnes", "ap", "tipo_unidade_sms"],
+        tags = ["subpav", "cnes_aps"]
     )
 }}
 
@@ -155,19 +161,37 @@ tratado as (
 
         upper(coalesce(e.nome_fanta, '')) as nome_fanta_upper,
 
-        case
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('10', '010', '0010') then 10
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('21', '021', '0021') then 21
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('22', '022', '0022') then 22
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('31', '031', '0031') then 31
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('32', '032', '0032') then 32
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('33', '033', '0033') then 33
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('40', '040', '0040') then 40
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('51', '051', '0051') then 51
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('52', '052', '0052') then 52
-            when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('53', '053', '0053') then 53
-            else null
-        end as ap,
+        coalesce(
+            case
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('10', '010', '0010') then 10
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('21', '021', '0021') then 21
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('22', '022', '0022') then 22
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('31', '031', '0031') then 31
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('32', '032', '0032') then 32
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('33', '033', '0033') then 33
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('40', '040', '0040') then 40
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('51', '051', '0051') then 51
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('52', '052', '0052') then 52
+                when regexp_replace(coalesce(ap_original, ''), r'[^0-9]', '') in ('53', '053', '0053') then 53
+                else null
+            end,
+
+            case
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*1[\.\s-]*0') then 10
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*2[\.\s-]*1') then 21
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*2[\.\s-]*2') then 22
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*3[\.\s-]*1') then 31
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*3[\.\s-]*2') then 32
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*3[\.\s-]*3') then 33
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*4[\.\s-]*0') then 40
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*5[\.\s-]*1') then 51
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*5[\.\s-]*2') then 52
+                when regexp_contains(upper(coalesce(nome_fanta, '')), r'AP\s*-?\s*5[\.\s-]*3') then 53
+                else null
+            end,
+
+            null
+        ) as ap,
 
         case
             when tipo_estab_sempre_aberto = 'N' then 0
