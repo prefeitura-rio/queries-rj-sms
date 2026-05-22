@@ -2,7 +2,8 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="internacao_cadastro",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,10 +13,15 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with
 
 source_ as (
   select * from {{ source('brutos_prontuario_prontuaRio_staging', 'intb6') }} 
+  {% if is_incremental() %} 
+    where cast(loaded_at as date) >= date( '{{ last_partition }}' ) 
+  {% endif %}
 ),
 
 internacao_cadastro as (
@@ -110,7 +116,7 @@ final as (
         {{ process_null('id_logradouro') }} as id_logradouro,
         cnes,
         loaded_at,
-        cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+        cast(loaded_at as date) as data_particao
     from internacao_cadastro
     qualify row_number() over(partition by id_registro, id_prontuario1, cnes order by loaded_at desc) = 1
 

@@ -2,7 +2,8 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="medico",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,9 +13,14 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
 source_ as (
     select * from {{source('brutos_prontuario_prontuaRio_staging', 'medico')}}
+    {% if is_incremental() %} 
+      where date(timestamp(loaded_at), 'America/Sao_Paulo') >= date( '{{ last_partition }}' ) 
+    {% endif %}
 ),
 
 medico as (
@@ -37,13 +43,14 @@ final as (
     {{process_null("crm")}} as crm,
     {{process_null("ativo")}} as ativo,
     cnes,
-    cast(loaded_at as timestamp) as loaded_at
+    datetime(timestamp(loaded_at), 'America/Sao_Paulo') as loaded_at,
+    date(timestamp(loaded_at), 'America/Sao_Paulo') as data_particao
     from medico
     qualify row_number() over(partition by cpf, cnes order by loaded_at) = 1
 )
 
 
 select 
+    concat(cnes, '.', cpf) as gid_medico,
     *,
-    cast(loaded_at as date) as data_particao 
 from final

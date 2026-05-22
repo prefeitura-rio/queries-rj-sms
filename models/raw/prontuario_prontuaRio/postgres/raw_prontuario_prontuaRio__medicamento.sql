@@ -2,7 +2,8 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="medicamento",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,11 +13,15 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
 
 with 
 
     source_ as (
         select * from {{source('brutos_prontuario_prontuaRio_staging', 'medicamento') }} 
+        {% if is_incremental() %} 
+          where date(timestamp(loaded_at), 'America/Sao_Paulo') >= date( '{{ last_partition }}' )  
+        {% endif %}
     ),
 
     medicamento as (
@@ -71,8 +76,8 @@ with
             {{ process_null('medicva') }} as medicva,
             {{ process_null('etiqueta_aprasamento') }} as etiqueta_aprasamento,
             cnes,
-            loaded_at,
-            cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+            datetime(timestamp(loaded_at), 'America/Sao_Paulo') as loaded_at,
+            date(timestamp(loaded_at), 'America/Sao_Paulo') as data_particao
         from medicamento
         qualify row_number() over(partition by id_prescricao, id_medicamento, cnes order by loaded_at desc) = 1
     )

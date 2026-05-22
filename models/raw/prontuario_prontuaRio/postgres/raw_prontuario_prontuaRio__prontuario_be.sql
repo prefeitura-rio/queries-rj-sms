@@ -2,7 +2,8 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="prontuario_be",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,10 +13,15 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
 
   source_ as (
     select * from {{source('brutos_prontuario_prontuaRio_staging', 'hp_prontuario_be') }} 
+    {% if is_incremental() %} 
+      where cast(loaded_at as date) >= date( '{{ last_partition }}' ) 
+    {% endif %}
   ),
 
   prontuario_be as (
@@ -33,7 +39,7 @@ with
         safe_cast(id_boletim as int64) as id_boletim,
         cnes,
         loaded_at,
-        cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+        cast(loaded_at as date) as data_particao
       from prontuario_be 
       qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by loaded_at desc) = 1
     )

@@ -2,7 +2,8 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="emergencia_resumo",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,11 +13,16 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
   source_ as (
     select  
       *
     from {{ source('brutos_prontuario_prontuaRio_staging', 'cen54') }}
+  {% if is_incremental() %} 
+    where cast(loaded_at as date) >= date( '{{ last_partition }}' ) 
+  {% endif %}
   ),
 
  cadastro_emergencia as (
@@ -185,7 +191,7 @@ with
         {{ process_null('tipodoc') }} as tipodoc,
         cnes,
         loaded_at,
-        cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+        cast(loaded_at as date) as data_particao
     from cadastro_emergencia
     qualify row_number() over(partition by id_boletim, id_prontuario, cnes order by loaded_at desc) = 1
   )
