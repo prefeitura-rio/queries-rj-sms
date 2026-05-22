@@ -176,7 +176,28 @@ final as (
         id_desfecho_gestacao,
         desfecho_gestacao
 
+),
+
+excecao_disparo_puerperas as (
+
+    select
+        cpf,
+        nome,
+        data_alta_internacao,
+        cnes_maternidade_alta,
+        nome_maternidade_alta,
+        data_parto,
+        id_desfecho_gestacao,
+        desfecho_gestacao,
+        telefones_gestante
+    from {{ source("projeto_whatsapp", "excecao_disparo_puerperas") }}
+
 )
 
 select *
 from final
+
+union all
+
+select *
+from excecao_disparo_puerperas
