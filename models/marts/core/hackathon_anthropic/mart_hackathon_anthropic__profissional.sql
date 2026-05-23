@@ -31,6 +31,7 @@ casos as (
     cross join constantes
   where
     a.tipo_consulta = 'Visita Domiciliar'
+    and a.profissional_cbo_descricao in ('Agente comunitário de saúde', 'Técnico em Agente Comunitário de Saúde')
     and a.patient_cpf is not null
     and a.profissional_equipe_cod_ine is not null
     and date_add(date(a.datahora_fim_atendimento), interval e.shift_dias day) between (select data_minima from constantes) and (select data_maxima from constantes)
