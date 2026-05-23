@@ -48,7 +48,7 @@ visitas_com_shift as (
   from visitas_brutas
 ),
 
--- Remover duplicatas por profissional + paciente + datahora
+-- Remover duplicatas por profissional + paciente + data
 -- Em caso de duplicata, mantém apenas uma ocorrência
 visitas_deduplicadas as (
   select
@@ -58,7 +58,7 @@ visitas_deduplicadas as (
     data_visita
   from visitas_com_shift
   qualify row_number() over (
-    partition by profissional_cpf, patient_cpf, datahora_visita
+    partition by profissional_cpf, patient_cpf, data_visita
     order by datahora_visita
   ) = 1
 ),
