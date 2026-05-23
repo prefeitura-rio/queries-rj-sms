@@ -88,7 +88,7 @@ visitas_com_ordem as (
 
 select
   profissional_id,
-  paciente_id,
-  visitado_em,
-  ordem_visita_dia
+  visitado_em as registrados_em,
+  ordem_visita_dia,
+  paciente_id
 from visitas_com_ordem
