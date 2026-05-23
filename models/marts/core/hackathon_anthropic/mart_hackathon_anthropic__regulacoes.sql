@@ -35,7 +35,7 @@ procedimentos_comuns as (
 
 select
   {{ anonimize('m.paciente_cpf', "'hackathon_anthropic'") }} as paciente_id,
-  coalesce(m.procedimento_sigtap, m.procedimento_interno) as procedimento,
+  REGEXP_EXTRACT(TRIM(coalesce(m.procedimento_sigtap, m.procedimento_interno)), r'^(\S+)') AS procedimento,
   date_add(date(m.data_marcacao), interval e.shift_dias day) as data_marcacao
 from {{ ref('raw_sisreg_api__marcacoes') }} m
   inner join elegiveis e on m.paciente_cpf = e.cpf
