@@ -108,7 +108,7 @@ WITH
             {{ process_null('classificationgroup') }} as grupo_classificacao,
             replace({{ process_null('sinan') }}, '.0', '') as sinan,
 
-            extracted_at AS loaded_at,
+            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM arbovirose_deduplicados
     )

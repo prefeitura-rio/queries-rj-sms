@@ -54,7 +54,7 @@ WITH
 
             alergias_anamnese_descricao,
    
-            extracted_at AS loaded_at,
+            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM alergias_deduplicados
     ),

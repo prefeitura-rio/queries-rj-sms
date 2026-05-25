@@ -97,7 +97,7 @@ with
             {{ process_null('justificativa') }} as justificativa,
 
              -- Metadata
-            cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
+            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             cast({{ process_null('data_particao') }} as date) as data_particao,
             
         from vacina_dedup

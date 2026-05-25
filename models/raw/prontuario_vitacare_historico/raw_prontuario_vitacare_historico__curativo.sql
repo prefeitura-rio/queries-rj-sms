@@ -63,7 +63,7 @@ WITH
             {{ process_null ('iptborientacaodir') }} as ipt_b_orientacao_dir,
             {{ process_null ('enfenfcurativaobs') }} as enfenf_curativa_obs,
 
-            extracted_at AS loaded_at,
+            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM curativos_deduplicados
     )

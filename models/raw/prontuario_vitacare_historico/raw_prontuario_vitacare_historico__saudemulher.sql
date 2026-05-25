@@ -135,7 +135,7 @@ WITH
             {{ process_null('planonmotivomcont') }} AS planon_motivo_mcont,
             {{ process_null('planoncomplicacoesmcont') }} AS planon_complicacao_mcont,
    
-            extracted_at AS loaded_at,
+            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM saudemulher_deduplicados

@@ -48,7 +48,7 @@ WITH
             cod_cid10 AS cod_cid10,
             estado AS estado,
             SAFE_CAST((data_diagnostico) AS DATETIME) AS data_diagnostico,
-            extracted_at AS loaded_at,
+            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM condicoes_deduplicados
     ),
