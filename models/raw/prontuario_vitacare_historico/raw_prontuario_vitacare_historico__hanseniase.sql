@@ -78,7 +78,7 @@ WITH
             {{ process_null('numerosinanhansen') }} as numero_sinan_hansen,
             {{ process_null('hanseniasecomunicantesreferidos') }} as hanseniase_comunicantes_referidos,
 
-            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM hanseniase_deduplicados
     )

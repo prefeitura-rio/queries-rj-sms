@@ -108,7 +108,7 @@ WITH
             {{ process_null('esquemailtb') }} AS esquema_iltb,
             {{ process_null('observacoestuber') }} AS observacoes_tuber,
 
-            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM tuberculose_deduplicados

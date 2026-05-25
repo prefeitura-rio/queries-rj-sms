@@ -219,7 +219,7 @@ with
             safe_cast({{ process_null('utentedatanascimentoresponsavel') }} as datetime) as utente_data_nascimento_responsavel,
             {{ process_null('utentegrauparentescoresponsavel') }} as utente_grau_parentesco_responsavel,
 
-            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             date(safe_cast(extracted_at as datetime)) as data_particao
         from idoso_deduplicados
     )

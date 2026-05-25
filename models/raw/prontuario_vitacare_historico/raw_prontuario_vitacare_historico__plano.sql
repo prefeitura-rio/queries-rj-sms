@@ -70,7 +70,7 @@ with
             {{ process_null('cerumenremovalobservations') }} as observacoes_da_remocao_de_cerume,
             {{ process_null('abscessdrainageobservations') }} as observacoes_da_drenagem_de_abscesso,
 
-            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             date(safe_cast(extracted_at as datetime)) as data_particao
         from plano_deduplicados
     )

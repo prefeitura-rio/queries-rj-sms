@@ -79,7 +79,7 @@ with
             {{ process_null('dentalprosthesisuse') }} as uso_de_protese_dentaria,
             {{ process_null('referralspecialty') }} as encaminhamento_especialidade,
 
-            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             date(safe_cast(extracted_at as datetime)) as data_particao
         from saude_bucal_deduplicados
     )

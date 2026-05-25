@@ -232,7 +232,7 @@ WITH
             {{ process_null('gestantepuerperiocuretagem') }} AS gestante_puerperio_curetagem,
             {{ process_null('puerperiooutrotermoqual') }} AS puerperio_outro_termo_qual,
    
-            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
 
         FROM prenatal_deduplicados

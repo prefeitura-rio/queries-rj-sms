@@ -52,7 +52,7 @@ WITH
             {{ process_null('material') }} AS material,
             safe_cast(data_solicitacao as DATETIME) AS data_solicitacao,
 
-            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
             
         FROM solicitacaoexames_deduplicados

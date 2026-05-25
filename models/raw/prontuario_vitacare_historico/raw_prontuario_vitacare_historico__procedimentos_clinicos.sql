@@ -50,7 +50,7 @@ WITH
             co_procedimento,
             {{ process_null('no_procedimento') }} AS no_procedimento,
    
-            date(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM procedimentos_clinicos_deduplicados
     ),
