@@ -114,7 +114,10 @@ with
 
             p.ano_competencia,
             p.mes_competencia,
-            parse_date('%Y-%m-%d', tipo_vinculo.data_particao) as data_particao
+            -- data_particao determinística (não depende de left join
+            -- contra tabela de referência)
+            -- usa diretamente o snapshot mais atual
+            parse_date('%Y-%m-%d', (select versao from versao_atual)) as data_particao
 
         from profissionais_mrj as p
         left join
@@ -149,7 +152,11 @@ with
         left join
             (
                 select distinct safe_cast(cns as int64) as cns, cpf
-                from {{ ref("raw_cnes_gdb__profissional") }}
+                from {{ ref("raw_gdb_cnes__profissional") }}
+                qualify row_number() over (
+                    partition by cpf
+                    order by data_particao desc
+                ) = 1
             ) as gdb
 
             on safe_cast(ec.cns as int64) = gdb.cns

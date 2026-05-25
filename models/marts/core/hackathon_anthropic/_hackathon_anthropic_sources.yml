@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_hackathon_anthropic
+    database: rj-sms
+    schema: brutos_hackathon_anthropic
+    tables:
+      - name: enderecos_completo
+      - name: localizacao

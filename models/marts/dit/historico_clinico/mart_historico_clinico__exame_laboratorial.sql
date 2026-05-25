@@ -15,11 +15,12 @@
 with
     source as (
         select *
-        from {{ ref("int_historico_clinico__exames__cientificalab") }}
+        from {{ ref("int_historico_clinico__exames_laboratoriais") }}
     ),
 
     exames as (
         select
+            id_solicitacao,
             paciente_cpf,
             exame_nome,
             codigo_apoio,
@@ -35,6 +36,7 @@ with
     exames_agg as (
         select
             paciente_cpf,
+            id_solicitacao,
             array_agg(
                 struct(
                     exame_nome as descricao,
@@ -51,6 +53,7 @@ with
         from exames
         group by
             paciente_cpf,
+            id_solicitacao,
             medico_solicitante,
             unidade_nome,
             laudo_url,

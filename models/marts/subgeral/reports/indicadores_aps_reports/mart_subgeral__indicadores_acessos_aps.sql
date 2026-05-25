@@ -8,10 +8,10 @@
 -- Seleciona tipos de atendimento com pelo menos 30% realizados por médicos (CBO 225 ou 2231)
 WITH tipos_com_medico_30pct AS (
   SELECT
-    tipo
+    tipo_consulta
   FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
-  WHERE tipo IS NOT NULL
-  GROUP BY tipo
+  WHERE tipo_consulta IS NOT NULL
+  GROUP BY tipo_consulta
   HAVING 
     SUM(
       CASE 
@@ -20,9 +20,9 @@ WITH tipos_com_medico_30pct AS (
         THEN 1 ELSE 0 
       END
     ) * 1.0 / COUNT(*) >= 0.30
-    AND tipo NOT LIKE '%Gestão%'
-    AND tipo <> 'Procedimentos Radiológicos'
-    AND tipo <> 'Recomendações Clínicas'
+    AND tipo_consulta NOT LIKE '%Gestão%'
+    AND tipo_consulta <> 'Procedimentos Radiológicos'
+    AND tipo_consulta <> 'Recomendações Clínicas'
 ),
 
 -- Filtra atendimentos válidos com médico nos últimos 12 meses
@@ -32,7 +32,7 @@ atendimentos_validos AS (
     SAFE_CAST(datahora_inicio AS DATE) AS data_atendimento
   FROM {{ ref("raw_prontuario_vitacare__atendimento") }}
   WHERE
-    tipo IN (SELECT tipo FROM tipos_com_medico_30pct)
+    tipo_consulta IN (SELECT tipo_consulta FROM tipos_com_medico_30pct)
     AND (
       LEFT(cbo_profissional, 3) = '225'
       OR LEFT(cbo_profissional, 4) = '2231'

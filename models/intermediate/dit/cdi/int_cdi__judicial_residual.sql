@@ -1,7 +1,9 @@
-{{ config(
-  schema = "intermediario_cdi",
-  alias  = "judicial_residual",
-  materialized = "table"
+{{ 
+  config(
+      schema = "intermediario_cdi",
+      alias  = "judicial_residual",
+      materialized = "table",
+      meta={"owner": "karen"}
 ) }}
 
 WITH src AS (

@@ -27,7 +27,6 @@ with
             paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
@@ -35,23 +34,6 @@ with
             paciente_sexo,
             cast(null as string) as paciente_racacor,
 
-    -- endereco
-            /*
-            paciente_uf_nascimento,
-            paciente_municipio_nascimento,
-            paciente_uf_residencia,
-            paciente_municipio_residencia,
-            paciente_bairro_residencia,
-            paciente_cep_residencia,
-            paciente_endereco_residencia,
-            paciente_complemento_residencia,
-            paciente_numero_residencia,
-            paciente_tp_logradouro_residencia,
-            */
-
-            paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
@@ -59,7 +41,8 @@ with
             cast(null as string) as clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone      
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao  
         from {{ref("int_dim_paciente__pacientes_sisreg")}}
 
         union all
@@ -71,29 +54,12 @@ with
             paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             paciente_sexo,
             cast(null as string) as paciente_racacor,
 
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            paciente_uf_residencia,
-            paciente_municipio_residencia,
-            paciente_bairro_residencia,
-            paciente_cep_residencia,
-            paciente_endereco_residencia,
-            paciente_complemento_residencia,
-            paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
@@ -101,7 +67,8 @@ with
             cast(null as string) as clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_siscan")}}
 
         union all
@@ -113,29 +80,11 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
-
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            cast(null as string) as paciente_uf_residencia,
-            cast(null as string) as paciente_municipio_residencia,
-            cast(null as string) as paciente_bairro_residencia,
-            cast(null as string) as paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            cast(null as string) as paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
 
             cast(null as int) as paciente_obito_ano,
 
@@ -144,7 +93,8 @@ with
             cast(null as string) as clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_ser_internacoes")}}
 
         union all
@@ -156,29 +106,12 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             paciente_sexo,
             cast(null as string) as paciente_racacor,
 
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            cast(null as string) as paciente_uf_residencia,
-            paciente_municipio_residencia,
-            cast(null as string) as paciente_bairro_residencia,
-            cast(null as string) as paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            cast(null as string) as paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
@@ -186,7 +119,8 @@ with
             cast(null as string) as clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_ser_ambulatorial")}}
 
         union all
@@ -198,29 +132,12 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             paciente_sexo,
             paciente_racacor,
 
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            paciente_municipio_nascimento,
-            paciente_uf as paciente_uf_residencia,
-            paciente_municipio as paciente_municipio_residencia,
-            paciente_bairro as paciente_bairro_residencia,
-            paciente_cep as paciente_cep_residencia,
-            paciente_endereco_residencia,
-            paciente_complemento as paciente_complemento_residencia,
-            paciente_numero as paciente_numero_residencia,
-            paciente_tp_logradouro_residencia,
-            */
-
-            paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
@@ -228,50 +145,9 @@ with
             cast(null as string) as clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_sih")}}
-
-        union all
-
-        select
-            'profissionais_cnes' as sistema_origem,
-
-            paciente_cpf,
-            paciente_cns,
-            paciente_nome,
-            cast(null as string) as paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
-            cast(null as date) as paciente_data_nascimento,
-            cast(null as string) as paciente_nome_social,
-
-            cast(null as string) as paciente_sexo,
-            cast(null as string) as paciente_racacor,
-
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            cast(null as string) as paciente_uf_residencia,
-            cast(null as string) as paciente_municipio_residencia,
-            cast(null as string) as paciente_bairro_residencia,
-            cast(null as string) as paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            cast(null as string) as paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
-            cast(null as int) as paciente_obito_ano,
-
-            cast(null as string) as clinica_sf,
-            cast(null as string) as clinica_sf_ap,
-            cast(null as string) as clinica_sf_telefone,
-
-            cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
-        from {{ref("int_dim_paciente__profissionais_cnes")}}
 
         union all
 
@@ -282,29 +158,12 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             paciente_sexo,
             paciente_racacor,
 
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            paciente_uf_residencia,
-            paciente_municipio_residencia,
-            paciente_bairro_residencia,
-            cast(null as string) as paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            cast(null as string) as paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
@@ -312,7 +171,8 @@ with
             cast(null as string) as clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_minha_saude")}}
 
         union all
@@ -324,29 +184,12 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
             cast(null as date) as paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
 
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            cast(null as string) as paciente_uf_residencia,
-            cast(null as string) as paciente_municipio_residencia,
-            cast(null as string) as paciente_bairro_residencia,
-            cast(null as string) as paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            cast(null as string) as paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             cast(null as int) as paciente_obito_ano,
 
             clinica_sf,
@@ -354,7 +197,8 @@ with
             clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_tea")}}
 
         union all
@@ -366,29 +210,12 @@ with
             paciente_cns,
             paciente_nome,
             cast(null as string) as paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
             cast(null as date) as paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
 
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            cast(null as string) as paciente_uf_residencia,
-            cast(null as string) as paciente_municipio_residencia,
-            cast(null as string) as paciente_bairro_residencia,
-            cast(null as string) as paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            cast(null as string) as paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             cast(null as int) as paciente_obito_ano,
 
             clinica_sf,
@@ -396,7 +223,8 @@ with
             clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_fibromialgia")}}
 
         union all
@@ -408,29 +236,12 @@ with
             paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            --paciente_nome_pai,
             paciente_data_nascimento,
             cast(null as string) as paciente_nome_social,
 
             cast(null as string) as paciente_sexo,
             cast(null as string) as paciente_racacor,
 
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            paciente_uf_residencia,
-            paciente_municipio_residencia,
-            paciente_bairro_residencia,
-            paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            cast(null as string) as paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             cast(null as int) as paciente_obito_ano,
 
             cast(null as string) as clinica_sf,
@@ -438,7 +249,8 @@ with
             cast(null as string) as clinica_sf_telefone,
 
             cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
+            cast(null as string) as equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_sipni")}}
 
         union all
@@ -450,29 +262,12 @@ with
             paciente_cns,
             paciente_nome,
             paciente_nome_mae,
-            --paciente_nome_pai,
             paciente_data_nascimento,
             paciente_nome_social,
 
             paciente_sexo,
             paciente_racacor,
 
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            cast(null as string) as paciente_uf_residencia,
-            cast(null as string) as paciente_municipio_residencia,
-            cast(null as string) as paciente_bairro_residencia,
-            cast(null as string) as paciente_cep_residencia,
-            cast(null as string) as paciente_endereco_residencia,
-            cast(null as string) as paciente_complemento_residencia,
-            cast(null as string) as paciente_numero_residencia,
-            cast(null as string) as paciente_tp_logradouro_residencia,
-            */
-
-            cast(null as string) as paciente_telefone,
-            --cast(null as string) as paciente_email,
-            
             paciente_obito_ano,
 
             clinica_sf,
@@ -480,50 +275,9 @@ with
             clinica_sf_telefone,
 
             equipe_sf,
-            equipe_sf_telefone
+            equipe_sf_telefone,
+            data_atualizacao
         from {{ref("int_dim_paciente__pacientes_hci")}}
-
-        union all
-
-        select
-            'receita_federal' as sistema_origem,
-
-            paciente_cpf,
-            cast(null as int) as paciente_cns,
-            paciente_nome,
-            paciente_nome_mae,
-            --cast(null as string) as paciente_nome_pai,
-            paciente_data_nascimento,
-            paciente_nome_social,
-
-            paciente_sexo,
-            cast(null as string) as paciente_racacor,
-
-            /*
-            cast(null as string) as paciente_uf_nascimento,
-            cast(null as string) as paciente_municipio_nascimento,
-            paciente_uf_residencia,
-            paciente_municipio_residencia,
-            paciente_bairro_residencia,
-            paciente_cep_residencia,
-            paciente_endereco_residencia,
-            paciente_complemento_residencia,
-            paciente_numero_residencia,
-            paciente_tp_logradouro_residencia,
-            */
-
-            paciente_telefone,
-            --paciente_email,
-            
-            paciente_obito_ano,
-
-            cast(null as string) as clinica_sf,
-            cast(null as string) as clinica_sf_ap,
-            cast(null as string) as clinica_sf_telefone, -- DEU MERDA
-
-            cast(null as string) as equipe_sf,
-            cast(null as string) as equipe_sf_telefone    
-        from {{ref("int_dim_paciente__pacientes_bcadastro")}}
     ),
 
 -- backfill cpf
@@ -545,28 +299,23 @@ with
             ar.paciente_cns,
             ar.paciente_nome,
             ar.paciente_nome_mae,
-            --ar.paciente_nome_pai,
             ar.paciente_nome_social,
 
             ar.paciente_data_nascimento,
-            ar.paciente_sexo,
-            ar.paciente_racacor,
-
-            /*
-            ar.paciente_uf_nascimento,
-            ar.paciente_municipio_nascimento,
-            ar.paciente_uf_residencia,
-            ar.paciente_municipio_residencia,
-            ar.paciente_bairro_residencia,
-            ar.paciente_cep_residencia,
-            ar.paciente_endereco_residencia,
-            ar.paciente_complemento_residencia,
-            ar.paciente_numero_residencia,
-            ar.paciente_tp_logradouro_residencia,
-            */
-
-            ar.paciente_telefone,
-            --ar.paciente_email,
+            
+            case
+                when ar.paciente_sexo not in (
+                    "FEMININO", "MASCULINO"
+                ) then null
+                else ar.paciente_sexo
+            end as paciente_sexo,
+            
+            case 
+                when ar.paciente_racacor not in (
+                    "BRANCA", "PRETA", "PARDA", "AMARELA", "INDIGENA"
+                ) then null
+                else ar.paciente_racacor
+            end as paciente_racacor, 
             
             ar.paciente_obito_ano,
 
@@ -575,7 +324,9 @@ with
             ar.clinica_sf_telefone,
 
             ar.equipe_sf,
-            ar.equipe_sf_telefone
+            ar.equipe_sf_telefone,
+
+            ar.data_atualizacao
         from todos_registros ar
             left join {{ref("pacientes_subgeral__relacao_cns_cpf")}} m
             on safe_cast(ar.paciente_cns as int) = safe_cast(m.cns as int)

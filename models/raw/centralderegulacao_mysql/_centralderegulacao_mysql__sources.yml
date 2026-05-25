@@ -11,3 +11,4 @@ sources:
       - name: vw_tea_relatorio
       - name: vw_minhasauderio_pesquisa_satisfacao
       - name: vw_eletivas_sisare
+      - name: tb_preparos_finais

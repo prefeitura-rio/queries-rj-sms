@@ -357,21 +357,15 @@ with
                         json_extract_scalar(
                             json_extract(vacinas, '$[0]'), '$.nome_vacina'
                         )
-                    else nullif(tipo, '')
+                    else nullif(tipo_consulta, '')
                 end as string
             ) as subtipo,
 
+            atendimento.tipo_atendimento as tipo_demanda,
+
             -- Entrada e Saída
-            safe_cast(
-                if(datahora_inicio > current_date(),
-                    null,
-                    datahora_inicio) 
-                as date) as entrada_datahora,
-            safe_cast(
-                if(datahora_fim > current_date(),
-                null,
-                datahora_fim)
-                as date) as saida_datahora,
+            {{ parse_and_filter_future_date('datahora_inicio') }} as entrada_datahora,
+            {{ parse_and_filter_future_date('datahora_fim') }} as saida_datahora,
 
             -- Motivo e Desfecho
             upper(trim(soap_subjetivo_motivo)) as motivo_atendimento,
@@ -440,7 +434,13 @@ with
             on atendimento.id_prontuario_global = dim_prescricoes_atribuidas.fk_atendimento
     ),
 
-    episodios_validos as (select * from fato_atendimento where id_hci is not null)
+    episodios_validos as (
+    select *
+    from fato_atendimento
+    where id_hci is not null
+      and cpf is not null
+      and trim(cpf) != ''
+    )
 
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- Finalização

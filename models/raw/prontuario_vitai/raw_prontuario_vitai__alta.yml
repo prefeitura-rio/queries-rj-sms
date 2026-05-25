@@ -2,6 +2,13 @@ version: 2
 
 models:
   - name: raw_prontuario_vitai__alta
+    tests:
+    - dbt_utils.recency:
+        datepart: day
+        field: "cast(datahora as timestamp)"
+        interval: 1
+        config:
+          severity: warn
     description: "Tabela de altas médicas do prontuário Vitai. Contém informações sobre a finalização do atendimento de um paciente, seja por alta, óbito ou transferência. Os dados são dedupicados pela chave `gid`, mantendo sempre o registro mais recente."
     columns:
       - name: gid

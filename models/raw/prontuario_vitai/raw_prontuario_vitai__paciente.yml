@@ -2,6 +2,13 @@ version: 2
 
 models:
   - name: raw_prontuario_vitai__paciente
+    tests:
+    - dbt_utils.recency:
+        datepart: day
+        field: "cast(imported_at as timestamp)"
+        interval: 1
+        config:
+          severity: warn
     description: Tabela de pacientes, sincronizada com Vitai.
     columns:
       - name: gid

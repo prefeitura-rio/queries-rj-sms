@@ -13,22 +13,19 @@
 }}
 
 with
-    source_paciente_mart as (
+    mapeamento as (
         select
-            *
-        from {{ ref('mart_historico_clinico__paciente') }}
+            cpf,
+            valor_cns
+        from {{ ref("mart_historico_clinico__paciente") }},
+            unnest(cns) as valor_cns
+        where {{ validate_cpf("cpf") }}
     ),
-    cns_mapeamento as (
+    app as (
         select
-            valor_cns, cpf
-        from source_paciente_mart, unnest(cns) as valor_cns
-    ),
-
-
-    source_paciente_app as (
-        select
-            *
-        from {{ ref('mart_historico_clinico_app__paciente') }}
+            cpf,
+            registration_name as nome
+        from {{ ref("mart_historico_clinico_app__paciente") }}
     ),
 
     -- -----------------------------------------
@@ -36,15 +33,15 @@ with
     -- -----------------------------------------
     dados as (
         select
-            cast(cns_mapeamento.valor_cns as int64) as cns_particao,
-            source_paciente_app.cpf,
-            registration_name as nome,
-        from source_paciente_app
-            inner join cns_mapeamento on cns_mapeamento.cpf = source_paciente_app.cpf
+            cast(mapeamento.valor_cns as int64) as cns_particao,
+            app.cpf,
+            app.nome,
+        from app
+        inner join mapeamento
+            on mapeamento.cpf = app.cpf
     )
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- FINAL
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 select *
 from dados
-where {{ validate_cpf("cpf") }}

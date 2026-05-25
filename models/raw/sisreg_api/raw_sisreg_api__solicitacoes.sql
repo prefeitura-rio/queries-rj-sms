@@ -26,33 +26,35 @@
 
 with
   latest_src_partition as (
-    select max(cast(data_inicial as date)) as latest_load_dt
+    select max(cast(data_particao as date)) as latest_load_dt
     from {{ ref('raw_sisreg_api_log__logs') }}
-    where tabela = 'solicitacoes'
+    where tabela = 'solicitacoes' and completed = True
   ),
 
   sisreg as (
     select
-      s.*,
+      s.* except (data_atualizacao),
+      cast({{ process_null("data_atualizacao") }} as timestamp) as data_atualizacao,
+
       safe.parse_json(replace(s.laudo, "'", '"')) as laudo_json_transformed,
       safe.parse_json(replace(s.procedimentos, "'", '"')) as proceds_json_transformed
 
     from {{ source('brutos_sisreg_api_staging', 'solicitacoes') }} s
     {% if is_incremental() %}
         where 1=1
-            and cast(s.data_particao as date) = (select latest_load_dt from latest_src_partition)
+            and s.data_particao = (select format_date('%Y-%m-%d', latest_load_dt) from latest_src_partition)
     {% endif %}
   ),
 
-    dedup_batch as (
-      select *
-      from sisreg
-      qualify row_number() over (
-          partition by codigo_solicitacao
-          order by
-              date(safe_cast(data_atualizacao as timestamp), 'America/Sao_Paulo') desc nulls last
-      ) = 1
-    ),
+  dedup_batch as (
+    select *
+    from sisreg
+    qualify row_number() over (
+        partition by codigo_solicitacao
+        order by
+            data_atualizacao desc nulls last
+    ) = 1
+  ),
 
   sisreg_transformed as (
     select
@@ -61,11 +63,12 @@ with
 
       -- Identificação básica da solicitação
       {{ process_null("codigo_solicitacao") }} as solicitacao_id,
-      safe_cast({{ process_null("data_solicitacao") }} as timestamp) as data_solicitacao,
-            date(safe_cast(
-                {{ process_null("data_atualizacao") }} as timestamp), 'America/Sao_Paulo'
-            ) as data_atualizacao,
-      safe_cast({{ process_null("data_cancelamento") }} as timestamp) as data_cancelamento,
+
+      cast({{ process_null("data_solicitacao") }} as timestamp) as data_solicitacao,
+
+      date(data_atualizacao, "America/Sao_Paulo") as data_atualizacao,
+
+      cast({{ process_null("data_cancelamento") }} as timestamp) as data_cancelamento,
 
       -- Status e classificação
       {{ process_null("status_solicitacao") }} as solicitacao_status,
@@ -130,14 +133,14 @@ with
       {{ process_null("numero_crm") }} as crm,
 
       -- Preferências da solicitação
-      safe_cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
+      cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
       lpad({{ process_null("codigo_unidade_desejada") }}, 7, '0') as unidade_desejada_id,
 
       -- Dados do paciente
       lpad({{ process_null("cpf_usuario") }}, 11, '0') as paciente_cpf,
       lpad({{ process_null("cns_usuario") }}, 15, '0') as paciente_cns,
       {{ clean_name_string(process_null("no_usuario")) }} as paciente_nome,
-      safe_cast({{ process_null("dt_nascimento_usuario") }} as timestamp) as paciente_dt_nasc,
+      timestamp(safe_cast({{ process_null("dt_nascimento_usuario") }} as datetime), 'America/Sao_Paulo') as paciente_dt_nasc,
       {{ clean_name_string(process_null("sexo_usuario")) }} as paciente_sexo,
       {{ clean_name_string(process_null("no_mae_usuario")) }} as paciente_nome_mae,
       {{ process_null("telefone") }} as paciente_telefone,
@@ -162,10 +165,11 @@ with
       json_value(laudo_json_transformed, '$[0].tipo_descricao') as laudo_descricao_tp,
       json_value(laudo_json_transformed, '$[0].situacao') as laudo_situacao,
       json_value(laudo_json_transformed, '$[0].observacao') as laudo_observacao,
-      safe_cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
+      cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
 
-      -- Metadado SMS 
-      date(safe_cast({{ process_null("data_extracao") }} as timestamp), 'America/Sao_Paulo') as data_extracao
+      -- Metadado SMS
+      -- `data_extracao` vem sem fuso; i.e. '2000-01-01T00:00:00.000000'
+      date(cast({{ process_null("data_extracao") }} as datetime)) as data_extracao
 
     from dedup_batch
   )

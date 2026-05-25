@@ -1,7 +1,8 @@
 {{ config(
     schema = "projeto_cdi",
     alias  = "jr_perfil_solicitacoes",
-    materialized = "table"
+    materialized = "table",
+    meta={"owner": "karen"}
 ) }}
 
 WITH base AS (

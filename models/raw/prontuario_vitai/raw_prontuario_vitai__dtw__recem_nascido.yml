@@ -1,0 +1,105 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai__dtw__recem_nascido
+    description: "Modelo contendo dados de recém-nascidos do prontuário eletrônico Vitai."
+    columns:
+      - name: gid
+        description: "Identificador único do registro do recém-nascido no sistema."
+        data_tests:
+          - unique
+          - not_null
+      - name: gid_estabelecimento
+        description: "Identificador do estabelecimento de saúde."
+      - name: gid_boletim
+        description: "Identificador do boletim de atendimento."
+      - name: gid_boletim_mae
+        description: "Identificador do boletim de atendimento da mãe."
+      - name: id_paciente_rede
+        description: "Identificador do paciente recém-nascido na rede."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_paciente_rede_mae
+        description: "Identificador da mãe na rede."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: parto_datahora
+        description: "Data e hora do parto."
+      - name: obito_datahora
+        description: "Data e hora do óbito, se aplicável."
+      - name: sexo
+        description: "Sexo do recém-nascido."
+      - name: recem_nascido_sexo
+        description: "Sexo do recém-nascido (campo original)."
+      - name: peso
+        description: "Peso do recém-nascido ao nascer."
+      - name: altura
+        description: "Altura/comprimento do recém-nascido ao nascer."
+      - name: prematuro
+        description: "Indicador se o recém-nascido é prematuro."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: mal_formacao_congenita
+        description: "Indicador de malformação congênita."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: ren_malformacao_congenita
+        description: "Indicador de malformação congênita (campo original)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: perimetro_toracico
+        description: "Perímetro torácico do recém-nascido."
+      - name: perimetro_cefalico
+        description: "Perímetro cefálico do recém-nascido."
+      - name: baixo_peso
+        description: "Indicador de baixo peso ao nascer."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: microcefalia
+        description: "Indicador de microcefalia."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: doenca_cardiaca
+        description: "Indicador de doença cardíaca."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: doenca_infecciosa
+        description: "Indicador de doença infecciosa."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: uso_alcool_droga
+        description: "Indicador de uso de álcool ou drogas (mãe)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: gemelar
+        description: "Indicador se é gestação gemelar."
+      - name: numero_gemeo
+        description: "Número do gêmeo (ordem de nascimento)."
+      - name: gestacao_semanas
+        description: "Número de semanas de gestação."
+      - name: apgar_primeiro_minuto
+        description: "Índice de Apgar no primeiro minuto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: apgar_quinto_minuto
+        description: "Índice de Apgar no quinto minuto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: numero_dnv
+        description: "Número da Declaração de Nascido Vivo (DNV)."
+      - name: con_id
+        description: "Identificador de consulta (con_id)."
+      - name: tip_id
+        description: "Identificador tip_id."
+      - name: rcc_id
+        description: "Identificador rcc_id."
+      - name: registro_datahora
+        description: "Data e hora de registro."
+      - name: created_at
+        description: "Data e hora de criação do registro na origem."
+      - name: updated_at
+        description: "Data e hora da última atualização do registro na origem."
+      - name: imported_at
+        description: "Data e hora de importação para o datalake."
+      - name: data_particao
+        description: "Data da partição dos dados. É data de carregamento dos dados no datalake, não necessariamente a data do evento."

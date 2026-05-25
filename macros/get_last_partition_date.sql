@@ -9,7 +9,7 @@
       END AS last_partition
     FROM `{{ table_ref.database }}.{{ table_ref.schema }}.INFORMATION_SCHEMA.PARTITIONS`
     WHERE table_name = '{{ table_ref.identifier }}'
-      AND partition_id <> '__NULL__'
+      AND partition_id <> '__NULL__' AND partition_id <> '__UNPARTITIONED__'
   {% endset %}
 
   {% set result = run_query(sql) %}

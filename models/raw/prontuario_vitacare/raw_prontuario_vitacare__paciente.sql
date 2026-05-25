@@ -1,7 +1,9 @@
 {{
     config(
+        schema = "brutos_prontuario_vitacare",
         alias="paciente",
         materialized="table",
+        cluster_by=["id_paciente_global", "cpf", "cns"],
         tags=['daily']
     )
 }}
@@ -21,7 +23,8 @@ with
         from paciente
         qualify
             row_number() over (
-                partition by id order by updated_at_rank desc
+                partition by id_paciente_global
+                order by updated_at_rank desc
             ) = 1
     ),
 
@@ -63,14 +66,16 @@ with
     renomeado as (
         select
             -- PK
-            {{ remove_accents_upper("id") }} as id,
+            id_paciente_global,
 
+            -- Identificadores do paciente no VitaCare
+            id_paciente_local,
 
             -- Outras Chaves
-            {{ remove_accents_upper("id_cnes") }} as id_cnes,
+            id_cnes,
             numero_prontuario,
-            {{ remove_accents_upper("cpf") }} as cpf,
-            {{ remove_accents_upper("cns") }} as cns,
+            {{ clean_numeric("cpf") }} as cpf,
+            cns,
 
             -- Informações Pessoais
             {{ remove_accents_upper("nome") }} as nome,
@@ -87,9 +92,9 @@ with
             -- Informações Cadastrais
             situacao,
             cadastro_permanente_indicador,
-            {{ validate_cpf(remove_accents_upper("cpf")) }} as cpf_valido_indicador,
-            timestamp_add(datetime(timestamp(data_cadastro_inicial), 'America/Sao_Paulo'),interval 3 hour) as data_cadastro_inicial,
-            timestamp_add(datetime(timestamp(data_ultima_atualizacao_cadastral), 'America/Sao_Paulo'),interval 3 hour) data_ultima_atualizacao_cadastral,
+            {{ validate_cpf(clean_numeric("cpf")) }} as cpf_valido_indicador,
+            timestamp_add(datetime(timestamp(data_cadastro_inicial), 'America/Sao_Paulo'), interval 3 hour) as data_cadastro_inicial,
+            timestamp_add(datetime(timestamp(data_ultima_atualizacao_cadastral), 'America/Sao_Paulo'), interval 3 hour) as data_ultima_atualizacao_cadastral,
 
             -- Contato
             {{ remove_accents_upper("telefone") }} as telefone,
@@ -119,21 +124,16 @@ with
 
             -- Informações da Unidade
             equipe_familia_indicador,
-            {{ remove_accents_upper("codigo_ine_equipe_saude") }} as id_ine,
+            codigo_ine_equipe_saude as id_ine,
             data_atualizacao_vinculo_equipe,
 
-
             -- Metadados
-            timestamp_add(datetime(timestamp(source_created_at), 'America/Sao_Paulo'),interval 3 hour) as source_created_at,
-            timestamp_add(datetime(timestamp(source_updated_at), 'America/Sao_Paulo'),interval 3 hour) as source_updated_at,
+            timestamp_add(datetime(timestamp(source_created_at), 'America/Sao_Paulo'), interval 3 hour) as source_created_at,
+            timestamp_add(datetime(timestamp(source_updated_at), 'America/Sao_Paulo'), interval 3 hour) as source_updated_at,
             updated_at_rank
 
         from corrige_cadastro
-    ),
-
-    pacientes_validos as (
-        select * from renomeado where cpf is not null and id_cnes is not null
     )
 
 select *
-from pacientes_validos
+from renomeado

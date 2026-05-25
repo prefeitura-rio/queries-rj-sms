@@ -10,6 +10,7 @@
             "data_type": "date",
             "granularity": "day",
         },
+        meta={"owner": "herian"}
     )
 }}
 with 
@@ -18,7 +19,7 @@ triagem as (
   select
     gid_boletim,
     pbe.gid_prontuario,
-    data_registro as entrada_datahora,
+    {{ parse_and_filter_future_datetime('data_registro')  }} as entrada_datahora,
     struct(
         safe_cast(altura as float64) as altura, 
         cast(null as float64) as circunferencia_abdominal,
@@ -148,10 +149,21 @@ triagem as (
         struct(
           cid as id,
           nome as descricao,
-          cast(null as string) as situacao,
+          -- O prontuaRio não informa situacao do CID. Para preservar a fonte original, a situacao permanece nula na maioria dos casos.
+          -- Exceção: quando o CID indica desfecho obstétrico (parto, aborto ou pós-parto),
+          -- a modelagem deriva situacao = 'RESOLVIDO' para permitir identificar o fim da gestação 
+          -- isso é utilizado nos modelos dashboard_gestacoes da SAP
+          case
+            when regexp_contains(cid, r'^O8[0-4]$')
+              or regexp_contains(cid, r'^Z37')
+              or regexp_contains(cid, r'^Z39')
+              or regexp_contains(cid, r'^O0[0-4]$')
+            then 'RESOLVIDO'
+            else cast(null as string)
+          end as situacao,
           cast(internacao_data as string) as data_diagnostico
         )
-      ) as condicoes,
+      ) as condicoes
     from emerg_cid
     group by gid_boletim
   ),
@@ -198,7 +210,7 @@ emerg_prescricao_agg as (
         cast(null as string) as unidade_medida,
         intervalo as uso,
         via as via_administracao,
-        safe_cast(atendimento_data as timestamp) as prescricao_data
+        {{ parse_and_filter_future_date('atendimento_data') }} as prescricao_data
       )
     ) as medicamentos_administrados
   from emerg_prescricao 
@@ -310,7 +322,18 @@ inter_saida as (
         struct(
           id,
           descricao,
-          cast(null as string) as situacao,
+          -- O prontuaRio não informa situacao do CID. Para preservar a fonte original, a situacao permanece nula na maioria dos casos.
+          -- Exceção: quando o CID indica desfecho obstétrico (parto, aborto ou pós-parto),
+          -- a modelagem deriva situacao = 'RESOLVIDO' para permitir identificar o fim da gestação 
+          -- isso é utilizado nos modelos dashboard_gestacoes da SAP
+          case
+            when regexp_contains(id, r'^O8[0-4]$')
+              or regexp_contains(id, r'^Z37')
+              or regexp_contains(id, r'^Z39')
+              or regexp_contains(id, r'^O0[0-4]$')
+            then 'RESOLVIDO'
+            else cast(null as string)
+          end as situacao,
           cast(internacao_data as string) as data_diagnostico
         )
       ) as condicoes
@@ -383,7 +406,7 @@ inter_prescricao_agg as (
         cast(null as string) as unidade_medida,
         intervalo as uso,
         via as via_administracao,
-        safe_cast(atendimento_data as timestamp) as prescricao_data
+        {{  parse_and_filter_future_date('atendimento_data') }} as prescricao_data
       )
     ) as medicamentos_administrados
   from inter_prescricao 
@@ -416,8 +439,8 @@ merge_ as (
       pr.gid_paciente as gid_paciente,
       'Consulta' as tipo,
       'Emergência' as subtipo,
-      t.entrada_datahora,
-      r.saida_datahora,
+      {{ parse_and_filter_future_datetime('t.entrada_datahora')}} as entrada_datahora,
+      {{ parse_and_filter_future_datetime('r.saida_datahora')}} as saida_datahora,
       t.motivo_atendimento,
       u.desfecho_atendimento,
       t.medidas,
@@ -445,8 +468,8 @@ merge_ as (
       pr.gid_paciente as gid_paciente,
       'Consulta' as tipo,
       'Internação' as subtipo,
-      t.entrada_datahora,
-      s.saida_datahora,
+      {{ parse_and_filter_future_datetime('t.entrada_datahora')}} as entrada_datahora,
+      {{ parse_and_filter_future_datetime('s.saida_datahora')}} as saida_datahora,
       motivo_atendimento,
       id.desfecho_atendimento,
       t.medidas,

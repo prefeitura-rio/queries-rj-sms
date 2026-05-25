@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: raw_exames_laboratoriais__exames
+    description: Tabela contendo informações detalhadas sobre os exames realizados
+    columns:
+      - name: id
+        description: Identificador único do registro de exame.
+      - name: id_solicitacao
+        description: Identificador da solicitação à qual o exame está vinculado.
+      - name: codigo_lis
+        description: Código do exame no sistema LIS 
+      - name: amostra_lis
+        description: Código da amostra no sistema LIS.
+      - name: codigo_apoio
+        description: Código do exame no sistema de apoio.
+      - name: material_lis
+        description: Código do material no sistema LIS.
+      - name: amostra_apoio
+        description: Código da amostra no sistema de apoio.
+      - name: codigo_exame
+        description: Código do exame em si.
+      - name: sequencia_lis
+        description: Sequência do exame dentro do LIS.
+      - name: examedependente_lis
+        description: Código de exame dependente no LIS, se houver.
+      - name: amostra_apoio_anterior
+        description: Código da amostra de apoio anterior, se aplicável.
+      - name: parcial
+        description: Indica se o exame é parcial ('true') ou completo ('false').
+      - name: retificado
+        description: Indica se o exame foi retificado ('true') ou não ('false').
+      - name: usuario_assinatura
+        description: Nome do usuário que assinou o exame.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: usuario_assinatura_cpf
+        description: CPF do usuário que assinou o exame.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: data_assinatura
+        description: Data e hora em que o exame foi assinado.
+      - name: alterado
+        description: Indica se o exame sofreu alguma alteração.
+      - name: impresso
+        description: Indica se foi impresso
+      - name: codigo_versao
+        description: data da ultima versao
+      - name: descricao_metodo
+        description: metodo utilizado
+      - name: status
+        description: Status atual do exame (e.g., pendente, concluído).
+      - name: mensagem
+        description: Mensagens relacionadas ao status do exame.
+      - name: solicitante_numero
+        description: Número do conselho do solicitante (e.g., CRM, CRO).
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: solicitante_conselho
+        description: Conselho profissional do solicitante.
+      - name: solicitante_uf
+        description: Unidade da Federação (UF) do solicitante.
+      - name: solicitante_nome
+        description: Nome completo do solicitante do exame.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: datalake_loaded_at
+        description: Data e hora em que o registro foi carregado no datalake.
+      - name: origem
+        description: Nome da origem da solicitação (e.g., cientificalab, biomega).
+     

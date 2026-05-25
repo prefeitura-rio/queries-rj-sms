@@ -10,6 +10,7 @@
             "data_type": "date",
             "granularity": "day",
         },
+        meta={"owner": "herian"}
     )
 }}
 
@@ -420,8 +421,8 @@ select
     id_paciente,
     tipo,
     subtipo,
-    entrada_datahora,
-    saida_datahora,
+    {{ parse_and_filter_future_datetime('entrada_datahora') }} as entrada_datahora,
+    {{ parse_and_filter_future_datetime('saida_datahora') }} as saida_datahora,
     desfecho_atendimento,
     condicoes,
     prescricoes,

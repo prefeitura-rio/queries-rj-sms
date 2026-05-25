@@ -2,6 +2,13 @@ version: 2
 
 models:
   - name: raw_prontuario_vitai__internacao
+    tests:
+    - dbt_utils.recency:
+        datepart: day
+        field: "cast(saida_data as timestamp)"
+        interval: 1
+        config:
+          severity: warn
     description: >
       Tabela contendo informações detalhadas sobre as internações realizados nos estabelecimentos de saúde.
     columns:

@@ -53,13 +53,52 @@ dbt deps              # baixa dbt-utils e demais packages declarados em packages
     - **ex.** `DBT_PROFILES_DIR='/Users/foo/.credentials/'` 
 
 
-### 3 - Configure seu ambiente de desenvolvimento
+### 4 - Configure seu ambiente de desenvolvimento
 
 1. Crie uma variável de ambiente chamada `DBT_USER`, que receba seu nome.
     - **ex.** `DBT_USER='seu_nome'`
 
- 8. Dê privilegio de execução para o script ./recce.sh
-    - **Linux e MacOS**: chmod +x recce.sh
+2. **[OBRIGATÓRIO]** Crie uma variável de ambiente chamada `HASH_SECRET` com um valor secreto aleatório.
+    - Esta variável é **obrigatória** para anonimização de dados sensíveis (CPF, IDs, etc.)
+    - Use um valor aleatório e seguro (mínimo 32 caracteres)
+    - **NUNCA commite este valor no Git!**
+    
+    **Gerar um secret seguro:**
+    ```bash
+    # Linux/macOS
+    openssl rand -hex 32
+    
+    # Python
+    python -c "import secrets; print(secrets.token_hex(32))"
+    ```
+    
+    **Configurar a variável:**
+    ```bash
+    # Linux/macOS (adicione ao ~/.zshrc ou ~/.bashrc para permanência)
+    export HASH_SECRET='seu_secret_gerado_aqui'
+    
+    # Windows PowerShell
+    $env:HASH_SECRET='seu_secret_gerado_aqui'
+    
+    # Windows CMD
+    set HASH_SECRET=seu_secret_gerado_aqui
+    ```
+    
+    **Ou use um arquivo `.env` na raiz do projeto** (recomendado):
+    ```bash
+    # .env
+    HASH_SECRET=seu_secret_gerado_aqui
+    DBT_USER=seu_nome
+    ```
+    
+    Depois carregue antes de executar o dbt:
+    ```bash
+    # Linux/macOS
+    export $(cat .env | xargs) && dbt run
+    ```
+
+3. Dê privilégio de execução para o script ./recce.sh
+    - **Linux e MacOS**: `chmod +x tools/recce.sh`
     - **Windows**: Não precisa
 
 ---

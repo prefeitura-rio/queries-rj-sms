@@ -7,6 +7,18 @@
 
 with
 
+    dedup_paciente as (
+        select *
+        from {{ ref("raw_prontuario_vitacare_historico__cadastro") }}
+        qualify row_number() over (partition by id_global order by loaded_at desc) = 1
+    ),
+
+    dedup_profissional as (
+        select *
+        from {{ ref("raw_prontuario_vitacare_historico__profissional") }}
+        qualify row_number() over (partition by id_global order by loaded_at desc) = 1
+    ),
+
     condicoes_ativas as (
         select
             id_prontuario_global as id_atendimento,
@@ -60,8 +72,8 @@ with
 
             age.loaded_at
         from {{ ref("raw_prontuario_vitacare_historico__agendamento") }} age
-            left join {{ ref("raw_prontuario_vitacare_historico__profissional") }} prof on prof.id_global = age.id_profissional
-            left join {{ ref("raw_prontuario_vitacare_historico__cadastro") }} cad on cad.id_global = age.id_cadastro
+            left join dedup_profissional prof on prof.id_global = age.id_profissional
+            left join dedup_paciente cad on cad.id_global = age.id_paciente_global
         where
             tipo_atendimento = 'TELECONSULTA'
     ),
@@ -105,7 +117,7 @@ with
             acto.loaded_at
         from
             {{ ref("raw_prontuario_vitacare_historico__acto") }} acto
-            left join {{ ref("raw_prontuario_vitacare_historico__cadastro") }} cad on cad.id_global = acto.id_cadastro
+            left join dedup_paciente cad on cad.id_global = acto.id_paciente_global
         where
             tipo_atendimento = 'TELECONSULTA'
     ),

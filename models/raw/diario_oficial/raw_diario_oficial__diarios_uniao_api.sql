@@ -1,7 +1,12 @@
 {{
     config(
         alias="diario_uniao_api",
-        materialized="table"
+        materialized="table",
+        tags=["cdi_vps"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date"
+        }
     )
 }}
 
@@ -13,23 +18,23 @@ with
 
     diario_padronizado as (
         select
-            {{ process_null('title') }} as titulo,
-            {{ process_null('id') }} as id,
-            {{ process_null('act_id') }} as id_oficio,
-            {{ process_null('text_title') }} as texto_titulo,
+            cast({{ process_null('title') }} as string) as titulo,
+            cast({{ process_null('id') }} as string) as id,
+            cast({{ process_null('act_id') }} as string) as id_oficio,
+            cast({{ process_null('text_title') }} as string) as texto_titulo,
             parse_date('%d/%m/%Y', published_at) as data_publicacao,
-            {{ process_null('agency') }} as organizacao_principal, 
-            {{ process_null('number_page') }} as number_page,
-            {{ process_null('edition') }} as edicao,
-            {{ process_null('section') }} as secao,
-            {{ process_null('text') }} as texto,
-            {{ process_null('signatures') }} as assinaturas,
-            {{ process_null('role') }} as cargo,
-            {{ process_null('url') }} as link,
+            cast({{ process_null('agency') }} as string) as organizacao_principal, 
+            cast({{ process_null('number_page') }} as string) as number_page,
+            cast({{ process_null('edition') }} as string) as edicao,
+            cast({{ process_null('section') }} as string) as secao,
+            cast({{ process_null('text') }} as string) as texto,
+            cast({{ process_null('signatures') }} as string) as assinaturas,
+            cast({{ process_null('role') }} as string) as cargo,
+            cast({{ process_null('url') }} as string) as link,
             safe_cast(extracted_at as timestamp) as data_extracao,
-            {{ process_null('ano_particao') }} as ano_particao,
-            {{ process_null('mes_particao') }} as mes_particao,
-            {{ process_null('data_particao') }} as data_particao
+            cast({{ process_null('ano_particao') }} as int64) as ano_particao,
+            cast({{ process_null('mes_particao') }} as int64) as mes_particao,
+            cast({{ process_null('data_particao') }} as date) as data_particao
         from source
     )
 

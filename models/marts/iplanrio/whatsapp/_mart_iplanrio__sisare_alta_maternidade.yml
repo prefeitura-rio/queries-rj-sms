@@ -1,0 +1,78 @@
+version: 2
+
+sources:
+  - name: projeto_whatsapp
+    database: rj-sms
+    schema: projeto_whatsapp
+    tables:
+      - name: excecao_disparo_puerperas
+        description: >
+          Tabela de exceções operacionais para inclusão manual de puérperas na régua de disparos
+          do projeto Cegonha Digital. Possui o mesmo schema da tabela sisare_alta_maternidade
+          para permitir união no modelo final sem expor dados pessoais no repositório.
+
+models:
+  - name: mart_iplanrio__sisare_alta_maternidade
+    description: >
+          Tabela do projeto Cegonha Digital que consolida eventos hospitalares de parto e aborto
+          registrados no SISARE, com dados de contato da gestante validados para disparo via WhatsApp.
+          Contempla exclusivamente internações do ano vigente cujo desfecho foi Aborto (1) ou Parto (3).
+          Para cada gestante, os telefones são consolidados a partir do próprio SISARE e enriquecidos
+          com os prontuários da SMS (Vitacare e Vitai), sendo armazenados em um array ordenado por prioridade.
+    columns:
+      - name: cpf
+        description: >
+          CPF da gestante. Pode ser proveniente do cadastro do SISARE ou enriquecido através da base da SMS.
+
+      - name: nome
+        description: >
+          Nome completo da gestante conforme cadastro no SISARE.
+
+      - name: telefones_gestante
+        description: >
+          Array de structs com os telefones da gestante consolidados a partir de múltiplas origens,
+          ordenados por prioridade. Cada elemento contém:
+          - telefone_original: número bruto conforme registrado na origem.
+          - origem: fonte do telefone. Valores possíveis: sisare, vitacare, vitai.
+          - prioridade: ordem de preferência do telefone (1 = sisare, 2 = vitacare, 3 = vitai).
+          - telefone_valido_whatsapp: telefone validado e padronizado no formato 55DDD9XXXXXXXX
+            para disparo via WhatsApp. Nulo quando o número não atende aos critérios de validade.
+          - motivo_invalidacao_telefone: motivo pelo qual o telefone foi considerado inválido.
+            Valores possíveis: poucos_digitos, ddd_invalido, todos_digitos_iguais,
+            numero_institucional, texto_indefinido, numero_compartilhado, telefone_formatado_nulo.
+            Nulo quando o telefone é válido.
+
+      - name: data_alta_internacao
+        description: >
+          Data em que a paciente recebeu alta do hospital após o parto ou aborto.
+          É a data de saída da internação, não a data do parto em si — essas duas datas
+          podem ser diferentes, pois a paciente pode permanecer internada por alguns dias
+          após o parto. Só são consideradas altas do ano vigente associadas a internações
+          com desfecho confirmado de Parto (3) ou Aborto (1).
+
+      - name: cnes_maternidade_alta
+        description: >
+          Código CNES da unidade hospitalar onde ocorreu o parto ou aborto.
+
+      - name: nome_maternidade_alta
+        description: >
+          Nome fantasia da maternidade obtido através do CNES.
+
+      - name: data_parto
+        description: >
+          Data em que ocorreu o parto. Não necessariamente coincide com
+          a data_alta_internacao, pois após o parto a paciente pode permanecer internada
+          por alguns dias para recuperação antes de receber alta.
+
+      - name: id_desfecho_gestacao
+        description: >
+          Identificador numérico do desfecho da gestação conforme tabela de domínio do SISARE.
+          Valores possíveis:
+          1 = RN Nascido Vivo,
+          2 = Óbito | Aborto | Com Alta Natimorto,
+          3 = RN Internado.
+
+      - name: desfecho_gestacao
+        description: >
+          Descrição textual do desfecho da gestação. Valores possíveis:
+          RN Nascido Vivo, Óbito | Aborto | Com Alta Natimorto, RN Internado.

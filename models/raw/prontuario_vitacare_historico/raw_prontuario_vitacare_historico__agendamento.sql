@@ -46,7 +46,7 @@ with
                 {{ process_null ('cnes')}},
                 '.',
                 replace({{ process_null('ut_id') }}, '.0', '') 
-            ) as id_cadastro,
+            ) as id_paciente_global,
             CONCAT(
                 id_cnes,
                 '.',

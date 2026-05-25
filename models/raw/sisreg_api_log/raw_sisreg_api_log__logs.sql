@@ -5,12 +5,12 @@
     schema = "brutos_sisreg_api_log",
     alias = "logs",
     partition_by = {
-      "field": "data_inicial",
+      "field": "data_particao",
       "data_type": "date",
       "granularity": "month"
     },
     incremental_strategy = 'insert_overwrite',
-    partitions = ['data_inicial'],
+    partitions = ['data_particao'],
     cluster_by = ['tabela','run_id'],
     on_schema_change = 'sync_all_columns'
   )
@@ -25,9 +25,10 @@ extracoes as (
       environment as run_ambiente,
       bq_table as tabela,
       bq_dataset,
-      safe_cast(data_inicial as date) as data_inicial,
-      safe_cast(data_final as date) as data_final,
-      completed
+      data_inicial,
+      data_final,
+      cast(completed as bool) as completed,
+      cast(data_particao as date) as data_particao 
   from {{ source("brutos_sisreg_api_log_staging", "marcacoes") }}
   {% if is_incremental() %}
     where
@@ -44,9 +45,10 @@ extracoes as (
       environment as run_ambiente,
       bq_table as tabela,
       bq_dataset,
-      safe_cast(data_inicial as date) as data_inicial,
-      safe_cast(data_final as date) as data_final,
-      completed
+      data_inicial,
+      data_final,
+      cast(completed as bool) as completed,
+      cast(data_particao as date) as data_particao
   from {{ source("brutos_sisreg_api_log_staging", "solicitacoes") }}
   {% if is_incremental() %}
   where 

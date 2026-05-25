@@ -1,7 +1,8 @@
 {{ config(
   schema = "projeto_cdi",
   alias  = "pgm_oficios_status",
-  materialized = "table"
+  materialized = "table",
+  meta={"owner": "karen"}
 ) }}
 
 SELECT

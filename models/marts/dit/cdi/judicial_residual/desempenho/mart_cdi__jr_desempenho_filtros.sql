@@ -1,7 +1,8 @@
 {{ config(
   schema = "projeto_cdi",
   alias  = "jr_desempenho_filtros",
-  materialized = "view"
+  materialized = "view",
+  meta={"owner": "karen"}
 ) }}
 
 SELECT DISTINCT

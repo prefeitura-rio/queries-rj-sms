@@ -1,14 +1,26 @@
 {{
     config(
         alias="listagem_pacientes_tea",
-        materialized="table",
+        materialized="incremental",
+        unique_key="id_surrogate",
+        incremental_strategy="insert_overwrite",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month"
+        },
         tags=["subpav", "tea"]
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 WITH source AS (
     SELECT *
     FROM {{ source("brutos_informes_vitacare_staging", "listagem_pacientes_tea") }}
+    {% if is_incremental() %} 
+        where data_particao >= '{{ last_partition }}' 
+    {% endif %}
 ),
 
 sem_duplicatas as (
@@ -19,6 +31,14 @@ sem_duplicatas as (
 
 extrair_informacoes AS (
     SELECT
+        {{
+            dbt_utils.generate_surrogate_key(
+                [
+                    "_source_file",
+                    "indice"
+                ]
+            )
+        }} as id_surrogate,
         -- Chave de competência (AAAA-MM) extraída do _source_file
         {{ extract_competencia_from_path('_source_file') }}       AS competencia,
 
@@ -111,7 +131,7 @@ extrair_informacoes AS (
         -- Particionamento
         {{ normalize_null('ano_particao') }}                                   AS ano_particao,
         {{ normalize_null('mes_particao') }}                                   AS mes_particao,
-        {{ parse_date('data_particao') }}                                    AS data_particao
+        {{ parse_date('data_particao') }}                                   AS data_particao
     FROM sem_duplicatas
 )
 

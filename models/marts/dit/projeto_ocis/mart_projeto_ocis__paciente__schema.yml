@@ -1,0 +1,56 @@
+version: 2
+models:
+  - name: mart_projeto_ocis__paciente
+    description: >
+      Informações sobre pacientes relevantes ao projeto.
+      Somente possui pacientes cujo CPF foi informado diretamente
+      ou inferido a partir do CNS.
+    columns:
+
+      - name: id_paciente
+        description: >
+          Identificador do paciente, gerado a partir
+          de nome e data de nascimento. Presumivelmente único.
+      - name: cpf_paciente
+        description: >
+          CPF do paciente, ou informado diretamente, ou inferido
+          a partir do CNS.
+      - name: cns_paciente
+        description: >
+          Lista de CNS's do paciente, potencialmente vazia.
+      - name: nm_paciente
+        description: >
+          Nome do paciente, como consta no prontuário.
+      - name: nm_mae_paciente
+        description: >
+          Nome da mãe do paciente, obtido a partir da Receita Federal.
+      - name: sexo_paciente
+        description: >
+          Sexo do paciente, como consta no prontuário.
+      - name: data_nascimento_paciente
+        description: >
+          Data de nascimento do paciente, como consta no prontuário.
+      - name: ds_raca_paciente
+        description: >
+          Nome da raça/cor do paciente, como consta no prontuário.
+          Por ora, não recebemos esse dado, então possui valor mock.
+      - name: _rf_cpf_existe
+        description: >
+          Flag indicando se o CPF foi encontrado na base da Receita Federal.
+      - name: _rf_cpf_mesmo_nome
+        description: >
+          Flag indicando se o nome atrelado ao CPF, na base da Receita,
+          é o mesmo nome indicado pelo prontuário. Mudanças de escrita
+          simples (S vs. Z, H, etc) podem afetar essa flag.
+      - name: _rf_cpf_mesmo_nascimento
+        description: >
+          Flag indicando se a data de nascimento atrelada ao CPF, na
+          base da Receita, é a mesma indicada pelo prontuário.
+      - name: _prontuario_fonte
+        description: >
+          Nome do prontuário de onde as informações foram obtidas.
+      - name: _campo_fonte
+        description: >
+          Nome do campo principal no prontuário utilizado para obter
+          informações sobre o paciente. A preferência é dada ao CPF,
+          quando preenchido; o CNS é usado como segunda opção.

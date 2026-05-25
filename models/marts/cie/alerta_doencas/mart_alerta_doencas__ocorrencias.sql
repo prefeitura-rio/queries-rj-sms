@@ -54,7 +54,7 @@ with
     equipes as (select * from {{ ref("dim_equipe") }}),
 
     -- Dimensão de pacientes
-    pacientes as (select * from {{ ref("raw_prontuario_vitacare__paciente") }}),
+    pacientes as (select * from {{ ref("int_prontuario_vitacare__paciente") }}),
 
     -- Tabela auxiliar dos CIDs de atenção
     cid10_atencao as (

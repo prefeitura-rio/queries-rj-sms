@@ -2,6 +2,7 @@
     config(
         alias="autorizacoes_internacoes_hospitalares",
         materialized="table",
+        meta={"owner": "herian"}
     )
 }}
 

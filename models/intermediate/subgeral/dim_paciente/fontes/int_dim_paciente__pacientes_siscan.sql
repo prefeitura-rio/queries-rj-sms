@@ -15,21 +15,18 @@ with pacientes as (
 
         safe_cast(paciente_idade as int64) as paciente_idade,
         
-        /*
-        safe_cast(paciente_uf as string) as paciente_uf_residencia,
-        safe_cast(paciente_municipio as string) as paciente_municipio_residencia,
-        safe_cast(paciente_cep as string) as paciente_cep_residencia,
-        safe_cast(paciente_bairro as string) as paciente_bairro_residencia,
-        safe_cast(paciente_logradouro as string) as paciente_endereco_residencia,
-        safe_cast(paciente_endereco_complemento as string) as paciente_complemento_residencia,
-        safe_cast(paciente_endereco_numero as string) as paciente_numero_residencia,
-        */
-        
-        safe_cast(paciente_telefone as string) as paciente_telefone
-            
+        safe_cast(paciente_telefone as string) as paciente_telefone,
+
+        -- proxy de atualização cadastral: data do laudo mais recente no SISCAN.
+        safe_cast(data_solicitacao as timestamp) as data_atualizacao
+
     from {{ ref("raw_siscan_web__laudos") }}
     where data_solicitacao >= "2024-01-01"
 )
 
-select distinct * from pacientes 
--- paciente_sexo: Feminino, Masculino
+select * from pacientes
+-- SISCAN não tem cpf; particiona por cns.
+qualify row_number() over (
+    partition by paciente_cns
+    order by data_atualizacao desc
+) = 1

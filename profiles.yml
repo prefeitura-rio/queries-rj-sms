@@ -33,4 +33,3 @@ sms:
       location: US
       threads: 10
       keyfile: /tmp/credentials.json
-

@@ -2,10 +2,8 @@
 
 {{
   config(
-    enabled=true,
     schema="projeto_monitora_cancer",
     alias="pacientes_linha_tempo",
-    unique_key=['cpf_particao'],
     partition_by={
         "field": "cpf_particao",
         "data_type": "int64",
@@ -16,181 +14,109 @@ on_schema_change = 'sync_all_columns'
 )
 }}
 
-with
-    populacao_interesse as (
-        select
-            paciente_cpf,
-            case
-                when max(cast(criterio_diagnostico as int64)) = 1 then 'DIAGNOSTICO'
-                else 'SUSPEITA'
-            end as status
-        from {{ ref("mart_monitora_cancer__fatos") }}
-        where
-            data_solicitacao >= "2025-01-01"
-            and (
-                criterio_suspeita = true
-                or criterio_diagnostico = true
-            )
-        group by paciente_cpf
-    ),
+select
+    -- pk
+    ev.cpf_particao,
+    ev.cpf,
 
-    -- to do: pegar o registro mais recente ao invés de safe_offset(0)
-    enriquece_populacao_interesse as (
-        select
-            pop.paciente_cpf,
-            pop.status,
+    -- id paciente
+    ev.nome,
+    ev.raca_cor,
+    ev.idade,
+    ev.ap,
+    ev.cf,
+    ev.equipe_sf,
 
-            dim_paciente.nomes [SAFE_OFFSET(0)] as nome,
-            dim_paciente.racas_cores [SAFE_OFFSET(0)] as raca_cor,
+    -- qualificadores gerais
+    ev.status,
+    coalesce(any_value (grv.gravidade_score), 0) as gravidade_score,
+    any_value (ev.gestante) as gestante,
 
-            -- dim_paciente.telefones[SAFE_OFFSET(0)] as telefone,
+    -- contato paciente
+    ev.telefone,
+    ev.telefone_cf,
+    ev.telefone_esf,
 
-            date_diff(
-                current_date(),
-                safe_cast(dim_paciente.datas_nascimento [SAFE_OFFSET(0)] as date),
-                year
-            ) as idade,
+    -- sistemas com eventos do paciente
+    struct(
+        logical_or(ev.fonte = 'SISCAN') as siscan,
+        logical_or(ev.fonte = 'SER') as ser,
+        logical_or(ev.fonte = 'SISREG') as sisreg
+    ) as fontes,
 
-            dim_paciente.clinicas_sf [SAFE_OFFSET(0)] as clinica_sf,
-            dim_paciente.clinicas_sf_ap [SAFE_OFFSET(0)] as clinica_sf_ap,
-            dim_paciente.clinicas_sf_telefone [SAFE_OFFSET(0)] as clinica_sf_telefone,
-            dim_paciente.equipes_sf [SAFE_OFFSET(0)] as equipe_sf,
-            -- dim_paciente.equipes_sf_telefone[SAFE_OFFSET(0)] as equipe_sf_telefone,
+    -- eventos
+    array_agg (
+        struct(
+            ev.fonte,
+            ev.tipo,
+            ev.evento_status,
+            ev.procedimento,
+            ev.cid,
 
-            dsr.dias_sem_resposta as gravidade_score
+            ev.unidade_solicitante,
+            ev.unidade_executante,
 
-        from populacao_interesse as pop
+            ev.data_solicitacao,
+            ev.data_autorizacao,
+            ev.data_execucao,
+            ev.data_resultado,
 
-            left join {{ref("pacientes_subgeral__dim_paciente")}} as dim_paciente
-            on pop.paciente_cpf = dim_paciente.cpf_particao
+            safe_cast(ev.data_solicitacao as string) as data_solicitacao_str,
+            safe_cast(ev.data_autorizacao as string) as data_autorizacao_str,
+            safe_cast(ev.data_execucao as string) as data_execucao_str,
+            safe_cast(ev.data_resultado as string) as data_resultado_str,
 
-            left join {{ref("mart_monitora_cancer__pacientes_dias_sem_resposta")}} as dsr
-            on pop.paciente_cpf = safe_cast(dsr.paciente_cpf as int)
-
-        where dim_paciente.sexos [SAFE_OFFSET(0)] != "MASCULINO"
-            and not exists(
-                select 1
-                from unnest (dim_paciente.anos_obito) as ano
-                where ano is not null
-            )
-    ),
-
-    eventos as (
-        select
-            lpad(safe_cast(fcts.paciente_cpf as string), 11, '0') as cpf,
-            fcts.paciente_cpf as cpf_particao,
-
-            -- dados basicos paciente
-            pop.nome,
-            pop.raca_cor,
-            pop.idade,
-            pop.clinica_sf_ap as ap,
-            pop.clinica_sf as cf,
-            pop.equipe_sf,
-            pop.status,
-            pop.gravidade_score,
-            pop.clinica_sf_telefone as telefone,
-
-            -- dados evento
-            fcts.sistema_origem as fonte,
-            fcts.sistema_tipo as tipo,
-            fcts.procedimento,
-            fcts.cid,
-            fcts.estabelecimento_origem_nome as unidade_solicitante,
-            fcts.estabelecimento_executante_nome as unidade_executante,
-            fcts.data_solicitacao,
-            fcts.data_autorizacao,
-            fcts.data_execucao,
-            fcts.data_exame_resultado as data_resultado,
-            fcts.mama_esquerda_classif_radiologica,
-            fcts.mama_direita_classif_radiologica
-
-        from enriquece_populacao_interesse as pop
-            left join {{ref("mart_monitora_cancer__fatos")}} as fcts
-            on pop.paciente_cpf = fcts.paciente_cpf
-    ),
-
-    paciente_linha_tempo as (
-        select
-            -- pk
-            cpf_particao,
-            cpf,
-
-            -- id paciente
-            nome,
-            raca_cor,
-            idade,
-            ap,
-            cf,
-            equipe_sf,
-
-            -- qualificadores gerais
-            status,
-            gravidade_score,
-            count(*) as procedimentos_n,
-
-            -- contato paciente
-            telefone,
-
-            -- sistemas com eventos do paciente
-            struct(
-                logical_or(fonte = 'SISCAN') as siscan,
-                logical_or(fonte = 'SER') as ser,
-                logical_or(fonte = 'SISREG') as sisreg
-            ) as fontes,
-
-            -- eventos
-            array_agg (
-                struct(
-                    fonte,
-                    tipo,
-                    procedimento,
-                    cid,
-
-                    unidade_solicitante,
-                    unidade_executante,
-
-                    data_solicitacao,
-                    data_autorizacao,
-                    data_execucao,
-                    data_resultado,
-
-                    array_concat(
-                        if(
-                            mama_esquerda_classif_radiologica is null,
-                            [],
-                            [concat("Mama Esquerda ", mama_esquerda_classif_radiologica)]
-                        ),
-
-                        if(
-                            mama_direita_classif_radiologica is null,
-                            [],
-                            [concat("Mama Direita ", mama_direita_classif_radiologica)]
-                        )
-                    ) as resultados
+            array_concat(
+                if(
+                    ev.mama_esquerda_resultado is null,
+                    [],
+                    [concat("Mama Esquerda ", ev.mama_esquerda_resultado)]
+                ),
+                if(
+                    ev.mama_direita_resultado is null,
+                    [],
+                    [concat("Mama Direita ", ev.mama_direita_resultado)]
                 )
+            ) as resultados,
 
-                order by
-                    data_solicitacao,
-                    data_autorizacao,
-                    data_execucao,
-                    data_resultado
-            ) as eventos
+            ev.atraso_solicitacao_autorizacao,
+            ev.atraso_autorizacao_execucao,
+            ev.atraso_regulacao,
 
-        from eventos
-        group by
-            cpf_particao,
-            cpf,
-            nome,
-            raca_cor,
-            idade,
-            ap,
-            cf,
-            equipe_sf,
-            status,
-            gravidade_score,
-            telefone
-    )
+            ev.risco,
 
-select *
-from paciente_linha_tempo
+            ev.dias_proximo_evento,
+            ev.run_id as jornada_id
+        )
+
+        order by
+            ev.data_referencia_evento,
+            ev.data_solicitacao,
+            ev.data_autorizacao,
+            ev.data_execucao,
+            ev.data_resultado
+    ) as eventos,
+
+    any_value (ev.tempo_total) as tempo_total,
+
+    -- pendências atuais (1 array por paciente, calculado em int_monitora_cancer__pendencias)
+    any_value (pend.pendencia_atual) as pendencia_atual
+
+from {{ ref("int_monitora_cancer__eventos_episodios") }} as ev
+    left join {{ ref("mart_monitora_cancer__gravidade") }} as grv
+    on ev.cpf_particao = grv.cpf_particao
+    left join {{ ref("int_monitora_cancer__pendencias") }} as pend
+    on ev.cpf_particao = pend.cpf_particao
+group by
+    ev.cpf_particao,
+    ev.cpf,
+    ev.nome,
+    ev.raca_cor,
+    ev.idade,
+    ev.ap,
+    ev.cf,
+    ev.equipe_sf,
+    ev.status,
+    ev.telefone,
+    ev.telefone_cf,
+    ev.telefone_esf

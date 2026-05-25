@@ -17,18 +17,22 @@
 
 with
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- MERGING DATA: Merging Data from Different Sources
+    -- (1) DADOS: Junta atendimentos de diferentes fontes
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     merged_data as (
+        --##################
+        --##     Vitai    ##
+        --##################
         select
             id_hci,
             cpf as paciente_cpf,
             tipo,
             subtipo,
+            cast(null as string) as tipo_demanda,
             entrada_datahora,
             saida_datahora,
             exames_realizados,
-            null as procedimentos_realizados,
+            cast(null as string) as procedimentos_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
@@ -56,19 +60,25 @@ with
             cpf_particao,
         from {{ ref("int_historico_clinico__episodio__vitai") }}
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            where date(metadados.imported_at) >= (select max(data_particao) from {{ this }})
         {% endif %}
+
+        --##################
+        --##   Vitacare   ##
+        --##################
         union all
         select
             id_hci,
             cpf as paciente_cpf,
             tipo,
             subtipo,
+            tipo_demanda,
             entrada_datahora,
             saida_datahora,
             array(
                 select as struct
-                    cast(null as string) as tipo, cast(null as string) as descricao
+                    cast(null as string) as tipo,
+                    cast(null as string) as descricao
             ) as exames_realizados,
             procedimentos_realizados,
             motivo_atendimento,
@@ -76,7 +86,7 @@ with
             condicoes,
             medidas,
             prescricoes,
-            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string, prescricao_data timestamp>>[] as medicamentos_administrados,
+            array<struct<nome string, quantidade integer, unidade_medida string, uso string, via_administracao string, prescricao_data date>>[] as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
@@ -84,19 +94,25 @@ with
             cpf_particao,
         from {{ ref("int_historico_clinico__episodio__vitacare") }}
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            where date(metadados.imported_at) >= (select max(data_particao) from {{ this }})
         {% endif %}
+
+        --##################
+        --##     PCSM     ##
+        --##################
         union all
         select
             id_hci,
             cpf as paciente_cpf,
             tipo,
             subtipo,
+            cast(null as string) as tipo_demanda,
             entrada_datahora,
             saida_datahora,
             array(
                 select as struct
-                    cast(null as string) as tipo, cast(null as string) as descricao
+                    cast(null as string) as tipo,
+                    cast(null as string) as descricao
             ) as exames_realizados,
             cast(null as string) as procedimentos_realizados,
             cast(null as string) motivo_atendimento,
@@ -118,64 +134,119 @@ with
                 cast(null as float64) as temperatura
             ) as medidas,
             prescricoes,
-            array<struct<nome string, quantidade integer, unidade_medica string, uso string, via_administracao string, prescricao_data timestamp>>[] as medicamentos_administrados,
+            array<struct<nome string, quantidade integer, unidade_medida string, uso string, via_administracao string, prescricao_data date>>[] as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
             metadados,
             cpf_particao
-        from {{ref("int_historico_clinico__episodio__pcsm")}}
+        from {{ ref("int_historico_clinico__episodio__pcsm") }}
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            where date(metadados.imported_at) >= (select max(data_particao) from {{ this }})
         {% endif %}
+
+        --##################
+        --##  ProntuaRio  ##
+        --##################
+        -- union all
+        -- select
+        --     id_hci,
+        --     cpf as paciente_cpf,
+        --     tipo,
+        --     subtipo,
+        --     cast(null as string) as tipo_demanda,
+        --     entrada_datahora,
+        --     saida_datahora,
+        --     array(
+        --         select as struct
+        --             cast(null as string) as tipo,
+        --             cast(null as string) as descricao
+        --     ) as exames_realizados,
+        --     cast(null as string) as procedimentos_realizados,
+        --     motivo_atendimento,
+        --     desfecho_atendimento,
+        --     condicoes,
+        --     medidas,
+        --     array<struct<id string, nome string, concentracao string, uso_continuo string>>[] as prescricoes,
+        --     medicamentos_administrados,
+        --     estabelecimento,
+        --     profissional_saude_responsavel,
+        --     prontuario,
+        --     metadados,
+        --     cpf_particao
+        -- from {{ ref("int_historico_clinico__episodio__prontuaRio") }}
+        -- {% if is_incremental() %}
+        --     where date(metadados.imported_at) >= (select max(data_particao) from {{ this }})
+        -- {% endif %}
+
+        --##################
+        --##    Sarah     ##
+        --##################
         union all
-        select 
+        select
             id_hci,
             cpf as paciente_cpf,
-            tipo, 
+            tipo,
             subtipo,
+            cast(null as string) as tipo_demanda,
             entrada_datahora,
             saida_datahora,
             array(
                 select as struct
-                    cast(null as string) as tipo, cast(null as string) as descricao
+                    cast(null as string) as tipo,
+                    cast(null as string) as descricao
             ) as exames_realizados,
-            cast(null as string) as procedimentos_realizados,
+            procedimentos_realizados,
             motivo_atendimento,
             desfecho_atendimento,
             condicoes,
-            medidas,
-            array<struct<id string, nome string, concentracao string, uso_continuo string>>[] as prescricoes,
-            medicamentos_administrados,
+            struct(
+                cast(null as float64) as altura,
+                cast(null as float64) as circunferencia_abdominal,
+                cast(null as float64) as frequencia_cardiaca,
+                cast(null as float64) as frequencia_respiratoria,
+                cast(null as float64) as glicemia,
+                cast(null as float64) as hemoglobina_glicada,
+                cast(null as float64) as imc,
+                cast(null as float64) as peso,
+                cast(null as float64) as pressao_sistolica,
+                cast(null as float64) as pressao_diastolica,
+                cast(null as string) as pulso_ritmo,
+                cast(null as float64) as saturacao_oxigenio,
+                cast(null as float64) as temperatura
+            ) as medidas,
+            array(
+                select as struct
+                    p.id, p.nome, p.posologia as concentracao, p.uso_continuo
+                from unnest(prescricoes) as p
+            ) as prescricoes,
+            array<struct<nome string, quantidade integer, unidade_medida string, uso string, via_administracao string, prescricao_data date>>[] as medicamentos_administrados,
             estabelecimento,
             profissional_saude_responsavel,
             prontuario,
             metadados,
             cpf_particao
-        from {{ref("int_historico_clinico__episodio__prontuaRio")}}
+        from {{ ref("int_historico_clinico__episodio__sarah") }}
         {% if is_incremental() %}
-            WHERE DATE(metadados.imported_at) > (SELECT MAX(data_particao) FROM {{ this }})
+            where date(metadados.imported_at) >= (select max(data_particao) from {{ this }})
         {% endif %}
     ),
+
+
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- PATIENT DATA: Patient Enrichment 
+    -- (2) PACIENTE: Enriquece com dados de pacientes
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     merged_patient as (
         select cpf, cns, dados.data_nascimento
-        from {{ref('mart_historico_clinico__paciente')}}
+        from {{ ref("mart_historico_clinico__paciente") }}
     ),
     merged_data_patient as (
-        select merged_data.*,
+        select
+            merged_data.*,
             struct(
                 merged_patient.cpf,
                 merged_patient.cns,
-                {{
-                dbt_utils.generate_surrogate_key(
-                        [
-                            "cpf",
-                        ]
-                    )
-                }} as id_paciente,
+                {{ dbt_utils.generate_surrogate_key([ "cpf" ]) }} as id_paciente,
                 merged_patient.data_nascimento
             ) as paciente,
         from merged_data
@@ -183,37 +254,32 @@ with
         on merged_patient.cpf = merged_data.paciente_cpf
     ),
 
+
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- DECEASED: Adding deceased flag
+    -- (3) ÓBITO: Adiciona flag de óbito
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     deceased as (
         select boletim_obito
-        from
-            {{ ref("int_historico_clinico__obito__vitai") }},
+        from {{ ref("int_historico_clinico__obito__vitai") }},
             unnest(gid_boletim_obito) as boletim_obito
     ),
     merged_data_deceased as (
-        select *, if(deceased.boletim_obito is null, false, true) as obito_indicador
+        select
+            *,
+            (deceased.boletim_obito is not null) as obito_indicador
         from merged_data_patient
-        left join
-            deceased on merged_data_patient.prontuario.id_prontuario_global = deceased.boletim_obito
-
+        left join deceased
+            on merged_data_patient.prontuario.id_prontuario_global = deceased.boletim_obito
     ),
-    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- CONFLICT: Adding registration conflict flag
-    -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    registration_conflict as (
-        select * from {{ref('int_historico_clinico__pacientes_invalidos')}}
-    ),
-
     deduped as (
         select *
         from merged_data_deceased
         qualify row_number() over (partition by id_hci) = 1
     ),
 
+
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
-    -- CID: Add CID summarization
+    -- (4) CIDs: Associa descrições aos CIDs de atendimentos
     -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
     eps_cid_subcat as (
         select
@@ -223,7 +289,8 @@ with
             cid.situacao,
             cid.data_diagnostico,
             best_agrupador as descricao_agg
-        from deduped, unnest(condicoes) as cid
+        from deduped,
+            unnest(condicoes) as cid
         left join
             {{ ref("int_historico_clinico__cid_subcategoria") }} as agg_4_dig
             on agg_4_dig.id = regexp_replace(cid.id, r'\.', '')
@@ -237,13 +304,13 @@ with
             cid.situacao,
             cid.data_diagnostico,
             best_agrupador as descricao_agg
-        from deduped, unnest(condicoes) as cid
+        from deduped,
+            unnest(condicoes) as cid
         left join
             {{ ref("int_historico_clinico__cid_categoria") }} as agg_3_dig
             on agg_3_dig.id_categoria = regexp_replace(cid.id, r'\.', '')
         where char_length(regexp_replace(cid.id, r'\.', '')) = 3
     ),
-
     all_cids as (
         select
             id_prontuario_global,
@@ -253,44 +320,43 @@ with
                 )
                 order by data_diagnostico desc, descricao
             ) as condicoes
-        from
-            (
-                select *
-                from eps_cid_subcat
-                union all
-                select *
-                from eps_cid_cat
-            )
+        from (
+            select * from eps_cid_subcat
+            union all
+            select * from eps_cid_cat
+        )
         group by 1
     ),
 
     final as (
-    select
-        deduped.id_hci,
-        deduped.paciente_cpf,
-        deduped.paciente,
-        deduped.tipo,
-        deduped.subtipo,
-        cast(deduped.entrada_datahora as date) as entrada_data,
-        deduped.entrada_datahora,
-        deduped.saida_datahora,
-        deduped.exames_realizados,
-        deduped.procedimentos_realizados,
-        deduped.medidas,
-        deduped.motivo_atendimento,
-        deduped.desfecho_atendimento,
-        deduped.obito_indicador,
-        all_cids.condicoes,
-        deduped.prescricoes,
-        deduped.medicamentos_administrados,
-        deduped.estabelecimento,
-        deduped.profissional_saude_responsavel,
-        deduped.prontuario,
-        deduped.metadados,
-        cast(deduped.entrada_datahora as date) as data_particao
-    from deduped
-    left join all_cids 
-    on all_cids.id_prontuario_global = deduped.prontuario.id_prontuario_global
-)
+        select
+            deduped.id_hci,
+            deduped.paciente_cpf,
+            deduped.paciente,
+            deduped.tipo,
+            deduped.subtipo,
+            deduped.tipo_demanda,
+            cast(deduped.entrada_datahora as date) as entrada_data,
+            deduped.entrada_datahora,
+            deduped.saida_datahora,
+            deduped.exames_realizados,
+            deduped.procedimentos_realizados,
+            deduped.medidas,
+            deduped.motivo_atendimento,
+            deduped.desfecho_atendimento,
+            deduped.obito_indicador,
+            all_cids.condicoes,
+            deduped.prescricoes,
+            deduped.medicamentos_administrados,
+            deduped.estabelecimento,
+            deduped.profissional_saude_responsavel,
+            deduped.prontuario,
+            deduped.metadados,
+            cast(deduped.entrada_datahora as date) as data_particao
+        from deduped
+        left join all_cids
+            on all_cids.id_prontuario_global = deduped.prontuario.id_prontuario_global
+    )
+
 select *
 from final

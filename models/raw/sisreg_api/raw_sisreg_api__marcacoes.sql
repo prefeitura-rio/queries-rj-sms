@@ -26,20 +26,22 @@
 
 with
     latest_src_partition as (
-        select max(cast(data_inicial as date)) as latest_load_dt
+        select max(cast(data_particao as date)) as latest_load_dt
         from {{ ref('raw_sisreg_api_log__logs') }}
-        where tabela = 'marcacoes'
+        where tabela = 'marcacoes' and completed = True
     ),
 
     sisreg as (
         select
-            s.*,
+            s.* except (data_atualizacao),
+            cast({{ process_null("data_atualizacao") }} as timestamp) as data_atualizacao,
+
             safe.parse_json(replace(s.laudo, "'", '"')) as laudo_json_transformed
 
         from {{ source('brutos_sisreg_api_staging', 'marcacoes') }} s
         {% if is_incremental() %}
             where 1=1
-                and cast(s.data_particao as date) = (select latest_load_dt from latest_src_partition)
+                and s.data_particao = (select format_date('%Y-%m-%d', latest_load_dt) from latest_src_partition)
         {% endif %}
     ),
 
@@ -49,7 +51,7 @@ with
         qualify row_number() over (
             partition by codigo_solicitacao
             order by
-                date(safe_cast(data_atualizacao as timestamp), 'America/Sao_Paulo') desc nulls last
+                data_atualizacao desc nulls last
         ) = 1
     ),
 
@@ -60,17 +62,11 @@ with
 
             -- Identificação básica da solicitação
             {{ process_null("codigo_solicitacao") }} as solicitacao_id,
-            safe_cast(
-                {{ process_null("data_solicitacao") }} as timestamp
-            ) as data_solicitacao,
+            cast({{ process_null("data_solicitacao") }} as timestamp) as data_solicitacao,
 
-            date(safe_cast(
-                {{ process_null("data_atualizacao") }} as timestamp), 'America/Sao_Paulo'
-            ) as data_atualizacao,
+            date(data_atualizacao, "America/Sao_Paulo") as data_atualizacao,
 
-            safe_cast(
-                {{ process_null("data_cancelamento") }} as timestamp
-            ) as data_cancelamento,
+            cast({{ process_null("data_cancelamento") }} as timestamp) as data_cancelamento,
 
             -- Status e classificação
             {{ process_null("status_solicitacao") }} as solicitacao_status,
@@ -174,9 +170,7 @@ with
             {{ process_null("nome_perfil_cancelamento") }} as perfil_cancelamento,
 
             -- Preferências da solicitação
-            safe_cast(
-                {{ process_null("data_desejada") }} as timestamp
-            ) as data_desejada,
+            cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
             lpad(
                 {{ process_null("codigo_unidade_desejada") }}, 7, '0'
             ) as unidade_desejada_id,
@@ -187,8 +181,8 @@ with
             lpad({{ process_null("cpf_usuario") }}, 11, '0') as paciente_cpf,
             lpad({{ process_null("cns_usuario") }}, 15, '0') as paciente_cns,
             {{ clean_name_string(process_null("no_usuario")) }} as paciente_nome,
-            safe_cast(
-                {{ process_null("dt_nascimento_usuario") }} as timestamp
+            timestamp(
+                safe_cast({{ process_null("dt_nascimento_usuario") }} as datetime), 'America/Sao_Paulo'
             ) as paciente_dt_nasc,
             {{ clean_name_string(process_null("sexo_usuario")) }} as paciente_sexo,
             {{ clean_name_string(process_null("no_mae_usuario")) }}
@@ -221,7 +215,7 @@ with
             json_value(laudo_json_transformed, '$[0].tipo_descricao') as laudo_descricao_tp,
             json_value(laudo_json_transformed, '$[0].situacao') as laudo_situacao,
             json_value(laudo_json_transformed, '$[0].observacao') as laudo_observacao,
-            safe_cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
+            cast(json_value(laudo_json_transformed, '$[0].data_observacao') as timestamp) as laudo_data_observacao,
 
             -- Dados do operador autorizador
             {{ clean_name_string(process_null("nome_operador_autorizador")) }}
@@ -268,15 +262,9 @@ with
 
             -- Dados da marcação
             {{ process_null("codigo_marcacao") }} as marcacao_id,
-            safe_cast(
-                {{ process_null("data_marcacao") }} as timestamp
-            ) as data_marcacao,
-            safe_cast(
-                {{ process_null("data_aprovacao") }} as timestamp
-            ) as data_aprovacao,
-            safe_cast(
-                {{ process_null("data_confirmacao") }} as timestamp
-            ) as data_confirmacao,
+            cast({{ process_null("data_marcacao") }} as timestamp) as data_marcacao,
+            cast({{ process_null("data_aprovacao") }} as timestamp) as data_aprovacao,
+            cast({{ process_null("data_confirmacao") }} as timestamp) as data_confirmacao,
             {{ process_null("marcacao_executada") }} as marcacao_executada,
             case
                 when {{ process_null("st_falta_registrada") }} = "1"
@@ -307,8 +295,9 @@ with
             {{ clean_name_string(process_null("descricao_cid_agendado")) }}
             as cid_agendado,
 
-            -- Metadado SMS 
-            date(safe_cast({{ process_null("data_extracao") }} as timestamp), 'America/Sao_Paulo') as data_extracao
+            -- Metadado SMS
+            -- `data_extracao` vem sem fuso; i.e. '2000-01-01T00:00:00.000000'
+            date(cast({{ process_null("data_extracao") }} as datetime)) as data_extracao
 
 
         from dedup_batch

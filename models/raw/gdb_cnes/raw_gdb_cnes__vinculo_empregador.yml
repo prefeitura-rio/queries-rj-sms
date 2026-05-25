@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__vinculo_empregador
+    description: "Tabela de vínculo do empregador com o estabelecimento de saúde, extraída do GDB-CNES."
+    columns:
+      - name: id_vinculacao
+        description: "Identificador único da vinculação."
+      - name: id_tipo_vinculo
+        description: "Identificador do tipo de vínculo."
+      - name: descricao_vinculo
+        description: "Descrição textual do tipo de vínculo."
+      - name: habilitado
+        description: "Indica se o vínculo está habilitado (S/N)."
+      - name: data_particao
+        description: "Data da partição dos dados, utilizada para otimização de consultas."
+      - name: data_carga
+        description: "Timestamp da carga dos dados na tabela."

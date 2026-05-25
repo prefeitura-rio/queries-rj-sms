@@ -1,0 +1,58 @@
+version: 2
+models:
+  - name: raw_gdb_cnes__equipe_profissionais
+    description: |-
+      Tabelas contendo os profissonais pertencentes as equipes nas unidades de saúde
+      Arquivo CNES: LFCES038
+      Granularidade: profissional / unidade de saúde
+    columns:
+      - name: id_profissional_sus
+        description: Hash parcial do código do profissional
+      - name: id_profissional_cnes
+        description: Código do profissional de saúde
+      - name: id_cbo
+        description: Código CBO do profissional
+      - name: equipe_sequencial
+        description: Código sequencial da equipe
+      - name: id_unidade
+        description: Código da unidade de saúde da equipe
+      - name: id_municipio
+        description: Código do município
+      - name: id_area
+        description: Código da área da equipe
+      - name: id_microarea
+        description: Código da microarea da equipe
+      - name: tipo_sus_nao_sus
+        description: Indica se o profissional faz atendimento SUS
+      - name:  id_vinculo_profissional
+        description: Indica a vinculação, o tipo e o sub tipo  de vinculo do Profissional com o Estabelecimento de Saúde
+      - name: data_entrada_profissional
+        description: Data de entrada do profissional na equipe
+      - name: data_desligamento_profissional
+        description: Data de desligamento do profissional na equipe
+      - name: id_cnes_outra_equipe
+        description: CNES no qual o Profissional completa a Carga Horária
+      - name: id_municipio_outra_equipe
+        description: Código do Município no qual o Profissional completa a Carga Horária
+      - name: id_area_outra_equipe
+        description: Código da Área na qual o Profissional completa a Carga Horária
+      - name: id_profissional_complementar
+        description: Profissional de Carga Horária Complementar
+      - name: cbo_profissional_complementar
+        description: CBO do Profissional de Carga Horária Complementar
+      - name: pertence_equipe_minima
+        description: Indica se o Profissional pertence a Equipe Mínima
+      - name: id_municipio_atuacao
+        description: Código do Municipio de atuação da microárea do Profissional na Equipe
+      - name: data_atualizacao
+        description: Data de atualização do registro
+      - name: nome_usuario
+        description: Último usuário que atualizou o registro
+      - name: data_atualizacao_origem
+        description: Data da primeira entrada no Banco de Produção Federal
+      - name: data_carga
+        description: Data e hora em que os dados foram carregados no banco de dados
+        data_type: string
+      - name: data_particao
+        description: Data e hora de particionamento da tabela crua
+        data_type: string

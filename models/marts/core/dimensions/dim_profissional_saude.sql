@@ -115,7 +115,11 @@ with
             cpf,
             cns,
             upper(nome) as nome,
-        from {{ ref('raw_cnes_gdb__profissional') }}
+        from {{ ref('raw_gdb_cnes__profissional') }}
+        qualify row_number() over (
+            partition by cpf
+            order by data_particao desc
+        ) = 1
     ),
 
     -- Cópia de mart_historico_clinico__paciente na parte de cns

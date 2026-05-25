@@ -1,0 +1,54 @@
+Fonte	Tabela GDB	Descrição
+SIHD	TB_AIH_BDNAIH	
+SIHD	TB_AIH_STATUS_FINAL	
+SIHD	TB_AL	Alocação de leitos
+SIHD	TB_AUTORIZADOR	Autorizadores de AIH nos órgãos emissores
+SIHD	TB_CESAREA	Percentuais autorizados para cesariana por CNES de cada órgão emissor
+SIHD	TB_C_D	Tabela código--descrição (índice em C_D_CO_TAB = 0099)
+SIHD	TB_FAIXA_AIH	Faixas de uso da numeração da AIH por órgão emissor do gestor
+SIHD	TB_GESTOR	Cadastro de gestores
+SIHD	TB_HA	Cadstro de hospitais
+SIHD	TB_HADV	
+SIHD	TB_HAIH	AIHs (histórico)
+SIHD	TB_HAIH_MSG	
+SIHD	TB_HAIH_STATUS	
+SIHD	TB_HAIH_UL	
+SIHD	TB_HALP	AIH de longa permanência (identificador 1) (histórico)
+SIHD	TB_HA_CONTRATO	
+SIHD	TB_HA_EQUIPE	
+SIHD	TB_HA_HAB	
+SIHD	TB_HA_SUBTP	
+SIHD	TB_HA_TC_SERVICO	
+SIHD	TB_HERR	Erros da AIH (histórico)
+SIHD	TB_HHA_HAB	
+SIHD	TB_HLA	
+SIHD	TB_HOPM	
+SIHD	TB_HPA	Procedimentos da AIH (histórico)
+SIHD	TB_HRC	Registro civil da AIH (histórioc)
+SIHD	TB_HUL	Utilização de leitos hospitalares por CNES
+SIHD	TB_HVPRV	Valores da prévia (histórico)
+SIHD	TB_IVH	
+SIHD	TB_MUN	Municípios
+SIHD	TB_PR	Números de processamento no SIHD
+SIHD	TB_PRESTADOR	
+SIHD	TB_PROF_IRREGULAR	
+SIHD	TB_TC	Cadastro de terceiros
+SIHD	TB_TC_VINC	
+SIHD	TB_TETO	Teto financeiro cadastrado pelos gestores
+SIHD	TB_UF	Unidades da Federação (UF)
+SIHD	TB_UL_FINAL	
+SIHD	TB_VAL_ADI	
+SIHD	TU_CID	
+SIHD	TU_EXCECAO_COMPATIBILIDADE	
+SIHD	TU_PROCEDIMENTO	
+SIHD	TU_PROCEDIMENTO_CID	
+SIHD	TU_PROCEDIMENTO_COMPATIVEL	
+SIHD	TU_PROCEDIMENTO_DETALHE	
+SIHD	TU_PROCEDIMENTO_HABILITACAO	
+SIHD	TU_PROCEDIMENTO_INCREMENTO	
+SIHD	TU_PROCEDIMENTO_LEITO	
+SIHD	TU_PROCEDIMENTO_MODALIDADE	
+SIHD	TU_PROCEDIMENTO_OCUPACAO	
+SIHD	TU_PROCEDIMENTO_REGISTRO	
+SIHD	TU_PROCEDIMENTO_REGRA	
+SIHD	TU_PROCEDIMENTO_SERVICO	

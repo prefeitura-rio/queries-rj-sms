@@ -1,0 +1,112 @@
+version: 2
+
+models:
+  - name: raw_cdi__pgm_2025
+    description: >
+      Modelo bruto da equipe PGM (Procuradoria Geral do Município) referente ao ano de 2025.
+      Contém os registros de diligências jurídicas encaminhadas pela PGM à CDI,
+      com informações sobre processos, prazos, solicitações e situação de atendimento.
+    config:
+      schema: brutos_cdi
+    columns: &pgm_columns
+      - name: processorio
+        description: Número de identificação do ofício no sistema Processo.Rio ou SEI.
+
+      - name: procuradora
+        description: Nome do(a) procurador(a) responsável pelo acompanhamento do caso.
+
+      - name: requerente
+        description: Nome do(a) requerente da solicitação judicial.
+
+      - name: processo_judicial
+        description: Número do processo judicial de origem.
+
+      - name: origem
+        description: Setor de origem da demanda, podendo ser um setor da PGM ou da própria SMS
+
+      - name: data_de_entrada
+        description: Data de entrada da solicitação no sistema da área.
+
+      - name: data_de_saida
+        description: Data em que a área encaminhou o ofício para finalização ou tratativas.
+
+      - name: data_saida_pgm
+        description: Data de envio da resposta final à Procuradoria Geral do Município (PGM).
+
+      - name: prazo
+        description: Data limite para atendimento do processo.
+
+      - name: mes_ano
+        description: Mês e ano de entrada da solicitação.
+
+      - name: sexo
+        description: Sexo do requerente.
+
+      - name: idade
+        description: Faixa etária do requerente.
+
+      - name: hospital_de_origem
+        description: >
+          Unidade de saúde de origem do requerente, podendo ser hospital, UPA,
+          clínica da família, CMS, entre outras unidades da rede de saúde.
+          Também pode indicar domicílio.
+
+      - name: cap
+        description: Área Programática (CAP) de referência do processo.
+
+      - name: erro_medico
+        description: Indica se há possível erro médico envolvido.
+
+      - name: acp
+        description: Indica se o processo envolve Ação Civil Pública.
+
+      - name: tipo_indenizacao
+        description: Tipo de valor financeiro envolvido — multa, bloqueio de verba ou indenização.
+
+      - name: valor
+        description: >
+          Descrição textual do valor financeiro envolvido no processo, podendo incluir
+          multas, limites e periodicidade conforme registrado no ofício.
+
+      - name: mandado_de_prisao
+        description: Indica se há mandado de prisão relacionado ao processo.
+
+      - name: crime_de_desobediencia
+        description: Indica se o caso envolve crime de desobediência judicial.
+
+      - name: patologia_assunto
+        description: Resumo clínico ou descrição da patologia ou assunto envolvido na demanda.
+
+      - name: solicitacao
+        description: Conteúdo do ofício judicial encaminhado pela PGM.
+
+      - name: sintese_solicitacao
+        description: Categorização simplificada da solicitação.
+
+      - name: setor_responsavel
+        description: Setor interno responsável por elaborar a resposta ao processo.
+
+      - name: prazo_dias
+        description: Prazo definido em dias para atendimento da solicitação.
+
+      - name: situacao
+        description: Situação atual do processo.
+
+      - name: pendencias
+        description: >
+          Mês e ano de referência da pendência do processo.
+          Coluna presente apenas no modelo de 2025, removida a partir de 2026.
+
+      - name: observacoes
+        description: >
+          Anotações operacionais sobre o andamento do processo, incluindo
+          encaminhamentos internos e referências a documentos SEI.
+
+  - name: raw_cdi__pgm_2026
+    description: >
+      Modelo bruto da equipe PGM (Procuradoria Geral do Município) referente ao ano de 2026.
+      Estrutura idêntica ao modelo de 2025, com exceção da coluna `pendencias`,
+      que foi removida e é preenchida com NULL para manter compatibilidade de schema.
+    config:
+      schema: brutos_cdi
+    columns: *pgm_columns

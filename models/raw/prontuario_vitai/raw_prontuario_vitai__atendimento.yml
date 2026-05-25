@@ -2,6 +2,13 @@ version: 2
 
 models:
   - name: raw_prontuario_vitai__atendimento
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: "cast(inicio_datahora as timestamp)"
+          interval: 1
+          config:
+            severity: warn
     description: Tabela de eventos de atendimento, sincronizada com Vitai.
     columns:
       - name: gid
