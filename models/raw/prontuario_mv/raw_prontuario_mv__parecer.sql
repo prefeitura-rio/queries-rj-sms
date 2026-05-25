@@ -20,7 +20,7 @@ source as (
     select * 
     from {{ source("brutos_prontuario_mv_api_staging", "parecer_continuo") }}  
     {% if is_incremental() %}
-        where TIMESTAMP_TRUNC(datalake_loaded_at, DAY) >= TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 30 day))
+        where TIMESTAMP_TRUNC(datalake_loaded_at, DAY) >= TIMESTAMP(date_sub(current_date('America/Sao_Paulo'), interval 7 day))
     {% endif %}
 ),
 
