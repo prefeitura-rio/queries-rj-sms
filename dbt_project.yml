@@ -366,9 +366,9 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
-      prontuario_prontua_rio:
+      prontuario_prontuaRio:
         +schema: brutos_prontuario_prontuaRio
-        +tags: ["prontua_rio", "daily"]
+        +tags: ["prontuaRio", "daily"]
         +meta: {"owner": "herian"}
         +labels:
           dado_publico: nao
