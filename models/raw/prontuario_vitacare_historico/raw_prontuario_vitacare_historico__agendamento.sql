@@ -63,7 +63,7 @@ with
              {{ process_null('tipo_atendimento') }} as tipo_atendimento,
              {{ process_null('consulta_realizada') }} as consulta_realizada,
 
-             datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+             cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             date(safe_cast(extracted_at as datetime)) as data_particao
         from agendamento_deduplicados
     )

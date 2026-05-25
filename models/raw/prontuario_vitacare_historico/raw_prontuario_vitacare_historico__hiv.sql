@@ -113,7 +113,7 @@ WITH
             {{ process_null('aidsobsnotas') }} AS aids_obs_notas,
             {{ process_null('aidsemterapiaantiretroviral') }} AS aids_em_terapia_antiretroviral,
 
-            datetime(cast({{ process_null('extracted_at') }} as timestamp), 'America/Sao_Paulo') as loaded_at,
+            cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM hiv_deduplicados
     ),
