@@ -33,7 +33,17 @@ internacoes as (
         cast(unidade_atendimento as string) as cnes_maternidade_alta
     from {{ ref('raw_plataforma_subpav_sisare__internacoes') }}
     where id_internacao is not null
-    and dt_saida >= date('2026-01-01')  -- filtra pelos dados a partir de 2026
+      and dt_saida >= date('2026-01-01')  -- filtra pelos dados a partir de 2026
+
+),
+
+altas as (
+
+    select
+        cast(id_internacao as string) as id_internacao,
+        datetime(created_at) as data_hora_digitacao
+    from {{ ref('raw_plataforma_subpav_sisare__vw_altas') }}
+    where id_internacao is not null
 
 ),
 
@@ -86,6 +96,7 @@ base as (
     select
         g.cpf,
         g.nome,
+        a.data_hora_digitacao,
         i.data_alta_internacao,
         regexp_replace(i.cnes_maternidade_alta, r'\D', '') as cnes_maternidade_alta,
         e.nome_maternidade_alta,
@@ -98,6 +109,8 @@ base as (
     from gestantes g
     inner join internacoes i
         on i.id_internacao = g.id_internacao
+    left join altas a
+        on a.id_internacao = g.id_internacao
     left join desfechos_gestacao d
         on d.id_desfecho_gestacao = g.id_desfecho_gestacao
     left join estabelecimento e
@@ -114,6 +127,7 @@ telefones_explodidos as (
     select
         b.cpf,
         b.nome,
+        b.data_hora_digitacao,
         b.data_alta_internacao,
         b.cnes_maternidade_alta,
         b.nome_maternidade_alta,
@@ -149,6 +163,7 @@ final as (
     select
         cpf,
         nome,
+        data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,
         nome_maternidade_alta,
@@ -169,6 +184,7 @@ final as (
     group by
         cpf,
         nome,
+        data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,
         nome_maternidade_alta,
@@ -183,6 +199,7 @@ excecao_disparo_puerperas as (
     select
         cpf,
         nome,
+        cast(null as datetime) as data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,
         nome_maternidade_alta,

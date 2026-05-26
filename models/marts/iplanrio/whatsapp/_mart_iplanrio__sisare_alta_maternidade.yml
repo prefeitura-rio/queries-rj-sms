@@ -28,6 +28,10 @@ models:
         description: >
           Nome completo da gestante conforme cadastro no SISARE.
 
+      - name: data_hora_digitacao
+        description: >
+          Data e hora de digitação da alta no SISARE, obtida a partir do campo created_at da visão de altas.
+
       - name: telefones_gestante
         description: >
           Array de structs com os telefones da gestante consolidados a partir de múltiplas origens,
