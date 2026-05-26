@@ -1,7 +1,7 @@
 {{
   config(
     alias="paciente",
-    materialized="table",
+    materialized="ephemeral",
     schema="projeto_ocis",
     meta={"owner": "avellar"}
   )
