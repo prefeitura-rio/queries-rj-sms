@@ -2,7 +2,8 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="atendimento",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         unique_key="id_prontuario",
         tags=["prontuaRio"],
         partition_by={
@@ -13,11 +14,16 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with
  
   source_ as (
     select * 
     from {{source('brutos_prontuario_prontuaRio_staging', 'atendimento') }}
+    {% if is_incremental() %} 
+      where date(timestamp(loaded_at), 'America/Sao_Paulo') >= date( '{{ last_partition }}' ) 
+    {% endif %}
   ),
 
   atendimentos as (
@@ -126,8 +132,8 @@ final as (
     {{ process_null('obs_hemo') }} as obs_hemo,
     {{ process_null('hemo_ok') }} as hemo_ok,
     cnes,
-    loaded_at,
-    cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+    datetime(timestamp(loaded_at), 'America/Sao_Paulo') as loaded_at,
+    date(timestamp(loaded_at), 'America/Sao_Paulo') as data_particao
   from atendimentos
   qualify row_number() over(
     partition by id_atendimento, cnes

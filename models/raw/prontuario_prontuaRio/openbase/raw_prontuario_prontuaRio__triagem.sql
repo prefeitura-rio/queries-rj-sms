@@ -2,7 +2,8 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="triagem",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -13,11 +14,16 @@
 }}
 
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
 
 source_ as (
   select *
   from {{source('brutos_prontuario_prontuaRio_staging', 'triagem') }}
+  {% if is_incremental() %} 
+    where cast(loaded_at as date) >= date( '{{ last_partition }}' )  
+  {% endif %}
 ),
 
 triagem as (
@@ -144,8 +150,8 @@ final as (
     {{ process_null('parto_normal') }} as parto_normal,
     {{ process_null('parto_cesario') }} as parto_cesario,
     cnes,
-    cast(loaded_at as timestamp) as loaded_at,
-    cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+    loaded_at,
+    cast(loaded_at as date) as data_particao
   from triagem
   qualify row_number() over(
     partition by id_prontuario, id_boletim, cnes 

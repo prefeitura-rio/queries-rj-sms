@@ -2,7 +2,8 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="evolucao",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="insert_overwrite",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,9 +13,14 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
     source_ as (
     select * from {{source('brutos_prontuario_prontuaRio_staging', 'hp_rege_evolucao') }}
+    {% if is_incremental() %} 
+      where cast(loaded_at as date) >= date( '{{ last_partition }}' ) 
+    {% endif %}
     ),
 
     evolucao as (
@@ -22,7 +28,7 @@ with
             json_extract_scalar(data, '$.id') as id_prontuario,
             json_extract_scalar(data, '$.id_be') as id_boletim,
             json_extract_scalar(data, '$.cns') as cns,
-            json_extract_scalar(data, '$.registro') as registro, -- process null
+            json_extract_scalar(data, '$.registro') as registro, 
             json_extract_scalar(data, '$.data_reg') as registro_data,
             json_extract_scalar(data, '$.data_evo') as evolucao_data,
             json_extract_scalar(data, '$.profissional') as nome_profissional,
@@ -55,8 +61,8 @@ with
         select
             safe_cast(id_prontuario as int64) as id_prontuario, 
             safe_cast(id_boletim as int64) as id_boletim,
+            safe_cast(registro as int64) as registro,
             {{ process_null('cns') }} as cns,
-            {{ process_null('registro') }} as registro,
             safe_cast(evolucao_data as datetime) as evolucao_data,
             safe_cast(registro_data as datetime) as registro_data,
             {{ process_null('nome_profissional') }} as nome_profissional,
@@ -88,14 +94,15 @@ with
             {{ process_null('proc_descricao') }} as proc_descricao,
             cnes,
             loaded_at,
-            cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+            cast(loaded_at as date) as data_particao
         from evolucao
-        qualify row_number() over(partition by id_prontuario, id_boletim, cnes order by evolucao_data desc, loaded_at desc) = 1
+        qualify row_number() over(partition by id_prontuario, id_boletim, registro, cnes order by loaded_at desc) = 1
 
     )
 
 select 
     concat(cnes, '.', id_prontuario) as gid_prontuario,
     concat(cnes, '.', id_boletim) as gid_boletim,
+    concat(cnes, '.', registro) as gid_registro, 
     *
 from final
