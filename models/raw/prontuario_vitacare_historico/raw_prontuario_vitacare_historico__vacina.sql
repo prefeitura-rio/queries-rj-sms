@@ -99,7 +99,7 @@ with
              -- Metadata
             cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             cast({{ process_null('data_particao') }} as date) as data_particao,
-            
+          
         from vacina_dedup
     )
 

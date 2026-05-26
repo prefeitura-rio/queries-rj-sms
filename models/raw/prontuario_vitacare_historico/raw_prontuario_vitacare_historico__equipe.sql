@@ -50,7 +50,7 @@ WITH
             nome,
             n_ine,
    
-            extracted_at AS loaded_at,
+            cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM equipes_deduplicados
     ),

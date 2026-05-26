@@ -103,7 +103,7 @@ WITH
             {{ process_null('tabacosituacaopacientefase2') }} as tabaco_situacao_paciente_fase2,
             safe_cast({{ process_null('tabacoapoiomedicamentodatafim') }} as datetime) as tabaco_apoio_medicamento_data_fim,
 
-            extracted_at AS loaded_at,
+            cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM tabagismo_deduplicados
     )
