@@ -13,7 +13,6 @@ with gestantes as (
         cast(id_internacao as string) as id_internacao,
         cpf,
         nome,
-        telefone as telefone_sisare,
         dt_parto as data_parto,
         id_desfecho_internacao,
         id_desfecho_gestacao
@@ -33,7 +32,17 @@ internacoes as (
         cast(unidade_atendimento as string) as cnes_maternidade_alta
     from {{ ref('raw_plataforma_subpav_sisare__internacoes') }}
     where id_internacao is not null
-    and dt_saida >= date('2026-01-01')  -- filtra pelos dados a partir de 2026
+      and dt_saida >= date('2026-01-01')  -- filtra pelos dados a partir de 2026
+
+),
+
+altas as (
+
+    select
+        cast(id_internacao as string) as id_internacao,
+        datetime(created_at) as data_hora_digitacao
+    from {{ ref('raw_plataforma_subpav_sisare__vw_altas') }}
+    where id_internacao is not null
 
 ),
 
@@ -60,11 +69,10 @@ estabelecimento as (
 vitacare_tel as (
 
     select
-        regexp_replace(cast(cpf as string), r'\D', '') as cpf,
+        cpf,
         any_value({{ normalize_null("trim(cast(telefone as string))") }}) as telefone
-    from {{ ref('raw_prontuario_vitacare__paciente') }}
-    where {{ normalize_null("trim(cast(cpf as string))") }} is not null
-      and {{ normalize_null("trim(cast(telefone as string))") }} is not null
+    from {{ ref('int_prontuario_vitacare__paciente') }}
+    where {{ normalize_null("trim(cast(telefone as string))") }} is not null
     group by 1
 
 ),
@@ -72,11 +80,29 @@ vitacare_tel as (
 vitai_tel as (
 
     select
-        regexp_replace(cast(cpf as string), r'\D', '') as cpf,
+        {{ clean_numeric("cast(cpf as string)") }} as cpf,
         any_value({{ normalize_null("trim(cast(telefone as string))") }}) as telefone
     from {{ ref('raw_prontuario_vitai__paciente') }}
-    where {{ normalize_null("trim(cast(cpf as string))") }} is not null
+    where {{ clean_numeric("cast(cpf as string)") }} is not null
       and {{ normalize_null("trim(cast(telefone as string))") }} is not null
+    group by 1
+
+),
+
+cegonha_tel as (
+
+    select
+        cpf,
+        array_agg(
+            telefone.telefone_original
+            order by cast(telefone.prioridade as int64)
+            limit 1
+        )[offset(0)] as telefone_cegonha
+    from {{ ref('mart_iplanrio__siscegonha_agendamento_maternidade') }},
+    unnest(telefones_gestante) as telefone
+    where {{ normalize_null("trim(cast(cpf as string))") }} is not null
+      and telefone.origem = 'cegonha'
+      and {{ normalize_null("trim(cast(telefone.telefone_original as string))") }} is not null
     group by 1
 
 ),
@@ -86,22 +112,27 @@ base as (
     select
         g.cpf,
         g.nome,
+        a.data_hora_digitacao,
         i.data_alta_internacao,
         regexp_replace(i.cnes_maternidade_alta, r'\D', '') as cnes_maternidade_alta,
         e.nome_maternidade_alta,
         g.data_parto,
         g.id_desfecho_gestacao,
         d.desfecho_gestacao,
-        g.telefone_sisare,
+        cg.telefone_cegonha,
         vt.telefone as telefone_vitacare,
         vi.telefone as telefone_vitai
     from gestantes g
     inner join internacoes i
         on i.id_internacao = g.id_internacao
+    left join altas a
+        on a.id_internacao = g.id_internacao
     left join desfechos_gestacao d
         on d.id_desfecho_gestacao = g.id_desfecho_gestacao
     left join estabelecimento e
         on e.cnes_maternidade_alta = regexp_replace(i.cnes_maternidade_alta, r'\D', '')
+    left join cegonha_tel cg
+        on cg.cpf = g.cpf
     left join vitacare_tel vt
         on vt.cpf = g.cpf
     left join vitai_tel vi
@@ -114,6 +145,7 @@ telefones_explodidos as (
     select
         b.cpf,
         b.nome,
+        b.data_hora_digitacao,
         b.data_alta_internacao,
         b.cnes_maternidade_alta,
         b.nome_maternidade_alta,
@@ -125,7 +157,7 @@ telefones_explodidos as (
         tel.prioridade
     from base b,
     unnest([
-        struct(b.telefone_sisare   as telefone, 'sisare'    as origem, 1 as prioridade),
+        struct(b.telefone_cegonha  as telefone, 'cegonha'   as origem, 1 as prioridade),
         struct(b.telefone_vitacare as telefone, 'vitacare'  as origem, 2 as prioridade),
         struct(b.telefone_vitai    as telefone, 'vitai'     as origem, 3 as prioridade)
     ]) as tel
@@ -149,6 +181,7 @@ final as (
     select
         cpf,
         nome,
+        data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,
         nome_maternidade_alta,
@@ -169,6 +202,7 @@ final as (
     group by
         cpf,
         nome,
+        data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,
         nome_maternidade_alta,
@@ -183,6 +217,7 @@ excecao_disparo_puerperas as (
     select
         cpf,
         nome,
+        cast(null as datetime) as data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,
         nome_maternidade_alta,
