@@ -19,8 +19,9 @@ models:
           Contempla exclusivamente internações do ano vigente cujo desfecho foi Aborto (1) ou Parto (3).
           Para cada gestante, os telefones são consolidados a partir do agendamento do Cegonha Digital
           e enriquecidos com os prontuários da SMS (Vitacare e Vitai), sendo armazenados em um array
-          ordenado por prioridade. O telefone informado no SISARE não é utilizado como fonte de contato
-          para disparo.
+          ordenado por prioridade. O telefone informado no SISARE não é utilizado como fonte de contato para disparo, 
+          pois considera-se que essa informação pode estar desatualizada.
+
     columns:
       - name: cpf
         description: >
@@ -32,7 +33,7 @@ models:
 
       - name: data_hora_digitacao
         description: >
-          Data e hora de digitação da alta no SISARE, obtida a partir do campo created_at da visão de altas.
+          Data e hora de digitação da alta no SISARE, obtida a partir do campo created_at da tabela altas.
 
       - name: telefones_gestante
         description: >

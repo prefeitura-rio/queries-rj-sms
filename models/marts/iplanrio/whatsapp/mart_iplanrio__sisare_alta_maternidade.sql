@@ -69,11 +69,10 @@ estabelecimento as (
 vitacare_tel as (
 
     select
-        regexp_replace(cast(cpf as string), r'\D', '') as cpf,
+        cpf,
         any_value({{ normalize_null("trim(cast(telefone as string))") }}) as telefone
-    from {{ ref('raw_prontuario_vitacare__paciente') }}
-    where {{ normalize_null("trim(cast(cpf as string))") }} is not null
-      and {{ normalize_null("trim(cast(telefone as string))") }} is not null
+    from {{ ref('int_prontuario_vitacare__paciente') }}
+    where {{ normalize_null("trim(cast(telefone as string))") }} is not null
     group by 1
 
 ),
@@ -81,10 +80,10 @@ vitacare_tel as (
 vitai_tel as (
 
     select
-        regexp_replace(cast(cpf as string), r'\D', '') as cpf,
+        {{ clean_numeric("cast(cpf as string)") }} as cpf,
         any_value({{ normalize_null("trim(cast(telefone as string))") }}) as telefone
     from {{ ref('raw_prontuario_vitai__paciente') }}
-    where {{ normalize_null("trim(cast(cpf as string))") }} is not null
+    where {{ clean_numeric("cast(cpf as string)") }} is not null
       and {{ normalize_null("trim(cast(telefone as string))") }} is not null
     group by 1
 
@@ -93,7 +92,7 @@ vitai_tel as (
 cegonha_tel as (
 
     select
-        regexp_replace(cast(cpf as string), r'\D', '') as cpf,
+        cpf,
         array_agg(
             telefone.telefone_original
             order by cast(telefone.prioridade as int64)
