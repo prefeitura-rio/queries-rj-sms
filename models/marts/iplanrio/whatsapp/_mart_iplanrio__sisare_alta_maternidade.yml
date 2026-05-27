@@ -17,8 +17,10 @@ models:
           Tabela do projeto Cegonha Digital que consolida eventos hospitalares de parto e aborto
           registrados no SISARE, com dados de contato da gestante validados para disparo via WhatsApp.
           Contempla exclusivamente internações do ano vigente cujo desfecho foi Aborto (1) ou Parto (3).
-          Para cada gestante, os telefones são consolidados a partir do próprio SISARE e enriquecidos
-          com os prontuários da SMS (Vitacare e Vitai), sendo armazenados em um array ordenado por prioridade.
+          Para cada gestante, os telefones são consolidados a partir do agendamento do Cegonha Digital
+          e enriquecidos com os prontuários da SMS (Vitacare e Vitai), sendo armazenados em um array
+          ordenado por prioridade. O telefone informado no SISARE não é utilizado como fonte de contato
+          para disparo.
     columns:
       - name: cpf
         description: >
@@ -34,11 +36,11 @@ models:
 
       - name: telefones_gestante
         description: >
-          Array de structs com os telefones da gestante consolidados a partir de múltiplas origens,
-          ordenados por prioridade. Cada elemento contém:
+          Array de structs com os telefones da gestante consolidados a partir das fontes válidas
+          para disparo via WhatsApp, ordenados por prioridade. Cada elemento contém:
           - telefone_original: número bruto conforme registrado na origem.
-          - origem: fonte do telefone. Valores possíveis: sisare, vitacare, vitai.
-          - prioridade: ordem de preferência do telefone (1 = sisare, 2 = vitacare, 3 = vitai).
+          - origem: fonte do telefone. Valores possíveis: cegonha, vitacare, vitai.
+          - prioridade: ordem de preferência do telefone (1 = cegonha, 2 = vitacare, 3 = vitai).
           - telefone_valido_whatsapp: telefone validado e padronizado no formato 55DDD9XXXXXXXX
             para disparo via WhatsApp. Nulo quando o número não atende aos critérios de validade.
           - motivo_invalidacao_telefone: motivo pelo qual o telefone foi considerado inválido.

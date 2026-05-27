@@ -13,7 +13,6 @@ with gestantes as (
         cast(id_internacao as string) as id_internacao,
         cpf,
         nome,
-        telefone as telefone_sisare,
         dt_parto as data_parto,
         id_desfecho_internacao,
         id_desfecho_gestacao
@@ -91,6 +90,24 @@ vitai_tel as (
 
 ),
 
+cegonha_tel as (
+
+    select
+        regexp_replace(cast(cpf as string), r'\D', '') as cpf,
+        array_agg(
+            telefone.telefone_original
+            order by cast(telefone.prioridade as int64)
+            limit 1
+        )[offset(0)] as telefone_cegonha
+    from {{ ref('mart_iplanrio__siscegonha_agendamento_maternidade') }},
+    unnest(telefones_gestante) as telefone
+    where {{ normalize_null("trim(cast(cpf as string))") }} is not null
+      and telefone.origem = 'cegonha'
+      and {{ normalize_null("trim(cast(telefone.telefone_original as string))") }} is not null
+    group by 1
+
+),
+
 base as (
 
     select
@@ -103,7 +120,7 @@ base as (
         g.data_parto,
         g.id_desfecho_gestacao,
         d.desfecho_gestacao,
-        g.telefone_sisare,
+        cg.telefone_cegonha,
         vt.telefone as telefone_vitacare,
         vi.telefone as telefone_vitai
     from gestantes g
@@ -115,6 +132,8 @@ base as (
         on d.id_desfecho_gestacao = g.id_desfecho_gestacao
     left join estabelecimento e
         on e.cnes_maternidade_alta = regexp_replace(i.cnes_maternidade_alta, r'\D', '')
+    left join cegonha_tel cg
+        on cg.cpf = g.cpf
     left join vitacare_tel vt
         on vt.cpf = g.cpf
     left join vitai_tel vi
@@ -139,7 +158,7 @@ telefones_explodidos as (
         tel.prioridade
     from base b,
     unnest([
-        struct(b.telefone_sisare   as telefone, 'sisare'    as origem, 1 as prioridade),
+        struct(b.telefone_cegonha  as telefone, 'cegonha'   as origem, 1 as prioridade),
         struct(b.telefone_vitacare as telefone, 'vitacare'  as origem, 2 as prioridade),
         struct(b.telefone_vitai    as telefone, 'vitai'     as origem, 3 as prioridade)
     ]) as tel
