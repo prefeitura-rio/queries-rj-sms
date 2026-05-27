@@ -1,27 +1,31 @@
 -- dias_atraso =
--- dias_desde_trigger - threshold
+--   max( 0, date_diff(hoje, data_trigger) - intervalo_urgencia )
 
-{% macro monitora_cancer_dias_atraso(data_inicio, threshold) %}
+{% macro monitora_cancer_dias_atraso(data_inicio, intervalo_urgencia) %}
   GREATEST(
     0,
-    DATE_DIFF(CURRENT_DATE('America/Sao_Paulo'), {{ data_inicio }}, DAY) - {{ threshold }}
+    DATE_DIFF(CURRENT_DATE('America/Sao_Paulo'), {{ data_inicio }}, DAY) - {{ intervalo_urgencia }}
   )
 {% endmacro %}
 
 
 /*
-    Dias de atraso de um subscore do monitora_cancer.
+    Dias de atraso de um critério do score de gravidade do
+    monitora_cancer.
 
     Conta os dias entre `data_inicio` (data do evento gatilho — pode ser
-    data_trigger, data_solicitacao ou data_autorizacao, conforme o subscore)
-    e o dia de hoje no fuso America/Sao_Paulo, descontando o `threshold`
-    (folga em dias antes de começar a contar atraso). O piso 0 garante que,
-    dentro do threshold, dias_atraso = 0 — equivalente a "trigger ativo mas
-    sem atraso ainda".
+    data_trigger, data_solicitacao ou data_autorizacao, conforme o critério)
+    e o dia de hoje no fuso America/Sao_Paulo, descontando o
+    `intervalo_urgencia` (folga clinicamente tolerável em dias). O piso 0
+    garante que, dentro da folga, dias_atraso = 0 — equivalente a "gatilho
+    ativo mas dentro da janela tolerada".
 
     Parâmetros:
       • data_inicio: expressão SQL com a data do gatilho a partir da qual
         contar o atraso.
-      • threshold: dias de folga subtraídos do date_diff antes do GREATEST.
-        Tipicamente a variável Jinja subscore_N_threshold do modelo.
+      • intervalo_urgencia: folga em dias subtraída do date_diff
+        antes do GREATEST. Tipicamente a variável Jinja
+        criterio_N_intervalo de int_monitora_cancer__gravidade_instancias.
+        A cada intervalo_urgencia dias adicionais de atraso (depois da
+        folga), o fator de tempo dias_atraso/intervalo_urgencia cresce em 1.
 */
