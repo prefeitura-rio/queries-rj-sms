@@ -113,12 +113,10 @@ with
             cnes,
             loaded_at
         from evolucao
-        {% if not is_incremental() %}
         qualify row_number() over(
             partition by id_prontuario, id_boletim, registro, cnes 
             order by loaded_at desc
         ) = 1
-        {% endif %}
     )
 
 select 

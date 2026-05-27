@@ -2,8 +2,7 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="profissional_atividade",
-        materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        materialized="table",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",

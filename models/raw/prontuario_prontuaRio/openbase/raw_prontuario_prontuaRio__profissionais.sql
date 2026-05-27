@@ -3,7 +3,8 @@
         schema='brutos_prontuario_prontuaRio',
         alias="profissionais",
         materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy="merge",
+        unique_key="id",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -68,6 +69,14 @@ final as (
 
 
 select
+    {{
+      dbt_utils.generate_surrogate_key(
+        [
+            'cnes',
+            'cpf'
+        ]
+      )
+    }} as id,
     concat(cnes, '.', cpf) as gid_profissional,
     *
 from final
