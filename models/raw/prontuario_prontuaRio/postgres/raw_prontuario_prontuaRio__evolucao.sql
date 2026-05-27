@@ -35,9 +35,6 @@ with
     source_ as (
         select * from {{ source('brutos_prontuario_prontuaRio_staging', 'hp_rege_evolucao') }}
         {% if not is_incremental() %}
-        /*
-
-        */
           where date(loaded_at) between date('2026-05-20') and date('2026-05-20') -- Primeira extração do ProntuaRio
         {% endif %}
         {% if is_incremental() %} 
