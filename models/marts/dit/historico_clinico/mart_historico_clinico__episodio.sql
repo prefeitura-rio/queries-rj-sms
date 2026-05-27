@@ -174,10 +174,10 @@ with
         --     prontuario,
         --     metadados,
         --     cpf_particao
-        -- from {{ ref("int_historico_clinico__episodio__prontuaRio") }}
-        -- {% if is_incremental() %}
-        --     where date(metadados.imported_at) >= (select max(data_particao) from {{ this }})
-        -- {% endif %}
+        -- from // ref("int_historico_clinico__episodio__prontuaRio") //
+        -- // if is_incremental() //
+        --     where date(metadados.imported_at) >= (select max(data_particao) from // this //)
+        -- // endif //
 
         --##################
         --##    Sarah     ##
