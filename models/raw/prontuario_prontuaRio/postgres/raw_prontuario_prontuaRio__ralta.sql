@@ -3,7 +3,8 @@
         schema='brutos_prontuario_prontuaRio',
         alias="ralta",
         materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy="merge",
+        unique_key="id",  
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -65,6 +66,16 @@ with
   )
 
 select
+    {{
+      dbt_utils.generate_surrogate_key(
+        [
+            'cnes',
+            'id_boletim',
+            'id_alta',
+            'id_prontuario'
+        ]
+      )
+  }} as id,
   concat(cnes, '.', id_alta) as gid_alta,
   concat(cnes, '.', id_prontuario) as gid_prontuario,
   concat(cnes, '.', id_boletim) as gid_boletim,
