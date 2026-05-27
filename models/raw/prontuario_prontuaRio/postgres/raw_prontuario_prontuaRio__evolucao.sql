@@ -19,21 +19,25 @@
 with 
 
 /*
-  Caso seja necessário rodar o modelo em modo --full-refresh é preciso executar o comando abaixo: 
-  $ dbt run -s raw_prontuario_prontuaRio__evolucao --full-refresh --vars '{"start_date": "2026-05-20", "end_date": "2026-05-20"}'
+  Ao executar o run/build com --full-refresh sem a lógica abaixo, é gerado um erro de uso de memória.
+  Isso acontece devido ao conteúdo presente no campo `descricao` que contém extensos formulários em html.
+  Para contornar este problema restringimos a execução para rodar apenas com dados extraídos no primeiro 
+  dia de extração do ProntuaRio (20/05/2026).
 
-  Depois é necessário ir executando dia a dia em modo incremental para não sobrecarregar o processamento de dados.
-  As primeiras extrações dos arquivos mais antigos foram feitas do dia 20/05/2026 até o dia 25/05/2026 
+  Os dados históricos (backup de novembro/2025) foram extraídos do dia 20/05/2026 até o dia 25/05/2026.
+  Dessa forma, para processa-los é necessário executar uma materialização utilizando os parâmetros abaixo:
 
   $ dbt run -s raw_prontuario_prontuaRio__evolucao --vars '{"start_date": "2026-05-21", "end_date": "2026-05-21"}'
-    
-  Quando for executar o modelo em modo incremental, ele irá considerar a data da última partição processada para buscar os dados 
-  a partir dela até a data atual.
+
+  A indicação é que seja feita dia a dia (até o dia 25/05/2026)
 */
 
     source_ as (
         select * from {{ source('brutos_prontuario_prontuaRio_staging', 'hp_rege_evolucao') }}
         {% if not is_incremental() %}
+        /*
+
+        */
           where date(loaded_at) between date('2026-05-20') and date('2026-05-20') -- Primeira extração do ProntuaRio
         {% endif %}
         {% if is_incremental() %} 
