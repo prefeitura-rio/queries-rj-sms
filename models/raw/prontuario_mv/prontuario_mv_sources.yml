@@ -12,3 +12,4 @@ sources:
       - name: evolucao_continuo
       - name: paciente_continuo
       - name: parecer_continuo
+      - name: profissional_continuo
