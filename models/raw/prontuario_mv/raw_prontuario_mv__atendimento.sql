@@ -41,6 +41,7 @@ paciente_json as (
         json_extract_scalar(data, '$.tipoAtendimento') as tipoAtendimento,
         json_extract_scalar(data, '$.especialidadeAtendimento') as especialidadeAtendimento,
         json_extract_scalar(data, '$.hr_nascimento_rn') as hr_nascimento_rn,
+        json_extract_scalar(data, '$.dh_alta_medica') as dh_alta_medica,
         datalake_loaded_at,
         source_updated_at
     from source
@@ -52,6 +53,7 @@ paciente_renomeado as (
         {{ process_null('numero_atendimento') }} as id_atendimento,
         {{ process_null('id_cnes') }} as id_cnes,
         safe.parse_datetime('%Y/%m/%d %H:%M:%S', data_atendimento) as atendimento_datahora,
+        safe.parse_datetime('%Y/%m/%d %H:%M:%S', dh_alta_medica) as alta_datahora,
         case 
             when tipoAtendimento like 'A' then 'AMBULATORIAL'
             when tipoAtendimento like 'B' then 'BUSCA ATIVA'
