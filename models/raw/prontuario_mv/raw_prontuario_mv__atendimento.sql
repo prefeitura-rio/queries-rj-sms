@@ -16,6 +16,11 @@
 
 
 with 
+/*
+    Apesar do source ser a tabela `paciente_continuo` por algum motivo a MV está enviando a 
+    tabela de atendimento no endpoint de paciente e enviam os dados dos pacientes em todas as 
+    outras tabelas.
+*/
 
 source as (
     select * 
@@ -31,6 +36,7 @@ paciente_json as (
         payload_cnes as id_cnes,
         json_extract_scalar(data, '$.numero_atendimento') as numero_atendimento,
         json_extract_scalar(data, '$.nome_paciente') as nome_paciente,
+        json_extract_scalar(data, '$.cpf_paciente') as cpf_paciente,
         json_extract_scalar(data, '$.cns_paciente') as cns_paciente,
         json_extract_scalar(data, '$.nome_social_paciente') as nome_social_paciente,
         json_extract_scalar(data, '$.data_nascimento_paciente') as data_nascimento_paciente,
@@ -67,6 +73,7 @@ paciente_renomeado as (
         {{ process_null('especialidadeAtendimento') }} as atendimento_especialidade,
 
         -- Paciente
+        {{ process_null('cpf_paciente') }} as paciente_cpf,
         {{ process_null('nome_paciente') }} as paciente_nome,
         {{ process_null('cns_paciente') }} as paciente_cns,
         {{ process_null('nome_social_paciente') }} as paciente_nome_social,
