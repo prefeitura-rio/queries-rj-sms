@@ -39,8 +39,14 @@ parênteses é o que aparece no SQL)
   a 4 (grave). Vem dos exames e da regulação.
 - **`peso_criterio`**: importância relativa do tipo de critério.
   "Diagnóstico confirmado" pesa mais que "suspeita em rastreio".
-- **`gravidade_criterio`** = `risco_evento_gatilho × dias_atraso` -
-  o quão "pesado" o critério está ficando.
+- **`fator_tempo`** = `dias_atraso ÷ intervalo_urgencia_dias` - quantas
+  "folgas" de atraso já se passaram. Cresce sem teto.
+- **`fator_risco`**: converte o risco bruto (1 a 4) num peso suave -
+  com os parâmetros atuais, `(risco + 1) ÷ 5`, dando entre 0.4 e 1.0
+  (o "+1" e o "÷5" vêm de amortecedor_risco e risco_maximo_escala).
+  Amortece: risco 4 vale 2.5× o risco 1, não 4×. Risco ausente vira 2.
+- **`gravidade_criterio`** = `fator_risco × fator_tempo` - o quão
+  "pesado" o critério está ficando.
 - **`contribuicao_criterio`** = `peso_criterio × gravidade_criterio` -
   contribuição de um critério para o `gravidade_total` da paciente.
 - **`gravidade_termo_max`**, **`gravidade_termo_soma`**: agregações da
@@ -56,7 +62,9 @@ parênteses é o que aparece no SQL)
 PARA CADA paciente:
 
     PARA CADA critério ativo da paciente:
-        gravidade_criterio    = risco_evento_gatilho × dias_atraso
+        fator_tempo           = dias_atraso ÷ intervalo_urgencia_dias
+        fator_risco           = (risco_evento_gatilho + 1) ÷ 5
+        gravidade_criterio    = fator_risco × fator_tempo
         contribuicao_criterio = peso_criterio × gravidade_criterio
 
     gravidade_termo_max  = a MAIOR contribuicao_criterio entre os critérios
@@ -88,6 +96,37 @@ critério ativo continua com `gravidade_total = 0` (não há
 dois garante que tanto um único caso muito grave quanto uma carga
 acumulada de casos médios fazem a paciente subir na fila. Sem isso, ou
 só os casos catastróficos importariam, ou só o volume de pendências.
+
+## Exemplo passo a passo
+
+Paciente fictícia **Maria**: 2 critérios ativos e gestante.
+
+```text
+Critério C2 (mamografia Cat 6):  risco 4,  atraso 10 dias,  folga 5,   peso 3
+    fator_tempo           = 10 ÷ 5       = 2.0
+    fator_risco           = (4 + 1) ÷ 5  = 1.0
+    gravidade_criterio    = 1.0 × 2.0    = 2.0
+    contribuicao_criterio = 3 × 2.0      = 6.0
+
+Critério C5 (SER pendente):      risco 2,  atraso 10 dias,  folga 10,  peso 2
+    fator_tempo           = 10 ÷ 10      = 1.0
+    fator_risco           = (2 + 1) ÷ 5  = 0.6
+    gravidade_criterio    = 0.6 × 1.0    = 0.6
+    contribuicao_criterio = 2 × 0.6      = 1.2
+
+Agregação por paciente:
+    gravidade_termo_max  = maior(6.0, 1.2) = 6.0
+    gravidade_termo_soma = 6.0 + 1.2       = 7.2
+
+Score (Maria é gestante → multiplicador_gestante = 1):
+    gravidade_total = 6.0 × (1 + 1) + 0.5 × 7.2
+                    = 12.0 + 3.6
+                    = 15.6
+```
+
+O critério de diagnóstico (C2) domina o score, como esperado: peso alto
+× muito atraso. Se Maria não fosse gestante, o score seria
+`6.0 × 1 + 0.5 × 7.2 = 9.6`.
 
 ## Critérios atuais e seus parâmetros
 
