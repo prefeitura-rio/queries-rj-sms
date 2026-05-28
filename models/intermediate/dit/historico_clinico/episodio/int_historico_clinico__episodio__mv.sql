@@ -22,6 +22,7 @@ atendimento as (
     id_atendimento,
     id_cnes,
     atendimento_datahora,
+    alta_datahora,
     atendimento_tipo,
     atendimento_especialidade,  
     loaded_at,
@@ -149,7 +150,7 @@ select
   atendimento_tipo as tipo,
   atendimento_especialidade as subtipo,
   atendimento.atendimento_datahora as entrada_datahora,
-  alta_medica_datahora as saida_datahora,
+  alta_datahora as saida_datahora,
 
   -- Exames Realizados 
 
