@@ -48,18 +48,12 @@ WITH
             cod_cid10 AS cod_cid10,
             estado AS estado,
             SAFE_CAST((data_diagnostico) AS DATETIME) AS data_diagnostico,
-            extracted_at AS loaded_at,
+            cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
         FROM condicoes_deduplicados
-    ),
-
-    -- Filtro temporário para remover registros anteriores à carga oficial (24/06/2025 17:15)
-    fato_filtrado AS (
-        SELECT *
-        FROM fato_condicoes
-        WHERE PARSE_TIMESTAMP('%F %H:%M:%E6S', loaded_at) > TIMESTAMP('2025-06-24 17:15:00.000000')
     )
+
 
 SELECT
     *
-FROM fato_filtrado
+FROM fato_condicoes

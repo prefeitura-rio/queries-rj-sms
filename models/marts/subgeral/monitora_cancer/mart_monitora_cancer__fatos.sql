@@ -1,8 +1,18 @@
 -- noqa: disable=LT08
--- Este modelo contem fatos relacionados a todos os procedimentos de mama encontrados nas bases listadas
+-- Fatos unificados do monitoramento de câncer de mama.
+-- Responsável pelo UNION das fontes intermediárias + enriquecimento de CPF e estabelecimento.
+
+-- Lookback empírico: p99 do date_diff(data_solicitacao, data_execucao) sobre todas
+-- as solicitações no sisreg (histórico) em 04/05/2026.
+-- Cobre eventos cuja execução chega tardiamente após a solicitação.
+{% set lookback_dias = 464 %}
+
+{% set last_partition = get_last_partition_date( this ) %}
+
 {{
   config(
-    enabled=true,
+    materialized='incremental',
+    incremental_strategy='merge',
     schema="projeto_monitora_cancer",
     alias="fatos",
     unique_key=['sistema_origem', 'id_sistema_origem'],
@@ -11,601 +21,102 @@
       "data_type": "date",
       "granularity": "month",
     },
+incremental_predicates = [
+  "DBT_INTERNAL_DEST.data_solicitacao >= date_sub(date('" ~ last_partition ~ "'), interval " ~ lookback_dias ~ " day)"
+],
 cluster_by = ['sistema_origem', 'id_cnes_unidade_origem', 'id_cnes_unidade_executante', 'paciente_cpf'],
 on_schema_change = 'sync_all_columns'
 )
 }}
 
 with
-    sisreg as (
-        select
-        -- pk
-            "SISREG" as sistema_origem,
-            "REGULACAO" as sistema_tipo,
-            safe_cast(id_solicitacao as int) as id_sistema_origem,
-
-        -- paciente
-            paciente_cpf,
-            paciente_cns,
-
-        -- unidades
-            id_cnes_unidade_solicitante as id_cnes_unidade_origem,
-            id_cnes_unidade_executante,
-
-        -- attr
-            solicitacao_risco as carater,
-            cid_solicitacao as cid,
-            fcts.solicitacao_status as evento_status,
-
-        -- proced
-            sheets.especialidade as procedimento_especialidade,
-            sheets.tipo_procedimento as procedimento_tipo,
-            procedimento,
-
-        -- datas
-            safe_cast(data_solicitacao as date) as data_solicitacao,
-            safe_cast(data_autorizacao as date) as data_autorizacao,
-            safe_cast(data_execucao as date) as data_execucao,
-        --data_cancelamento,
-
-        -- resultados siscan
-            cast(NULL as date) as data_exame_resultado,
-            cast(NULL as string) as mama_esquerda_classif_radiologica,
-            cast(NULL as string) as mama_direita_classif_radiologica,
-
-        -- indicadores
-            case
-                when procedimento in (
-                    "MAMOGRAFIA  DIAGNOSTICA",
-                    "BIÓPSIA DE MAMA - LESÃO PALPÁVEL",
-                    "BIOPSIA DE MAMA GUIADA POR USG",
-                    "BIOPSIA DE MAMA POR ESTEREOTAXIA",
-
-                    "ULTRASSONOGRAFIA MAMARIA BILATERAL PARA ORIENTAR BIOPSIA DE MAMA"
-                ) then true
-                else false
-            end as criterio_suspeita,
-            false as criterio_diagnostico
-
-
-        from {{ref("mart_sisreg__solicitacoes")}} as fcts
-            left join {{ ref("raw_sheets__assistencial_procedimento") }} as sheets
-            on safe_cast(fcts.id_procedimento_sisreg as int) = safe_cast(sheets.id_procedimento as int)
-        where 1 = 1
-            and data_solicitacao >= "2021-01-01"
-            and fcts.procedimento in (
-                "MAMOGRAFIA BILATERAL",
-                "MAMOGRAFIA  DIAGNOSTICA",
-                "CONSULTA EM MASTOLOGIA",
-                "CONSULTA EM GINECOLOGIA - MASTOLOGIA",
-                "CONSULTA EM CIRURGIA PLASTICA - REPARADORA - MAMA",
-                "BIÓPSIA DE MAMA - LESÃO PALPÁVEL",
-                "BIOPSIA DE MAMA GUIADA POR USG",
-                "BIOPSIA DE MAMA POR ESTEREOTAXIA",
-                "ULTRASSONOGRAFIA DE MAMAS BILATERAL",
-                "ULTRA-SONOGRAFIA DE MAMAS  BILATERAL",
-                "ULTRA-SONOGRAFIA  DE MAMAS (BILATERAL) - PEDIATRICA",
-                "ULTRA-SONOGRAFIA DOPPLER DE MAMAS",
-                "ULTRASSONOGRAFIA MAMARIA BILATERAL PARA ORIENTAR BIOPSIA DE MAMA",
-                "RESSONANCIA MAGNETICA DE MAMA (BILATERAL)",
-                "RESSONANCIA MAGNETICA DE MAMA ESQUERDA",
-                "RESSONANCIA MAGNETICA DE MAMA DIREITA",
-
-                "MAMOGRAFIA BILATERAL - PPI",
-                "CONSULTA EM GINECOLOGIA - MASTOLOGIA - PPI",
-                "BIÓPSIA DE MAMA - LESÃO PALPÁVEL - PPI",
-                "BIOPSIA DE MAMA GUIADA POR USG-PPI",
-                "ULTRA-SONOGRAFIA DE MAMAS BILATERAL - PPI",
-                "ULTRA-SONOGRAFIA DOPPLER DE MAMAS - PPI"
-            )
+    -- Snapshot da última competência do dim de estabelecimentos.
+    -- Não usa modelo DIM da DIT pois temos mais unidades.
+    dim_estabelecimento_atual as (
+        select id_cnes, nome_fantasia
+        from {{ ref('dim_estabelecimento_sus_rio_historico') }}
+            qualify rank() over (order by ano_competencia desc, mes_competencia desc) = 1
     ),
 
-    ser_ambulatorial as (
-        select
-        -- pk
-            "SER" as sistema_origem,
-            "REGULACAO" as sistema_tipo,
-            id_solicitacao as id_sistema_origem,
-
-        -- paciente
-            paciente_cns,
-
-        -- unidades
-            id_cnes_unidade_origem,
-            id_cnes_unidade_executante,
-
-        -- attr
-            carater,
-            cid,
-            cast(NULL as string) as evento_status,
-
-        -- procedimento
-            coalesce(especialidade_solicitado, especialidade_regulado) as procedimento_especialidade,
-            coalesce(procedimento_solicitado_tipo, procedimento_regulado_tipo) as procedimento_tipo,
-            coalesce(procedimento_regulado, procedimento_solicitado) as procedimento,
-
-        -- datas
-            data_solicitacao,
-            data_agendamento as data_autorizacao,
-            --data_tratamento_inicio,
-            --data_tratamento_prevista,
-            data_execucao,
-
-        -- resultados siscan
-            cast(NULL as date) as data_exame_resultado,
-            cast(NULL as string) as mama_esquerda_classif_radiologica,
-            cast(NULL as string) as mama_direita_classif_radiologica,
-
-        -- indicadores
-            false as criterio_suspeita,
-            case
-                when
-                procedimento_solicitado in (
-                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)"
-                )
-                or
-                procedimento_regulado in (
-                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)"
-                )
-                then true
-                else false
-            end as criterio_diagnostico
-
-        from {{ ref("raw_ser_metabase__ambulatorial") }}
-        where 1 = 1
-            and data_solicitacao >= "2021-01-01"
-            and (
-                procedimento_solicitado in (
-                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)",
-                    "RESSONÂNCIA MAGNÉTICA DE MAMA",
-                    "BIÓPSIA DE MAMA GUIADA POR USG",
-                    "AMBULATÓRIO 1ª VEZ EM CIRURGIA PLÁSTICA REPARADORA - MAMA (ONCOLOGIA)",
-                    "MAMOGRAFIA BILATERAL",
-                    "BIÓPSIA DE MAMA POR ULTRASSONOGRAFIA",
-                    "BIÓPSIA GUIADA POR MAMOGRAFIA",
-                    "CORE BIOPSIA DE MAMA",
-                    "RESSONÂNCIA MAGNÉTICA DE MAMA-ONCOLOGIA",
-                    "ULTRA-SONOGRAFIA DOPPLER DE MAMAS",
-                    "ULTRASSONOGRAFIA DE MAMA (FEMININA E MASCULINA)",
-                    "MASTOLOGIA (RETORNO)",
-                    "CREG BL AMBULATÓRIO 1ª VEZ - MASTOLOGIA",
-                    "MAMOGRAFIA - BILATERAL",
-                    "BIOPSIA DE MAMA POR PAAF",
-                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA",
-                    "AMBULATÓRIO 1ª VEZ EM MASTOLOGIA - LESÃO IMPALPÁVEL (ONCOLOGIA)",
-                    "CONSULTA EM MASTOLOGIA",
-                    "MAMOGRAFIA DE RASTREIO",
-                    "ULTRASSONOGRAFIA - MAMAS",
-                    "BIÓPSIA DE MAMA POR ESTEREOTAXIA / MAMOTOMIA",
-                    "CONSULTA EM GINECOLOGIA - MASTOLOGIA",
-                    "BIÓPSIA DE MAMA - LESÃO PALPÁ�VEL",
-                    "ULTRASSONOGRAFIA DE MAMA COM DOPPLER",
-                    "CORE BIÓPSIA DE MAMA",
-                    "PROCEDIMENTOS DIAGNÓSTICOS GUIADOS POR USG (MAMA) (DESATIVADO)",
-                    "ULTRASSONOGRAFIA DE MAMAS BILATERAL",
-                    "BIÓPSIA DE MAMA POR ULTRASSONOGRAFIA"
-                ) or
-                procedimento_regulado in (
-                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA (ONCOLOGIA)",
-                    "RESSONÂNCIA MAGNÉTICA DE MAMA",
-                    "BIÓPSIA DE MAMA GUIADA POR USG",
-                    "AMBULATÓRIO 1ª VEZ EM CIRURGIA PLÁSTICA REPARADORA - MAMA (ONCOLOGIA)",
-                    "MAMOGRAFIA BILATERAL",
-                    "BIÓPSIA DE MAMA POR ULTRASSONOGRAFIA",
-                    "BIÓPSIA GUIADA POR MAMOGRAFIA",
-                    "CORE BIOPSIA DE MAMA",
-                    "RESSONÂNCIA MAGNÉTICA DE MAMA-ONCOLOGIA",
-                    "ULTRA-SONOGRAFIA DOPPLER DE MAMAS",
-                    "ULTRASSONOGRAFIA DE MAMA (FEMININA E MASCULINA)",
-                    "MASTOLOGIA (RETORNO)",
-                    "CREG BL AMBULATÓRIO 1ª VEZ - MASTOLOGIA",
-                    "MAMOGRAFIA - BILATERAL",
-                    "BIOPSIA DE MAMA POR PAAF",
-                    "AMBULATÓRIO 1ª VEZ - MASTOLOGIA",
-                    "AMBULATÓRIO 1ª VEZ EM MASTOLOGIA - LESÃO IMPALPÁVEL (ONCOLOGIA)",
-                    "CONSULTA EM MASTOLOGIA",
-                    "MAMOGRAFIA DE RASTREIO",
-                    "ULTRASSONOGRAFIA - MAMAS",
-                    "BIÓPSIA DE MAMA POR ESTEREOTAXIA / MAMOTOMIA",
-                    "CONSULTA EM GINECOLOGIA - MASTOLOGIA",
-                    "BIÓPSIA DE MAMA - LESÃO PALPÁ�VEL",
-                    "ULTRASSONOGRAFIA DE MAMA COM DOPPLER",
-                    "CORE BIÓPSIA DE MAMA",
-                    "PROCEDIMENTOS DIAGNÓSTICOS GUIADOS POR USG (MAMA) (DESATIVADO)",
-                    "ULTRASSONOGRAFIA DE MAMAS BILATERAL",
-                    "BIÓPSIA DE MAMA POR ULTRASSONOGRAFIA"
-                )
-            )
-    ),
-
-    ser_internacoes as (
-        select
-        -- pk
-            "SER" as sistema_origem,
-            "REGULACAO" as sistema_tipo,
-            id_solicitacao as id_sistema_origem,
-
-        -- paciente
-            paciente_cns,
-
-        -- unidades
-            id_cnes_unidade_origem,
-            id_cnes_unidade_executante,
-
-        -- attr
-            carater,
-            cid,
-            cast(NULL as string) as evento_status,
-
-        -- procedimento
-            procedimento_especialidade,
-            procedimento_tipo,
-            procedimento,
-            --coalesce(procedimento_leito_regulado_tipo, procedimento_leito_solicitado_tipo) as leito_tipo,
-
-        -- datas
-            data_solicitacao,
-            data_reserva as data_autorizacao, -- está certo isso? data_reserva = data_autorizacao?
-            data_internacao_inicio as data_execucao,
-            --data_internacao_termino,
-            --data_alta,
-
-        -- resultados siscan
-            cast(NULL as date) as data_exame_resultado,
-            cast(NULL as string) as mama_esquerda_classif_radiologica,
-            cast(NULL as string) as mama_direita_classif_radiologica,
-
-        -- indicadores
-            false as criterio_suspeita,
-            false as criterio_diagnostico
-
-        from {{ ref("raw_ser_metabase__internacoes") }}
-        where 1 = 1
-            and data_solicitacao >= "2021-01-01"
-            and procedimento in (
-                "DRENAGEM DE ABSCESSO DE MAMA",
-                "SEGMENTECTOMIA/QUADRANTECTOMIA/SETORECTOMIA DE MAMA EM ONCOLOGIA",
-                "MASTOIDECTOMIA RADICAL",
-                "MASTOIDECTOMIA SUBTOTAL",
-                "RESSECÇAO DE LESAO NAO PALPÁVEL DE MAMA COM MARCAÇAO EM ONCOLOGIA (POR MAMA)",
-                "MAMOPLASTIA PÓS-CIRURGIA BARIÁTRICA"
-            )
-    ),
-
--- repensar toda modelagem e decisoes deste cte do siscan
-    siscan as (
-        select
-        -- pk
-            "SISCAN" as sistema_origem,
-            "EXAME" as sistema_tipo,
-            safe_cast(protocolo_id as int) as id_sistema_origem,
-
-        -- paciente
-            paciente_cns,
-
-        -- unidades
-            unidade_solicitante_id_cnes as id_cnes_unidade_origem,
-            unidade_prestadora_id_cnes as id_cnes_unidade_executante,
-
-        -- attr,
-            mamografia_rastreamento_tipo as carater,
-            cast(NULL as string) as cid,
-            cast(NULL as string) as evento_status,
-
-        -- procedimento
-            cast(NULL as string) as procedimento_especialidade,
-            "RESULTADO DE EXAME" as procedimento_tipo,
-            case
-                when mamografia_tipo = "Rastreamento" then "RESULTADO MAMOGRAFIA DE RASTREIO"
-                when mamografia_tipo = "Diagnóstica" then "RESULTADO MAMOGRAFIA DIAGNOSTICA"
-                else null
-            end as procedimento,
-
-        -- datas
-            data_solicitacao,
-            cast(NULL as date) as data_autorizacao,
-            data_realizacao as data_execucao,
-
-        -- resultados siscan
-            data_liberacao_resultado as data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
-
-        -- indicadores
-            case
-                when
-                mama_esquerda_classif_radiologica in (
-                    "Categoria 4 - achados mamográficos suspeitos",
-                    "Categoria 5 - achados mamográficos altamente suspeitos"
-                )
-                or
-                mama_direita_classif_radiologica in (
-                    "Categoria 4 - achados mamográficos suspeitos",
-                    "Categoria 5 - achados mamográficos altamente suspeitos"
-                )
-                then true
-                else false
-            end as criterio_suspeita,
-
-            case
-                when
-                mama_esquerda_classif_radiologica = "Categoria 6 - achados mamográficos"
-                or
-                mama_direita_classif_radiologica = "Categoria 6 - achados mamográficos"
-                then true
-                else false
-            end as criterio_diagnostico
-
-        from {{ ref("raw_siscan_web__laudos") }}
-        where 1 = 1
-            and data_solicitacao >= "2021-01-01"
-    ),
-
--- refatorar
-    siscan_histo_mama as (
-        select
-        -- pk
-            "SISCAN" as sistema_origem,
-            "EXAME" as sistema_tipo,
-            safe_cast(protocolo_id as int) as id_sistema_origem,
-
-        -- paciente
-            paciente_cns,
-
-        -- unidades
-            unidade_solicitante_id_cnes as id_cnes_unidade_origem,
-            unidade_prestadora_id_cnes as id_cnes_unidade_executante,
-
-        -- attr,
-            cast(NULL as string) as carater,
-            cast(NULL as string) as cid,
-            cast(NULL as string) as evento_status,
-
-        -- procedimento
-            cast(NULL as string) as procedimento_especialidade,
-            "RESULTADO DE EXAME" as procedimento_tipo,
-            upper(procedimento_cirurgico) as procedimento,
-
-        -- datas
-            data_solicitacao,
-            cast(NULL as date) as data_autorizacao,
-            data_realizacao as data_execucao,
-
-        -- resultados siscan
-            data_liberacao_resultado as data_exame_resultado,
-            case 
-                when lateralidade = "Esquerda" then coalesce(lesao_neoplasico, lesao_benigno)
-                else null
-            end as mama_esquerda_classif_radiologica, 
-            
-            case 
-                when lateralidade = "Direita" then coalesce(lesao_neoplasico, lesao_benigno)
-                else null
-            end as mama_direita_classif_radiologica,
-
-        -- indicadores
-            true as criterio_suspeita,
-
-            case
-                when lesao_neoplasico is not null then true
-                else false
-            end as criterio_diagnostico
-
-        from {{ ref("raw_siscan_web__laudos_histo_mama") }}
-        where 1 = 1
-            and data_solicitacao >= "2021-01-01"
-    ),
-
-    fatos as (
-        select
-            sistema_origem,
-            sistema_tipo,
-            id_sistema_origem,
-            paciente_cns,
-            id_cnes_unidade_origem,
-            id_cnes_unidade_executante,
-            carater,
-            cid,
-            evento_status,
-            procedimento_especialidade,
-            procedimento_tipo,
-            procedimento,
-            data_solicitacao,
-            data_autorizacao,
-            data_execucao,
-            data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
-            criterio_suspeita,
-            criterio_diagnostico
-        from sisreg
+    fontes_unificadas as (
+        select * from {{ ref("int_monitora_cancer__sisreg") }}
+            {% if is_incremental() %}
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
+            {% endif %}
 
         union all
 
-        select
-            sistema_origem,
-            sistema_tipo,
-            id_sistema_origem,
-            paciente_cns,
-            id_cnes_unidade_origem,
-            id_cnes_unidade_executante,
-            carater,
-            cid,
-            evento_status,
-            procedimento_especialidade,
-            procedimento_tipo,
-            procedimento,
-            data_solicitacao,
-            data_autorizacao,
-            data_execucao,
-            data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
-            criterio_suspeita,
-            criterio_diagnostico
-        from ser_ambulatorial
+        select * from {{ ref("int_monitora_cancer__ser_ambulatorial") }}
+            {% if is_incremental() %}
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
+            {% endif %}
 
         union all
 
-        select
-            sistema_origem,
-            sistema_tipo,
-            id_sistema_origem,
-            paciente_cns,
-            id_cnes_unidade_origem,
-            id_cnes_unidade_executante,
-            carater,
-            cid,
-            evento_status,
-            procedimento_especialidade,
-            procedimento_tipo,
-            procedimento,
-            data_solicitacao,
-            data_autorizacao,
-            data_execucao,
-            data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
-            criterio_suspeita,
-            criterio_diagnostico
-        from ser_internacoes
+        select * from {{ ref("int_monitora_cancer__siscan") }}
+            {% if is_incremental() %}
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
+            {% endif %}
 
         union all
 
-        select
-            sistema_origem,
-            sistema_tipo,
-            id_sistema_origem,
-            paciente_cns,
-            id_cnes_unidade_origem,
-            id_cnes_unidade_executante,
-            carater,
-            cid,
-            evento_status,
-            procedimento_especialidade,
-            procedimento_tipo,
-            procedimento,
-            data_solicitacao,
-            data_autorizacao,
-            data_execucao,
-            data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
-            criterio_suspeita,
-            criterio_diagnostico
-        from siscan
-
-        union all
-
-        select
-            sistema_origem,
-            sistema_tipo,
-            id_sistema_origem,
-            paciente_cns,
-            id_cnes_unidade_origem,
-            id_cnes_unidade_executante,
-            carater,
-            cid,
-            evento_status,
-            procedimento_especialidade,
-            procedimento_tipo,
-            procedimento,
-            data_solicitacao,
-            data_autorizacao,
-            data_execucao,
-            data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
-            criterio_suspeita,
-            criterio_diagnostico
-        from siscan_histo_mama
+        select * from {{ ref("int_monitora_cancer__siscan_histo_mama") }}
+            {% if is_incremental() %}
+        where data_solicitacao >= date_sub('{{ last_partition }}', interval {{ lookback_dias }} day)
+            {% endif %}
     ),
 
-    transforma_fatos as (
+    transforma as (
         select
             sistema_origem,
             sistema_tipo,
             id_sistema_origem,
             paciente_cns,
+            paciente_cpf_sisreg,
             id_cnes_unidade_origem,
             id_cnes_unidade_executante,
-            upper(carater) as carater,
             left(cid, 3) as cid,
             evento_status,
-            procedimento_especialidade,
-            procedimento_tipo,
-            {{ clean_proced_name("procedimento") }} as procedimento,
+            procedimento,
             data_solicitacao,
             data_autorizacao,
             data_execucao,
-        if(data_execucao is not null, "SIM", "NAO") as indicador_procedimento_executado,
-        if(data_execucao < current_date(), "SIM", "NAO") as indicador_procedimento_execucao_passada,
-        date_diff(data_execucao, data_solicitacao, day) as tempo_espera,
-        data_exame_resultado,
-        mama_esquerda_classif_radiologica,
-        mama_direita_classif_radiologica,
-        criterio_suspeita,
-        criterio_diagnostico
-        from fatos
+            data_exame_resultado,
+            mama_esquerda_resultado,
+            mama_direita_resultado,
+            criterio_suspeita,
+            criterio_diagnostico,
+            atraso_solicitacao_autorizacao,
+            atraso_autorizacao_execucao,
+            atraso_regulacao,
+            safe_cast(risco as int) as risco
+        from fontes_unificadas
     ),
 
     enriquece_cpf as (
+        -- CPF via lookup CNS→CPF; fallback para o CPF direto do SISREG quando disponível
         select
-            safe_cast(cns_cpf.cpf as int) as paciente_cpf,
-            transforma_fatos.*
+            coalesce(safe_cast(cns_cpf.cpf as int), transforma.paciente_cpf_sisreg) as paciente_cpf,
+            transforma.*
 
-        from transforma_fatos
-            left join {{ref("pacientes_subgeral__relacao_cns_cpf")}} as cns_cpf
-            on safe_cast(transforma_fatos.paciente_cns as int) = safe_cast(cns_cpf.cns as int)
-    ),
-
-    enriquece_cid as (
-        select
-            ec.*,
-            dim_cid.cid_descricao,
-            dim_cid.cid_capitulo_descricao
-
-        from enriquece_cpf ec
-            left join (
-                select distinct
-                    categoria.id as cid,
-                    categoria.descricao as cid_descricao,
-                    capitulo.descricao as cid_capitulo_descricao
-                from {{ref("dim_condicao_cid10")}}
-            ) as dim_cid
-        using (cid)
+        from transforma
+            left join {{ ref("pacientes_subgeral__relacao_cns_cpf") }} as cns_cpf
+            on safe_cast(transforma.paciente_cns as int) = safe_cast(cns_cpf.cns as int)
     ),
 
     enriquece_estabelecimento as (
         select
-            enriquece_cid.*,
+            enriquece_cpf.*,
             estabs_origem.nome_fantasia as estabelecimento_origem_nome,
-            estabs_origem.esfera as estabelecimento_origem_esfera,
-            estabs_origem.id_ap as estabelecimento_origem_ap,
-            estabs_origem.endereco_bairro as estabelecimento_origem_bairro,
-            estabs_origem.tipo_unidade_alternativo as estabelecimento_origem_tipo,
-            estabs_origem.tipo_unidade_agrupado as estabelecimento_origem_tipo_agrupado,
-            estabs_origem.estabelecimento_sms_indicador as estabelecimento_origem_sms_indicador,
+            estabs_exec.nome_fantasia as estabelecimento_executante_nome
 
-            estabs_exec.nome_fantasia as estabelecimento_executante_nome,
-            estabs_exec.esfera as estabelecimento_executante_esfera,
-            estabs_exec.id_ap as estabelecimento_executante_ap,
-            estabs_exec.endereco_bairro as estabelecimento_executante_bairro,
-            estabs_exec.tipo_unidade_alternativo as estabelecimento_executante_tipo,
-            estabs_exec.tipo_unidade_agrupado as estabelecimento_executante_tipo_agrupado,
-            estabs_exec.estabelecimento_sms_indicador as estabelecimento_sms_indicador
+        from enriquece_cpf
 
-        from enriquece_cid
-
-            left join {{ref("dim_estabelecimento_sus_rio_historico")}} as estabs_origem
+            left join dim_estabelecimento_atual as estabs_origem
             on safe_cast(id_cnes_unidade_origem as int) = safe_cast(estabs_origem.id_cnes as int)
 
-            left join {{ref("dim_estabelecimento_sus_rio_historico")}} as estabs_exec
+            left join dim_estabelecimento_atual as estabs_exec
             on safe_cast(id_cnes_unidade_executante as int) = safe_cast(estabs_exec.id_cnes as int)
-
-        where 1 = 1
-            and estabs_origem.ano_competencia = 2025 and estabs_origem.mes_competencia = 6
-            and estabs_exec.ano_competencia = 2025 and estabs_exec.mes_competencia = 6
     ),
 
     final as (
@@ -616,57 +127,44 @@ with
 
         -- id paciente
             paciente_cpf,
-            paciente_cns,
 
         -- tipo sistema fonte
             sistema_tipo,
 
         -- qualificacao do procedimento
-            procedimento_especialidade,
-            procedimento_tipo,
             procedimento,
-            carater,
             cid,
             evento_status,
-            cid_descricao,
-            cid_capitulo_descricao,
 
         -- datas
             data_solicitacao,
             data_autorizacao,
             data_execucao,
-            tempo_espera,
 
         -- resultados siscan
             data_exame_resultado,
-            mama_esquerda_classif_radiologica,
-            mama_direita_classif_radiologica,
+            mama_esquerda_resultado,
+            mama_direita_resultado,
 
         -- indicadores
-            indicador_procedimento_executado,
-            indicador_procedimento_execucao_passada,
             criterio_suspeita,
             criterio_diagnostico,
+
+        -- atraso (severidade 0-3)
+            atraso_solicitacao_autorizacao,
+            atraso_autorizacao_execucao,
+            atraso_regulacao,
+
+        -- risco do evento (1-4 ou NULL); mapeamento por sistema feito nos int_*
+            risco,
 
         -- unidade solicitante
             id_cnes_unidade_origem,
             estabelecimento_origem_nome,
-            estabelecimento_origem_esfera,
-            estabelecimento_origem_ap,
-            estabelecimento_origem_bairro,
-            estabelecimento_origem_tipo,
-            estabelecimento_origem_tipo_agrupado,
-            estabelecimento_origem_sms_indicador,
 
         -- unidade executante
             id_cnes_unidade_executante,
-            estabelecimento_executante_nome,
-            estabelecimento_executante_esfera,
-            estabelecimento_executante_ap,
-            estabelecimento_executante_bairro,
-            estabelecimento_executante_tipo,
-            estabelecimento_executante_tipo_agrupado,
-            estabelecimento_sms_indicador
+            estabelecimento_executante_nome
         from enriquece_estabelecimento
     )
 

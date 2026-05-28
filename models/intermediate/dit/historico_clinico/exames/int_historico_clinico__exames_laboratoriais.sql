@@ -32,7 +32,7 @@ with
             id_solicitacao as solicitacao_id,
             codigo_apoio,
             -- Conserta casos como o seguinte:
-            -- "&lt;i&gt;ANDRE FILIPE PEREIRA DE OLIVEIRA SOARES (SMS CF MAESTRO CELES"
+            -- "&lt;i&gt;ANDRE .... (SMS ..."
             -- 1) Remove '&lt;i&gt;' (<i> escapado)
             -- 2) Remove '(SMS ...' do final
             split(

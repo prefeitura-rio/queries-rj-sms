@@ -146,3 +146,5 @@ sources:
           error_after: {count: 24, period: hour}
           
       - name: alta_eventos
+
+      - name: dtw__fat_recem_nascido_eventos

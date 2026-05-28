@@ -1,0 +1,41 @@
+version: 2
+models:
+  - name: mart_projeto_ocis__documento
+    description: >
+      Informações sobre documentos relevantes ao projeto.
+      Somente possui documentos cujos pacientes estão presentes
+      na tabela de pacientes.
+    columns:
+
+      - name: id_paciente
+        description: >
+          Identificador do paciente, a ser cruzado com a
+          tabela de pacientes.
+      - name: id_registro
+        description: >
+          Identificador único do documento
+      - name: data_registro
+        description: >
+          Data em que o documento foi criado.
+      - name: id_tipo_registro
+        description: >
+          Número que identifica o tipo do documento.
+      - name: tipo_registro
+        description: >
+          Descrição do tipo do documento; mapeada 1:1
+          com o `id_tipo_registro`.
+      - name: titulo_documento
+        description: >
+          Nome do documento (ex. "RECEITUÁRIO")
+      - name: descricao_conteudo
+        description: >
+          Dados estruturados do documento, em formato JSON.
+      - name: cns_profissional_responsavel
+        description: >
+          CNS do profissional responsável pela emissão do documento.
+      - name: cbo_profissional_responsavel
+        description: >
+          CBO do profissional responsável pela emissão do documento.
+      - name: _prontuario_fonte
+        description: >
+          Nome do prontuário de onde as informações foram obtidas.

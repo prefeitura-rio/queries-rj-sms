@@ -2,7 +2,9 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="paciente",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="merge",
+        unique_key="id",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,10 +14,15 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
 
 source_ as (
     select * from {{source('brutos_prontuario_prontuaRio_staging', 'paciente')}}
+    {% if is_incremental() %} 
+      where date(timestamp(loaded_at), 'America/Sao_Paulo') >= date( '{{ last_partition }}' )  
+    {% endif %}
 ),
 
 paciente as (
@@ -40,14 +47,23 @@ final as (
         {{process_null('tipo_documento')}} as tipo_documento,
         {{process_null('peso')}} as peso,
         cnes,
-        cast(loaded_at as timestamp) as loaded_at
+        datetime(timestamp(loaded_at), 'America/Sao_Paulo') as loaded_at,
+        date(timestamp(loaded_at), 'America/Sao_Paulo') as data_particao
     from paciente
     qualify row_number() over(partition by id_paciente, registro, cnes order by loaded_at) = 1
 )
 
 select 
+    {{
+      dbt_utils.generate_surrogate_key(
+        [
+            'cnes',
+            'id_paciente',
+            'registro'
+        ]
+      )
+    }} as id,
     concat(cnes, '.', id_paciente) as gid_paciente,
     concat(cnes, '.', registro) as gid_registro,
     *,
-    date(loaded_at) as data_particao
 from final

@@ -1,8 +1,9 @@
 {{
     config(
         alias="alta_clinica",
-        materialized="table",
-        unique_key="id_prontuario",
+        materialized="incremental",
+        incremental_strategy="merge",
+        unique_key="id",
         tags=["prontuaRio"],
         schema="brutos_prontuario_prontuaRio",
         partition_by={
@@ -13,10 +14,15 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
   source_ as (
     select *
     from {{ source('brutos_prontuario_prontuaRio_staging', 'alta_clinica') }} 
+    {% if is_incremental() %} 
+      where cast(loaded_at as date) >= date( '{{ last_partition }}' ) 
+    {% endif %}
 ),
 
   alta_clinica as (
@@ -87,7 +93,7 @@ final as (
       {{ process_null('status') }} as status,
       cnes,
       loaded_at,
-      cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+      cast(loaded_at as date) as data_particao
     from alta_clinica
     
     qualify row_number() over (
@@ -96,6 +102,14 @@ final as (
 )
 
 select 
+  {{
+      dbt_utils.generate_surrogate_key(
+        [
+            'cnes',
+            'id_prontuario',
+        ]
+      )
+    }} as id,
   concat(cnes, '.', id_prontuario) as gid_prontuario,
   concat(cnes, '.', id_clinica) as gid_clinica,
   concat(cnes, '.', id_leito) as gid_leito,

@@ -27,6 +27,7 @@ clean-targets: # directories to be removed by `dbt clean`
 vars:
   # Internal variables
   DBT_USER: "{{ env_var('DBT_USER', 'dev_fantasma') }}"
+  HASH_SECRET: "{{ env_var('HASH_SECRET') }}"
   
   # Policy tags
   #  Free access:
@@ -93,6 +94,14 @@ models:
     raw:
       +materialized: table
       +tags: "raw"
+      iplan:
+        +schema: brutos_iplanrio
+        +tags: "daily"
+        +meta: {"owner": "karen"}
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       aplicacao_hci:
         +schema: brutos_aplicacao_hci
         +tags: "daily"
@@ -136,13 +145,32 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+
       gdb_cnes:
         +schema: brutos_gdb_cnes
         +tags: ["weekly", "gdb_cnes"]
+        +meta: {"owner": "avellar"}
         +labels:
           dado_publico: sim
           dado_pessoal: sim
           dado_sensivel: sim
+      gdb_sih:
+        +schema: brutos_gdb_sih
+        +tags: ["gdb_sih"]  # TODO: weekly
+        +meta: {"owner": "avellar"}
+        +labels:
+          dado_publico: sim
+          dado_pessoal: sim
+          dado_sensivel: sim
+      gdb_sia:
+        +schema: brutos_gdb_sia
+        +tags: ["gdb_sia"]  # TODO: weekly
+        +meta: {"owner": "avellar"}
+        +labels:
+          dado_publico: sim
+          dado_pessoal: sim
+          dado_sensivel: sim
+
       geo_pgeo3:
         +schema: brutos_geo_pgeo3
         +tags: ["weekly", "subgeral", "monitora_reg", "cnes_subgeral"]
@@ -189,13 +217,28 @@ models:
           dado_pessoal: sim
           dado_sensivel: nao
           dominio: subgeral
+
+      ##################
+      ## CDI
+      # Planilhas
+      cdi:
+        +schema: brutos_cdi
+        +tags: ["daily", "cdi", "cdi-4hours"]
+        +meta: {"owner": "karen"}
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+      # VPS
       diario_oficial:
         +schema: brutos_diario_oficial
-        +tags: "daily"
+        +tags: ["daily"]
+        +meta: {"owner": "avellar"}
         +labels:
           dado_publico: sim
           dado_pessoal: nao
           dado_sensivel: nao
+
       monitoramento:
         +schema: gerenciamento__historico_clinico__logs
         +tags: "daily"
@@ -212,6 +255,7 @@ models:
           dado_sensivel: nao
           dominio: estoque
       sisvisa:
+        +enabled: false
         +schema: brutos_sisvisa
         +tags: ["daily", "sisvisa", "ivisa"]
         +labels:
@@ -236,6 +280,7 @@ models:
       plataforma_subpav:
         +schema: brutos_plataforma_subpav
         +tags: ["plataforma_subpav", "daily"]
+        +meta: {"owner": "dayaners"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -255,9 +300,13 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: subpav
+
+      ##################
+      ## Prontuários
       prontuario_vitacare:
         +schema: brutos_prontuario_vitacare
         +tags: ["vitacare"]
+        +meta: {"owner": "karen"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -266,6 +315,7 @@ models:
       prontuario_vitacare_api:
         +schema: brutos_prontuario_vitacare_api
         +tags: ["vitacare", "daily", "vitacare_api"]
+        +meta: {"owner": "karen"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -274,6 +324,7 @@ models:
       prontuario_vitacare_api_centralizadora:
         +schema: brutos_prontuario_vitacare_api_centralizadora
         +tags: ["vitacare", "daily", "vitacare_api_centralizadora"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -282,6 +333,7 @@ models:
       prontuario_vitacare_historico:
         +schema: brutos_prontuario_vitacare_historico
         +tags: ["vitacare", "vitacare_historico"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -290,6 +342,7 @@ models:
       prontuario_vitai:
         +schema: brutos_prontuario_vitai
         +tags: ["vitai","daily"]
+        +meta: {"owner": "herian"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -298,6 +351,7 @@ models:
       prontuario_vitai_api:
         +schema: brutos_prontuario_vitai_api
         +tags: ["vitai", "daily", "vitai_api"]
+        +meta: {"owner": "herian"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -305,7 +359,17 @@ models:
           dominio: historico_clinico
       prontuario_carioca_saude_mental:
         +schema: brutos_prontuario_carioca_saude_mental
+        +meta: {"owner": "herian"}
         +tags: ["pcsm", "saude mental", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+      prontuario_prontuaRio:
+        +schema: brutos_prontuario_prontuaRio
+        +tags: ["prontuaRio", "daily"]
+        +meta: {"owner": "herian"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -323,11 +387,13 @@ models:
         +schema: brutos_prontuario_mv
         +tags: ["mv", "daily"]
         +meta: {'owner': 'herian'}
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+
       bcadastro:
         +schema: brutos_bcadastro
         +tags: "bcadastro"
@@ -357,6 +423,9 @@ models:
           dado_pessoal: nao
           dado_sensivel: nao
           dominio: subgeral
+
+      ##################
+      ## Sistemas
       sih:
         +schema: brutos_sih
         +tags: ["sih", "subgeral"]
@@ -392,9 +461,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+
+      ##################
+      ## Exames
       exames_laboratoriais:
         +schema: brutos_exames_laboratoriais
-        +tags: ["exames_laboratoriais"]
+        +tags: ["exames_laboratoriais", "daily"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -402,10 +475,12 @@ models:
       medilab:
         +schema: brutos_medilab
         +tags: ["daily", "medilab"]
+        +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+
       projeto_c34:
         +schema: projeto_c34
         +tags: ["weekly", "subgeral", "projeto_c34"]
@@ -414,21 +489,16 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
 
-      cdi:
-        +schema: brutos_cdi
-        +tags: ["daily", "cdi", "cdi-4hours"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: sim
-          dado_sensivel: sim
-      
 
+    ##########################################################################
+    ##########################################################################
     intermediate:
       +materialized: ephemeral
       iplanrio:
         whatsapp:
           +materialized: table
           +tags: ["daily", "iplanrio", "whatsapp"]
+          +meta: {"owner": "karen"}
           +schema: intermediario_whatsapp
           +labels:
             dado_publico: nao
@@ -436,6 +506,7 @@ models:
             dado_sensivel: sim
             dominio: iplanrio
       ivisa:
+          +enabled: false
           +schema: intermediario_empreendimentos_cariocas
           +tags: ["daily", "ivisa", "empreendimentos"]
           +labels:
@@ -446,6 +517,7 @@ models:
       subpav:
           +schema: intermediario_plataforma_subpav
           +tags: ["daily", "subpav", "cegonha"]
+          +meta: {"owner": "karen"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -497,6 +569,10 @@ models:
             dado_publico: sim
             dado_pessoal: sim
             dado_sensivel: sim
+
+
+    ##########################################################################
+    ##########################################################################
     marts:
       +materialized: table
       core:
@@ -538,6 +614,20 @@ models:
             dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
+        hackathon_anthropic:
+          +schema: hackathon_anthropic
+          +tags: ["hackathon_anthropic"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+        projeto_wac:
+          +schema: projeto_wac
+          +tags: ["projeto_wac"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
       cie:
         alerta_doencas:
           +schema: projeto_alerta_doencas
@@ -558,6 +648,7 @@ models:
         vacinacao:
           +schema: projeto_cie_vacinacao
           +tags: ["cie", "daily"]
+          +meta: {"owner": "daniel"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -617,6 +708,15 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+
+        projeto_ocis:
+          +schema: projeto_ocis
+          +tags: ["projeto_ocis"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+
         gerenciamento:
           +tags: "daily"
         historico_clinico:
@@ -649,6 +749,7 @@ models:
             dado_sensivel: sim
       ivisa:
         empreendimentos_cariocas:
+          +enabled: false
           +schema: projeto_empreendimentos_cariocas
           +tags: ["daily", "ivisa", "empreendimentos"]
           +labels:
@@ -670,6 +771,7 @@ models:
         whatsapp:
           +tags: ["daily", "iplanrio", "whatsapp"]
           +schema: projeto_whatsapp
+          +meta: {"owner": "karen"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -678,6 +780,7 @@ models:
         pic:
           +schema: projeto_pic
           +tags: ["daily", "iplanrio", "pic"]
+          +meta: {"owner": "karen"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -686,6 +789,7 @@ models:
         paciente:
           +schema: projeto_paciente
           +tags: ["daily", "iplanrio", "paciente"]
+          +meta: {"owner": "karen"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -718,6 +822,7 @@ models:
         sinanrio:
           +schema: projeto_sinanrio
           +tags: ["daily", "subpav", "sinanrio"]
+          +meta: {"owner": "dayaners"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -813,23 +918,20 @@ models:
             dado_pessoal: nao
             dado_sensivel: nao
 
-        projeto_monitora_cancer:
+        monitora_cancer:
           +schema: projeto_monitora_cancer
           +tags: ["daily", "subgeral", "monitora_cancer"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
-            dominio: subgeral          
+            dominio: subgeral
 
 data_tests:
   rj_sms:
     +severity: error
     +store_failures: true
     +schema: gerenciamento__dbt_test_audit
-
-seeds:
-  rj_sms:
 
 flags:
   require_explicit_package_overrides_for_builtin_materializations: False

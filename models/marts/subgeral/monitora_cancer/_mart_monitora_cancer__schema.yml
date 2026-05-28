@@ -1,0 +1,577 @@
+version: 2
+
+models:
+  - name: mart_monitora_cancer__fatos
+    description: >
+      Fatos longos de eventos relacionados ao monitoramento de câncer de mama.
+      Granularidade: 1 linha por (sistema_origem, id_sistema_origem).
+      Cobertura: SISREG (regulação ambulatorial), SER (regulação estadual ambulatorial
+      e internações), SISCAN (laudos radiológicos e histopatológicos).
+      Janela temporal: data_solicitacao >= 2021-01-01.
+    meta:
+      owner: "SMS/SUBGERAL/CR/NTI"
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - sistema_origem
+            - id_sistema_origem
+          name: mart_monitora_cancer__fatos__sistema_origem_id_sistema_origem__unique_combination_of_columns
+
+    columns:
+
+      # ── chave primária ───────────────────────────────────────────────────────
+      - name: sistema_origem
+        description: >
+          Sistema de origem do evento. Identifica a fonte primária do registro
+          (ex.: SISREG, SER, SISCAN).
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__sistema_origem__not_null
+          - accepted_values:
+              values: ['SISREG', 'SER', 'SISCAN']
+              name: mart_monitora_cancer__fatos__sistema_origem__accepted_values
+
+      - name: id_sistema_origem
+        description: >
+          Identificador único do registro dentro do sistema de origem.
+          Combinado com sistema_origem forma a chave primária da tabela.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__id_sistema_origem__not_null
+
+      # ── identificação do paciente ─────────────────────────────────────────────
+      - name: paciente_cpf
+        description: CPF da paciente. Obtido por lookup CNS→CPF; quando ausente,
+          utiliza o CPF proveniente diretamente do SISREG como fallback.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      # ── tipo do sistema ────────────────────────────────────────────────────────
+      - name: sistema_tipo
+        description: Classificação funcional do sistema de origem (ex. REGULACAO, EXAME).
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__sistema_tipo__not_null
+          - accepted_values:
+              values: ['REGULACAO', 'EXAME']
+              name: mart_monitora_cancer__fatos__sistema_tipo__accepted_values
+
+      # ── qualificação do procedimento ──────────────────────────────────────────
+      - name: procedimento
+        description: Descrição padronizada do procedimento realizado ou solicitado.
+
+      - name: cid
+        description: Código CID-10 (3 caracteres) associado à solicitação.
+
+      - name: evento_status
+        description: "Status do evento no sistema de origem (ex.: AGENDADO, CANCELADO, EXECUTADO)."
+
+      # ── datas ─────────────────────────────────────────────────────────────────
+      - name: data_solicitacao
+        description: Data em que o procedimento foi solicitado. Coluna de particionamento da tabela.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__data_solicitacao__not_null
+
+      - name: data_autorizacao
+        description: Data em que a solicitação foi autorizada ou agendada.
+
+      - name: data_execucao
+        description: Data em que o procedimento foi efetivamente realizado.
+
+      # ── resultados de exame (SISCAN) ───────────────────────────────────────────
+      - name: data_exame_resultado
+        description: Data de liberação do laudo do exame no SISCAN.
+
+      - name: mama_esquerda_resultado
+        description: >
+          Resultado do exame para a mama esquerda. Para laudos radiológicos (SISCAN),
+          contém a classificação BI-RADS. Para laudos histopatológicos (SISCAN Histo),
+          contém o resultado do tecido neoplásico ou benigno.
+
+      - name: mama_direita_resultado
+        description: >
+          Resultado do exame para a mama direita. Para laudos radiológicos (SISCAN),
+          contém a classificação BI-RADS. Para laudos histopatológicos (SISCAN Histo),
+          contém o resultado do tecido neoplásico ou benigno.
+
+      # ── indicadores ───────────────────────────────────────────────────────────
+      - name: criterio_suspeita
+        description: >
+          TRUE quando o evento classifica a paciente como suspeita de câncer de mama
+          (ex.: mamografia com achados BI-RADS 4/5, biópsia solicitada).
+          Para laudos histopatológicos, sempre FALSE — o evento vai direto ao diagnóstico.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__criterio_suspeita__not_null
+          - accepted_values:
+              values: [true, false]
+              quote: false
+              name: mart_monitora_cancer__fatos__criterio_suspeita__accepted_values
+
+      - name: criterio_diagnostico
+        description: >
+          TRUE quando o evento confirma diagnóstico de câncer de mama
+          (ex.: BI-RADS 6, lesão neoplásica em histopatológico, consulta oncológica de 1ª vez).
+          Casos puramente benignos (lesao_benigno sem lesao_neoplasico) resultam em FALSE.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__fatos__criterio_diagnostico__not_null
+          - accepted_values:
+              values: [true, false]
+              quote: false
+              name: mart_monitora_cancer__fatos__criterio_diagnostico__accepted_values
+
+      # ── atraso ────────────────────────────────────────────────────────────────
+      - name: atraso_solicitacao_autorizacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_autorizacao,
+          comparada ao limite do procedimento em int_monitora_cancer__parametros_*.
+          0 = dentro do prazo; 1 = >= limite; 2 = >= limite + 10; 3 = >= limite + 20.
+          NULL para eventos SISCAN (não há parâmetro de regulação) e quando
+          alguma das datas está ausente.
+        data_tests:
+          - accepted_values:
+              values: [0, 1, 2, 3]
+              quote: false
+              name: mart_monitora_cancer__fatos__atraso_solicitacao_autorizacao__accepted_values
+
+      - name: atraso_autorizacao_execucao
+        description: >
+          Severidade (0-3) do atraso entre data_autorizacao e data_execucao,
+          comparada ao limite do procedimento em int_monitora_cancer__parametros_*.
+          Mesma regra de atraso_solicitacao_autorizacao. NULL para SISCAN
+          e quando alguma das datas está ausente.
+        data_tests:
+          - accepted_values:
+              values: [0, 1, 2, 3]
+              quote: false
+              name: mart_monitora_cancer__fatos__atraso_autorizacao_execucao__accepted_values
+
+      - name: atraso_regulacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_execucao
+          (tempo total de regulação), comparada a limite_dias_regulacao do
+          procedimento em int_monitora_cancer__parametros_*. Mesma regra dos
+          demais atrasos. NULL para SISCAN e quando alguma das datas está ausente.
+        data_tests:
+          - accepted_values:
+              values: [0, 1, 2, 3]
+              quote: false
+              name: mart_monitora_cancer__fatos__atraso_regulacao__accepted_values
+
+      # ── risco ────────────────────────────────────────────────────────────────
+      - name: risco
+        description: >
+          Score numérico (int) de risco do evento, normalizado entre sistemas
+          de origem na camada intermediária (int_monitora_cancer__*). Quanto maior
+          o valor, maior o risco. Mapeamento por fonte:
+          (SISREG) AZUL=1, VERDE=2, AMARELO=3, VERMELHO=4;
+          (SER) prioridade convertida diretamente para float64 — valores não
+          numéricos (ex.: "nan") viram NULL;
+          (SISCAN Mamografia) BI-RADS 1/2=1, 0/3=2, 4=3, 5/6=4; quando
+          há resultado nas duas mamas, retém-se o maior risco;
+          (SISCAN Histo Mama) grau histológico I=2, II=3, III=4.
+          NULL quando o evento não tem informação de risco mapeada.
+        data_tests:
+          - accepted_values:
+              values: [1.0, 2.0, 3.0, 4.0]
+              quote: false
+              name: mart_monitora_cancer__fatos__risco__accepted_values
+
+      # ── unidade solicitante ────────────────────────────────────────────────────
+      - name: id_cnes_unidade_origem
+        description: Código CNES da unidade que originou / solicitou o evento.
+
+      - name: estabelecimento_origem_nome
+        description: Nome fantasia da unidade solicitante.
+
+      # ── unidade executante ─────────────────────────────────────────────────────
+      - name: id_cnes_unidade_executante
+        description: Código CNES da unidade que executou ou executará o procedimento.
+
+      - name: estabelecimento_executante_nome
+        description: Nome fantasia da unidade executante.
+
+  - name: mart_monitora_cancer__pacientes_linha_tempo
+    description: >
+      Linha do tempo de cada paciente da população-alvo de monitoramento de
+      câncer de mama. Reúne, em uma única linha por paciente, os dados de
+      identificação, contato, vínculo com a APS e um array ordenado de eventos
+      (solicitações, autorizações, execuções e resultados). Inclui também
+      indicadores derivados: status da paciente, gravidade (dias desde o último
+      evento) e tempo total (dias até a UNACON para pacientes com SER, ou dias
+      desde o início da última sequência de eventos para pacientes sem SER).
+      Granularidade: 1 linha por paciente (cpf_particao).
+    meta:
+      owner: "SMS/SUBGERAL/CR/NTI"
+
+    columns:
+
+      # ── chave primária ────────────────────────────────────────────────────────
+      - name: cpf_particao
+        description: >
+          CPF da paciente em formato numérico (int64). Usado como chave
+          primária e campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: mart_monitora_cancer__pacientes_linha_tempo__cpf_particao__unique
+          - not_null:
+              name: mart_monitora_cancer__pacientes_linha_tempo__cpf_particao__not_null
+
+      - name: cpf
+        description: >
+          CPF da paciente em formato texto, com 11 dígitos e zeros à esquerda
+          quando necessário.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      # ── identificação da paciente ─────────────────────────────────────────────
+      - name: nome
+        description: Nome completo da paciente, obtido do cadastro base (bcadastro).
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: raca_cor
+        description: >
+          Raça/cor autodeclarada da paciente. Consolidada a partir de múltiplas
+          fontes (bcadastro, HCI, Minha Saúde) segundo a regra de prioridade
+          definida em pacientes_subgeral__dim_paciente.
+
+      - name: idade
+        description: >
+          Idade médica da paciente em anos completos, calculada na data de
+          execução do modelo. Considera se o aniversário já ocorreu no ano
+          corrente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      # ── vínculo com a APS ─────────────────────────────────────────────────────
+      - name: ap
+        description: Área de Planejamento (AP) da clínica da família vinculada à paciente no HCI.
+
+      - name: cf
+        description: Nome da clínica da família (CF) vinculada à paciente no HCI.
+
+      - name: equipe_sf
+        description: Nome da equipe de Saúde da Família vinculada à paciente no HCI.
+
+      # ── qualificadores clínicos ───────────────────────────────────────────────
+      - name: status
+        description: >
+          Classificação da paciente no monitoramento:
+          "UNACON" quando há pelo menos um evento vindo do SER (regulação para oncologia);
+          "DIAGNOSTICO" quando há evento com critério de diagnóstico confirmado;
+          "SUSPEITA" nos demais casos da população-alvo.
+
+      - name: gravidade_score
+        description: >
+          Score de gravidade (FLOAT64) da paciente, calculado em
+          mart_monitora_cancer__gravidade. Cada trigger só gera subscore
+          enquanto o desfecho esperado ainda NÃO chegou — quando o expected
+          acontece, o trigger é desativado e some do score. Para triggers
+          ativos: dias_atraso = max(0, date_diff(hoje, trigger) - threshold)
+          e subscore_valor = coalesce(risco_trigger, 1)
+                           * 2 ^ (min(dias_atraso, 90) / dias_dobrar_subscore).
+          O score é a soma dos valores dos subscores ativos da paciente,
+          multiplicada por 2 quando a paciente é gestante. Pacientes sem
+          nenhum trigger ativo no run atual recebem 0. Valores maiores
+          indicam pacientes com mais atrasos acumulados na linha de cuidado
+          e, portanto, potencialmente mais críticas de acompanhar.
+
+      - name: tempo_total
+        description: >
+          Tempo, em dias, de percurso da paciente até a entrada em UNACON
+          através do SER. Caso a paciente não tenha entrado, o cálculo é
+          feito até o dia atual. A data do início do percurso é a data de
+          solicitação do primeiro evento em uma sequência de eventos com
+          intervalo entre eles menor ou igual a 180 dias.
+
+      - name: gestante
+        description: >
+          TRUE quando a paciente está atualmente gestante segundo
+          mart_bi_gestacoes__gestacoes (fase_atual = 'Gestação'); FALSE caso
+          contrário.
+
+      # ── contato ───────────────────────────────────────────────────────────────
+      - name: telefone
+        description: >
+          Telefone pessoal da paciente. Preferência: telefone do bcadastro
+          (DDI + DDD + número); caso ausente, usa o primeiro telefone válido
+          do mart_iplanrio__telefones_validos.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: telefone_cf
+        description: Telefone institucional da clínica da família vinculada à paciente.
+
+      - name: telefone_esf
+        description: Telefone institucional da equipe de Saúde da Família vinculada à paciente.
+
+      # ── fontes de eventos ─────────────────────────────────────────────────────
+      - name: fontes
+        description: >
+          Struct de flags booleanos indicando em quais sistemas a paciente tem
+          eventos registrados. Campos: siscan (exames), ser (regulação
+          oncológica), sisreg (regulação ambulatorial).
+
+      - name: fontes.siscan
+        description: >
+          TRUE quando a paciente possui ao menos um evento originado do SISCAN
+          (laudos radiológicos ou histopatológicos de mama).
+
+      - name: fontes.ser
+        description: >
+          TRUE quando a paciente possui ao menos um evento originado do SER
+          (regulação estadual ambulatorial ou internações em oncologia).
+
+      - name: fontes.sisreg
+        description: >
+          TRUE quando a paciente possui ao menos um evento originado do SISREG
+          (regulação ambulatorial municipal).
+
+      # ── eventos ───────────────────────────────────────────────────────────────
+      - name: eventos
+        description: >
+          Array ordenado de structs com todos os eventos da paciente, do mais
+          antigo ao mais recente. Cada struct contém: sistema de origem (fonte),
+          tipo de evento, status, procedimento, CID, unidade solicitante,
+          unidade executante, datas (solicitação, autorização, execução,
+          resultado) em formato date e string, resultados dos exames das mamas,
+          severidades de atraso, score de risco (float64) normalizado por sistema,
+          o intervalo em dias até o próximo evento (dias_proximo_evento) e o
+          identificador do episódio (jornada_id) ao qual o evento pertence —
+          episódios são sequências consecutivas de eventos cujos gaps entre
+          data_referencia_evento não excedem 180 dias; o id incrementa a cada
+          gap maior, dentro de um mesmo paciente.
+
+      - name: eventos.fonte
+        description: Sistema de origem do evento (SISREG, SER ou SISCAN).
+
+      - name: eventos.tipo
+        description: >
+          Classificação funcional do sistema de origem do evento
+          (REGULACAO ou EXAME).
+
+      - name: eventos.evento_status
+        description: >
+          Status do evento no sistema de origem (ex.: AGENDADO, AUTORIZADO,
+          CANCELADO, EXECUTADO).
+
+      - name: eventos.procedimento
+        description: Descrição padronizada do procedimento solicitado ou executado.
+
+      - name: eventos.cid
+        description: Código CID-10 (3 caracteres) associado ao evento.
+
+      - name: eventos.unidade_solicitante
+        description: >
+          Unidade de saúde que solicitou o evento, no formato
+          "<CNES> - <nome do estabelecimento>". Quando o CNES ou o nome não
+          estão disponíveis, é utilizado o texto "CNES ?" ou
+          "Estabelecimento não identificado", respectivamente.
+
+      - name: eventos.unidade_executante
+        description: >
+          Unidade de saúde que executou (ou executará) o evento, no formato
+          "<CNES> - <nome do estabelecimento>". Mesmas regras de preenchimento
+          de unidade_solicitante quando há campos ausentes.
+
+      - name: eventos.data_solicitacao
+        description: Data em que o evento foi solicitado, em formato date.
+
+      - name: eventos.data_autorizacao
+        description: Data em que o evento foi autorizado ou agendado, em formato date.
+
+      - name: eventos.data_execucao
+        description: Data em que o evento foi efetivamente executado, em formato date.
+
+      - name: eventos.data_resultado
+        description: >
+          Data de liberação do laudo/resultado do evento, em formato date
+          (aplicável a laudos do SISCAN).
+
+      - name: eventos.data_solicitacao_str
+        description: >
+          Mesmo valor de eventos.data_solicitacao, convertido para string
+          (útil em ferramentas que não preservam o tipo date no consumo).
+
+      - name: eventos.data_autorizacao_str
+        description: Mesmo valor de eventos.data_autorizacao, convertido para string.
+
+      - name: eventos.data_execucao_str
+        description: Mesmo valor de eventos.data_execucao, convertido para string.
+
+      - name: eventos.data_resultado_str
+        description: Mesmo valor de eventos.data_resultado, convertido para string.
+
+      - name: eventos.resultados
+        description: >
+          Array de strings com os resultados dos exames de mama no formato
+          "Mama Esquerda <resultado>" e/ou "Mama Direita <resultado>". Vazio
+          quando o evento não produz laudo de mama.
+
+      - name: eventos.atraso_solicitacao_autorizacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_autorizacao,
+          conforme o limite definido em int_monitora_cancer__parametros_*.
+          0 = dentro do prazo; 1 = >= limite; 2 = >= limite + 10; 3 = >= limite + 20.
+          NULL para eventos SISCAN e quando alguma das datas está ausente.
+
+      - name: eventos.atraso_autorizacao_execucao
+        description: >
+          Severidade (0-3) do atraso entre data_autorizacao e data_execucao.
+          Mesma regra de eventos.atraso_solicitacao_autorizacao. NULL para
+          SISCAN e quando alguma das datas está ausente.
+
+      - name: eventos.atraso_regulacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_execucao
+          (tempo total de regulação). NULL para SISCAN e quando alguma das
+          datas está ausente.
+
+      - name: eventos.risco
+        description: >
+          Score numérico (float64) de risco do evento, normalizado entre sistemas
+          de origem na camada intermediária. Quanto maior o valor, maior o risco.
+          Mapeamento por fonte:
+          (SISREG) AZUL=1.0, VERDE=2.0, AMARELO=3.0, VERMELHO=4.0;
+          (SER) prioridade convertida diretamente para float64 — valores não
+          numéricos (ex.: "nan") viram NULL;
+          (SISCAN Mamografia) BI-RADS 1/2=1.0, 0/3=2.0, 4=3.0, 5/6=4.0; quando
+          há resultado nas duas mamas, retém-se o maior risco;
+          (SISCAN Histo Mama) grau histológico I=1.0, II=2.0, III=3.0.
+          NULL quando o evento não tem informação de risco mapeada. Validação
+          do domínio é coberta pelo accepted_values em mart_monitora_cancer__fatos.risco.
+
+      - name: eventos.dias_proximo_evento
+        description: >
+          Intervalo, em dias, entre a data de referência deste evento
+          (MAX das datas de solicitação, autorização, execução e resultado) e
+          a data de referência do próximo evento cronológico da mesma paciente.
+          NULL no último evento da paciente.
+
+      - name: eventos.jornada_id
+        description: >
+          Identificador do episódio de cuidado (jornada) ao qual o evento
+          pertence. Episódios são sequências consecutivas de eventos da mesma
+          paciente cujo intervalo entre datas de referência não excede 180
+          dias; o id incrementa a cada gap maior, reiniciando por paciente.
+
+      # ── pendências atuais ─────────────────────────────────────────────────────
+      - name: pendencia_atual
+        description: >
+          Lista de rótulos (possivelmente vazia) com as pendências atuais da
+          paciente, calculadas em int_monitora_cancer__pendencias.
+
+  - name: mart_monitora_cancer__gravidade
+    description: >
+      Score de gravidade da paciente no monitoramento de câncer de mama.
+      Cada trigger só gera subscore enquanto o desfecho esperado (expected)
+      ainda NÃO chegou — quando o expected acontece, o trigger é desativado
+      e não aparece no breakdown. Para triggers ativos:
+      dias_atraso = max(0, date_diff(hoje, trigger) - threshold) e
+      subscore_valor = coalesce(risco_trigger, 1)
+                     * 2 ^ (min(dias_atraso, teto_atraso) / dias_dobrar_subscore),
+      via macro monitora_cancer_subscore. O fator de risco multiplica
+      diretamente o subscore conforme o risco do evento gatilho (escala
+      1..4); triggers sem risco mapeado recebem fator 1. Antes da soma, cada
+      subscore é normalizado para (0, 1] via macro
+      monitora_cancer_subscore_normalizado:
+      subscore_valor_normalizado = subscore_valor
+                                 / ( max_risco * 2 ^ (teto_atraso / dias_dobrar_subscore) ).
+      O score final é a SOMA dos subscores NORMALIZADOS de todos os triggers
+      ativos da paciente, multiplicada por 2 se ela for gestante. Considera
+      apenas eventos do RUN ATUAL (último episódio de cuidado) de cada
+      paciente.
+
+      Subscores atualmente implementados (thresholds parametrizados no topo
+      de int_monitora_cancer__gravidade.sql; dias_dobrar_subscore = threshold
+      em todos):
+        1. SISCAN mamografia Cat 0/4/5 → SISREG ultrassonografia ou biópsia,
+           threshold 10 dias.
+        2. SISCAN mamografia Cat 6 → qualquer evento SER, threshold 5 dias.
+        3. SISCAN biópsia neoplásica → qualquer evento SER, threshold 5 dias.
+        4. SISREG biópsia → progresso entre datas intra-evento,
+           threshold 20 dias por leg (legs: solicitacao→autorizacao,
+           autorizacao→execucao).
+        5. SER status "PENDENTE" → atualização do status da solicitação,
+           threshold 10 dias.
+        6. SER status "EM FILA" → atualização do status da solicitação,
+           threshold 60 dias.
+        7. SER status de falha ("CHEGADA NAO CONFIRMADA", "CANCELADA")
+           → nova solicitação SER, threshold 10 dias.
+
+      Mecanismo de desativação:
+        • Cross-evento (1, 2, 3, 7): NOT EXISTS contra a CTE de expected.
+          Quando aparece qualquer expected ≥ trigger (> em 7), o trigger some.
+        • Intra-evento legs (4): WHERE direto exigindo a data do desfecho
+          do leg = NULL.
+        • Intra-evento "stuck" (5, 6): WHERE no evento_status — quando o
+          status muda, a linha some naturalmente.
+
+      Granularidade: 1 linha por paciente (cpf_particao). Apenas pacientes
+      com pelo menos um trigger ativo no run atual estão presentes.
+    meta:
+      owner: "SMS/SUBGERAL/CR/NTI"
+
+    columns:
+      - name: cpf_particao
+        description: >
+          CPF da paciente em formato numérico (int64). Chave primária e
+          campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: mart_monitora_cancer__gravidade__cpf_particao__unique
+          - not_null:
+              name: mart_monitora_cancer__gravidade__cpf_particao__not_null
+
+      - name: gravidade_score
+        description: >
+          Score final (FLOAT64), em soma de subscores NORMALIZADOS, já com o
+          multiplicador de gestante aplicado. Igual a gravidade_score_base * 2
+          quando gestante = TRUE, caso contrário igual a gravidade_score_base.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__gravidade__gravidade_score__not_null
+
+      - name: gravidade_score_base
+        description: >
+          Soma dos subscores NORMALIZADOS
+          (subscore_valor_normalizado = subscore_valor
+                                      / ( max_risco
+                                          * 2 ^ (teto_atraso / dias_dobrar_subscore) ))
+          de todos os triggers ATIVOS de todos os subscores, ANTES da
+          multiplicação por gestante. Tipo FLOAT64. Cada trigger ativo
+          contribui com um valor em (0, 1] — perto de 0 quando o atraso é
+          pequeno e o risco baixo, próximo de 1 quando o atraso satura em
+          teto_atraso e risco_trigger = max_risco. Útil para auditoria e
+          comparação direta entre pacientes gestantes e não-gestantes.
+
+      - name: gestante
+        description: >
+          TRUE quando a paciente está atualmente gestante (mesma fonte usada
+          em mart_monitora_cancer__pacientes_linha_tempo). Aciona o
+          multiplicador 2x sobre gravidade_score_base.
+
+      - name: gravidade_breakdown
+        description: >
+          Array de structs detalhando cada subscore ATIVO que compõe o score,
+          ordenado por data_trigger desc. Triggers cujo expected já chegou
+          não aparecem aqui (foram desativados). Cada struct contém:
+          subscore (identificador textual do par trigger/expected),
+          data_trigger (data de referência do evento gatilho), dias_atraso
+          (dias desde o trigger até hoje, descontado o threshold, com piso
+          0 e teto-limitado em teto_atraso pela fórmula do subscore),
+          dias_dobrar_subscore (parâmetro da fórmula exponencial — a cada N
+          dias de atraso, o termo exponencial dobra), risco_trigger (risco
+          do evento gatilho, 1..4 ou NULL — alimenta o fator de risco
+          coalesce(risco_trigger, 1)), subscore_valor (valor BRUTO do
+          subscore para aquele trigger) e subscore_valor_normalizado (valor
+          do subscore dividido pelo máximo teórico — em (0, 1], é o que
+          entra na soma do gravidade_score).

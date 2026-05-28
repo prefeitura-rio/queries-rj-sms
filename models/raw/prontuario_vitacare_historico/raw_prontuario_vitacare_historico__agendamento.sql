@@ -46,7 +46,7 @@ with
                 {{ process_null ('cnes')}},
                 '.',
                 replace({{ process_null('ut_id') }}, '.0', '') 
-            ) as id_cadastro,
+            ) as id_paciente_global,
             CONCAT(
                 id_cnes,
                 '.',
@@ -63,7 +63,7 @@ with
              {{ process_null('tipo_atendimento') }} as tipo_atendimento,
              {{ process_null('consulta_realizada') }} as consulta_realizada,
 
-            extracted_at as loaded_at,
+             cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             date(safe_cast(extracted_at as datetime)) as data_particao
         from agendamento_deduplicados
     )

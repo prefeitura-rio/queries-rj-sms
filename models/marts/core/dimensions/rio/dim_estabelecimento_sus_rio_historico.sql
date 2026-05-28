@@ -380,7 +380,11 @@ with
             cast(mes as int64) as mes_competencia,
             -- safe_cast(mes_particao as int64) as mes_particao,
             -- safe_cast(ano_particao as int64) as ano_particao,
-            parse_date('%Y-%m-%d', data_particao) as data_particao,
+            
+            -- data_particao determinística (não depende de left join
+            -- contra tabela de referência)
+            -- usa diretamente o snapshot mais atual
+            parse_date('%Y-%m-%d', (select versao from versao_atual)) as data_particao,
             data_carga,
             data_snapshot
 

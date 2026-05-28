@@ -1,15 +1,10 @@
 -- carga horaria ambulatorial dos profissionais no cnes em unidades que oferecem vagas
 -- no sisreg
 with
-    -- seleciona a versão mais atual dos dados
+    -- mart_cnes_subgeral__profissionais_mrj_sus atualmente é materializado como table (overwrite
+    -- completo), portanto contém um único snapshot.
     versao_atual as (
-        select *
-        from {{ ref("mart_cnes_subgeral__profissionais_mrj_sus") }}
-        where
-            metadado__data_particao = (
-                select max(metadado__data_particao)
-                from {{ ref("mart_cnes_subgeral__profissionais_mrj_sus") }}
-            )
+        select * from {{ ref("mart_cnes_subgeral__profissionais_mrj_sus") }}
     ),
 
     -- seleciona apenas os profissionais com carga horaria ambulatorial,

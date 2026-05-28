@@ -21,3 +21,11 @@ macros:
       - name: path_column
         description: Coluna contendo o caminho do arquivo (string).
         type: string
+
+  - name: repec_origem_unidade_para_cnes
+    description: >
+      Mapeia a unidade de origem do Repec para o código do CNES.
+    arguments:
+      - name: origem_unidade
+        description: Coluna contendo a unidade de origem do Repec (string).
+        type: string

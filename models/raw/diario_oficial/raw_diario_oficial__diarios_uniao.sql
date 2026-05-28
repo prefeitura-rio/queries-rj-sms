@@ -1,7 +1,8 @@
 {{
     config(
         alias="diario_uniao",
-        materialized="table"
+        materialized="table",
+        meta={"owner": "herian"},
     )
 }}
 -- TODO: apagar esse modelo

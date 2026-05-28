@@ -1,10 +1,10 @@
 {{
     config(
+        schema="brutos_prontuario_vitacare_historico",
         alias="vacina", 
         materialized="incremental",
-        unique_key = ['id_prontuario_global', 'cod_vacina'],
-        cluster_by= ['id_prontuario_global', 'cod_vacina'],
-        schema="brutos_prontuario_vitacare_historico",
+        unique_key = ['id_prontuario_global', 'id_vacinacao'],
+        cluster_by= ['id_prontuario_global', 'id_vacinacao'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -15,65 +15,97 @@
 
 {% set last_partition = get_last_partition_date(this) %}
 
-WITH
+with
 
-    source_vacinas AS (
-        SELECT 
-            CONCAT(
-                NULLIF(id_cnes, ''), 
-                '.',
-                NULLIF(REPLACE(acto_id, '.0', ''), '')
-            ) AS id_prontuario_global,
-            *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'vacinas') }} 
+   vacina_source as (
+        select
+            id,
+            acto_id,
+            prof_id,
+            ut_id,
+            nome_vacina,
+            cod_vacina,
+            dose,
+            lote,
+            data_aplicacao,
+            data_registro,
+            diff,
+            calendario_vacinal_atualizado,
+            tipo_registro,
+            estrategia_imunizacao,
+            foi_aplicada,
+            justificativa,
+            extracted_at,
+            id_cnes,
+            ano_particao,
+            mes_particao,
+            data_particao
+        from {{ source('brutos_prontuario_vitacare_historico_staging', 'vacinas') }} 
         {% if is_incremental() %}
-            WHERE data_particao > '{{last_partition}}'
+            where data_particao > '{{last_partition}}'
         {% endif %}
     ),
 
-
-      -- Using window function to deduplicate vacinas
-    vacinas_deduplicados AS (
-        SELECT
+     vacina_dedup as (
+        select
             *
-        FROM source_vacinas 
-        qualify row_number() over (partition by id_prontuario_global, cod_vacina order by extracted_at desc) = 1
+        from vacina_source 
+        qualify row_number() over (partition by id_cnes, acto_id, id order by extracted_at desc) = 1
     ),
 
-    fato_vacinas AS (
-        SELECT
-            -- PKs e Chaves
-            id_prontuario_global,
-            REPLACE(acto_id, '.0', '') AS id_prontuario_local,
-            id_cnes, 
-            concat(id_cnes, '.', id) as id_vacinacao,
-            {{ process_null('nome_vacina') }} AS nome_vacina,
-            cod_vacina AS cod_vacina,
-            {{ process_null('dose') }} AS dose,
-            lote AS lote,
-            safe_cast(substr(data_aplicacao, 1, 10) AS DATE) AS data_aplicacao,
-            timestamp_add(datetime(safe_cast({{process_null('data_registro')}} as timestamp), 'America/Sao_Paulo'),interval 3 hour) as data_registro,
-            REPLACE({{ process_null('diff') }}, '.0', '') AS diff,
-            calendario_vacinal_atualizado AS calendario_vacinal_atualizado,
-            {{ process_null('tipo_registro') }} AS tipo_registro,
-            {{ process_null('estrategia_imunizacao') }} AS estrategia_imunizacao,
-            {{ process_null('foi_aplicada') }} AS foi_aplicada,
-            {{ process_null('justificativa') }} AS justificativa,
+    vacina_casted as (
+        select
+             -- Keys
+           {{ process_null(
+                "id_cnes || '.' || replace(acto_id, '.0', '')"
+            ) }} as id_prontuario_global,
 
-            extracted_at AS loaded_at,
-            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
+            {{ process_null("replace(acto_id, '.0', '')") }} as id_prontuario_local,
+
+            {{ process_null(
+                "id_cnes || '.' || replace(ut_id, '.0', '')"
+            ) }} as id_cadastro,
             
-        FROM vacinas_deduplicados
-    ),
+            {{ process_null(
+                "id_cnes || '.' || replace(prof_id, '.0', '')"
+            ) }} as id_profissional,
 
-    -- Filtro temporário para remover registros anteriores à carga oficial (24/06/2025 17:15)
-    fato_filtrado AS (
-        SELECT *
-        FROM fato_vacinas
-        WHERE PARSE_TIMESTAMP('%F %H:%M:%E6S', loaded_at) > TIMESTAMP('2025-06-24 17:15:00.000000')
+            {{ process_null('id_cnes') }} as id_cnes,
+
+            {{ process_null(
+                "id_cnes || '.' || id"
+            ) }} as id_vacinacao,
+
+            -- Variables
+            {{ process_null('nome_vacina') }} as nome_vacina,
+            {{ process_null('cod_vacina') }} as cod_vacina,
+            {{ process_null('dose') }} as dose,
+            {{ process_null('lote') }} as lote,
+
+            case
+                when cast(substr({{ process_null('data_aplicacao') }}, 1, 10) as date) <= date '1900-01-01'
+                    then null
+                else cast(substr({{ process_null('data_aplicacao') }}, 1, 10) as date)
+            end as data_aplicacao,
+            cast(substr({{ process_null('data_registro') }}, 1, 10) as date) as data_registro,
+            {{ process_null("replace(diff, '.0', '')") }} as diff,
+
+            {{ process_null('calendario_vacinal_atualizado') }} as calendario_vacinal_atualizado,
+            {{ process_null('tipo_registro') }} as tipo_registro,
+            {{ process_null('estrategia_imunizacao') }} as estrategia_imunizacao,
+            {{ process_null('foi_aplicada') }} as foi_aplicada,
+            {{ process_null('justificativa') }} as justificativa,
+
+             -- Metadata
+            cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
+            cast({{ process_null('data_particao') }} as date) as data_particao,
+          
+        from vacina_dedup
     )
 
-SELECT
+select 
     *
-FROM fato_filtrado
+from vacina_casted
+
+
 

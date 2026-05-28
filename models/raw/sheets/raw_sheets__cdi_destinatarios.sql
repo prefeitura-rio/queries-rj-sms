@@ -3,6 +3,7 @@
         schema="brutos_sheets",
         alias="cdi_destinatarios",
         tags=["cdi_vps"],
+        meta={"owner": "avellar"}
     )
 }}
 

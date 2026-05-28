@@ -10,6 +10,7 @@
             "data_type": "date",
             "granularity": "day",
         },
+        meta={"owner": "herian"}
     )
 }}
 with 
@@ -148,10 +149,21 @@ triagem as (
         struct(
           cid as id,
           nome as descricao,
-          cast(null as string) as situacao,
+          -- O prontuaRio não informa situacao do CID. Para preservar a fonte original, a situacao permanece nula na maioria dos casos.
+          -- Exceção: quando o CID indica desfecho obstétrico (parto, aborto ou pós-parto),
+          -- a modelagem deriva situacao = 'RESOLVIDO' para permitir identificar o fim da gestação 
+          -- isso é utilizado nos modelos dashboard_gestacoes da SAP
+          case
+            when regexp_contains(cid, r'^O8[0-4]$')
+              or regexp_contains(cid, r'^Z37')
+              or regexp_contains(cid, r'^Z39')
+              or regexp_contains(cid, r'^O0[0-4]$')
+            then 'RESOLVIDO'
+            else cast(null as string)
+          end as situacao,
           cast(internacao_data as string) as data_diagnostico
         )
-      ) as condicoes,
+      ) as condicoes
     from emerg_cid
     group by gid_boletim
   ),
@@ -310,7 +322,18 @@ inter_saida as (
         struct(
           id,
           descricao,
-          cast(null as string) as situacao,
+          -- O prontuaRio não informa situacao do CID. Para preservar a fonte original, a situacao permanece nula na maioria dos casos.
+          -- Exceção: quando o CID indica desfecho obstétrico (parto, aborto ou pós-parto),
+          -- a modelagem deriva situacao = 'RESOLVIDO' para permitir identificar o fim da gestação 
+          -- isso é utilizado nos modelos dashboard_gestacoes da SAP
+          case
+            when regexp_contains(id, r'^O8[0-4]$')
+              or regexp_contains(id, r'^Z37')
+              or regexp_contains(id, r'^Z39')
+              or regexp_contains(id, r'^O0[0-4]$')
+            then 'RESOLVIDO'
+            else cast(null as string)
+          end as situacao,
           cast(internacao_data as string) as data_diagnostico
         )
       ) as condicoes

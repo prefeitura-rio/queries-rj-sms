@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: raw_iplanrio__resposta_disparo
+    description: >
+      Tabela com os registros de respostas a disparos do Projeto Cegonha Digital
+      disponibilizada pela Iplan. Cada linha representa uma mensagem associada a
+      uma interação considerada como resposta a um disparo, contendo informações
+      sobre o HSM enviado, o status do disparo, a identificação do contato e o
+      conteúdo das mensagens relacionadas à resposta.
+    columns:
+      - name: id_conta
+        description: "Identificador da conta/plataforma de envio à qual o disparo está associado."
+
+      - name: id_hsm
+        description: "Identificador do template de mensagem ativa (HSM) enviado."
+
+      - name: id_disparo
+        description: "Identificador único do disparo."
+
+      - name: id_externo
+        description: "Identificador externo associado ao contato ou cidadão no sistema de origem."
+
+      - name: id_target
+        description: "Identificador do alvo/destinatário do disparo na plataforma."
+
+      - name: contato_telefone
+        description: "Número de telefone do contato associado ao disparo."
+
+      - name: nome_hsm
+        description: "Nome do template de mensagem ativa (HSM) enviado."
+
+      - name: nome_campanha
+        description: "Nome da campanha associada ao disparo."
+
+      - name: orgao_responsavel
+        description: "Órgão responsável pela campanha ou disparo."
+
+      - name: categoria_hsm
+        description: "Categoria do template de mensagem ativa."
+
+      - name: ambiente
+        description: "Ambiente em que o disparo foi realizado, como prod."
+
+      - name: criacao_envio_datahora
+        description: "Data e hora de criação do envio do disparo."
+
+      - name: envio_datahora
+        description: "Data e hora em que o disparo foi enviado."
+
+      - name: entrega_datahora
+        description: "Data e hora em que o disparo foi entregue ao destinatário."
+
+      - name: leitura_datahora
+        description: "Data e hora em que o disparo foi lido pelo destinatário."
+
+      - name: falha_datahora
+        description: "Data e hora em que foi registrada falha no disparo, quando aplicável."
+
+      - name: resposta_datahora
+        description: "Data e hora da resposta associada ao disparo, quando identificada pela regra da tabela."
+
+      - name: fim_datahora
+        description: "Data e hora do último evento considerado na interação/resposta associada ao disparo."
+
+      - name: datarelay_datahora
+        description: "Data e hora em que o registro foi encaminhado ou atualizado na camada de relay/processamento."
+
+      - name: descricao_falha
+        description: "Descrição da falha do disparo, quando houver."
+
+      - name: indicador_falha
+        description: "Indicador se houve falha no disparo."
+
+      - name: id_status_disparo
+        description: "Identificador numérico do status do disparo."
+
+      - name: status_disparo
+        description: "Descrição textual do status do disparo, como delivered ou read."
+
+      - name: ano_particao
+        description: "Ano de partição lógica do registro."
+
+      - name: mes_particao
+        description: "Mês de partição lógica do registro."
+
+      - name: id_sessao
+        description: "Identificador da sessão de conversa associada à resposta ao disparo."
+
+      - name: datahora_resposta
+        description: "Data e hora da mensagem registrada como parte da resposta ou do fluxo relacionado ao disparo."
+
+      - name: mensagem_resposta
+        description: "Conteúdo textual da mensagem associada à resposta ou ao fluxo subsequente do disparo."
+
+      - name: id_mensagem_resposta
+        description: "Identificador da mensagem registrada como resposta ou mensagem relacionada ao disparo."
+
+      - name: mensagem_fonte
+        description: "Origem da mensagem registrada, como CUSTOMER, FLOW, SYSTEM ou URA."
+
+      - name: id_contato
+        description: "Identificador do contato na plataforma de mensageria."
+
+      - name: horas_para_responder
+        description: "Quantidade de horas entre o envio do disparo e a resposta considerada pela regra da tabela."
+
+      - name: data_particao
+        description: "Data de partição do registro."

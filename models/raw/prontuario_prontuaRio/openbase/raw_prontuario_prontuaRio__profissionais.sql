@@ -2,7 +2,9 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="profissionais",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="merge",
+        unique_key="id",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,10 +14,15 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
 
 source_ as (
   select * from {{ source('brutos_prontuario_prontuaRio_staging', 'intc0') }}
+  {% if is_incremental() %} 
+    where cast(loaded_at as date) >= date( '{{ last_partition }}' ) 
+  {% endif %}
 ),
 
 profissionais as (
@@ -53,16 +60,25 @@ final as (
         {{process_null('ativo_indicador')}} as ativo_indicador,
         {{process_null('email')}} as email,
         cnes,
-        cast(cast(loaded_at as timestamp)as datetime) as loaded_at
+        loaded_at,
+        cast(loaded_at as date) as data_particao
     from profissionais
     qualify row_number() over(partition by cpf, cnes order by loaded_at desc) = 1 
 
 )
 
 
-select 
-    *,
-    cast(loaded_at as date) as data_particao,
+select
+    {{
+      dbt_utils.generate_surrogate_key(
+        [
+            'cnes',
+            'cpf'
+        ]
+      )
+    }} as id,
+    concat(cnes, '.', cpf) as gid_profissional,
+    *
 from final
 
 

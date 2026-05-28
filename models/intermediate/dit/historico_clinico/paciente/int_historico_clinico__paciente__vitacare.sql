@@ -24,8 +24,8 @@
 with
     paciente as (
         select
-            * except (id, source_updated_at),
-            id as id_paciente,
+            * except (id_paciente_global, source_updated_at),
+            id_paciente_global as id_paciente,
             source_updated_at as updated_at,
             row_number() over (
                 partition by cpf
@@ -482,7 +482,7 @@ with
             cpf,
             'vitacare' as sistema,
             id_cnes,
-            id as id_paciente,
+            id_paciente_global as id_paciente,
             row_number() over (
                 partition by cpf
                 order by source_updated_at

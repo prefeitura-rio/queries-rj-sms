@@ -4,6 +4,7 @@
         alias="contatos_caps",
         materialized="table",
         tags=["weekly"],
+        meta={"owner": "avellar"}
     )
 }}
 

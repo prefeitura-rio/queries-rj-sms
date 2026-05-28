@@ -2,16 +2,28 @@ version: 2
 
 models:
   - name: raw_prontuario_vitacare_historico__acto
-    description: Modelo histórico de atendimentos (acto) do prontuário Vitacare.
+    description: Modelo histórico de atendimentos (acto) do prontuário VitaCare.
     columns:
+      - name: id_global
+        description: Identificador global do atendimento, criado a partir da composição entre id_cnes e acto_id.
+
+      - name: id_local
+        description: Identificador local do atendimento, correspondente ao acto_id
+
+      - name: id_cnes
+        description: Número CNES da unidade de saúde onde o atendimento ocorreu.
+
+      - name: id_paciente_global
+        description: Identificador global do paciente no VitaCare, criado a partir da composição entre id_cnes e ut_id. Permite identificar o paciente vinculado ao atendimento, inclusive quando não há CPF.
+
       - name: id_prontuario_global
-        description: Identificador global criado para cada acto a partir da junção do id_cnes e do id_prontuario_local.
+        description: Identificador global criado para cada acto a partir da composição entre id_cnes e id_prontuario_local.
 
       - name: id_prontuario_local
         description: Identificador único do atendimento no prontuário local.
 
-      - name: id_cnes
-        description: Número CNES da unidade de saúde onde o atendimento ocorreu.
+      - name: ut_id
+        description: Identificador local do paciente na unidade de saúde. O mesmo ut_id pode existir em unidades diferentes.
 
       - name: unidade_ap
         description: Área programática da unidade.
@@ -43,7 +55,7 @@ models:
         description: Código da Classificação Brasileira de Ocupações do profissional que realizou o atendimento.
 
       - name: profissional_cbo_descricao
-        description: Descrição da Ocupação do profissional que realizou o atendimento.
+        description: Descrição da ocupação do profissional que realizou o atendimento.
 
       - name: profissional_equipe_nome
         description: Nome da equipe de saúde do profissional que realizou o atendimento.
@@ -80,9 +92,6 @@ models:
 
       - name: notas_observacoes
         description: Observações das notas do atendimento SOAP.
-
-      - name: ut_id
-        description: Identificador local do paciente.
 
       - name: realizado
         description: Indica se o atendimento foi realizado ou não.

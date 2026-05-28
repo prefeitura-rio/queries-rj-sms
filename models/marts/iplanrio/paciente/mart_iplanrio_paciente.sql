@@ -15,11 +15,20 @@
 with base as (
     select *
     from {{ ref("mart_historico_clinico__paciente") }}
+),
+
+-- Para diminuir o custo, a varredura tem como base os episodios da camada intermediaria da vitacare, ao inves do mart historico clinico
+-- Essa variavel é usada no RMI e em um dos protocolo do PIC
+atendimento as (
+    select distinct
+        cpf
+    from {{ ref("int_historico_clinico__episodio__vitacare") }} 
+    where cpf is not null
 )
 
 select
-    cpf,
-    cns,
+    base.cpf,
+    base.cns,
 
     struct(
         base.dados.obito_data      as obito_data,
@@ -27,19 +36,23 @@ select
         base.dados.raca            as raca
     ) as dados,
 
-    equipe_saude_familia,
+    base.equipe_saude_familia,
 
     struct(
         base.contato.email    as email,
         base.contato.telefone as telefone
     ) as contato,
 
-    endereco,
+    base.endereco,
 
-    cpf_particao,
+    coalesce(atendimento.cpf is not null, false) as tem_atendimento_aps,
+
+    base.cpf_particao,
 
     struct(
         current_timestamp() as ultima_atualizacao
     ) as metadados
 
 from base
+left join atendimento
+    on base.cpf = atendimento.cpf

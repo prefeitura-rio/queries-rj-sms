@@ -10,6 +10,7 @@
             "data_type": "date",
             "granularity": "day",
         },
+        meta={"owner": "herian"}
     )
 }}
 
@@ -430,6 +431,6 @@ select
     prontuario,
     metadados,
     cast(cpf as int64) as cpf_particao,
-    cast(entrada_datahora as date) as data_particao
+    {{ parse_and_filter_future_date("entrada_datahora") }} as data_particao
 from deduplicated
 where rn = 1

@@ -160,6 +160,8 @@ models:
       description: "Ano utilizado para fins de particionamento dos dados."
     - name: data_particao
       description: "Data específica utilizada para particionamento dos dados."
+      tests:
+        - not_null
     - name: data_carga
       description: "Data em que os dados foram carregados no banco de dados."
     - name: data_snapshot
@@ -176,6 +178,8 @@ models:
       # Identificação
       - name: data_particao
         description: "Data usado para o particionamento do conjunto de dados."
+        tests:
+          - not_null
       - name: ano_competencia
         description: "Ano de referência dos dados."
       - name: mes_competencia
@@ -219,6 +223,8 @@ models:
     columns:
       - name: data_particao
         description: "Data usado para o particionamento do conjunto de dados."
+        tests:
+          - not_null
       - name: ano_competencia
         description: "Ano de referência dos dados."
       - name: mes_competencia
@@ -268,6 +274,8 @@ models:
     columns:
       - name: data_particao
         description: "Data usado para o particionamento do conjunto de dados."
+        tests:
+          - not_null
       - name: ano_competencia
         description: "Ano de referência dos dados."
       - name: mes_competencia
@@ -309,6 +317,8 @@ models:
     columns:
       - name: data_particao
         description: "Data usado para o particionamento do conjunto de dados."
+        tests:
+          - not_null
       - name: ano_competencia
         description: "Ano de referência dos dados."
       - name: mes_competencia

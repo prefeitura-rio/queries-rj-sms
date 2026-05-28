@@ -1,16 +1,28 @@
 {{
     config(
         alias="ficha_c_v2",
-        materialized="table",
+        materialized="incremental",
+        unique_key="id_surrogate",
+        incremental_strategy="insert_overwrite",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month"
+        },
         tags = ['subpav', 'ficha_c']
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 with
     source as (
         select 
             *
         from {{ source("brutos_informes_vitacare_staging", "ficha_c_v2") }}
+        {% if is_incremental() %} 
+            where data_particao >= '{{ last_partition }}' 
+        {% endif %}
     ),
 
     sem_duplicatas as (
@@ -21,6 +33,14 @@ with
 
     extrair_informacoes as (
         select
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "_source_file",
+                        "indice"
+                    ]
+                )
+            }} as id_surrogate,
             {{extract_competencia_from_path('_source_file')}} as competencia,
             {{normalize_null('ap') }} as ap,
             {{normalize_null('cnes_da_unidade') }} as cnes_unidade,

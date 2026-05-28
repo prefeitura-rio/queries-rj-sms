@@ -2,7 +2,9 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="ralta",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="merge",
+        unique_key="id",  
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,10 +14,15 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
   source_ as (
     select *
     from {{source('brutos_prontuario_prontuaRio_staging', 'hp_rege_ralta') }}
+    {% if is_incremental() %} 
+      where cast(loaded_at as date) > date( '{{ last_partition }}' ) 
+    {% endif %}
   ),
 
   ralta as (
@@ -59,6 +66,16 @@ with
   )
 
 select
+    {{
+      dbt_utils.generate_surrogate_key(
+        [
+            'cnes',
+            'id_boletim',
+            'id_alta',
+            'id_prontuario'
+        ]
+      )
+  }} as id,
   concat(cnes, '.', id_alta) as gid_alta,
   concat(cnes, '.', id_prontuario) as gid_prontuario,
   concat(cnes, '.', id_boletim) as gid_boletim,

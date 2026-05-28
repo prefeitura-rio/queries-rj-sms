@@ -1,7 +1,8 @@
 {{
   config(
     alias="bairro",
-    materialized="table"
+    materialized="table",
+    meta={"owner": "avellar"}
   )
 }}
 

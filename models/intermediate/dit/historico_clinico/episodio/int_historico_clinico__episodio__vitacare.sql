@@ -357,9 +357,11 @@ with
                         json_extract_scalar(
                             json_extract(vacinas, '$[0]'), '$.nome_vacina'
                         )
-                    else nullif(tipo, '')
+                    else nullif(tipo_consulta, '')
                 end as string
             ) as subtipo,
+
+            atendimento.tipo_atendimento as tipo_demanda,
 
             -- Entrada e Saída
             {{ parse_and_filter_future_date('datahora_inicio') }} as entrada_datahora,
@@ -432,7 +434,13 @@ with
             on atendimento.id_prontuario_global = dim_prescricoes_atribuidas.fk_atendimento
     ),
 
-    episodios_validos as (select * from fato_atendimento where id_hci is not null)
+    episodios_validos as (
+    select *
+    from fato_atendimento
+    where id_hci is not null
+      and cpf is not null
+      and trim(cpf) != ''
+    )
 
 -- -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--
 -- Finalização

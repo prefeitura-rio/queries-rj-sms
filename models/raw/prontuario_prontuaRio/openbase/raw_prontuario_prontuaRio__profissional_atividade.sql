@@ -4,12 +4,22 @@
         alias="profissional_atividade",
         materialized="table",
         tags=["prontuaRio"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        },
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 with 
     source_ as (
         select * from {{ source('brutos_prontuario_prontuaRio_staging', 'intb0') }}
+      {% if is_incremental() %} 
+        where cast(loaded_at as date) >= date( '{{ last_partition }}' )  
+      {% endif %}
     ),
 
     ocupacoes as (
@@ -33,9 +43,10 @@ with
                 else upper(descricao)
             end as descricao,
             loaded_at,
+            date(loaded_at) as data_particao
         from ocupacoes
+        qualify row_number() over(partition by gid_atividade, descricao order by loaded_at desc)=1
 
     )
 
 select * from final
-qualify row_number() over(partition by gid_atividade, descricao order by loaded_at desc)=1

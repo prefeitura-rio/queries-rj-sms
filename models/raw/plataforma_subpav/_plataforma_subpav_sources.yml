@@ -37,3 +37,6 @@ sources:
       - name: subpav_altas_referenciadas__pacientes
       - name: subpav_altas_referenciadas__internacoes
       - name: subpav_altas_referenciadas__desfechos_gestacao
+      - name: subpav_altas_referenciadas__vw_altas
+      - name: subpav_altas_referenciadas__internacoes_comorbidades
+      - name: subpav_altas_referenciadas__internacoes_diagnosticos

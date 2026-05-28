@@ -232,19 +232,12 @@ WITH
             {{ process_null('gestantepuerperiocuretagem') }} AS gestante_puerperio_curetagem,
             {{ process_null('puerperiooutrotermoqual') }} AS puerperio_outro_termo_qual,
    
-            extracted_at AS loaded_at,
+            cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
             DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
 
         FROM prenatal_deduplicados
-    ),
-
-    -- Filtro temporário para remover registros anteriores à carga oficial (24/06/2025 17:15)
-    fato_filtrado AS (
-        SELECT *
-        FROM fato_prenatal
-        WHERE PARSE_TIMESTAMP('%F %H:%M:%E6S', loaded_at) > TIMESTAMP('2025-06-24 17:15:00.000000')
     )
-
+    
 SELECT
     *
-FROM fato_filtrado
+FROM fato_prenatal

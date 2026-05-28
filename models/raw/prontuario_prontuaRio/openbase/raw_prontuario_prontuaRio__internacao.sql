@@ -2,7 +2,9 @@
     config(
         schema='brutos_prontuario_prontuaRio',
         alias="internacao",
-        materialized="table",
+        materialized="incremental",
+        incremental_strategy="merge",
+        unique_key="id",
         tags=["prontuaRio"],
         partition_by={
             "field": "data_particao",
@@ -12,12 +14,17 @@
     )
 }}
 
+{% set last_partition = get_last_partition_date(this) %}
+
 with 
 
   source_ as (
     select  
       *
     from {{ source('brutos_prontuario_prontuaRio_staging', 'cen02') }}
+  {% if is_incremental() %} 
+    where cast(loaded_at as date) >= date( '{{ last_partition }}' ) 
+  {% endif %}
   ),
 
  internacoes as (
@@ -118,7 +125,7 @@ with
       {{ process_null('notifcomp') }} as notifcomp,
       cnes,
       loaded_at,
-      cast(safe_cast(loaded_at as timestamp) as date) as data_particao
+      cast(loaded_at as date) as data_particao
   from internacoes
   qualify row_number() over(
     partition by 
@@ -129,6 +136,15 @@ with
  )
 
 select 
+    {{
+      dbt_utils.generate_surrogate_key(
+        [
+            'cnes',
+            'id_prontuario',
+            'id_boletim'
+        ]
+      )
+    }} as id,
   concat(cnes, '.', id_prontuario) as gid_prontuario,
   concat(cnes, '.', id_boletim) as gid_boletim,
   *

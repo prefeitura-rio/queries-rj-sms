@@ -7,7 +7,8 @@
         partition_by={
             "field": "data_publicacao",
             "data_type": "date"
-        }
+        },
+        meta={"owner": "avellar"}
     )
 }}
 

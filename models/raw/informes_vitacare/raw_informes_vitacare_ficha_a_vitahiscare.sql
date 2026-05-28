@@ -1,9 +1,18 @@
 {{
     config(
         alias="ficha_a_vitahiscare",
-        materialized="table",
+        materialized="incremental",
+        unique_key="id_surrogate",
+        incremental_strategy="insert_overwrite",
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month"
+        }
     )
 }}
+
+{% set last_partition = get_last_partition_date(this) %}
 
 with
     source as (
@@ -23,7 +32,14 @@ with
 
     extrair_informacoes as (
         select
-
+            {{
+                dbt_utils.generate_surrogate_key(
+                    [
+                        "_source_file",
+                        "indice"
+                    ]
+                )
+            }} as id_surrogate,
             {{ process_null("ap") }} as ap,
             {{ process_null("numero_cnes_unidade") }} as numero_cnes_unidade,
             {{ process_null("nome_unidade_de_saude") }} as nome_unidade_de_saude,
@@ -140,8 +156,7 @@ with
             ) as metadados,
             {{ process_null("ano_particao") }} as ano_particao,
             {{ process_null("mes_particao") }} as mes_particao,
-            {{ process_null("data_particao") }} as data_particao
-
+            date(data_particao) as data_particao
         from sem_duplicatas
     )
 select * from extrair_informacoes

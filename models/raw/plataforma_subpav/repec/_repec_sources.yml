@@ -1,0 +1,81 @@
+version: 2
+
+sources:
+  - name: brutos_plataforma_subpav_staging
+    database: "{{ 'rj-sms' if target.name == 'prod' else 'rj-sms-dev' }}"
+    schema: brutos_plataforma_subpav_staging
+    tables:
+      - name: subpav_repec__agendamentos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__atendimentos_clinicos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__atendimentos_clinicos_acs
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__dados_biometricos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__dados_clinicos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__diagnosticos_cid10
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__documentos_emitidos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__encaminhamentos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__entidades
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__episodios_saude
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__exames_solicitados
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__familias
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__hist_status_pacientes
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__hist_status_profissionais
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__material_coletado_alergia
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__medicamentos_dispensados
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__medicamentos_prescritos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__pacientes
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__procedimentos_atend
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__procedimentos_dentes
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__profissionais
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__result_exames
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__resultados_testes_rapidos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_campo_dado_clinico
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_dados_biometricos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_dose
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_equipe
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_exames
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_microarea
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_testes_rapidos
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_tipo_atendimento
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_tipo_dado_clinico
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_tipo_documento
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_tipo_encaminhamento
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__tabaux_vacina
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__vacinas
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+      - name: subpav_repec__vd_familia
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
