@@ -1,5 +1,6 @@
 {{
     config(
+        enabled=false,
         alias="gestante",
         materialized="incremental",
         schema='brutos_prontuario_mv',
