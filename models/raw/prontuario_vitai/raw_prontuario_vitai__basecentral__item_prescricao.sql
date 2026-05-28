@@ -46,7 +46,7 @@ select
     -- Detalhes do Item Prescrito
     safe_cast({{ process_null('item_prescrito') }} as string) as item_prescrito,
     safe_cast({{ process_null('pri_descricaoitem') }} as string) as descricao_item,
-    safe_cast(cast(quantidade as float64) as integer) as quantidade,
+    safe_cast(cast({{ process_null('quantidade') }} as float64) as integer) as quantidade,
     safe_cast({{ process_null('unidade_medida') }} as string) as unidade_medida,
     safe_cast({{ process_null('via_administracao') }} as string) as via_administracao,
     safe_cast({{ process_null('observacao') }} as string) as observacao,
