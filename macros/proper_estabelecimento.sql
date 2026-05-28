@@ -6,8 +6,10 @@
                     when
                         lower(word) in (
                             'sms',   -- Secretaria Municipal de Saúde
+                            'ses',   -- Secretaria de Estado de Saúde
+                            'ms',    -- Ministério da Saúde
                             'smsdc',
-                            'ap',
+                            'ap',    -- Área Programática
                             'cap',
                             'caps',  -- Centro de Atenção Psicossocial
                             'cer',   -- Centro de Emergência Regional
@@ -21,8 +23,7 @@
                             'eat',   -- (CAPS) Espaço Aberto ao Tempo
                             'uerj',
                             'ufrj',
-
-                            'a', 'e', 'o',
+                            'rj',
 
                             'i',  'ii',  'iii',  'iv',  'v',  'vi',  'vii',  'viii',  'ix', 'x',
                             'xi', 'xii', 'xiii', 'xiv', 'xv', 'xvi', 'xvii', 'xviii', 'xix', 'xx',

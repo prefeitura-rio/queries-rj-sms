@@ -560,6 +560,13 @@ models:
             dado_publico: sim
             dado_pessoal: sim
             dado_sensivel: sim
+        regulacao:
+          +tags: []
+          +schema: intermediario_regulacao
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
 
 
     ##########################################################################

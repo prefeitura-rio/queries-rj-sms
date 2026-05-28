@@ -49,18 +49,18 @@ with
           else cast(null as string)
       end as solicitacao_visualizada_regulador,
 
-      -- TODO: o que cada código significa?
-      cast({{ process_null("codigo_tipo_regulacao") }} as string)      as codigo_tipo_regulacao,
-      cast({{ process_null("codigo_tipo_fila") }} as string)           as codigo_tipo_fila,
-      cast({{ process_null("codigo_perfil_cancelamento") }} as string) as codigo_perfil_cancelamento,
-      cast({{ process_null("codigo_classificacao_risco") }} as string) as codigo_classificacao_risco,
-      case codigo_classificacao_risco
-          when "1" then "vermelho"
-          when "2" then "amarelo"
-          when "3" then "verde"
-          when "4" then "azul"
+      cast({{ process_null("codigo_classificacao_risco") }} as string) as classificacao_risco_codigo,
+      case trim(codigo_classificacao_risco)
+          when "1" then "vermelho"  -- até 30 dias
+          when "2" then "amarelo"   -- até 90 dias
+          when "3" then "verde"     -- até 180 dias
+          when "4" then "azul"      -- >180 dias
           else cast(null as string)
       end as classificacao_risco,
+
+      -- TODO: o que cada código significa?
+      cast({{ process_null("codigo_tipo_regulacao") }} as string) as tipo_regulacao_codigo,
+      cast({{ process_null("codigo_tipo_fila") }} as string)      as tipo_fila_codigo,
 
 
       -- Informações da solicitação
@@ -93,7 +93,7 @@ with
       cast({{ process_null("nome_cnes_central_solicitante") }} as string) as central_solicitante_nome_cnes,
       cast({{ process_null("nome_central_solicitante") }} as string) as central_solicitante_nome,
 
-      lpad({{ process_null("codigo_unidade_solicitante") }}, 7, "0") as unidade_solicitante_codigo,
+      lpad({{ process_null("codigo_unidade_solicitante") }}, 7, "0") as unidade_solicitante_id_cnes,
       trim({{ process_null("nome_unidade_solicitante") }}) as unidade_solicitante_nome,
 
       lpad({{ process_null("cpf_profissional_solicitante") }}, 11, "0") as profissional_solicitante_cpf,
@@ -113,16 +113,18 @@ with
       cast({{ process_null("codigo_central_reguladora") }} as string) as central_reguladora_codigo,
       cast({{ process_null("nome_central_reguladora") }} as string) as central_reguladora_nome,
 
+      -- Cancelamento
+      cast({{ process_null("codigo_perfil_cancelamento") }} as string) as perfil_cancelamento_codigo,
       cast({{ process_null("nome_perfil_cancelamento") }} as string) as perfil_cancelamento_nome,
 
 
       -- Dados do executante
-      cast({{ process_null("numero_crm") }} as string) as crm,
+      cast({{ process_null("numero_crm") }} as string) as executante_crm,
 
 
       -- Preferências da solicitação
       cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
-      lpad({{ process_null("codigo_unidade_desejada") }}, 7, "0") as unidade_desejada_codigo,
+      lpad({{ process_null("codigo_unidade_desejada") }}, 7, "0") as unidade_desejada_id_cnes,
       cast({{ process_null("nome_unidade_desejada") }} as string) as unidade_desejada_nome,
 
 
@@ -130,7 +132,7 @@ with
       lpad({{ process_null("cpf_usuario") }}, 11, "0") as paciente_cpf,
       lpad({{ process_null("cns_usuario") }}, 15, "0") as paciente_cns,
       cast({{ process_null("no_usuario") }} as string) as paciente_nome,
-      cast({{ process_null("sexo_usuario") }} as string) as paciente_sexo,
+      lower({{ process_null("sexo_usuario") }}) as paciente_sexo,
       cast({{ process_null("no_mae_usuario") }} as string) as paciente_nome_mae,
       cast({{ process_null("telefone") }} as string) as paciente_telefones,
       -- -- Nascimento
