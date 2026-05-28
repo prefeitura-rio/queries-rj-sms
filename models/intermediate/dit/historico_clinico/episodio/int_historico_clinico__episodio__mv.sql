@@ -17,17 +17,18 @@
 with 
 
 atendimento as (
-  SELECT 
+  select 
     id_hci,
     id_atendimento,
     id_cnes,
+    paciente_cpf,
     atendimento_datahora,
     alta_datahora,
     atendimento_tipo,
     atendimento_especialidade,  
     loaded_at,
     updated_at
-    FROM `rj-sms-dev.Herian__brutos_prontuario_mv.bam` 
+    from {{ ref('raw_prontuario_mv__atendimento') }}
 ),
 
 
@@ -48,7 +49,8 @@ bam as (
     saturacao_oxigenio, 
     hipotese_diagnostica,
     conduta_proposta,
-  from `rj-sms-dev.Herian__brutos_prontuario_mv.bam`
+    profissional_nome
+  from {{ref('raw_prontuario_mv__bam')}}
 ),
 
 
@@ -70,7 +72,8 @@ anamnese as (
     altura,
     imc,
     cid,
-  from rj-sms-dev.Herian__brutos_prontuario_mv.anamnese -- TODO:trocar por modelo
+    profissional_nome
+  from {{ref('raw_prontuario_mv__anamnese')}}
 ),
 
 
@@ -79,9 +82,16 @@ parecer as (
     id_atendimento,
     atendimento_datahora as data_diagnostico,
     split(cid, ' ')[0] as id_cid,
-  from `rj-sms-dev.Herian__brutos_prontuario_mv.parecer` -- TOD: trocar por modelo
+  from {{ref('raw_prontuario_mv__parecer')}}
 ),
 
+evolucao as (
+  select 
+    id_atendimento,
+    profissional_nome,
+    planejamento_terapeutico
+  from {{ref('raw_prontuario_mv__evolucao')}}
+),
 
 -- Alta
 alta as (
@@ -95,13 +105,14 @@ alta as (
     evolucao_paciente,
     plano_alta_orientacao_enfermagem,
     orientacao_medica,
-  from `rj-sms-dev.Herian__brutos_prontuario_mv.alta` -- TODO:trocar por modelo
+  from {{ref('raw_prontuario_mv__alta')}}
 ),
 
 anamnese_alta as (
   select 
     id_atendimento,
     conduta_proposta,
+    profissional_nome
   from anamnese
   where upper(plano_terapeutico) like "%ALTA%"
 ),
@@ -114,7 +125,7 @@ condicoes as (
     id_cid,
     descricao 
   from parecer p
-  join `rj-sms.saude_dados_mestres.condicao_cid10` c -- TODO: Trocar por dim_condicao
+  join {{ ref("dim_condicao_cid10") }} c
     on c.id = p.id_cid 
   where id_cid is not null
   union all
@@ -124,10 +135,55 @@ condicoes as (
     cid_principal as id_cid,
     descricao
   from alta a
-  join `rj-sms.saude_dados_mestres.condicao_cid10` c -- TODO: Trocar por dim_condicao
+  join {{ ref("dim_condicao_cid10") }} c
     on c.id = a.cid_principal
   where cid_principal is not null
 ),
+
+profissional as (
+  select 
+    p.nome,
+    p.cns,
+    p.cpf,
+    p.id_cbo,
+    cbo.descricao
+  from {{ref('raw_prontuario_mv__profissional')}} p
+  left join {{ref('raw_datasus__cbo')}} cbo using(id_cbo) 
+),
+
+profissional_saude_responsavel as (
+  select
+    id_atendimento,
+    profissional_nome,
+  from alta
+  union all
+  select 
+    id_atendimento,
+    profissional_nome,
+  from anamnese
+  union all 
+  select 
+    id_atendimento,
+    profissional_nome,
+  from bam
+  union all
+  select 
+    id_atendimento,
+    profissional_nome,
+  from evolucao
+),
+
+profissional_saude_enriquecido as (
+  select distinct
+    psr.id_atendimento,
+    psr.profissional_nome,
+    p.cns,
+    p.cpf,
+    p.id_cbo,
+    p.descricao
+  from profissional_saude_responsavel psr
+  left join profissional p on upper(psr.profissional_nome) = upper(p.nome)
+  ),
 
 condicoes_agg as(
   select 
@@ -142,108 +198,124 @@ condicoes_agg as(
     ) as condicoes_agregadas
   from condicoes
   group by id_atendimento
-)
+),
 
-select 
-  id_hci,
-  id_atendimento,
-  atendimento_tipo as tipo,
-  atendimento_especialidade as subtipo,
-  atendimento.atendimento_datahora as entrada_datahora,
-  alta_datahora as saida_datahora,
+final as (
+  select 
+    id_hci,
+    paciente_cpf,
+    atendimento_tipo as tipo,
+    atendimento_especialidade as subtipo,
+    {{parse_and_filter_future_datetime('atendimento.atendimento_datahora')}} as entrada_datahora,
+    {{parse_and_filter_future_datetime('alta_datahora')}} as saida_datahora,
 
-  -- Exames Realizados 
+    -- Exames Realizados 
 
-  -- Procedimentos Realizados
-  upper(procedimentos_realizados),
+    -- Procedimentos Realizados
+    upper(procedimentos_realizados) as procedimentos_realizados,
 
-  -- Medidas
-  struct(
-    an.altura as altura,
-    an.superficie_corporal as circunferencia_abdominal,
-    coalesce(b.frequencia_cardiaca, an.frequencia_cardiaca) as frequencia_cardiaca,
-    coalesce(b.frequencia_respiratoria, an.frequencia_respiratoria) as frequencia_respiratoria,
-    cast(null as float64) as glicemia,
-    cast(null as float64) as hemoglobina_glicada,
-    cast(null as float64) as imc,
-    cast(null as float64) as peso,
+    -- Motivo do Atendimento
     coalesce(
-      b.pressao_arterial_sistolica, 
-      an.pressao_arterial_sistolica
-    ) as pressao_sistolica,
+      upper(queixa_principal),
+      upper(queixa_medica),
+      upper(queixa_principal_anamnese)
+    ) as motivo_atendimento,
+
+    -- Desfecho do Atendimento
     coalesce(
-      b.pressao_arterial_diastolica, 
-      an.pressao_arterial_diastolica
-    ) as pressao_diastolica,
-    cast(null as string) as pulso_ritmo,
-    coalesce(
-      b.saturacao_oxigenio,
-      an.saturacao_oxigenio
-    ) as saturacao_oxigenio,
-    coalesce(
-      b.temperatura,
-      an.temperatura
-    ) as temperatura
-  ) as medidas,
+      upper(a.orientacao_medica),
+      upper(ev.planejamento_terapeutico),
+      upper(b.conduta_proposta)
+    ) as desfecho_atendimento,
 
-  -- Motivo do Atendimento
-  coalesce(
-    upper(queixa_principal),
-    upper(queixa_medica),
-    upper(queixa_principal_anamnese)
-  ) as motivo_atendimento,
+    -- Condicoes
+    c.condicoes_agregadas as condicoes,
 
-  -- Desfecho do Atendimento
-  coalesce(
-    upper(a.orientacao_medica)
-    --upper(evolucao_paciente)
-    --upper(aa.conduta_proposta)
-  ) as desfecho_atendimento,
+    -- Medidas
+    struct(
+      an.altura as altura,
+      an.superficie_corporal as circunferencia_abdominal,
+      coalesce(b.frequencia_cardiaca, an.frequencia_cardiaca) as frequencia_cardiaca,
+      coalesce(b.frequencia_respiratoria, an.frequencia_respiratoria) as frequencia_respiratoria,
+      cast(null as float64) as glicemia,
+      cast(null as float64) as hemoglobina_glicada,
+      cast(null as float64) as imc,
+      cast(null as float64) as peso,
+      coalesce(
+        b.pressao_arterial_sistolica, 
+        an.pressao_arterial_sistolica
+      ) as pressao_sistolica,
+      coalesce(
+        b.pressao_arterial_diastolica, 
+        an.pressao_arterial_diastolica
+      ) as pressao_diastolica,
+      cast(null as string) as pulso_ritmo,
+      coalesce(
+        b.saturacao_oxigenio,
+        an.saturacao_oxigenio
+      ) as saturacao_oxigenio,
+      coalesce(
+        b.temperatura,
+        an.temperatura
+      ) as temperatura
+    ) as medidas,
 
-  -- Obito Indicador 
-  cast(null as boolean) as obito_indicador, 
+    -- Obito Indicador 
+    cast(null as boolean) as obito_indicador, 
 
-  -- Condicoes
-  c.condicoes_agregadas as condicoes,
+    -- Prescricoes 
+    -- Campo aberto, exige mineração de texto para se 
+    -- encaixar no formato atual do episódio assitencial
 
-  -- Prescricoes 
-  -- Medicamentos Administrados
+    -- Medicamentos Administrados
+    -- Campo aberto, exige mineração de texto para se 
+    -- encaixar no formato atual do episódio assitencial
 
-  -- Estabelecimento
-  struct(
-    id_cnes,
-    e.nome_acentuado as nome,
-    e.tipo_sms as estabelecimento_tipo
-  ) as estabelecimento,
+    -- Estabelecimento
+    struct(
+      id_cnes,
+      {{ proper_estabelecimento("e.nome_acentuado") }} as nome,
+      e.tipo_sms as estabelecimento_tipo
+    ) as estabelecimento,
 
-  -- Profissional
-  struct(
-    cast(null as string) as id,
-    cast(null as string) as cpf,
-    cast(null as string) as cns,
-    profissional_nome as nome,
-    cast(null as string) as especialidade
-  ) as profissional_saude_responsavel,
+    -- Profissional
+    struct(
+      cast(null as string) as id,
+      p.cpf as cpf,
+      p.cns as cns,
+      p.profissional_nome as nome,
+      p.descricao as especialidade
+    ) as profissional_saude_responsavel,
 
 
-  -- Prontuario
-  struct(
-    concat(id_cnes, '.', id_atendimento) as id_prontuario_global,
-    id_atendimento as id_prontuario_local,
-    'mv' as fornecedor
-  ) as prontuario,
+    -- Prontuario
+    struct(
+      concat(id_cnes, '.', id_atendimento) as id_prontuario_global,
+      id_atendimento as id_prontuario_local,
+      'mv' as fornecedor
+    ) as prontuario,
 
-  -- Metadados
-  struct(
-    updated_at,
-    loaded_at as imported_at,
-    current_datetime('America/Sao_Paulo') as processed_at
-  ) as metadados
+    -- Metadados
+    struct(
+      updated_at,
+      loaded_at as imported_at,
+      current_datetime('America/Sao_Paulo') as processed_at
+    ) as metadados,
+    date(atendimento.atendimento_datahora) as data_particao,
+    safe_cast(cpf as int64) as cpf_particao
+    
 
-from atendimento
-left join bam b using(id_atendimento)
-left join alta a using(id_atendimento)
-left join anamnese an using(id_atendimento)
-left join anamnese_alta aa using(id_atendimento)
-left join condicoes_agg c using(id_atendimento)
-left join rj-sms.saude_dados_mestres.estabelecimento e using (id_cnes) -- TODO:Trocar por dim_estabelecimento
+  from atendimento
+  left join bam b using(id_atendimento)
+  left join alta a using(id_atendimento)
+  left join evolucao ev using(id_atendimento)
+  left join anamnese an using(id_atendimento)
+  left join anamnese_alta aa using(id_atendimento)
+  left join condicoes_agg c using(id_atendimento)
+  left join profissional_saude_enriquecido p using(id_atendimento)
+  left join {{ref('dim_estabelecimento')}} e using (id_cnes)
+) 
+
+select *
+from final 
+qualify row_number() over(partition by id_hci order by metadados.updated_at desc) = 1
