@@ -78,8 +78,11 @@ Grupos funcionais dos modelos intermediários:
   (filtra quem deve sair).
 - **eventos** — `eventos_episodios` (compute compartilhado por paciente,
   com `run_id`) e `pendencias`.
-- **gravidade** (`gravidade_indicador/`) — `gravidade_instancias`,
-  `gravidade` e o README dedicado do indicador.
+- **gravidade** (`gravidade_indicador/`) — `eventos_run_atual` (fonte
+  ephemeral compartilhada do run atual), 7 modelos de critério em
+  `criterios/`, `gravidade_instancias` (agregador) e `gravidade`
+  (orquestrador do score). README dedicado em
+  [`gravidade_indicador/README.md`](gravidade_indicador/README.md).
 
 ## Domínio em uma página
 
@@ -90,10 +93,12 @@ Grupos funcionais dos modelos intermediários:
   (`episodio_gap_dias`). O `run_id` incrementa a cada gap maior que isso.
   O score e a linha do tempo consideram **apenas o run atual** (último
   episódio de cuidado).
-- **Status da paciente** — `UNACON` quando há ≥1 evento SER (entrada na
-  regulação para oncologia); `DIAGNOSTICO` quando há evento com critério
-  de diagnóstico confirmado; `SUSPEITA` nos demais casos da
-  população-alvo.
+- **Status da paciente** — calculado sobre os eventos que qualificaram a
+  paciente para o monitoramento (`data_solicitacao >= 2025-01-01` E com
+  `criterio_suspeita` ou `criterio_diagnostico`): `UNACON` quando há ≥1
+  evento SER (entrada na regulação para oncologia); `DIAGNOSTICO` quando
+  há evento com critério de diagnóstico confirmado; `SUSPEITA` nos
+  demais casos da população-alvo.
 - **Score de gravidade** — número que ordena as pacientes do run atual por
   **urgência de contato**: combina, por critério ativo, atraso × risco ×
   peso clínico, agrega por paciente (maior contribuição + soma das
@@ -175,5 +180,3 @@ Termos de domínio do projeto. Os termos **específicos do score**
 - **Blocos de documentação (`docs` blocks)** reaproveitados na
   documentação do dbt:
   [`_monitora_cancer__overview.md`](_monitora_cancer__overview.md).
-- **Plano de refatoração** do projeto:
-  [`../../../marts/subgeral/monitora_cancer/REFACTOR_PLAN.MD`](../../../marts/subgeral/monitora_cancer/REFACTOR_PLAN.MD).

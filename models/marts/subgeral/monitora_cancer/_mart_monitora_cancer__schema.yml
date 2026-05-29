@@ -176,7 +176,7 @@ models:
           NULL quando o evento não tem informação de risco mapeada.
         data_tests:
           - accepted_values:
-              values: [1.0, 2.0, 3.0, 4.0]
+              values: [1, 2, 3, 4]
               quote: false
               name: mart_monitora_cancer__fatos__risco__accepted_values
 
@@ -263,7 +263,9 @@ models:
       # ── qualificadores clínicos ───────────────────────────────────────────────
       - name: status
         description: >
-          Classificação da paciente no monitoramento:
+          Classificação da paciente no monitoramento, calculada sobre os eventos que
+          qualificaram a paciente para o monitoramento (data_solicitacao >= 2025-01-01
+          com criterio_suspeita ou criterio_diagnostico):
           "UNACON" quando há pelo menos um evento vindo do SER (regulação para oncologia);
           "DIAGNOSTICO" quando há evento com critério de diagnóstico confirmado;
           "SUSPEITA" nos demais casos da população-alvo.
@@ -347,8 +349,11 @@ models:
 
       - name: eventos.evento_status
         description: >
-          Status do evento no sistema de origem (ex.: AGENDADO, AUTORIZADO,
-          CANCELADO, EXECUTADO).
+          Status do evento no sistema de origem. Underscores presentes na fonte
+          (e em mart_monitora_cancer__fatos.evento_status) são substituídos por
+          espaços nesta emissão — ex.: "CHEGADA_NAO_CONFIRMADA" do SER aparece como
+          "CHEGADA NAO CONFIRMADA". Para o valor literal preservado, use
+          mart_monitora_cancer__fatos.evento_status.
 
       - name: eventos.procedimento
         description: Descrição padronizada do procedimento solicitado ou executado.
@@ -424,15 +429,16 @@ models:
 
       - name: eventos.risco
         description: >
-          Score numérico (float64) de risco do evento, normalizado entre sistemas
-          de origem na camada intermediária. Quanto maior o valor, maior o risco.
-          Mapeamento por fonte:
-          (SISREG) AZUL=1.0, VERDE=2.0, AMARELO=3.0, VERMELHO=4.0;
-          (SER) prioridade convertida diretamente para float64 — valores não
+          Score numérico (int64; truncado de float64 via safe_cast em
+          mart_monitora_cancer__fatos) de risco do evento, normalizado entre
+          sistemas de origem na camada intermediária. Quanto maior o valor,
+          maior o risco. Mapeamento por fonte:
+          (SISREG) AZUL=1, VERDE=2, AMARELO=3, VERMELHO=4;
+          (SER) prioridade convertida diretamente para int — valores não
           numéricos (ex.: "nan") viram NULL;
-          (SISCAN Mamografia) BI-RADS 1/2=1.0, 0/3=2.0, 4=3.0, 5/6=4.0; quando
+          (SISCAN Mamografia) BI-RADS 1/2=1, 0/3=2, 4=3, 5/6=4; quando
           há resultado nas duas mamas, retém-se o maior risco;
-          (SISCAN Histo Mama) grau histológico I=2.0, II=3.0, III=4.0.
+          (SISCAN Histo Mama) grau histológico I=2, II=3, III=4.
           NULL quando o evento não tem informação de risco mapeada. Validação
           do domínio é coberta pelo accepted_values em mart_monitora_cancer__fatos.risco.
 

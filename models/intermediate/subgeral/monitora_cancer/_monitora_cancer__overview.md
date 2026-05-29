@@ -18,10 +18,12 @@ consideram apenas o **run atual** (último episódio de cuidado).
 
 
 {% docs monitora_cancer__status %}
-Classificação da paciente no monitoramento:
-"UNACON" quando há pelo menos um evento vindo do SER (regulação para
-oncologia); "DIAGNOSTICO" quando há evento com critério de diagnóstico
-confirmado; "SUSPEITA" nos demais casos da população-alvo.
+Classificação da paciente no monitoramento, calculada sobre os eventos
+que a qualificaram (data_solicitacao >= 2025-01-01 com criterio_suspeita
+ou criterio_diagnostico): "UNACON" quando há pelo menos um evento vindo
+do SER (regulação para oncologia); "DIAGNOSTICO" quando há evento com
+critério de diagnóstico confirmado; "SUSPEITA" nos demais casos da
+população-alvo.
 {% enddocs %}
 
 

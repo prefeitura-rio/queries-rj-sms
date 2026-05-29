@@ -44,8 +44,11 @@
 --     usado como proxy do tempo desde o ingresso no percurso de cuidado.
 --   • Os valores de evento_status para SER são preservados de raw_ser_metabase
 --     (coluna solicitacao_estado), que armazena 'CHEGADA_NAO_CONFIRMADA',
---     'CANCELADA' etc. com underscores. Não há transformação que remova
---     underscores no caminho raw → int → mart.
+--     'CANCELADA' etc. com underscores. O caminho consumido aqui
+--     (raw → int_* → mart__fatos → eventos_episodios → pendencias) preserva
+--     a forma literal; o match abaixo usa essa forma. Nota: o mart
+--     pacientes_linha_tempo, em ramo separado, substitui '_' por ' ' apenas
+--     na emissão de eventos.evento_status — não afeta este modelo.
 
 {{
     config(
