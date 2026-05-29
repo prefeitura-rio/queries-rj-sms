@@ -27,8 +27,6 @@
 {{
     config(
         materialized="table",
-        schema="projeto_monitora_cancer",
-        tags=["daily", "subgeral", "monitora_cancer"],
         partition_by={
             "field": "cpf_particao",
             "data_type": "int64",

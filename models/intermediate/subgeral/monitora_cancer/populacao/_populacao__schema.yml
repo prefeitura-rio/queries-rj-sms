@@ -1,0 +1,5 @@
+version: 2
+
+# Débito pré-existente: os modelos desta pasta (populacao_alvo, exclusoes)
+# ainda não têm entrada de documentação/testes neste schema. Fora do escopo
+# da reorganização (PR 2); documentar em iniciativa separada.

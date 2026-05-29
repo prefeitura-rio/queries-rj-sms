@@ -269,15 +269,7 @@ models:
           "SUSPEITA" nos demais casos da população-alvo.
 
       - name: gravidade_score
-        description: >
-          Apresentação 0-100 do score de gravidade da paciente. Reflete
-          mart_monitora_cancer__gravidade.gravidade_total_0_100, com clip
-          no p95 dinâmico de gravidade_total do run atual — acima do
-          teto, satura em 100; a ordenação canônica da fila continua via
-          gravidade_total bruto (no mart_monitora_cancer__gravidade).
-          Pacientes sem critério ativo recebem 0 — inclusive gestantes
-          (o multiplicador atua sobre o termo_max e não cria score onde
-          não há critério).
+        description: '{{ doc("monitora_cancer__gravidade_score") }}'
 
       - name: tempo_total
         description: >
