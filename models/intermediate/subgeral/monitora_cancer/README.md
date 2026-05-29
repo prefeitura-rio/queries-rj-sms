@@ -25,48 +25,52 @@ contato** (score de gravidade) e uma **linha do tempo por paciente**.
 
 ## DAG conceitual
 
-```
-[parametros_sisreg] ─▶ [sisreg] ──────────┐
-[parametros_ser] ────▶ [ser_ambulatorial] ─┤
-                       [siscan] ───────────┼─▶ UNION ─▶ ┌─────────────────────┐
-                       [siscan_histo_mama] ┘            │ mart__fatos         │
-                                                        │ (incremental)       │
-                                                        └──────────┬──────────┘
-                          ┌──────────────────────────────┬─────────┤
-                          ▼                               ▼         ▼
-                  [exclusoes] ──────────────▶ [populacao_alvo]      │
-                        (+ gestacoes, dim_paciente, telefones, …)   │
-                                                    │               │
-                                                    ▼               ▼
-                                       ┌────────────────────────────────────┐
-                                       │ eventos_episodios  (table)          │
-                                       │ ◀ populacao_alvo + fatos; run_id    │
-                                       └─────────────┬───────────────────────┘
-                                                     │
-                    ┌────────────────────────────────┼─────────────────────────┐
-                    ▼                                 ▼                          ▼
-        ┌───────────────────────────┐      ┌───────────────────┐     ┌────────────────────┐
-        │ gravidade_instancias      │      │ pendencias        │     │ (eventos p/ join    │
-        │ (table; 7 critérios;      │      │                   │     │  gestante na PLT)   │
-        │  aplica Eq.1 + folga)     │      └─────────┬─────────┘     └─────────┬──────────┘
-        └──────┬──────────────┬─────┘                │                         │
-               ▼              ▼                       │                         │
-   ┌──────────────────┐  ┌──────────────────────┐    │                         │
-   │ gravidade        │  │ mart__gravidade_     │    │                         │
-   │ (ephemeral; Eq.3 │  │ instancias (analítico)│   │                         │
-   │  + reescala 0-100)│ └──────────────────────┘    │                         │
-   └────────┬─────────┘                              │                         │
-            ▼                                         │                         │
-   ┌──────────────────┐                               │                         │
-   │ mart__gravidade  │ ──── gravidade_total_0_100 ───┤                         │
-   │ (table)          │                               │                         │
-   └──────────────────┘                               │                         │
-            └──────────────────────────┬──────────────┴─────────────────────────┘
-                                        ▼
-                        ┌──────────────────────────────┐
-                        │ mart__pacientes_linha_tempo  │   gravidade_score =
-                        │ (contrato downstream)        │   cast(gravidade_total_0_100)
-                        └──────────────────────────────┘
+```mermaid
+flowchart TD
+    PSR[parametros_sisreg]
+    PSE[parametros_ser]
+    SR[sisreg]
+    SE[ser_ambulatorial]
+    SC[siscan]
+    SCH[siscan_histo_mama]
+
+    PSR --> SR
+    PSE --> SE
+
+    F[("mart__fatos<br/>(incremental)")]
+    SR --> F
+    SE --> F
+    SC --> F
+    SCH --> F
+
+    EXT(["dim_paciente · telefones ·<br/>gestacoes · bcadastro"])
+    EX[exclusoes]
+    POP[populacao_alvo]
+    F --> EX
+    F --> POP
+    EX --> POP
+    EXT --> POP
+
+    EE[("eventos_episodios<br/>(table)")]
+    F --> EE
+    POP --> EE
+
+    GI[("gravidade_instancias<br/>(table · 7 critérios · Eq.1 + folga)")]
+    P[("pendencias<br/>(table)")]
+    EE --> GI
+    EE --> P
+
+    G["gravidade<br/>(ephemeral · Eq.3 + reescala 0-100)"]
+    MGI[("mart__gravidade_instancias<br/>(analítico)")]
+    MG[("mart__gravidade<br/>(table)")]
+    GI --> G
+    GI --> MGI
+    G --> MG
+
+    PLT[("mart__pacientes_linha_tempo<br/>(contrato downstream)")]
+    MG -- "gravidade_total_0_100<br/>→ gravidade_score" --> PLT
+    P --> PLT
+    EE -- "gestante" --> PLT
 ```
 
 Grupos funcionais dos modelos intermediários:
