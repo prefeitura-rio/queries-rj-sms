@@ -147,8 +147,8 @@ Sistemas mencionados nos critérios:
 | # | Critério (nome no SQL) | Quando dispara | `intervalo_urgencia_dias` | `peso_criterio` |
 |---|---|---|---:|---:|
 | C1 | `SISCAN_MAMA_CAT_0_4_5__SISREG_ULTRA_OU_BIOPSIA` | Mamografia Categoria 0/4/5 (suspeita) sem ultra ou biópsia no SISREG depois | 10 | 1.0 |
-| C2 | `SISCAN_MAMA_CAT_6__SER` | Mamografia Categoria 6 (diagnóstico) sem evento no SER depois | 5 | 3.0 |
-| C3 | `SISCAN_BIOPSIA_NEOPLASICA__SER` | Biópsia com lesão neoplásica sem evento no SER depois | 5 | 3.0 |
+| C2 | `SISCAN_MAMA_CAT_6__SER` | Mamografia Categoria 6 (diagnóstico) sem solicitação no SER depois (mesmo pendente) | 5 | 3.0 |
+| C3 | `SISCAN_BIOPSIA_NEOPLASICA__SER` | Biópsia com lesão neoplásica sem solicitação no SER depois (mesmo pendente) | 5 | 3.0 |
 | C4 | `SISREG_BIOPSIA_PROGRESSO` | Biópsia no SISREG com autorização ou execução parada | 20 (por etapa) | 1.0 |
 | C5 | `SER_PENDENTE__STATUS_UPDATE` | Solicitação SER travada no status "PENDENTE" | 10 | 2.0 |
 | C6 | `SER_EM_FILA__STATUS_UPDATE` | Solicitação SER travada no status "EM_FILA" | 60 | 2.0 |

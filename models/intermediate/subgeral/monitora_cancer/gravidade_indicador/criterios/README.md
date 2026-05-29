@@ -37,7 +37,7 @@ consome todos via `UNION ALL`, aplica a fórmula (`fator_tempo`,
 > **Nomes de CTE únicos por arquivo.** Como os critérios são ephemeral e o
 > dbt faz *hoisting* dos CTEs para o agregador, CTEs de arquivos diferentes
 > não podem colidir. Por isso os desfechos dos critérios 2 e 3 (ambos
-> "qualquer SER") são CTEs separadas `criterio_2_desfecho_esperado` e
+> "solicitação SER") são CTEs separadas `criterio_2_desfecho_esperado` e
 > `criterio_3_desfecho_esperado`, não uma compartilhada.
 
 ## Para adicionar um critério novo

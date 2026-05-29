@@ -1,5 +1,6 @@
 -- Critério 2 (cross-evento) — gatilho: mamografia SISCAN Categoria 6
--- (diagnóstico). Desfecho esperado: qualquer evento no SER. Folga: 5 dias.
+-- (diagnóstico). Desfecho esperado: solicitação no SER (entrada na regulação
+-- estadual; data_solicitacao). Folga: 5 dias.
 -- Emite a relação canônica bruta de 8 colunas.
 {% set criterio_2_intervalo = 5 %}
 {% set criterio_2_peso = monitora_cancer_pesos_clinicos()[1] %}
@@ -23,15 +24,17 @@ with
         group by cpf_particao, data_referencia_evento
     ),
 
-    -- Desfecho esperado: qualquer evento SER (mesma definição usada no
-    -- critério 3; cópia local para manter cada arquivo autossuficiente).
+    -- Desfecho esperado: uma SOLICITAÇÃO no SER (igual ao critério 7). Uma
+    -- solicitação SER, ainda que pendente de autorização/execução, já
+    -- satisfaz o desfecho — a paciente entrou na regulação estadual; cópia local para manter cada arquivo
+    -- autossuficiente.
     criterio_2_desfecho_esperado as (
         select
             cpf_particao,
-            data_expected
+            data_solicitacao as data_expected
         from {{ ref("int_monitora_cancer__eventos_run_atual") }}
         where fonte = 'SER'
-            and data_expected is not null
+            and data_solicitacao is not null
     )
 
 {{ monitora_cancer_criterio_cross_evento(
