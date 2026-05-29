@@ -31,17 +31,21 @@ with
     ),
 
     criterio_1_desfecho_esperado as (
-        -- procedimento já vem normalizado por clean_proced_name em fatos
-        -- (uppercase, sem diacríticos), então 'BIOPSIA' cobre 'BIÓPSIA' e
-        -- 'ULTRA' cobre 'ULTRASSONOGRAFIA' e 'ULTRA-SONOGRAFIA'
+        -- Match nos rótulos definidos em int_monitora_cancer__parametros_sisreg:
+        -- 'USG' é a abreviação usada para ultrassonografia (o seed não usa
+        -- 'ULTRA' nem 'ULTRASSONOGRAFIA'). CONTAINS_SUBSTR normaliza case via
+        -- NFKC mas preserva diacríticos, por isso 'BIOPSIA' e 'BIÓPSIA' são
+        -- testados separadamente para cobrir 'Biópsia' (acentuado) e
+        -- 'Biopsia' (sem acento, em 'USG de Mamas - para Biopsia').
         select
             cpf_particao,
             data_expected
         from {{ ref("int_monitora_cancer__eventos_run_atual") }}
         where fonte = 'SISREG'
             and (
-                contains_substr(procedimento, 'ULTRA')
+                contains_substr(procedimento, 'USG')
                 or contains_substr(procedimento, 'BIOPSIA')
+                or contains_substr(procedimento, 'BIÓPSIA')
             )
             and data_expected is not null
     )
