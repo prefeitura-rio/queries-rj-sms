@@ -13,9 +13,3 @@ interesse — sem business logic complexa. Alimentam o `UNION` de
 | `int_monitora_cancer__siscan_histo_mama` | Laudos histopatológicos de mama (SISCAN). |
 | `int_monitora_cancer__parametros_sisreg` | Procedimentos SISREG de interesse + critérios clínicos. |
 | `int_monitora_cancer__parametros_ser` | Procedimentos SER de interesse + critérios clínicos. |
-
-> **TODO** (débito pré-existente, fora do escopo da reorganização): os 4
-> modelos de sistema-fonte (`sisreg`, `ser_ambulatorial`, `siscan`,
-> `siscan_histo_mama`) ainda não têm documentação/testes em
-> `_fontes__schema.yml` — só os `parametros_*` estão documentados.
-> Documentar em iniciativa separada.

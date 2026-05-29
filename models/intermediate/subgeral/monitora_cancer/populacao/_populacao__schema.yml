@@ -1,5 +1,158 @@
 version: 2
 
-# Débito pré-existente: os modelos desta pasta (populacao_alvo, exclusoes)
-# ainda não têm entrada de documentação/testes neste schema. Fora do escopo
-# da reorganização (PR 2); documentar em iniciativa separada.
+models:
+  - name: int_monitora_cancer__populacao_alvo
+    description: >
+      Universo-alvo do monitoramento de câncer de mama: pacientes com pelo
+      menos um evento de suspeita ou diagnóstico desde 2025-01-01 em
+      mart_monitora_cancer__fatos, enriquecidos com dados cadastrais
+      (nome, idade, raça/cor, telefone), vínculo com a APS
+      (clínica/equipe SF e telefones institucionais) e flag de gestação
+      ativa. Granularidade: 1 linha por paciente_cpf.
+      Filtros aplicados na entrada do funil: (i) sexo != "masculino" e
+      (ii) ausência de óbito cadastral (bcadastro.obito_ano IS NULL e
+      dim_paciente.anos_obito vazio). As demais regras de exclusão
+      (mamografia Cat 1/2, biópsia sem lesão, SER antigo etc.) ficam
+      centralizadas em int_monitora_cancer__exclusoes e são aplicadas
+      aqui via anti-join.
+    columns:
+      - name: paciente_cpf
+        description: >
+          CPF da paciente em formato numérico (int64). Chave primária.
+          Obtido a partir de mart_monitora_cancer__fatos.paciente_cpf;
+          nunca nulo aqui (o GROUP BY na CTE populacao_interesse e os
+          filtros de cadastro descartam pacientes sem CPF).
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__populacao_alvo__paciente_cpf__unique
+          - not_null:
+              name: int_monitora_cancer__populacao_alvo__paciente_cpf__not_null
+
+      - name: status
+        description: '{{ doc("monitora_cancer__status") }}'
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__populacao_alvo__status__not_null
+          - accepted_values:
+              values: ['UNACON', 'DIAGNOSTICO', 'SUSPEITA']
+              name: int_monitora_cancer__populacao_alvo__status__accepted_values
+
+      - name: nome
+        description: Nome completo da paciente, obtido de raw_bcadastro__cpf.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: raca_cor
+        description: >
+          Raça/cor autodeclarada da paciente. Vem de
+          pacientes_subgeral__dim_paciente, que consolida bcadastro, HCI
+          e minha_saude pela regra de prioridade documentada naquele
+          dim (com fallback automático quando o vencedor é NULL).
+        data_type: string
+
+      - name: telefone
+        description: >
+          Telefone pessoal da paciente. Preferência: telefone do
+          bcadastro (concat de DDI opcional + DDD + número); fallback no
+          primeiro telefone do mart_iplanrio__telefones_validos. NULL
+          quando nenhuma das fontes tem o par (DDD + número) preenchido.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: idade
+        description: >
+          Idade médica em anos completos, calculada como
+          date_diff(current_date('America/Sao_Paulo'),
+          bcadastro.nascimento_data, YEAR) com correção de -1 quando o
+          aniversário ainda não ocorreu no ano corrente (comparação por
+          MMDD).
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: clinica_sf
+        description: >
+          Nome da clínica da família (CF) vinculada à paciente no HCI
+          (via pacientes_subgeral__dim_paciente). NULL para pacientes
+          que não estão no HCI.
+        data_type: string
+
+      - name: clinica_sf_ap
+        description: >
+          Área de Planejamento (AP) da clínica da família vinculada à
+          paciente no HCI.
+        data_type: string
+
+      - name: clinica_sf_telefone
+        description: Telefone institucional da clínica da família vinculada à paciente.
+        data_type: string
+
+      - name: equipe_sf
+        description: >
+          Nome da equipe de Saúde da Família vinculada à paciente no
+          HCI.
+        data_type: string
+
+      - name: equipe_sf_telefone
+        description: Telefone institucional da equipe de Saúde da Família vinculada à paciente.
+        data_type: string
+
+      - name: gestante
+        description: >
+          TRUE quando a paciente está em fase 'Gestação' em
+          mart_bi_gestacoes__gestacoes na data de execução do modelo;
+          FALSE caso contrário.
+        data_type: bool
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__populacao_alvo__gestante__not_null
+
+  - name: int_monitora_cancer__exclusoes
+    description: >
+      Regras de EXCLUSÃO da população-alvo derivadas do histórico de
+      eventos em mart_monitora_cancer__fatos. Granularidade: 1 linha por
+      paciente_cpf excluído, com um array dos motivos aplicáveis (uma
+      paciente pode satisfazer mais de uma regra).
+      A regra de óbito (cadastral) é aplicada na entrada do funil em
+      int_monitora_cancer__populacao_alvo; aqui ficam SOMENTE regras
+      derivadas de eventos:
+      (ii) MAMOGRAFIA_BIRADS_1_OU_2 — último evento é mamografia com
+      todos os resultados preenchidos em Categoria 1 ou 2;
+      (iii) MAMOGRAFIA_BIRADS_3_EM_DOIS — os dois últimos eventos são
+      mamografias com todos os resultados em Categoria 3;
+      (iv) BIOPSIA_SEM_LESAO — último evento é biópsia histopatológica
+      sem lesão neoplásica nem benigna (ambas as mamas NULL);
+      (v) SER_ANTIGO — último evento é SER em status terminal
+      (CHEGADA_CONFIRMADA / CANCELADA / ALTA) há tempo suficiente sem
+      novo evento, com janelas parametrizadas via vars do dbt
+      (exclusao_ser_chegada_cancelada_meses=6,
+      exclusao_ser_alta_meses=3).
+    columns:
+      - name: paciente_cpf
+        description: CPF da paciente excluída. Chave primária.
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__exclusoes__paciente_cpf__unique
+          - not_null:
+              name: int_monitora_cancer__exclusoes__paciente_cpf__not_null
+
+      - name: motivos_exclusao
+        description: >
+          Array ordenado e deduplicado dos rótulos de regra aplicáveis à
+          paciente. Valores possíveis: MAMOGRAFIA_BIRADS_1_OU_2,
+          MAMOGRAFIA_BIRADS_3_EM_DOIS, BIOPSIA_SEM_LESAO, SER_ANTIGO.
+          Sempre não-vazio (a paciente só aparece nesta tabela se ≥1
+          motivo dispara).
+        data_type: array<string>
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__exclusoes__motivos_exclusao__not_null
