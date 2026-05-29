@@ -200,8 +200,9 @@ models:
       câncer de mama. Reúne, em uma única linha por paciente, os dados de
       identificação, contato, vínculo com a APS e um array ordenado de eventos
       (solicitações, autorizações, execuções e resultados). Inclui também
-      indicadores derivados: status da paciente, gravidade (dias desde o último
-      evento) e tempo total (dias até a UNACON para pacientes com SER, ou dias
+      indicadores derivados: status da paciente, gravidade_score (score
+      0-100 da fila de urgência, vindo de mart_monitora_cancer__gravidade)
+      e tempo total (dias até a UNACON para pacientes com SER, ou dias
       desde o início da última sequência de eventos para pacientes sem SER).
       Granularidade: 1 linha por paciente (cpf_particao).
     meta:
@@ -269,18 +270,14 @@ models:
 
       - name: gravidade_score
         description: >
-          Score de gravidade (FLOAT64) da paciente, calculado em
-          mart_monitora_cancer__gravidade. Cada trigger só gera subscore
-          enquanto o desfecho esperado ainda NÃO chegou — quando o expected
-          acontece, o trigger é desativado e some do score. Para triggers
-          ativos: dias_atraso = max(0, date_diff(hoje, trigger) - threshold)
-          e subscore_valor = coalesce(risco_trigger, 1)
-                           * 2 ^ (min(dias_atraso, 90) / dias_dobrar_subscore).
-          O score é a soma dos valores dos subscores ativos da paciente,
-          multiplicada por 2 quando a paciente é gestante. Pacientes sem
-          nenhum trigger ativo no run atual recebem 0. Valores maiores
-          indicam pacientes com mais atrasos acumulados na linha de cuidado
-          e, portanto, potencialmente mais críticas de acompanhar.
+          Apresentação 0-100 do score de gravidade da paciente. Reflete
+          mart_monitora_cancer__gravidade.gravidade_total_0_100, com clip
+          no p95 dinâmico de gravidade_total do run atual — acima do
+          teto, satura em 100; a ordenação canônica da fila continua via
+          gravidade_total bruto (no mart_monitora_cancer__gravidade).
+          Pacientes sem critério ativo recebem 0 — inclusive gestantes
+          (o multiplicador atua sobre o termo_max e não cria score onde
+          não há critério).
 
       - name: tempo_total
         description: >
@@ -467,111 +464,3 @@ models:
           Lista de rótulos (possivelmente vazia) com as pendências atuais da
           paciente, calculadas em int_monitora_cancer__pendencias.
 
-  - name: mart_monitora_cancer__gravidade
-    description: >
-      Score de gravidade da paciente no monitoramento de câncer de mama.
-      Cada trigger só gera subscore enquanto o desfecho esperado (expected)
-      ainda NÃO chegou — quando o expected acontece, o trigger é desativado
-      e não aparece no breakdown. Para triggers ativos:
-      dias_atraso = max(0, date_diff(hoje, trigger) - threshold) e
-      subscore_valor = coalesce(risco_trigger, 1)
-                     * 2 ^ (min(dias_atraso, teto_atraso) / dias_dobrar_subscore),
-      via macro monitora_cancer_subscore. O fator de risco multiplica
-      diretamente o subscore conforme o risco do evento gatilho (escala
-      1..4); triggers sem risco mapeado recebem fator 1. Antes da soma, cada
-      subscore é normalizado para (0, 1] via macro
-      monitora_cancer_subscore_normalizado:
-      subscore_valor_normalizado = subscore_valor
-                                 / ( max_risco * 2 ^ (teto_atraso / dias_dobrar_subscore) ).
-      O score final é a SOMA dos subscores NORMALIZADOS de todos os triggers
-      ativos da paciente, multiplicada por 2 se ela for gestante. Considera
-      apenas eventos do RUN ATUAL (último episódio de cuidado) de cada
-      paciente.
-
-      Subscores atualmente implementados (thresholds parametrizados no topo
-      de int_monitora_cancer__gravidade.sql; dias_dobrar_subscore = threshold
-      em todos):
-        1. SISCAN mamografia Cat 0/4/5 → SISREG ultrassonografia ou biópsia,
-           threshold 10 dias.
-        2. SISCAN mamografia Cat 6 → qualquer evento SER, threshold 5 dias.
-        3. SISCAN biópsia neoplásica → qualquer evento SER, threshold 5 dias.
-        4. SISREG biópsia → progresso entre datas intra-evento,
-           threshold 20 dias por leg (legs: solicitacao→autorizacao,
-           autorizacao→execucao).
-        5. SER status "PENDENTE" → atualização do status da solicitação,
-           threshold 10 dias.
-        6. SER status "EM FILA" → atualização do status da solicitação,
-           threshold 60 dias.
-        7. SER status de falha ("CHEGADA NAO CONFIRMADA", "CANCELADA")
-           → nova solicitação SER, threshold 10 dias.
-
-      Mecanismo de desativação:
-        • Cross-evento (1, 2, 3, 7): NOT EXISTS contra a CTE de expected.
-          Quando aparece qualquer expected ≥ trigger (> em 7), o trigger some.
-        • Intra-evento legs (4): WHERE direto exigindo a data do desfecho
-          do leg = NULL.
-        • Intra-evento "stuck" (5, 6): WHERE no evento_status — quando o
-          status muda, a linha some naturalmente.
-
-      Granularidade: 1 linha por paciente (cpf_particao). Apenas pacientes
-      com pelo menos um trigger ativo no run atual estão presentes.
-    meta:
-      owner: "SMS/SUBGERAL/CR/NTI"
-
-    columns:
-      - name: cpf_particao
-        description: >
-          CPF da paciente em formato numérico (int64). Chave primária e
-          campo de particionamento da tabela.
-        policy_tags:
-          - '{{ var("TAG_CPF") }}'
-        data_tests:
-          - unique:
-              name: mart_monitora_cancer__gravidade__cpf_particao__unique
-          - not_null:
-              name: mart_monitora_cancer__gravidade__cpf_particao__not_null
-
-      - name: gravidade_score
-        description: >
-          Score final (FLOAT64), em soma de subscores NORMALIZADOS, já com o
-          multiplicador de gestante aplicado. Igual a gravidade_score_base * 2
-          quando gestante = TRUE, caso contrário igual a gravidade_score_base.
-        data_tests:
-          - not_null:
-              name: mart_monitora_cancer__gravidade__gravidade_score__not_null
-
-      - name: gravidade_score_base
-        description: >
-          Soma dos subscores NORMALIZADOS
-          (subscore_valor_normalizado = subscore_valor
-                                      / ( max_risco
-                                          * 2 ^ (teto_atraso / dias_dobrar_subscore) ))
-          de todos os triggers ATIVOS de todos os subscores, ANTES da
-          multiplicação por gestante. Tipo FLOAT64. Cada trigger ativo
-          contribui com um valor em (0, 1] — perto de 0 quando o atraso é
-          pequeno e o risco baixo, próximo de 1 quando o atraso satura em
-          teto_atraso e risco_trigger = max_risco. Útil para auditoria e
-          comparação direta entre pacientes gestantes e não-gestantes.
-
-      - name: gestante
-        description: >
-          TRUE quando a paciente está atualmente gestante (mesma fonte usada
-          em mart_monitora_cancer__pacientes_linha_tempo). Aciona o
-          multiplicador 2x sobre gravidade_score_base.
-
-      - name: gravidade_breakdown
-        description: >
-          Array de structs detalhando cada subscore ATIVO que compõe o score,
-          ordenado por data_trigger desc. Triggers cujo expected já chegou
-          não aparecem aqui (foram desativados). Cada struct contém:
-          subscore (identificador textual do par trigger/expected),
-          data_trigger (data de referência do evento gatilho), dias_atraso
-          (dias desde o trigger até hoje, descontado o threshold, com piso
-          0 e teto-limitado em teto_atraso pela fórmula do subscore),
-          dias_dobrar_subscore (parâmetro da fórmula exponencial — a cada N
-          dias de atraso, o termo exponencial dobra), risco_trigger (risco
-          do evento gatilho, 1..4 ou NULL — alimenta o fator de risco
-          coalesce(risco_trigger, 1)), subscore_valor (valor BRUTO do
-          subscore para aquele trigger) e subscore_valor_normalizado (valor
-          do subscore dividido pelo máximo teórico — em (0, 1], é o que
-          entra na soma do gravidade_score).

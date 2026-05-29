@@ -23,7 +23,7 @@
 -- evitando trabalho repetido.
 -- Antes, como ephemeral, era inlinado 12 vezes em gravidade.
 -- Particionado por cpf_particao para pruning em consultas pontuais.
--- Clusterizado por ['fonte', 'procedimento'] para acelerar filtros nos subscores de gravidade.
+-- Clusterizado por ['fonte', 'procedimento'] para acelerar filtros das CTEs de critério em gravidade_instancias.
 {{
     config(
         materialized="table",
