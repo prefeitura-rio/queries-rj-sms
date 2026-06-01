@@ -160,13 +160,14 @@ with
 
     -- Universo de pacientes do run atual (com OU sem critério ativo).
     -- Seed do LEFT JOIN abaixo — única via pela qual gestantes-sem-critério
-    -- entram no mart.
+    -- entram no mart. Fonte: eventos_run_atual (fonte única de "run atual +
+    -- gestante", mesma usada na CTE gestantes de gravidade_instancias), em vez
+    -- de reaplicar aqui o filtro qualify run_id = max(run_id).
     universo_pacientes as (
         select distinct
             cpf_particao,
             gestante
-        from {{ ref("int_monitora_cancer__eventos_episodios") }}
-        qualify run_id = max(run_id) over (partition by cpf_particao)
+        from {{ ref("int_monitora_cancer__eventos_run_atual") }}
     ),
 
     -- Computa gravidade_base = termo_max + peso_carga_total · termo_soma

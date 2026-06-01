@@ -71,9 +71,9 @@ models:
       clínica diagnóstico confirmado > SER em curso/falho > rastreio):
         1. SISCAN mamografia Cat 0/4/5 → SISREG ultrassonografia ou biópsia,
            intervalo 10 dias, peso 1.0.
-        2. SISCAN mamografia Cat 6 → qualquer evento SER, intervalo 5 dias,
+        2. SISCAN mamografia Cat 6 → solicitação SER (mesmo pendente), intervalo 5 dias,
            peso 3.0.
-        3. SISCAN biópsia neoplásica → qualquer evento SER, intervalo 5 dias,
+        3. SISCAN biópsia neoplásica → solicitação SER (mesmo pendente), intervalo 5 dias,
            peso 3.0.
         4. SISREG biópsia → progresso entre datas intra-evento,
            intervalo 20 dias por leg (legs: solicitacao→autorizacao,

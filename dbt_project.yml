@@ -561,6 +561,22 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
 
+      subgeral:
+        monitora_cancer:
+          +schema: projeto_monitora_cancer
+          +tags: ["daily", "subgeral", "monitora_cancer"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subgeral
+          gravidade_indicador:
+            criterios:
+              # Unidades estruturais internas (ephemeral): o contrato
+              # semântico está no agregador gravidade_instancias e nos marts.
+              +required_tests: {}
+              +required_docs: false
+
 
     ##########################################################################
     ##########################################################################

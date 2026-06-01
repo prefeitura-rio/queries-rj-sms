@@ -147,8 +147,8 @@ Sistemas mencionados nos critérios:
 | # | Critério (nome no SQL) | Quando dispara | `intervalo_urgencia_dias` | `peso_criterio` |
 |---|---|---|---:|---:|
 | C1 | `SISCAN_MAMA_CAT_0_4_5__SISREG_ULTRA_OU_BIOPSIA` | Mamografia Categoria 0/4/5 (suspeita) sem ultra ou biópsia no SISREG depois | 10 | 1.0 |
-| C2 | `SISCAN_MAMA_CAT_6__SER` | Mamografia Categoria 6 (diagnóstico) sem evento no SER depois | 5 | 3.0 |
-| C3 | `SISCAN_BIOPSIA_NEOPLASICA__SER` | Biópsia com lesão neoplásica sem evento no SER depois | 5 | 3.0 |
+| C2 | `SISCAN_MAMA_CAT_6__SER` | Mamografia Categoria 6 (diagnóstico) sem solicitação no SER depois (mesmo pendente) | 5 | 3.0 |
+| C3 | `SISCAN_BIOPSIA_NEOPLASICA__SER` | Biópsia com lesão neoplásica sem solicitação no SER depois (mesmo pendente) | 5 | 3.0 |
 | C4 | `SISREG_BIOPSIA_PROGRESSO` | Biópsia no SISREG com autorização ou execução parada | 20 (por etapa) | 1.0 |
 | C5 | `SER_PENDENTE__STATUS_UPDATE` | Solicitação SER travada no status "PENDENTE" | 10 | 2.0 |
 | C6 | `SER_EM_FILA__STATUS_UPDATE` | Solicitação SER travada no status "EM_FILA" | 60 | 2.0 |
@@ -160,14 +160,19 @@ Sistemas mencionados nos critérios:
   `monitora_cancer_pesos_clinicos`.
 - **`peso_carga_total`, `multiplicador_gestante`**: topo de
   `int_monitora_cancer__gravidade.sql`.
-- **Folgas e gatilhos de cada critério**: topo de
-  `int_monitora_cancer__gravidade_instancias.sql`.
+- **Folgas e gatilhos de cada critério**: topo do arquivo do critério
+  em `gravidade_indicador/criterios/int_monitora_cancer__criterio_N_*.sql`
+  (variável Jinja `{% set criterio_N_intervalo %}` e CTEs locais
+  `criterio_N_triggers` / `criterio_N_desfecho_esperado` para cross-evento,
+  `source_filter` para intra-evento).
 
 ## Onde a lógica vive
 
 | Arquivo | Para que serve |
 |---|---|
-| `int_monitora_cancer__gravidade_instancias.sql` | calcula os critérios ativos (1 linha por critério) |
-| `int_monitora_cancer__gravidade.sql` | agrega os critérios num `gravidade_total` por paciente |
-| `mart_monitora_cancer__gravidade.sql` | tabela final que alimenta a fila de contato |
-| `mart_monitora_cancer__gravidade_instancias.sql` | tabela de critérios, usada para análises de calibração |
+| `criterios/int_monitora_cancer__criterio_N_*.sql` (×7) | um arquivo por critério, ephemeral: define gatilho/desfecho (cross-evento) ou `source_filter` (intra-evento) e emite a relação canônica bruta de 8 colunas. Passo a passo em [`criterios/README.md`](criterios/README.md). |
+| `int_monitora_cancer__eventos_run_atual.sql` | ephemeral, fonte única compartilhada do run atual de cada paciente (com `data_expected` pré-calculada), consumida pelos 7 critérios e pela CTE de gestante. |
+| `int_monitora_cancer__gravidade_instancias.sql` | agregador: `UNION ALL` dos 7 critérios, aplica `fator_tempo`/`fator_risco`/`gravidade_criterio`, JOIN de gestante e filtro `dias_atraso > 0` (1 linha por critério ativo). |
+| `int_monitora_cancer__gravidade.sql` | colapso MAX por critério, agregação por paciente (`termo_max` + `termo_soma`), multiplicador de gestante e reescala 0-100 com clip dinâmico no p95. |
+| `mart_monitora_cancer__gravidade.sql` | tabela final que alimenta a fila de contato (passthrough do intermediário). |
+| `mart_monitora_cancer__gravidade_instancias.sql` | passthrough analítico (antes do colapso MAX), usado para calibração de pesos e análise de sensibilidade. |
