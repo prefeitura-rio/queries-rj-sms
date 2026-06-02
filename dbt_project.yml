@@ -94,7 +94,7 @@ models:
     raw:
       +materialized: table
       +tags: "raw"
-      iplan:
+      iplanrio:
         +schema: brutos_iplanrio
         +meta: {"owner": "karen"}
         +labels:
@@ -280,13 +280,6 @@ models:
         +schema: brutos_plataforma_subpav
         +tags: ["plataforma_subpav", "daily"]
         +meta: {"owner": "dayaners"}
-        +labels:
-          dado_publico: nao
-          dado_pessoal: sim
-          dado_sensivel: sim
-      plataforma_clickup:
-        +schema: brutos_plataforma_clickup
-        +tags: ["daily"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
