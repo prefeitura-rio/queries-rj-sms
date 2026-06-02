@@ -94,7 +94,7 @@ models:
     raw:
       +materialized: table
       +tags: "raw"
-      iplan:
+      iplanrio:
         +schema: brutos_iplanrio
         +meta: {"owner": "karen"}
         +labels:
