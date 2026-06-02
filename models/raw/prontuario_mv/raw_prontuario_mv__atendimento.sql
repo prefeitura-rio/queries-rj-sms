@@ -48,6 +48,7 @@ paciente_json as (
         json_extract_scalar(data, '$.especialidadeAtendimento') as especialidadeAtendimento,
         json_extract_scalar(data, '$.hr_nascimento_rn') as hr_nascimento_rn,
         json_extract_scalar(data, '$.dh_alta_medica') as dh_alta_medica,
+        json_extract_scalar(data, '$.ds_desfecho') as ds_desfecho,
         datalake_loaded_at,
         source_updated_at
     from source
@@ -62,15 +63,13 @@ paciente_renomeado as (
         safe.parse_datetime('%Y/%m/%d %H:%M:%S', dh_alta_medica) as alta_datahora,
         case 
             when tipoAtendimento like 'A' then 'AMBULATORIAL'
-            when tipoAtendimento like 'B' then 'BUSCA ATIVA'
             when tipoAtendimento like 'E' then 'EXTERNO'
-            when tipoAtendimento like 'H' then 'HOME CARE'
             when tipoAtendimento like 'I' then 'INTERNAÇÃO'
-            when tipoAtendimento like 'S' then 'SUS - AIH'
             when tipoAtendimento like 'U' then 'URGÊNCIA'
             else tipoAtendimento
         end as atendimento_tipo,
         {{ process_null('especialidadeAtendimento') }} as atendimento_especialidade,
+        {{ process_null('ds_desfecho') }} as atendimento_desfecho,
 
         -- Paciente
         {{ process_null('cpf_paciente') }} as paciente_cpf,

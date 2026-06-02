@@ -26,9 +26,14 @@ atendimento as (
     alta_datahora,
     atendimento_tipo,
     atendimento_especialidade,  
+    atendimento_desfecho,
     loaded_at,
     updated_at
     from {{ ref('raw_prontuario_mv__atendimento') }}
+    where 
+      atendimento_datahora > date('2026-06-02')
+      and alta_datahora is not null
+      and atendimento_tipo != 'EXTERNO'
 ),
 
 
@@ -47,8 +52,16 @@ bam as (
     frequencia_respiratoria,
     temperatura, 
     saturacao_oxigenio, 
+    destino_paciente,
     hipotese_diagnostica,
     conduta_proposta,
+    concat(
+      queixa_principal,
+      '\n\n',
+      queixa_medica,
+      '\n\n',
+      historia_doenca_atual
+    ) as motivo_atendimento,
     profissional_nome
   from {{ref('raw_prontuario_mv__bam')}}
 ),
@@ -58,8 +71,11 @@ bam as (
 anamnese as (
   select 
     id_atendimento,
-    queixa_principal as queixa_principal_anamnese,
+    queixa_principal,
+    historia_pregressa,
+    diagnostico_provavel,
     plano_terapeutico,
+    historia_doenca_atual,
     conduta_proposta,
     pressao_arterial_sistolica,
     pressao_arterial_diastolica,
@@ -72,7 +88,14 @@ anamnese as (
     altura,
     imc,
     cid,
-    profissional_nome
+    profissional_nome,
+    historia_doenca_atual,
+    concat(
+      queixa_principal,
+      '\n\n',
+      historia_doenca_atual
+    ) as motivo_atendimento,
+    destino_paciente
   from {{ref('raw_prontuario_mv__anamnese')}}
 ),
 
@@ -89,7 +112,16 @@ evolucao as (
   select 
     id_atendimento,
     profissional_nome,
-    planejamento_terapeutico
+    planejamento_terapeutico,
+    resumo_internacao,
+    conduta_adotada,
+    diagnostico_cid,
+    concat(
+      resumo_internacao,
+      '\n\n',
+      diagnostico_cid
+    ) as motivo_atendimento,
+    profissional_nome
   from {{ref('raw_prontuario_mv__evolucao')}}
 ),
 
@@ -106,15 +138,6 @@ alta as (
     plano_alta_orientacao_enfermagem,
     orientacao_medica,
   from {{ref('raw_prontuario_mv__alta')}}
-),
-
-anamnese_alta as (
-  select 
-    id_atendimento,
-    conduta_proposta,
-    profissional_nome
-  from anamnese
-  where upper(plano_terapeutico) like "%ALTA%"
 ),
 
 -- Condições (CID)
@@ -204,7 +227,12 @@ final as (
   select 
     id_hci,
     paciente_cpf,
-    atendimento_tipo as tipo,
+    case 
+      when atendimento_tipo like 'AMBULATORIAL' then 'Agendada'
+      when atendimento_tipo like 'INTERNAÇÃO' then 'Internação'
+      when atendimento_tipo like 'URGÊNCIA' then 'Demanda Espontânea'
+      else upper(atendimento_tipo)
+    end as tipo,
     atendimento_especialidade as subtipo,
     {{parse_and_filter_future_datetime('atendimento.atendimento_datahora')}} as entrada_datahora,
     {{parse_and_filter_future_datetime('alta_datahora')}} as saida_datahora,
@@ -216,16 +244,20 @@ final as (
 
     -- Motivo do Atendimento
     coalesce(
-      upper(queixa_principal),
-      upper(queixa_medica),
-      upper(queixa_principal_anamnese)
+      bam.motivo_atendimento,
+      an.motivo_atendimento,
+      ev.motivo_atendimento
     ) as motivo_atendimento,
 
     -- Desfecho do Atendimento
     coalesce(
-      upper(a.orientacao_medica),
+      upper(atendimento_desfecho),
+      upper(bam.conduta_proposta),
+      upper(bam.destino_paciente),
+      upper(ev.conduta_adotada),
       upper(ev.planejamento_terapeutico),
-      upper(b.conduta_proposta)
+      upper(an.conduta_proposta),
+      upper(an.destino_paciente)
     ) as desfecho_atendimento,
 
     -- Condicoes
@@ -235,27 +267,27 @@ final as (
     struct(
       an.altura as altura,
       an.superficie_corporal as circunferencia_abdominal,
-      coalesce(b.frequencia_cardiaca, an.frequencia_cardiaca) as frequencia_cardiaca,
-      coalesce(b.frequencia_respiratoria, an.frequencia_respiratoria) as frequencia_respiratoria,
+      coalesce(bam.frequencia_cardiaca, an.frequencia_cardiaca) as frequencia_cardiaca,
+      coalesce(bam.frequencia_respiratoria, an.frequencia_respiratoria) as frequencia_respiratoria,
       cast(null as float64) as glicemia,
       cast(null as float64) as hemoglobina_glicada,
       cast(null as float64) as imc,
       cast(null as float64) as peso,
       coalesce(
-        b.pressao_arterial_sistolica, 
+        bam.pressao_arterial_sistolica, 
         an.pressao_arterial_sistolica
       ) as pressao_sistolica,
       coalesce(
-        b.pressao_arterial_diastolica, 
+        bam.pressao_arterial_diastolica, 
         an.pressao_arterial_diastolica
       ) as pressao_diastolica,
       cast(null as string) as pulso_ritmo,
       coalesce(
-        b.saturacao_oxigenio,
+        bam.saturacao_oxigenio,
         an.saturacao_oxigenio
       ) as saturacao_oxigenio,
       coalesce(
-        b.temperatura,
+        bam.temperatura,
         an.temperatura
       ) as temperatura
     ) as medidas,
@@ -306,11 +338,10 @@ final as (
     
 
   from atendimento
-  left join bam b using(id_atendimento)
+  left join bam using(id_atendimento)
   left join alta a using(id_atendimento)
   left join evolucao ev using(id_atendimento)
   left join anamnese an using(id_atendimento)
-  left join anamnese_alta aa using(id_atendimento)
   left join condicoes_agg c using(id_atendimento)
   left join profissional_saude_enriquecido p using(id_atendimento)
   left join {{ref('dim_estabelecimento')}} e using (id_cnes)
