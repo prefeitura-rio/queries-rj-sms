@@ -96,7 +96,6 @@ models:
       +tags: "raw"
       iplan:
         +schema: brutos_iplanrio
-        +tags: "daily"
         +meta: {"owner": "karen"}
         +labels:
           dado_publico: nao
