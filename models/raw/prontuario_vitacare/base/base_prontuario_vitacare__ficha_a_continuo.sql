@@ -171,7 +171,7 @@ with
             end as crianca_matriculada_creche_pre_escola,
 
             cast(nullif(source_updated_at, '') as datetime) as updated_at,
-            cast(datalake_loaded_at as string) as loaded_at
+            cast(datalake_loaded_at as datetime) as loaded_at
 
         from latest_events
     )
