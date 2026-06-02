@@ -109,7 +109,7 @@ with
       _extracted_at,
       data_particao
 
-    from {{ ref("raw_sisreg_api_v2__solicitacoes") }}
+    from {{ ref("raw_sisreg_api_v2__solicitacao_ambulatorial") }}
   )
 
 select *

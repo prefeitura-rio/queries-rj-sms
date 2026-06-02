@@ -46,7 +46,7 @@ with
 
       _extracted_at,
       safe_cast(paciente_cns as int64) as cns_particao
-    from {{ ref("raw_sisreg_api_v2__solicitacoes") }}
+    from {{ ref("raw_sisreg_api_v2__solicitacao_ambulatorial") }}
     qualify row_number() over (
       partition by paciente_cns
       order by _extracted_at desc nulls last
