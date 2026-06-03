@@ -13,6 +13,29 @@
     )
 }}
 
+/*
+  O MV tem 4 tipos de atendimentos: Ambulatorial, Internação, Urgência e Externo.
+  O tipo é definido a partir do campo atendimento_tipo. O fluxo do paciente é definido da seguinte forma:
+
+  - Urgência:
+  `atendimento`-> `bam` -> `parecer` (opcional) 
+
+  - Internação:
+  `atendimento`-> `evolucao` -> `parecer` (opcional) -> `alta`
+
+  - Ambulatorial:
+  `atendimento`-> `anamnese` -> `parecer` (opcional)
+
+  O tipo de atendimento externo é ignorado por não se encaixar na definição de episódio assistencial, uma vez que 
+  não há continuidade assistencial. Tendo em vista que um atendimento externo normalmente são realizados exames ou 
+  procedimentos sem que haja uma consulta médica, o que dificulta a definição de um motivo de atendimento e desfecho, 
+  além de não haver continuidade assistencial.
+
+  Os registros são enviados de forma contínua, ou seja, a cada nova atualização dos dados, o MV é atualizado com os 
+  novos registros e os registros já existentes são atualizados caso haja alguma mudança nos dados. Para garantir que 
+  tenhamos os dados completos de um episódio assistencial, só consideramos os atendimentos que tiveram alta ou óbito, 
+  ou seja, que estão completos.
+*/
 
 with 
 
@@ -31,8 +54,9 @@ atendimento as (
     updated_at
     from {{ ref('raw_prontuario_mv__atendimento') }}
     where 
+      -- Data quando passamos a receber os dados completos (sem lacunas)
       atendimento_datahora > date('2026-06-02')
-      and alta_datahora is not null
+      and alta_datahora is not null  
       and atendimento_tipo != 'EXTERNO'
 ),
 
@@ -56,9 +80,9 @@ bam as (
     hipotese_diagnostica,
     conduta_proposta,
     concat(
-      queixa_principal,
+      upper(queixa_principal),
       '\n\n',
-      queixa_medica,
+      upper(queixa_medica),
       '\n\n',
       historia_doenca_atual
     ) as motivo_atendimento,
@@ -91,9 +115,9 @@ anamnese as (
     profissional_nome,
     historia_doenca_atual,
     concat(
-      queixa_principal,
+      upper(queixa_principal),
       '\n\n',
-      historia_doenca_atual
+      upper(historia_doenca_atual)
     ) as motivo_atendimento,
     destino_paciente
   from {{ref('raw_prontuario_mv__anamnese')}}
@@ -108,6 +132,7 @@ parecer as (
   from {{ref('raw_prontuario_mv__parecer')}}
 ),
 
+-- Evolução
 evolucao as (
   select 
     id_atendimento,
@@ -117,11 +142,10 @@ evolucao as (
     conduta_adotada,
     diagnostico_cid,
     concat(
-      resumo_internacao,
+      upper(diagnostico_cid),
       '\n\n',
-      diagnostico_cid
+      upper(resumo_internacao)
     ) as motivo_atendimento,
-    profissional_nome
   from {{ref('raw_prontuario_mv__evolucao')}}
 ),
 
@@ -206,6 +230,8 @@ profissional_saude_enriquecido as (
     p.descricao
   from profissional_saude_responsavel psr
   left join profissional p on upper(psr.profissional_nome) = upper(p.nome)
+  -- Até o momento o nome do profissional é a única informação que temos para realizar o match, 
+  -- o que pode gerar alguns erros de associação.
   ),
 
 condicoes_agg as(
@@ -227,13 +253,15 @@ final as (
   select 
     id_hci,
     paciente_cpf,
+
     case 
       when atendimento_tipo like 'AMBULATORIAL' then 'Agendada'
       when atendimento_tipo like 'INTERNAÇÃO' then 'Internação'
       when atendimento_tipo like 'URGÊNCIA' then 'Demanda Espontânea'
       else upper(atendimento_tipo)
     end as tipo,
-    atendimento_especialidade as subtipo,
+    initcap(atendimento_tipo) as subtipo,
+
     {{parse_and_filter_future_datetime('atendimento.atendimento_datahora')}} as entrada_datahora,
     {{parse_and_filter_future_datetime('alta_datahora')}} as saida_datahora,
 
