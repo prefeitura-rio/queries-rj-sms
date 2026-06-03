@@ -296,7 +296,22 @@ Estas três pendências descrevem a mesma situação em níveis de urgência cre
 | Prazo para início de tratamento próximo do limite legal  | Pessoa diagnosticada há 45 dias ou mais e ainda sem solicitação SER. |
 | Prazo legal para início de tratamento ultrapassado       | Pessoa diagnosticada há 60 dias ou mais e ainda sem solicitação SER (prazo legal de 60 dias ultrapassado). |
 
-## 12. Atualização de Dados
+## 12. A Linha do Tempo da Pessoa
+
+Além da posição na fila (o score de gravidade), o sistema monta, para cada pessoa, uma ficha que a equipe usa no contato. Ela reúne:
+
+- **Identificação e contato**: nome, idade, raça/cor, telefone da pessoa e os telefones da clínica da família e da equipe responsável.
+- **Situação atual**: o status (SUSPEITA, DIAGNÓSTICO ou UNACON, veja a Seção 4) e o score de gravidade (Seção 9).
+- **Histórico de eventos**: todos os exames, consultas e encaminhamentos, do mais antigo ao mais recente. Cada evento traz o procedimento, as datas (pedido, autorização, realização e resultado), as unidades envolvidas, o resultado e o nível de risco informado pelo sistema de origem (por exemplo, a categoria BI-RADS no SISCAN ou a prioridade no SER). Aparece também um aviso quando a etapa está demorando mais do que o esperado (prazos na Seção 8).
+- **Pendências em aberto** (Seção 11).
+- **Tempos da linha de cuidado**, medidos no episódio atual (a sequência mais recente de eventos, com intervalos de até 180 dias - Seção 8.2):
+  - **Tempo total** (`tempo_total`): dias do início do episódio até a entrada na UNACON; se a pessoa ainda não chegou, conta até hoje.
+  - **Tempo até o diagnóstico** (`tempo_diagnostico`): dias do início do episódio até a pessoa passar a DIAGNÓSTICO ou UNACON.
+  - **Tempo diagnosticada sem tratamento** (`tempo_diagnostico_sem_tratamento`): dias entre o diagnóstico e o encaminhamento ao SER, acompanhando o prazo legal de 60 dias (Seção 8.2).
+
+Assim, em uma única tela, a equipe vê quem é a pessoa, em que ponto da linha de cuidado ela está e o que falta fazer.
+
+## 13. Atualização de Dados
 
 - **Frequência**: o sistema é atualizado **uma vez por dia**, de forma automática.
 - **O que é recalculado**: a lista de pessoas em monitoramento, o status de cada uma, as pendências em aberto e o score de gravidade.
@@ -358,7 +373,7 @@ Os três parâmetros abaixo são exatamente os que aparecem na fórmula acima.
 | Multiplicador de gestante| $\alpha$           | 1.0               | Dobra a contribuição da pendência mais grave ($\text{termo}_{\max}$) quando a pessoa está gestante. |
 | Amortecimento de risco   | $\dfrac{r_c + 1}{r_{\max} + 1}$ | (risco + 1) / 5 | Normaliza o risco pelo seu valor máximo: o denominador é $r_{\max} + 1 = 4 + 1 = 5$, onde $r_{\max} = 4$ é o maior valor da escala (não é um 5 arbitrário). Suaviza a diferença entre risco baixo e alto, fazendo o risco máximo (4) valer 2.5 vezes o risco mínimo (1). |
 
-## 13. Equipe
+## 14. Equipe
 
 Este projeto é desenvolvido pelo **Núcleo de Tecnologia da Informação (NTI)**, na Central de Regulação da **Subsecretaria Geral (SUBGERAL)** da Secretaria Municipal de Saúde do Rio de Janeiro (SMS Rio).
 

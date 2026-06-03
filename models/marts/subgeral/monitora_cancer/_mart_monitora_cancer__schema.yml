@@ -201,9 +201,11 @@ models:
       identificação, contato, vínculo com a APS e um array ordenado de eventos
       (solicitações, autorizações, execuções e resultados). Inclui também
       indicadores derivados: status da paciente, gravidade_score (score
-      0-100 da fila de urgência, vindo de mart_monitora_cancer__gravidade)
-      e tempo total (dias até a UNACON para pacientes com SER, ou dias
-      desde o início da última sequência de eventos para pacientes sem SER).
+      0-100 da fila de urgência, vindo de mart_monitora_cancer__gravidade),
+      tempo total (dias até a UNACON para pacientes com SER, ou dias
+      desde o início da última sequência de eventos para pacientes sem SER)
+      e os tempos da linha de cuidado medidos no run atual (tempo_diagnostico
+      e tempo_diagnostico_sem_tratamento).
       Granularidade: 1 linha por paciente (cpf_particao).
     meta:
       owner: "SMS/SUBGERAL/CR/NTI"
@@ -280,6 +282,30 @@ models:
           feito até o dia atual. A data do início do percurso é a data de
           solicitação do primeiro evento em uma sequência de eventos com
           intervalo entre eles menor ou igual a 180 dias.
+
+      - name: tempo_diagnostico
+        description: >
+          Tempo, em dias, do início do run atual (último episódio, gaps <= 180
+          dias) até a paciente passar a DIAGNOSTICO ou UNACON — 1º evento do run
+          com diagnóstico confirmado (criterio_diagnostico) ou entrada no SER.
+          Preenchido só para quem atinge esse status no run atual; NULL em
+          SUSPEITA. Calculado em int_monitora_cancer__eventos_episodios.
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              name: mart_monitora_cancer__pacientes_linha_tempo__tempo_diagnostico__accepted_range
+
+      - name: tempo_diagnostico_sem_tratamento
+        description: >
+          Tempo, em dias, no run atual, entre o diagnóstico confirmado
+          (criterio_diagnostico) e a 1ª solicitação SER — proxy do tempo
+          diagnosticada sem encaminhamento para tratamento. Preenchido só para
+          UNACON com diagnóstico em/antes do SER; NULL nos demais casos.
+          Calculado em int_monitora_cancer__eventos_episodios.
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              name: mart_monitora_cancer__pacientes_linha_tempo__tempo_diagnostico_sem_tratamento__accepted_range
 
       - name: gestante
         description: >
