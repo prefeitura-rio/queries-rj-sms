@@ -81,9 +81,9 @@ bam as (
     conduta_proposta,
     concat(
       upper(queixa_principal),
-      '\n\n',
+      '\n',
       upper(queixa_medica),
-      '\n\n',
+      '\n',
       historia_doenca_atual
     ) as motivo_atendimento,
     profissional_nome
@@ -116,7 +116,7 @@ anamnese as (
     historia_doenca_atual,
     concat(
       upper(queixa_principal),
-      '\n\n',
+      '\n',
       upper(historia_doenca_atual)
     ) as motivo_atendimento,
     destino_paciente
@@ -143,7 +143,7 @@ evolucao as (
     diagnostico_cid,
     concat(
       upper(diagnostico_cid),
-      '\n\n',
+      '\n',
       upper(resumo_internacao)
     ) as motivo_atendimento,
   from {{ref('raw_prontuario_mv__evolucao')}}
