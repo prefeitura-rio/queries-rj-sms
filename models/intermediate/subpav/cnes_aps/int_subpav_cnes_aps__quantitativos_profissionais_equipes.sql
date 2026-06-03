@@ -3,6 +3,12 @@
         schema = 'intermediario_plataforma_subpav',
         alias = 'cnes_aps__quantitativos_profissionais_equipes',
         materialized = "table",
+        partition_by = {
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month",
+        },
+        cluster_by = ["ine", "cnes", "cod_cbo"],
         tags = ["subpav", "cnes_aps"]
     )
 }}
@@ -11,8 +17,10 @@ with profissionais_consolidacao as (
     select *
     from {{ ref("int_subpav_cnes_aps__profissionais_consolidacao") }}
     where possui_vinculo_equipe = 1
-      and equipe_ativa = 1
-      and cg_horaamb >= 20
+        and equipe_ativa = 1
+        and ine is not null
+        and cod_cbo is not null
+        and cg_horaamb >= 20
 ),
 
 mapa_cbo_composicao_legado as (
@@ -204,7 +212,6 @@ agregado as (
         is_cbo_panorama,
 
         count(*) as total_registros,
-
         countif(dt_desligamento is null) as total_profissionais,
 
         countif(sexo_id = 1 and dt_desligamento is null) as total_prof_masculino,
@@ -243,10 +250,22 @@ agregado as (
 
         countif(dt_desligamento is not null) as total_desligados,
 
-        max(dias_desligado) as total_dias_desligados,
+        case
+            when countif(cg_horaamb >= 40 and dt_desligamento is null) = 0
+                then max(dias_desligado)
+            else null
+        end as total_dias_desligados,
 
         case
             when countif(cg_horaamb >= 40 and dt_desligamento is null) = 0
+                and coalesce(max(dias_desligado), 0) > 60
+                then max(dt_desligamento)
+            else null
+        end as data_eqp_incompleta,
+
+        case
+            when countif(cg_horaamb >= 40 and dt_desligamento is null) = 0
+                and coalesce(max(dias_desligado), 0) <= 60
                 then max(dt_desligamento)
             else null
         end as data_eqp_vacancia,
