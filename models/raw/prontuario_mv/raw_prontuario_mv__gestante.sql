@@ -1,6 +1,5 @@
 {{
     config(
-        enabled=false,
         alias="gestante",
         materialized="incremental",
         schema="brutos_prontuario_mv",
@@ -20,7 +19,7 @@ with
 
     source as (
         select *
-        from {{ source("brutos_prontuario_mv_api_staging_dev", "gestante_continuo") }}
+        from {{ source("brutos_prontuario_mv_api_staging", "gestante_continuo") }}
         {% if is_incremental() %}
             where
                 timestamp_trunc(datalake_loaded_at, day) >= timestamp(
