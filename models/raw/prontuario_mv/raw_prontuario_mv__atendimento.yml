@@ -24,6 +24,8 @@ models:
         description: "Especialidade do atendimento."
       - name: atendimento_desfecho
         description: "Desfecho do atendimento."
+      - name: id_cid
+        description: "Código CID associado ao atendimento, se disponível."
       - name: paciente_cpf
         description: "CPF do paciente."
         policy_tags:

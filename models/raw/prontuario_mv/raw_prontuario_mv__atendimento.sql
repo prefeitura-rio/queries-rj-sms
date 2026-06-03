@@ -51,6 +51,7 @@ with
             json_extract_scalar(
                 data, '$.especialidadeAtendimento'
             ) as especialidadeatendimento,
+            json_extract_scalar(data, '$.cd_cid') as cd_cid,
             json_extract_scalar(data, '$.hr_nascimento_rn') as hr_nascimento_rn,
             json_extract_scalar(data, '$.dh_alta_medica') as dh_alta_medica,
             json_extract_scalar(data, '$.ds_desfecho') as ds_desfecho,
@@ -81,6 +82,7 @@ with
             end as atendimento_tipo,
             {{ process_null("especialidadeAtendimento") }} as atendimento_especialidade,
             {{ process_null("ds_desfecho") }} as atendimento_desfecho,
+            {{ process_null("cd_cid") }} as id_cid,
 
             -- Paciente
             {{ process_null("cpf_paciente") }} as paciente_cpf,

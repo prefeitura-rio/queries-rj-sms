@@ -13,3 +13,4 @@ sources:
       - name: paciente_continuo
       - name: parecer_continuo
       - name: profissional_continuo
+      - name: gestante_continuo

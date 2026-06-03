@@ -49,6 +49,7 @@ with
             atendimento_tipo,
             atendimento_especialidade,
             atendimento_desfecho,
+            id_cid,
             loaded_at,
             updated_at
         from {{ ref("raw_prontuario_mv__atendimento") }}
@@ -158,6 +159,14 @@ with
 
     -- Condições (CID)
     condicoes as (
+        select 
+            id_atendimento,
+            cast(atendimento_datahora as date) as data_diagnostico,
+            id_cid,
+            descricao
+        from atendimento a
+        join {{ ref("dim_condicao_cid10") }} c on c.id = a.id_cid
+        union all
         select
             id_atendimento,
             cast(data_diagnostico as date) as data_diagnostico,
