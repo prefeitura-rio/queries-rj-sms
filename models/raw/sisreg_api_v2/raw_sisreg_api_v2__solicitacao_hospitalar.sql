@@ -43,14 +43,18 @@ with
           when "4" then "azul"      -- >180 dias
           else cast(null as string)
       end as classificacao_risco,
+      cast({{ process_null("carater") }} as string) as carater,
+      cast({{ process_null("codigo_natureza_lesao") }} as string) as lesao_codigo,
+      cast({{ process_null("descricao_natureza_lesao") }} as string) as lesao_descricao,
 
 
       -- Informações da solicitação
       upper({{ process_null("codigo_cid") }}) as cid_id,
       cast({{ process_null("descricao_cid") }} as string) as cid_descricao,
-      cast({{ process_null("exames") }} as string) as solicitacao_exames,
-      cast({{ process_null("sintomas") }} as string) as solicitacao_sintomas,
-
+      cast({{ process_null("sintomas") }} as string) as sintomas,
+      cast({{ process_null("exames") }} as string) as exames,
+      cast({{ process_null("justificativa") }} as string) as justificativa,
+      cast({{ process_null("justificativa_impedimento") }} as string) as justificativa_impedimento,
 
 
       -- Dados do procedimento
@@ -62,7 +66,7 @@ with
       cast({{ process_null("codigo_uf_solicitante") }} as string) as uf_solicitante_codigo,
       cast({{ process_null("sigla_uf_solicitante") }} as string) as uf_solicitante_sigla,
 
-      cast({{ process_null("codigo_central_solicitante") }} as string) as central_solicitante_codigo,
+      cast({{ process_null("codigo_central_solicitante") }} as string) as central_solicitante_codigo_ibge,
       cast({{ process_null("nome_central_solicitante") }} as string) as central_solicitante_nome,
 
       lpad({{ process_null("codigo_unidade_solicitante") }}, 7, "0") as unidade_solicitante_id_cnes,
@@ -80,7 +84,7 @@ with
       cast({{ process_null("codigo_uf_regulador") }} as string) as uf_regulador_codigo,
       cast({{ process_null("sigla_uf_regulador") }} as string) as uf_regulador_sigla,
 
-      cast({{ process_null("codigo_central_reguladora") }} as string) as central_reguladora_codigo,
+      cast({{ process_null("codigo_central_reguladora") }} as string) as central_reguladora_codigo_ibge,
       cast({{ process_null("nome_central_reguladora") }} as string) as central_reguladora_nome,
 
 
@@ -134,11 +138,12 @@ with
       cast({{ process_null("telefone_responsavel") }} as string) as responsavel_telefone,
 
       -- Alta
-      cast({{ process_null("data_previsao_alta") }} as string) as data_alta_prevista,
-      cast({{ process_null("data_alta") }} as string) as data_alta,
-      cast({{ process_null("hora_alta") }} as string) as hora_alta,
-      cast({{ process_null("operador_alta") }} as string) as operador_alta,
+      cast({{ process_null("data_previsao_alta") }} as string) as alta_data_prevista,
+      cast({{ process_null("data_alta") }} as string) as alta_data,
+      cast({{ process_null("hora_alta") }} as string) as alta_hora,
+      cast({{ process_null("operador_alta") }} as string) as alta_operador,
 
+      -- Misc
       cast({{ process_null("numero_aih") }} as string) as aih_numero,
       cast({{ process_null("numero_digito_aih") }} as string) as aih_digito,
       cast({{ process_null("valor_proc_aih") }} as string) as aih_valor_procedimento,
@@ -146,28 +151,25 @@ with
       cast({{ process_null("nome_clinica") }} as string) as clinica_nome,
       cast({{ process_null("nome_clinica_complementar") }} as string) as clinica_nome_complementar,
 
+      cast({{ process_null("codigo_unidade_referencia") }} as string) as unidade_referencia_codigo,
+      cast({{ process_null("nome_unidade_referencia") }} as string) as unidade_referencia_nome,
 
-      cast({{ process_null("data_internacao") }} as string) as data_internacao,
-      cast({{ process_null("data_reserva") }} as string) as data_reserva,
-      cast({{ process_null("carater") }} as string) as carater,
-      cast({{ process_null("justificativa") }} as string) as justificativa,
-      cast({{ process_null("justificativa_impedimento") }} as string) as justificativa_impedimento,
-      cast({{ process_null("descricao_natureza_lesao") }} as string) as descricao_natureza_lesao,
-      cast({{ process_null("nome_leito") }} as string) as nome_leito,
-      cast({{ process_null("nome_leito_complementar") }} as string) as nome_leito_complementar,
-      cast({{ process_null("hora_autorizacao") }} as string) as hora_autorizacao,
-      cast({{ process_null("nome_operador_autorizacao") }} as string) as nome_operador_autorizacao,
-      cast({{ process_null("codigo_natureza_lesao") }} as string) as codigo_natureza_lesao,
-      cast({{ process_null("codigo_unidade_referencia") }} as string) as codigo_unidade_referencia,
-      cast({{ process_null("nome_unidade_referencia") }} as string) as nome_unidade_referencia,
-      cast({{ process_null("operador_internacao") }} as string) as operador_internacao,
+      cast({{ process_null("hora_autorizacao") }} as string) as autorizacao_hora,
+      cast({{ process_null("nome_operador_autorizacao") }} as string) as autorizacao_operador_nome,
 
+      cast({{ process_null("data_internacao") }} as string) as internacao_data,
+      cast({{ process_null("operador_internacao") }} as string) as internacao_operador,
 
-      type as tipo,
+      cast({{ process_null("nome_leito") }} as string) as leito_nome,
+      cast({{ process_null("nome_leito_complementar") }} as string) as leito_complementar_nome,
+
+      cast({{ process_null("data_reserva") }} as string) as reserva_data,
+
+      cast({{ process_null("type") }} as string) as tipo,
+      cast({{ process_null("version") }} as string) as versao_sisreg,
 
       -- Campos deixados de fora:
       --   'carga_epoch': '1779xxxxxx',
-      --   'version': '1',
       --   'timestamp': '2026-xx-xxTxx:xx:xx.xxxZ',
 
       -- Metadados internos

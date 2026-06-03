@@ -438,6 +438,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      sisreg_api_v2:
+        +schema: brutos_sisreg_api_v2
+        +tags: ["sisreg_v2"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
       sisreg_api_log:
         +schema: brutos_sisreg_api_log
         +tags: ["daily", "subgeral", "sisreg", "sisreg_reports"]

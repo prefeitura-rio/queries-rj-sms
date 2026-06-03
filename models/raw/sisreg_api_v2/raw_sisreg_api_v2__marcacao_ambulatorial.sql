@@ -1,7 +1,7 @@
 {{
   config(
     schema = "brutos_sisreg_api_v2",
-    alias  = "solicitacao_ambulatorial",
+    alias  = "marcacao_ambulatorial",
     partition_by = {
       "field": "data_particao",
       "data_type": "date",
@@ -14,7 +14,7 @@
 with
   dedup_source as (
     select *
-    from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_ambulatorial_rj") }}
+    from {{ source("brutos_sisreg_api_v2_staging", "marcacao_ambulatorial_rj") }}
     qualify row_number() over (
       partition by codigo_solicitacao
       order by _extracted_at desc nulls last
@@ -23,16 +23,15 @@ with
 
   unnested as (
     select
-      src.* except(laudo, procedimentos),
+      src.* except(laudo),
       ld as laudo,
-      pd as procedimento
     from dedup_source as src,
-      unnest(json_query_array(laudo)) as ld,
-      unnest(json_query_array(procedimentos)) as pd
+      unnest(json_query_array(laudo)) as ld
   ),
 
   sisreg as (
     select
+
       -- Identificação básica da solicitação
       cast({{ process_null("codigo_solicitacao") }} as string) as codigo_solicitacao,
       cast({{ process_null("data_solicitacao") }} as timestamp)  as datahora_solicitacao,
@@ -60,7 +59,7 @@ with
       -- TODO: o que cada código significa?
       cast({{ process_null("codigo_tipo_regulacao") }} as string) as tipo_regulacao_codigo,
       cast({{ process_null("codigo_tipo_fila") }} as string)      as tipo_fila_codigo,
-
+      cast({{ process_null("codigo_tipo_vaga_consumida") }} as string) as tipo_vaga_consumida_codigo,
 
       -- Informações da solicitação
       lpad({{ process_null("codigo_grupo_procedimento") }}, 7, "0") as procedimento_grupo_codigo,
@@ -74,13 +73,15 @@ with
       end as tipo_vaga_solicitada,
       upper({{ process_null("codigo_cid_solicitado") }}) as cid_id,
       cast({{ process_null("descricao_cid_solicitado") }} as string) as cid_descricao,
+      cast({{ process_null("codigo_cid_agendado") }} as string) as cid_agendado_id,
+      cast({{ process_null("descricao_cid_agendado") }} as string) as cid_agendado_descricao,
 
 
       -- Dados do procedimento
-      json_value(procedimento, "$.codigo_interno")    as procedimento_id,
-      json_value(procedimento, "$.descricao_interna") as procedimento_descricao,
-      json_value(procedimento, "$.codigo_sigtap")     as procedimento_sigtap_id,
-      json_value(procedimento, "$.descricao_sigtap")  as procedimento_sigtap_descricao,
+      cast({{ process_null("codigo_interno_procedimento") }} as string) as procedimento_id,
+      cast({{ process_null("descricao_interna_procedimento") }} as string) as procedimento_descricao,
+      cast({{ process_null("codigo_sigtap_procedimento") }} as string) as procedimento_sigtap_id,
+      cast({{ process_null("descricao_sigtap_procedimento") }} as string) as procedimento_sigtap_descricao,
 
 
       -- Dados do solicitante
@@ -114,6 +115,7 @@ with
 
       -- Cancelamento
       cast({{ process_null("data_cancelamento") }} as timestamp) as cancelamento_datahora,
+      cast({{ process_null("justificativa_cancelamento") }} as string) as cancelamento_justificativa,
       cast({{ process_null("nome_operador_cancelamento") }} as string) as operador_cancelamento_nome,
       cast({{ process_null("codigo_perfil_cancelamento") }} as string) as perfil_cancelamento_codigo,
       cast({{ process_null("nome_perfil_cancelamento") }} as string) as perfil_cancelamento_nome,
@@ -121,6 +123,23 @@ with
 
       -- Dados do executante
       cast({{ process_null("numero_crm") }} as string) as profissional_executante_crm,
+      cast({{ process_null("cpf_profissional_executante") }} as string) as profissional_executante_cpf,
+      cast({{ process_null("nome_profissional_executante") }} as string) as profissional_executante_nome,
+
+      cast({{ process_null("nome_unidade_executante") }} as string) as unidade_executante_nome,
+      cast({{ process_null("codigo_unidade_executante") }} as string) as unidade_executante_id_cnes,
+      cast({{ process_null("telefone_unidade_executante") }} as string) as unidade_executante_telefone,
+
+      cast({{ process_null("cep_unidade_executante") }} as string) as unidade_executante_cep,
+      cast({{ process_null("municipio_unidade_executante") }} as string) as unidade_executante_municipio,
+      cast({{ process_null("bairro_unidade_executante") }} as string) as unidade_executante_bairro,
+      cast({{ process_null("logradouro_unidade_executante") }} as string) as unidade_executante_logradouro,
+      cast({{ process_null("numero_unidade_executante") }} as string) as unidade_executante_numero,
+      cast({{ process_null("complemento_unidade_executante") }} as string) as unidade_executante_complemento,
+
+      cast({{ process_null("codigo_cnes_central_executante") }} as string) as central_executante_id_cnes,
+      cast({{ process_null("nome_cnes_central_executante") }} as string) as central_executante_nome,
+
 
 
       -- Preferências da solicitação
@@ -161,12 +180,43 @@ with
       json_value(laudo, "$.observacao") as laudo_observacao,
       cast(json_value(laudo, "$.data_observacao") as timestamp) as laudo_datahora_observacao,
 
+
+      -- Marcação
+      cast({{ process_null("codigo_marcacao") }} as string) as marcacao_id,
+      cast({{ process_null("data_marcacao") }} as timestamp) as marcacao_data,
+      case marcacao_executada
+          when "1" then "sim"
+          when "0" then "nao"
+          else cast(null as string)
+      end as marcacao_executada,
+
+      cast({{ process_null("data_aprovacao") }} as string) as aprovacao_data,
+      cast({{ process_null("data_confirmacao") }} as string) as confirmacao_data,
+
+      cast({{ process_null("nome_operador_autorizador") }} as string) as operador_autorizador_nome,
+      cast({{ process_null("nome_perfil_operador_autorizador") }} as string) as operador_autorizador_perfil,
+      cast({{ process_null("codigo_perfil_operador_autorizador") }} as string) as operador_autorizador_perfil_codigo,
+  
+      case cast(cast({{ process_null("st_paciente_avisado") }} as float64) as int64)
+        when 1 then "sim"
+        when 0 then "nao"
+        else cast(null as string)
+      end as flag_paciente_avisado,
+
+      case cast(cast({{ process_null("st_falta_registrada") }} as float64) as int64)
+        when 1 then "sim"
+        when 0 then "nao"
+        else cast(null as string)
+      end as flag_falta_registrada,
+
+
       cast({{ process_null("type") }} as string) as tipo,
       cast({{ process_null("version") }} as string) as versao_sisreg,
 
+
       -- Campos deixados de fora:
+      --   'chave_confirmacao': 'xxxxx',
       --   'carga_epoch': '1779xxxxxx',
-      --   'version': '1',
       --   'timestamp': '2026-xx-xxTxx:xx:xx.xxxZ',
 
       -- Metadados internos
@@ -176,6 +226,7 @@ with
 
     from unnested
   )
+
 
 select *
 from sisreg
