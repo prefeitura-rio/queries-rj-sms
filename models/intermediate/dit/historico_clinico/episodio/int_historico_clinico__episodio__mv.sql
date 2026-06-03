@@ -84,7 +84,7 @@ bam as (
       '\n',
       upper(queixa_medica),
       '\n',
-      historia_doenca_atual
+      upper(historia_doenca_atual)
     ) as motivo_atendimento,
     profissional_nome
   from {{ref('raw_prontuario_mv__bam')}}
@@ -252,7 +252,7 @@ condicoes_agg as(
 final as (
   select 
     id_hci,
-    paciente_cpf,
+    paciente_cpf as cpf,
 
     case 
       when atendimento_tipo like 'AMBULATORIAL' then 'Agendada'
@@ -321,7 +321,14 @@ final as (
     ) as medidas,
 
     -- Obito Indicador 
-    cast(null as boolean) as obito_indicador, 
+    -- Obitos são indicados no desfecho do atendimento com os seguintes desfechos 
+    -- - "OBITO COM DECLARACAO DE OBITO FORNECIDA PELO INSTITUTO MEDIC"
+    -- - "OBITO COM DECLARACAO DE OBITO FORNECIDA PELO MEDICO ASSISTEN"
+    if(
+      atendimento_desfecho like '%OBITO%', 
+      true,
+      false
+    ) as obito_indicador, 
 
     -- Prescricoes 
     -- Campo aberto, exige mineração de texto para se 

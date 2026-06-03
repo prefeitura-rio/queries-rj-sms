@@ -237,7 +237,7 @@ with
         union all
         select
             id_hci,
-            paciente_cpf,
+            cpf as paciente_cpf,
             tipo,
             subtipo,
             cast(null as string) as tipo_demanda,
