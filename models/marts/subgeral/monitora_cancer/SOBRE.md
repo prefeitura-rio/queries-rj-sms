@@ -353,15 +353,15 @@ O $\text{termo}_{\max}$ é a pendência mais grave (domina o score); o $\text{te
 
 **4. Score total** combina os dois termos, com o multiplicador de gestante sobre a pendência mais grave e o peso de carga total sobre a soma:
 
-$$\text{gravidade\_total} \;=\; \text{termo}_{\max} \cdot \left(1 + \alpha \cdot \mathbf{1}_{\text{gestante}}\right) \;+\; \lambda \cdot \text{termo}_{\text{soma}}$$
+$$\text{gravidade}_{\text{total}} \;=\; \text{termo}_{\max} \cdot \left(1 + \alpha \cdot \mathbf{1}_{\text{gestante}}\right) \;+\; \lambda \cdot \text{termo}_{\text{soma}}$$
 
 onde $\alpha = 1.0$ é o **multiplicador de gestante**, $\lambda = 0.5$ é o **peso de carga total** e $\mathbf{1}_{\text{gestante}}$ vale $1$ se a pessoa é gestante e $0$ caso contrário (ou seja, gestante dobra o $\text{termo}_{\max}$).
 
 **5. Reescala para 0-100** (apenas para apresentação na fila):
 
-$$\text{score}_{0\text{-}100} \;=\; 100 \times \min\left(\frac{\text{gravidade\_total}}{\text{teto}},\ 1\right)$$
+$$\text{score}_{0\text{-}100} \;=\; 100 \times \min\left(\frac{\text{gravidade}_{\text{total}}}{\text{teto}},\ 1\right)$$
 
-onde o $\text{teto}$ é o percentil 95 da distribuição de $\text{gravidade\_total}$ daquele dia, recalculado a cada atualização, de modo que cerca de 5% das pessoas saturam em 100.
+onde o $\text{teto}$ é o percentil 95 da distribuição de $\text{gravidade}_{\text{total}}$ daquele dia, recalculado a cada atualização, de modo que cerca de 5% das pessoas saturam em 100.
 
 ### Outros parâmetros do score
 
