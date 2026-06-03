@@ -1360,7 +1360,7 @@ models:
       - name: paciente.id_prontuario
         description: |
           Prontuário relacionado ao atendimento.
-      - name: paciente.cpf
+      - name: cpf
         description: |
           CPF do paciente.
         policy_tags:
@@ -1522,6 +1522,9 @@ models:
       - name: prontuario.fornecedor
         description: |
           Fornecedor do prontuário.
+      - name: medidas
+        description: >
+          Medidas aferidas durante o episódio.
       - name: metadados
         description: |
           Metadados do registro
@@ -1545,3 +1548,7 @@ models:
           Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
+      - name: obito_indicador
+        description: >
+          Indicador de óbito no episódio assistencial.
+      - name: procedimentos_realizados
