@@ -1,0 +1,564 @@
+version: 2
+
+models:
+  - name: raw_prontuario_mv__gestante
+    description: "Tabela de informações sobre gestantes do Prontuário MV. Contém dados detalhados sobre o parto, estado da mãe, do recém-nascido e procedimentos."
+    columns:
+      - name: id_hci
+        description: "Identificador único para o atendimento gerada na materialização do DBT. Combinação de id_atendimento e id_cnes para garantir unicidade."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento (ex: AMBULATORIAL, INTERNAÇÃO, URGÊNCIA)."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento."
+      - name: estabelecimento_nome
+        description: "Indicador ou dado referente a Estabelecimento nome."
+      - name: profissional_nome
+        description: "Indicador ou dado referente a Profissional nome."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: paciente_nome
+        description: "Nome do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_mae_nome
+        description: "Nome da mãe do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_cns
+        description: "CNS do paciente."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: aborto_data
+        description: "Indicador ou dado referente a Aborto data."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: aborto_aviso
+        description: "Indicador ou dado referente a Aborto aviso."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: ava_sob_ventre_materno
+        description: "Indicador ou dado referente a Ava sob ventre materno."
+      - name: reanimacao
+        description: "Indicador ou dado referente a Reanimacao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: utero
+        description: "Indicador ou dado referente a Utero."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: perineo
+        description: "Indicador ou dado referente a Perineo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: perda_sangue
+        description: "Indicador ou dado referente a Perda sangue."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: pa
+        description: "Indicador ou dado referente a Pa."
+      - name: nome
+        description: "Indicador ou dado referente a Nome."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: horario
+        description: "Indicador ou dado referente a Horario."
+      - name: sn_acompanhante
+        description: "Indicador ou dado referente a Sn acompanhante."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: reanim_vent_press
+        description: "Indicador ou dado referente a Reanim vent press."
+      - name: periodo_expulsivo
+        description: "Indicador ou dado referente a Periodo expulsivo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: class_robson
+        description: "Indicador ou dado referente a Class robson."
+      - name: tec_houve
+        description: "Indicador ou dado referente a Tec houve."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_respiracao
+        description: "Indicador ou dado referente a Tec respiracao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_rebozo
+        description: "Indicador ou dado referente a Tec rebozo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_penumbra
+        description: "Indicador ou dado referente a Tec penumbra."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_outros
+        description: "Indicador ou dado referente a Tec outros."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_oleo_perineal
+        description: "Indicador ou dado referente a Tec oleo perineal."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_musica
+        description: "Indicador ou dado referente a Tec musica."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_recusa
+        description: "Indicador ou dado referente a Tec recusa."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_mov_pelvicos
+        description: "Indicador ou dado referente a Tec mov pelvicos."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_massagem
+        description: "Indicador ou dado referente a Tec massagem."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_lateral
+        description: "Indicador ou dado referente a Tec lateral."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_imersao_4
+        description: "Indicador ou dado referente a Tec imersao 4."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_imersao_1_1
+        description: "Indicador ou dado referente a Tec imersao 1 1."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_imersao_1
+        description: "Indicador ou dado referente a Tec imersao 1."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_genupeitoral
+        description: "Indicador ou dado referente a Tec genupeitoral."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_escaldapes
+        description: "Indicador ou dado referente a Tec escaldapes."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_deambulacao
+        description: "Indicador ou dado referente a Tec deambulacao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_compressa_morna
+        description: "Indicador ou dado referente a Tec compressa morna."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_cavalinho
+        description: "Indicador ou dado referente a Tec cavalinho."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: sn_tec_bola
+        description: "Indicador ou dado referente a Sn tec bola."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_banqueta
+        description: "Indicador ou dado referente a Tec banqueta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_aromaterapia
+        description: "Indicador ou dado referente a Tec aromaterapia."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tec_4_apoios
+        description: "Indicador ou dado referente a Tec 4 apoios."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: sedacao
+        description: "Indicador ou dado referente a Sedacao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: cardiotoco
+        description: "Indicador ou dado referente a Cardiotoco."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: raquidian
+        description: "Indicador ou dado referente a Raquidian."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: peridural
+        description: "Indicador ou dado referente a Peridural."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: locoregional
+        description: "Indicador ou dado referente a Locoregional."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: anestesia_geral
+        description: "Indicador ou dado referente a Anestesia geral."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tp_vasos
+        description: "Indicador ou dado referente a Tp vasos."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: solicitado_anatomo
+        description: "Indicador ou dado referente a Solicitado anatomo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tipo_rotura
+        description: "Indicador ou dado referente a Tipo rotura."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: pediatra
+        description: "Indicador ou dado referente a Pediatra."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: obstetra
+        description: "Indicador ou dado referente a Obstetra."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: circulante
+        description: "Indicador ou dado referente a Circulante."
+      - name: placenta
+        description: "Indicador ou dado referente a Placenta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: momento_obito
+        description: "Indicador ou dado referente a Momento obito."
+      - name: mgso4
+        description: "Indicador ou dado referente a Mgso4."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: anatomo
+        description: "Indicador ou dado referente a Anatomo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: face_materna
+        description: "Indicador ou dado referente a Face materna."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: face_fetal
+        description: "Indicador ou dado referente a Face fetal."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: evolucao_parto
+        description: "Indicador ou dado referente a Evolucao parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: episiotomia
+        description: "Indicador ou dado referente a Episiotomia."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: diu
+        description: "Indicador ou dado referente a Diu."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: diag_cirurgico
+        description: "Indicador ou dado referente a Diag cirurgico."
+      - name: dequitacao
+        description: "Indicador ou dado referente a Dequitacao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: contato_pele
+        description: "Indicador ou dado referente a Contato pele."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: clampeamento
+        description: "Indicador ou dado referente a Clampeamento."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: cirurgia
+        description: "Indicador ou dado referente a Cirurgia."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: insercao_velamentosa
+        description: "Indicador ou dado referente a Insercao velamentosa."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: circular
+        description: "Indicador ou dado referente a Circular."
+      - name: amamentacao
+        description: "Indicador ou dado referente a Amamentacao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: acompanhante
+        description: "Indicador ou dado referente a Acompanhante."
+      - name: rotura_perineal
+        description: "Indicador ou dado referente a Rotura perineal."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: episiotomia_descricao
+        description: "Indicador ou dado referente a Episiotomia descricao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tecno_houve
+        description: "Indicador ou dado referente a Tecno houve."
+      - name: proc_outros
+        description: "Indicador ou dado referente a Proc outros."
+      - name: outro_clampeamento
+        description: "Indicador ou dado referente a Outro clampeamento."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: numero_acompanhante
+        description: "Indicador ou dado referente a Numero acompanhante."
+      - name: intercorrencia
+        description: "Indicador ou dado referente a Intercorrencia."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: duracao_parto_assistido
+        description: "Indicador ou dado referente a Duracao parto assistido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: duracao_parto
+        description: "Indicador ou dado referente a Duracao parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: diagnostico_pre_operatorio
+        description: "Indicador ou dado referente a Diagnostico pre operatorio."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: dequitacao_outro
+        description: "Indicador ou dado referente a Dequitacao outro."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: dequitacao_apos
+        description: "Indicador ou dado referente a Dequitacao apos."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vasos_cordao
+        description: "Indicador ou dado referente a Vasos cordao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: causa_obito
+        description: "Indicador ou dado referente a Causa obito."
+      - name: apresentacao_outros
+        description: "Indicador ou dado referente a Apresentacao outros."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: ds_anomalia_congenita
+        description: "Indicador ou dado referente a Ds anomalia congenita."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_vertical
+        description: "Indicador ou dado referente a Posicao vertical."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_semi_vertical
+        description: "Indicador ou dado referente a Posicao semi vertical."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: outras_posicoes
+        description: "Indicador ou dado referente a Outras posicoes."
+      - name: posicao_lateral
+        description: "Indicador ou dado referente a Posicao lateral."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_horizontal
+        description: "Indicador ou dado referente a Posicao horizontal."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_cocoras
+        description: "Indicador ou dado referente a Posicao cocoras."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_cavalinho
+        description: "Indicador ou dado referente a Posicao cavalinho."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_cadeira
+        description: "Indicador ou dado referente a Posicao cadeira."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_banqueta
+        description: "Indicador ou dado referente a Posicao banqueta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_banheira
+        description: "Indicador ou dado referente a Posicao banheira."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: posicao_4_apoios
+        description: "Indicador ou dado referente a Posicao 4 apoios."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_ppp
+        description: "Indicador ou dado referente a Parto ppp."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_maca
+        description: "Indicador ou dado referente a Parto maca."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_chuveiro
+        description: "Indicador ou dado referente a Parto chuveiro."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_cama
+        description: "Indicador ou dado referente a Parto cama."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: reanimacao_medicamentosa
+        description: "Indicador ou dado referente a Reanimacao medicamentosa."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: reanimacao_o2
+        description: "Indicador ou dado referente a Reanimacao o2."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: reanimacao_intubacao
+        description: "Indicador ou dado referente a Reanimacao intubacao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: reanimacao_massagem
+        description: "Indicador ou dado referente a Reanimacao massagem."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: reanimacao_ventilatoria
+        description: "Indicador ou dado referente a Reanimacao ventilatoria."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: doula
+        description: "Indicador ou dado referente a Doula."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tocotraumatismo
+        description: "Indicador ou dado referente a Tocotraumatismo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: anomalia_congenita
+        description: "Indicador ou dado referente a Anomalia congenita."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: outros_procedimentos
+        description: "Indicador ou dado referente a Outros procedimentos."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: krause
+        description: "Indicador ou dado referente a Krause."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: us
+        description: "Indicador ou dado referente a Us."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: procedimento_antihipertensivo
+        description: "Indicador ou dado referente a Procedimento antihipertensivo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: transfusao
+        description: "Indicador ou dado referente a Transfusao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: dilapam
+        description: "Indicador ou dado referente a Dilapam."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: miso
+        description: "Indicador ou dado referente a Miso."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: amniotomia
+        description: "Indicador ou dado referente a Amniotomia."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: ocitocina
+        description: "Indicador ou dado referente a Ocitocina."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: raca
+        description: "Indicador ou dado referente a Raca."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: sexo_rn
+        description: "Indicador ou dado referente a Sexo rn."
+      - name: apresentacao
+        description: "Indicador ou dado referente a Apresentacao."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tipo_parto
+        description: "Indicador ou dado referente a Tipo parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: peso_natimorto
+        description: "Indicador ou dado referente a Peso natimorto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: peso_placenta
+        description: "Indicador ou dado referente a Peso placenta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: peso_rn
+        description: "Indicador ou dado referente a Peso rn."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: apgar_5
+        description: "Indicador ou dado referente a Apgar 5."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: apgar_1
+        description: "Indicador ou dado referente a Apgar 1."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: capurro
+        description: "Indicador ou dado referente a Capurro."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: ds_cirurgia
+        description: "Indicador ou dado referente a Ds cirurgia."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: ds_conduta
+        description: "Indicador ou dado referente a Ds conduta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: dt_parto
+        description: "Indicador ou dado referente a Dt parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: fechamento_datahora
+        description: "Indicador ou dado referente a Fechamento datahora."
+      - name: tp_status
+        description: "Indicador ou dado referente a Tp status."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: id_prestador
+        description: "Indicador ou dado referente a Id prestador."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_paciente
+        description: "Indicador ou dado referente a Id paciente."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: documento_clinico
+        description: "Indicador ou dado referente a Documento clinico."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: alta_medica_datahora
+        description: "Indicador ou dado referente a Alta medica datahora."
+      - name: cnes
+        description: "Indicador ou dado referente a Cnes."
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."
+      - name: data_particao
+        description: "Data utilizada para particionamento dos dados, neste caso é a data de carregamento no Data Lake."

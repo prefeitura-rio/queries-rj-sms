@@ -6,8 +6,12 @@ models:
     columns:
       - name: id_hci
         description: "Identificador único para o atendimento gerada na materialização do DBT. Combinação de id_atendimento e id_cnes para garantir unicidade."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: id_atendimento
         description: "Identificador único do atendimento."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: id_cnes
         description: "Identificador CNES do estabelecimento de saúde."
       - name: estabelecimento_nome
@@ -20,66 +24,116 @@ models:
         description: "Especialidade do atendimento."
       - name: profissional_nome
         description: "Nome do profissional de saúde."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: fechamento_datahora
         description: "Data e hora de fechamento do boletim."
       - name: paciente_nome
         description: "Nome do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: paciente_cpf
         description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
       - name: paciente_cns
         description: "CNS do paciente."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
       - name: paciente_nome_social
         description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: paciente_data_nascimento
         description: "Data de nascimento do paciente."
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: paciente_sexo
         description: "Sexo do paciente."
       - name: paciente_pcd
         description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
       - name: paciente_mae_nome
         description: "Nome da mãe do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
       - name: paciente_alergia
         description: "Descrição de alergias do paciente."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: queixa_principal
         description: "Queixa principal do paciente."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: queixa_medica
         description: "Queixa médica detalhada."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: historia_doenca_atual
         description: "História da doença atual."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: historia_doenca_pregressa
         description: "História de doenças pregressas."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: historia_social
         description: "História social do paciente."
       - name: medicamento_uso_continuo
         description: "Descrição de medicamentos de uso contínuo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: exame_fisico
         description: "Resultados do exame físico geral."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: exame_fisico_especifico
         description: "Resultados do exame físico específico."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: pressao_arterial_sistolica
         description: "Pressão arterial sistólica em mmHg."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: pressao_arterial_diastolica
         description: "Pressão arterial diastólica em mmHg."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: frequencia_cardiaca
         description: "Frequência cardíaca em batimentos por minuto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: frequencia_respiratoria
         description: "Frequência respiratória em movimentos por minuto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: temperatura
         description: "Temperatura corporal em graus Celsius."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: saturacao_oxigenio
         description: "Saturação de oxigênio (SpO2) em porcentagem."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: hipotese_diagnostica
         description: "Hipótese diagnóstica."
       - name: exames_complementares
         description: "Descrição de exames complementares."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: conduta_proposta
         description: "Conduta ou procedimento proposto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: destino_paciente
         description: "Destino do paciente após o atendimento."
       - name: risco_suicidio
         description: "Indicador de risco de suicídio."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: classificacao_risco
         description: "Classificação de risco do paciente."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: loaded_at
         description: "Data e hora de carregamento dos dados no Datalake."
       - name: updated_at

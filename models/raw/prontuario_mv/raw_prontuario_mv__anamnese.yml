@@ -2,12 +2,16 @@ version: 2
 
 models:
   - name: raw_prontuario_mv__anamnese
-    description: "Tabela de anamnese do Prontuário MV. Contém o registro da entrevista inicial com o paciente, incluindo queixas, histórico, exame físico e conduta."
+    description: "Tabela de anamnese do Prontuário MV. Contém o registro da entrevista inicial do atendimento ambulatorial com o paciente, incluindo queixas, histórico, exame físico e conduta."
     columns:
       - name: id_hci
         description: "Identificador único para o atendimento gerada na materialização do DBT. Combinação de id_atendimento e id_cnes para garantir unicidade."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: id_atendimento
         description: "Identificador único do atendimento."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: id_cnes
         description: "Identificador CNES do estabelecimento de saúde."
       - name: estabelecimento_nome
@@ -20,28 +24,46 @@ models:
         description: "Especialidade do atendimento."
       - name: profissional_nome
         description: "Nome do profissional de saúde."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: fechamento_datahora
         description: "Data e hora de fechamento do registro de anamnese."
       - name: paciente_nome
         description: "Nome do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: paciente_cpf
         description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
       - name: paciente_cns
         description: "CNS do paciente."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
       - name: paciente_nome_social
         description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
       - name: paciente_data_nascimento
         description: "Data de nascimento do paciente."
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
       - name: paciente_sexo
         description: "Sexo do paciente."
       - name: paciente_pcd
         description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
       - name: paciente_mae_nome
         description: "Nome da mãe do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
       - name: queixa_principal
         description: "Queixa principal do paciente."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: historia_doenca_atual
         description: "História da doença atual."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: historia_pregressa
         description: "História médica pregressa do paciente."
       - name: historia_familiar
@@ -50,60 +72,112 @@ models:
         description: "História social do paciente."
       - name: medicamentos_em_uso
         description: "Indicador se o paciente faz uso de medicamentos."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: medicamentos_quais
         description: "Descrição de quais medicamentos o paciente usa."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: exame_fisico
         description: "Resultados do exame físico."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: sinais_vitais_ultimas_afericoes
         description: "Descrição das últimas aferições de sinais vitais."
-      - name: sinais_vitais_pressao_arterial_sistolica
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: pressao_arterial_sistolica
         description: "Pressão arterial sistólica em mmHg."
-      - name: sinais_vitais_pressao_arterial_diastolica
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: pressao_arterial_diastolica
         description: "Pressão arterial diastólica em mmHg."
-      - name: sinais_vitais_frequencia_cardiaca
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: frequencia_cardiaca
         description: "Frequência cardíaca em batimentos por minuto."
-      - name: sinais_vitais_frequencia_respiratoria
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: frequencia_respiratoria
         description: "Frequência respiratória em movimentos por minuto."
-      - name: sinais_vitais_temperatura
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: temperatura
         description: "Temperatura corporal em graus Celsius."
-      - name: sinais_vitais_saturacao_oxigenio
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: saturacao_oxigenio
         description: "Saturação de oxigênio (SpO2) em porcentagem."
-      - name: sinais_vitais_peso
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: peso
         description: "Peso do paciente em quilogramas."
-      - name: sinais_vitais_altura
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: altura
         description: "Altura do paciente em metros ou centímetros."
-      - name: sinais_vitais_imc
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: imc
         description: "Índice de Massa Corporal (IMC)."
-      - name: sinais_vitais_imc_descricao
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: imc_descricao
         description: "Descrição da classificação do IMC."
-      - name: sinais_vitais_superficie_corporal
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: superficie_corporal
         description: "Superfície corporal em metros quadrados."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: dor_indicador
         description: "Indicador de dor."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: dor_escala
         description: "Escala de dor utilizada."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: dor_detalhes
         description: "Detalhes sobre a dor."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: hipotese_diagnostica
         description: "Hipótese diagnóstica."
       - name: diagnostico_provavel
         description: "Diagnóstico provável."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: cid
         description: "Código CID relacionado."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: exames_complementares
         description: "Descrição de exames complementares solicitados ou realizados."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: conduta_proposta
         description: "Conduta proposta para o caso."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: plano_terapeutico
         description: "Plano terapêutico definido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: destino_paciente
         description: "Destino do paciente após o atendimento (ex: alta, internação)."
       - name: retorno_necessidade
         description: "Indicador da necessidade de retorno."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: retorno_data
         description: "Data agendada para o retorno."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: retorno_especialidade
         description: "Especialidade para o retorno."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
       - name: loaded_at
         description: "Data e hora de carregamento dos dados no Datalake."
       - name: updated_at
