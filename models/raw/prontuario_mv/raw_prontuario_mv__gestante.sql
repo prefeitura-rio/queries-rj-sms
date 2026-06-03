@@ -4,7 +4,7 @@
         materialized="incremental",
         schema="brutos_prontuario_mv",
         unique_key="id_hci",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy="merge",
         partition_by={
             "field": "data_particao",
             "data_type": "date",

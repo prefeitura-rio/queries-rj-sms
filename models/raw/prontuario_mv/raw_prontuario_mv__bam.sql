@@ -3,7 +3,7 @@
         alias="bam",
         materialized="incremental",
         schema="brutos_prontuario_mv",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy="merge",
         unique_key="id_hci",
         partition_by={
             "field": "data_particao",
