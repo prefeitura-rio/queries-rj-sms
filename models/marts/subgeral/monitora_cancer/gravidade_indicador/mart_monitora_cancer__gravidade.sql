@@ -16,8 +16,11 @@ on_schema_change = "sync_all_columns"
 
 select
     cpf_particao,
-    gravidade_score,
-    gravidade_score_base,
+    gravidade_total,
+    gravidade_total_0_100,
+    gravidade_base,
+    gravidade_termo_max,
+    gravidade_termo_soma,
     gestante,
-    gravidade_breakdown
+    gravidade_detalhamento
 from {{ ref("int_monitora_cancer__gravidade") }}

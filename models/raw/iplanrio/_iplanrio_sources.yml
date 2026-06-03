@@ -6,15 +6,3 @@ sources:
     schema: brutos_iplanrio
     tables:
       - name: registro_municipal_integrado
-
-  - name: iplanrio_rmi_conversas
-    database: rj-crm-registry
-    schema: rmi_conversas
-    tables:
-      - name: chatbot
-
-  - name: iplanrio_intermediario_rmi_conversas
-    database: rj-crm-registry
-    schema: intermediario_rmi_conversas
-    tables:
-      - name: resposta_disparo

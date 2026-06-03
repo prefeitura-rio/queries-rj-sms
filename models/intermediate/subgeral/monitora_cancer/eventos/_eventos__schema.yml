@@ -1,0 +1,297 @@
+version: 2
+
+models:
+  - name: int_monitora_cancer__eventos_episodios
+    description: >
+      Eventos da população-alvo em forma longa, com janelas temporais
+      (dias_proximo_evento), identificador de episódio de cuidado (run_id)
+      e agregado de tempo total da jornada (tempo_total) broadcasted em
+      cada linha.
+
+      Episódios ("runs"): sequências consecutivas de eventos da mesma
+      paciente cujos gaps entre data_referencia_evento não excedem
+      episodio_gap_dias (default 180 dias, var() do dbt). O run_id
+      incrementa a cada gap > episodio_gap_dias dentro do mesmo paciente.
+
+      tempo_total: para pacientes com SER, dias do início da run que
+      contém o primeiro SER até a data desse primeiro SER (proxy do tempo
+      decorrido até a entrada em UNACON); para pacientes sem SER, dias
+      do início da última run até a data atual.
+
+      Granularidade: 1 linha por evento (mesma de mart_monitora_cancer__fatos
+      restrita à população-alvo, via LEFT JOIN de pop em fatos por
+      paciente_cpf). Não há chave primária de coluna única — o
+      mart_monitora_cancer__fatos já garante unicidade em
+      (sistema_origem, id_sistema_origem) upstream.
+
+      Materializado como TABLE (não ephemeral) para compartilhar o
+      cálculo de run_id entre a cadeia de gravidade (via
+      int_monitora_cancer__eventos_run_atual) e
+      mart_monitora_cancer__pacientes_linha_tempo; particionado por
+      cpf_particao (range) e clusterizado por (fonte, procedimento) para
+      acelerar as CTEs de critério no agregador de gravidade.
+    columns:
+      - name: cpf_particao
+        description: CPF da paciente em formato numérico (int64). Campo de particionamento.
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__eventos_episodios__cpf_particao__not_null
+
+      - name: cpf
+        description: CPF em formato string com 11 dígitos e zero-padding à esquerda.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: nome
+        description: Nome completo da paciente, propagado de int_monitora_cancer__populacao_alvo.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: raca_cor
+        description: Raça/cor autodeclarada, propagado de int_monitora_cancer__populacao_alvo.
+        data_type: string
+
+      - name: idade
+        description: Idade médica em anos completos, propagado de int_monitora_cancer__populacao_alvo.
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: ap
+        description: Área de Planejamento (AP) da clínica vinculada (HCI).
+        data_type: string
+
+      - name: cf
+        description: Nome da clínica da família vinculada (HCI).
+        data_type: string
+
+      - name: equipe_sf
+        description: Nome da equipe de Saúde da Família vinculada (HCI).
+        data_type: string
+
+      - name: status
+        description: '{{ doc("monitora_cancer__status") }}'
+        data_type: string
+
+      - name: telefone
+        description: Telefone pessoal da paciente (bcadastro ou fallback em telefones_validos).
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: telefone_cf
+        description: Telefone institucional da clínica da família vinculada.
+        data_type: string
+
+      - name: telefone_esf
+        description: Telefone institucional da equipe de Saúde da Família vinculada.
+        data_type: string
+
+      - name: gestante
+        description: >
+          TRUE quando a paciente está em fase 'Gestação' em
+          mart_bi_gestacoes__gestacoes na data de execução do modelo.
+        data_type: bool
+
+      - name: fonte
+        description: >
+          Sistema de origem do evento (SISREG, SER ou SISCAN). Alias para
+          mart_monitora_cancer__fatos.sistema_origem.
+        data_type: string
+
+      - name: tipo
+        description: >
+          Classificação funcional do sistema de origem (REGULACAO ou
+          EXAME). Alias para mart_monitora_cancer__fatos.sistema_tipo.
+        data_type: string
+
+      - name: evento_status
+        description: >
+          Status do evento no sistema de origem, no formato literal
+          preservado de mart_monitora_cancer__fatos (com underscores no
+          caso do SER). Para a forma com espaços (uso em UI), ver
+          mart_monitora_cancer__pacientes_linha_tempo.eventos.evento_status.
+        data_type: string
+
+      - name: procedimento
+        description: >
+          Descrição padronizada do procedimento, conforme emitido pelos
+          modelos de fonte (seed de parametros_sisreg/parametros_ser ou
+          mapeamento do procedimento bruto em SISCAN).
+        data_type: string
+
+      - name: cid
+        description: >
+          Código CID-10 (3 caracteres) associado ao evento, quando
+          disponível. NULL para SISCAN (não emitido).
+        data_type: string
+
+      - name: unidade_solicitante
+        description: >
+          Unidade que solicitou o evento, no formato "<CNES> - <nome do
+          estabelecimento>" com fallbacks "CNES ?" e "Estabelecimento não
+          identificado" para os componentes ausentes.
+        data_type: string
+
+      - name: unidade_executante
+        description: >
+          Unidade que executou (ou executará) o evento, mesmo formato e
+          fallbacks de unidade_solicitante.
+        data_type: string
+
+      - name: data_solicitacao
+        description: >
+          Data da solicitação do procedimento. Sempre preenchida (todas as
+          fontes filtram data_solicitacao >= 2021-01-01 na entrada).
+        data_type: date
+
+      - name: data_autorizacao
+        description: >
+          Data em que a solicitação foi autorizada (SISREG) ou agendada
+          (SER, alias de data_agendamento). NULL para SISCAN.
+        data_type: date
+
+      - name: data_execucao
+        description: >
+          Data em que o procedimento foi efetivamente executado (SISREG/SER)
+          ou realizado (SISCAN, alias de data_realizacao).
+        data_type: date
+
+      - name: data_resultado
+        description: >
+          Data de liberação do laudo/resultado (aplicável a SISCAN, alias
+          de data_liberacao_resultado). NULL para SISREG/SER.
+        data_type: date
+
+      - name: data_referencia_evento
+        description: >
+          MAX entre data_solicitacao, data_autorizacao, data_execucao e
+          data_resultado (ignora NULLs). Usada como cronologia canônica
+          do evento na construção de runs e na ordenação dos eventos da
+          paciente. Sempre não-nula (data_solicitacao já é).
+        data_type: date
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__eventos_episodios__data_referencia_evento__not_null
+
+      - name: mama_esquerda_resultado
+        description: >
+          Resultado do exame para a mama esquerda (SISCAN: BI-RADS ou
+          lesão histopatológica). NULL para SISREG/SER.
+        data_type: string
+
+      - name: mama_direita_resultado
+        description: >
+          Resultado do exame para a mama direita (SISCAN). NULL para
+          SISREG/SER.
+        data_type: string
+
+      - name: criterio_diagnostico
+        description: >
+          TRUE quando o evento confirma diagnóstico (BI-RADS 6, lesão
+          neoplásica em histo, procedimento de oncologia). Definição
+          completa em mart_monitora_cancer__fatos.criterio_diagnostico.
+        data_type: bool
+
+      - name: atraso_solicitacao_autorizacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e
+          data_autorizacao (apenas SISREG/SER). NULL para SISCAN.
+        data_type: int64
+
+      - name: atraso_autorizacao_execucao
+        description: >
+          Severidade (0-3) do atraso entre data_autorizacao e
+          data_execucao (apenas SISREG/SER). NULL para SISCAN.
+        data_type: int64
+
+      - name: atraso_regulacao
+        description: >
+          Severidade (0-3) do atraso total entre data_solicitacao e
+          data_execucao (apenas SISREG/SER). NULL para SISCAN.
+        data_type: int64
+
+      - name: risco
+        description: >
+          Score numérico (int64) de risco do evento, normalizado entre
+          fontes. Definição completa em mart_monitora_cancer__fatos.risco.
+        data_type: int64
+
+      - name: dias_proximo_evento
+        description: >
+          Intervalo, em dias, entre data_referencia_evento e a próxima
+          data_referencia_evento da mesma paciente (ordem cronológica
+          canônica). NULL no último evento da paciente.
+        data_type: int64
+
+      - name: run_id
+        description: >
+          Identificador do episódio de cuidado, incrementa a cada gap >
+          episodio_gap_dias (default 180) entre data_referencia_evento
+          dentro da mesma paciente. Reseta por paciente; o maior run_id
+          de cada paciente é o "run atual" usado pela cadeia de gravidade
+          (int_monitora_cancer__eventos_run_atual).
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__eventos_episodios__run_id__not_null
+
+      - name: tempo_total
+        description: >
+          Para pacientes com SER, dias do início da run que contém o
+          primeiro SER até a data desse primeiro SER. Para pacientes sem
+          SER, dias do início da última run até hoje. NULL quando o
+          cálculo resulta em 0 (mesmo dia). Broadcasted: mesmo valor em
+          todas as linhas de uma paciente.
+        data_type: int64
+
+  - name: int_monitora_cancer__pendencias
+    description: >
+      Pendências atuais de cada paciente do monitoramento, derivadas do
+      ÚLTIMO evento da linha do tempo (recencia 1 por
+      data_referencia_evento, com as demais datas como desempate) +
+      status + tempo_total. Granularidade: 1 linha por paciente
+      (cpf_particao), com um array pendencia_atual contendo zero ou mais
+      rótulos.
+
+      Famílias de pendência:
+        - SISREG (último evento é SISREG): "Pendente de autorização SISREG",
+          "Pendente de realização SISREG", "Aguardando execução SISREG"
+          (data_execucao no futuro), "Devolvido SISREG", "Falta SISREG".
+        - SER (último evento é SER): "Pendente de autorização SER",
+          "Pendente de realização SER", "Aguardando execução SER",
+          "Procedimento cancelado SER", "Falta SER".
+        - Outros (status + tempo_total para DIAGNOSTICO, exclusivos entre si
+          pelas faixas de tempo_total): "Prazo legal para início de
+          tratamento ultrapassado" (>=60d), "Prazo para início de
+          tratamento próximo do limite legal" (>=45d), "Pendente de
+          solicitação para UNACON" (<45d).
+
+      Materializado como TABLE; particionado por cpf_particao (range)
+      para pruning em joins.
+    columns:
+      - name: cpf_particao
+        description: CPF da paciente em formato numérico (int64). Chave primária e campo de particionamento.
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__pendencias__cpf_particao__unique
+          - not_null:
+              name: int_monitora_cancer__pendencias__cpf_particao__not_null
+
+      - name: pendencia_atual
+        description: >
+          Array (possivelmente vazio) com as pendências atuais da
+          paciente. Conjunto fechado de rótulos descrito no description
+          do modelo.
+        data_type: array<string>
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__pendencias__pendencia_atual__not_null

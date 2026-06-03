@@ -29,7 +29,7 @@ select
 
     -- qualificadores gerais
     ev.status,
-    coalesce(any_value (grv.gravidade_score), 0) as gravidade_score,
+    safe_cast(coalesce(any_value (grv.gravidade_total_0_100), 0) as int) as gravidade_score,
     any_value (ev.gestante) as gestante,
 
     -- contato paciente
@@ -49,7 +49,7 @@ select
         struct(
             ev.fonte,
             ev.tipo,
-            ev.evento_status,
+            replace(ev.evento_status, '_', ' ') as evento_status,
             ev.procedimento,
             ev.cid,
 

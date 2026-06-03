@@ -146,7 +146,8 @@ cad_e_atd AS (
   cadastro_normalizado AS (
     SELECT
       cf.*,
-      COALESCE(NULLIF(UPPER(TRIM(cf.unidade)), ''), 'SEM INFORMACAO') AS unidade_norm
+      COALESCE(NULLIF(UPPER(TRIM(cf.unidade)), ''), 'SEM INFORMACAO') AS unidade_norm,
+      COALESCE(NULLIF(UPPER(TRIM(cf.equipe)),  ''), 'SEM INFORMACAO') AS equipe_norm
     FROM cadastro_filtrado cf
   ),
   atendimentos_por_unidade AS (
@@ -223,7 +224,8 @@ cad_e_atd AS (
               WHEN cc.cnt_permanente = 0 THEN cc.ultima_data_atendimento
             END DESC,
             cc.data_atualizacao_cadastro DESC,
-            cc.unidade
+            cc.unidade,
+            COALESCE(cc.equipe, '')
         ) AS rn
       FROM cadastro_classificado cc
     )
@@ -236,6 +238,7 @@ cad_e_atd AS (
     cp.id_cnes,
     cp.ap,
     cp.unidade AS unidade_vinculo_cadastro,
+    cp.equipe  AS equipe_vinculo_cadastro,
     COALESCE(uap.unidade_display, cp.unidade) AS unidade_atendimento,
     COALESCE(uap.total_atendimentos, 0) AS total_atendimentos_unidade_atendimento,
     cp.total_atendimentos_unidade_cadastro,
@@ -1930,8 +1933,9 @@ final AS (
     ue.data_consulta as ue_data_consulta,
     ue.motivo_atendimento as ue_motivo_atendimento,
     ue.nome_estabelecimento as ue_nome_estabelecimento,
-    -- Novas colunas de unidade de cadastro e atendimento
+    -- Novas colunas de unidade de cadastro, equipe de cadastro e atendimento
     cad.unidade_vinculo_cadastro AS unidade_cadastro,
+    cad.equipe_vinculo_cadastro  AS equipe_cadastro,
     cad.unidade_atendimento AS unidade_atendimento
     FROM
         filtrado f
