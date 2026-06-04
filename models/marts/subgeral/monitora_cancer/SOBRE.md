@@ -30,7 +30,7 @@ flowchart LR
 
 As equipes da SMS Rio não conseguem entrar em contato com todas as pessoas em monitoramento no mesmo dia. É preciso uma ferramenta para apoiar as decisões neste processo.
 
-O objetivo do Monitora Câncer é, portando, responder, todos os dias, a duas perguntas:
+O objetivo do Monitora Câncer é, portanto, responder, todos os dias, a duas perguntas:
 
 1. **Quais pessoas estão em monitoramento agora?**
 2. **Em qual ordem a equipe deve contatá-las?**
