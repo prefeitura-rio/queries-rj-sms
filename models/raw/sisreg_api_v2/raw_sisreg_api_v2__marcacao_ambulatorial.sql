@@ -33,14 +33,14 @@ with
     select
 
       -- Identificação básica da solicitação
-      cast({{ process_null("codigo_solicitacao") }} as string) as codigo_solicitacao,
-      cast({{ process_null("data_solicitacao") }} as timestamp)  as datahora_solicitacao,
-      cast({{ process_null("data_atualizacao") }} as timestamp)  as datahora_atualizacao,
+      cast({{ process_null("codigo_solicitacao") }} as string) as solicitacao_id,
+      cast({{ process_null("data_solicitacao") }} as timestamp)  as solicitacao_datahora,
+      cast({{ process_null("data_atualizacao") }} as timestamp)  as atualizacao_datahora,
 
 
       -- Status e classificação
-      cast({{ process_null("status_solicitacao") }} as string) as status_solicitacao,
-      cast({{ process_null("sigla_situacao") }} as string)     as sigla_situacao,
+      cast({{ process_null("status_solicitacao") }} as string) as solicitacao_status,
+      cast({{ process_null("sigla_situacao") }} as string)     as situacao_sigla,
       case st_visualizado_regulador
           when "1" then "sim"
           when "0" then "nao"
@@ -210,8 +210,9 @@ with
       end as flag_falta_registrada,
 
 
-      cast({{ process_null("type") }} as string) as tipo,
       cast({{ process_null("version") }} as string) as versao_sisreg,
+      cast({{ process_null("type") }} as string) as tipo_interno,
+      "marcacao-ambulatorial" as tipo_externo,
 
 
       -- Campos deixados de fora:

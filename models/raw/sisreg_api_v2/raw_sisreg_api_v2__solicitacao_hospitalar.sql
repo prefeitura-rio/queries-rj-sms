@@ -24,16 +24,16 @@ with
   sisreg as (
     select
       -- Identificação básica da solicitação
-      cast({{ process_null("codigo_solicitacao") }} as string) as codigo_solicitacao,
-      cast({{ process_null("data_solicitacao") }} as string)  as data_solicitacao,
-      cast({{ process_null("hora_solicitacao") }} as string) as hora_solicitacao,
-      cast({{ process_null("data_atualizacao") }} as timestamp)  as datahora_atualizacao,
-      cast({{ process_null("data_atualizacao_solicitacao") }} as timestamp) as datahora_atualizacao_solicitacao,
-      cast({{ process_null("data_atualizacao_marcacao") }} as timestamp) as datahora_atualizacao_marcacao,
+      cast({{ process_null("codigo_solicitacao") }} as string) as solicitacao_id,
+      cast({{ process_null("data_solicitacao") }} as string)  as solicitacao_data,
+      cast({{ process_null("hora_solicitacao") }} as string) as solicitacao_hora,
+      cast({{ process_null("data_atualizacao") }} as timestamp)  as atualizacao_datahora,
+      cast({{ process_null("data_atualizacao_solicitacao") }} as timestamp) as solicitacao_atualizacao_datahora,
+      cast({{ process_null("data_atualizacao_marcacao") }} as timestamp) as marcacao_atualizacao_datahora,
 
 
       -- Status e classificação
-      cast({{ process_null("status") }} as string) as status,
+      cast({{ process_null("status") }} as string) as solicitacao_status,
 
       cast({{ process_null("codigo_classificacao_risco") }} as string) as classificacao_risco_codigo,
       case trim(codigo_classificacao_risco)
@@ -58,8 +58,8 @@ with
 
 
       -- Dados do procedimento
-      {{ process_null("codigo_procedimento") }} as procedimento_id,
-      {{ process_null("descricao_procedimento") }} as procedimento_descricao,
+      {{ process_null("codigo_procedimento") }} as procedimento_sigtap_id,
+      {{ process_null("descricao_procedimento") }} as procedimento_sigtap_descricao,
 
 
       -- Dados do solicitante
@@ -106,7 +106,9 @@ with
 
 
       -- Preferências da solicitação
-      cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
+      date(
+        cast({{ process_null("data_desejada") }} as timestamp)
+      ) as data_desejada,
       lpad({{ process_null("codigo_unidade_desejada") }}, 7, "0") as unidade_desejada_id_cnes,
       cast({{ process_null("nome_unidade_desejada") }} as string) as unidade_desejada_nome,
 
@@ -123,14 +125,14 @@ with
       cast({{ process_null("uf_municipio_nascimento") }} as string) as paciente_nascimento_uf,
       cast({{ process_null("nome_municipio_nascimento") }} as string) as paciente_nascimento_municipio,
       -- -- Residência
+      lpad({{ process_null("cep_paciente_residencia") }}, 8, "0") as paciente_residencia_cep,
       cast({{ process_null("uf_paciente_residencia") }} as string) as paciente_residencia_uf,
       cast({{ process_null("municipio_paciente_residencia") }} as string) as paciente_residencia_municipio,
       cast({{ process_null("bairro_paciente_residencia") }} as string) as paciente_residencia_bairro,
+      cast({{ process_null("tipo_logradouro_paciente_residencia") }} as string) as paciente_residencia_logradouro,
       cast({{ process_null("endereco_paciente_residencia") }} as string) as paciente_residencia_endereco,
       cast({{ process_null("complemento_paciente_residencia") }} as string) as paciente_residencia_complemento,
       cast({{ process_null("numero_paciente_residencia") }} as string) as paciente_residencia_numero,
-      cast({{ process_null("tipo_logradouro_paciente_residencia") }} as string) as paciente_residencia_logradouro,
-      lpad({{ process_null("cep_paciente_residencia") }}, 8, "0") as paciente_residencia_cep,
 
 
       -- Responsável
@@ -165,8 +167,9 @@ with
 
       cast({{ process_null("data_reserva") }} as string) as reserva_data,
 
-      cast({{ process_null("type") }} as string) as tipo,
       cast({{ process_null("version") }} as string) as versao_sisreg,
+      cast({{ process_null("type") }} as string) as tipo_interno,
+      "solicitacao-hospitalar" as tipo_externo,
 
       -- Campos deixados de fora:
       --   'carga_epoch': '1779xxxxxx',

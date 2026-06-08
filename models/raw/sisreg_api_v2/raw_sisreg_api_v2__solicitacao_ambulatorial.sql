@@ -34,13 +34,13 @@ with
   sisreg as (
     select
       -- Identificação básica da solicitação
-      cast({{ process_null("codigo_solicitacao") }} as string) as codigo_solicitacao,
-      cast({{ process_null("data_solicitacao") }} as timestamp)  as datahora_solicitacao,
-      cast({{ process_null("data_atualizacao") }} as timestamp)  as datahora_atualizacao,
+      cast({{ process_null("codigo_solicitacao") }} as string) as solicitacao_id,
+      cast({{ process_null("data_solicitacao") }} as timestamp)  as solicitacao_datahora,
+      cast({{ process_null("data_atualizacao") }} as timestamp)  as atualizacao_datahora,
 
 
       -- Status e classificação
-      cast({{ process_null("status_solicitacao") }} as string) as status_solicitacao,
+      cast({{ process_null("status_solicitacao") }} as string) as solicitacao_status,
       cast({{ process_null("sigla_situacao") }} as string)     as sigla_situacao,
       case st_visualizado_regulador
           when "1" then "sim"
@@ -88,7 +88,7 @@ with
       cast({{ process_null("sigla_uf_solicitante") }} as string) as uf_solicitante_sigla,
 
       lpad({{ process_null("codigo_cnes_central_solicitante") }}, 7, "0") as central_solicitante_id_cnes,
-      cast({{ process_null("codigo_central_solicitante") }} as string) as central_solicitante_codigo,
+      cast({{ process_null("codigo_central_solicitante") }} as string) as central_solicitante_codigo_ibge,
       cast({{ process_null("nome_cnes_central_solicitante") }} as string) as central_solicitante_nome_cnes,
       cast({{ process_null("nome_central_solicitante") }} as string) as central_solicitante_nome,
 
@@ -108,7 +108,7 @@ with
       cast({{ process_null("codigo_uf_regulador") }} as string) as uf_regulador_codigo,
       cast({{ process_null("sigla_uf_regulador") }} as string) as uf_regulador_sigla,
 
-      cast({{ process_null("codigo_central_reguladora") }} as string) as central_reguladora_codigo,
+      cast({{ process_null("codigo_central_reguladora") }} as string) as central_reguladora_codigo_ibge,
       cast({{ process_null("nome_central_reguladora") }} as string) as central_reguladora_nome,
 
 
@@ -124,7 +124,9 @@ with
 
 
       -- Preferências da solicitação
-      cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
+      date(
+        cast({{ process_null("data_desejada") }} as timestamp)
+      ) as data_desejada,
       lpad({{ process_null("codigo_unidade_desejada") }}, 7, "0") as unidade_desejada_id_cnes,
       cast({{ process_null("nome_unidade_desejada") }} as string) as unidade_desejada_nome,
 
@@ -158,11 +160,12 @@ with
       json_value(laudo, "$.tipo_perfil") as laudo_perfil_tipo,
       json_value(laudo, "$.tipo_descricao") as laudo_descricao_tipo,
       json_value(laudo, "$.situacao") as laudo_situacao,
-      json_value(laudo, "$.observacao") as laudo_observacao,
+      {{ process_null("json_value(laudo, '$.observacao')") }} as laudo_observacao,
       cast(json_value(laudo, "$.data_observacao") as timestamp) as laudo_datahora_observacao,
 
-      cast({{ process_null("type") }} as string) as tipo,
       cast({{ process_null("version") }} as string) as versao_sisreg,
+      cast({{ process_null("type") }} as string) as tipo_interno,
+      "solicitacao-ambulatorial" as tipo_externo,
 
       -- Campos deixados de fora:
       --   'carga_epoch': '1779xxxxxx',

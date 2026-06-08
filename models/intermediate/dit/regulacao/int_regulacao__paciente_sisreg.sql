@@ -66,6 +66,34 @@ with
       paciente_nome_mae as mae_nome,
 
       _extracted_at
+    from {{ ref("raw_sisreg_api_v2__marcacao_ambulatorial") }}
+
+    union all
+
+    select
+      paciente_cpf as cpf,
+      paciente_cns as cns,
+      paciente_nome as nome,
+      paciente_sexo as sexo,
+
+      paciente_nascimento_data as nascimento_data,
+      paciente_nascimento_uf as nascimento_uf,
+      paciente_nascimento_municipio as nascimento_municipio,
+
+      paciente_residencia_uf as residencia_uf,
+      paciente_residencia_municipio as residencia_municipio,
+      paciente_residencia_bairro as residencia_bairro,
+      paciente_residencia_logradouro as residencia_logradouro,
+      paciente_residencia_endereco as residencia_endereco,
+      paciente_residencia_numero as residencia_numero,
+      paciente_residencia_complemento as residencia_complemento,
+      paciente_residencia_cep as residencia_cep,
+
+      paciente_telefones as telefones,
+
+      paciente_nome_mae as mae_nome,
+
+      _extracted_at
     from {{ ref("raw_sisreg_api_v2__solicitacao_hospitalar") }}
   ),
 
@@ -92,11 +120,33 @@ with
       {{ clean_cidade("residencia_municipio") }} as residencia_municipio,
       {{ clean_bairro("residencia_bairro") }} as residencia_bairro,
 
-      {{ proper_br("residencia_logradouro") }} as residencia_logradouro,
-      {{ proper_br("residencia_endereco") }} as residencia_endereco,
-      {{ proper_br("residencia_numero") }} as residencia_numero,
-      {{ proper_br("residencia_complemento") }} as residencia_complemento,
-      residencia_cep,
+      case lower(trim(residencia_logradouro))
+        when "invalido" then null
+        else {{ proper_br("residencia_logradouro") }}
+      end as residencia_logradouro,
+
+      case lower(trim(residencia_endereco))
+        when "sem informação" then null
+        else {{ proper_br("residencia_endereco") }}
+      end as residencia_endereco,
+
+      case lower(trim(residencia_numero))
+        when "s/n" then "S/n"
+        when "sem" then "S/n"
+        when "sn" then "S/n"
+        else {{ proper_br("residencia_numero") }}
+      end as residencia_numero,
+
+      case lower(trim(residencia_complemento))
+        when "sem informação" then null
+        when "sem informacao" then null
+        else {{ proper_br("residencia_complemento") }}
+      end as residencia_complemento,
+
+      case trim(residencia_cep)
+        when "20000000" then null
+        else residencia_cep
+      end as residencia_cep,
 
       array(
         select
