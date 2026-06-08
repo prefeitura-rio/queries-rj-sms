@@ -99,6 +99,11 @@ select
 
     any_value (ev.tempo_total) as tempo_total,
 
+    -- tempos da linha de cuidado, medidos dentro do run atual (calculados em
+    -- int_monitora_cancer__eventos_episodios; NULL fora do escopo de cada um)
+    any_value (ev.tempo_diagnostico) as tempo_diagnostico,
+    any_value (ev.tempo_diagnostico_sem_tratamento) as tempo_diagnostico_sem_tratamento,
+
     -- pendências atuais (1 array por paciente, calculado em int_monitora_cancer__pendencias)
     any_value (pend.pendencia_atual) as pendencia_atual
 

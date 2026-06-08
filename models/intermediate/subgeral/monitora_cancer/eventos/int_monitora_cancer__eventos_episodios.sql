@@ -2,7 +2,8 @@
 
 -- Eventos de monitoramento de câncer de mama em forma longa, com janelas
 -- temporais (dias_proximo_evento), identificador de episódio (run_id) e
--- agregado por paciente (tempo_total) broadcast em cada linha.
+-- agregados por paciente (tempo_total, tempo_diagnostico,
+-- tempo_diagnostico_sem_tratamento) broadcast em cada linha.
 --
 -- Episódios ("runs"): sequências consecutivas de eventos cujos gaps entre
 -- data_referencia_evento não excedem `episodio_gap_dias` (default 180 dias).
@@ -12,6 +13,14 @@
 --   - pacientes com SER: dias do início da run que contém o primeiro SER até
 --     a data desse primeiro SER;
 --   - pacientes sem SER: dias do início da última run até a data atual.
+--
+-- tempo_diagnostico / tempo_diagnostico_sem_tratamento: medidos no run atual
+-- (run_id = max(run_id), como int_monitora_cancer__eventos_run_atual):
+--   - tempo_diagnostico: dias do início do run atual até o 1º evento que vira
+--     DIAGNOSTICO/UNACON (criterio_diagnostico OU fonte = 'SER'). NULL em SUSPEITA.
+--   - tempo_diagnostico_sem_tratamento: dias do 1º diagnóstico confirmado
+--     (criterio_diagnostico) até a 1ª solicitação SER. NULL sem diagnóstico
+--     em/antes do SER (só assume valor para UNACON).
 --
 -- Granularidade: 1 linha por evento (mesma granularidade de mart_monitora_cancer__fatos
 -- restrita à população-alvo).
@@ -220,6 +229,101 @@ with
             left join run_starts as rs_ser
             on psi.cpf_particao = rs_ser.cpf_particao
             and psi.primeira_ser_run_id = rs_ser.run_id
+    ),
+
+    -- Run atual (run_id = max(run_id)). Replica int_monitora_cancer__eventos_run_atual
+    -- (downstream deste — evita ciclo). Base dos tempos de diagnóstico abaixo.
+    eventos_run_atual as (
+        select *
+        from eventos_com_run
+        qualify run_id = max(run_id) over (partition by cpf_particao)
+    ),
+
+    -- Início do run atual: data_solicitacao mais antiga (mesmo marcador de run_starts).
+    run_atual_start as (
+        select
+            cpf_particao,
+            min(data_solicitacao) as run_atual_start_data
+        from eventos_run_atual
+        group by cpf_particao
+    ),
+
+    -- 1º evento do run atual que vira DIAGNOSTICO/UNACON (criterio_diagnostico OU SER).
+    marco_diagnostico_run_atual as (
+        select
+            cpf_particao,
+            data_referencia_evento as marco_data
+        from eventos_run_atual
+        where criterio_diagnostico = true or fonte = 'SER'
+            qualify row_number() over evento_order = 1
+            window evento_order as (
+                partition by cpf_particao
+                order by -- event_order
+                    data_referencia_evento,
+                    data_solicitacao,
+                    data_autorizacao,
+                    data_execucao,
+                    data_resultado
+            )
+    ),
+
+    -- 1º diagnóstico confirmado do run atual (criterio_diagnostico).
+    diagnostico_run_atual as (
+        select
+            cpf_particao,
+            data_referencia_evento as diagnostico_data
+        from eventos_run_atual
+        where criterio_diagnostico = true
+            qualify row_number() over evento_order = 1
+            window evento_order as (
+                partition by cpf_particao
+                order by -- event_order
+                    data_referencia_evento,
+                    data_solicitacao,
+                    data_autorizacao,
+                    data_execucao,
+                    data_resultado
+            )
+    ),
+
+    -- 1ª solicitação SER do run atual.
+    ser_run_atual as (
+        select
+            cpf_particao,
+            data_solicitacao as primeira_ser_data
+        from eventos_run_atual
+        where fonte = 'SER'
+            qualify row_number() over evento_order = 1
+            window evento_order as (
+                partition by cpf_particao
+                order by -- event_order
+                    data_referencia_evento,
+                    data_solicitacao,
+                    data_autorizacao,
+                    data_execucao,
+                    data_resultado
+            )
+    ),
+
+    -- Broadcast por paciente. Dirigida por marco_diagnostico_run_atual: quem não
+    -- tem marco no run atual (SUSPEITA) não entra e fica NULL via LEFT JOIN final.
+    tempos_diagnostico_por_paciente as (
+        select
+            mdr.cpf_particao,
+            -- (i) >= 0 por construção (o marco está no run que começa no min da solicitação)
+            date_diff(mdr.marco_data, ras.run_atual_start_data, day) as tempo_diagnostico,
+            -- (ii) NULL quando não há diagnóstico em/antes do SER
+            if(
+                dxr.diagnostico_data is not null
+                    and ser.primeira_ser_data is not null
+                    and ser.primeira_ser_data >= dxr.diagnostico_data,
+                date_diff(ser.primeira_ser_data, dxr.diagnostico_data, day),
+                null
+            ) as tempo_diagnostico_sem_tratamento
+        from marco_diagnostico_run_atual as mdr
+            left join run_atual_start as ras using (cpf_particao)
+            left join diagnostico_run_atual as dxr using (cpf_particao)
+            left join ser_run_atual as ser using (cpf_particao)
     )
 
 select
@@ -264,7 +368,10 @@ select
     ev.dias_proximo_evento,
     ev.run_id,
 
-    ttp.tempo_total
+    ttp.tempo_total,
+    tdp.tempo_diagnostico,
+    tdp.tempo_diagnostico_sem_tratamento
 
 from eventos_com_run as ev
     left join tempo_total_por_paciente as ttp using (cpf_particao)
+    left join tempos_diagnostico_por_paciente as tdp using (cpf_particao)
