@@ -89,7 +89,7 @@ with
       cast({{ process_null("sigla_uf_solicitante") }} as string) as uf_solicitante_sigla,
 
       lpad({{ process_null("codigo_cnes_central_solicitante") }}, 7, "0") as central_solicitante_id_cnes,
-      cast({{ process_null("codigo_central_solicitante") }} as string) as central_solicitante_codigo,
+      cast({{ process_null("codigo_central_solicitante") }} as string) as central_solicitante_codigo_ibge,
       cast({{ process_null("nome_cnes_central_solicitante") }} as string) as central_solicitante_nome_cnes,
       cast({{ process_null("nome_central_solicitante") }} as string) as central_solicitante_nome,
 
@@ -106,10 +106,10 @@ with
 
 
       -- Dados do regulador
-      cast({{ process_null("codigo_uf_regulador") }} as string) as uf_regulador_codigo,
+      cast({{ process_null("codigo_uf_regulador") }} as string) as uf_regulador_codigo_ibge,
       cast({{ process_null("sigla_uf_regulador") }} as string) as uf_regulador_sigla,
 
-      cast({{ process_null("codigo_central_reguladora") }} as string) as central_reguladora_codigo,
+      cast({{ process_null("codigo_central_reguladora") }} as string) as central_reguladora_codigo_ibge,
       cast({{ process_null("nome_central_reguladora") }} as string) as central_reguladora_nome,
 
 
@@ -143,7 +143,9 @@ with
 
 
       -- Preferências da solicitação
-      cast({{ process_null("data_desejada") }} as timestamp) as data_desejada,
+      date(
+        cast({{ process_null("data_desejada") }} as timestamp)
+      ) as data_desejada,
       lpad({{ process_null("codigo_unidade_desejada") }}, 7, "0") as unidade_desejada_id_cnes,
       cast({{ process_null("nome_unidade_desejada") }} as string) as unidade_desejada_nome,
 
@@ -190,7 +192,7 @@ with
           else cast(null as string)
       end as marcacao_executada,
 
-      cast({{ process_null("data_aprovacao") }} as string) as aprovacao_data,
+      cast({{ process_null("data_aprovacao") }} as timestamp) as aprovacao_datahora,
       cast({{ process_null("data_confirmacao") }} as string) as confirmacao_data,
 
       cast({{ process_null("nome_operador_autorizador") }} as string) as operador_autorizador_nome,

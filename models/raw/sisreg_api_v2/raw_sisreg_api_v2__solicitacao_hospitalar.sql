@@ -81,7 +81,7 @@ with
 
 
       -- Dados do regulador
-      cast({{ process_null("codigo_uf_regulador") }} as string) as uf_regulador_codigo,
+      cast({{ process_null("codigo_uf_regulador") }} as string) as uf_regulador_codigo_ibge,
       cast({{ process_null("sigla_uf_regulador") }} as string) as uf_regulador_sigla,
 
       cast({{ process_null("codigo_central_reguladora") }} as string) as central_reguladora_codigo_ibge,

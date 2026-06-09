@@ -37,7 +37,8 @@ with
 
       paciente_nome_mae as mae_nome,
 
-      _extracted_at
+      _extracted_at,
+      2 as rank
     from {{ ref("raw_sisreg_api_v2__solicitacao_ambulatorial") }}
 
     union all
@@ -65,7 +66,8 @@ with
 
       paciente_nome_mae as mae_nome,
 
-      _extracted_at
+      _extracted_at,
+      1 as rank
     from {{ ref("raw_sisreg_api_v2__marcacao_ambulatorial") }}
 
     union all
@@ -93,7 +95,8 @@ with
 
       paciente_nome_mae as mae_nome,
 
-      _extracted_at
+      _extracted_at,
+      3 as rank
     from {{ ref("raw_sisreg_api_v2__solicitacao_hospitalar") }}
   ),
 
@@ -102,7 +105,9 @@ with
     from source
     qualify row_number() over (
       partition by cns
-      order by _extracted_at desc nulls last
+      order by
+        rank asc,
+        _extracted_at desc nulls last
     ) = 1
   ),
 
