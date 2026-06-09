@@ -4,10 +4,10 @@
 regexp_replace(
   regexp_replace(
     {{ text }},
-    r"(?i)^(\s|SMS|SES(\sRJ)?|MS|UFRJ)*",
+    r"(?i)^(\s|SMS|SES(\sRJ)?|MS|UFRJ)*\b",
     ""
   ),
-  r"(?i)AP\s*[0-9]*$",
+  r"(?i)\bAP\s*[0-9]*$",
   ""
 )
 {% endmacro %}
