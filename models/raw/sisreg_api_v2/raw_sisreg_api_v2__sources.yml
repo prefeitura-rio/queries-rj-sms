@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: brutos_sisreg_api_v2_staging
+    database: rj-sms-dev  # FIXME
+    schema: brutos_sisreg_api_v2_staging
+    tables:
+      - name: marcacao_ambulatorial_rj
+      - name: solicitacao_ambulatorial_rj
+      - name: solicitacao_hospitalar_rj
