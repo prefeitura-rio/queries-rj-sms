@@ -1,0 +1,122 @@
+version: 2
+
+models:
+  - name: raw_prontuario_mv__evolucao
+    description: "Tabela de evolução do paciente do Prontuário MV. Contém registros sobre o acompanhamento clínico do paciente em internação."
+    columns:
+      - name: id_hci
+        description: "Identificador único para o atendimento gerada na materialização do DBT. Combinação de id_atendimento e id_cnes para garantir unicidade."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: estabelecimento_nome
+        description: "Nome do estabelecimento de atendimento."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento de evolução."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento (ex: AMBULATORIAL, INTERNAÇÃO, URGÊNCIA)."
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento."
+      - name: profissional_nome
+        description: "Nome do profissional de saúde."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nome
+        description: "Nome do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_cns
+        description: "CNS do paciente."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: paciente_mae_nome
+        description: "Nome da mãe do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: diagnostico_cid
+        description: "Código CID do diagnóstico."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: resumo_internacao
+        description: "Resumo da internação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: avaliacao_exames_fisicos
+        description: "Avaliação dos exames físicos."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: conduta_adotada
+        description: "Conduta adotada na evolução."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: planejamento_terapeutico
+        description: "Planejamento terapêutico."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: metas_tratamento
+        description: "Metas do tratamento."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: protocolos
+        description: "Protocolos aplicados."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: previsao_alta
+        description: "Previsão de alta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: previsao_alta_setor_data
+        description: "Data de previsão de alta do setor."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: objetivo_enfermagem
+        description: "Objetivo da enfermagem."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: objetivo_nutricao
+        description: "Objetivo da nutrição."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: objetivo_outros
+        description: "Outros objetivos."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profilaxia_medicamento
+        description: "Indicador de profilaxia com medicamento."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profilaxia_deambulacao
+        description: "Indicador de profilaxia com deambulação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profilaxia_mecanica
+        description: "Indicador de profilaxia mecânica."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."
+      - name: data_particao
+        description: "Data utilizada para particionamento dos dados, neste caso é a data de carregamento no Data Lake."
