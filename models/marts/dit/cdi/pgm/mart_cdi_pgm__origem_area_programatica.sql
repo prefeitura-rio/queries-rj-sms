@@ -1,5 +1,5 @@
 {{ config(
-  schema = "mart_cdi",
+  schema = "projeto_cdi",
   alias  = "pgm_origem_area_programatica",
   materialized = "table",
   meta={"owner": "karen"}
