@@ -60,19 +60,19 @@ Uma pessoa entra na lista quando atende, ao mesmo tempo, a todos os critérios a
 
 ### Status da pessoa
 
-Quando uma pessoa entra, ela também recebe um **status**. O status diz em que ponto da linha de cuidado ela está:
+Quando uma pessoa entra, ela também recebe um **status**. O status diz em que ponto da linha de cuidado ela está. Ele é decidido olhando **apenas a jornada atual** (a sequência de eventos mais recente - ver a regra dos 180 dias mais adiante): eventos de jornadas antigas não contam para o status atual.
 
 - **SUSPEITA**: há indícios em exames ou pedidos de exames, mas o câncer ainda não foi confirmado.
 - **DIAGNÓSTICO**: o câncer foi confirmado por exame (por exemplo, mamografia BI-RADS categoria 6 ou biópsia com lesão neoplásica).
-- **UNACON**: a pessoa já foi encaminhada para uma unidade de alta complexidade oncológica - ou seja, tem pelo menos um evento registrado no SER.
+- **UNACON**: a pessoa já foi encaminhada para uma unidade de alta complexidade oncológica - ou seja, tem pelo menos uma solicitação de evento registrada no SER na jornada atual.
 
-A regra de decisão é a seguinte:
+A regra de decisão é a seguinte (sempre considerando só os eventos da jornada atual):
 
 ```mermaid
 flowchart TD
     A[Paciente na<br/>população-alvo]
-    Q1{Tem pelo<br/>menos um<br/>evento<br/>no SER?}
-    Q2{Algum exame<br/>com<br/>diagnóstico<br/>confirmado?}
+    Q1{Tem pelo<br/>menos uma<br/>solicitação no SER<br/>na jornada<br/>atual?}
+    Q2{Algum exame<br/>com diagnóstico<br/>confirmado na<br/>jornada atual?}
     R1[UNACON]
     R2[DIAGNÓSTICO]
     R3[SUSPEITA]
@@ -83,7 +83,7 @@ flowchart TD
     Q2 -- não --> R3
 ```
 
-**Exemplo:** Uma pessoa faz mamografia e o laudo sai como BI-RADS 4. Ela entra com status SUSPEITA. Em seguida, faz uma biópsia que confirma lesão neoplásica: passa para DIAGNÓSTICO. Quando o pedido de consulta com mastologista oncológico aparece no SER, passa para UNACON.
+**Exemplo:** Dentro de uma mesma jornada de cuidado, uma pessoa faz mamografia e o laudo sai como BI-RADS 4. Ela entra com status SUSPEITA. Em seguida, faz uma biópsia que confirma lesão neoplásica: passa para DIAGNÓSTICO. Quando o pedido de consulta com mastologista oncológico aparece no SER, passa para UNACON. Se mais tarde ela iniciar uma nova jornada (após mais de 180 dias sem eventos), o status volta a ser avaliado só pelos eventos dessa nova jornada.
 
 ## 5. Tabela de Procedimentos Monitorados
 
@@ -196,7 +196,7 @@ Para cada procedimento, o sistema espera que ele seja autorizado e executado den
 | Parâmetro                                  | Valor       | Para que serve |
 |--------------------------------------------|-------------|----------------|
 | Data de corte                              | 01/01/2025  | Eventos anteriores a essa data não contam para entrada da pessoa na lista. |
-| Episódio de cuidado                        | 180 dias    | Eventos da mesma pessoa separados por mais de 180 dias são tratados como episódios diferentes de cuidado. O sistema considera apenas o episódio mais recente. |
+| Jornada de cuidado                         | 180 dias    | Eventos da mesma pessoa separados por mais de 180 dias são tratados como jornadas de cuidado diferentes. O sistema considera apenas a jornada atual (a mais recente). |
 | Exclusão por SER antigo (status ALTA)      | 3 meses     | Se o último evento da pessoa foi um SER com status ALTA há 3 meses ou mais, a pessoa sai da lista. |
 | Exclusão por SER antigo (chegada/cancelada)| 6 meses     | Se o último evento foi um SER com status CHEGADA_CONFIRMADA ou CANCELADA há 6 meses ou mais, a pessoa sai da lista. |
 | Alerta de prazo legal próximo do limite    | 45 dias     | A partir de 45 dias desde o diagnóstico, o sistema avisa que o prazo legal para início de tratamento está próximo. |
@@ -304,9 +304,9 @@ Além da posição na fila (o score de gravidade), o sistema monta, para cada pe
 - **Situação atual**: o status (SUSPEITA, DIAGNÓSTICO ou UNACON, veja a Seção 4) e o score de gravidade (Seção 9).
 - **Histórico de eventos**: todos os exames, consultas e encaminhamentos, do mais antigo ao mais recente. Cada evento traz o procedimento, as datas (pedido, autorização, realização e resultado), as unidades envolvidas, o resultado e o nível de risco informado pelo sistema de origem (por exemplo, a categoria BI-RADS no SISCAN ou a prioridade no SER). Aparece também um aviso quando a etapa está demorando mais do que o esperado (prazos na Seção 8).
 - **Pendências em aberto** (Seção 11).
-- **Tempos da linha de cuidado**, medidos no episódio atual (a sequência mais recente de eventos, com intervalos de até 180 dias - Seção 8.2):
-  - **Tempo total** (`tempo_total`): dias do início do episódio até a entrada na UNACON; se a pessoa ainda não chegou, conta até hoje.
-  - **Tempo até o diagnóstico** (`tempo_diagnostico`): dias do início do episódio até a pessoa passar a DIAGNÓSTICO ou UNACON.
+- **Tempos da linha de cuidado**, medidos na jornada atual (a sequência mais recente de eventos, com intervalos de até 180 dias - Seção 8.2):
+  - **Tempo total** (`tempo_total`): dias do início da jornada até a entrada na UNACON; se a pessoa ainda não chegou, conta até hoje.
+  - **Tempo até o diagnóstico** (`tempo_diagnostico`): dias do início da jornada até a pessoa passar a DIAGNÓSTICO ou UNACON.
   - **Tempo diagnosticada sem tratamento** (`tempo_diagnostico_sem_tratamento`): dias entre o diagnóstico e o encaminhamento ao SER, acompanhando o prazo legal de 60 dias (Seção 8.2).
 
 Assim, em uma única tela, a equipe vê quem é a pessoa, em que ponto da linha de cuidado ela está e o que falta fazer.

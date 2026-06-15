@@ -1,4 +1,4 @@
--- Eventos do RUN ATUAL apenas (último episódio de cuidado de cada paciente),
+-- Eventos da JORNADA ATUAL apenas (a sequência de eventos mais recente de cada paciente),
 -- com a data_expected pré-calculada. Fonte única compartilhada pelos 7
 -- modelos de critério (gravidade_indicador/criterios/) e pelo agregador
 -- int_monitora_cancer__gravidade_instancias (CTE gestantes). Ephemeral: o

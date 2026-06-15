@@ -2,7 +2,7 @@
 
 Um arquivo SQL por critério de gravidade. Cada arquivo é **ephemeral**, lê
 [`int_monitora_cancer__eventos_run_atual`](../int_monitora_cancer__eventos_run_atual.sql)
-(fonte compartilhada dos eventos do run atual), define as CTEs locais que
+(fonte compartilhada dos eventos da jornada atual), define as CTEs locais que
 precisar e termina retornando a **relação canônica bruta** de 8 colunas:
 
 ```
