@@ -22,7 +22,7 @@
 -- INSTÂNCIAS DE CRITÉRIO ATIVAS — AGREGADOR (granularidade fina)
 -- ════════════════════════════════════════════════════════════════════════════
 --
--- Uma linha por (cpf_particao, criterio, etapa, data_trigger) ativa no run
+-- Uma linha por (cpf_particao, criterio, etapa, data_trigger) ativa na jornada
 -- atual. "Ativa" = gatilho disparou AND desfecho esperado ainda não chegou
 -- AND dias_atraso > 0.
 --
@@ -36,7 +36,7 @@
 -- expondo fator_tempo, fator_risco, gravidade_criterio; (c) JOIN de gestante;
 -- (d) filtro de folga dias_atraso > 0.
 --
--- Os eventos do run atual (com data_expected) vêm de
+-- Os eventos da jornada atual (com data_expected) vêm de
 -- int_monitora_cancer__eventos_run_atual (ephemeral compartilhado pelos 7
 -- critérios e pela CTE gestantes abaixo — o dbt o injeta uma única vez).
 --

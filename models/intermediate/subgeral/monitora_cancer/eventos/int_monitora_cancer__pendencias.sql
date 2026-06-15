@@ -40,7 +40,7 @@
 --     futuro (data_execucao > hoje), indicando que a paciente está
 --     aguardando a data agendada para execução.
 --   • tempo_total já é calculado em eventos_episodios: para pacientes sem
---     SER, equivale aos dias decorridos do início da última run até hoje —
+--     SER, equivale aos dias decorridos do início da última jornada até hoje —
 --     usado como proxy do tempo desde o ingresso no percurso de cuidado.
 --   • Os valores de evento_status para SER são preservados de raw_ser_metabase
 --     (coluna solicitacao_estado), que armazena 'CHEGADA_NAO_CONFIRMADA',

@@ -83,7 +83,7 @@ Grupos funcionais dos modelos intermediários:
 - **eventos** — `eventos_episodios` (compute compartilhado por paciente,
   com `run_id`) e `pendencias`.
 - **gravidade** (`gravidade_indicador/`) — `eventos_run_atual` (fonte
-  ephemeral compartilhada do run atual), 7 modelos de critério em
+  ephemeral compartilhada da jornada atual), 7 modelos de critério em
   `criterios/`, `gravidade_instancias` (agregador) e `gravidade`
   (orquestrador do score). README dedicado em
   [`gravidade_indicador/README.md`](gravidade_indicador/README.md).
@@ -92,18 +92,18 @@ Grupos funcionais dos modelos intermediários:
 
 - **Evento** — uma linha em `mart__fatos`. Granularidade
   `(sistema_origem, id_sistema_origem)`. Vem de SISREG, SER ou SISCAN.
-- **Episódio / run** — sequência consecutiva de eventos da mesma paciente
-  cujos gaps de `data_referencia_evento` são **≤ 180 dias**
+- **Jornada / episódio (run)** — sequência consecutiva de eventos da mesma
+  paciente cujos gaps de `data_referencia_evento` são **≤ 180 dias**
   (`episodio_gap_dias`). O `run_id` incrementa a cada gap maior que isso.
-  O score e a linha do tempo consideram **apenas o run atual** (último
-  episódio de cuidado).
-- **Status da paciente** — calculado sobre os eventos que qualificaram a
-  paciente para o monitoramento (`data_solicitacao >= 2025-01-01` E com
-  `criterio_suspeita` ou `criterio_diagnostico`): `UNACON` quando há ≥1
-  evento SER (entrada na regulação para oncologia); `DIAGNOSTICO` quando
-  há evento com critério de diagnóstico confirmado; `SUSPEITA` nos
-  demais casos da população-alvo.
-- **Score de gravidade** — número que ordena as pacientes do run atual por
+  O score e a linha do tempo consideram **apenas a jornada atual** (a
+  sequência de eventos mais recente).
+- **Status da paciente** — calculado **apenas sobre os eventos da jornada
+  atual** (eventos de jornadas antigas não contam), em
+  `int_monitora_cancer__eventos_episodios`: `UNACON` quando há ≥1 evento SER
+  na jornada atual (entrada na regulação para oncologia); `DIAGNOSTICO`
+  quando há evento com critério de diagnóstico confirmado na jornada atual;
+  `SUSPEITA` nos demais casos da população-alvo.
+- **Score de gravidade** — número que ordena as pacientes da jornada atual por
   **urgência de contato**: combina, por critério ativo, atraso × risco ×
   peso clínico, agrega por paciente (maior contribuição + soma das
   contribuições) e aplica multiplicador de gestante. A fila ordena por
@@ -125,7 +125,7 @@ Grupos funcionais dos modelos intermediários:
   um **contrato downstream estável** (nome/alias/schema), isolando o mart
   da reorganização interna da camada intermediária.
 - **`episodio_gap_dias = 180`** — eventos separados por mais de ~6 meses
-  são tratados como episódios de cuidado distintos.
+  são tratados como jornadas de cuidado distintas.
 
 ## Como adicionar uma nova fonte de dados
 
@@ -165,13 +165,13 @@ Termos de domínio do projeto. Os termos **específicos do score**
 | **evento** | Linha em `mart__fatos`. Granularidade `(sistema_origem, id_sistema_origem)`. SISREG, SER ou SISCAN. |
 | **população-alvo** | Universo inicial de pacientes do monitoramento (`int_monitora_cancer__populacao_alvo`). |
 | **exclusões** | Regras que removem pacientes da população-alvo (`int_monitora_cancer__exclusoes`). |
-| **episódio / run** | Sequência consecutiva de eventos da paciente com gaps de `data_referencia_evento` ≤ 180 dias. |
-| **run_id / jornada_id** | Identificador do episódio; incrementa a cada gap > `episodio_gap_dias` (180) dentro do mesmo paciente. |
+| **jornada / episódio (run)** | Sequência consecutiva de eventos da paciente com gaps de `data_referencia_evento` ≤ 180 dias. A mais recente é a **jornada atual**. |
+| **run_id / jornada_id** | Identificador da jornada; incrementa a cada gap > `episodio_gap_dias` (180) dentro do mesmo paciente. |
 | **data_referencia_evento** | `MAX` das datas conhecidas do evento (solicitação, autorização, execução, resultado). |
 | **critério** | Motivo registrado para a paciente precisar de atenção (par gatilho/desfecho-esperado). Uma paciente pode ter vários ativos. |
 | **pendência** | Tarefa clínica esperando ser feita (ex.: biópsia pedida mas não realizada). Materializada em `int_monitora_cancer__pendencias`. |
-| **UNACON** | Unidade de Alta Complexidade em Oncologia. Status atribuído quando há ≥1 evento SER. |
-| **DIAGNOSTICO** | Status quando há evento com `criterio_diagnostico = TRUE`. |
+| **UNACON** | Unidade de Alta Complexidade em Oncologia. Status atribuído quando há ≥1 evento SER na jornada atual. |
+| **DIAGNOSTICO** | Status quando há evento com `criterio_diagnostico = TRUE` na jornada atual. |
 | **SUSPEITA** | Status default da população-alvo (sem UNACON nem DIAGNOSTICO). |
 | **BI-RADS** | Classificação radiológica de mamografia (Categoria 0..6). Mapeada para `risco` na fonte SISCAN. |
 | **criterio_suspeita / criterio_diagnostico** | Flags que classificam o evento como suspeita ou diagnóstico (de `parametros_*` para SISREG/SER; de regras de laudo para SISCAN). |

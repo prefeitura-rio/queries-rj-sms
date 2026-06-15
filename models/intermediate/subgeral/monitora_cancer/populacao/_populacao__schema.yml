@@ -31,16 +31,6 @@ models:
           - not_null:
               name: int_monitora_cancer__populacao_alvo__paciente_cpf__not_null
 
-      - name: status
-        description: '{{ doc("monitora_cancer__status") }}'
-        data_type: string
-        data_tests:
-          - not_null:
-              name: int_monitora_cancer__populacao_alvo__status__not_null
-          - accepted_values:
-              values: ['UNACON', 'DIAGNOSTICO', 'SUSPEITA']
-              name: int_monitora_cancer__populacao_alvo__status__accepted_values
-
       - name: nome
         description: Nome completo da paciente, obtido de raw_bcadastro__cpf.
         data_type: string
