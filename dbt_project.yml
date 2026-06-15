@@ -552,6 +552,12 @@ models:
             dado_publico: sim
             dado_pessoal: sim
             dado_sensivel: sim
+        exames:
+          +tags: ["daily", "exames"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
 
       subgeral:
         monitora_cancer:
