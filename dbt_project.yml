@@ -155,7 +155,7 @@ models:
           dado_sensivel: sim
       gdb_sih:
         +schema: brutos_gdb_sih
-        +tags: ["gdb_sih"]  # TODO: weekly
+        +tags: ["weekly", "gdb_sih"]
         +meta: {"owner": "avellar"}
         +labels:
           dado_publico: sim
@@ -163,7 +163,7 @@ models:
           dado_sensivel: sim
       gdb_sia:
         +schema: brutos_gdb_sia
-        +tags: ["gdb_sia"]  # TODO: weekly
+        +tags: ["weekly", "gdb_sia"]
         +meta: {"owner": "avellar"}
         +labels:
           dado_publico: sim
