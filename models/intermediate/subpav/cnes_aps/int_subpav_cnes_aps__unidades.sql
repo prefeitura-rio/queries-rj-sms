@@ -76,7 +76,7 @@ cnes_validos as (
 
 extraido as (
     select
-        -- metadados da carga
+        
         data_particao,
         ano_particao,
         mes_particao,
@@ -84,14 +84,14 @@ extraido as (
         _loaded_at,
         _source_file,
 
-        -- identificação
+        
         lpad(nullif(regexp_replace(CNES, r'[^0-9]', ''), ''), 7, '0') as cnes,
         nullif(UNIDADE_ID, '') as unidade_id_original,
         nullif(DIST_SANIT, '') as ap_original,
         nullif(NOME_FANTA, '') as nome_fanta,
         nullif(R_SOCIAL, '') as razao_social,
 
-        -- localização/contato
+        
         nullif(LOGRADOURO, '') as logradouro,
         nullif(NUMERO, '') as numero,
         nullif(COMPLEMENT, '') as complemento,
@@ -107,7 +107,7 @@ extraido as (
         safe_cast(nullif(DT_ATU_GEO, '') as date) as dt_atualiza_geo,
         nullif(NO_USUARIO_GEO, '') as usuario_geo,
 
-        -- classificação CNES
+        
         nullif(TP_UNID_ID, '') as tipo_unidade_id,
         nullif(COD_TURNAT, '') as turno_atendimento_id,
         nullif(CD_MOTIVO_DESAB, '') as motivo_desativacao_unidade_id,
@@ -117,7 +117,7 @@ extraido as (
         nullif(CO_TIPO_UNIDADE, '') as tipo_unidade_federal_id,
         nullif(CO_TIPO_ABRANGENCIA, '') as tipo_abrangencia_id,
 
-        -- gestão/status
+        
         nullif(CODMUNGEST, '') as cod_municipio_gestor,
         nullif(SIGESTGEST, '') as sigla_gestao,
         nullif(TP_GESTAO, '') as tipo_gestao_id,
@@ -126,13 +126,13 @@ extraido as (
         nullif(PFPJ_IND, '') as pessoa_fisica_juridica_id,
         nullif(NIVEL_DEP, '') as nivel_dependencia_id,
 
-        -- flags/documentos
+        
         nullif(TP_ESTAB_SEMPRE_ABERTO, '') as tipo_estab_sempre_aberto,
         nullif(ST_CONEXAOINTERNET, '') as possui_conexao_internet_original,
         nullif(ST_CONTRATO_FORMALIZADO, '') as contrato_formalizado_original,
         nullif(ST_COWORKING, '') as coworking_original,
 
-        -- datas
+        
         safe_cast(nullif(DATA_ATU, '') as date) as dt_atualiza,
         safe_cast(nullif(DATA_EXPED, '') as date) as dt_expedicao,
         safe_cast(nullif(DT_VAL_LIC_SANI, '') as date) as dt_validade_licenca_sanitaria,
@@ -141,13 +141,13 @@ extraido as (
         safe_cast(nullif(DT_CMTP_INICIO, '') as date) as dt_cmtp_inicio,
         safe_cast(nullif(DT_CMTP_FIM, '') as date) as dt_cmtp_fim,
 
-        -- diretor / documentos
+        
         lpad(nullif(regexp_replace(CPFDIRETORCLINICO, r'[^0-9]', ''), ''), 11, '0') as cpf_diretor_clinico,
         nullif(REGDIRETORCLINICO, '') as registro_diretor_clinico,
         lpad(nullif(regexp_replace(CNPJ, r'[^0-9]', ''), ''), 14, '0') as cnpj,
         lpad(nullif(regexp_replace(CNPJ_MANT, r'[^0-9]', ''), ''), 14, '0') as cnpj_mantenedora,
 
-        -- controle
+        
         nullif(USUARIO, '') as usuario_atualizacao,
         nullif(NMUSUARIOEMUSO, '') as usuario_em_uso,
         nullif(CHKSUM, '') as checksum
@@ -230,10 +230,10 @@ com_esfera as (
         t.*,
 
         case
-            when natureza_juridica_id = '1031' then 3 -- Municipal
-            when natureza_juridica_id in ('1015', '1074', '1104', '1139') then 1 -- Federal
-            when natureza_juridica_id in ('1023', '1147', '1260') then 2 -- Estadual
-            when natureza_juridica_id is not null then 4 -- Privada / demais
+            when natureza_juridica_id = '1031' then 3 
+            when natureza_juridica_id in ('1015', '1074', '1104', '1139') then 1 
+            when natureza_juridica_id in ('1023', '1147', '1260') then 2 
+            when natureza_juridica_id is not null then 4 
             else null
         end as esfera_administrativa_id
 
@@ -268,7 +268,7 @@ classificado as (
                 and esfera_administrativa_id = 3
                 then 'CAP'
 
-            -- CF: precisa bloquear privadas que começam com CF
+            
             when esfera_administrativa_id = 3
                 and safe_cast(tipo_unidade_id as int64) in (1, 2)
                 and (
@@ -277,7 +277,7 @@ classificado as (
                 )
                 then 'CF'
 
-            -- CMS: municipal + nome, mas sem exigir tipo_unidade_id 1/2
+            
             when esfera_administrativa_id = 3
                 and (
                     regexp_contains(nome_fanta_upper, r'(^|[^A-Z0-9])CMS([^A-Z0-9]|$)')
@@ -285,7 +285,7 @@ classificado as (
                 )
                 then 'CMS'
 
-            -- CSE: pode ser federal, mas precisa ser tipo básico
+            
             when safe_cast(tipo_unidade_id as int64) in (1, 2)
                 and (
                     regexp_contains(nome_fanta_upper, r'(^|[^A-Z0-9])CSE([^A-Z0-9]|$)')
@@ -428,14 +428,14 @@ deduplicado as (
 )
 
 select
-    -- identificação principal
+    
     cnes,
     unidade_id_original,
     nome_fanta,
     nome_fanta_upper,
     razao_social,
 
-    -- território
+    
     ap,
     ap_formatada,
     ap_original,
@@ -443,7 +443,7 @@ select
     cod_municipio_gestor,
     is_municipio_rio,
 
-    -- classificação SMS / Panorama
+    
     tipo_unidade_sms,
     is_unidade_aps_panorama,
     is_unidade_aps,
@@ -451,7 +451,7 @@ select
     is_centro_municipal_saude,
     is_centro_saude_escola,
 
-    -- tipo / nível / esfera
+    
     tipo_unidade_id,
     tipo_unidade_descricao,
     tipo_unidade_federal_id,
@@ -464,7 +464,7 @@ select
     natureza_juridica,
     esfera_administrativa_id,
 
-    -- status / gestão / situação
+    
     unidade_ativa,
     motivo_desativacao_unidade_id,
     motivo_desativacao_unidade,
@@ -478,7 +478,7 @@ select
     competencia_cnes,
     estrutura_estabelecimento,
 
-    -- localização/endereço
+    
     logradouro,
     numero,
     complemento,
@@ -487,13 +487,13 @@ select
     latitude,
     longitude,
 
-    -- contato
+    
     telefone,
     fax,
     email,
     url,
 
-    -- funcionamento / flags operacionais
+    
     turno_atendimento_id,
     tipo_estab_sempre_aberto,
     estab_sempre_aberto,
@@ -504,7 +504,7 @@ select
     coworking_original,
     coworking,
 
-    -- documentos / responsáveis
+    
     pessoa_fisica_juridica_id,
     nivel_dependencia_id,
     cnpj,
@@ -512,7 +512,7 @@ select
     cpf_diretor_clinico,
     registro_diretor_clinico,
 
-    -- datas de negócio/CNES
+    
     dt_atualiza,
     dt_expedicao,
     dt_validade_licenca_sanitaria,
@@ -522,13 +522,13 @@ select
     dt_cmtp_inicio,
     dt_cmtp_fim,
 
-    -- controle CNES
+    
     usuario_atualizacao,
     usuario_em_uso,
     usuario_geo,
     checksum,
 
-    -- metadados da carga
+    
     competencia_mes,
     data_particao,
     ano_particao,

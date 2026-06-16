@@ -1,1970 +1,1812 @@
 version: 2
 
 models:
-  - name: int_subpav_cnes_aps__unidades
+- name: int_subpav_cnes_aps__competencias_legado
+  description: Modelo intermediário de competências utilizadas no processamento histórico do CNES APS. Fornece a referência temporal mensal necessária para associar os snapshots do CNES, calcular o último dia de cada competência e apoiar janelas históricas de composição, vacância e incompletude.
+  columns:
+  - name: competencia_id
+    description: Identificador da competência na base de referência temporal.
+  - name: competencia
+    description: Competência no formato AAAA-MM.
+  - name: data_particao
+    description: Data mensal de referência do snapshot CNES.
+  - name: dt_final_competencia
+    description: Último dia da competência.
+  - name: dt_final_competencia_anterior
+    description: Último dia da competência imediatamente anterior.
+  - name: base_final
+    description: Indicador de base final da competência, quando informado na origem.
+  - name: created_at
+    description: Timestamp de criação do registro na origem.
+  - name: updated_at
+    description: Timestamp da última atualização do registro na origem.
+- name: int_subpav_cnes_aps__unidades
+  description: >
+    Modelo intermediário de unidades do CNES APS. Consolida os estabelecimentos a partir da raw LFCES004, enriquecendo com tabelas auxiliares de tipo de unidade, motivo de desativação, natureza jurídica e CNES válidos. Mantém o universo completo de estabelecimentos municipais, incluindo unidades públicas e privadas, para permitir usos futuros além do Panorama APS. Para reprodução do quadro de Unidades APS do Panorama SUBPAV, utilizar a flag is_unidade_aps_panorama.
+
+    Regra de classificação de unidade APS para o Panorama: CF: unidade ativa, município Rio, esfera municipal, tipo de unidade básico e nome contendo CF ou Clínica da Família. CMS: unidade ativa, município Rio, esfera municipal e nome contendo CMS ou Centro Municipal de Saúde, sem exigir tipo_unidade_id 1/2, para contemplar unidades como SMS CMS Manoel Arthur Villaboim. CSE: unidade ativa, município Rio, tipo de unidade básico e nome contendo CSE ou Centro Saúde Escola, permitindo CSE federal como FIOCRUZ/ENSP/CSE Germano Sinval Faria. A classificação ampla tipo_unidade_sms é mantida para exploração, mas os indicadores do Panorama devem usar is_unidade_aps_panorama.
+  columns:
+  - name: cnes
+    description: "Código Nacional do Estabelecimento de Saúde, normalizado com 7 dígitos."
+
+  - name: unidade_id_original
+    description: "Identificador original do estabelecimento no CNES."
+
+  - name: nome_fanta
+    description: "Nome fantasia do estabelecimento."
+
+  - name: nome_fanta_upper
+    description: "Nome fantasia em letras maiúsculas, usado nas regras de classificação por nome."
+
+  - name: razao_social
+    description: "Razão social do estabelecimento."
+
+  - name: ap
+    description: "Área Programática normalizada em formato inteiro: 10, 21, 22, 31, 32, 33, 40, 51, 52 ou 53. Valores não reconhecidos recebem null."
+
+  - name: ap_formatada
+    description: "Área Programática formatada com ponto: 1.0, 2.1, 2.2, 3.1, 3.2, 3.3, 4.0, 5.1, 5.2 ou 5.3."
+
+  - name: ap_original
+    description: "Valor original do distrito sanitário/Área Programática informado no CNES."
+
+  - name: cod_municipio_cnes
+    description: "Código do município do estabelecimento obtido da LFCES057, quando disponível."
+
+  - name: cod_municipio_gestor
+    description: "Código do município gestor informado na LFCES004."
+
+  - name: is_municipio_rio
+    description: "Flag indicando se o estabelecimento pertence ao município do Rio de Janeiro, considerando o município da LFCES057 e, como fallback, o município gestor da LFCES004."
+
+  - name: tipo_unidade_sms
     description: >
-      Modelo intermediário de unidades do CNES APS. Consolida os estabelecimentos
-      a partir da raw LFCES004, enriquecendo com tabelas auxiliares de tipo de unidade,
-      motivo de desativação, natureza jurídica e CNES válidos. Mantém o universo completo
-      de estabelecimentos municipais, incluindo unidades públicas e privadas, para permitir
-      usos futuros além do Panorama APS. Para reprodução do quadro de Unidades APS do Panorama SUBPAV,
-      utilizar a flag is_unidade_aps_panorama.
+      Classificação SMS do tipo de unidade, derivada de nome fantasia, tipo de unidade, esfera administrativa e exceções documentadas. Possíveis valores incluem SMS, CAP, CF, CMS, CSE, CAPSIII, CAPSI, CAPS, POLICLINICA, UPA, CER, HOSPITAL e OUTROS.
 
-      Regra de classificação de unidade APS para o Panorama:
-      CF: unidade ativa, município Rio, esfera municipal, tipo de unidade básico e nome contendo
-      CF ou Clínica da Família.
-      CMS: unidade ativa, município Rio, esfera municipal e nome contendo CMS ou Centro Municipal
-      de Saúde, sem exigir tipo_unidade_id 1/2, para contemplar unidades como SMS CMS Manoel
-      Arthur Villaboim.
-      CSE: unidade ativa, município Rio, tipo de unidade básico e nome contendo CSE ou Centro
-      Saúde Escola, permitindo CSE federal como FIOCRUZ/ENSP/CSE Germano Sinval Faria.
-      A classificação ampla tipo_unidade_sms é mantida para exploração, mas os indicadores do
-      Panorama devem usar is_unidade_aps_panorama.
-    columns:
-      - name: cnes
-        description: "Código Nacional do Estabelecimento de Saúde, normalizado com 7 dígitos."
-
-      - name: unidade_id_original
-        description: "Identificador original do estabelecimento no CNES."
-
-      - name: nome_fanta
-        description: "Nome fantasia do estabelecimento."
-
-      - name: nome_fanta_upper
-        description: "Nome fantasia em letras maiúsculas, usado nas regras de classificação por nome."
-
-      - name: razao_social
-        description: "Razão social do estabelecimento."
-
-      - name: ap
-        description: "Área Programática normalizada em formato inteiro: 10, 21, 22, 31, 32, 33, 40, 51, 52 ou 53. Valores não reconhecidos recebem null."
-
-      - name: ap_formatada
-        description: "Área Programática formatada com ponto: 1.0, 2.1, 2.2, 3.1, 3.2, 3.3, 4.0, 5.1, 5.2 ou 5.3."
-
-      - name: ap_original
-        description: "Valor original do distrito sanitário/Área Programática informado no CNES."
-
-      - name: cod_municipio_cnes
-        description: "Código do município do estabelecimento obtido da LFCES057, quando disponível."
-
-      - name: cod_municipio_gestor
-        description: "Código do município gestor informado na LFCES004."
-
-      - name: is_municipio_rio
-        description: "Flag indicando se o estabelecimento pertence ao município do Rio de Janeiro, considerando o município da LFCES057 e, como fallback, o município gestor da LFCES004."
-
-      - name: tipo_unidade_sms
-        description: >
-          Classificação SMS do tipo de unidade, derivada de nome fantasia, tipo de unidade,
-          esfera administrativa e exceções documentadas. Possíveis valores incluem SMS, CAP,
-          CF, CMS, CSE, CAPSIII, CAPSI, CAPS, POLICLINICA, UPA, CER, HOSPITAL e OUTROS.
-
-      - name: is_unidade_aps_panorama
-        description: >
-          Flag oficial para reprodução do quadro de Unidades APS do Panorama CNES.
-          Considera unidades ativas do município do Rio classificadas como CF, CMS ou CSE,
-          com regras específicas por tipo: CF exige esfera municipal e tipo básico; CMS exige
-          esfera municipal e nome compatível; CSE permite unidade federal desde que tenha tipo
-          básico e nome compatível. Validada em 2026-04 contra o Panorama legado, com
-          UNIDADE_APS = 241, CF = 135, CMS = 103 e CSE = 3.
-
-      - name: is_unidade_aps
-        description: >
-          Flag ampla indicando se a classificação tipo_unidade_sms é CF, CMS ou CSE.
-          Esta flag serve para exploração geral da base, mas não deve ser usada para
-          reproduzir o quadro de Unidades APS do Panorama.
-
-      - name: is_clinica_familia
-        description: "Flag indicando se a unidade foi classificada como Clínica da Família."
-
-      - name: is_centro_municipal_saude
-        description: "Flag indicando se a unidade foi classificada como Centro Municipal de Saúde."
-
-      - name: is_centro_saude_escola
-        description: "Flag indicando se a unidade foi classificada como Centro de Saúde Escola."
-
-      - name: tipo_unidade_id
-        description: "Código do tipo de unidade/estabelecimento no CNES."
-
-      - name: tipo_unidade_descricao
-        description: "Descrição do tipo de unidade obtida da tabela auxiliar NFCES010."
-
-      - name: tipo_unidade_federal_id
-        description: "Código federal do tipo de unidade, quando informado."
-
-      - name: tipo_estabelecimento_id
-        description: "Código do tipo de estabelecimento."
-
-      - name: atividade_principal_id
-        description: "Código da atividade principal do estabelecimento."
-
-      - name: tipo_abrangencia_id
-        description: "Código da abrangência Telessaúde do estabelecimento."
-
-      - name: nivel_atencao_id
-        description: >
-          Identificador do nível de atenção. Valor 1 para Atenção Primária, 2 para Atenção
-          Secundária, 3 para Atenção Terciária, 4 para Gestão e null quando não classificado.
-
-      - name: nivel_atencao
-        description: "Descrição do nível de atenção: ATENCAO_PRIMARIA, ATENCAO_SECUNDARIA, ATENCAO_TERCIARIA, GESTAO ou NAO_CLASSIFICADO."
-
-      - name: natureza_juridica_id
-        description: "Código da natureza jurídica do estabelecimento."
-
-      - name: natureza_juridica
-        description: "Descrição da natureza jurídica obtida da tabela auxiliar NFCES085."
-
-      - name: esfera_administrativa_id
-        description: >
-          Esfera administrativa derivada da natureza jurídica. Valor 1 para federal,
-          2 para estadual, 3 para municipal, 4 para privada/demais e null quando não classificado.
-          A natureza jurídica 1031 é tratada como municipal.
-
-      - name: unidade_ativa
-        description: "Flag indicando se a unidade está ativa no CNES. Valor 1 quando não há motivo de desativação/desabilitação na LFCES004; caso contrário, 0."
-
-      - name: motivo_desativacao_unidade_id
-        description: "Código do motivo de desativação/desabilitação do estabelecimento."
-
-      - name: motivo_desativacao_unidade
-        description: "Descrição do motivo de desativação/desabilitação da unidade obtida da tabela auxiliar NFCES049."
-
-      - name: motivo_desativacao_cnes_id
-        description: "Código do motivo de desativação do estabelecimento obtido da LFCES057."
-
-      - name: status
-        description: "Controle interno do registro no CNES."
-
-      - name: status_movimento
-        description: "Status de movimentação do estabelecimento no CNES."
-
-      - name: status_estabelecimento_cnes
-        description: "Status do estabelecimento obtido da LFCES057."
-
-      - name: tipo_gestao_id
-        description: "Tipo de gestão informado na LFCES004."
-
-      - name: tipo_gestao_cnes
-        description: "Tipo de gestão do estabelecimento obtido da LFCES057."
-
-      - name: sigla_gestao
-        description: "Sigla da UF gestora do estabelecimento."
-
-      - name: competencia_cnes
-        description: "Competência informada na LFCES057 para o CNES."
-
-      - name: estrutura_estabelecimento
-        description: "Tipo de estrutura do estabelecimento obtido da LFCES057."
-
-      - name: logradouro
-        description: "Logradouro do endereço do estabelecimento."
-
-      - name: numero
-        description: "Número do endereço do estabelecimento."
-
-      - name: complemento
-        description: "Complemento do endereço do estabelecimento."
-
-      - name: bairro
-        description: "Bairro do endereço do estabelecimento."
-
-      - name: cep
-        description: "Código de Endereçamento Postal do estabelecimento."
-
-      - name: latitude
-        description: "Latitude do endereço do estabelecimento, quando informada."
-
-      - name: longitude
-        description: "Longitude do endereço do estabelecimento, quando informada."
-
-      - name: telefone
-        description: "Telefone do estabelecimento."
-
-      - name: fax
-        description: "Fax do estabelecimento."
-
-      - name: email
-        description: "E-mail do estabelecimento."
-
-      - name: url
-        description: "URL do estabelecimento."
-
-      - name: turno_atendimento_id
-        description: "Código do turno de atendimento do estabelecimento."
-
-      - name: tipo_estab_sempre_aberto
-        description: "Valor original que indica se o estabelecimento funciona sempre aberto."
-
-      - name: estab_sempre_aberto
-        description: "Flag indicando se o estabelecimento funciona sempre aberto. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: possui_conexao_internet_original
-        description: "Valor original que indica se o estabelecimento possui conexão com internet."
-
-      - name: possui_conexao_internet
-        description: "Flag indicando se o estabelecimento possui conexão com internet. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: contrato_formalizado_original
-        description: "Valor original que indica se o estabelecimento possui contrato formalizado com o SUS."
-
-      - name: contrato_formalizado
-        description: "Flag indicando se o estabelecimento possui contrato formalizado com o SUS. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: coworking_original
-        description: "Valor original que indica se o estabelecimento funciona em regime de coworking."
-
-      - name: coworking
-        description: "Flag indicando se o estabelecimento funciona em regime de coworking. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pessoa_fisica_juridica_id
-        description: "Indica se o estabelecimento é pessoa física ou jurídica."
-
-      - name: nivel_dependencia_id
-        description: "Identificador da situação/dependência do estabelecimento."
-
-      - name: cnpj
-        description: "CNPJ do estabelecimento, normalizado com 14 dígitos."
-
-      - name: cnpj_mantenedora
-        description: "CNPJ da mantenedora, normalizado com 14 dígitos."
-
-      - name: cpf_diretor_clinico
-        description: "CPF do diretor clínico ou gerente/administrador, normalizado com 11 dígitos."
-
-      - name: registro_diretor_clinico
-        description: "Registro no conselho de classe do diretor clínico."
-
-      - name: dt_atualiza
-        description: "Data da última atualização do registro no CNES."
-
-      - name: dt_expedicao
-        description: "Data de expedição do alvará da Vigilância Sanitária."
-
-      - name: dt_validade_licenca_sanitaria
-        description: "Data de validade do licenciamento sanitário."
-
-      - name: dt_validacao
-        description: "Data/hora de validação do registro."
-
-      - name: dt_atualiza_geo
-        description: "Data de atualização das coordenadas geográficas."
-
-      - name: dt_atualizacao_origem
-        description: "Data da primeira entrada no Banco de Produção Federal."
-
-      - name: dt_cmtp_inicio
-        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
-
-      - name: dt_cmtp_fim
-        description: "Data final de competência."
-
-      - name: usuario_atualizacao
-        description: "Último usuário que atualizou o registro."
-
-      - name: usuario_em_uso
-        description: "Controle interno referente ao usuário em uso."
-
-      - name: usuario_geo
-        description: "Usuário responsável pela atualização das coordenadas geográficas."
-
-      - name: checksum
-        description: "Campo de controle/checksum do CNES."
-
-      - name: competencia_mes
-        description: "Competência da base CNES no formato AAAA-MM."
-
-      - name: data_particao
-        description: "Data de partição/competência da base CNES."
-        data_tests:
-          - not_null
-
-      - name: ano_particao
-        description: "Ano da partição da base CNES."
-
-      - name: mes_particao
-        description: "Mês da partição da base CNES."
-
-      - name: _loaded_at
-        description: "Timestamp de carga do registro na camada raw/staging."
-
-      - name: _source_file
-        description: "Arquivo GDB de origem do registro."
-
-  - name: int_subpav_cnes_aps__equipes
+  - name: is_unidade_aps_panorama
     description: >
-      Modelo intermediário de equipes do CNES APS. Consolida os registros da LFCES037,
-      enriquecendo com unidade, tipo de equipe e motivo de desativação. Mantém a leitura
-      ampla do CNES e cria flags específicas para reprodução do Panorama CNES.
+      Flag oficial para reprodução do quadro de Unidades APS do Panorama CNES. Considera unidades ativas do município do Rio classificadas como CF, CMS ou CSE, com regras específicas por tipo: CF exige esfera municipal e tipo básico; CMS exige esfera municipal e nome compatível; CSE permite unidade federal desde que tenha tipo básico e nome compatível. Validada em 2026-04 contra o Panorama de referência, com UNIDADE_APS = 241, CF = 135, CMS = 103 e CSE = 3.
 
-      O modelo possui regras temporais para lidar com a mudança de tipologia do CNES:
-      até 2020-04, equipes EACS são consideradas como ESF incompleta no Panorama histórico;
-      a partir de 2020-05, o cálculo de APS passa a considerar ESF, EAP e ECR conforme a
-      tipologia vigente. Para evitar ambiguidade, o modelo separa flags amplas do CNES
-      de flags específicas de Panorama.
-
-      Flags principais:
-      is_equipe_aps_painel representa a regra da tipologia atual do painel.
-      is_equipe_aps_historico representa a regra adequada para série histórica completa.
-      is_esf_panorama_historico representa o campo ESF do Panorama, incluindo EACS no
-      período antigo.
-      is_eacs_panorama_historico representa o campo EACS apenas no período em que ele é
-      exibido separadamente no Panorama histórico.
-      is_eapp_panorama remove duplicidades de equipes prisionais PSIC.
-      is_emad_panorama remove registros fora do recorte do Panorama, preservando is_emad
-      como leitura ampla do CNES.
-
-      Ressalva histórica: as competências 2020-05, 2020-06 e 2020-07 possuem raw LFCES037
-      incompleta na fonte atualmente disponível. Portanto, essas competências não conseguem
-      reproduzir integralmente o legado apenas por regra de transformação.
-
-    columns:
-      - name: ine
-        description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
-
-      - name: cnes
-        description: "Código Nacional do Estabelecimento de Saúde vinculado à equipe."
-
-      - name: unidade_id_original
-        description: "Identificador original da unidade no CNES, usado para relacionamento com a tabela de unidades."
-
-      - name: nome_unidade
-        description: "Nome fantasia da unidade vinculada à equipe."
-
-      - name: ap
-        description: "Área Programática normalizada da unidade vinculada à equipe."
-
-      - name: ap_formatada
-        description: "Área Programática formatada com ponto: 1.0, 2.1, 2.2, 3.1, 3.2, 3.3, 4.0, 5.1, 5.2 ou 5.3."
-
-      - name: is_municipio_rio
-        description: "Flag indicando se a unidade vinculada à equipe pertence ao município do Rio de Janeiro."
-
-      - name: cod_mun
-        description: "Código do município informado originalmente na LFCES037."
-
-      - name: cod_area
-        description: "Código da área da equipe informado originalmente na LFCES037."
-
-      - name: seq_equipe
-        description: "Sequencial da equipe informado originalmente na LFCES037."
-
-      - name: nm_referencia
-        description: "Nome de referência da equipe."
-
-      - name: tipo_equipe_id
-        description: "Código do tipo de equipe no CNES."
-
-      - name: tipo_equipe_descricao
-        description: "Descrição do tipo de equipe obtida da tabela auxiliar NFCES046."
-
-      - name: grupo_equipe_id
-        description: "Código do grupo de equipe obtido da tabela auxiliar NFCES046."
-
-      - name: subtipo_equipe_id
-        description: "Código do subtipo de equipe informado na LFCES037."
-
-      - name: classificacao_equipe
-        description: >
-          Classificação ampla da equipe segundo agrupamento CNES, sem aplicação das regras
-          temporais do Panorama. Possíveis valores incluem ESF, EACS, ESB, ECR, EAP,
-          ENASF, EAPP, EMAD, EMAP e OUTROS.
-
-      - name: classificacao_equipe_temporal
-        description: >
-          Classificação da equipe considerando as regras temporais de tipologia CNES,
-          especialmente a distinção entre período anterior e posterior a 2020-05.
-
-      - name: classificacao_equipe_painel
-        description: >
-          Classificação baseada na tipologia atual do painel, usada principalmente para
-          interpretação das equipes do período recente.
-
-      - name: equipe_ativa
-        description: "Flag indicando se a equipe está ativa. Valor 1 quando dt_desativacao é nula; caso contrário, 0."
-
-      - name: is_esf
-        description: >
-          Flag ampla indicando se a equipe é classificada como ESF segundo a regra temporal
-          do CNES. No período antigo, considera tipos ESF históricos; no período atual,
-          considera tipo de equipe 70.
-
-      - name: is_esf_panorama_historico
-        description: >
-          Flag específica para reprodução do campo ESF do Panorama na série histórica.
-          Até 2020-04, considera ESF, EACS e ECR conforme regra do legado histórico.
-          A partir de 2020-05, considera apenas ESF.
-
-      - name: is_eacs
-        description: "Flag ampla indicando se a equipe é classificada como EACS segundo o CNES."
-
-      - name: is_eacs_panorama_historico
-        description: >
-          Flag específica para reprodução do campo EACS no Panorama histórico.
-          Recebe 1 apenas para equipes EACS em competências anteriores a 2020-05;
-          no período atual, o campo EACS do Panorama deve permanecer 0.
-
-      - name: is_esb
-        description: >
-          Flag indicando se a equipe é classificada como Equipe de Saúde Bucal,
-          considerando a regra temporal do CNES.
-
-      - name: is_ecr
-        description: >
-          Flag indicando se a equipe é classificada como Equipe de Consultório na Rua,
-          considerando a regra temporal do CNES.
-
-      - name: is_enasf
-        description: >
-          Flag indicando se a equipe é classificada como ENASF/NASF,
-          considerando a regra temporal do CNES.
-
-      - name: is_eap
-        description: >
-          Flag indicando se a equipe é classificada como Equipe de Atenção Primária,
-          considerando a regra temporal do CNES.
-
-      - name: is_eapp
-        description: >
-          Flag ampla indicando se a equipe é classificada como Equipe de Atenção Primária
-          Prisional segundo o CNES.
-
-      - name: is_eapp_panorama
-        description: >
-          Flag específica para reprodução do campo EAPP do Panorama. Para tipo_equipe_id 74,
-          remove equipes cujo nome de referência contém PSIC, evitando contagem duplicada
-          das equipes prisionais. Preserva is_eapp como leitura ampla do CNES.
-
-      - name: is_emad
-        description: "Flag ampla indicando se a equipe é classificada como EMAD segundo o CNES."
-
-      - name: is_emad_panorama
-        description: >
-          Flag específica para reprodução do campo EMAD do Panorama. Considera EMAD municipal
-          ou unidades com nome iniciado por SMS PADI, preservando is_emad como leitura ampla
-          do CNES.
-
-      - name: is_emap
-        description: "Flag indicando se a equipe é classificada como EMAP segundo o CNES."
-
-      - name: is_equipe_aps_painel
-        description: >
-          Flag para regra atual do painel, considerando equipes dos tipos 70, 76 e 73
-          como equipes APS. Não deve ser usada isoladamente para série histórica antiga.
-
-      - name: is_equipe_aps_cobertura
-        description: >
-          Flag para cálculo de cobertura APS no período recente, considerando equipes dos
-          tipos 70, 76 e 73.
-
-      - name: is_equipe_aps_historico
-        description: >
-          Flag oficial para contagem histórica do campo APS. Até 2020-04, considera ESF,
-          EACS e ECR. A partir de 2020-05, considera ESF, EAP e ECR.
-
-      - name: is_aps
-        description: >
-          Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES.
-          Esta flag é exploratória e não deve substituir is_equipe_aps_historico nos
-          indicadores do Panorama.
-
-      - name: tipo_unidade_sms
-        description: "Classificação SMS da unidade vinculada à equipe."
-
-      - name: is_unidade_aps_panorama
-        description: "Flag da unidade vinculada indicando se ela entra no quadro de Unidades APS do Panorama."
-
-      - name: motivo_desativacao_equipe_id
-        description: "Código do motivo de desativação da equipe."
-
-      - name: motivo_desativacao_equipe
-        description: "Descrição do motivo de desativação da equipe obtida da tabela auxiliar NFCES053."
-
-      - name: tipo_desativacao_id
-        description: "Código do tipo de desativação da equipe."
-
-      - name: dt_ativacao
-        description: "Data de ativação da equipe."
-
-      - name: dt_desativacao
-        description: "Data de desativação da equipe."
-
-      - name: dt_atualiza
-        description: "Data da última atualização do registro da equipe no CNES."
-
-      - name: pop_assist_quilomb_original
-        description: "Valor original indicando população assistida quilombola."
-
-      - name: pop_assist_assent_original
-        description: "Valor original indicando população assistida de assentamento."
-
-      - name: pop_assist_geral_original
-        description: "Valor original indicando população assistida geral."
-
-      - name: pop_assist_escola_original
-        description: "Valor original indicando população assistida escolar."
-
-      - name: pop_assist_pronasci_original
-        description: "Valor original indicando população assistida PRONASCI."
-
-      - name: pop_assist_indigena_original
-        description: "Valor original indicando população assistida indígena."
-
-      - name: pop_assist_ribeirinha_original
-        description: "Valor original indicando população assistida ribeirinha."
-
-      - name: pop_assist_situacao_rua_original
-        description: "Valor original indicando população em situação de rua."
-
-      - name: pop_assist_priv_liberdade_original
-        description: "Valor original indicando população privada de liberdade."
-
-      - name: pop_assist_conflito_lei_original
-        description: "Valor original indicando população em conflito com a lei."
-
-      - name: pop_assist_adol_conf_lei_original
-        description: "Valor original indicando adolescente em conflito com a lei."
-
-      - name: pop_assist_quilomb
-        description: "Flag tratada indicando população assistida quilombola. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_assent
-        description: "Flag tratada indicando população assistida de assentamento. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_geral
-        description: "Flag tratada indicando população assistida geral. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_escola
-        description: "Flag tratada indicando população assistida escolar. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_pronasci
-        description: "Flag tratada indicando população assistida PRONASCI. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_indigena
-        description: "Flag tratada indicando população assistida indígena. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_ribeirinha
-        description: "Flag tratada indicando população assistida ribeirinha. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_situacao_rua
-        description: "Flag tratada indicando população em situação de rua. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_priv_liberdade
-        description: "Flag tratada indicando população privada de liberdade. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_conflito_lei
-        description: "Flag tratada indicando população em conflito com a lei. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: pop_assist_adol_conf_lei
-        description: "Flag tratada indicando adolescente em conflito com a lei. Valor 1 para sim, 0 para não e null quando não informado."
-
-      - name: cnes_unidade_odontologica_movel
-        description: "CNES da Unidade Odontológica Móvel vinculada à equipe, quando informado."
-
-      - name: carga_horaria_ambulatorial_uom
-        description: "Carga horária ambulatorial da Unidade Odontológica Móvel."
-
-      - name: co_prof_sus_preceptor
-        description: "Código do profissional SUS preceptor."
-
-      - name: cnes_preceptor
-        description: "CNES do estabelecimento preceptor."
-
-      - name: usuario_atualizacao
-        description: "Usuário responsável pela atualização do registro."
-
-      - name: status_movimento
-        description: "Status de movimentação do registro da equipe."
-
-      - name: nu_seq_processo
-        description: "Número sequencial do processo associado ao registro da equipe."
-
-      - name: periodo_regra_calculo
-        description: >
-          Período de regra utilizado para classificação temporal:
-          ATE_2020_04, 2020_05_A_2021_05 ou 2021_06_EM_DIANTE.
-
-      - name: dt_atualizacao_origem
-        description: "Data de atualização do registro na origem."
-
-      - name: dt_cmtp_inicio
-        description: "Data inicial de competência do registro."
-
-      - name: dt_cmtp_fim
-        description: "Data final de competência do registro."
-
-      - name: competencia_mes
-        description: "Competência da base CNES no formato AAAA-MM."
-
-      - name: data_particao
-        description: "Data de partição/competência da base CNES."
-        data_tests:
-          - not_null
-
-      - name: ano_particao
-        description: "Ano da partição da base CNES."
-
-      - name: mes_particao
-        description: "Mês da partição da base CNES."
-
-      - name: loaded_at
-        description: "Timestamp de carga do registro na camada raw/staging."
-
-      - name: _source_file
-        description: "Arquivo GDB de origem do registro."
-
-  - name: int_subpav_cnes_aps__equipes_profissionais
+  - name: is_unidade_aps
     description: >
-      Modelo intermediário de vínculos entre profissionais e equipes do CNES APS.
-      Consolida os registros da LFCES038, enriquecendo com dados cadastrais do
-      profissional, dados da equipe, unidade vinculada e informações complementares
-      de vínculo profissional-unidade da LFCES021.
+      Flag ampla indicando se a classificação tipo_unidade_sms é CF, CMS ou CSE. Esta flag serve para exploração geral da base, mas não deve ser usada para reproduzir o quadro de Unidades APS do Panorama.
 
-      A chave principal de deduplicação é composta por data_particao, cpf, ine e cod_cbo.
-      O modelo mantém apenas registros com CPF, INE e CBO preenchidos.
+  - name: is_clinica_familia
+    description: "Flag indicando se a unidade foi classificada como Clínica da Família."
 
-      O campo vinculo_equipe_ativo indica se o vínculo do profissional com a equipe
-      está ativo, com base na ausência de dt_desligamento. Já vinculo_unidade_encontrado
-      indica apenas se foi encontrado vínculo correspondente na LFCES021 para enriquecimento
-      de carga horária, conselho e vínculo unidade; portanto, não deve ser interpretado
-      como desligamento.
+  - name: is_centro_municipal_saude
+    description: "Flag indicando se a unidade foi classificada como Centro Municipal de Saúde."
 
-      O campo tipo_enriquecimento_vinculo_unidade indica se o enriquecimento foi feito
-      por correspondência exata de CBO, por fallback profissional-unidade ou se não houve
-      vínculo profissional-unidade encontrado.
+  - name: is_centro_saude_escola
+    description: "Flag indicando se a unidade foi classificada como Centro de Saúde Escola."
 
-    columns:
-      - name: cpf
-        description: "CPF do profissional, normalizado com 11 dígitos."
-        data_tests:
-          - not_null
+  - name: tipo_unidade_id
+    description: "Código do tipo de unidade/estabelecimento no CNES."
 
-      - name: cns
-        description: "Cartão Nacional de Saúde do profissional, normalizado com 15 dígitos."
+  - name: tipo_unidade_descricao
+    description: "Descrição do tipo de unidade obtida da tabela auxiliar NFCES010."
 
-      - name: nome_profissional
-        description: "Nome do profissional obtido da LFCES018."
+  - name: tipo_unidade_federal_id
+    description: "Código federal do tipo de unidade, quando informado."
 
-      - name: profissional_id_original
-        description: "Identificador original do profissional no CNES."
+  - name: tipo_estabelecimento_id
+    description: "Código do tipo de estabelecimento."
 
-      - name: profissional_id_ch_compl_original
-        description: "Identificador original do profissional usado para carga horária complementar, quando informado na LFCES038."
+  - name: atividade_principal_id
+    description: "Código da atividade principal do estabelecimento."
 
-      - name: ine
-        description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
-        data_tests:
-          - not_null
+  - name: tipo_abrangencia_id
+    description: "Código da abrangência Telessaúde do estabelecimento."
 
-      - name: cnes
-        description: "Código Nacional do Estabelecimento de Saúde vinculado à equipe."
-
-      - name: unidade_id_original
-        description: "Identificador original da unidade no CNES."
-
-      - name: nome_unidade
-        description: "Nome fantasia da unidade vinculada à equipe."
-
-      - name: ap
-        description: "Área Programática normalizada da unidade vinculada à equipe."
-
-      - name: ap_formatada
-        description: "Área Programática formatada com ponto."
-
-      - name: is_municipio_rio
-        description: "Flag indicando se a unidade vinculada à equipe pertence ao município do Rio de Janeiro."
-
-      - name: cod_mun
-        description: "Código do município informado originalmente na LFCES038."
-
-      - name: cod_area
-        description: "Código da área da equipe informado originalmente na LFCES038."
-
-      - name: seq_equipe
-        description: "Sequencial da equipe informado originalmente na LFCES038."
-
-      - name: nm_referencia
-        description: "Nome de referência da equipe."
-
-      - name: cod_cbo
-        description: "Código CBO do profissional na equipe."
-        data_tests:
-          - not_null
-
-      - name: cod_cbo_ch_compl
-        description: "Código CBO de carga horária complementar, quando informado."
-
-      - name: vinculacao_id_original
-        description: "Código de vinculação do profissional, priorizando a LFCES021 e usando a LFCES038 como fallback."
-
-      - name: vinculacao_id_original_equipe
-        description: "Código de vinculação informado originalmente no vínculo profissional-equipe da LFCES038."
-
-      - name: tipo_sus_nao_sus
-        description: "Indicador original de vínculo SUS/não SUS informado na LFCES038."
-
-      - name: microarea
-        description: "Microárea de atuação do profissional na equipe, quando informada."
-
-      - name: fl_equipeminima_original
-        description: "Valor original da flag de equipe mínima informado na LFCES038."
-
-      - name: fl_equipeminima
-        description: "Flag tratada indicando se o profissional compõe a equipe mínima."
-
-      - name: tipo_equipe_id
-        description: "Código do tipo de equipe no CNES."
-
-      - name: tipo_equipe_descricao
-        description: "Descrição do tipo de equipe obtida da NFCES046."
-
-      - name: grupo_equipe_id
-        description: "Código do grupo de equipe obtido da NFCES046."
-
-      - name: subtipo_equipe_id
-        description: "Código do subtipo de equipe."
-
-      - name: classificacao_equipe
-        description: "Classificação ampla da equipe segundo agrupamento CNES."
-
-      - name: classificacao_equipe_temporal
-        description: "Classificação da equipe considerando as regras temporais de tipologia CNES."
-
-      - name: classificacao_equipe_historica
-        description: "Alias de compatibilidade para classificacao_equipe_temporal."
-
-      - name: classificacao_equipe_painel
-        description: "Classificação baseada na tipologia atual do painel."
-
-      - name: equipe_ativa
-        description: "Flag indicando se a equipe está ativa."
-
-      - name: is_esf
-        description: "Flag ampla indicando se a equipe é classificada como ESF."
-
-      - name: is_esf_panorama_historico
-        description: "Flag específica para reprodução do campo ESF do Panorama na série histórica."
-
-      - name: is_eacs
-        description: "Flag ampla indicando se a equipe é classificada como EACS segundo o CNES."
-
-      - name: is_eacs_panorama_historico
-        description: "Flag específica para reprodução do campo EACS no Panorama histórico."
-
-      - name: is_esb
-        description: "Flag indicando se a equipe é classificada como Equipe de Saúde Bucal."
-
-      - name: is_ecr
-        description: "Flag indicando se a equipe é classificada como Equipe de Consultório na Rua."
-
-      - name: is_enasf
-        description: "Flag indicando se a equipe é classificada como ENASF/NASF."
-
-      - name: is_eap
-        description: "Flag indicando se a equipe é classificada como Equipe de Atenção Primária."
-
-      - name: is_eapp
-        description: "Flag ampla indicando se a equipe é classificada como Equipe de Atenção Primária Prisional segundo o CNES."
-
-      - name: is_eapp_panorama
-        description: "Flag específica para reprodução do campo EAPP do Panorama, removendo duplicidades PSIC."
-
-      - name: is_emad
-        description: "Flag ampla indicando se a equipe é classificada como EMAD segundo o CNES."
-
-      - name: is_emad_panorama
-        description: "Flag específica para reprodução do campo EMAD do Panorama."
-
-      - name: is_emap
-        description: "Flag indicando se a equipe é classificada como EMAP segundo o CNES."
-
-      - name: is_equipe_aps_painel
-        description: "Flag para regra atual do painel, considerando os tipos atuais de equipes APS."
-
-      - name: is_equipe_aps_cobertura
-        description: "Flag para cálculo de cobertura APS no período recente."
-
-      - name: is_equipe_aps_historico
-        description: "Flag oficial para contagem histórica do campo APS."
-
-      - name: is_equipe_aps_cobertura_historica
-        description: "Alias de compatibilidade para is_equipe_aps_historico."
-
-      - name: is_equipe_aps_cobertura_painel
-        description: "Alias de compatibilidade para is_equipe_aps_painel."
-
-      - name: is_equipe_saude_bucal
-        description: "Alias de compatibilidade para is_esb."
-
-      - name: is_equipe_emulti
-        description: "Alias de compatibilidade para is_enasf."
-
-      - name: is_equipe_prisional
-        description: "Alias de compatibilidade para is_eapp_panorama."
-
-      - name: is_equipe_ad
-        description: "Flag indicando se a equipe pertence ao recorte de Atenção Domiciliar, considerando EMAD Panorama ou EMAP."
-
-      - name: is_aps
-        description: "Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES."
-
-      - name: tipo_unidade_sms
-        description: "Classificação SMS da unidade vinculada à equipe."
-
-      - name: is_unidade_aps_panorama
-        description: "Flag da unidade vinculada indicando se ela entra no quadro de Unidades APS do Panorama."
-
-      - name: cg_horaamb
-        description: "Carga horária ambulatorial do profissional na unidade, obtida da LFCES021."
-
-      - name: cg_horahosp
-        description: "Carga horária hospitalar do profissional na unidade, obtida da LFCES021."
-
-      - name: cg_horaoutr
-        description: "Carga horária em outros tipos de atividade do profissional na unidade, obtida da LFCES021."
-
-      - name: carga_horaria_total
-        description: "Soma das cargas horárias ambulatorial, hospitalar e outras."
-
-      - name: carga_horaria_classificacao
-        description: "Classificação simplificada da carga horária em 20 ou 40 horas, quando aplicável."
-
-      - name: conselho_id_original
-        description: "Código do conselho profissional informado na LFCES021."
-
-      - name: numero_registro
-        description: "Número de registro profissional informado na LFCES021."
-
-      - name: uf_registro
-        description: "UF do registro profissional informado na LFCES021."
-
-      - name: tp_preceptor
-        description: "Tipo de preceptor informado no vínculo profissional-unidade."
-
-      - name: tp_residente
-        description: "Tipo de residente informado no vínculo profissional-unidade."
-
-      - name: tipo_enriquecimento_vinculo_unidade
-        description: >
-          Tipo de correspondência usada para enriquecer o vínculo profissional-equipe
-          com dados da LFCES021. Valores possíveis: EXATO_CBO, FALLBACK_PROFISSIONAL_UNIDADE
-          e NAO_ENCONTRADO.
-
-      - name: dt_entrada
-        description: "Data de entrada do profissional na equipe."
-
-      - name: dt_desligamento
-        description: "Data de desligamento do profissional da equipe."
-
-      - name: possui_dt_desligamento
-        description: "Flag indicando se o vínculo profissional-equipe possui data de desligamento."
-
-      - name: vinculo_equipe_ativo
-        description: "Flag indicando se o vínculo do profissional com a equipe está ativo. Valor 1 quando dt_desligamento é nula."
-
-      - name: cnes_outra_equipe
-        description: "CNES de outra equipe informado na LFCES038, quando aplicável."
-
-      - name: cod_mun_outra_equipe
-        description: "Código do município de outra equipe informado na LFCES038."
-
-      - name: cod_area_outra_equipe
-        description: "Código da área de outra equipe informado na LFCES038."
-
-      - name: cod_municipio_atuacao
-        description: "Código do município de atuação informado na LFCES038."
-
-      - name: chave_profissional_equipe_cbo
-        description: "Chave composta por CPF, INE e CBO."
-
-      - name: chave_profissional_unidade_cbo
-        description: "Chave composta por CPF, CNES e CBO."
-
-      - name: profissional_encontrado
-        description: "Flag indicando se o profissional da LFCES038 foi encontrado na LFCES018."
-
-      - name: equipe_encontrada
-        description: "Flag indicando se a equipe da LFCES038 foi encontrada no modelo intermediário de equipes."
-
-      - name: unidade_equipe_encontrada
-        description: "Flag indicando se a unidade vinculada à equipe foi encontrada."
-
-      - name: vinculo_unidade_encontrado
-        description: >
-          Flag indicando se foi encontrado vínculo profissional-unidade correspondente
-          na LFCES021 para enriquecimento de carga horária, conselho e vínculo unidade.
-          Não deve ser interpretado como indicador de desligamento.
-
-      - name: dt_atualiza
-        description: "Data de atualização do registro na LFCES038."
-
-      - name: dt_atualiza_profissional
-        description: "Data de atualização do cadastro do profissional na LFCES018."
-
-      - name: dt_atualizacao_origem
-        description: "Data de atualização do registro na origem."
-
-      - name: dt_cmtp_inicio
-        description: "Data inicial de competência do registro."
-
-      - name: dt_cmtp_fim
-        description: "Data final de competência do registro."
-
-      - name: usuario_atualizacao
-        description: "Usuário responsável pela atualização do registro."
-
-      - name: nu_seq_processo
-        description: "Número sequencial do processo associado ao registro."
-
-      - name: competencia_mes
-        description: "Competência da base CNES no formato AAAA-MM."
-
-      - name: data_particao
-        description: "Data de partição/competência da base CNES."
-        data_tests:
-          - not_null
-
-      - name: ano_particao
-        description: "Ano da partição da base CNES."
-
-      - name: mes_particao
-        description: "Mês da partição da base CNES."
-
-      - name: loaded_at
-        description: "Timestamp de carga do registro na camada raw/staging."
-
-      - name: _source_file
-        description: "Arquivo GDB de origem do registro."
-
-  - name: int_subpav_cnes_aps__profissionais
+  - name: nivel_atencao_id
     description: >
-      Modelo intermediário de profissionais do CNES APS. Consolida os dados cadastrais
-      dos profissionais a partir da LFCES018, utilizando CPF como chave principal por
-      competência. O modelo normaliza CPF e CNS, trata dados pessoais, endereço, contato,
-      documentos e campos de controle do CNES.
+      Identificador do nível de atenção. Valor 1 para Atenção Primária, 2 para Atenção Secundária, 3 para Atenção Terciária, 4 para Gestão e null quando não classificado.
 
-      A deduplicação é feita por data_particao e CPF, priorizando o registro mais recente
-      por loaded_at, dt_atualiza e profissional_id_original.
+  - name: nivel_atencao
+    description: "Descrição do nível de atenção: ATENCAO_PRIMARIA, ATENCAO_SECUNDARIA, ATENCAO_TERCIARIA, GESTAO ou NAO_CLASSIFICADO."
 
-      O campo cpf_valido indica apenas CPF com 11 dígitos e diferente de zeros. Não representa,
-      neste modelo, validação por dígito verificador.
+  - name: natureza_juridica_id
+    description: "Código da natureza jurídica do estabelecimento."
 
-    columns:
-      - name: cpf
-        description: "CPF do profissional, normalizado com 11 dígitos."
-        data_tests:
-          - not_null
+  - name: natureza_juridica
+    description: "Descrição da natureza jurídica obtida da tabela auxiliar NFCES085."
 
-      - name: cns
-        description: "Cartão Nacional de Saúde do profissional, normalizado com 15 dígitos."
-
-      - name: pis_pasep
-        description: "Número do PIS/PASEP do profissional."
-
-      - name: profissional_id_original
-        description: "Identificador original do profissional no CNES."
-
-      - name: nome_profissional
-        description: "Nome do profissional informado no CNES."
-
-      - name: nome_social
-        description: "Nome social do profissional, quando informado."
-
-      - name: nome_mae
-        description: "Nome da mãe do profissional."
-
-      - name: nome_pai
-        description: "Nome do pai do profissional."
-
-      - name: dt_nascimento
-        description: "Data de nascimento do profissional."
-
-      - name: sexo_id
-        description: "Código tratado do sexo do profissional. Valor 1 para masculino, 2 para feminino e 0 para não informado."
-
-      - name: sexo
-        description: "Descrição tratada do sexo do profissional: MASCULINO, FEMININO ou NAO_INFORMADO."
-
-      - name: sexo_id_original
-        description: "Valor original do sexo informado no CNES."
-
-      - name: raca_cor_id
-        description: "Código tratado de raça/cor do profissional."
-
-      - name: raca_cor_id_original
-        description: "Valor original de raça/cor informado no CNES."
-
-      - name: nivel_escolaridade_id
-        description: "Código tratado do nível de escolaridade do profissional."
-
-      - name: nivel_escolaridade_id_original
-        description: "Valor original do nível de escolaridade informado no CNES."
-
-      - name: nacionalidade
-        description: "Descrição tratada da nacionalidade: BRASILEIRA, ESTRANGEIRA ou NATURALIZADA."
-
-      - name: nacionalidade_indicador_original
-        description: "Indicador original de nacionalidade informado no CNES."
-
-      - name: nacionalidade_id_original
-        description: "Código original de nacionalidade informado no CNES."
-
-      - name: nome_pais_origem
-        description: "Nome do país de origem do profissional, quando informado."
-
-      - name: pais_origem_id
-        description: "Código do país de origem do profissional."
-
-      - name: etnia_id
-        description: "Código de etnia do profissional, quando informado."
-
-      - name: municipio_nascimento_id
-        description: "Código do município de nascimento do profissional."
-
-      - name: municipio_residencia_id
-        description: "Código do município de residência do profissional."
-
-      - name: uf_residencia
-        description: "UF de residência do profissional."
-
-      - name: pais_residencia_id
-        description: "Código do país de residência do profissional."
-
-      - name: uf_identidade
-        description: "UF associada ao documento de identidade do profissional."
-
-      - name: tipo_logradouro_id
-        description: "Código do tipo de logradouro do endereço do profissional."
-
-      - name: logradouro
-        description: "Logradouro do endereço do profissional."
-
-      - name: numero
-        description: "Número do endereço do profissional."
-
-      - name: complemento
-        description: "Complemento do endereço do profissional."
-
-      - name: bairro
-        description: "Bairro ou distrito do endereço do profissional."
-
-      - name: cep
-        description: "Código de Endereçamento Postal do profissional."
-
-      - name: telefone
-        description: "Telefone do profissional."
-
-      - name: email
-        description: "E-mail do profissional."
-
-      - name: numero_identidade
-        description: "Número do documento de identidade do profissional."
-
-      - name: orgao_emissor_identidade
-        description: "Código do órgão emissor do documento de identidade."
-
-      - name: uf_orgao_emissor_identidade
-        description: "UF do órgão emissor do documento de identidade."
-
-      - name: dt_emissao_identidade
-        description: "Data de emissão do documento de identidade."
-
-      - name: numero_livro_certidao
-        description: "Número do livro da certidão."
-
-      - name: numero_folha_certidao
-        description: "Número da folha da certidão."
-
-      - name: numero_termo_certidao
-        description: "Número do termo da certidão."
-
-      - name: certidao_id
-        description: "Código do tipo de certidão."
-
-      - name: dt_emissao_certidao
-        description: "Data de emissão da certidão."
-
-      - name: nome_cartorio
-        description: "Nome do cartório da certidão."
-
-      - name: ctps_numero
-        description: "Número da Carteira de Trabalho e Previdência Social."
-
-      - name: ctps_serie
-        description: "Série da Carteira de Trabalho e Previdência Social."
-
-      - name: ctps_uf
-        description: "UF da Carteira de Trabalho e Previdência Social."
-
-      - name: dt_emissao_ctps
-        description: "Data de emissão da Carteira de Trabalho e Previdência Social."
-
-      - name: carteira_habilitacao_numero
-        description: "Número da Carteira Nacional de Habilitação."
-
-      - name: dt_emissao_carteira_habilitacao
-        description: "Data de emissão da Carteira Nacional de Habilitação."
-
-      - name: uf_carteira_habilitacao
-        description: "UF da Carteira Nacional de Habilitação."
-
-      - name: dt_entrada_brasil
-        description: "Data de entrada no Brasil, quando aplicável."
-
-      - name: dt_naturalizacao
-        description: "Data de naturalização, quando aplicável."
-
-      - name: cpf_valido
-        description: "Flag indicando se o CPF possui 11 dígitos e é diferente de zeros. Não valida dígito verificador."
-
-      - name: cns_preenchido
-        description: "Flag indicando se o CNS possui 15 dígitos e é diferente de zeros."
-
-      - name: nome_profissional_cadsus
-        description: "Flag tratada indicando se o nome do profissional veio do CADSUS."
-
-      - name: nome_profissional_cadsus_original
-        description: "Valor original indicando se o nome do profissional veio do CADSUS."
-
-      - name: status
-        description: "Status original do registro do profissional no CNES."
-
-      - name: status_movimento
-        description: "Status de movimentação do registro do profissional no CNES."
-
-      - name: dt_atualiza
-        description: "Data da última atualização do registro do profissional no CNES."
-
-      - name: usuario_atualizacao
-        description: "Usuário responsável pela atualização do registro."
-
-      - name: usuario_em_uso
-        description: "Controle interno referente ao usuário em uso."
-
-      - name: checksum
-        description: "Campo de controle/checksum do CNES."
-
-      - name: sequencial_inclusao
-        description: "Código sequencial de inclusão do registro."
-
-      - name: competencia_mes
-        description: "Competência da base CNES no formato AAAA-MM."
-
-      - name: data_particao
-        description: "Data de partição/competência da base CNES."
-        data_tests:
-          - not_null
-
-      - name: ano_particao
-        description: "Ano da partição da base CNES."
-
-      - name: mes_particao
-        description: "Mês da partição da base CNES."
-
-      - name: loaded_at
-        description: "Timestamp de carga do registro na camada raw/staging."
-
-      - name: _source_file
-        description: "Arquivo GDB de origem do registro."
-
-  - name: int_subpav_cnes_aps__profissionais_unidades
+  - name: esfera_administrativa_id
     description: >
-      Modelo intermediário de vínculos entre profissionais, unidades e CBOs do CNES APS.
-      Consolida os registros da LFCES021, enriquecendo com dados cadastrais do profissional
-      e dados da unidade.
+      Esfera administrativa derivada da natureza jurídica. Valor 1 para federal, 2 para estadual, 3 para municipal, 4 para privada/demais e null quando não classificado. A natureza jurídica 1031 é tratada como municipal.
 
-      A chave principal de deduplicação é composta por data_particao, cpf, cnes e cod_cbo.
-      O modelo mantém apenas registros com CPF, CNES e CBO preenchidos.
+  - name: unidade_ativa
+    description: "Flag indicando se a unidade está ativa no CNES. Valor 1 quando não há motivo de desativação/desabilitação na LFCES004; caso contrário, 0."
 
-      Este modelo representa o vínculo profissional-unidade-CBO e é usado como base para
-      enriquecimento de carga horária, conselho profissional, vínculo, preceptoria e residência.
-      A chave chave_profissional_unidade_cbo mantém compatibilidade com a lógica legada:
-      CPF + CNES + CBO.
+  - name: motivo_desativacao_unidade_id
+    description: "Código do motivo de desativação/desabilitação do estabelecimento."
 
-      O campo possui_carga_horaria indica se há carga horária ambulatorial, hospitalar ou
-      outras informada. Ausência de carga horária não significa ausência de vínculo; indica
-      apenas que os campos de carga vieram zerados ou nulos na LFCES021.
+  - name: motivo_desativacao_unidade
+    description: "Descrição do motivo de desativação/desabilitação da unidade obtida da tabela auxiliar NFCES049."
 
-    columns:
-      - name: cpf
-        description: "CPF do profissional, normalizado com 11 dígitos."
-        data_tests:
-          - not_null
+  - name: motivo_desativacao_cnes_id
+    description: "Código do motivo de desativação do estabelecimento obtido da LFCES057."
 
-      - name: cns
-        description: "Cartão Nacional de Saúde do profissional, normalizado com 15 dígitos."
+  - name: status
+    description: "Controle interno do registro no CNES."
 
-      - name: nome_profissional
-        description: "Nome do profissional obtido da LFCES018."
+  - name: status_movimento
+    description: "Status de movimentação do estabelecimento no CNES."
 
-      - name: profissional_id_original
-        description: "Identificador original do profissional no CNES."
+  - name: status_estabelecimento_cnes
+    description: "Status do estabelecimento obtido da LFCES057."
 
-      - name: cnes
-        description: "Código Nacional do Estabelecimento de Saúde vinculado ao profissional."
-        data_tests:
-          - not_null
+  - name: tipo_gestao_id
+    description: "Tipo de gestão informado na LFCES004."
 
-      - name: unidade_id_original
-        description: "Identificador original da unidade no CNES."
+  - name: tipo_gestao_cnes
+    description: "Tipo de gestão do estabelecimento obtido da LFCES057."
 
-      - name: nome_unidade
-        description: "Nome fantasia da unidade."
+  - name: sigla_gestao
+    description: "Sigla da UF gestora do estabelecimento."
 
-      - name: ap
-        description: "Área Programática normalizada da unidade."
+  - name: competencia_cnes
+    description: "Competência informada na LFCES057 para o CNES."
 
-      - name: ap_formatada
-        description: "Área Programática formatada com ponto."
+  - name: estrutura_estabelecimento
+    description: "Tipo de estrutura do estabelecimento obtido da LFCES057."
 
-      - name: is_municipio_rio
-        description: "Flag indicando se a unidade pertence ao município do Rio de Janeiro."
+  - name: logradouro
+    description: "Logradouro do endereço do estabelecimento."
 
-      - name: cod_cbo
-        description: "Código CBO do vínculo profissional-unidade."
-        data_tests:
-          - not_null
+  - name: numero
+    description: "Número do endereço do estabelecimento."
 
-      - name: vinculacao_id_original
-        description: "Código de vinculação informado no vínculo profissional-unidade."
+  - name: complemento
+    description: "Complemento do endereço do estabelecimento."
 
-      - name: tipo_sus_nao_sus
-        description: "Indicador original de atendimento SUS/não SUS."
+  - name: bairro
+    description: "Bairro do endereço do estabelecimento."
 
-      - name: detalhe_terceirizado_sih
-        description: "Detalhe de terceirização SIH informado no CNES."
+  - name: cep
+    description: "Código de Endereçamento Postal do estabelecimento."
 
-      - name: cnpj_detalhe_vinculo
-        description: "CNPJ associado ao detalhe do vínculo, quando informado."
+  - name: latitude
+    description: "Latitude do endereço do estabelecimento, quando informada."
 
-      - name: cg_horaamb
-        description: "Carga horária ambulatorial do profissional na unidade."
+  - name: longitude
+    description: "Longitude do endereço do estabelecimento, quando informada."
 
-      - name: cg_horahosp
-        description: "Carga horária hospitalar do profissional na unidade."
+  - name: telefone
+    description: "Telefone do estabelecimento."
 
-      - name: cg_horaoutr
-        description: "Carga horária em outras atividades do profissional na unidade."
+  - name: fax
+    description: "Fax do estabelecimento."
 
-      - name: carga_horaria_total
-        description: "Soma das cargas horárias ambulatorial, hospitalar e outras."
+  - name: email
+    description: "E-mail do estabelecimento."
 
-      - name: carga_horaria_classificacao
-        description: "Classificação simplificada da carga horária: 40, 20, OUTRA ou null."
+  - name: url
+    description: "URL do estabelecimento."
 
-      - name: possui_carga_horaria
-        description: "Flag indicando se o vínculo possui alguma carga horária informada."
+  - name: turno_atendimento_id
+    description: "Código do turno de atendimento do estabelecimento."
 
-      - name: conselho_id_original
-        description: "Código do conselho profissional informado na LFCES021."
+  - name: tipo_estab_sempre_aberto
+    description: "Valor original que indica se o estabelecimento funciona sempre aberto."
 
-      - name: numero_registro
-        description: "Número de registro profissional informado na LFCES021."
+  - name: estab_sempre_aberto
+    description: "Flag indicando se o estabelecimento funciona sempre aberto. Valor 1 para sim, 0 para não e null quando não informado."
 
-      - name: uf_registro
-        description: "UF do registro profissional informado na LFCES021."
+  - name: possui_conexao_internet_original
+    description: "Valor original que indica se o estabelecimento possui conexão com internet."
 
-      - name: tp_preceptor_original
-        description: "Valor original do indicador de preceptor."
+  - name: possui_conexao_internet
+    description: "Flag indicando se o estabelecimento possui conexão com internet. Valor 1 para sim, 0 para não e null quando não informado."
 
-      - name: tp_preceptor
-        description: "Flag tratada indicando se o profissional é preceptor."
+  - name: contrato_formalizado_original
+    description: "Valor original que indica se o estabelecimento possui contrato formalizado com o SUS."
 
-      - name: tp_residente_original
-        description: "Valor original do indicador de residente."
+  - name: contrato_formalizado
+    description: "Flag indicando se o estabelecimento possui contrato formalizado com o SUS. Valor 1 para sim, 0 para não e null quando não informado."
 
-      - name: tp_residente
-        description: "Flag tratada indicando se o profissional é residente."
+  - name: coworking_original
+    description: "Valor original que indica se o estabelecimento funciona em regime de coworking."
 
-      - name: tipo_unidade_sms
-        description: "Classificação SMS da unidade."
+  - name: coworking
+    description: "Flag indicando se o estabelecimento funciona em regime de coworking. Valor 1 para sim, 0 para não e null quando não informado."
 
-      - name: is_unidade_aps_panorama
-        description: "Flag indicando se a unidade entra no quadro de Unidades APS do Panorama."
+  - name: pessoa_fisica_juridica_id
+    description: "Indica se o estabelecimento é pessoa física ou jurídica."
 
-      - name: unidade_ativa
-        description: "Flag indicando se a unidade está ativa no CNES."
+  - name: nivel_dependencia_id
+    description: "Identificador da situação/dependência do estabelecimento."
 
-      - name: chave_profissional_unidade_cbo
-        description: "Chave composta por CPF, CNES e CBO, compatível com a lógica legada."
+  - name: cnpj
+    description: "CNPJ do estabelecimento, normalizado com 14 dígitos."
 
-      - name: profissional_encontrado
-        description: "Flag indicando se o profissional da LFCES021 foi encontrado na LFCES018."
+  - name: cnpj_mantenedora
+    description: "CNPJ da mantenedora, normalizado com 14 dígitos."
 
-      - name: unidade_encontrada
-        description: "Flag indicando se a unidade da LFCES021 foi encontrada no intermediário de unidades."
+  - name: cpf_diretor_clinico
+    description: "CPF do diretor clínico ou gerente/administrador, normalizado com 11 dígitos."
 
-      - name: status
-        description: "Status original do registro no CNES."
+  - name: registro_diretor_clinico
+    description: "Registro no conselho de classe do diretor clínico."
 
-      - name: status_movimento
-        description: "Status de movimentação do registro no CNES."
+  - name: dt_atualiza
+    description: "Data da última atualização do registro no CNES."
 
-      - name: dt_atualiza
-        description: "Data de atualização do vínculo profissional-unidade no CNES."
+  - name: dt_expedicao
+    description: "Data de expedição do alvará da Vigilância Sanitária."
 
-      - name: dt_atualiza_profissional
-        description: "Data de atualização do cadastro do profissional na LFCES018."
+  - name: dt_validade_licenca_sanitaria
+    description: "Data de validade do licenciamento sanitário."
 
-      - name: dt_atualizacao_origem
-        description: "Data de atualização do registro na origem."
+  - name: dt_validacao
+    description: "Data/hora de validação do registro."
 
-      - name: dt_cmtp_inicio
-        description: "Data inicial de competência do registro."
+  - name: dt_atualiza_geo
+    description: "Data de atualização das coordenadas geográficas."
 
-      - name: dt_cmtp_fim
-        description: "Data final de competência do registro."
+  - name: dt_atualizacao_origem
+    description: "Data da primeira entrada no Banco de Produção Federal."
 
-      - name: usuario_atualizacao
-        description: "Usuário responsável pela atualização do registro."
+  - name: dt_cmtp_inicio
+    description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
 
-      - name: checksum
-        description: "Campo de controle/checksum do CNES."
+  - name: dt_cmtp_fim
+    description: "Data final de competência."
 
-      - name: nu_seq_processo
-        description: "Número sequencial do processo associado ao registro."
+  - name: usuario_atualizacao
+    description: "Último usuário que atualizou o registro."
 
-      - name: competencia_mes
-        description: "Competência da base CNES no formato AAAA-MM."
+  - name: usuario_em_uso
+    description: "Controle interno referente ao usuário em uso."
 
-      - name: data_particao
-        description: "Data de partição/competência da base CNES."
-        data_tests:
-          - not_null
+  - name: usuario_geo
+    description: "Usuário responsável pela atualização das coordenadas geográficas."
 
-      - name: ano_particao
-        description: "Ano da partição da base CNES."
+  - name: checksum
+    description: "Campo de controle/checksum do CNES."
 
-      - name: mes_particao
-        description: "Mês da partição da base CNES."
+  - name: competencia_mes
+    description: "Competência da base CNES no formato AAAA-MM."
 
-      - name: loaded_at
-        description: "Timestamp de carga do registro na camada raw/staging."
+  - name: data_particao
+    description: "Data de partição/competência da base CNES."
+    data_tests:
+    - not_null
 
-      - name: _source_file
-        description: "Arquivo GDB de origem do registro."
+  - name: ano_particao
+    description: "Ano da partição da base CNES."
 
-  - name: int_subpav_cnes_aps__profissionais_consolidacao
+  - name: mes_particao
+    description: "Mês da partição da base CNES."
+
+  - name: _loaded_at
+    description: "Timestamp de carga do registro na camada raw/staging."
+
+  - name: _source_file
+    description: "Arquivo GDB de origem do registro."
+
+- name: int_subpav_cnes_aps__equipes
+  description: >
+    Modelo intermediário de equipes do CNES APS. Consolida os registros da LFCES037, enriquecendo com unidade, tipo de equipe e motivo de desativação. Mantém a leitura ampla do CNES e cria flags específicas para reprodução do Panorama CNES.
+
+    O modelo possui regras temporais para lidar com a mudança de tipologia do CNES: até 2020-04, equipes EACS são consideradas como ESF incompleta no Panorama histórico; a partir de 2020-05, o cálculo de APS passa a considerar ESF, EAP e ECR conforme a tipologia vigente. Para evitar ambiguidade, o modelo separa flags amplas do CNES de flags específicas de Panorama.
+
+    Flags principais: is_equipe_aps_painel representa a regra da tipologia atual do painel. is_equipe_aps_historico representa a regra adequada para série histórica completa. is_esf_panorama_historico representa o campo ESF do Panorama, incluindo EACS no período antigo. is_eacs_panorama_historico representa o campo EACS apenas no período em que ele é exibido separadamente no Panorama histórico. is_eapp_panorama remove duplicidades de equipes prisionais PSIC. is_emad_panorama remove registros fora do recorte do Panorama, preservando is_emad como leitura ampla do CNES.
+
+    Ressalva histórica: as competências 2020-05, 2020-06 e 2020-07 possuem raw LFCES037 incompleta na fonte atualmente disponível. Portanto, essas competências não conseguem reproduzir integralmente o comportamento anterior apenas por regra de transformação.
+
+  columns:
+  - name: ine
+    description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
+
+  - name: cnes
+    description: "Código Nacional do Estabelecimento de Saúde vinculado à equipe."
+
+  - name: unidade_id_original
+    description: "Identificador original da unidade no CNES, usado para relacionamento com a tabela de unidades."
+
+  - name: nome_unidade
+    description: "Nome fantasia da unidade vinculada à equipe."
+
+  - name: ap
+    description: "Área Programática normalizada da unidade vinculada à equipe."
+
+  - name: ap_formatada
+    description: "Área Programática formatada com ponto: 1.0, 2.1, 2.2, 3.1, 3.2, 3.3, 4.0, 5.1, 5.2 ou 5.3."
+
+  - name: is_municipio_rio
+    description: "Flag indicando se a unidade vinculada à equipe pertence ao município do Rio de Janeiro."
+
+  - name: cod_mun
+    description: "Código do município informado originalmente na LFCES037."
+
+  - name: cod_area
+    description: "Código da área da equipe informado originalmente na LFCES037."
+
+  - name: seq_equipe
+    description: "Sequencial da equipe informado originalmente na LFCES037."
+
+  - name: nm_referencia
+    description: "Nome de referência da equipe."
+
+  - name: tipo_equipe_id
+    description: "Código do tipo de equipe no CNES."
+
+  - name: tipo_equipe_descricao
+    description: "Descrição do tipo de equipe obtida da tabela auxiliar NFCES046."
+
+  - name: grupo_equipe_id
+    description: "Código do grupo de equipe obtido da tabela auxiliar NFCES046."
+
+  - name: subtipo_equipe_id
+    description: "Código do subtipo de equipe informado na LFCES037."
+
+  - name: classificacao_equipe
     description: >
-      Modelo intermediário consolidado de profissionais do CNES APS. Parte do vínculo
-      profissional-unidade-CBO, enriquecendo com dados cadastrais do profissional e,
-      quando existente, com vínculo do profissional em equipe.
+      Classificação ampla da equipe segundo agrupamento CNES, sem aplicação das regras temporais do Panorama. Possíveis valores incluem ESF, EACS, ESB, ECR, EAP, ENASF, EAPP, EMAD, EMAP e OUTROS.
 
-      A chave principal de deduplicação é composta por data_particao, cpf, cnes, cod_cbo
-      e ine. Quando não há vínculo com equipe, ine permanece nulo e a chave considera
-      apenas o vínculo profissional-unidade-CBO.
-
-      O campo possui_vinculo_equipe indica se o vínculo profissional-unidade-CBO encontrou
-      correspondência em uma equipe ativa. Assim, registros com possui_vinculo_equipe = 0
-      continuam válidos como vínculos profissionais em unidade, mas não entram diretamente
-      nas regras de composição de equipes.
-
-      O campo inconsistente sinaliza casos em que o mesmo CPF, CNES e CBO possui mais de
-      um vínculo ativo em equipe na mesma competência. Isso não significa erro de carga
-      nem remove o registro; serve como alerta para compartilhamento de profissional entre
-      equipes ou situações que podem exigir análise manual nas regras de composição.
-
-    columns:
-      - name: data_particao
-        description: "Data de partição/competência da base CNES."
-        data_tests:
-          - not_null
-
-      - name: ano_particao
-        description: "Ano da partição da base CNES."
-
-      - name: mes_particao
-        description: "Mês da partição da base CNES."
-
-      - name: competencia_mes
-        description: "Competência da base CNES no formato AAAAMM."
-
-      - name: profissional_id_original
-        description: "Identificador original do profissional no CNES."
-
-      - name: unidade_id_original
-        description: "Identificador original da unidade no CNES."
-
-      - name: cpf
-        description: "CPF do profissional, normalizado com 11 dígitos."
-        data_tests:
-          - not_null
-
-      - name: cns
-        description: "Cartão Nacional de Saúde do profissional, normalizado com 15 dígitos."
-
-      - name: nome_profissional
-        description: "Nome do profissional."
-
-      - name: nome_social
-        description: "Nome social do profissional, quando informado."
-
-      - name: dt_nascimento
-        description: "Data de nascimento do profissional."
-
-      - name: sexo_id
-        description: "Código tratado do sexo do profissional."
-
-      - name: sexo
-        description: "Descrição tratada do sexo do profissional."
-
-      - name: raca_cor_id
-        description: "Código tratado de raça/cor do profissional."
-
-      - name: nivel_escolaridade_id
-        description: "Código tratado do nível de escolaridade do profissional."
-
-      - name: nacionalidade
-        description: "Descrição tratada da nacionalidade do profissional."
-
-      - name: nacionalidade_indicador_original
-        description: "Indicador original de nacionalidade informado no CNES."
-
-      - name: nacionalidade_id_original
-        description: "Código original de nacionalidade informado no CNES."
-
-      - name: nome_pais_origem
-        description: "Nome do país de origem do profissional, quando informado."
-
-      - name: telefone
-        description: "Telefone do profissional."
-
-      - name: email
-        description: "E-mail do profissional."
-
-      - name: cpf_valido
-        description: "Flag indicando se o CPF possui 11 dígitos e é diferente de zeros. Não valida dígito verificador."
-
-      - name: cns_preenchido
-        description: "Flag indicando se o CNS possui 15 dígitos e é diferente de zeros."
-
-      - name: cnes
-        description: "Código Nacional do Estabelecimento de Saúde vinculado ao profissional."
-        data_tests:
-          - not_null
-
-      - name: ap
-        description: "Área Programática normalizada da unidade."
-
-      - name: ap_formatada
-        description: "Área Programática formatada com ponto."
-
-      - name: nome_unidade
-        description: "Nome fantasia da unidade."
-
-      - name: is_municipio_rio
-        description: "Flag indicando se a unidade pertence ao município do Rio de Janeiro."
-
-      - name: tipo_unidade_sms
-        description: "Classificação SMS da unidade."
-
-      - name: is_unidade_aps_panorama
-        description: "Flag indicando se a unidade entra no quadro de Unidades APS do Panorama."
-
-      - name: unidade_ativa
-        description: "Flag indicando se a unidade está ativa no CNES."
-
-      - name: cod_cbo
-        description: "Código CBO do vínculo profissional-unidade."
-        data_tests:
-          - not_null
-
-      - name: vinculacao_id_original
-        description: "Código de vinculação informado no vínculo profissional-unidade."
-
-      - name: tipo_sus_nao_sus
-        description: "Indicador original de atendimento SUS/não SUS."
-
-      - name: detalhe_terceirizado_sih
-        description: "Detalhe de terceirização SIH informado no CNES."
-
-      - name: cnpj_detalhe_vinculo
-        description: "CNPJ associado ao detalhe do vínculo, quando informado."
-
-      - name: conselho_id_original
-        description: "Código do conselho profissional informado no vínculo profissional-unidade."
-
-      - name: numero_registro
-        description: "Número de registro profissional."
-
-      - name: uf_registro
-        description: "UF do registro profissional."
-
-      - name: cg_horaamb
-        description: "Carga horária ambulatorial do profissional na unidade."
-
-      - name: cg_horahosp
-        description: "Carga horária hospitalar do profissional na unidade."
-
-      - name: cg_horaoutr
-        description: "Carga horária em outras atividades do profissional na unidade."
-
-      - name: carga_horaria_total
-        description: "Soma das cargas horárias ambulatorial, hospitalar e outras."
-
-      - name: carga_horaria_classificacao
-        description: "Classificação simplificada da carga horária: 40, 20, OUTRA ou null."
-
-      - name: possui_carga_horaria
-        description: "Flag indicando se o vínculo possui alguma carga horária informada."
-
-      - name: tp_preceptor
-        description: "Flag tratada indicando se o profissional é preceptor."
-
-      - name: tp_residente
-        description: "Flag tratada indicando se o profissional é residente."
-
-      - name: ine
-        description: "Identificador Nacional de Equipe, quando o vínculo profissional-unidade-CBO possui correspondência com equipe."
-
-      - name: tipo_equipe_id
-        description: "Código do tipo de equipe no CNES."
-
-      - name: tipo_equipe_descricao
-        description: "Descrição do tipo de equipe."
-
-      - name: classificacao_equipe
-        description: "Classificação ampla da equipe segundo agrupamento CNES."
-
-      - name: classificacao_equipe_temporal
-        description: "Classificação da equipe considerando regras temporais de tipologia CNES."
-
-      - name: classificacao_equipe_historica
-        description: "Alias de compatibilidade para classificacao_equipe_temporal."
-
-      - name: classificacao_equipe_painel
-        description: "Classificação baseada na tipologia atual do painel."
-
-      - name: equipe_ativa
-        description: "Flag indicando se a equipe está ativa."
-
-      - name: is_esf
-        description: "Flag ampla indicando se a equipe é classificada como ESF."
-
-      - name: is_esf_panorama_historico
-        description: "Flag específica para reprodução do campo ESF do Panorama na série histórica."
-
-      - name: is_eacs
-        description: "Flag ampla indicando se a equipe é classificada como EACS."
-
-      - name: is_eacs_panorama_historico
-        description: "Flag específica para reprodução do campo EACS no Panorama histórico."
-
-      - name: is_esb
-        description: "Flag indicando se a equipe é classificada como Equipe de Saúde Bucal."
-
-      - name: is_ecr
-        description: "Flag indicando se a equipe é classificada como Equipe de Consultório na Rua."
-
-      - name: is_enasf
-        description: "Flag indicando se a equipe é classificada como ENASF/NASF."
-
-      - name: is_eap
-        description: "Flag indicando se a equipe é classificada como Equipe de Atenção Primária."
-
-      - name: is_eapp
-        description: "Flag ampla indicando se a equipe é classificada como Equipe de Atenção Primária Prisional."
-
-      - name: is_eapp_panorama
-        description: "Flag específica para reprodução do campo EAPP do Panorama."
-
-      - name: is_emad
-        description: "Flag ampla indicando se a equipe é classificada como EMAD."
-
-      - name: is_emad_panorama
-        description: "Flag específica para reprodução do campo EMAD do Panorama."
-
-      - name: is_emap
-        description: "Flag indicando se a equipe é classificada como EMAP."
-
-      - name: is_equipe_aps_painel
-        description: "Flag para regra atual do painel de equipes APS."
-
-      - name: is_equipe_aps_cobertura
-        description: "Flag para cálculo de cobertura APS no período recente."
-
-      - name: is_equipe_aps_historico
-        description: "Flag oficial para contagem histórica do campo APS."
-
-      - name: is_equipe_aps_cobertura_historica
-        description: "Alias de compatibilidade para is_equipe_aps_historico."
-
-      - name: is_equipe_aps_cobertura_painel
-        description: "Alias de compatibilidade para is_equipe_aps_painel."
-
-      - name: is_equipe_saude_bucal
-        description: "Alias de compatibilidade para is_esb."
-
-      - name: is_equipe_emulti
-        description: "Alias de compatibilidade para is_enasf."
-
-      - name: is_equipe_prisional
-        description: "Alias de compatibilidade para is_eapp_panorama."
-
-      - name: is_equipe_ad
-        description: "Flag indicando se a equipe pertence ao recorte de Atenção Domiciliar."
-
-      - name: is_aps
-        description: "Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES."
-
-      - name: dt_entrada
-        description: "Data de entrada do profissional na equipe."
-
-      - name: dt_desligamento
-        description: "Data de desligamento do profissional da equipe."
-
-      - name: fl_equipeminima
-        description: "Flag tratada indicando se o profissional compõe a equipe mínima."
-
-      - name: possui_dt_desligamento
-        description: "Flag indicando se o vínculo profissional-equipe possui data de desligamento."
-
-      - name: vinculo_equipe_ativo
-        description: "Flag indicando se o vínculo do profissional com a equipe está ativo."
-
-      - name: microarea
-        description: "Microárea de atuação do profissional na equipe, quando informada."
-
-      - name: tipo_enriquecimento_vinculo_unidade
-        description: "Tipo de correspondência usada no enriquecimento do vínculo profissional-equipe com dados da LFCES021."
-
-      - name: dias_desligado
-        description: "Quantidade de dias entre a data de desligamento e o último dia da competência."
-
-      - name: inconsistente
-        description: >
-          Flag indicando que o mesmo CPF, CNES e CBO possui mais de um vínculo ativo
-          em equipe na mesma competência. Não significa erro de carga; sinaliza possível
-          compartilhamento de profissional entre equipes ou caso que pode exigir análise
-          manual nas regras de composição.
-
-      - name: qtd_vinculos_equipe_mesma_chave
-        description: "Quantidade de vínculos de equipe encontrados para a mesma chave data_particao, CPF, CNES e CBO."
-
-      - name: qtd_vinculos_ativos_mesma_chave
-        description: "Quantidade de vínculos ativos de equipe encontrados para a mesma chave data_particao, CPF, CNES e CBO."
-
-      - name: possui_vinculo_equipe
-        description: "Flag indicando se o vínculo profissional-unidade-CBO possui correspondência com equipe."
-
-      - name: profissional_encontrado
-        description: "Flag indicando se o profissional foi encontrado na base cadastral de profissionais."
-
-      - name: unidade_encontrada
-        description: "Flag indicando se a unidade foi encontrada no intermediário de unidades."
-
-      - name: chave_profissional_unidade_cbo
-        description: "Chave composta por CPF, CNES e CBO."
-
-      - name: chave_profissional_unidade_cbo_equipe
-        description: "Chave composta por CPF, CNES, CBO e INE."
-
-      - name: dt_atualiza_vinculo_unidade
-        description: "Data de atualização do vínculo profissional-unidade."
-
-      - name: loaded_at
-        description: "Timestamp de carga do registro na camada raw/staging."
-
-      - name: _source_file
-        description: "Arquivo GDB de origem do registro."
-
-  - name: int_subpav_cnes_aps__quantitativos_profissionais_equipes
+  - name: classificacao_equipe_temporal
     description: >
-      Modelo intermediário de quantitativos de profissionais por equipe, CBO e categoria
-      profissional. Parte do modelo consolidado de profissionais, considerando apenas
-      vínculos com equipe ativa, INE preenchido, CBO preenchido e carga horária ambulatorial
-      maior ou igual a 20 horas.
+      Classificação da equipe considerando as regras temporais de tipologia CNES, especialmente a distinção entre período anterior e posterior a 2020-05.
 
-      O modelo classifica os CBOs em categorias profissionais usadas nas regras de composição
-      e vacância do Panorama CNES. Mantém duas leituras principais: categoria_profissional_composicao_legado,
-      usada para avaliação de composição de equipes, e categoria_profissional_vacancia_panorama,
-      usada nas regras específicas de vacância.
-
-      Os totais calculados consideram profissionais ativos no vínculo de equipe, isto é,
-      registros sem dt_desligamento. O campo inconsistente é propagado do modelo consolidado
-      e indica possível múltiplo vínculo ativo do mesmo CPF, CNES e CBO em mais de uma equipe.
-
-    columns:
-      - name: data_particao
-        description: "Data de partição/competência da base CNES."
-        data_tests:
-          - not_null
-
-      - name: ano_particao
-        description: "Ano da partição da base CNES."
-
-      - name: mes_particao
-        description: "Mês da partição da base CNES."
-
-      - name: competencia_mes
-        description: "Competência da base CNES no formato AAAAMM."
-
-      - name: ap
-        description: "Área Programática normalizada da unidade vinculada à equipe."
-
-      - name: ap_formatada
-        description: "Área Programática formatada com ponto."
-
-      - name: cnes
-        description: "Código Nacional do Estabelecimento de Saúde vinculado à equipe."
-        data_tests:
-          - not_null
-
-      - name: nome_unidade
-        description: "Nome fantasia da unidade vinculada à equipe."
-
-      - name: ine
-        description: "Identificador Nacional de Equipe."
-        data_tests:
-          - not_null
-
-      - name: tipo_equipe_id
-        description: "Código do tipo de equipe no CNES."
-
-      - name: classificacao_equipe
-        description: "Classificação ampla da equipe segundo agrupamento CNES."
-
-      - name: classificacao_equipe_historica
-        description: "Classificação da equipe considerando regras temporais de tipologia CNES."
-
-      - name: classificacao_equipe_painel
-        description: "Classificação baseada na tipologia atual do painel."
-
-      - name: is_equipe_aps_cobertura
-        description: "Flag para cálculo de cobertura APS no período recente."
-
-      - name: is_equipe_aps_cobertura_historica
-        description: "Flag para cálculo histórico de cobertura APS."
-
-      - name: is_equipe_aps_cobertura_painel
-        description: "Flag para regra atual do painel de equipes APS."
-
-      - name: is_equipe_saude_bucal
-        description: "Flag indicando se a equipe pertence ao recorte de Saúde Bucal."
-
-      - name: is_equipe_emulti
-        description: "Flag indicando se a equipe pertence ao recorte ENASF/eMulti."
-
-      - name: is_equipe_prisional
-        description: "Flag indicando se a equipe pertence ao recorte de Atenção Primária Prisional."
-
-      - name: is_equipe_ad
-        description: "Flag indicando se a equipe pertence ao recorte de Atenção Domiciliar."
-
-      - name: is_aps
-        description: "Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES."
-
-      - name: cod_cbo
-        description: "Código CBO do profissional na equipe."
-        data_tests:
-          - not_null
-
-      - name: categoria_profissional_composicao_legado
-        description: >
-          Categoria profissional usada nas regras de composição herdadas do importador legado.
-          Valores esperados incluem MEDICO, ENFERMEIRO, TEC_AUX_ENFERMAGEM, ACS,
-          CIRURGIAO_DENTISTA, AUX_BUCAL e TEC_BUCAL.
-
-      - name: categoria_profissional_vacancia_panorama
-        description: >
-          Categoria profissional usada nas regras de vacância do Panorama CNES.
-          Considera um conjunto mais restrito de CBOs em relação à composição ampla.
-
-      - name: categoria_profissional_panorama
-        description: "Alias de compatibilidade para categoria_profissional_vacancia_panorama."
-
-      - name: categoria_profissional_aps_ampla
-        description: >
-          Categoria profissional inferida por regra ampla de CBO, incluindo categorias
-          relacionadas à APS e OUTROS.
-
-      - name: categoria_profissional_aps
-        description: >
-          Categoria profissional final para agregação. Prioriza o mapa de composição legado
-          e, quando o CBO não está nesse mapa, utiliza a classificação ampla de APS.
-
-      - name: is_cbo_composicao_legado
-        description: "Flag indicando se o CBO está no mapa de composição legado."
-
-      - name: is_cbo_vacancia_panorama
-        description: "Flag indicando se o CBO está no mapa de vacância do Panorama."
-
-      - name: is_cbo_panorama
-        description: "Alias de compatibilidade para is_cbo_vacancia_panorama."
-
-      - name: total_registros
-        description: "Total de registros agregados para a combinação de competência, equipe, CBO e categoria."
-
-      - name: total_profissionais
-        description: "Total de profissionais ativos, considerando registros sem dt_desligamento."
-
-      - name: total_prof_masculino
-        description: "Total de profissionais ativos com sexo tratado como masculino."
-
-      - name: total_prof_feminino
-        description: "Total de profissionais ativos com sexo tratado como feminino."
-
-      - name: total_sem_sexo
-        description: "Total de profissionais ativos sem sexo informado ou com sexo não classificado."
-
-      - name: total_40_horas
-        description: "Total de profissionais ativos com carga horária ambulatorial maior ou igual a 40 horas."
-
-      - name: total_20_horas
-        description: "Total de profissionais ativos com carga horária ambulatorial maior ou igual a 20 e menor que 40 horas."
-
-      - name: total_carga_horaria_ambulatorial
-        description: "Soma da carga horária ambulatorial dos profissionais ativos."
-
-      - name: total_24_horas
-        description: "Total de profissionais ativos com carga horária ambulatorial igual a 24 horas."
-
-      - name: total_outras_horas
-        description: "Total de profissionais ativos com carga horária ambulatorial diferente de 20, 24 e 40 horas."
-
-      - name: total_residentes
-        description: "Total de profissionais ativos marcados como residentes."
-
-      - name: total_preceptores
-        description: "Total de profissionais ativos marcados como preceptores."
-
-      - name: total_contratados
-        description: "Total de profissionais ativos cuja data de entrada na equipe ocorreu na mesma competência."
-
-      - name: total_desligados
-        description: "Total de registros com data de desligamento preenchida."
-
-      - name: total_dias_desligados
-        description: "Maior quantidade de dias desligados observada na combinação agregada."
-
-      - name: data_eqp_vacancia
-        description: >
-          Data usada como referência de vacância quando não há profissional ativo de 40 horas
-          na combinação agregada.
-
-      - name: inconsistente
-        description: >
-          Flag indicando se há possível múltiplo vínculo ativo do mesmo CPF, CNES e CBO
-          em mais de uma equipe na competência.
-
-  - name: int_subpav_cnes_aps__qpe_com_cbo_ausente
+  - name: classificacao_equipe_painel
     description: >
-      Modelo intermediário complementar ao quantitativo de profissionais por equipe.
-      Parte do modelo int_subpav_cnes_aps__quantitativos_profissionais_equipes e adiciona
-      linhas sintéticas para categorias profissionais obrigatórias ausentes em equipes
-      eSF e eSB.
+      Classificação baseada na tipologia atual do painel, usada principalmente para interpretação das equipes do período recente.
 
-      As linhas originais recebem origem_linha_qpe = ORIGINAL. As linhas criadas para
-      categorias ausentes recebem origem_linha_qpe = SINTETICA_CBO_AUSENTE, total de
-      profissionais zerado e CBO sintético representativo da categoria profissional.
+  - name: equipe_ativa
+    description: "Flag indicando se a equipe está ativa. Valor 1 quando dt_desativacao é nula; caso contrário, 0."
 
-      O modelo calcula data_eqp_incompleta para indicar desde quando a categoria obrigatória
-      está ausente na equipe. Quando a ausência está dentro da janela de até 60 dias, também
-      preenche data_eqp_vacancia. Essas informações são usadas posteriormente nas regras
-      de composição, completude e vacância das equipes.
+  - name: is_esf
+    description: >
+      Flag ampla indicando se a equipe é classificada como ESF segundo a regra temporal do CNES. No período antigo, considera tipos ESF históricos; no período atual, considera tipo de equipe 70.
 
-      Para eSF, as categorias esperadas são MEDICO, ENFERMEIRO, TEC_AUX_ENFERMAGEM e ACS.
-      Para eSB, as categorias esperadas são CIRURGIAO_DENTISTA, AUX_BUCAL e TEC_BUCAL.
+  - name: is_esf_panorama_historico
+    description: >
+      Flag específica para reprodução do campo ESF do Panorama na série histórica. Até 2020-04, considera ESF, EACS e ECR conforme regra do histórica. A partir de 2020-05, considera apenas ESF.
 
-    columns:
-      - name: data_particao
-        description: "Data de partição/competência da base CNES."
-        data_tests:
-          - not_null
+  - name: is_eacs
+    description: "Flag ampla indicando se a equipe é classificada como EACS segundo o CNES."
 
-      - name: ano_particao
-        description: "Ano da partição da base CNES."
+  - name: is_eacs_panorama_historico
+    description: >
+      Flag específica para reprodução do campo EACS no Panorama histórico. Recebe 1 apenas para equipes EACS em competências anteriores a 2020-05; no período atual, o campo EACS do Panorama deve permanecer 0.
 
-      - name: mes_particao
-        description: "Mês da partição da base CNES."
+  - name: is_esb
+    description: >
+      Flag indicando se a equipe é classificada como Equipe de Saúde Bucal, considerando a regra temporal do CNES.
 
-      - name: ap
-        description: "Área Programática normalizada da unidade vinculada à equipe."
+  - name: is_ecr
+    description: >
+      Flag indicando se a equipe é classificada como Equipe de Consultório na Rua, considerando a regra temporal do CNES.
 
-      - name: ap_formatada
-        description: "Área Programática formatada com ponto."
+  - name: is_enasf
+    description: >
+      Flag indicando se a equipe é classificada como ENASF/NASF, considerando a regra temporal do CNES.
 
-      - name: cnes
-        description: "Código Nacional do Estabelecimento de Saúde vinculado à equipe."
-        data_tests:
-          - not_null
+  - name: is_eap
+    description: >
+      Flag indicando se a equipe é classificada como Equipe de Atenção Primária, considerando a regra temporal do CNES.
 
-      - name: nome_unidade
-        description: "Nome fantasia da unidade vinculada à equipe."
+  - name: is_eapp
+    description: >
+      Flag ampla indicando se a equipe é classificada como Equipe de Atenção Primária Prisional segundo o CNES.
 
-      - name: ine
-        description: "Identificador Nacional de Equipe."
-        data_tests:
-          - not_null
+  - name: is_eapp_panorama
+    description: >
+      Flag específica para reprodução do campo EAPP do Panorama. Para tipo_equipe_id 74, remove equipes cujo nome de referência contém PSIC, evitando contagem duplicada das equipes prisionais. Preserva is_eapp como leitura ampla do CNES.
 
-      - name: nm_referencia
-        description: "Nome de referência da equipe."
+  - name: is_emad
+    description: "Flag ampla indicando se a equipe é classificada como EMAD segundo o CNES."
 
-      - name: tipo_equipe_id
-        description: "Código do tipo de equipe no CNES."
+  - name: is_emad_panorama
+    description: >
+      Flag específica para reprodução do campo EMAD do Panorama. Considera EMAD municipal ou unidades com nome iniciado por SMS PADI, preservando is_emad como leitura ampla do CNES.
 
-      - name: classificacao_equipe
-        description: "Classificação ampla da equipe segundo agrupamento CNES."
+  - name: is_emap
+    description: "Flag indicando se a equipe é classificada como EMAP segundo o CNES."
 
-      - name: cod_cbo
-        description: "Código CBO original ou sintético associado à categoria profissional."
-        data_tests:
-          - not_null
+  - name: is_equipe_aps_painel
+    description: >
+      Flag para regra atual do painel, considerando equipes dos tipos 70, 76 e 73 como equipes APS. Não deve ser usada isoladamente para série histórica antiga.
 
-      - name: categoria_profissional_composicao_legado
-        description: "Categoria profissional usada nas regras de composição herdadas do importador legado."
+  - name: is_equipe_aps_cobertura
+    description: >
+      Flag para cálculo de cobertura APS no período recente, considerando equipes dos tipos 70, 76 e 73.
 
-      - name: categoria_profissional_vacancia_panorama
-        description: "Categoria profissional usada nas regras de vacância do Panorama CNES."
+  - name: is_equipe_aps_historico
+    description: >
+      Flag oficial para contagem histórica do campo APS. Até 2020-04, considera ESF, EACS e ECR. A partir de 2020-05, considera ESF, EAP e ECR.
 
-      - name: is_cbo_composicao_legado
-        description: "Flag indicando se o CBO pertence ao mapa de composição legado."
+  - name: is_aps
+    description: >
+      Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES. Esta flag é exploratória e não deve substituir is_equipe_aps_historico nos indicadores do Panorama.
 
-      - name: is_cbo_vacancia_panorama
-        description: "Flag indicando se o CBO pertence ao mapa de vacância do Panorama."
+  - name: tipo_unidade_sms
+    description: "Classificação SMS da unidade vinculada à equipe."
 
-      - name: is_cbo_panorama
-        description: "Alias de compatibilidade para is_cbo_vacancia_panorama nas linhas originais; nas linhas sintéticas é preenchido como 0."
+  - name: is_unidade_aps_panorama
+    description: "Flag da unidade vinculada indicando se ela entra no quadro de Unidades APS do Panorama."
 
-      - name: total_profissionais
-        description: "Total de profissionais ativos na categoria. Nas linhas sintéticas de ausência, o valor é 0."
+  - name: motivo_desativacao_equipe_id
+    description: "Código do motivo de desativação da equipe."
 
-      - name: total_40_horas
-        description: "Total de profissionais ativos com carga horária ambulatorial maior ou igual a 40 horas. Nas linhas sintéticas, o valor é 0."
+  - name: motivo_desativacao_equipe
+    description: "Descrição do motivo de desativação da equipe obtida da tabela auxiliar NFCES053."
 
-      - name: total_20_horas
-        description: "Total de profissionais ativos com carga horária ambulatorial maior ou igual a 20 e menor que 40 horas. Nas linhas sintéticas, o valor é 0."
+  - name: tipo_desativacao_id
+    description: "Código do tipo de desativação da equipe."
 
-      - name: total_desligados
-        description: "Total de registros com data de desligamento preenchida. Nas linhas sintéticas, o valor é 0."
+  - name: dt_ativacao
+    description: "Data de ativação da equipe."
 
-      - name: total_dias_desligados
-        description: >
-          Quantidade de dias desde a data calculada de incompletude até o último dia da
-          competência. Nas linhas sintéticas, representa o tempo de ausência da categoria
-          obrigatória.
+  - name: dt_desativacao
+    description: "Data de desativação da equipe."
 
-      - name: data_eqp_vacancia
-        description: >
-          Data de referência de vacância da categoria profissional ausente. É preenchida
-          quando a ausência está dentro da janela de até 60 dias, conforme regra usada
-          para vacância.
+  - name: dt_atualiza
+    description: "Data da última atualização do registro da equipe no CNES."
 
-      - name: data_eqp_incompleta
-        description: >
-          Data calculada de início da incompletude da categoria obrigatória na equipe.
-          É preenchida nas linhas sintéticas de categoria ausente.
+  - name: pop_assist_quilomb_original
+    description: "Valor original indicando população assistida quilombola."
 
-      - name: inconsistente
-        description: >
-          Flag de inconsistência herdada das linhas originais. Nas linhas sintéticas de
-          categoria ausente, é preenchida como 0.
+  - name: pop_assist_assent_original
+    description: "Valor original indicando população assistida de assentamento."
 
-      - name: origem_linha_qpe
-        description: >
-          Origem da linha no modelo. ORIGINAL indica linha proveniente do quantitativo de
-          profissionais; SINTETICA_CBO_AUSENTE indica linha criada para representar uma
-          categoria obrigatória ausente.
+  - name: pop_assist_geral_original
+    description: "Valor original indicando população assistida geral."
 
-    
+  - name: pop_assist_escola_original
+    description: "Valor original indicando população assistida escolar."
+
+  - name: pop_assist_pronasci_original
+    description: "Valor original indicando população assistida PRONASCI."
+
+  - name: pop_assist_indigena_original
+    description: "Valor original indicando população assistida indígena."
+
+  - name: pop_assist_ribeirinha_original
+    description: "Valor original indicando população assistida ribeirinha."
+
+  - name: pop_assist_situacao_rua_original
+    description: "Valor original indicando população em situação de rua."
+
+  - name: pop_assist_priv_liberdade_original
+    description: "Valor original indicando população privada de liberdade."
+
+  - name: pop_assist_conflito_lei_original
+    description: "Valor original indicando população em conflito com a lei."
+
+  - name: pop_assist_adol_conf_lei_original
+    description: "Valor original indicando adolescente em conflito com a lei."
+
+  - name: pop_assist_quilomb
+    description: "Flag tratada indicando população assistida quilombola. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_assent
+    description: "Flag tratada indicando população assistida de assentamento. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_geral
+    description: "Flag tratada indicando população assistida geral. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_escola
+    description: "Flag tratada indicando população assistida escolar. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_pronasci
+    description: "Flag tratada indicando população assistida PRONASCI. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_indigena
+    description: "Flag tratada indicando população assistida indígena. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_ribeirinha
+    description: "Flag tratada indicando população assistida ribeirinha. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_situacao_rua
+    description: "Flag tratada indicando população em situação de rua. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_priv_liberdade
+    description: "Flag tratada indicando população privada de liberdade. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_conflito_lei
+    description: "Flag tratada indicando população em conflito com a lei. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: pop_assist_adol_conf_lei
+    description: "Flag tratada indicando adolescente em conflito com a lei. Valor 1 para sim, 0 para não e null quando não informado."
+
+  - name: cnes_unidade_odontologica_movel
+    description: "CNES da Unidade Odontológica Móvel vinculada à equipe, quando informado."
+
+  - name: carga_horaria_ambulatorial_uom
+    description: "Carga horária ambulatorial da Unidade Odontológica Móvel."
+
+  - name: co_prof_sus_preceptor
+    description: "Código do profissional SUS preceptor."
+
+  - name: cnes_preceptor
+    description: "CNES do estabelecimento preceptor."
+
+  - name: usuario_atualizacao
+    description: "Usuário responsável pela atualização do registro."
+
+  - name: status_movimento
+    description: "Status de movimentação do registro da equipe."
+
+  - name: nu_seq_processo
+    description: "Número sequencial do processo associado ao registro da equipe."
+
+  - name: periodo_regra_calculo
+    description: >
+      Período de regra utilizado para classificação temporal: ATE_2020_04, 2020_05_A_2021_05 ou 2021_06_EM_DIANTE.
+
+  - name: dt_atualizacao_origem
+    description: "Data de atualização do registro na origem."
+
+  - name: dt_cmtp_inicio
+    description: "Data inicial de competência do registro."
+
+  - name: dt_cmtp_fim
+    description: "Data final de competência do registro."
+
+  - name: competencia_mes
+    description: "Competência da base CNES no formato AAAA-MM."
+
+  - name: data_particao
+    description: "Data de partição/competência da base CNES."
+    data_tests:
+    - not_null
+
+  - name: ano_particao
+    description: "Ano da partição da base CNES."
+
+  - name: mes_particao
+    description: "Mês da partição da base CNES."
+
+  - name: loaded_at
+    description: "Timestamp de carga do registro na camada raw/staging."
+
+  - name: _source_file
+    description: "Arquivo GDB de origem do registro."
+
+- name: int_subpav_cnes_aps__equipes_profissionais
+  description: >
+    Modelo intermediário de vínculos entre profissionais e equipes do CNES APS. Consolida os registros da LFCES038, enriquecendo com dados cadastrais do profissional, dados da equipe, unidade vinculada e informações complementares de vínculo profissional-unidade da LFCES021.
+
+    A chave principal de deduplicação é composta por data_particao, cpf, ine e cod_cbo. O modelo mantém apenas registros com CPF, INE e CBO preenchidos.
+
+    O campo vinculo_equipe_ativo indica se o vínculo do profissional com a equipe está ativo, com base na ausência de dt_desligamento. Já vinculo_unidade_encontrado indica apenas se foi encontrado vínculo correspondente na LFCES021 para enriquecimento de carga horária, conselho e vínculo unidade; portanto, não deve ser interpretado como desligamento.
+
+    O campo tipo_enriquecimento_vinculo_unidade indica se o enriquecimento foi feito por correspondência exata de CBO, por fallback profissional-unidade ou se não houve vínculo profissional-unidade encontrado.
+
+  columns:
+  - name: cpf
+    description: "CPF do profissional, normalizado com 11 dígitos."
+    data_tests:
+    - not_null
+
+  - name: cns
+    description: "Cartão Nacional de Saúde do profissional, normalizado com 15 dígitos."
+
+  - name: nome_profissional
+    description: "Nome do profissional obtido da LFCES018."
+
+  - name: profissional_id_original
+    description: "Identificador original do profissional no CNES."
+
+  - name: profissional_id_ch_compl_original
+    description: "Identificador original do profissional usado para carga horária complementar, quando informado na LFCES038."
+
+  - name: ine
+    description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
+    data_tests:
+    - not_null
+
+  - name: cnes
+    description: "Código Nacional do Estabelecimento de Saúde vinculado à equipe."
+
+  - name: unidade_id_original
+    description: "Identificador original da unidade no CNES."
+
+  - name: nome_unidade
+    description: "Nome fantasia da unidade vinculada à equipe."
+
+  - name: ap
+    description: "Área Programática normalizada da unidade vinculada à equipe."
+
+  - name: ap_formatada
+    description: "Área Programática formatada com ponto."
+
+  - name: is_municipio_rio
+    description: "Flag indicando se a unidade vinculada à equipe pertence ao município do Rio de Janeiro."
+
+  - name: cod_mun
+    description: "Código do município informado originalmente na LFCES038."
+
+  - name: cod_area
+    description: "Código da área da equipe informado originalmente na LFCES038."
+
+  - name: seq_equipe
+    description: "Sequencial da equipe informado originalmente na LFCES038."
+
+  - name: nm_referencia
+    description: "Nome de referência da equipe."
+
+  - name: cod_cbo
+    description: "Código CBO do profissional na equipe."
+    data_tests:
+    - not_null
+
+  - name: cod_cbo_ch_compl
+    description: "Código CBO de carga horária complementar, quando informado."
+
+  - name: vinculacao_id_original
+    description: "Código de vinculação do profissional, priorizando a LFCES021 e usando a LFCES038 como fallback."
+
+  - name: vinculacao_id_original_equipe
+    description: "Código de vinculação informado originalmente no vínculo profissional-equipe da LFCES038."
+
+  - name: tipo_sus_nao_sus
+    description: "Indicador original de vínculo SUS/não SUS informado na LFCES038."
+
+  - name: microarea
+    description: "Microárea de atuação do profissional na equipe, quando informada."
+
+  - name: fl_equipeminima_original
+    description: "Valor original da flag de equipe mínima informado na LFCES038."
+
+  - name: fl_equipeminima
+    description: "Flag tratada indicando se o profissional compõe a equipe mínima."
+
+  - name: tipo_equipe_id
+    description: "Código do tipo de equipe no CNES."
+
+  - name: tipo_equipe_descricao
+    description: "Descrição do tipo de equipe obtida da NFCES046."
+
+  - name: grupo_equipe_id
+    description: "Código do grupo de equipe obtido da NFCES046."
+
+  - name: subtipo_equipe_id
+    description: "Código do subtipo de equipe."
+
+  - name: classificacao_equipe
+    description: "Classificação ampla da equipe segundo agrupamento CNES."
+
+  - name: classificacao_equipe_temporal
+    description: "Classificação da equipe considerando as regras temporais de tipologia CNES."
+
+  - name: classificacao_equipe_historica
+    description: "Alias de compatibilidade para classificacao_equipe_temporal."
+
+  - name: classificacao_equipe_painel
+    description: "Classificação baseada na tipologia atual do painel."
+
+  - name: equipe_ativa
+    description: "Flag indicando se a equipe está ativa."
+
+  - name: is_esf
+    description: "Flag ampla indicando se a equipe é classificada como ESF."
+
+  - name: is_esf_panorama_historico
+    description: "Flag específica para reprodução do campo ESF do Panorama na série histórica."
+
+  - name: is_eacs
+    description: "Flag ampla indicando se a equipe é classificada como EACS segundo o CNES."
+
+  - name: is_eacs_panorama_historico
+    description: "Flag específica para reprodução do campo EACS no Panorama histórico."
+
+  - name: is_esb
+    description: "Flag indicando se a equipe é classificada como Equipe de Saúde Bucal."
+
+  - name: is_ecr
+    description: "Flag indicando se a equipe é classificada como Equipe de Consultório na Rua."
+
+  - name: is_enasf
+    description: "Flag indicando se a equipe é classificada como ENASF/NASF."
+
+  - name: is_eap
+    description: "Flag indicando se a equipe é classificada como Equipe de Atenção Primária."
+
+  - name: is_eapp
+    description: "Flag ampla indicando se a equipe é classificada como Equipe de Atenção Primária Prisional segundo o CNES."
+
+  - name: is_eapp_panorama
+    description: "Flag específica para reprodução do campo EAPP do Panorama, removendo duplicidades PSIC."
+
+  - name: is_emad
+    description: "Flag ampla indicando se a equipe é classificada como EMAD segundo o CNES."
+
+  - name: is_emad_panorama
+    description: "Flag específica para reprodução do campo EMAD do Panorama."
+
+  - name: is_emap
+    description: "Flag indicando se a equipe é classificada como EMAP segundo o CNES."
+
+  - name: is_equipe_aps_painel
+    description: "Flag para regra atual do painel, considerando os tipos atuais de equipes APS."
+
+  - name: is_equipe_aps_cobertura
+    description: "Flag para cálculo de cobertura APS no período recente."
+
+  - name: is_equipe_aps_historico
+    description: "Flag oficial para contagem histórica do campo APS."
+
+  - name: is_equipe_aps_cobertura_historica
+    description: "Alias de compatibilidade para is_equipe_aps_historico."
+
+  - name: is_equipe_aps_cobertura_painel
+    description: "Alias de compatibilidade para is_equipe_aps_painel."
+
+  - name: is_equipe_saude_bucal
+    description: "Alias de compatibilidade para is_esb."
+
+  - name: is_equipe_emulti
+    description: "Alias de compatibilidade para is_enasf."
+
+  - name: is_equipe_prisional
+    description: "Alias de compatibilidade para is_eapp_panorama."
+
+  - name: is_equipe_ad
+    description: "Flag indicando se a equipe pertence ao recorte de Atenção Domiciliar, considerando EMAD Panorama ou EMAP."
+
+  - name: is_aps
+    description: "Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES."
+
+  - name: tipo_unidade_sms
+    description: "Classificação SMS da unidade vinculada à equipe."
+
+  - name: is_unidade_aps_panorama
+    description: "Flag da unidade vinculada indicando se ela entra no quadro de Unidades APS do Panorama."
+
+  - name: cg_horaamb
+    description: "Carga horária ambulatorial do profissional na unidade, obtida da LFCES021."
+
+  - name: cg_horahosp
+    description: "Carga horária hospitalar do profissional na unidade, obtida da LFCES021."
+
+  - name: cg_horaoutr
+    description: "Carga horária em outros tipos de atividade do profissional na unidade, obtida da LFCES021."
+
+  - name: carga_horaria_total
+    description: "Soma das cargas horárias ambulatorial, hospitalar e outras."
+
+  - name: carga_horaria_classificacao
+    description: "Classificação simplificada da carga horária em 20 ou 40 horas, quando aplicável."
+
+  - name: conselho_id_original
+    description: "Código do conselho profissional informado na LFCES021."
+
+  - name: numero_registro
+    description: "Número de registro profissional informado na LFCES021."
+
+  - name: uf_registro
+    description: "UF do registro profissional informado na LFCES021."
+
+  - name: tp_preceptor
+    description: "Tipo de preceptor informado no vínculo profissional-unidade."
+
+  - name: tp_residente
+    description: "Tipo de residente informado no vínculo profissional-unidade."
+
+  - name: tipo_enriquecimento_vinculo_unidade
+    description: >
+      Tipo de correspondência usada para enriquecer o vínculo profissional-equipe com dados da LFCES021. Valores possíveis: EXATO_CBO, FALLBACK_PROFISSIONAL_UNIDADE e NAO_ENCONTRADO.
+
+  - name: dt_entrada
+    description: "Data de entrada do profissional na equipe."
+
+  - name: dt_desligamento
+    description: "Data de desligamento do profissional da equipe."
+
+  - name: possui_dt_desligamento
+    description: "Flag indicando se o vínculo profissional-equipe possui data de desligamento."
+
+  - name: vinculo_equipe_ativo
+    description: "Flag indicando se o vínculo do profissional com a equipe está ativo. Valor 1 quando dt_desligamento é nula."
+
+  - name: cnes_outra_equipe
+    description: "CNES de outra equipe informado na LFCES038, quando aplicável."
+
+  - name: cod_mun_outra_equipe
+    description: "Código do município de outra equipe informado na LFCES038."
+
+  - name: cod_area_outra_equipe
+    description: "Código da área de outra equipe informado na LFCES038."
+
+  - name: cod_municipio_atuacao
+    description: "Código do município de atuação informado na LFCES038."
+
+  - name: chave_profissional_equipe_cbo
+    description: "Chave composta por CPF, INE e CBO."
+
+  - name: chave_profissional_unidade_cbo
+    description: "Chave composta por CPF, CNES e CBO."
+
+  - name: profissional_encontrado
+    description: "Flag indicando se o profissional da LFCES038 foi encontrado na LFCES018."
+
+  - name: equipe_encontrada
+    description: "Flag indicando se a equipe da LFCES038 foi encontrada no modelo intermediário de equipes."
+
+  - name: unidade_equipe_encontrada
+    description: "Flag indicando se a unidade vinculada à equipe foi encontrada."
+
+  - name: vinculo_unidade_encontrado
+    description: >
+      Flag indicando se foi encontrado vínculo profissional-unidade correspondente na LFCES021 para enriquecimento de carga horária, conselho e vínculo unidade. Não deve ser interpretado como indicador de desligamento.
+
+  - name: dt_atualiza
+    description: "Data de atualização do registro na LFCES038."
+
+  - name: dt_atualiza_profissional
+    description: "Data de atualização do cadastro do profissional na LFCES018."
+
+  - name: dt_atualizacao_origem
+    description: "Data de atualização do registro na origem."
+
+  - name: dt_cmtp_inicio
+    description: "Data inicial de competência do registro."
+
+  - name: dt_cmtp_fim
+    description: "Data final de competência do registro."
+
+  - name: usuario_atualizacao
+    description: "Usuário responsável pela atualização do registro."
+
+  - name: nu_seq_processo
+    description: "Número sequencial do processo associado ao registro."
+
+  - name: competencia_mes
+    description: "Competência da base CNES no formato AAAA-MM."
+
+  - name: data_particao
+    description: "Data de partição/competência da base CNES."
+    data_tests:
+    - not_null
+
+  - name: ano_particao
+    description: "Ano da partição da base CNES."
+
+  - name: mes_particao
+    description: "Mês da partição da base CNES."
+
+  - name: loaded_at
+    description: "Timestamp de carga do registro na camada raw/staging."
+
+  - name: _source_file
+    description: "Arquivo GDB de origem do registro."
+
+- name: int_subpav_cnes_aps__profissionais
+  description: >
+    Modelo intermediário de profissionais do CNES APS. Consolida os dados cadastrais dos profissionais a partir da LFCES018, utilizando CPF como chave principal por competência. O modelo normaliza CPF e CNS, trata dados pessoais, endereço, contato, documentos e campos de controle do CNES.
+
+    A deduplicação é feita por data_particao e CPF, priorizando o registro mais recente por loaded_at, dt_atualiza e profissional_id_original.
+
+    O campo cpf_valido indica apenas CPF com 11 dígitos e diferente de zeros. Não representa, neste modelo, validação por dígito verificador.
+
+  columns:
+  - name: cpf
+    description: "CPF do profissional, normalizado com 11 dígitos."
+    data_tests:
+    - not_null
+
+  - name: cns
+    description: "Cartão Nacional de Saúde do profissional, normalizado com 15 dígitos."
+
+  - name: pis_pasep
+    description: "Número do PIS/PASEP do profissional."
+
+  - name: profissional_id_original
+    description: "Identificador original do profissional no CNES."
+
+  - name: nome_profissional
+    description: "Nome do profissional informado no CNES."
+
+  - name: nome_social
+    description: "Nome social do profissional, quando informado."
+
+  - name: nome_mae
+    description: "Nome da mãe do profissional."
+
+  - name: nome_pai
+    description: "Nome do pai do profissional."
+
+  - name: dt_nascimento
+    description: "Data de nascimento do profissional."
+
+  - name: sexo_id
+    description: "Código tratado do sexo do profissional. Valor 1 para masculino, 2 para feminino e 0 para não informado."
+
+  - name: sexo
+    description: "Descrição tratada do sexo do profissional: MASCULINO, FEMININO ou NAO_INFORMADO."
+
+  - name: sexo_id_original
+    description: "Valor original do sexo informado no CNES."
+
+  - name: raca_cor_id
+    description: "Código tratado de raça/cor do profissional."
+
+  - name: raca_cor_id_original
+    description: "Valor original de raça/cor informado no CNES."
+
+  - name: nivel_escolaridade_id
+    description: "Código tratado do nível de escolaridade do profissional."
+
+  - name: nivel_escolaridade_id_original
+    description: "Valor original do nível de escolaridade informado no CNES."
+
+  - name: nacionalidade
+    description: "Descrição tratada da nacionalidade: BRASILEIRA, ESTRANGEIRA ou NATURALIZADA."
+
+  - name: nacionalidade_indicador_original
+    description: "Indicador original de nacionalidade informado no CNES."
+
+  - name: nacionalidade_id_original
+    description: "Código original de nacionalidade informado no CNES."
+
+  - name: nome_pais_origem
+    description: "Nome do país de origem do profissional, quando informado."
+
+  - name: pais_origem_id
+    description: "Código do país de origem do profissional."
+
+  - name: etnia_id
+    description: "Código de etnia do profissional, quando informado."
+
+  - name: municipio_nascimento_id
+    description: "Código do município de nascimento do profissional."
+
+  - name: municipio_residencia_id
+    description: "Código do município de residência do profissional."
+
+  - name: uf_residencia
+    description: "UF de residência do profissional."
+
+  - name: pais_residencia_id
+    description: "Código do país de residência do profissional."
+
+  - name: uf_identidade
+    description: "UF associada ao documento de identidade do profissional."
+
+  - name: tipo_logradouro_id
+    description: "Código do tipo de logradouro do endereço do profissional."
+
+  - name: logradouro
+    description: "Logradouro do endereço do profissional."
+
+  - name: numero
+    description: "Número do endereço do profissional."
+
+  - name: complemento
+    description: "Complemento do endereço do profissional."
+
+  - name: bairro
+    description: "Bairro ou distrito do endereço do profissional."
+
+  - name: cep
+    description: "Código de Endereçamento Postal do profissional."
+
+  - name: telefone
+    description: "Telefone do profissional."
+
+  - name: email
+    description: "E-mail do profissional."
+
+  - name: numero_identidade
+    description: "Número do documento de identidade do profissional."
+
+  - name: orgao_emissor_identidade
+    description: "Código do órgão emissor do documento de identidade."
+
+  - name: uf_orgao_emissor_identidade
+    description: "UF do órgão emissor do documento de identidade."
+
+  - name: dt_emissao_identidade
+    description: "Data de emissão do documento de identidade."
+
+  - name: numero_livro_certidao
+    description: "Número do livro da certidão."
+
+  - name: numero_folha_certidao
+    description: "Número da folha da certidão."
+
+  - name: numero_termo_certidao
+    description: "Número do termo da certidão."
+
+  - name: certidao_id
+    description: "Código do tipo de certidão."
+
+  - name: dt_emissao_certidao
+    description: "Data de emissão da certidão."
+
+  - name: nome_cartorio
+    description: "Nome do cartório da certidão."
+
+  - name: ctps_numero
+    description: "Número da Carteira de Trabalho e Previdência Social."
+
+  - name: ctps_serie
+    description: "Série da Carteira de Trabalho e Previdência Social."
+
+  - name: ctps_uf
+    description: "UF da Carteira de Trabalho e Previdência Social."
+
+  - name: dt_emissao_ctps
+    description: "Data de emissão da Carteira de Trabalho e Previdência Social."
+
+  - name: carteira_habilitacao_numero
+    description: "Número da Carteira Nacional de Habilitação."
+
+  - name: dt_emissao_carteira_habilitacao
+    description: "Data de emissão da Carteira Nacional de Habilitação."
+
+  - name: uf_carteira_habilitacao
+    description: "UF da Carteira Nacional de Habilitação."
+
+  - name: dt_entrada_brasil
+    description: "Data de entrada no Brasil, quando aplicável."
+
+  - name: dt_naturalizacao
+    description: "Data de naturalização, quando aplicável."
+
+  - name: cpf_valido
+    description: "Flag indicando se o CPF possui 11 dígitos e é diferente de zeros. Não valida dígito verificador."
+
+  - name: cns_preenchido
+    description: "Flag indicando se o CNS possui 15 dígitos e é diferente de zeros."
+
+  - name: nome_profissional_cadsus
+    description: "Flag tratada indicando se o nome do profissional veio do CADSUS."
+
+  - name: nome_profissional_cadsus_original
+    description: "Valor original indicando se o nome do profissional veio do CADSUS."
+
+  - name: status
+    description: "Status original do registro do profissional no CNES."
+
+  - name: status_movimento
+    description: "Status de movimentação do registro do profissional no CNES."
+
+  - name: dt_atualiza
+    description: "Data da última atualização do registro do profissional no CNES."
+
+  - name: usuario_atualizacao
+    description: "Usuário responsável pela atualização do registro."
+
+  - name: usuario_em_uso
+    description: "Controle interno referente ao usuário em uso."
+
+  - name: checksum
+    description: "Campo de controle/checksum do CNES."
+
+  - name: sequencial_inclusao
+    description: "Código sequencial de inclusão do registro."
+
+  - name: competencia_mes
+    description: "Competência da base CNES no formato AAAA-MM."
+
+  - name: data_particao
+    description: "Data de partição/competência da base CNES."
+    data_tests:
+    - not_null
+
+  - name: ano_particao
+    description: "Ano da partição da base CNES."
+
+  - name: mes_particao
+    description: "Mês da partição da base CNES."
+
+  - name: loaded_at
+    description: "Timestamp de carga do registro na camada raw/staging."
+
+  - name: _source_file
+    description: "Arquivo GDB de origem do registro."
+
+- name: int_subpav_cnes_aps__profissionais_unidades
+  description: >
+    Modelo intermediário de vínculos entre profissionais, unidades e CBOs do CNES APS. Consolida os registros da LFCES021, enriquecendo com dados cadastrais do profissional e dados da unidade.
+
+    A chave principal de deduplicação é composta por data_particao, cpf, cnes e cod_cbo. O modelo mantém apenas registros com CPF, CNES e CBO preenchidos.
+
+    Este modelo representa o vínculo profissional-unidade-CBO e é usado como base para enriquecimento de carga horária, conselho profissional, vínculo, preceptoria e residência. A chave chave_profissional_unidade_cbo é composta por CPF + CNES + CBO e apoia a integração com vínculos de equipe.
+
+    O campo possui_carga_horaria indica se há carga horária ambulatorial, hospitalar ou outras informada. Ausência de carga horária não significa ausência de vínculo; indica apenas que os campos de carga vieram zerados ou nulos na LFCES021.
+
+  columns:
+  - name: cpf
+    description: "CPF do profissional, normalizado com 11 dígitos."
+    data_tests:
+    - not_null
+
+  - name: cns
+    description: "Cartão Nacional de Saúde do profissional, normalizado com 15 dígitos."
+
+  - name: nome_profissional
+    description: "Nome do profissional obtido da LFCES018."
+
+  - name: profissional_id_original
+    description: "Identificador original do profissional no CNES."
+
+  - name: cnes
+    description: "Código Nacional do Estabelecimento de Saúde vinculado ao profissional."
+    data_tests:
+    - not_null
+
+  - name: unidade_id_original
+    description: "Identificador original da unidade no CNES."
+
+  - name: nome_unidade
+    description: "Nome fantasia da unidade."
+
+  - name: ap
+    description: "Área Programática normalizada da unidade."
+
+  - name: ap_formatada
+    description: "Área Programática formatada com ponto."
+
+  - name: is_municipio_rio
+    description: "Flag indicando se a unidade pertence ao município do Rio de Janeiro."
+
+  - name: cod_cbo
+    description: "Código CBO do vínculo profissional-unidade."
+    data_tests:
+    - not_null
+
+  - name: vinculacao_id_original
+    description: "Código de vinculação informado no vínculo profissional-unidade."
+
+  - name: tipo_sus_nao_sus
+    description: "Indicador original de atendimento SUS/não SUS."
+
+  - name: detalhe_terceirizado_sih
+    description: "Detalhe de terceirização SIH informado no CNES."
+
+  - name: cnpj_detalhe_vinculo
+    description: "CNPJ associado ao detalhe do vínculo, quando informado."
+
+  - name: cg_horaamb
+    description: "Carga horária ambulatorial do profissional na unidade."
+
+  - name: cg_horahosp
+    description: "Carga horária hospitalar do profissional na unidade."
+
+  - name: cg_horaoutr
+    description: "Carga horária em outras atividades do profissional na unidade."
+
+  - name: carga_horaria_total
+    description: "Soma das cargas horárias ambulatorial, hospitalar e outras."
+
+  - name: carga_horaria_classificacao
+    description: "Classificação simplificada da carga horária: 40, 20, OUTRA ou null."
+
+  - name: possui_carga_horaria
+    description: "Flag indicando se o vínculo possui alguma carga horária informada."
+
+  - name: conselho_id_original
+    description: "Código do conselho profissional informado na LFCES021."
+
+  - name: numero_registro
+    description: "Número de registro profissional informado na LFCES021."
+
+  - name: uf_registro
+    description: "UF do registro profissional informado na LFCES021."
+
+  - name: tp_preceptor_original
+    description: "Valor original do indicador de preceptor."
+
+  - name: tp_preceptor
+    description: "Flag tratada indicando se o profissional é preceptor."
+
+  - name: tp_residente_original
+    description: "Valor original do indicador de residente."
+
+  - name: tp_residente
+    description: "Flag tratada indicando se o profissional é residente."
+
+  - name: tipo_unidade_sms
+    description: "Classificação SMS da unidade."
+
+  - name: is_unidade_aps_panorama
+    description: "Flag indicando se a unidade entra no quadro de Unidades APS do Panorama."
+
+  - name: unidade_ativa
+    description: "Flag indicando se a unidade está ativa no CNES."
+
+  - name: chave_profissional_unidade_cbo
+    description: "Chave composta por CPF, CNES e CBO, compatível com a lógica de integração do CNES."
+
+  - name: profissional_encontrado
+    description: "Flag indicando se o profissional da LFCES021 foi encontrado na LFCES018."
+
+  - name: unidade_encontrada
+    description: "Flag indicando se a unidade da LFCES021 foi encontrada no intermediário de unidades."
+
+  - name: status
+    description: "Status original do registro no CNES."
+
+  - name: status_movimento
+    description: "Status de movimentação do registro no CNES."
+
+  - name: dt_atualiza
+    description: "Data de atualização do vínculo profissional-unidade no CNES."
+
+  - name: dt_atualiza_profissional
+    description: "Data de atualização do cadastro do profissional na LFCES018."
+
+  - name: dt_atualizacao_origem
+    description: "Data de atualização do registro na origem."
+
+  - name: dt_cmtp_inicio
+    description: "Data inicial de competência do registro."
+
+  - name: dt_cmtp_fim
+    description: "Data final de competência do registro."
+
+  - name: usuario_atualizacao
+    description: "Usuário responsável pela atualização do registro."
+
+  - name: checksum
+    description: "Campo de controle/checksum do CNES."
+
+  - name: nu_seq_processo
+    description: "Número sequencial do processo associado ao registro."
+
+  - name: competencia_mes
+    description: "Competência da base CNES no formato AAAA-MM."
+
+  - name: data_particao
+    description: "Data de partição/competência da base CNES."
+    data_tests:
+    - not_null
+
+  - name: ano_particao
+    description: "Ano da partição da base CNES."
+
+  - name: mes_particao
+    description: "Mês da partição da base CNES."
+
+  - name: loaded_at
+    description: "Timestamp de carga do registro na camada raw/staging."
+
+  - name: _source_file
+    description: "Arquivo GDB de origem do registro."
+
+- name: int_subpav_cnes_aps__profissionais_consolidacao
+  description: >-
+    Modelo intermediário consolidado de profissionais do CNES APS. Integra vínculos profissional-unidade-CBO com vínculos profissional-equipe, preservando o vínculo de equipe quando ele existe e usando o vínculo profissional-unidade para enriquecer carga horária, conselho, preceptoria, residência e dados complementares.
+
+
+    A chave principal de deduplicação considera data_particao, profissional, unidade, CBO e INE. Quando não há vínculo com equipe, o INE permanece nulo e o registro continua válido como vínculo profissional-unidade. O campo possui_vinculo_equipe indica se o registro entra nas regras de composição de equipes. O campo inconsistente sinaliza múltiplo vínculo ativo do mesmo CPF, CNES e CBO em mais de uma equipe na mesma competência.
+
+  columns:
+  - name: data_particao
+    description: Data de partição/competência da base CNES.
+  - name: ano_particao
+    description: Ano da partição da base CNES.
+  - name: mes_particao
+    description: Mês da partição da base CNES.
+  - name: competencia_mes
+    description: Competência da base CNES no formato AAAAMM.
+  - name: competencia_id
+    description: Identificador da competência na base de referência temporal.
+  - name: competencia
+    description: Competência no formato AAAA-MM.
+  - name: dt_final_competencia
+    description: Último dia da competência.
+  - name: dt_final_competencia_anterior
+    description: Último dia da competência imediatamente anterior.
+  - name: base_final
+    description: Indicador de base final da competência, quando informado na origem.
+  - name: cpf
+    description: CPF do profissional, normalizado com 11 dígitos.
+  - name: cns
+    description: Cartão Nacional de Saúde do profissional, normalizado com 15 dígitos.
+  - name: nome_profissional
+    description: Nome do profissional.
+  - name: profissional_id_original
+    description: Identificador original do profissional no CNES.
+  - name: sexo_id
+    description: Código tratado do sexo do profissional.
+  - name: sexo
+    description: Descrição tratada do sexo do profissional.
+  - name: sexo_id_original
+    description: Valor original do sexo na origem.
+  - name: cnes
+    description: Código Nacional do Estabelecimento de Saúde vinculado ao profissional.
+  - name: unidade_id_original
+    description: Identificador original da unidade no CNES.
+  - name: nome_unidade
+    description: Nome fantasia da unidade.
+  - name: ap
+    description: Área Programática normalizada da unidade.
+  - name: ap_formatada
+    description: Área Programática formatada com ponto.
+  - name: cod_cbo
+    description: Código CBO do vínculo profissional-unidade.
+  - name: vinculacao_id_original
+    description: Código de vinculação informado no vínculo profissional-unidade.
+  - name: tipo_sus_nao_sus
+    description: Indicador original de atendimento SUS/não SUS.
+  - name: detalhe_terceirizado_sih
+    description: Detalhe de terceirização SIH informado no CNES.
+  - name: cnpj_detalhe_vinculo
+    description: CNPJ associado ao detalhe do vínculo, quando informado.
+  - name: cg_horaamb
+    description: Carga horária ambulatorial do profissional na unidade.
+  - name: cg_horahosp
+    description: Carga horária hospitalar do profissional na unidade.
+  - name: cg_horaoutr
+    description: Carga horária em outras atividades do profissional na unidade.
+  - name: carga_horaria_total
+    description: Soma das cargas horárias ambulatorial, hospitalar e outras.
+  - name: carga_horaria_classificacao
+    description: 'Classificação simplificada da carga horária: 40, 20, OUTRA ou null.'
+  - name: possui_carga_horaria
+    description: Flag indicando se o vínculo possui alguma carga horária informada.
+  - name: conselho_id_original
+    description: Código do conselho profissional informado no vínculo profissional-unidade.
+  - name: numero_registro
+    description: Número de registro profissional.
+  - name: uf_registro
+    description: UF do registro profissional.
+  - name: tp_preceptor_original
+    description: Valor original do indicador de preceptor.
+  - name: tp_preceptor
+    description: Flag tratada indicando se o profissional é preceptor.
+  - name: tp_residente_original
+    description: Valor original do indicador de residente.
+  - name: tp_residente
+    description: Flag tratada indicando se o profissional é residente.
+  - name: tipo_unidade_sms
+    description: Classificação SMS da unidade.
+  - name: is_unidade_aps_panorama
+    description: Flag indicando se a unidade entra no quadro de Unidades APS do Panorama.
+  - name: unidade_ativa
+    description: Flag indicando se a unidade está ativa no CNES.
+  - name: status
+    description: Status cadastral da origem CNES.
+  - name: status_movimento
+    description: Status de movimentação da origem CNES.
+  - name: ine
+    description: Identificador Nacional de Equipe, quando o vínculo profissional-unidade-CBO possui correspondência com equipe.
+  - name: seq_equipe
+    description: Sequencial da equipe na origem.
+  - name: cod_area
+    description: Código da área da equipe.
+  - name: nm_referencia
+    description: Nome de referência da equipe.
+  - name: tipo_equipe_id
+    description: Código do tipo de equipe no CNES.
+  - name: tipo_equipe_descricao
+    description: Descrição do tipo de equipe.
+  - name: grupo_equipe_id
+    description: Grupo do tipo de equipe.
+  - name: subtipo_equipe_id
+    description: Subtipo de equipe CNES.
+  - name: classificacao_equipe
+    description: Classificação ampla da equipe segundo agrupamento CNES.
+  - name: classificacao_equipe_temporal
+    description: Classificação da equipe considerando regras temporais de tipologia CNES.
+  - name: classificacao_equipe_historica
+    description: Alias de compatibilidade para classificacao_equipe_temporal.
+  - name: classificacao_equipe_painel
+    description: Classificação baseada na tipologia atual do painel.
+  - name: equipe_ativa
+    description: Flag indicando se a equipe está ativa.
+  - name: fl_equipeminima
+    description: Flag tratada indicando se o profissional compõe a equipe mínima.
+  - name: is_esf
+    description: Flag ampla indicando se a equipe é classificada como ESF.
+  - name: is_esf_panorama_historico
+    description: Flag específica para reprodução do campo ESF do Panorama na série histórica.
+  - name: is_eacs
+    description: Flag ampla indicando se a equipe é classificada como EACS.
+  - name: is_eacs_panorama_historico
+    description: Flag específica para reprodução do campo EACS no Panorama histórico.
+  - name: is_esb
+    description: Flag indicando se a equipe é classificada como Equipe de Saúde Bucal.
+  - name: is_ecr
+    description: Flag indicando se a equipe é classificada como Equipe de Consultório na Rua.
+  - name: is_enasf
+    description: Flag indicando se a equipe é classificada como ENASF/NASF.
+  - name: is_eap
+    description: Flag indicando se a equipe é classificada como Equipe de Atenção Primária.
+  - name: is_eapp
+    description: Flag ampla indicando se a equipe é classificada como Equipe de Atenção Primária Prisional.
+  - name: is_eapp_panorama
+    description: Flag específica para reprodução do campo EAPP do Panorama.
+  - name: is_emad
+    description: Flag ampla indicando se a equipe é classificada como EMAD.
+  - name: is_emad_panorama
+    description: Flag específica para reprodução do campo EMAD do Panorama.
+  - name: is_emap
+    description: Flag indicando se a equipe é classificada como EMAP.
+  - name: is_equipe_aps_painel
+    description: Flag para regra atual do painel de equipes APS.
+  - name: is_equipe_aps_cobertura
+    description: Flag para cálculo de cobertura APS no período recente.
+  - name: is_equipe_aps_historico
+    description: Flag oficial para contagem histórica do campo APS.
+  - name: is_equipe_aps_cobertura_historica
+    description: Alias de compatibilidade para is_equipe_aps_historico.
+  - name: is_equipe_aps_cobertura_painel
+    description: Alias de compatibilidade para is_equipe_aps_painel.
+  - name: is_equipe_saude_bucal
+    description: Alias de compatibilidade para is_esb.
+  - name: is_equipe_emulti
+    description: Alias de compatibilidade para is_enasf.
+  - name: is_equipe_prisional
+    description: Alias de compatibilidade para is_eapp_panorama.
+  - name: is_equipe_ad
+    description: Flag indicando se a equipe pertence ao recorte de Atenção Domiciliar.
+  - name: is_aps
+    description: Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES.
+  - name: dt_entrada
+    description: Data de entrada do profissional na equipe.
+  - name: dt_desligamento
+    description: Data de desligamento do profissional da equipe.
+  - name: dias_desligado
+    description: Quantidade de dias entre a data de desligamento e o último dia da competência.
+  - name: possui_dt_desligamento
+    description: Flag indicando se o vínculo profissional-equipe possui data de desligamento.
+  - name: vinculo_equipe_ativo
+    description: Flag indicando se o vínculo do profissional com a equipe está ativo.
+  - name: dt_atualiza_equipe
+    description: Data de atualização do registro de equipe/profissional-equipe.
+  - name: dt_atualiza_unidade
+    description: Data de atualização do vínculo profissional-unidade.
+  - name: dt_atualiza
+    description: Data de atualização consolidada do registro.
+  - name: dt_atualiza_profissional
+    description: Data de atualização do cadastro do profissional.
+  - name: dt_atualizacao_origem
+    description: Data de atualização na origem federal, quando disponível.
+  - name: pu_dt_cmtp_inicio
+    description: Data de início de competência do vínculo profissional-unidade.
+  - name: pu_dt_cmtp_fim
+    description: Data final de competência do vínculo profissional-unidade.
+  - name: ep_dt_cmtp_inicio
+    description: Data de início de competência do vínculo profissional-equipe.
+  - name: ep_dt_cmtp_fim
+    description: Data final de competência do vínculo profissional-equipe.
+  - name: usuario_atualizacao
+    description: Usuário responsável pela última atualização na origem, quando informado.
+  - name: nu_seq_processo
+    description: Número sequencial do processo de carga na origem, quando disponível.
+  - name: chave_profissional_unidade_cbo_base
+    description: Chave técnica profissional-unidade-CBO utilizada para integração entre LFCES021 e LFCES038.
+  - name: chave_profissional_equipe_cbo
+    description: Chave técnica profissional-equipe-CBO.
+  - name: ep_chave_profissional_unidade_cbo
+    description: Chave profissional-unidade-CBO proveniente do vínculo profissional-equipe.
+  - name: pu_chave_profissional_unidade_cbo
+    description: Chave profissional-unidade-CBO proveniente do vínculo profissional-unidade.
+  - name: qtd_vinculos_mesma_chave
+    description: Quantidade de vínculos profissional-unidade-CBO na mesma competência.
+  - name: qtd_vinculos_ativos_mesma_chave
+    description: Quantidade de vínculos ativos de equipe encontrados para a mesma chave data_particao, CPF, CNES e CBO.
+  - name: possui_vinculo_equipe
+    description: Flag indicando se o vínculo profissional-unidade-CBO possui correspondência com equipe.
+  - name: origem_competencia_vinculo
+    description: Origem temporal usada para o vínculo profissional-equipe.
+  - name: data_particao_origem_vinculo
+    description: Data de partição da origem do vínculo profissional-equipe.
+  - name: inconsistente
+    description: "Flag indicando que o mesmo CPF, CNES e CBO possui mais de um vínculo ativo em equipe na mesma competência. Não significa erro de carga; sinaliza possível compartilhamento de profissional entre equipes ou caso que pode exigir análise manual nas regras de composição.\n"
+  - name: pu_loaded_at
+    description: Timestamp de carga do vínculo profissional-unidade.
+  - name: pu_source_file
+    description: Arquivo de origem do vínculo profissional-unidade.
+  - name: ep_loaded_at
+    description: Timestamp de carga do vínculo profissional-equipe.
+  - name: ep_source_file
+    description: Arquivo de origem do vínculo profissional-equipe.
+  - name: loaded_at
+    description: Timestamp de carga do registro na camada raw/staging.
+  - name: _source_file
+    description: Arquivo GDB de origem do registro.
+- name: int_subpav_cnes_aps__quantitativos_profissionais_equipes
+  description: >-
+    Modelo intermediário de quantitativos de profissionais por equipe, CBO e categoria profissional. Parte do modelo consolidado de profissionais e considera vínculos com equipe ativa, INE preenchido, CBO preenchido e carga horária ambulatorial maior ou igual a 20 horas.
+
+
+    O modelo classifica os CBOs em categorias profissionais usadas nas regras de composição das equipes e de vacância do Panorama CNES. Os totais consideram profissionais ativos no vínculo de equipe, ou seja, registros sem data de desligamento. O campo inconsistente é propagado do consolidado de profissionais e indica possível múltiplo vínculo ativo do mesmo CPF, CNES e CBO em mais de uma equipe na mesma competência.
+
+  columns:
+  - name: data_particao
+    description: Data de partição/competência da base CNES.
+  - name: ano_particao
+    description: Ano da partição da base CNES.
+  - name: mes_particao
+    description: Mês da partição da base CNES.
+  - name: competencia_mes
+    description: Competência da base CNES no formato AAAAMM.
+  - name: ap
+    description: Área Programática normalizada da unidade vinculada à equipe.
+  - name: ap_formatada
+    description: Área Programática formatada com ponto.
+  - name: cnes
+    description: Código Nacional do Estabelecimento de Saúde vinculado à equipe.
+  - name: nome_unidade
+    description: Nome fantasia da unidade vinculada à equipe.
+  - name: ine
+    description: Identificador Nacional de Equipe.
+  - name: tipo_equipe_id
+    description: Código do tipo de equipe no CNES.
+  - name: classificacao_equipe
+    description: Classificação ampla da equipe segundo agrupamento CNES.
+  - name: classificacao_equipe_historica
+    description: Classificação da equipe considerando regras temporais de tipologia CNES.
+  - name: classificacao_equipe_painel
+    description: Classificação baseada na tipologia atual do painel.
+  - name: is_equipe_aps_cobertura
+    description: Flag para cálculo de cobertura APS no período recente.
+  - name: is_equipe_aps_cobertura_historica
+    description: Flag para cálculo histórico de cobertura APS.
+  - name: is_equipe_aps_cobertura_painel
+    description: Flag para regra atual do painel de equipes APS.
+  - name: is_equipe_saude_bucal
+    description: Flag indicando se a equipe pertence ao recorte de Saúde Bucal.
+  - name: is_equipe_emulti
+    description: Flag indicando se a equipe pertence ao recorte ENASF/eMulti.
+  - name: is_equipe_prisional
+    description: Flag indicando se a equipe pertence ao recorte de Atenção Primária Prisional.
+  - name: is_equipe_ad
+    description: Flag indicando se a equipe pertence ao recorte de Atenção Domiciliar.
+  - name: is_aps
+    description: Flag ampla indicando se a equipe pertence a algum tipo relacionado à APS no CNES.
+  - name: cod_cbo
+    description: Código CBO do profissional na equipe.
+  - name: categoria_profissional_composicao
+    description: "Categoria profissional usada nas regras de composição de composição. Valores esperados incluem MEDICO, ENFERMEIRO, TEC_AUX_ENFERMAGEM, ACS, CIRURGIAO_DENTISTA, AUX_BUCAL e TEC_BUCAL.\n"
+  - name: categoria_profissional_vacancia_panorama
+    description: "Categoria profissional usada nas regras de vacância do Panorama CNES. Considera um conjunto mais restrito de CBOs em relação à composição ampla.\n"
+  - name: categoria_profissional_panorama
+    description: Alias de compatibilidade para categoria_profissional_vacancia_panorama.
+  - name: categoria_profissional_aps_ampla
+    description: "Categoria profissional inferida por regra ampla de CBO, incluindo categorias relacionadas à APS e OUTROS.\n"
+  - name: categoria_profissional_aps
+    description: "Categoria profissional final para agregação. Prioriza o mapa de composição e, quando o CBO não está nesse mapa, utiliza a classificação ampla de APS.\n"
+  - name: is_cbo_composicao
+    description: Flag indicando se o CBO está no mapa de composição.
+  - name: is_cbo_vacancia_panorama
+    description: Flag indicando se o CBO está no mapa de vacância do Panorama.
+  - name: is_cbo_panorama
+    description: Alias de compatibilidade para is_cbo_vacancia_panorama.
+  - name: total_registros
+    description: Total de registros agregados para a combinação de competência, equipe, CBO e categoria.
+  - name: total_profissionais
+    description: Total de profissionais ativos, considerando registros sem dt_desligamento.
+  - name: total_prof_masculino
+    description: Total de profissionais ativos com sexo tratado como masculino.
+  - name: total_prof_feminino
+    description: Total de profissionais ativos com sexo tratado como feminino.
+  - name: total_sem_sexo
+    description: Total de profissionais ativos sem sexo informado ou com sexo não classificado.
+  - name: total_40_horas
+    description: Total de profissionais ativos com carga horária ambulatorial maior ou igual a 40 horas.
+  - name: total_20_horas
+    description: Total de profissionais ativos com carga horária ambulatorial maior ou igual a 20 e menor que 40 horas.
+  - name: total_carga_horaria_ambulatorial
+    description: Soma da carga horária ambulatorial dos profissionais ativos.
+  - name: total_24_horas
+    description: Total de profissionais ativos com carga horária ambulatorial igual a 24 horas.
+  - name: total_outras_horas
+    description: Total de profissionais ativos com carga horária ambulatorial diferente de 20, 24 e 40 horas.
+  - name: total_residentes
+    description: Total de profissionais ativos marcados como residentes.
+  - name: total_preceptores
+    description: Total de profissionais ativos marcados como preceptores.
+  - name: total_contratados
+    description: Total de profissionais ativos cuja data de entrada na equipe ocorreu na mesma competência.
+  - name: total_desligados
+    description: Total de registros com data de desligamento preenchida.
+  - name: total_dias_desligados
+    description: Maior quantidade de dias desligados observada na combinação agregada.
+  - name: data_eqp_incompleta
+    description: Data de início da ausência usada para incompletude da categoria/equipe.
+  - name: data_eqp_vacancia
+    description: "Data usada como referência de vacância quando não há profissional ativo de 40 horas na combinação agregada.\n"
+  - name: inconsistente
+    description: "Flag indicando se há possível múltiplo vínculo ativo do mesmo CPF, CNES e CBO em mais de uma equipe na competência.\n"
+- name: int_subpav_cnes_aps__qpe_com_cbo_ausente
+  description: >-
+    Modelo intermediário que complementa os quantitativos profissionais por equipe com linhas sintéticas para categorias obrigatórias ausentes. A partir dos quantitativos reais por equipe, CBO e categoria, identifica categorias necessárias à composição da equipe que não aparecem na competência atual e cria linha sintética com total de profissionais igual a zero.
+
+
+    Essas linhas permitem calcular vacância e incompletude por categoria profissional, considerando janela histórica de até quatro competências anteriores e impacto após ausência superior a 60 dias. O campo origem_linha_qpe diferencia linhas reais das linhas criadas para representar categoria obrigatória ausente.
+
+  columns:
+  - name: data_particao
+    description: Data de partição/competência da base CNES.
+  - name: ano_particao
+    description: Ano da partição da base CNES.
+  - name: mes_particao
+    description: Mês da partição da base CNES.
+  - name: ap
+    description: Área Programática normalizada da unidade vinculada à equipe.
+  - name: ap_formatada
+    description: Área Programática formatada com ponto.
+  - name: cnes
+    description: Código Nacional do Estabelecimento de Saúde vinculado à equipe.
+  - name: nome_unidade
+    description: Nome fantasia da unidade vinculada à equipe.
+  - name: ine
+    description: Identificador Nacional de Equipe.
+  - name: nm_referencia
+    description: Nome de referência da equipe.
+  - name: tipo_equipe_id
+    description: Código do tipo de equipe no CNES.
+  - name: classificacao_equipe
+    description: Classificação ampla da equipe segundo agrupamento CNES.
+  - name: cod_cbo
+    description: Código CBO original ou sintético associado à categoria profissional.
+  - name: categoria_profissional_composicao
+    description: Categoria profissional usada nas regras de composição de composição.
+  - name: categoria_profissional_vacancia_panorama
+    description: Categoria profissional usada nas regras de vacância do Panorama CNES.
+  - name: is_cbo_composicao
+    description: Flag indicando se o CBO pertence ao mapa de composição.
+  - name: is_cbo_vacancia_panorama
+    description: Flag indicando se o CBO pertence ao mapa de vacância do Panorama.
+  - name: is_cbo_panorama
+    description: Alias de compatibilidade para is_cbo_vacancia_panorama nas linhas originais; nas linhas sintéticas é preenchido como 0.
+  - name: total_profissionais
+    description: Total de profissionais ativos na categoria. Nas linhas sintéticas de ausência, o valor é 0.
+  - name: total_40_horas
+    description: Total de profissionais ativos com carga horária ambulatorial maior ou igual a 40 horas. Nas linhas sintéticas, o valor é 0.
+  - name: total_20_horas
+    description: Total de profissionais ativos com carga horária ambulatorial maior ou igual a 20 e menor que 40 horas. Nas linhas sintéticas, o valor é 0.
+  - name: total_desligados
+    description: Total de registros com data de desligamento preenchida. Nas linhas sintéticas, o valor é 0.
+  - name: total_dias_desligados
+    description: "Quantidade de dias desde a data calculada de incompletude até o último dia da competência. Nas linhas sintéticas, representa o tempo de ausência da categoria obrigatória.\n"
+  - name: data_eqp_vacancia
+    description: "Data de referência de vacância da categoria profissional ausente. É preenchida quando a ausência está dentro da janela de até 60 dias, conforme regra usada para vacância.\n"
+  - name: data_eqp_incompleta
+    description: "Data calculada de início da incompletude da categoria obrigatória na equipe. É preenchida nas linhas sintéticas de categoria ausente.\n"
+  - name: inconsistente
+    description: "Flag de inconsistência herdada das linhas originais. Nas linhas sintéticas de categoria ausente, é preenchida como 0.\n"
+  - name: origem_linha_qpe
+    description: "Origem da linha no modelo. ORIGINAL indica linha proveniente do quantitativo de profissionais; SINTETICA_CBO_AUSENTE indica linha criada para representar uma categoria obrigatória ausente.\n"
+- name: int_subpav_cnes_aps__composicao_equipes
+  description: "Modelo intermediário de composição, completude e incompletude das equipes APS. Consolida os quantitativos por equipe a partir do modelo de QPE com categorias ausentes e aplica as regras de composição de eSF, APS e eSB.\n\nPara eSF, considera completa a equipe que possui médico válido, enfermeiro, técnico ou auxiliar de enfermagem e ACS conforme a regra temporal aplicável. Para a categoria médica, considera válido 1 médico com 40h ou 2 médicos com 20h. A incompletude é calculada por categoria profissional obrigatória, com impacto após ausência superior a 60 dias.\n\nPara eSB, considera completa a equipe com cirurgião-dentista e auxiliar ou técnico de saúde bucal. O modelo também expõe diagnósticos de ausência de cirurgião-dentista, ausência de auxiliar/técnico bucal e inexistência após 60 dias."
+  columns:
+  - name: data_particao
+    description: Data mensal de referência do snapshot CNES.
+  - name: ano_particao
+    description: Ano extraído da data de partição.
+  - name: mes_particao
+    description: Mês extraído da data de partição.
+  - name: ap
+    description: Código da Área Programática.
+  - name: ap_formatada
+    description: Área Programática formatada para exibição.
+  - name: cnes
+    description: Código CNES da unidade.
+  - name: nome_unidade
+    description: Nome fantasia da unidade.
+  - name: ine
+    description: Identificador Nacional de Equipe.
+  - name: nm_referencia
+    description: Nome de referência da equipe.
+  - name: tipo_equipe_id
+    description: Tipo de equipe CNES.
+  - name: tipo_equipe_descricao
+    description: Descrição do tipo de equipe CNES.
+  - name: classificacao_equipe
+    description: Classificação consolidada da equipe.
+  - name: dt_ativacao
+    description: Data de ativação da equipe.
+  - name: dt_desativacao
+    description: Data de desativação da equipe.
+  - name: equipe_ativa
+    description: Flag indicando equipe ativa na competência.
+  - name: is_esf
+    description: Flag de equipe de Saúde da Família.
+  - name: is_esb
+    description: Flag de equipe de Saúde Bucal.
+  - name: is_aps
+    description: Flag geral de equipe APS.
+  - name: is_esf_panorama_historico
+    description: Flag de eSF usada no recorte histórico do Panorama.
+  - name: is_eacs_panorama_historico
+    description: Flag de eACS usada no recorte histórico do Panorama.
+  - name: is_ecr
+    description: Flag de equipe de Consultório na Rua.
+  - name: is_eap
+    description: Flag de equipe de Atenção Primária.
+  - name: is_equipe_aps_historico
+    description: Flag de equipe APS usada na série histórica.
+  - name: is_equipe_aps_painel
+    description: Flag de equipe APS conforme regra do painel atual.
+  - name: competencia
+    description: Competência no formato AAAA-MM.
+  - name: competencia_id
+    description: Identificador da competência na base de referência temporal.
+  - name: dt_final_competencia
+    description: Último dia da competência.
+  - name: dt_final_competencia_anterior
+    description: Último dia da competência imediatamente anterior.
+  - name: total_medico
+    description: Total de profissionais médicos considerados na equipe.
+  - name: total_medico_40h
+    description: Total de médicos com carga horária ambulatorial de 40h ou mais.
+  - name: total_medico_20h
+    description: Total de médicos com carga horária ambulatorial entre 20h e 39h.
+  - name: total_enfermeiro
+    description: Total de profissionais enfermeiros considerados na equipe.
+  - name: total_enfermeiro_40h
+    description: Total de enfermeiros com carga horária ambulatorial de 40h ou mais.
+  - name: total_tec_aux
+    description: Total de técnicos ou auxiliares de enfermagem considerados na equipe.
+  - name: total_tec_aux_enfermagem_40h
+    description: Total de técnicos ou auxiliares de enfermagem com carga horária ambulatorial de 40h ou mais.
+  - name: total_acs
+    description: Total de ACS considerados na equipe.
+  - name: total_acs_40h
+    description: Total de ACS com carga horária ambulatorial de 40h ou mais.
+  - name: cirurgiao
+    description: Total de cirurgiões-dentistas com 40h ou mais.
+  - name: cirurgiao_20
+    description: Total de cirurgiões-dentistas com 20h a 39h.
+  - name: aux_bucal
+    description: Total de auxiliares de saúde bucal com 40h ou mais.
+  - name: aux_bucal_20
+    description: Total de auxiliares de saúde bucal com 20h a 39h.
+  - name: tec_bucal
+    description: Total de técnicos de saúde bucal com 40h ou mais.
+  - name: tec_bucal_20
+    description: Total de técnicos de saúde bucal com 20h a 39h.
+  - name: desligados_60_medico
+    description: Flag/total de ausência de médico com impacto superior a 60 dias.
+  - name: desligados_60_enfermeiro
+    description: Flag/total de ausência de enfermeiro com impacto superior a 60 dias.
+  - name: desligados_60_tec_aux_enfermagem
+    description: Flag/total de ausência de técnico/auxiliar de enfermagem com impacto superior a 60 dias.
+  - name: desligados_60_acs
+    description: Flag/total de ausência de ACS com impacto superior a 60 dias.
+  - name: data_eqp_incompleta
+    description: Data de início da ausência usada para incompletude da categoria/equipe.
+  - name: data_eqp_vacancia
+    description: Data de início da ausência quando ainda está dentro da janela de vacância de até 60 dias.
+  - name: incompleta_medico
+    description: Diagnóstico de incompletude por ausência de médico válido.
+  - name: incompleta_enfermeiro
+    description: Diagnóstico de incompletude por ausência de enfermeiro 40h.
+  - name: incompleta_tec_aux_enfermagem
+    description: Diagnóstico de incompletude por ausência de técnico/auxiliar de enfermagem 40h.
+  - name: incompleta_acs
+    description: Diagnóstico de incompletude por ausência de ACS conforme regra temporal aplicável.
+  - name: total_incompletude_esf
+    description: Soma dos diagnósticos de incompletude da eSF.
+  - name: esf_completa
+    description: Flag indicando eSF completa conforme regra de composição.
+  - name: esf_incompleta
+    description: Flag indicando eSF incompleta conforme regra de composição e ausência superior a 60 dias.
+  - name: aps_completa
+    description: Flag indicando equipe APS completa no recorte histórico.
+  - name: aps_incompleta
+    description: Flag indicando equipe APS incompleta no recorte histórico.
+  - name: esb_completa
+    description: Flag indicando eSB completa conforme regra de composição.
+  - name: esb_incompleta
+    description: Flag indicando eSB incompleta conforme regra de composição.
+  - name: desligados_60_cirurgiao_dentista
+    description: Flag/total de ausência de cirurgião-dentista com impacto superior a 60 dias.
+  - name: desligados_60_aux_bucal
+    description: Flag/total de ausência de auxiliar de saúde bucal com impacto superior a 60 dias.
+  - name: desligados_60_tec_bucal
+    description: Flag/total de ausência de técnico de saúde bucal com impacto superior a 60 dias.
+  - name: incompleta_cirurgiao_dentista
+    description: Diagnóstico de incompletude por ausência de cirurgião-dentista.
+  - name: incompleta_aux_tec_bucal
+    description: Diagnóstico de incompletude por ausência de auxiliar ou técnico de saúde bucal.
+  - name: esb_inexistente_60d
+    description: Flag indicando eSB sem composição mínima por ausência superior a 60 dias.
+  - name: inconsistente
+    description: Flag de possível múltiplo vínculo ativo do mesmo CPF, CNES e CBO em mais de uma equipe na mesma competência.
+  - name: inconsistente_qpe
+    description: Flag agregada de inconsistência proveniente dos quantitativos profissionais por equipe.
+  - name: is_tipo_esf_panorama
+    description: Flag indicando se a equipe entra no recorte eSF do Panorama histórico.
+  - name: acs_minimo_ok
+    description: Flag indicando se a equipe atende à regra mínima de ACS aplicável à competência.

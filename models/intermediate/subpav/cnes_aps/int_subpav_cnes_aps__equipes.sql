@@ -105,7 +105,7 @@ motivo_desativacao as (
 
 extraido as (
     select
-        -- identificação principal
+        
         lpad(nullif(regexp_replace(CO_EQUIPE, r'[^0-9]', ''), ''), 10, '0') as ine,
         nullif(UNIDADE_ID, '') as unidade_id_original,
         nullif(COD_MUN, '') as cod_mun,
@@ -113,13 +113,13 @@ extraido as (
         nullif(SEQ_EQUIPE, '') as seq_equipe,
         nullif(NM_REFERENCIA, '') as nm_referencia,
 
-        -- tipologia / descrição
+        
         safe_cast(nullif(TP_EQUIPE, '') as int64) as tipo_equipe_id,
         nullif(CO_SUB_TIPO_EQUIPE, '') as subtipo_equipe_id,
         lpad(nullif(CD_MOTIVO_DESATIV, ''), 2, '0') as motivo_desativacao_equipe_id,
         lpad(nullif(CD_TP_DESATIV, ''), 2, '0') as tipo_desativacao_id,
 
-        -- datas
+        
         safe_cast(nullif(DT_ATIVACAO, '') as date) as dt_ativacao,
         safe_cast(nullif(DT_DESATIVACAO, '') as date) as dt_desativacao,
         safe_cast(nullif(DATA_ATU, '') as date) as dt_atualiza,
@@ -127,7 +127,7 @@ extraido as (
         safe_cast(nullif(DT_CMTP_INICIO, '') as date) as dt_cmtp_inicio,
         safe_cast(nullif(DT_CMTP_FIM, '') as date) as dt_cmtp_fim,
 
-        -- população assistida: valores originais do CNES
+        
         nullif(TP_POP_ASSIST_QUILOMB, '') as pop_assist_quilomb_original,
         nullif(TP_POP_ASSIST_ASSENT, '') as pop_assist_assent_original,
         nullif(TP_POP_ASSIST_GERAL, '') as pop_assist_geral_original,
@@ -140,7 +140,7 @@ extraido as (
         nullif(TP_POP_ASSIST_CONFLITO_LEI, '') as pop_assist_conflito_lei_original,
         nullif(TP_POP_ASSIST_ADOL_CONF_LEI, '') as pop_assist_adol_conf_lei_original,
 
-        -- outros campos CNES
+        
         nullif(CO_CNES_UOM, '') as cnes_unidade_odontologica_movel,
         safe_cast(nullif(NU_CH_AMB_UOM, '') as int64) as carga_horaria_ambulatorial_uom,
         nullif(CO_PROF_SUS_PRECEPTOR, '') as co_prof_sus_preceptor,
@@ -149,7 +149,7 @@ extraido as (
         nullif(STATUSMOV, '') as status_movimento,
         nullif(NU_SEQ_PROCESSO, '') as nu_seq_processo,
 
-        -- metadados
+        
         data_particao,
         ano_particao,
         mes_particao,
@@ -538,7 +538,6 @@ deduplicado as (
 )
 
 select
-    -- identificação principal
     ine,
     cnes,
     unidade_id_original,
@@ -547,13 +546,11 @@ select
     ap_formatada,
     is_municipio_rio,
 
-    -- identificação da equipe
     cod_mun,
     cod_area,
     seq_equipe,
     nm_referencia,
 
-    -- tipologia
     tipo_equipe_id,
     tipo_equipe_descricao,
     grupo_equipe_id,
@@ -562,7 +559,6 @@ select
     classificacao_equipe_temporal,
     classificacao_equipe_painel,
 
-    -- flags de contagem
     equipe_ativa,
     is_esf,
     is_esf_panorama_historico,
@@ -582,11 +578,9 @@ select
     is_equipe_aps_historico,
     is_aps,
 
-    -- unidade / escopo
     tipo_unidade_sms,
     is_unidade_aps_panorama,
 
-    -- desativação
     motivo_desativacao_equipe_id,
     motivo_desativacao_equipe,
     tipo_desativacao_id,
@@ -594,7 +588,6 @@ select
     dt_desativacao,
     dt_atualiza,
 
-    -- população assistida original
     pop_assist_quilomb_original,
     pop_assist_assent_original,
     pop_assist_geral_original,
@@ -607,7 +600,6 @@ select
     pop_assist_conflito_lei_original,
     pop_assist_adol_conf_lei_original,
 
-    -- população assistida tratada
     pop_assist_quilomb,
     pop_assist_assent,
     pop_assist_geral,
@@ -620,7 +612,6 @@ select
     pop_assist_conflito_lei,
     pop_assist_adol_conf_lei,
 
-    -- outros campos CNES
     cnes_unidade_odontologica_movel,
     carga_horaria_ambulatorial_uom,
     co_prof_sus_preceptor,
@@ -633,7 +624,6 @@ select
     dt_cmtp_inicio,
     dt_cmtp_fim,
 
-    -- metadados
     competencia_mes,
     data_particao,
     ano_particao,

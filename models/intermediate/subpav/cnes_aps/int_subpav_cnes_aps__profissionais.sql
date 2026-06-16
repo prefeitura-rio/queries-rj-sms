@@ -84,7 +84,7 @@ with fonte as (
 
 extraido as (
     select
-        -- identificação principal
+        
         nullif(cast(PROF_ID as string), '') as profissional_id_original,
         lpad(
             nullif(regexp_replace(cast(CPF_PROF as string), r'[^0-9]', ''), ''),
@@ -98,13 +98,13 @@ extraido as (
         ) as cns,
         nullif(cast(PISPASEP as string), '') as pis_pasep,
 
-        -- nomes
+        
         nullif(cast(NOME_PROF as string), '') as nome_profissional,
         nullif(cast(NO_SOCIAL as string), '') as nome_social,
         nullif(cast(NOME_MAE as string), '') as nome_mae,
         nullif(cast(NOME_PAI as string), '') as nome_pai,
 
-        -- dados pessoais
+        
         safe_cast(nullif(cast(DATA_NASC as string), '') as date) as dt_nascimento,
         nullif(cast(SEXO as string), '') as sexo_id_original,
         nullif(cast(CD_RACA as string), '') as raca_cor_id_original,
@@ -115,7 +115,7 @@ extraido as (
         nullif(cast(CD_PAIS as string), '') as pais_origem_id,
         nullif(cast(CO_ETNIA as string), '') as etnia_id,
 
-        -- território / endereço
+        
         nullif(cast(COD_MUN as string), '') as municipio_nascimento_id,
         nullif(cast(COD_MUN_RES as string), '') as municipio_residencia_id,
         nullif(cast(UF_RES as string), '') as uf_residencia,
@@ -128,11 +128,11 @@ extraido as (
         nullif(cast(BAIRRODIST as string), '') as bairro,
         nullif(cast(COD_CEP as string), '') as cep,
 
-        -- contato
+        
         nullif(cast(TELEFONE as string), '') as telefone,
         nullif(cast(NO_EMAIL as string), '') as email,
 
-        -- documentos
+        
         nullif(cast(NUM_IDENT as string), '') as numero_identidade,
         nullif(cast(CODORGEMIS as string), '') as orgao_emissor_identidade,
         nullif(cast(SIGLA_EST as string), '') as uf_orgao_emissor_identidade,
@@ -151,11 +151,11 @@ extraido as (
         safe_cast(nullif(cast(DT_EMIS_CARTEIRA_HAB as string), '') as date) as dt_emissao_carteira_habilitacao,
         nullif(cast(UF_CARTEIRA_HAB as string), '') as uf_carteira_habilitacao,
 
-        -- entrada/naturalização
+        
         safe_cast(nullif(cast(DATA_ENTRA as string), '') as date) as dt_entrada_brasil,
         safe_cast(nullif(cast(DT_NATUR as string), '') as date) as dt_naturalizacao,
 
-        -- controle CNES
+        
         nullif(cast(STATUS as string), '') as status,
         nullif(cast(STATUSMOV as string), '') as status_movimento,
         safe_cast(nullif(cast(DATA_ATU as string), '') as date) as dt_atualiza,
@@ -165,7 +165,7 @@ extraido as (
         nullif(cast(ST_NMPROF_CADSUS as string), '') as nome_profissional_cadsus_original,
         nullif(cast(CO_SEQ_INCLUSAO as string), '') as sequencial_inclusao,
 
-        -- metadados
+        
         format_date('%Y-%m', data_particao) as competencia_mes,
         data_particao,
         ano_particao,
@@ -239,19 +239,16 @@ deduplicado as (
 )
 
 select
-    -- identificação principal
     cpf,
     cns,
     pis_pasep,
     profissional_id_original,
 
-    -- nomes
     nome_profissional,
     nome_social,
     nome_mae,
     nome_pai,
 
-    -- dados pessoais tratados
     dt_nascimento,
     sexo_id,
     sexo,
@@ -267,7 +264,6 @@ select
     pais_origem_id,
     etnia_id,
 
-    -- território / endereço
     municipio_nascimento_id,
     municipio_residencia_id,
     uf_residencia,
@@ -280,11 +276,9 @@ select
     bairro,
     cep,
 
-    -- contato
     telefone,
     email,
 
-    -- documentos
     numero_identidade,
     orgao_emissor_identidade,
     uf_orgao_emissor_identidade,
@@ -303,17 +297,14 @@ select
     dt_emissao_carteira_habilitacao,
     uf_carteira_habilitacao,
 
-    -- entrada/naturalização
     dt_entrada_brasil,
     dt_naturalizacao,
 
-    -- flags de qualidade
     cpf_valido,
     cns_preenchido,
     nome_profissional_cadsus,
     nome_profissional_cadsus_original,
-
-    -- controle CNES
+    
     status,
     status_movimento,
     dt_atualiza,
@@ -322,7 +313,6 @@ select
     checksum,
     sequencial_inclusao,
 
-    -- metadados
     competencia_mes,
     data_particao,
     ano_particao,

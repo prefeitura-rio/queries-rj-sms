@@ -15,6 +15,7 @@ with source as (
 sem_duplicatas as (
     select *
     from source
+
     qualify row_number() over (
         partition by safe_cast(id as int64)
         order by safe_cast(updated_at as timestamp) desc
@@ -43,11 +44,18 @@ parse as (
 
 final as (
     select
-        *,
+        competencia_id,
+        competencia,
+        data_particao,
+        dt_final_competencia,
 
         lag(dt_final_competencia) over (
-            order by data_particao
-        ) as dt_final_competencia_anterior
+            order by competencia_id
+        ) as dt_final_competencia_anterior,
+
+        base_final,
+        created_at,
+        updated_at
 
     from parse
 )

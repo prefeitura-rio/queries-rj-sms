@@ -23,8 +23,8 @@ with profissionais_consolidacao as (
         and cg_horaamb >= 20
 ),
 
-mapa_cbo_composicao_legado as (
-    select '2231F9' as cod_cbo, 'MEDICO' as categoria_profissional_composicao_legado union all
+mapa_cbo_composicao as (
+    select '2231F9' as cod_cbo, 'MEDICO' as categoria_profissional_composicao union all
     select '225103', 'MEDICO' union all
     select '225105', 'MEDICO' union all
     select '225106', 'MEDICO' union all
@@ -118,10 +118,10 @@ classificado as (
     select
         pc.*,
 
-        comp.categoria_profissional_composicao_legado,
+        comp.categoria_profissional_composicao,
         vac.categoria_profissional_vacancia_panorama,
 
-        -- aliases de compatibilidade com o que já tínhamos usado
+        
         vac.categoria_profissional_vacancia_panorama as categoria_profissional_panorama,
 
         case
@@ -136,7 +136,7 @@ classificado as (
         end as categoria_profissional_aps_ampla,
 
         coalesce(
-            comp.categoria_profissional_composicao_legado,
+            comp.categoria_profissional_composicao,
             case
                 when regexp_contains(pc.cod_cbo, r'^2251') then 'MEDICO'
                 when pc.cod_cbo in ('223565', '223505') then 'ENFERMEIRO'
@@ -152,21 +152,21 @@ classificado as (
         case
             when comp.cod_cbo is not null then 1
             else 0
-        end as is_cbo_composicao_legado,
+        end as is_cbo_composicao,
 
         case
             when vac.cod_cbo is not null then 1
             else 0
         end as is_cbo_vacancia_panorama,
 
-        -- alias de compatibilidade
+        
         case
             when vac.cod_cbo is not null then 1
             else 0
         end as is_cbo_panorama
 
     from profissionais_consolidacao pc
-    left join mapa_cbo_composicao_legado comp
+    left join mapa_cbo_composicao comp
         on pc.cod_cbo = comp.cod_cbo
     left join mapa_cbo_vacancia_panorama vac
         on pc.cod_cbo = vac.cod_cbo
@@ -201,13 +201,13 @@ agregado as (
 
         cod_cbo,
 
-        categoria_profissional_composicao_legado,
+        categoria_profissional_composicao,
         categoria_profissional_vacancia_panorama,
         categoria_profissional_panorama,
         categoria_profissional_aps_ampla,
         categoria_profissional_aps,
 
-        is_cbo_composicao_legado,
+        is_cbo_composicao,
         is_cbo_vacancia_panorama,
         is_cbo_panorama,
 
@@ -296,12 +296,12 @@ agregado as (
         is_equipe_ad,
         is_aps,
         cod_cbo,
-        categoria_profissional_composicao_legado,
+        categoria_profissional_composicao,
         categoria_profissional_vacancia_panorama,
         categoria_profissional_panorama,
         categoria_profissional_aps_ampla,
         categoria_profissional_aps,
-        is_cbo_composicao_legado,
+        is_cbo_composicao,
         is_cbo_vacancia_panorama,
         is_cbo_panorama
 )

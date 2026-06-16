@@ -218,7 +218,7 @@ equipes as (
 
 extraido as (
     select
-        -- chaves técnicas originais
+        
         nullif(cast(PROF_ID as string), '') as profissional_id_original,
         nullif(cast(PROF_ID_CH_COMPL as string), '') as profissional_id_ch_compl_original,
         nullif(cast(UNIDADE_ID as string), '') as unidade_id_original,
@@ -229,23 +229,23 @@ extraido as (
         upper(nullif(cast(COD_CBO as string), '')) as cod_cbo,
         upper(nullif(cast(COD_CBO_CH_COMPL as string), '')) as cod_cbo_ch_compl,
 
-        -- vínculo na equipe
+        
         safe_cast(nullif(cast(DT_ENTRADA as string), '') as date) as dt_entrada,
         safe_cast(nullif(cast(DT_DESLIGAMENTO as string), '') as date) as dt_desligamento,
         nullif(cast(FL_EQUIPEMINIMA as string), '') as fl_equipeminima_original,
         nullif(cast(MICROAREA as string), '') as microarea,
 
-        -- vínculo / SUS
+        
         nullif(cast(IND_VINC as string), '') as vinculacao_id_original_equipe,
         nullif(cast(TP_SUS_NAO_SUS as string), '') as tipo_sus_nao_sus,
 
-        -- outra equipe / atuação
+        
         lpad(nullif(regexp_replace(cast(CNES_OUTRAEQUIPE as string), r'[^0-9]', ''), ''), 7, '0') as cnes_outra_equipe,
         nullif(cast(COD_MUN_OUTRAEQUIPE as string), '') as cod_mun_outra_equipe,
         nullif(cast(COD_AREA_OUTRAEQUIPE as string), '') as cod_area_outra_equipe,
         nullif(cast(CO_MUN_ATUACAO as string), '') as cod_municipio_atuacao,
 
-        -- atualização / processo
+        
         nullif(cast(USUARIO as string), '') as usuario_atualizacao,
         safe_cast(nullif(cast(DATA_ATU as string), '') as date) as dt_atualiza,
         safe_cast(nullif(cast(DT_ATUALIZACAO_ORIGEM as string), '') as date) as dt_atualizacao_origem,
@@ -253,7 +253,7 @@ extraido as (
         safe_cast(nullif(cast(DT_CMTP_FIM as string), '') as date) as dt_cmtp_fim,
         nullif(cast(NU_SEQ_PROCESSO as string), '') as nu_seq_processo,
 
-        -- metadados
+        
         format_date('%Y-%m', data_particao) as competencia_mes,
         data_particao,
         ano_particao,
@@ -268,13 +268,13 @@ tratado as (
     select
         e.*,
 
-        -- profissional
+        
         p.cpf,
         p.cns,
         p.nome_profissional,
         p.dt_atualiza_profissional,
 
-        -- equipe/unidade
+        
         eq.ine,
         eq.cnes,
         eq.nome_unidade,
@@ -291,7 +291,7 @@ tratado as (
         eq.classificacao_equipe_temporal,
         eq.classificacao_equipe_painel,
 
-        -- aliases de compatibilidade com modelos antigos
+        
         eq.classificacao_equipe_temporal as classificacao_equipe_historica,
 
         eq.equipe_ativa,
@@ -313,7 +313,7 @@ tratado as (
         eq.is_equipe_aps_historico,
         eq.is_aps,
 
-        -- aliases de compatibilidade
+        
         eq.is_equipe_aps_historico as is_equipe_aps_cobertura_historica,
         eq.is_equipe_aps_painel as is_equipe_aps_cobertura_painel,
         eq.is_esb as is_equipe_saude_bucal,
@@ -328,7 +328,7 @@ tratado as (
         eq.tipo_unidade_sms,
         eq.is_unidade_aps_panorama,
 
-        -- dados complementares do vínculo profissional-unidade
+        
         coalesce(pu.cg_horaamb, puf.cg_horaamb) as cg_horaamb,
         coalesce(pu.cg_horahosp, puf.cg_horahosp) as cg_horahosp,
         coalesce(pu.cg_horaoutr, puf.cg_horaoutr) as cg_horaoutr,
@@ -439,8 +439,8 @@ deduplicado as (
     select *
     from tratado
     where cpf is not null
-      and ine is not null
-      and cod_cbo is not null
+        and ine is not null
+        and cod_cbo is not null
     qualify row_number() over (
         partition by data_particao, cpf, ine, cod_cbo
         order by
@@ -453,14 +453,12 @@ deduplicado as (
 )
 
 select
-    -- identificação profissional
     cpf,
     cns,
     nome_profissional,
     profissional_id_original,
     profissional_id_ch_compl_original,
 
-    -- identificação da equipe/unidade
     ine,
     cnes,
     unidade_id_original,
@@ -469,13 +467,11 @@ select
     ap_formatada,
     is_municipio_rio,
 
-    -- identificação original da equipe
     cod_mun,
     cod_area,
     seq_equipe,
     nm_referencia,
 
-    -- CBO/vínculo
     cod_cbo,
     cod_cbo_ch_compl,
     vinculacao_id_original,
@@ -485,7 +481,6 @@ select
     fl_equipeminima_original,
     fl_equipeminima,
 
-    -- tipologia da equipe
     tipo_equipe_id,
     tipo_equipe_descricao,
     grupo_equipe_id,
@@ -495,7 +490,6 @@ select
     classificacao_equipe_historica,
     classificacao_equipe_painel,
 
-    -- flags da equipe
     equipe_ativa,
     is_esf,
     is_esf_panorama_historico,
@@ -521,11 +515,9 @@ select
     is_equipe_ad,
     is_aps,
 
-    -- unidade / escopo
     tipo_unidade_sms,
     is_unidade_aps_panorama,
 
-    -- carga horária / conselho
     cg_horaamb,
     cg_horahosp,
     cg_horaoutr,
@@ -538,19 +530,16 @@ select
     tp_residente,
     tipo_enriquecimento_vinculo_unidade,
 
-    -- status do vínculo equipe
     dt_entrada,
     dt_desligamento,
     possui_dt_desligamento,
     vinculo_equipe_ativo,
 
-    -- outra equipe / atuação
     cnes_outra_equipe,
     cod_mun_outra_equipe,
     cod_area_outra_equipe,
     cod_municipio_atuacao,
 
-    -- chaves e checks
     chave_profissional_equipe_cbo,
     chave_profissional_unidade_cbo,
     profissional_encontrado,
@@ -558,7 +547,6 @@ select
     unidade_equipe_encontrada,
     vinculo_unidade_encontrado,
 
-    -- atualização / processo
     dt_atualiza,
     dt_atualiza_profissional,
     dt_atualizacao_origem,
@@ -567,7 +555,6 @@ select
     usuario_atualizacao,
     nu_seq_processo,
 
-    -- metadados
     competencia_mes,
     data_particao,
     ano_particao,

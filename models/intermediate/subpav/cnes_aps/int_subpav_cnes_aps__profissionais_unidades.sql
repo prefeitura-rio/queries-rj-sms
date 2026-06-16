@@ -96,32 +96,32 @@ unidades as (
 
 extraido as (
     select
-        -- chaves originais
+        
         nullif(cast(PROF_ID as string), '') as profissional_id_original,
         nullif(cast(UNIDADE_ID as string), '') as unidade_id_original,
         upper(nullif(cast(COD_CBO as string), '')) as cod_cbo,
 
-        -- vínculo / SUS
+        
         nullif(cast(IND_VINC as string), '') as vinculacao_id_original,
         nullif(cast(TP_SUS_NAO_SUS as string), '') as tipo_sus_nao_sus,
         nullif(cast(D_TERCSIH as string), '') as detalhe_terceirizado_sih,
         nullif(cast(NU_CNPJ_DET_VINC as string), '') as cnpj_detalhe_vinculo,
 
-        -- carga horária
+        
         safe_cast(nullif(cast(CG_HORAAMB as string), '') as int64) as cg_horaamb,
         safe_cast(nullif(cast(CGHORAHOSP as string), '') as int64) as cg_horahosp,
         safe_cast(nullif(cast(CGHORAOUTR as string), '') as int64) as cg_horaoutr,
 
-        -- conselho / registro
+        
         nullif(cast(CONSELHOID as string), '') as conselho_id_original,
         nullif(cast(N_REGISTRO as string), '') as numero_registro,
         nullif(cast(SG_UF_CRM as string), '') as uf_registro,
 
-        -- flags CNES
+        
         nullif(cast(TP_PRECEPTOR as string), '') as tp_preceptor_original,
         nullif(cast(TP_RESIDENTE as string), '') as tp_residente_original,
 
-        -- status / controle
+        
         nullif(cast(STATUS as string), '') as status,
         nullif(cast(STATUSMOV as string), '') as status_movimento,
         safe_cast(nullif(cast(DATA_ATU as string), '') as date) as dt_atualiza,
@@ -132,7 +132,7 @@ extraido as (
         safe_cast(nullif(cast(DT_CMTP_FIM as string), '') as date) as dt_cmtp_fim,
         nullif(cast(NU_SEQ_PROCESSO as string), '') as nu_seq_processo,
 
-        -- metadados
+        
         format_date('%Y-%m', data_particao) as competencia_mes,
         data_particao,
         ano_particao,
@@ -147,13 +147,13 @@ tratado as (
     select
         e.*,
 
-        -- profissional
+        
         p.cpf,
         p.cns,
         p.nome_profissional,
         p.dt_atualiza_profissional,
 
-        -- unidade
+        
         u.cnes,
         u.nome_unidade,
         u.ap,
@@ -163,7 +163,7 @@ tratado as (
         u.is_unidade_aps_panorama,
         u.unidade_ativa,
 
-        -- chave compatível com o legado: CPF + CNES + CBO
+        
         concat(
             coalesce(p.cpf, ''),
             coalesce(u.cnes, ''),
@@ -226,8 +226,8 @@ deduplicado as (
     select *
     from tratado
     where cpf is not null
-      and cnes is not null
-      and cod_cbo is not null
+        and cnes is not null
+        and cod_cbo is not null
 
     qualify row_number() over (
         partition by data_particao, cpf, cnes, cod_cbo
@@ -240,13 +240,13 @@ deduplicado as (
 )
 
 select
-    -- identificação profissional
+    
     cpf,
     cns,
     nome_profissional,
     profissional_id_original,
 
-    -- identificação da unidade
+    
     cnes,
     unidade_id_original,
     nome_unidade,
@@ -254,14 +254,14 @@ select
     ap_formatada,
     is_municipio_rio,
 
-    -- CBO / vínculo
+    
     cod_cbo,
     vinculacao_id_original,
     tipo_sus_nao_sus,
     detalhe_terceirizado_sih,
     cnpj_detalhe_vinculo,
 
-    -- carga horária
+    
     cg_horaamb,
     cg_horahosp,
     cg_horaoutr,
@@ -269,28 +269,28 @@ select
     carga_horaria_classificacao,
     possui_carga_horaria,
 
-    -- conselho / registro
+    
     conselho_id_original,
     numero_registro,
     uf_registro,
 
-    -- preceptor / residente
+    
     tp_preceptor_original,
     tp_preceptor,
     tp_residente_original,
     tp_residente,
 
-    -- unidade / escopo
+    
     tipo_unidade_sms,
     is_unidade_aps_panorama,
     unidade_ativa,
 
-    -- chaves e checks
+    
     chave_profissional_unidade_cbo,
     profissional_encontrado,
     unidade_encontrada,
 
-    -- status / controle CNES
+    
     status,
     status_movimento,
     dt_atualiza,
@@ -302,7 +302,7 @@ select
     checksum,
     nu_seq_processo,
 
-    -- metadados
+    
     competencia_mes,
     data_particao,
     ano_particao,

@@ -3,337 +3,235 @@
         schema = 'intermediario_plataforma_subpav',
         alias = 'cnes_aps__profissionais_consolidacao',
         materialized = "table",
-        partition_by = {
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "month",
-        },
-        cluster_by = ["cpf", "cnes", "ine", "cod_cbo"],
         tags = ["subpav", "cnes_aps"]
     )
 }}
 
-with competencias_legado as (
+with competencias as (
     select
-        data_particao,
+        competencia_id,
         competencia,
+        data_particao,
         dt_final_competencia,
-        dt_final_competencia_anterior
-
+        dt_final_competencia_anterior,
+        base_final
     from {{ ref("int_subpav_cnes_aps__competencias_legado") }}
     where dt_final_competencia is not null
 ),
 
-profissionais_unidades as (
-    select
-        pu.data_particao,
-        pu.ano_particao,
-        pu.mes_particao,
-
-        -- Auditoria: nesta versão controlada, a base de unidade/CBO permanece
-        -- ancorada no snapshot da própria competência. Não projetamos PU do
-        -- mês seguinte porque isso melhorou alguns casos pontuais, mas piorou
-        -- o histórico em várias competências.
-        pu.data_particao as data_particao_origem_cnes,
-
-        cl.dt_final_competencia,
-        cl.dt_final_competencia_anterior,
-
-        pu.loaded_at,
-        pu._source_file,
-
-        pu.profissional_id_original,
-        pu.unidade_id_original,
-
-        pu.cpf,
-        pu.cns,
-        pu.nome_profissional,
-
-        pu.cnes,
-        pu.ap,
-        pu.ap_formatada,
-        pu.nome_unidade,
-        pu.is_municipio_rio,
-
-        pu.cod_cbo,
-        pu.vinculacao_id_original,
-        pu.tipo_sus_nao_sus,
-        pu.detalhe_terceirizado_sih,
-        pu.cnpj_detalhe_vinculo,
-
-        pu.cg_horaamb,
-        pu.cg_horahosp,
-        pu.cg_horaoutr,
-        pu.carga_horaria_total,
-        pu.carga_horaria_classificacao,
-        pu.possui_carga_horaria,
-
-        pu.conselho_id_original,
-        pu.numero_registro,
-        pu.uf_registro,
-
-        pu.tp_preceptor,
-        pu.tp_residente,
-
-        pu.tipo_unidade_sms,
-        pu.is_unidade_aps_panorama,
-        pu.unidade_ativa,
-
-        pu.profissional_encontrado,
-        pu.unidade_encontrada,
-
-        pu.dt_atualiza
-
-    from {{ ref("int_subpav_cnes_aps__profissionais_unidades") }} pu
-    left join competencias_legado cl
-        on pu.data_particao = cl.data_particao
-),
-
 profissionais as (
     select
-        p.data_particao,
-        p.data_particao as data_particao_origem_cnes,
-
-        p.profissional_id_original,
-
-        p.cpf,
-        p.cns,
-        p.nome_profissional,
-        p.nome_social,
-
-        p.dt_nascimento,
-        p.sexo_id,
-        p.sexo,
-        p.raca_cor_id,
-        p.nivel_escolaridade_id,
-
-        p.nacionalidade,
-        p.nacionalidade_indicador_original,
-        p.nacionalidade_id_original,
-        p.nome_pais_origem,
-
-        p.telefone,
-        p.email,
-
-        p.cpf_valido,
-        p.cns_preenchido
-
-    from {{ ref("int_subpav_cnes_aps__profissionais") }} p
-),
-
-equipes_profissionais_snapshot as (
-    select
-        ep.data_particao,
-        ep.data_particao as data_particao_origem_vinculo,
-        'SNAPSHOT_MES' as origem_competencia_vinculo,
-        0 as prioridade_origem_competencia_vinculo,
-        ep.* except(data_particao)
-
-    from {{ ref("int_subpav_cnes_aps__equipes_profissionais") }} ep
-    where ep.equipe_ativa = 1
-),
-
--- Compatibilização com o importador legado:
--- mantém o snapshot mensal como base, mas antecipa para a competência corrente
--- entradas que só aparecem na partição seguinte, desde que a dt_entrada esteja
--- dentro da janela da competência: data_particao <= dt_entrada <= dt_final_competencia.
--- Isso cobre casos como transferência de equipe registrada no fechamento da competência,
--- sem deslocar o snapshot inteiro para o mês anterior.
-equipes_profissionais_entradas_fechamento as (
-    select
-        cl.data_particao,
-        ep.data_particao as data_particao_origem_vinculo,
-        'ENTRADA_FECHAMENTO_COMPETENCIA' as origem_competencia_vinculo,
-        1 as prioridade_origem_competencia_vinculo,
-        ep.* except(data_particao)
-
-    from {{ ref("int_subpav_cnes_aps__equipes_profissionais") }} ep
-    inner join competencias_legado cl
-        on ep.data_particao = date_add(cl.data_particao, interval 1 month)
-        and ep.dt_entrada between cl.data_particao and cl.dt_final_competencia
-
-    where ep.equipe_ativa = 1
-        and ep.vinculo_equipe_ativo = 1
-        and ep.dt_desligamento is null
-),
-
-equipes_profissionais_competencia as (
-    select *
-    from equipes_profissionais_snapshot
-
-    union all
-
-    select *
-    from equipes_profissionais_entradas_fechamento
-),
-
-equipes_profissionais_base as (
-    select
         data_particao,
-
-        data_particao_origem_vinculo,
-        origem_competencia_vinculo,
-        prioridade_origem_competencia_vinculo,
-
         cpf,
-        cnes,
-        cod_cbo,
-
-        ine,
-        tipo_equipe_id,
-        tipo_equipe_descricao,
-        classificacao_equipe,
-        classificacao_equipe_temporal,
-        classificacao_equipe_historica,
-        classificacao_equipe_painel,
-
-        equipe_ativa,
-
-        is_esf,
-        is_esf_panorama_historico,
-        is_eacs,
-        is_eacs_panorama_historico,
-        is_esb,
-        is_ecr,
-        is_enasf,
-        is_eap,
-        is_eapp,
-        is_eapp_panorama,
-        is_emad,
-        is_emad_panorama,
-        is_emap,
-
-        is_equipe_aps_painel,
-        is_equipe_aps_cobertura,
-        is_equipe_aps_historico,
-        is_equipe_aps_cobertura_historica,
-        is_equipe_aps_cobertura_painel,
-        is_equipe_saude_bucal,
-        is_equipe_emulti,
-        is_equipe_prisional,
-        is_equipe_ad,
-        is_aps,
-
-        dt_entrada,
-        dt_desligamento,
-        fl_equipeminima,
-        possui_dt_desligamento,
-        vinculo_equipe_ativo,
-        microarea,
-        tipo_enriquecimento_vinculo_unidade,
-
-        count(*) over (
-            partition by data_particao, cpf, cnes, cod_cbo
-        ) as qtd_vinculos_equipe_mesma_chave,
-
-        countif(vinculo_equipe_ativo = 1) over (
-            partition by data_particao, cpf, cnes, cod_cbo
-        ) as qtd_vinculos_ativos_mesma_chave
-
-    from equipes_profissionais_competencia
+        sexo_id,
+        sexo,
+        sexo_id_original
+    from {{ ref("int_subpav_cnes_aps__profissionais") }}
 ),
 
-equipes_profissionais_dedup as (
+profissionais_unidades_base as (
+    select
+        c.data_particao,
+        pu.data_particao as data_particao_origem_pu,
+        'SNAPSHOT_MES' as origem_pu,
+        1 as prioridade_pu,
+        pu.* except(data_particao),
+
+        concat(
+            coalesce(pu.profissional_id_original, ''),
+            '|',
+            coalesce(pu.unidade_id_original, ''),
+            '|',
+            coalesce(pu.cod_cbo, '')
+        ) as chave_profissional_unidade_cbo_base
+
+    from {{ ref("int_subpav_cnes_aps__profissionais_unidades") }} pu
+
+    inner join competencias c
+        on c.data_particao = pu.data_particao
+),
+
+profissionais_unidades as (
     select *
-    from equipes_profissionais_base
+    from profissionais_unidades_base
 
     qualify row_number() over (
         partition by
             data_particao,
-            cpf,
-            cnes,
-            cod_cbo,
-            coalesce(ine, ''),
-            coalesce(cast(tipo_equipe_id as string), '')
+            profissional_id_original,
+            unidade_id_original,
+            cod_cbo
         order by
-            prioridade_origem_competencia_vinculo desc,
-            vinculo_equipe_ativo desc,
-            fl_equipeminima desc,
-            dt_entrada desc,
-            dt_desligamento desc,
-            ine asc
+            prioridade_pu desc,
+            loaded_at desc,
+            _source_file desc
+    ) = 1
+),
+
+equipes_profissionais_base as (
+    select
+        c.data_particao,
+        ep.data_particao as data_particao_origem_vinculo,
+        'SNAPSHOT_MES' as origem_competencia_vinculo,
+        1 as prioridade_origem_competencia_vinculo,
+
+        case
+            when ep.dt_desligamento is null then 1
+            else 0
+        end as vinculo_equipe_ativo_asof,
+
+        ep.* except(data_particao)
+
+    from {{ ref("int_subpav_cnes_aps__equipes_profissionais") }} ep
+
+    inner join competencias c
+        on c.data_particao = ep.data_particao
+
+    where ep.equipe_ativa = 1
+        and ep.cg_horaamb >= 20
+),
+
+equipes_profissionais_com_contagem as (
+    select
+        ep.*,
+
+        count(*) over (
+        partition by
+            ep.data_particao,
+            ep.profissional_id_original,
+            ep.unidade_id_original,
+            ep.cod_cbo
+        ) as qtd_vinculos_mesma_chave,
+
+        countif(ep.vinculo_equipe_ativo_asof = 1) over (
+        partition by
+            ep.data_particao,
+            ep.profissional_id_original,
+            ep.unidade_id_original,
+            ep.cod_cbo
+        ) as qtd_vinculos_ativos_mesma_chave
+
+    from equipes_profissionais_base ep
+),
+
+equipes_profissionais as (
+  select *
+    from equipes_profissionais_com_contagem
+
+    qualify row_number() over (
+        partition by
+        data_particao,
+        profissional_id_original,
+        unidade_id_original,
+        cod_cbo,
+        ine
+        order by
+        vinculo_equipe_ativo_asof desc,
+        fl_equipeminima desc,
+        dt_entrada desc,
+        loaded_at desc,
+        _source_file desc
     ) = 1
 ),
 
 consolidado as (
     select
-        pu.data_particao,
-        pu.ano_particao,
-        pu.mes_particao,
-        format_date('%Y%m', pu.data_particao) as competencia_mes,
+        coalesce(pu.data_particao, ep.data_particao) as data_particao,
+        coalesce(pu.ano_particao, ep.ano_particao) as ano_particao,
+        coalesce(pu.mes_particao, ep.mes_particao) as mes_particao,
+        coalesce(pu.competencia_mes, ep.competencia_mes) as competencia_mes,
 
-        -- auditoria da janela da competência legada
-        pu.dt_final_competencia,
-        pu.dt_final_competencia_anterior,
+        c.competencia_id,
+        c.competencia,
+        c.dt_final_competencia,
+        c.dt_final_competencia_anterior,
+        c.base_final,
 
-        -- chaves originais
-        pu.profissional_id_original,
-        pu.unidade_id_original,
+        coalesce(pu.cpf, ep.cpf) as cpf,
+        coalesce(pu.cns, ep.cns) as cns,
+        coalesce(pu.nome_profissional, ep.nome_profissional) as nome_profissional,
+        coalesce(pu.profissional_id_original, ep.profissional_id_original) as profissional_id_original,
 
-        -- identificação profissional
-        pu.cpf,
-        coalesce(p.cns, pu.cns) as cns,
-        coalesce(p.nome_profissional, pu.nome_profissional) as nome_profissional,
-        p.nome_social,
-
-        p.dt_nascimento,
         p.sexo_id,
         p.sexo,
-        p.raca_cor_id,
-        p.nivel_escolaridade_id,
+        p.sexo_id_original,
 
-        p.nacionalidade,
-        p.nacionalidade_indicador_original,
-        p.nacionalidade_id_original,
-        p.nome_pais_origem,
+        coalesce(pu.cnes, ep.cnes) as cnes,
+        coalesce(pu.unidade_id_original, ep.unidade_id_original) as unidade_id_original,
+        coalesce(pu.nome_unidade, ep.nome_unidade) as nome_unidade,
+        coalesce(pu.ap, ep.ap) as ap,
+        coalesce(pu.ap_formatada, ep.ap_formatada) as ap_formatada,
 
-        p.telefone,
-        p.email,
+        coalesce(pu.cod_cbo, ep.cod_cbo) as cod_cbo,
+        coalesce(pu.vinculacao_id_original, ep.vinculacao_id_original) as vinculacao_id_original,
 
-        p.cpf_valido,
-        p.cns_preenchido,
-
-        -- unidade
-        pu.cnes,
-        pu.ap,
-        pu.ap_formatada,
-        pu.nome_unidade,
-        pu.is_municipio_rio,
-        pu.tipo_unidade_sms,
-        pu.is_unidade_aps_panorama,
-        pu.unidade_ativa,
-
-        -- vínculo unidade/CBO
-        pu.cod_cbo,
-        pu.vinculacao_id_original,
-        pu.tipo_sus_nao_sus,
+        coalesce(pu.tipo_sus_nao_sus, ep.tipo_sus_nao_sus) as tipo_sus_nao_sus,
         pu.detalhe_terceirizado_sih,
         pu.cnpj_detalhe_vinculo,
 
-        pu.conselho_id_original,
-        pu.numero_registro,
-        pu.uf_registro,
+        coalesce(ep.cg_horaamb, pu.cg_horaamb) as cg_horaamb,
+        coalesce(ep.cg_horahosp, pu.cg_horahosp) as cg_horahosp,
+        coalesce(ep.cg_horaoutr, pu.cg_horaoutr) as cg_horaoutr,
+        coalesce(ep.carga_horaria_total, pu.carga_horaria_total) as carga_horaria_total,
+        coalesce(ep.carga_horaria_classificacao, pu.carga_horaria_classificacao) as carga_horaria_classificacao,
 
-        pu.cg_horaamb,
-        pu.cg_horahosp,
-        pu.cg_horaoutr,
-        pu.carga_horaria_total,
-        pu.carga_horaria_classificacao,
-        pu.possui_carga_horaria,
+        coalesce(
+            pu.possui_carga_horaria,
+            case
+                when coalesce(ep.cg_horaamb, ep.cg_horahosp, ep.cg_horaoutr) is not null then 1
+                else 0
+            end
+        ) as possui_carga_horaria,
 
+        coalesce(pu.conselho_id_original, ep.conselho_id_original) as conselho_id_original,
+        coalesce(pu.numero_registro, ep.numero_registro) as numero_registro,
+        coalesce(pu.uf_registro, ep.uf_registro) as uf_registro,
+
+        coalesce(pu.tp_preceptor_original, ep.tp_preceptor) as tp_preceptor_original,
+
+        coalesce(
         pu.tp_preceptor,
-        pu.tp_residente,
+        case
+            when ep.tp_preceptor = '1' then 1
+            when ep.tp_preceptor = '2' then 0
+            else null
+        end
+        ) as tp_preceptor,
 
-        -- vínculo com equipe
+        coalesce(pu.tp_residente_original, ep.tp_residente) as tp_residente_original,
+
+        coalesce(
+        pu.tp_residente,
+        case
+            when ep.tp_residente = '1' then 1
+            when ep.tp_residente = '2' then 0
+            else null
+        end
+        ) as tp_residente,
+
+        coalesce(pu.tipo_unidade_sms, ep.tipo_unidade_sms) as tipo_unidade_sms,
+        coalesce(pu.is_unidade_aps_panorama, ep.is_unidade_aps_panorama) as is_unidade_aps_panorama,
+        pu.unidade_ativa,
+
+        pu.status,
+        pu.status_movimento,
+
         ep.ine,
+        ep.seq_equipe,
+        ep.cod_area,
+        ep.nm_referencia,
+
         ep.tipo_equipe_id,
         ep.tipo_equipe_descricao,
+        ep.grupo_equipe_id,
+        ep.subtipo_equipe_id,
         ep.classificacao_equipe,
         ep.classificacao_equipe_temporal,
         ep.classificacao_equipe_historica,
         ep.classificacao_equipe_painel,
 
         ep.equipe_ativa,
+        ep.fl_equipeminima,
 
         ep.is_esf,
         ep.is_esf_panorama_historico,
@@ -348,7 +246,6 @@ consolidado as (
         ep.is_emad,
         ep.is_emad_panorama,
         ep.is_emap,
-
         ep.is_equipe_aps_painel,
         ep.is_equipe_aps_cobertura,
         ep.is_equipe_aps_historico,
@@ -362,98 +259,85 @@ consolidado as (
 
         ep.dt_entrada,
         ep.dt_desligamento,
-        ep.fl_equipeminima,
-        ep.possui_dt_desligamento,
-        ep.vinculo_equipe_ativo,
-        ep.microarea,
-        ep.tipo_enriquecimento_vinculo_unidade,
 
         case
             when ep.dt_desligamento is not null
-                then date_diff(
-                    coalesce(pu.dt_final_competencia, last_day(pu.data_particao, month)),
-                    ep.dt_desligamento,
-                    day
-                )
+                then date_diff(c.dt_final_competencia, ep.dt_desligamento, day)
             else null
         end as dias_desligado,
 
-        case
-            when ep.qtd_vinculos_ativos_mesma_chave > 1 then 1
-            else 0
-        end as inconsistente,
+        ep.possui_dt_desligamento,
+        ep.vinculo_equipe_ativo,
 
-        ep.qtd_vinculos_equipe_mesma_chave,
+        ep.dt_atualiza as dt_atualiza_equipe,
+        pu.dt_atualiza as dt_atualiza_unidade,
+
+        coalesce(ep.dt_atualiza, pu.dt_atualiza) as dt_atualiza,
+        coalesce(ep.dt_atualiza_profissional, pu.dt_atualiza_profissional) as dt_atualiza_profissional,
+        coalesce(ep.dt_atualizacao_origem, pu.dt_atualizacao_origem) as dt_atualizacao_origem,
+
+        pu.dt_cmtp_inicio as pu_dt_cmtp_inicio,
+        pu.dt_cmtp_fim as pu_dt_cmtp_fim,
+        ep.dt_cmtp_inicio as ep_dt_cmtp_inicio,
+        ep.dt_cmtp_fim as ep_dt_cmtp_fim,
+
+        coalesce(ep.usuario_atualizacao, pu.usuario_atualizacao) as usuario_atualizacao,
+        coalesce(ep.nu_seq_processo, pu.nu_seq_processo) as nu_seq_processo,
+
+        coalesce(
+            pu.chave_profissional_unidade_cbo_base,
+            concat(
+                coalesce(ep.profissional_id_original, ''),
+                '|',
+                coalesce(ep.unidade_id_original, ''),
+                '|',
+                coalesce(ep.cod_cbo, '')
+            )
+        ) as chave_profissional_unidade_cbo_base,
+
+        ep.chave_profissional_equipe_cbo,
+        ep.chave_profissional_unidade_cbo as ep_chave_profissional_unidade_cbo,
+        pu.chave_profissional_unidade_cbo as pu_chave_profissional_unidade_cbo,
+
+        ep.qtd_vinculos_mesma_chave,
         ep.qtd_vinculos_ativos_mesma_chave,
 
         case
-            when ep.ine is not null then 1
+            when ep.profissional_id_original is not null then 1
             else 0
         end as possui_vinculo_equipe,
 
-        pu.profissional_encontrado,
-        pu.unidade_encontrada,
-
-        concat(
-            coalesce(pu.cpf, ''),
-            coalesce(pu.cnes, ''),
-            coalesce(pu.cod_cbo, '')
-        ) as chave_profissional_unidade_cbo,
-
-        concat(
-            coalesce(pu.cpf, ''),
-            coalesce(pu.cnes, ''),
-            coalesce(pu.cod_cbo, ''),
-            coalesce(ep.ine, '')
-        ) as chave_profissional_unidade_cbo_equipe,
-
-        ep.data_particao_origem_vinculo,
         ep.origem_competencia_vinculo,
+        ep.data_particao_origem_vinculo,
+        case
+                when coalesce(ep.qtd_vinculos_ativos_mesma_chave, 0) > 1 then 1
+                else 0
+        end as inconsistente,
 
-        pu.dt_atualiza as dt_atualiza_vinculo_unidade,
-        pu.loaded_at,
-        pu._source_file
+        pu.loaded_at as pu_loaded_at,
+        pu._source_file as pu_source_file,
+
+        ep.loaded_at as ep_loaded_at,
+        ep._source_file as ep_source_file,
+
+        coalesce(ep.loaded_at, pu.loaded_at) as loaded_at,
+        coalesce(ep._source_file, pu._source_file) as _source_file,
 
     from profissionais_unidades pu
 
+    full outer join equipes_profissionais ep
+        on ep.data_particao = pu.data_particao
+        and ep.profissional_id_original = pu.profissional_id_original
+        and ep.unidade_id_original = pu.unidade_id_original
+        and ep.cod_cbo = pu.cod_cbo
+
+    inner join competencias c
+        on c.data_particao = coalesce(pu.data_particao, ep.data_particao)
+
     left join profissionais p
-        on pu.data_particao = p.data_particao
-        and pu.data_particao_origem_cnes = p.data_particao_origem_cnes
-        and pu.profissional_id_original = p.profissional_id_original
-
-    left join equipes_profissionais_dedup ep
-        on pu.data_particao = ep.data_particao
-        and pu.cpf = ep.cpf
-        and pu.cnes = ep.cnes
-        and pu.cod_cbo = ep.cod_cbo
-),
-
-deduplicado as (
-    select *
-    from consolidado
-
-    qualify row_number() over (
-        partition by
-            data_particao,
-            cpf,
-            cnes,
-            cod_cbo,
-            coalesce(ine, ''),
-            coalesce(cast(tipo_equipe_id as string), '')
-        order by
-            possui_vinculo_equipe desc,
-            vinculo_equipe_ativo desc,
-            case
-                when origem_competencia_vinculo = 'ENTRADA_FECHAMENTO_COMPETENCIA' then 1
-                else 0
-            end desc,
-            fl_equipeminima desc,
-            dt_entrada desc,
-            dt_desligamento desc,
-            loaded_at desc,
-            dt_atualiza_vinculo_unidade desc
-    ) = 1
+        on p.data_particao = c.data_particao
+        and p.cpf = coalesce(pu.cpf, ep.cpf)
 )
 
 select *
-from deduplicado
+from consolidado
