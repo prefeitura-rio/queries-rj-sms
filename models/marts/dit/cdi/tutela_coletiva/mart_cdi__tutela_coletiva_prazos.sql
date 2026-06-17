@@ -2,7 +2,7 @@
     config(
         materialized = 'table',
         schema = 'projeto_cdi',
-        alias = 'equipe_tutela_coletiva_prazos',
+        alias = 'tutela_coletiva_prazos',
         meta={"owner": "karen"}
     ) 
 }}
@@ -10,7 +10,7 @@
 with base as (
 
     select *
-    from {{ ref('int_cdi__equipe_tutela_coletiva') }}
+    from {{ ref('int_cdi__tutela_coletiva') }}
 
 ),
 
@@ -19,7 +19,7 @@ prazo as (
     select
         area,
         assunto,
-        data_da_entrada,
+        data_entrada,
         ic,
         orgao,
         case
@@ -39,40 +39,33 @@ prazo as (
         end as grupo_orgao,
         processo_rio,
         reiteracoes,
-        sintese_da_solicitacao,
+        sintese_solicitacao,
         status,
         status_sla,
 
-        -- Data limite do prazo
         data_fim_sla as data_vencimento_prazo,
 
-        -- dias para vencer
         date_diff(
             data_fim_sla,
             current_date(),
             day
         ) as dias_para_vencer,
 
-        -- criando logica de antes e depois do prazo de vencimento
         case 
-            -- caso nao tenha data_envio
             when status <> 'RESOLVIDO' then null
             when data_envio_orgao_solicitante_arquivamento <= data_fim_sla then 'Dentro do Prazo'
             else 'Fora do Prazo'
         end as situacao_prazo,
-        -- calculando tempo de atendimento
         
         case 
             when status <> 'RESOLVIDO' 
                 then null
             else date_diff(
                     date(data_envio_orgao_solicitante_arquivamento),
-                    date(data_da_entrada),
+                    date(data_entrada),
                     day
-        
-        ) end as tempo_atendimento_dias
-            
-
+            )
+        end as tempo_atendimento_dias
 
     from base
 

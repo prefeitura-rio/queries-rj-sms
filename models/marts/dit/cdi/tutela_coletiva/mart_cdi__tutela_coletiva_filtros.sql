@@ -2,7 +2,7 @@
     config(
         materialized = 'table',
         schema = 'projeto_cdi',
-        alias = 'equipe_tutela_coletiva_filtros',
+        alias = 'tutela_coletiva_filtros',
         meta={"owner": "karen"}
     ) 
 }}
@@ -10,7 +10,7 @@
 with base as (
 
     select *
-    from {{ ref('int_cdi__equipe_tutela_coletiva') }}
+    from {{ ref('int_cdi__tutela_coletiva') }}
 
 ),
 
@@ -22,7 +22,7 @@ filtros as (
             else area 
         end as area,
         assunto,
-        data_da_entrada,
+        data_entrada,
         case
             
             when upper(orgao) like 'MPF%' then 'MPF'
@@ -48,25 +48,23 @@ filtros as (
             when orgao is null then 'Sem Informação' 
             else orgao 
         end as orgao,
-        -- total de reiteracoes unicas
         reiteracoes,
-        sintese_da_solicitacao,
+        sintese_solicitacao,
         status,
 
         count(processo_rio) as total_requisicoes
 
     from base
 
-
     group by
         area,
         assunto,
-        data_da_entrada,
+        data_entrada,
         grupo_orgao,
         ic,
         orgao,
         reiteracoes,
-        sintese_da_solicitacao,
+        sintese_solicitacao,
         status
 
 )
