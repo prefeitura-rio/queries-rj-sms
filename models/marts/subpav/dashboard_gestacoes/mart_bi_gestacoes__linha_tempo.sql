@@ -49,8 +49,8 @@ categorias_risco_gestacional AS (
         ) AS categorias_risco,
         --cat_risco_encaminhada
         STRING_AGG(DISTINCT c.id, '; ' ORDER BY c.id) AS cid_alto_risco,
-        STRING_AGG(DISTINCT r.Encaminhamento_Alto_Risco, '; ' ORDER BY r.Encaminhamento_Alto_Risco) AS encaminhamento_alto_risco,
-        STRING_AGG(DISTINCT r.justificativa___condicao, '; ' ORDER BY r.justificativa___condicao) AS justificativa_condicao, 
+        STRING_AGG(DISTINCT r.encaminhamento_alto_risco, '; ' ORDER BY r.encaminhamento_alto_risco) AS encaminhamento_alto_risco,
+        STRING_AGG(DISTINCT r.justificativa_condicao, '; ' ORDER BY r.justificativa_condicao) AS justificativa_condicao, 
     FROM
         filtrado f -- Usa 'filtrado' que já tem 'id_gestacao' e as datas corretas
         -- JOIN {{ ref('mart_historico_clinico__episodio') }} ea 
@@ -73,8 +73,8 @@ categorias_risco_gestacional AS (
         f.id_gestacao
         --cat_risco_encaminhada
         -- c.id,
-        -- r.Encaminhamento_Alto_Risco,
-        -- r.justificativa___condicao
+        -- r.encaminhamento_alto_risco,
+        -- r.justificativa_condicao
 ),
 
 
