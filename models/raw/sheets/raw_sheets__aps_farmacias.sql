@@ -15,7 +15,7 @@ with
             cnes as id_cnes,
             razao_social as nome,
             endereco,
-            horario_da_farmacia_seg_a_sexta as horario_seg__a_sexta,
+            horario_da_farmacia_seg__a_sexta as horario_seg_a_sexta,
             horario_da_farmacia_sab as horario_sabado,
             tem_farmacia as farmacia_indicador,
             {{ proper_br("nome_farmaceutico_rt") }} as farmaceutico_nome,
