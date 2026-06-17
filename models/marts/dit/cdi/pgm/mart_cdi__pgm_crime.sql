@@ -6,14 +6,14 @@
 ) }}
 
 SELECT
-    processorio,
-    data_de_entrada,
+    processo_rio,
+    data_entrada,
     UPPER(TRIM(situacao)) AS situacao,
     TRIM(cap) AS cap,
     UPPER(TRIM(origem)) AS origem,
     TRIM(sintese_solicitacao) AS sintese_solicitacao,
-    UPPER(TRIM(mandado_de_prisao)) AS mandado_de_prisao,
-    UPPER(TRIM(crime_de_desobediencia)) AS crime_de_desobediencia,
-    TRIM(setor_responsavel) AS setor_responsavel,
+    UPPER(TRIM(mandado_prisao)) AS mandado_prisao,
+    UPPER(TRIM(crime_desobediencia)) AS crime_desobediencia,
+    TRIM(setor_responsavel) AS setor_responsavel
 FROM {{ ref('int_cdi__pgm') }}
-WHERE data_de_entrada IS NOT NULL
+WHERE data_entrada IS NOT NULL
