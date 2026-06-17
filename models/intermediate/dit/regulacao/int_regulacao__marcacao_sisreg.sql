@@ -135,7 +135,7 @@ with
       struct(
         profissional_executante_crm as profissional_crm,
         profissional_executante_cpf as profissional_cpf,
-        profissional_executante_nome as profissional_nome,
+        {{ proper_br("profissional_executante_nome") }} as profissional_nome,
         unidade_executante_id_cnes as unidade_id_cnes,
         unidade_executante_nome as unidade_nome,
         unidade_executante_telefone as unidade_telefone,
