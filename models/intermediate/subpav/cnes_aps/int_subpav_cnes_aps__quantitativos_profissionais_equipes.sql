@@ -244,8 +244,7 @@ agregado as (
         countif(tp_preceptor = 1 and dt_desligamento is null) as total_preceptores,
 
         countif(
-            format_date('%Y%m', dt_entrada) = competencia_mes
-            and dt_desligamento is null
+            format_date('%Y-%m', dt_entrada) = competencia_mes
         ) as total_contratados,
 
         countif(dt_desligamento is not null) as total_desligados,

@@ -827,6 +827,15 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subpav
+        cnes_aps:
+          +schema: projeto_cnes_aps
+          +tags: ["monthly", "subpav", "cnes_aps"]
+          +meta: {"owner": "dayaners"}
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
         indicadores_paciente:
           +schema: projeto_subpav
           +tags: ["weekly", "subpav"]

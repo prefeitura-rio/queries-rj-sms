@@ -3,6 +3,11 @@
         schema = 'intermediario_plataforma_subpav',
         alias = 'cnes_aps__profissionais_consolidacao',
         materialized = "table",
+        partition_by = {
+            "field": "data_particao",
+            "data_type": "date"
+        },
+        cluster_by = ["competencia", "cnes", "cpf", "cod_cbo"],
         tags = ["subpav", "cnes_aps"]
     )
 }}
@@ -75,11 +80,6 @@ equipes_profissionais_base as (
         'SNAPSHOT_MES' as origem_competencia_vinculo,
         1 as prioridade_origem_competencia_vinculo,
 
-        case
-            when ep.dt_desligamento is null then 1
-            else 0
-        end as vinculo_equipe_ativo_asof,
-
         ep.* except(data_particao)
 
     from {{ ref("int_subpav_cnes_aps__equipes_profissionais") }} ep
@@ -88,7 +88,7 @@ equipes_profissionais_base as (
         on c.data_particao = ep.data_particao
 
     where ep.equipe_ativa = 1
-        and ep.cg_horaamb >= 20
+        and ep.tipo_enriquecimento_vinculo_unidade = 'EXATO_CBO'
 ),
 
 equipes_profissionais_com_contagem as (
@@ -96,41 +96,50 @@ equipes_profissionais_com_contagem as (
         ep.*,
 
         count(*) over (
-        partition by
-            ep.data_particao,
-            ep.profissional_id_original,
-            ep.unidade_id_original,
-            ep.cod_cbo
+            partition by
+                ep.data_particao,
+                ep.profissional_id_original,
+                ep.unidade_id_original,
+                ep.cod_cbo
         ) as qtd_vinculos_mesma_chave,
 
-        countif(ep.vinculo_equipe_ativo_asof = 1) over (
-        partition by
-            ep.data_particao,
-            ep.profissional_id_original,
-            ep.unidade_id_original,
-            ep.cod_cbo
+        countif(coalesce(ep.vinculo_equipe_ativo, 0) = 1) over (
+            partition by
+                ep.data_particao,
+                ep.profissional_id_original,
+                ep.unidade_id_original,
+                ep.cod_cbo
         ) as qtd_vinculos_ativos_mesma_chave
 
     from equipes_profissionais_base ep
 ),
 
-equipes_profissionais as (
-  select *
+equipes_profissionais_elegiveis_legado as (
+    select *
     from equipes_profissionais_com_contagem
+    where qtd_vinculos_mesma_chave = 1
+        or (
+            qtd_vinculos_mesma_chave > 1
+            and coalesce(vinculo_equipe_ativo, 0) = 1
+        )
+),
+
+equipes_profissionais as (
+    select *
+    from equipes_profissionais_elegiveis_legado
 
     qualify row_number() over (
         partition by
-        data_particao,
-        profissional_id_original,
-        unidade_id_original,
-        cod_cbo,
-        ine
+            data_particao,
+            profissional_id_original,
+            unidade_id_original,
+            cod_cbo
         order by
-        vinculo_equipe_ativo_asof desc,
-        fl_equipeminima desc,
-        dt_entrada desc,
-        loaded_at desc,
-        _source_file desc
+            coalesce(vinculo_equipe_ativo, 0) desc,
+            fl_equipeminima desc,
+            dt_entrada desc,
+            loaded_at desc,
+            _source_file desc
     ) = 1
 ),
 
