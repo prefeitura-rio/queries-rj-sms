@@ -8,7 +8,7 @@
 WITH classificada AS (
   SELECT DISTINCT
     SAFE_CAST(TRIM(processo_rio) AS STRING)                AS processo_rio,
-    DATE(entrada_gat_3)                                     AS data_solicitacao,
+    DATE(entrada_gat3)                                     AS data_solicitacao,
     CASE
       WHEN REGEXP_CONTAINS(UPPER(orgao), r'TJRJ') THEN 'TJRJ'
       WHEN REGEXP_CONTAINS(UPPER(orgao), r'JFRJ') THEN 'JFRJ'

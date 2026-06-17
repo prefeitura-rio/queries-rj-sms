@@ -12,10 +12,9 @@ WITH base AS (
     COALESCE(REGEXP_REPLACE(TRIM(area), r'\.', ''), 'Não informado') AS codigo_ap, 
     COALESCE(INITCAP(TRIM(area)), 'Não informado') AS ap,
     COALESCE(UPPER(TRIM(situacao)), 'Não informado') AS situacao,
-    COALESCE(DATE(entrada_gat_3), DATE(data)) AS data_entrada,
-    DATE_TRUNC(COALESCE(DATE(entrada_gat_3), DATE(data)), MONTH) AS ano_mes_dt,
+    DATE(entrada_gat3) AS data_entrada,
+    DATE_TRUNC(DATE(entrada_gat3), MONTH) AS ano_mes_dt,
 
-    -- divide solicitações compostas (com mais de um tipo para o mesmo processo)
     SPLIT(REGEXP_REPLACE(solicitacao, r'\s*,\s*', ','), ',') AS solicitacoes
   FROM {{ ref('int_cdi__judicial_residual') }}
   WHERE TRIM(solicitacao) IS NOT NULL

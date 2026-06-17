@@ -6,16 +6,15 @@
 ) }}
 
 SELECT
-  processorio,
-  SAFE_CAST(data_de_entrada AS DATE) AS data_entrada,
+  processo_rio,
+  SAFE_CAST(data_entrada AS DATE) AS data_entrada,
   TRIM(UPPER(origem)) AS origem,
 
-  -- dimensões para filtros
   UPPER(TRIM(situacao))                 AS situacao,
   TRIM(cap)                             AS cap,
   TRIM(sintese_solicitacao)             AS sintese_solicitacao,
-  TRIM(mandado_de_prisao)               AS mandado_de_prisao,
-  TRIM(crime_de_desobediencia)          AS crime_de_desobediencia,
+  TRIM(mandado_prisao)                  AS mandado_prisao,
+  TRIM(crime_desobediencia)             AS crime_desobediencia,
   TRIM(setor_responsavel)               AS setor_responsavel,
   UPPER(TRIM(sexo))                     AS sexo,
   UPPER(TRIM(idade))                    AS idade

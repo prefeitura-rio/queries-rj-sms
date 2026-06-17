@@ -8,7 +8,7 @@
 WITH base AS (
   SELECT
     CAST(TRIM(area) AS STRING) AS area,
-    DATE(entrada_gat_3) AS data_solicitacao,
+    DATE(entrada_gat3) AS data_solicitacao,
     INITCAP(TRIM(orgao)) AS orgao,
     COUNT(DISTINCT processo_rio) AS total_demandas
   FROM {{ ref('int_cdi__judicial_residual') }}

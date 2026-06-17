@@ -7,23 +7,21 @@
 
 WITH base AS (
   SELECT
-    processorio,
-    SAFE_CAST(data_de_entrada AS DATE) AS data_entrada,
+    processo_rio,
+    SAFE_CAST(data_entrada AS DATE) AS data_entrada,
     TRIM(cap) AS cap,
     UPPER(TRIM(sintese_solicitacao)) AS sintese_solicitacao,
 
-    -- dimensões para filtros
     UPPER(TRIM(situacao))                 AS situacao,
     TRIM(origem)                          AS origem,
     TRIM(setor_responsavel)               AS setor_responsavel,
-    TRIM(mandado_de_prisao)               AS mandado_de_prisao,
-    TRIM(crime_de_desobediencia)          AS crime_de_desobediencia
+    TRIM(mandado_prisao)                  AS mandado_prisao,
+    TRIM(crime_desobediencia)             AS crime_desobediencia
 
   FROM {{ ref('int_cdi__pgm') }}
   WHERE cap IS NOT NULL
 ),
 
--- Agregação por CAP
 agregado AS (
   SELECT
     cap,
@@ -33,15 +31,14 @@ agregado AS (
     ANY_VALUE(situacao)            AS situacao,
     ANY_VALUE(origem)              AS origem,
     ANY_VALUE(setor_responsavel)   AS setor_responsavel,
-    ANY_VALUE(mandado_de_prisao)   AS mandado_de_prisao,
-    ANY_VALUE(crime_de_desobediencia) AS crime_de_desobediencia,
-    COUNT(DISTINCT processorio) AS total_demandas
+    ANY_VALUE(mandado_prisao)      AS mandado_prisao,
+    ANY_VALUE(crime_desobediencia) AS crime_desobediencia,
+    COUNT(DISTINCT processo_rio) AS total_demandas
 
   FROM base
   GROUP BY cap, data_entrada, sintese_solicitacao
 ),
 
--- Classificação de área programática
 classificada AS (
   SELECT
     *,
@@ -70,7 +67,6 @@ classificada AS (
   FROM agregado
 ),
 
--- Coordenadas por AP
 coordenadas AS (
   SELECT
     CAST(area_programatica AS STRING) AS codigo_ap,
@@ -82,7 +78,6 @@ coordenadas AS (
   GROUP BY area_programatica
 ),
 
--- União das áreas com coordenadas
 unificado AS (
   SELECT
     a.*,
@@ -104,8 +99,8 @@ SELECT
   situacao,
   origem,
   setor_responsavel,
-  mandado_de_prisao,
-  crime_de_desobediencia,
+  mandado_prisao,
+  crime_desobediencia,
   codigo_ap,
   codigo_ap_classificacao_ordem,
   cap_label_exibida AS area,

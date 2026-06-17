@@ -10,17 +10,15 @@
 with base as (
 
     select *
-    from {{ ref('int_cdi__equipe_tutela_individual') }}
+    from {{ ref('int_cdi__tutela_individual') }}
 
 ),
 
 calculos as (
 
     select
-        -- identificador
         processo_rio,
 
-        -- dimensões para filtros
         orgao,
         case
             when (
@@ -30,49 +28,41 @@ calculos as (
             or upper(trim(sexo)) = 'AMBOS'
                 then 'Nucleo Familiar'
 
-            -- Núcleo familiar (NF explícito)
             when upper(trim(sexo)) = 'NF'
                 then 'Nucleo Familiar'
 
-            -- Feminino
             when upper(trim(sexo)) = 'F'
                 then 'Feminino'
 
-            -- Masculino
             when upper(trim(sexo)) = 'M'
                 then 'Masculino'
 
-            -- Qualquer outro valor
             else 'Não identificado'
         end as sexo_tratado,
-        classificacao_idade,
+        idade_categoria,
         area,
-        promotora_defensora,
+        promotor_defensor,
 
-        -- assunto (tipo de solicitação)
         assuntos,
 
-        -- datas base
-        data_de_entrada,
-        data_do_sms_ofi,
+        data_entrada,
+        data_finalizacao,
 
-        -- tempo de atendimento (por processo)
         case
             when situacao = "RESOLVIDO" then date_diff(
-                data_do_sms_ofi,
-                data_de_entrada,
+                data_finalizacao,
+                data_entrada,
                 day
             )
             else null
         end as tempo_atendimento_dias,
 
-
         case
             when situacao = "RESOLVIDO"
                 then 'Resolvido'
 
-            when data_do_sms_ofi
-                 <= date_add(data_de_entrada, interval prazo_dias day)
+            when data_finalizacao
+                 <= date_add(data_entrada, interval prazo_dias day)
                 then 'Dentro do prazo'
 
             else 'Fora do prazo'

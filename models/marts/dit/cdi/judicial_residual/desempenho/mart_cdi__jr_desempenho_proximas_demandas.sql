@@ -1,102 +1,102 @@
-{{ config(  
+{{ config(
   schema = "projeto_cdi",
   alias  = "jr_desempenho_proximas_demandas",
   materialized = "table",
   meta={"owner": "karen"}
 ) }}
 
-WITH base AS (
-  SELECT
-    SAFE_CAST(TRIM(id) AS STRING)                     AS id,
-    SAFE_CAST(TRIM(processo_rio) AS STRING)           AS processo_rio,
-    INITCAP(TRIM(solicitacao))                        AS tipo_solicitacao,
-    INITCAP(TRIM(orgao_para_subsidiar))               AS orgao_para_subsidiar,
-    SAFE_CAST(TRIM(orgao) AS STRING)                  AS orgao,
-    SAFE_CAST(TRIM(area) AS STRING)                   AS area,
-    REGEXP_REPLACE(TRIM(area), r'\.', '')             AS codigo_ap,
-    DATE(entrada_gat_3)                               AS data_entrada,
-    DATE(retorno)                                     AS data_retorno,
-    SAFE_CAST(prazo_dias AS INT64)                    AS prazo_dias,
+with base as (
 
-    -- cálculo do vencimento
-    DATE_ADD(DATE(entrada_gat_3), INTERVAL SAFE_CAST(prazo_dias AS INT64) DAY)
-      AS data_vencimento,
+  select
+    id,
+    processo_rio,
 
-    UPPER(TRIM(situacao))                             AS situacao_raw,
+    coalesce(
+      initcap(orgao_para_subsidiar),
+      'Não informado'
+    ) as orgao_para_subsidiar,
 
-    CASE
-      WHEN TRIM(situacao) IS NULL OR TRIM(situacao) = '' THEN 'Não informado'
-      ELSE INITCAP(LOWER(TRIM(situacao)))
-    END AS situacao_exibicao
+    entrada_gat3 as data_entrada,
+    retorno as data_retorno,
+    prazo_dias,
 
-  FROM {{ ref('int_cdi__judicial_residual') }}
-  WHERE entrada_gat_3 IS NOT NULL
+    date_add(entrada_gat3, interval prazo_dias day) as data_vencimento,
+
+    initcap(lower(situacao)) as situacao
+
+  from {{ ref('int_cdi__judicial_residual') }}
+
+  where entrada_gat3 is not null
+    and situacao like 'PENDENTE%'
+
 ),
 
-calc AS (
-  SELECT
+calc as (
+
+  select
     *,
-    DATE_DIFF(data_vencimento, CURRENT_DATE(), DAY) AS dias_para_vencer,
 
-    -- Prazo legível
-    CASE
-      WHEN data_vencimento IS NULL THEN 'Sem prazo definido'
-      WHEN DATE_DIFF(data_vencimento, CURRENT_DATE(), DAY) < 0
-        THEN CONCAT('Vencida há ', ABS(DATE_DIFF(data_vencimento, CURRENT_DATE(), DAY)), ' dias')
-      WHEN DATE_DIFF(data_vencimento, CURRENT_DATE(), DAY) = 0
-        THEN 'Vence hoje'
-      ELSE CONCAT('Em ', DATE_DIFF(data_vencimento, CURRENT_DATE(), DAY), ' dias')
-    END AS prazo_legivel,
+    date_diff(data_vencimento, current_date(), day) as dias_para_vencer
 
-    -- Status do vencimento
-    CASE
-      WHEN data_vencimento IS NULL THEN 'Sem prazo definido'
-      WHEN DATE_DIFF(data_vencimento, CURRENT_DATE(), DAY) < 0
-        THEN 'Vencida'
-      WHEN DATE_DIFF(data_vencimento, CURRENT_DATE(), DAY) BETWEEN 0 AND 7
-        THEN 'A vencer (≤7 dias)'
-      WHEN DATE_DIFF(data_vencimento, CURRENT_DATE(), DAY) BETWEEN 8 AND 15
-        THEN 'A vencer (8–15 dias)'
-      ELSE 'Dentro do Prazo (>15 dias)'
-    END AS status_vencimento
+  from base
 
-  FROM base
 ),
 
-dedup AS (
-  SELECT * EXCEPT(rn)
-  FROM (
-    SELECT
+classificada as (
+
+  select
+    *,
+
+    case
+      when data_vencimento is null then 'Sem prazo definido'
+      when dias_para_vencer < 0
+        then concat('Vencida há ', abs(dias_para_vencer), ' dias')
+      when dias_para_vencer = 0
+        then 'Vence hoje'
+      else concat('Em ', dias_para_vencer, ' dias')
+    end as prazo_legivel,
+
+    case
+      when data_vencimento is null then 'Sem prazo definido'
+      when dias_para_vencer < 0 then 'Vencida'
+      when dias_para_vencer between 0 and 7 then 'A vencer (≤7 dias)'
+      when dias_para_vencer between 8 and 15 then 'A vencer (8–15 dias)'
+      else 'Dentro do Prazo (>15 dias)'
+    end as status_vencimento
+
+  from calc
+
+),
+
+dedup as (
+
+  select * except (rn)
+  from (
+    select
       c.*,
-      ROW_NUMBER() OVER (
-        PARTITION BY id
-        ORDER BY
-          CASE WHEN data_retorno IS NULL THEN 1 ELSE 0 END,
-          data_vencimento DESC,
-          data_entrada DESC
-      ) AS rn
-    FROM calc c
+      row_number() over (
+        partition by id
+        order by
+          case when data_vencimento is null then 1 else 0 end,
+          data_vencimento asc,
+          data_entrada desc
+      ) as rn
+    from classificada c
   )
-  WHERE rn = 1
+  where rn = 1
+
 )
 
-SELECT
-  COALESCE(id, 'Não informado')                    AS id,
-  COALESCE(processo_rio, 'Não informado')          AS processo_rio,
-  COALESCE(tipo_solicitacao, 'Não informado')      AS tipo_solicitacao,
-  COALESCE(orgao_para_subsidiar, 'Não informado')  AS orgao_para_subsidiar,
-  COALESCE(orgao, 'Não informado')                 AS orgao,
-  COALESCE(area, 'Não informado')                  AS area,
-  COALESCE(codigo_ap, 'Não informado')             AS codigo_ap,
-  COALESCE(situacao_exibicao, 'Não informado')     AS situacao,
-  COALESCE(situacao_raw, 'Não informado')          AS situacao_raw,
+select
+  coalesce(processo_rio, 'Não informado') as processo_rio,
+  orgao_para_subsidiar,
   data_entrada,
   data_vencimento,
-  prazo_dias,
+  situacao,
   dias_para_vencer,
   prazo_legivel,
-  COALESCE(status_vencimento, 'Não informado')     AS status_vencimento
+  status_vencimento
 
-FROM dedup
-WHERE UPPER(TRIM(situacao_raw)) LIKE 'PENDENTE%'
-ORDER BY data_vencimento ASC
+from dedup
+
+order by data_vencimento asc

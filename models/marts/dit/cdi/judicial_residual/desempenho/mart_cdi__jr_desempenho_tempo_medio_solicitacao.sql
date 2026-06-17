@@ -13,10 +13,10 @@ WITH base AS (
     REGEXP_REPLACE(TRIM(area), r'\.', '') AS codigo_ap,
     UPPER(TRIM(situacao)) AS situacao,
     LOWER(TRIM(COALESCE(solicitacao, 'não informado'))) AS solicitacao_raw,
-    DATE(entrada_gat_3) AS data_entrada,
+    DATE(entrada_gat3) AS data_entrada,
     DATE(retorno) AS data_retorno
   FROM {{ ref('int_cdi__judicial_residual') }}
-  WHERE entrada_gat_3 IS NOT NULL
+  WHERE entrada_gat3 IS NOT NULL
 ),
 
 tipos AS (

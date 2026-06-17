@@ -2,23 +2,22 @@
     config(
         materialized = 'table',
         schema = 'projeto_cdi',
-        alias = 'equipe_tutela_coletiva_demandas_prazos_a_vencer',
+        alias = 'tutela_coletiva_prazos_a_vencer',
         meta={"owner": "karen"}
     ) 
 }}
-
 
 with base as (
 
     select
         processo_rio,
         assunto,
-        data_da_entrada,
+        data_entrada,
         area,
         orgao,
         ic,
         reiteracoes,
-        sintese_da_solicitacao,
+        sintese_solicitacao,
         status,
         prazo_dias,
 
@@ -33,16 +32,15 @@ with base as (
             else 'Outros'
         end as grupo_orgao,
 
-        -- saldo de dias em relação ao vencimento
         date_diff(
-            date_add(data_da_entrada, interval prazo_dias day),
+            date_add(data_entrada, interval prazo_dias day),
             current_date(),
             day
         ) as dias_para_vencer,
-        -- data de vencimento
-        date_add(data_da_entrada, interval prazo_dias day) as data_vencimento_prazo
 
-    from {{ ref('int_cdi__equipe_tutela_coletiva') }}
+        date_add(data_entrada, interval prazo_dias day) as data_vencimento_prazo
+
+    from {{ ref('int_cdi__tutela_coletiva') }}
 
 ),
 

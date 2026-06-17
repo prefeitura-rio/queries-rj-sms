@@ -5,55 +5,64 @@
     meta={"owner": "karen"}
 ) }}
 
-WITH base AS (
-    SELECT
-        SAFE_CAST(processo_rio AS STRING) AS processo_rio,
-        INITCAP(TRIM(solicitacao)) AS tipo_solicitacao,
-        INITCAP(TRIM(orgao_para_subsidiar)) AS orgao_para_subsidiar,
+with base as (
 
-        LOWER(TRIM(idade)) AS idade_classe,
-        UPPER(TRIM(sexo)) AS sexo_raw,
+    select
+        processo_rio,
+        initcap(solicitacao) as tipo_solicitacao,
+        initcap(orgao_para_subsidiar) as orgao_para_subsidiar,
 
-        SAFE_CAST(DATE(data) AS DATE) AS data_solicitacao,
+        idade_categoria,
+        sexo,
 
-        COALESCE(
-            INITCAP(NULLIF(TRIM(situacao), '')),
+        entrada_gat3 as data_solicitacao,
+
+        coalesce(
+            initcap(situacao),
             'Não informado'
-        ) AS situacao
-    FROM {{ ref('int_cdi__judicial_residual') }}
-    WHERE data IS NOT NULL
+        ) as situacao
+
+    from {{ ref('int_cdi__judicial_residual') }}
+    where entrada_gat3 is not null
+
 ),
 
-limpo AS (
-    SELECT
-        *,
-        CASE 
-            WHEN sexo_raw = 'F' THEN 'Feminino'
-            WHEN sexo_raw = 'M' THEN 'Masculino'
-            WHEN sexo_raw IN ('F/M', 'M/F') THEN 'Ambos'
-            ELSE 'Não Informado'
-        END AS sexo_norm,
+limpo as (
 
-        CASE
-            WHEN REGEXP_CONTAINS(idade_classe, r'\badult') THEN 'Adulto'
-            WHEN REGEXP_CONTAINS(idade_classe, r'\bidos') THEN 'Idoso'
-            WHEN REGEXP_CONTAINS(idade_classe, r'crian[cç]a') THEN 'Criança'
-            WHEN REGEXP_CONTAINS(idade_classe, r'adolesc') THEN 'Adolescente'
-            WHEN REGEXP_CONTAINS(idade_classe, r'\brn\b|rec[eé]m[- ]?nascid') THEN 'Recém-nascido'
-            WHEN REGEXP_CONTAINS(idade_classe, r'n[uú]cleo\s*familiar|fam[ií]li') THEN 'Núcleo familiar'
-            WHEN idade_classe IS NULL THEN 'Não informado'
-            ELSE INITCAP(idade_classe)
-        END AS faixa_etaria_norm
-    FROM base
+    select
+        *,
+
+        case 
+            when sexo = 'F' then 'Feminino'
+            when sexo = 'M' then 'Masculino'
+            when sexo in ('F/M', 'M/F') then 'Ambos'
+            else 'Não Informado'
+        end as sexo_norm,
+
+        case
+            when idade_categoria = 'adulto' then 'Adulto'
+            when idade_categoria = 'idoso' then 'Idoso'
+            when idade_categoria = 'crianca' then 'Criança'
+            when idade_categoria = 'adolescente' then 'Adolescente'
+            when idade_categoria = 'rn' then 'Recém-nascido'
+            when idade_categoria = 'nucleo_familiar' then 'Núcleo familiar'
+            when idade_categoria = 'adulto e idoso' then 'Adulto e Idoso'
+            else 'Não informado'
+        end as faixa_etaria_norm
+
+    from base
+
 )
 
-SELECT
+select
     processo_rio,
     tipo_solicitacao,
     orgao_para_subsidiar,
-    sexo_norm AS sexo,
-    faixa_etaria_norm AS faixa_etaria,
+    sexo_norm as sexo,
+    faixa_etaria_norm as faixa_etaria,
     data_solicitacao,
     situacao
-FROM limpo
-ORDER BY data_solicitacao
+
+from limpo
+
+order by data_solicitacao

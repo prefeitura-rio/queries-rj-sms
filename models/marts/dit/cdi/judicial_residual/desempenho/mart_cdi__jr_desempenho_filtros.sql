@@ -5,12 +5,23 @@
   meta={"owner": "karen"}
 ) }}
 
-SELECT DISTINCT
-  COALESCE(SAFE_CAST(TRIM(orgao) AS STRING), 'Não informado') AS orgao,
-  COALESCE(INITCAP(TRIM(solicitacao)), 'Não informado') AS tipo_solicitacao,
-  COALESCE(REGEXP_REPLACE(TRIM(area), r'\.', ''), 'Não informado') AS codigo_ap,
-  COALESCE(SAFE_CAST(TRIM(area) AS STRING), 'Não informado') AS area,
-  COALESCE(UPPER(TRIM(situacao)), 'Não informado') AS situacao,
-  COALESCE(DATE_TRUNC(DATE(entrada_gat_3), MONTH), DATE '1900-01-01') AS ano_mes_dt
-FROM {{ ref('int_cdi__judicial_residual') }}
-WHERE entrada_gat_3 IS NOT NULL
+select distinct
+  coalesce(orgao, 'Não informado') as orgao,
+
+  coalesce(initcap(solicitacao), 'Não informado') as tipo_solicitacao,
+
+  case
+    when regexp_contains(area, r'^\d+(\.\d+)?$')
+      then regexp_replace(area, r'\.', '')
+    else 'Não informado'
+  end as codigo_ap,
+
+  coalesce(area, 'Não informado') as area,
+
+  coalesce(situacao, 'Não informado') as situacao,
+
+  date_trunc(entrada_gat3, month) as ano_mes_dt
+
+from {{ ref('int_cdi__judicial_residual') }}
+
+where entrada_gat3 is not null
