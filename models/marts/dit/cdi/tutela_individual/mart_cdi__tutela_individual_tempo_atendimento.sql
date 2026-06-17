@@ -10,7 +10,7 @@
 with base as (
 
     select *
-    from {{ ref('int_cdi__equipe_tutela_individual') }}
+    from {{ ref('int_cdi__tutela_individual') }}
 
 ),
 
