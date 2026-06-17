@@ -11,7 +11,7 @@ base AS (
     SAFE_CAST(TRIM(processo_rio) AS STRING) AS processo_rio,
     SAFE_CAST(TRIM(orgao) AS STRING) AS orgao,
     SAFE_CAST(TRIM(area) AS STRING) AS area,
-    SAFE_CAST(DATE(data) AS DATE) AS data_solicitacao
+    DATE(entrada_gat3) AS data_solicitacao
   FROM {{ ref('int_cdi__judicial_residual') }}
   WHERE processo_rio IS NOT NULL
     AND TRIM(processo_rio) <> ''

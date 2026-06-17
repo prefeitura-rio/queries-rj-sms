@@ -7,15 +7,15 @@
 
 WITH base AS (
   SELECT
-    SAFE_CAST(id AS STRING)              AS id,              
+    SAFE_CAST(id AS STRING)              AS id,
     TRIM(orgao)                          AS orgao,
-    DATE(entrada_gat_3)                  AS data_solicitacao,   
+    DATE(entrada_gat3)                   AS data_solicitacao,
     SAFE_CAST(TRIM(area) AS STRING)      AS area,
     REGEXP_REPLACE(TRIM(area), r'\.', '') AS codigo_ap
   FROM {{ ref('int_cdi__judicial_residual') }}
   WHERE orgao IS NOT NULL
     AND TRIM(orgao) <> ''
-    AND entrada_gat_3 IS NOT NULL
+    AND entrada_gat3 IS NOT NULL
 )
 
 SELECT

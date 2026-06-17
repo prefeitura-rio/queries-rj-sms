@@ -17,15 +17,15 @@ WITH base AS (
       ELSE 'Não informado'
     END AS codigo_ap,
     UPPER(TRIM(situacao)) AS situacao,
-    DATE(entrada_gat_3) AS data_entrada,
+    DATE(entrada_gat3) AS data_entrada,
     DATE(retorno) AS data_retorno,
     SAFE_CAST(prazo_dias AS INT64) AS prazo_dias,
     CASE
-      WHEN prazo_dias IS NOT NULL THEN DATE_ADD(DATE(entrada_gat_3), INTERVAL prazo_dias DAY)
+      WHEN prazo_dias IS NOT NULL THEN DATE_ADD(DATE(entrada_gat3), INTERVAL prazo_dias DAY)
       ELSE NULL
     END AS data_vencimento
   FROM {{ ref('int_cdi__judicial_residual') }}
-  WHERE entrada_gat_3 IS NOT NULL
+  WHERE entrada_gat3 IS NOT NULL
 ),
 
 resolvidos AS (
