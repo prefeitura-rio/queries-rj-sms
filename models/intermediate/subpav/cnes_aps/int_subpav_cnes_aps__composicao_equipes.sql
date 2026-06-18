@@ -315,10 +315,20 @@ define_tipagem_esb as (
                 )
                 then 1
             else 0
-        end as esb_completa_calculada,
+        end as esb_completa_40h_calculada,
 
         case
             when is_esb = 1
+                and (
+                    cirurgiao >= 1
+                    or cirurgiao_20 >= 1
+                )
+                and (
+                    aux_bucal >= 1
+                    or aux_bucal_20 >= 1
+                    or tec_bucal >= 1
+                    or tec_bucal_20 >= 1
+                )
                 and not (
                     cirurgiao >= 1
                     and (
@@ -328,11 +338,46 @@ define_tipagem_esb as (
                 )
                 then 1
             else 0
+        end as esb_diferenciada_calculada,
+
+        case
+            when is_esb = 1
+                and (
+                    cirurgiao >= 1
+                    or cirurgiao_20 >= 1
+                )
+                and (
+                    aux_bucal >= 1
+                    or aux_bucal_20 >= 1
+                    or tec_bucal >= 1
+                    or tec_bucal_20 >= 1
+                )
+                then 1
+            else 0
+        end as esb_completa_calculada,
+
+        case
+            when is_esb = 1
+                and not (
+                    (
+                        cirurgiao >= 1
+                        or cirurgiao_20 >= 1
+                    )
+                    and (
+                        aux_bucal >= 1
+                        or aux_bucal_20 >= 1
+                        or tec_bucal >= 1
+                        or tec_bucal_20 >= 1
+                    )
+                )
+                then 1
+            else 0
         end as esb_incompleta_calculada,
 
         case
             when is_esb = 1
                 and cirurgiao < 1
+                and cirurgiao_20 < 1
                 then 1
             else 0
         end as incompleta_cirurgiao_dentista,
@@ -340,7 +385,9 @@ define_tipagem_esb as (
         case
             when is_esb = 1
                 and aux_bucal < 1
+                and aux_bucal_20 < 1
                 and tec_bucal < 1
+                and tec_bucal_20 < 1
                 then 1
             else 0
         end as incompleta_aux_tec_bucal,
@@ -350,11 +397,14 @@ define_tipagem_esb as (
                 and (
                     (
                         cirurgiao < 1
+                        and cirurgiao_20 < 1
                         and desligados_60_dent >= 1
                     )
                     or (
                         aux_bucal < 1
+                        and aux_bucal_20 < 1
                         and tec_bucal < 1
+                        and tec_bucal_20 < 1
                         and (
                             desligados_60_aux_bucal >= 1
                             or desligados_60_tec_bucal >= 1
@@ -513,6 +563,8 @@ select
         else 0
     end as aps_incompleta,
 
+    esb_completa_40h_calculada as esb_completa_40h,
+    esb_diferenciada_calculada as esb_diferenciada,
     esb_completa_calculada as esb_completa,
     esb_incompleta_calculada as esb_incompleta,
 
