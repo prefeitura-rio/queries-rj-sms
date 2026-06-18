@@ -58,9 +58,9 @@ with
           ""
         ) as grupo_nome, -- Nome sempre começa com "GRUPO - "
         procedimento_id as id,
-        procedimento_descricao as descricao,
+        trim(procedimento_descricao) as descricao,
         procedimento_sigtap_id as sigtap_id,
-        procedimento_sigtap_descricao as sigtap_descricao
+        trim(procedimento_sigtap_descricao) as sigtap_descricao
       ) as procedimento,
 
       ----------------

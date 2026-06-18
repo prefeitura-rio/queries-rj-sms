@@ -31,7 +31,32 @@ with
       }} as unidade_desejada,
 
       s.procedimento.sigtap_id,
-      s.procedimento.sigtap_descricao,
+      case 
+        when
+          regexp_contains(
+            s.procedimento.sigtap_descricao,
+            R"(?i)ACOMPANHAMENTO\s*E\s*AVALIAÇÃO\s*DOMICILIAR\s*DE\s*PACIENTE\s*SUBMETIDO\s*À\s*VENTILAÇÃO\s*MECANICA"
+          )
+          then "Avaliação domiciliar de paciente em ventilação mecânica"
+        else
+          regexp_replace(
+            regexp_replace(
+              regexp_replace(
+                regexp_replace(
+                  {{ proper_br("s.procedimento.sigtap_descricao") }},
+                  R"(?i)\b(RADIOGRAFIA|RAIO[\-\s]*X)\b",
+                  "RX"
+                ),
+                R"(?i)\bRESSON[AÂ]NCIA\s*MAGN[EÉ]TICA\b",
+                "RM"
+              ),
+              R"(?i)\bTOMOGRAFIA\s*COMPUTADORIZADA\b",
+              "TC"
+            ),
+            R"(?i)ACIDENTE\s*VASCULAR\s*CEREBRAL\s*-?\s*AVC",
+            "AVC"
+          )
+      end as sigtap_descricao,
 
       {{
         estabelecimento_remove_apendices(
@@ -72,6 +97,7 @@ with
       s.fonte,
       s.cpf_particao
     from {{ ref("mart_regulacao__solicitacao") }} as s
+    where s.cpf_particao is not null
   )
 
 select *
