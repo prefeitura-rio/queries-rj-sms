@@ -97,6 +97,56 @@ case
     )
         then null
 
+    -- Remove usuários genéricos derivados da palavra EMAIL.
+    -- Exemplos: email123@gmail.com, email.234@hotmail.com, email.com@gmail.com,    when regexp_contains(
+        upper(
+            regexp_replace(
+                normalize(
+                    split({{ texto }}, '@')[safe_offset(0)],
+                    NFD
+                ),
+                r'[^\p{L}0-9]',
+                ''
+            )
+        ),
+        r'^(EMAIL[0-9]*|EMAIL[A-Z]|[0-9]+EMAIL|EMAILCOM|EMAILRE|EMAILRJ|EMAIL[0-9]+RJ)$'
+    )
+        then null
+
+    -- Remove usuários com indicação explícita de teste, fake ou exemplo.
+    -- Exemplos: teste@gmail.com, fake@hotmail.com.
+    when regexp_contains(
+        upper(
+            regexp_replace(
+                normalize(
+                    split({{ texto }}, '@')[safe_offset(0)],
+                    NFD
+                ),
+                r'[^\p{L}0-9]',
+                ''
+            )
+        ),
+        r'(TESTE|FAKE|FALSO|EXEMPLO|EXAMPLE)'
+    )
+        then null
+
+    -- Remove usuários com indicação de ausência de e-mail.
+    -- Exemplos: criancantememail@gmail.com, pessoantememail@hotmail.com.
+    when regexp_contains(
+        upper(
+            regexp_replace(
+                normalize(
+                    split({{ texto }}, '@')[safe_offset(0)],
+                    NFD
+                ),
+                r'[^\p{L}0-9]',
+                ''
+            )
+        ),
+        r'(NTEMEMAIL|NTEMGMAIL|NTEMIMAIL|NUNCAUSOUEMAIL)'
+    )
+        then null
+
     -- Remove usuários genéricos antes de qualquer correção de domínio.
     -- Isso evita transformar lixo como placeholder@gamil.example em placeholder@gmail.example.
     when upper(
