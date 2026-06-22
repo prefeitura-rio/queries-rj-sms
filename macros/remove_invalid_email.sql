@@ -229,8 +229,8 @@ case
     )
         then null
 
-    -- Remove valores com até 2 caracteres úteis antes do @ em provedores comuns, incluindo domínios oficiais e principais variações mal digitadas.
-    -- Exemplos: a@example.com, a@hotmal.example, ab@gamil.example, j.a@example.com.
+    -- Remove valores com até 2 caracteres úteis antes do @ em qualquer domínio
+    -- Exemplos: a@gmail.com, ab@hotmail.com, a@12.com, c@n.co, cs@t.co.
     when length(
         regexp_replace(
             normalize(
@@ -241,64 +241,6 @@ case
             ''
         )
     ) <= 2
-        and (
-            trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
-                'GMAIL.COM',
-                'GMAIL.COM.BR',
-                'GMAIL.BR',
-                'GMAI.COM',
-                'GMIL.COM',
-                'GAMIL.COM',
-                'GAMAIL.COM',
-                'GEMAIL.COM',
-                'GEMIL.COM',
-                'GMAILL.COM',
-                'GMAIIL.COM',
-                'GGMAIL.COM',
-                'GMAIL.CM',
-                'GMAI.CM',
-                'GMAIL.CON',
-                'GMAI.CON',
-                'GMAIL.COMM',
-                'GMAIL.COMN',
-                'HOTMAIL.COM',
-                'HOTMAIL.COM.BR',
-                'HOTMAIL.BR',
-                'HOTMAI.COM',
-                'HOTMAI.COM.BR',
-                'HOTMAL.COM',
-                'HOTMAL.COM.BR',
-                'HOTEMAIL.COM',
-                'HOTEMAIL.COM.BR',
-                'HOTMAILL.COM',
-                'HOTMAIL.CM',
-                'HOTMAIL.CON',
-                'HOTMAIL.COMM',
-                'OUTLOOK.COM',
-                'OUTLOOK.COM.BR',
-                'OUTLOK.COM',
-                'OUTLOK.COM.BR',
-                'OTLOOK.COM',
-                'OTLOOK.COM.BR',
-                'OUTLOOK.CM',
-                'OUTLOOK.CON',
-                'OUTLOOK.COMM',
-                'YAHOO.COM',
-                'YAHOO.COM.BR',
-                'YAHOO.BR',
-                'YAHO.COM',
-                'YAHO.COM.BR',
-                'YAHOOL.COM',
-                'YAHOOL.COM.BR',
-                'YAHOOO.COM',
-                'YAHOO.CON',
-                'YAHOO.CON.BR'
-            )
-            or regexp_contains(
-                trim(upper(split({{ texto }}, '@')[safe_offset(1)])),
-                r'(GMAIL|GMAI|GMIL|GAMIL|GAMAIL|GEMAIL|GEMIL|HOTMAIL|HOTMAI|HOTMAL|HOTEMAIL|OUTLOOK|OUTLOK|OTLOOK|YAHOO|YAHO|YAHOOL)'
-            )
-        )
         then null
 
     -- Remove valores com um único caractere repetido antes do @ em domínios comuns ou malformados.
