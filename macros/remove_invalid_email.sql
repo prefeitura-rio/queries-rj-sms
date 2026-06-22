@@ -8,6 +8,11 @@ case
     when split(trim({{ texto }}), '@')[safe_offset(1)] is null
         then null
 
+    -- Remove domínio @facebook.com
+    -- O serviço de e-mail do Facebook foi encerrado e não é confiável para disparo atual
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) = 'FACEBOOK.COM'
+        then null
+
     -- Remove e-mails em que a parte antes do @ tem número colado com termo de contato.
     -- Exemplos: 21999999999zapnome@example.com, 21999999999sozap@example.com,
     -- 21999999999whatsnome@example.com, usuario21999999999wpp@example.com.
@@ -98,7 +103,8 @@ case
         then null
 
     -- Remove usuários genéricos derivados da palavra EMAIL.
-    -- Exemplos: email123@gmail.com, email.234@hotmail.com, email.com@gmail.com,    when regexp_contains(
+    -- Exemplos: email123@gmail.com, email.234@hotmail.com, email.com@gmail.com.
+    when regexp_contains(
         upper(
             regexp_replace(
                 normalize(
@@ -418,6 +424,7 @@ case
     -- Exemplos: usuario@gmail.com.br -> usuario@gmail.com, usuario@gmail.br -> usuario@gmail.com, usuario@gmai.cm.br -> usuario@gmail.com.
     when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
         'GMAIL.COM.BR',
+        'GMAIL.COM.BRO',
         'GMAIL.BR',
         'GMAIL.COM.BE',
         'GMAL.COM.BR',
@@ -469,6 +476,10 @@ case
         'GMAIIL.COM',
         'GEMAIL.COM',
         'GAMIL.COM',
+        'GAMIL.SOM',
+        'GAMIL.CCOM',
+        'GAMIL.OM',
+        'GAMIL.FCOM',
         'GAMAIL.COM',
         'GEMIL.COM',
         'GMAIL.COMM',
@@ -601,6 +612,8 @@ case
         'HOTMAI.COM',
         'HOTEMAIL.COM',
         'HOTMAL.COM',
+        'HOTMIAL.COM',
+        'HOTAMIL.COM',
         'HOTMAILL.COM',
         'HOTMAIIL.COM',
         'HOTMAIL.COMM',
@@ -639,7 +652,9 @@ case
         'OOHOTMAIL.COM',
         'HOEMAIL.COM',
         'HOTEMAIL.COMK',
-        'ROTEMAIL.COM'
+        'ROTEMAIL.COM',
+        'GOTMAIL.COM',
+        'HGOTMAIL.COM'
     )
         then concat(
             trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
@@ -677,6 +692,7 @@ case
     when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
         'OTLOOK.COM',
         'OUTLOK.COM',
+        'OUTLLOK.COM',
         'OUTLOOK.CO',
         'OUTLOOK.CON',
         'OUTLOOK.COMM',
@@ -705,6 +721,7 @@ case
         'YAHOO.COM.BR',
         'YAHOO.BR',
         'YAOO.COM.BR',
+        'YAHHO.COM.BR',
         'YAHO.COM.BR',
         'YAHOO.COMBR',
         'YAHOOCOM.BR',
@@ -745,6 +762,7 @@ case
     when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
         'YAHO.COM',
         'YAOO.COM',
+        'YAHHO.COM',
         'YAHOOO.COM',
         'YAHOOL.COM',
         'YAHOOL.COM.COM',
@@ -771,6 +789,133 @@ case
             trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
             '@icloud.com'
         )
+
+    -- Corrige domínios com erro de digitação provável para UOL.
+    -- Exemplo: usuario@uoll.com.br -> usuario@uol.com.br.
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'UOLL.COM.BR'
+    )
+        then concat(
+            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            '@uol.com.br'
+        )
+
+    -- Correções finais de typos prováveis de Gmail ainda encontrados na auditoria.
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'GMMAIL.COM',
+        'GMSIL.COM',
+        'GHMAIL.COM',
+        'GHMAIL.COMN',
+        'GAMILA.COM',
+        'GAMILL.COM',
+        'GMALI.COM',
+        'GNAILL.COM',
+        'GMMAILL.COM',
+        'GMMAILLL.COM',
+        'GMMAIL.CO',
+        'GMMAIL.COM.BR',
+        'GMMAIL.COMED',
+        'GMSIL.COM.BR',
+        'GMAILCOM.BE',
+        'GMAIO.COM.BR',
+        'GMAIOLL.COM',
+        'GAMIL.CXOM',
+        'GMAL.OCM',
+        'GMALC.OM',
+        'GMAIL.COP0M.BR',
+        'GMAIL.SOM.BR',
+        'GMAIL.L.COM'
+    )
+        then concat(
+            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            '@gmail.com'
+        )
+
+    -- Correções finais de typos prováveis de Hotmail ainda encontrados na auditoria.
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'HOTMIL.COM',
+        'HOTAIL.COM',
+        'HOTAIL.COM.BR',
+        'TOHMAIL.COM'
+    )
+        then concat(
+            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            '@hotmail.com'
+        )
+
+    -- Correções finais de typos prováveis de Yahoo Brasil ainda encontrados na auditoria.
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'YAOOL.COM.BR',
+        'YAHHOO.COM.BR',
+        'YAOOH.COM.BR',
+        'HYAOO.COM.BR'
+    )
+        then concat(
+            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            '@yahoo.com.br'
+        )
+
+    -- Correções finais de typos prováveis de Yahoo ainda encontrados na auditoria.
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'YAOOR.COM'
+    )
+        then concat(
+            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            '@yahoo.com'
+        )
+
+    -- Correções finais de typos prováveis de iCloud ainda encontrados na auditoria.
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'ICLOUDE.COM',
+        'ICLODE.COM',
+        'ICLOUB.COM',
+        'ICLOUV.COM',
+        'ICLOUDY.COM',
+        'ICLOUD.COM.BR'
+    )
+        then concat(
+            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            '@icloud.com'
+        )
+
+    -- Remove domínios ambíguos ou inseguros ainda encontrados na auditoria.
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'HMAIL.COM',
+        'AICLOUD.COM',
+        'AICLOD.COM',
+        'HOTMAILFAKE.COM',
+        'MYHYAOO.COM',
+        'GMAILRIO.COM'
+    )
+        then null
+
+    -- Remove domínios com número colado antes de provedor conhecido.
+    -- Não é seguro corrigir porque o número pode ter pertencido ao usuário antes do @.
+    when regexp_contains(
+        trim(upper(split({{ texto }}, '@')[safe_offset(1)])),
+        r'^[0-9]+(GNAIL|GMIAL|GMAIL|GMAI|GMIL|GAMIL|GMMAIL|GMSIL|HOTMIL|HOTMAIL|HOTMAI|HOTMAL|YAHOO|YAOO|YAHO)\..*$'
+    )
+        then null
+
+    -- Remove domínios com texto/nome colado depois de gmail.com.
+    -- Exemplos: gmail.com.melo, gmail.com.valmir, gmail.com.org.br.com.
+    when regexp_contains(
+        trim(upper(split({{ texto }}, '@')[safe_offset(1)])),
+        r'^GMAIL\.COM\.[A-Z0-9.-]+$'
+    )
+        then null
+
+    -- Remove domínios Gmail com sobrenome/palavra como TLD.
+    -- Exemplos: gmail.costa, gmail.melo, gmail.santos.
+    when regexp_contains(
+        trim(upper(split({{ texto }}, '@')[safe_offset(1)])),
+        r'^GMAIL\.[A-Z]{3,}$'
+    )
+        and trim(upper(split({{ texto }}, '@')[safe_offset(1)])) not in (
+            'GMAIL.COM',
+            'GMAIL.BR'
+        )
+        then null
 
     -- Remove domínios com texto/nome colado depois de provedor.com.
     -- Exemplos: gmail.comandrade, gmail.comfilomena, gmail.comcarlos.
@@ -931,18 +1076,44 @@ case
     )
         then null
 
-    -- Corrige Gmail com hífen digitado no início do usuário.
-    -- Exemplo: -usuario20@gmail.example -> usuario20@gmail.example.
-    -- A regra é restrita a gmail.com e só roda depois das regras que removem usuários fake/suspeitos.
-    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) = 'GMAIL.COM'
+    -- Corrige hífen digitado no início do usuário em provedores populares
+    -- Exemplos: -usuario@gmail.com -> usuario@gmail.com;
+    -- -usuario@hotmail.com -> usuario@hotmail.com
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'GMAIL.COM',
+        'HOTMAIL.COM',
+        'HOTMAIL.COM.BR',
+        'OUTLOOK.COM',
+        'OUTLOOK.COM.BR',
+        'YAHOO.COM',
+        'YAHOO.COM.BR',
+        'ICLOUD.COM',
+        'UOL.COM.BR',
+        'IG.COM.BR'
+    )
         and regexp_contains(
             trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
-            r'^-+[a-z0-9.]+$'
+            r'^-+[a-z0-9.][a-z0-9._%+\-]*$'
         )
-        and length(regexp_replace(trim(lower(split({{ texto }}, '@')[safe_offset(0)])), r'^-+', '')) > 2
+        and length(
+            regexp_replace(
+                regexp_replace(
+                    trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                    r'^-+',
+                    ''
+                ),
+                r'[^a-z0-9]',
+                ''
+            )
+        ) > 2
         then concat(
-            regexp_replace(trim(lower(split({{ texto }}, '@')[safe_offset(0)])), r'^-+', ''),
-            '@gmail.com'
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
+            '@',
+            trim(lower(split({{ texto }}, '@')[safe_offset(1)]))
         )
 
     else trim(lower({{ texto }}))
