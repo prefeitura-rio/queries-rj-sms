@@ -440,9 +440,8 @@ case
             '@gmail.com'
         )
 
-    -- Corrige domínios com erro de digitação muito provável para Gmail Brasil.
-    -- Exemplos: usuario@gmai.cm.br -> usuario@gmail.com.br, usuario@gmail.br -> usuario@gmail.com.br.
-    -- Mantém .com.br quando o erro original claramente veio nesse formato.
+    -- Corrige domínios com erro de digitação provável para Gmail, incluindo variações digitadas com .br
+    -- Exemplos: usuario@gmail.com.br -> usuario@gmail.com, usuario@gmail.br -> usuario@gmail.com, usuario@gmai.cm.br -> usuario@gmail.com.
     when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
         'GMAIL.COM.BR',
         'GMAIL.BR',
@@ -470,7 +469,7 @@ case
     )
         then concat(
             trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
-            '@gmail.com.br'
+            '@gmail.com'
         )
 
     -- Corrige domínios com erro de digitação muito provável para Gmail.
@@ -794,7 +793,6 @@ case
     )
         and trim(upper(split({{ texto }}, '@')[safe_offset(1)])) not in (
             'GMAIL.COM',
-            'GMAIL.COM.BR',
             'HOTMAIL.COM',
             'HOTMAIL.COM.BR',
             'OUTLOOK.COM',
