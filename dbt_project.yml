@@ -370,6 +370,15 @@ models:
       prontuario_sarah:
         +schema: brutos_prontuario_sarah
         +tags: ["sarah", "daily"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+      prontuario_mv:
+        +schema: brutos_prontuario_mv
+        +tags: ["mv", "daily"]
+        +meta: {'owner': 'herian'}
         +meta: {"owner": "daniel"}
         +labels:
           dado_publico: nao
