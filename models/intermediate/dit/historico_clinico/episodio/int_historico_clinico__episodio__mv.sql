@@ -281,7 +281,7 @@ with
             -- Medidas
             struct(
                 an.altura as altura,
-                an.superficie_corporal as circunferencia_abdominal,
+                cast(null as float64) as circunferencia_abdominal,
                 coalesce(
                     bam.frequencia_cardiaca, an.frequencia_cardiaca
                 ) as frequencia_cardiaca,
@@ -290,8 +290,8 @@ with
                 ) as frequencia_respiratoria,
                 cast(null as float64) as glicemia,
                 cast(null as float64) as hemoglobina_glicada,
-                cast(null as float64) as imc,
-                cast(null as float64) as peso,
+                cast(an.imc as float64) as imc,
+                cast(an.peso as float64) as peso,
                 coalesce(
                     bam.pressao_arterial_sistolica, an.pressao_arterial_sistolica
                 ) as pressao_sistolica,
@@ -315,9 +315,11 @@ with
             -- Prescricoes 
             -- Campo aberto, exige mineração de texto para se 
             -- encaixar no formato atual do episódio assitencial
+
             -- Medicamentos Administrados
             -- Campo aberto, exige mineração de texto para se 
             -- encaixar no formato atual do episódio assitencial
+            
             -- Estabelecimento
             struct(
                 id_cnes,
