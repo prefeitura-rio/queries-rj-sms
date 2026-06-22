@@ -168,8 +168,10 @@ grupos_idade as (
         1 as prioridade
     from paciente
     where
-        -- Pessoas com idade maior ou igual a 60 anos na data da extração.
-        data_nascimento <= date_sub(current_date('America/Sao_Paulo'), interval 60 year)
+        -- Pessoas com idade maior ou igual a 60 anos na data da extração
+        -- Remove datas de nascimento muito antigas possivelmente inválidas
+        data_nascimento > date('1900-01-01')
+        and data_nascimento <= date_sub(current_date('America/Sao_Paulo'), interval 60 year)
 
     union all
 
