@@ -322,24 +322,6 @@ case
         )
         then null
 
-    -- Remove valores com até 2 caracteres úteis antes do @ em domínios comuns ou malformados.
-    -- Exemplos: a.m@example.com, ab@gamil.example, c@gmil.example, j.a@example.com.
-    when length(
-        regexp_replace(
-            normalize(
-                trim(split({{ texto }}, '@')[safe_offset(0)]),
-                NFD
-            ),
-            r'[^\p{L}0-9]',
-            ''
-        )
-    ) <= 2
-        and regexp_contains(
-            trim(upper(split({{ texto }}, '@')[safe_offset(1)])),
-            r'(GMAIL|GMAI|GMIL|GAMIL|GAMAIL|GEMAIL|GEMIL|HOTMAIL|HOTMAI|OUTLOOK|OUTLOK|YAHOO|YAHO)'
-        )
-        then null
-
     -- Remove domínios terminando diretamente em nome de provedor, sem .com/.com.br/.co.uk etc.
     -- Exemplo: telefonezozap@dominio.gmail.
     when regexp_contains(
@@ -348,8 +330,8 @@ case
     )
         then null
 
-    -- Corrige domínio com hífen digitado antes de provedor
-    -- Exemplo: usuario@-dominio.com -> usuario@dominio.com
+    -- Corrige domínio iniciado por hífen.
+    -- Exemplo: usuario@-dominio.com -> usuario@dominio.com.
     when regexp_contains(
         trim(upper(split({{ texto }}, '@')[safe_offset(1)])),
         r'^-+[A-Z0-9][A-Z0-9.-]*\.[A-Z]{2,}$'
