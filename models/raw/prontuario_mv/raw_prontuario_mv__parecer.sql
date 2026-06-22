@@ -144,5 +144,6 @@ with
             = 1
     )
 
-select *
+select 
+    {{ dbt_utils.generate_surrogate_key(["id_atendimento", "id_cnes"]) }} as id_hci, *
 from parecer_deduplicado

@@ -3,7 +3,7 @@
         alias="profissional",
         materialized="incremental",
         schema="brutos_prontuario_mv",
-        unique_key="id_hci",
+        unique_key="cpf",
         incremental_strategy="merge",
         partition_by={
             "field": "data_particao",
@@ -49,7 +49,7 @@ with
             datetime(datalake_loaded_at, 'America/Sao_Paulo') as loaded_at,
             date(datalake_loaded_at, 'America/Sao_Paulo') as data_particao
         from profissional_json
-        qualify row_number() over (partition by cpf order by datalake_loaded_at) = 1
+        qualify row_number() over (partition by cpf order by datalake_loaded_at desc) = 1
     )
 
 select *
