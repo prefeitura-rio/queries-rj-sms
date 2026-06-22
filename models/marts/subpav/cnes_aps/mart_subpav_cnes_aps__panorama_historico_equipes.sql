@@ -19,6 +19,14 @@ with competencias as (
   from {{ ref('int_subpav_cnes_aps__competencias_legado') }}
 ),
 
+populacao_municipio as (
+    select
+        ano,
+        populacao
+    from {{ ref('raw_basedosdados_br__ibge_populacao_municipio_rio') }}
+),
+
+
 equipes as (
   select
     e.data_particao,
@@ -75,6 +83,45 @@ equipes_agg as (
     competencia_id
 ),
 
+limite_competencia_cnes as (
+  select
+    max(competencia) as ultima_competencia_cnes
+  from equipes_agg
+),
+
+competencias_panorama as (
+  select
+    c.data_particao,
+    c.competencia,
+    c.competencia_id,
+    cast(substr(c.competencia, 1, 4) as int64) as ano_competencia,
+
+    p.populacao as POPULACAO,
+    p.ano as ANO_POPULACAO_REFERENCIA,
+
+    3500 as POP_COBERTA,
+
+    case
+      when c.competencia >= '2024-04' then 46
+      else 0
+    end as ERES
+
+  from competencias c
+
+  cross join limite_competencia_cnes l
+
+  left join populacao_municipio p
+    on p.ano <= cast(substr(c.competencia, 1, 4) as int64)
+
+  where c.competencia >= '2015-01'
+    and c.competencia <= l.ultima_competencia_cnes
+
+  qualify row_number() over (
+    partition by c.competencia
+    order by p.ano desc
+  ) = 1
+),
+
 composicao as (
   select
     data_particao,
@@ -114,51 +161,28 @@ composicao_agg as (
     competencia_id
 ),
 
-parametros as (
-  select
-    e.*,
-
-    case
-      when e.competencia between '2017-01' and '2017-12' then 6498837
-      when e.competencia between '2018-01' and '2018-12' then 6520266
-      when e.competencia between '2019-01' and '2019-12' then 6688927
-      when e.competencia between '2020-01' and '2021-11' then 6718903
-      when e.competencia between '2021-12' and '2023-12' then 6775561
-      when e.competencia between '2024-01' and '2024-12' then 6211223
-      when e.competencia >= '2025-01' then 6729894
-    end as POPULACAO,
-
-    3500 as POP_COBERTA,
-
-    case
-      when e.competencia >= '2024-04' then 46
-      else 0
-    end as ERES
-
-  from equipes_agg e
-),
-
 final as (
   select
-    p.data_particao,
-    p.competencia,
-    cast(substr(p.competencia, 1, 4) as int64) as ano_competencia,
+    cp.data_particao,
+    cp.competencia,
+    cast(substr(cp.competencia, 1, 4) as int64) as ano_competencia,
 
-    p.APS,
-    p.ESF,
-    p.ESB,
-    p.ENASF,
-    p.ECR,
-    p.EACS,
-    p.EAB,
-    p.EAP,
-    p.EAPP,
-    p.EMAD,
-    p.EMAP,
+    coalesce(p.APS, 0) as APS,
+    coalesce(p.ESF, 0) as ESF,
+    coalesce(p.ESB, 0) as ESB,
+    coalesce(p.ENASF, 0) as ENASF,
+    coalesce(p.ECR, 0) as ECR,
+    coalesce(p.EACS, 0) as EACS,
+    coalesce(p.EAB, 0) as EAB,
+    coalesce(p.EAP, 0) as EAP,
+    coalesce(p.EAPP, 0) as EAPP,
+    coalesce(p.EMAD, 0) as EMAD,
+    coalesce(p.EMAP, 0) as EMAP,
 
     coalesce(c.INCONSISTENTE, 0) as INCONSISTENTE,
 
-    cast(p.POPULACAO as string) as POPULACAO,
+    cast(cp.POPULACAO as string) as POPULACAO,
+    cp.ANO_POPULACAO_REFERENCIA,
 
     coalesce(c.APS_COMPLETA, 0) as APS_COMPLETA,
     coalesce(c.APS_INCOMPLETA, 0) as APS_INCOMPLETA,
@@ -167,26 +191,25 @@ final as (
     coalesce(c.ESB_COMPLETA, 0) as ESB_COMPLETA,
     coalesce(c.ESB_INCOMPLETA, 0) as ESB_INCOMPLETA,
 
-    p.competencia_id as COMPETENCIA_ID,
-    p.ERES,
+    cp.competencia_id as COMPETENCIA_ID,
+    cp.ERES,
 
-    format('%.2f', safe_divide(p.APS * p.POP_COBERTA, p.POPULACAO) * 100) as COBERTURA_APS,
-    format('%.2f', safe_divide(coalesce(c.ESF_COMPLETA, 0) * p.POP_COBERTA, p.POPULACAO) * 100) as COBERTURA_ESF_COMPLETA,
-    format('%.2f', safe_divide(p.ESF * p.POP_COBERTA, p.POPULACAO) * 100) as COBERTURA_ESF,
-    format('%.2f', safe_divide(coalesce(c.ESF_COMPLETA, 0) * p.POP_COBERTA, p.POPULACAO) * 100) as COBERTURA_ESF_COMPLETA_GRAFICO,
-    format('%.2f', safe_divide(p.ESF * p.POP_COBERTA, p.POPULACAO) * 100) as COBERTURA_ESF_GRAFICO,
-
+    format('%.2f', safe_divide(coalesce(p.APS, 0) * cp.POP_COBERTA, cp.POPULACAO) * 100) as COBERTURA_APS,
+    format('%.2f', safe_divide(coalesce(c.ESF_COMPLETA, 0) * cp.POP_COBERTA, cp.POPULACAO) * 100) as COBERTURA_ESF_COMPLETA,
+    format('%.2f', safe_divide(coalesce(p.ESF, 0) * cp.POP_COBERTA, cp.POPULACAO) * 100) as COBERTURA_ESF,
+    format('%.2f', safe_divide(coalesce(c.ESF_COMPLETA, 0) * cp.POP_COBERTA, cp.POPULACAO) * 100) as COBERTURA_ESF_COMPLETA_GRAFICO,
+    format('%.2f', safe_divide(coalesce(p.ESF, 0) * cp.POP_COBERTA, cp.POPULACAO) * 100) as COBERTURA_ESF_GRAFICO,
     current_timestamp() as loaded_at
 
-  from parametros p
+  from competencias_panorama cp
+  left join equipes_agg p
+    on p.data_particao = cp.data_particao
+    and p.competencia = cp.competencia
+    and p.competencia_id = cp.competencia_id
   left join composicao_agg c
-    on c.data_particao = p.data_particao
-    and c.competencia_id = p.competencia_id
-
-  order by
-  p.data_particao desc,
-  p.competencia desc
-
+    on c.data_particao = cp.data_particao
+    and c.competencia = cp.competencia
+    and c.competencia_id = cp.competencia_id
 )
 
 select *

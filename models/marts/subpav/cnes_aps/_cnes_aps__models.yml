@@ -721,8 +721,10 @@ models:
         description: Total de equipes EMAP.
       - name: INCONSISTENTE
         description: Total de equipes com inconsistência identificada na composição.
+      - name: ANO_POPULACAO_REFERENCIA
+        description: Ano da população de referência utilizada no cálculo das coberturas.
       - name: POPULACAO
-        description: População de referência usada no cálculo das coberturas, representada como texto para compatibilidade com o Panorama.
+        description: População municipal de referência usada no cálculo das coberturas, obtida da raw materializada da Base dos Dados/IBGE.
       - name: APS_COMPLETA
         description: Total de equipes APS completas.
       - name: APS_INCOMPLETA

@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: raw_basedosdados_br__ibge_populacao_municipio_rio
+    description: >
+      Raw materializada a partir da tabela pública basedosdados.br_ibge_populacao.municipio,
+      filtrada para o município do Rio de Janeiro.
+    columns:
+      - name: ano
+        description: Ano de referência da população.
+        data_tests:
+          - not_null
+
+      - name: id_municipio
+        description: Código IBGE de 7 dígitos do município.
+        data_tests:
+          - not_null
+
+      - name: populacao
+        description: População municipal de referência.
+        data_tests:
+          - not_null
+
+      - name: fonte
+        description: Identificação da tabela pública de origem.
+
+      - name: loaded_at
+        description: Data e hora de materialização da raw no Data Lake.
