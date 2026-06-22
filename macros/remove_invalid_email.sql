@@ -428,6 +428,10 @@ case
         'GMAIL.COM.BR',
         'GMAIL.BR',
         'GMAIL.COM.BE',
+        'GMAL.COM.BR',
+        'GMIAL.COM.BR',
+        'GNAIL.COM.BR',
+        'GMEIL.COM.BR',
         'GMAI.CM.BR',
         'GMAIL.CM.BR',
         'GMAIL.CO.BR',
@@ -459,6 +463,10 @@ case
     when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
         'GMAI.COM',
         'GMIL.COM',
+        'GMAL.COM',
+        'GMIAL.COM',
+        'GNAIL.COM',
+        'GMEIL.COM',
         'GMAILL.COM',
         'GGMAIL.COM',
         'GGMAILL.COM',
@@ -704,6 +712,7 @@ case
     when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
         'YAHOO.COM.BR',
         'YAHOO.BR',
+        'YAOO.COM.BR',
         'YAHO.COM.BR',
         'YAHOO.COMBR',
         'YAHOOCOM.BR',
@@ -743,6 +752,7 @@ case
     -- Corrige domínios com erro de digitação muito provável para Yahoo.
     when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
         'YAHO.COM',
+        'YAOO.COM',
         'YAHOOO.COM',
         'YAHOOL.COM',
         'YAHOOL.COM.COM',
@@ -754,6 +764,20 @@ case
         then concat(
             trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
             '@yahoo.com'
+        )
+
+    -- Corrige domínios com erro de digitação muito provável para iCloud.
+    -- Exemplos: usuario@iclod.com -> usuario@icloud.com.
+    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
+        'ICLOD.COM',
+        'ICLOU.COM',
+        'ICLOUD.COMM',
+        'ICLOUD.CON',
+        'ICLOUD.CM'
+    )
+        then concat(
+            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            '@icloud.com'
         )
 
     -- Remove domínios com texto/nome colado depois de provedor.com.
