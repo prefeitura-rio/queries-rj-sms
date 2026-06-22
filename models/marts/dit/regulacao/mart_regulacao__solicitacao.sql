@@ -59,28 +59,89 @@ with
   ),
 
   joined as (
-    select * except (rank)
+    select
+      paciente_cpf,
+      paciente_cns,
+      solicitacao,
+      cancelamento,
+      procedimento,
+      solicitante,
+      regulador,
+      laudo,
+      marcacao,
+      execucao,
+      fonte,
+      _extracted_at
     from (
       select * from solicitacao_sisreg
       union all
       select * from marcacao_sisreg
     )
-    qualify row_number() over (
-      partition by solicitacao.id
-      order by
-        rank asc,
-        _extracted_at desc nulls last
-    ) = 1
+  ),
+
+  aggregated as (
+    select
+      paciente_cpf,
+      paciente_cns,
+      solicitacao,
+      cancelamento,
+      procedimento,
+      solicitante,
+      regulador,
+      array_agg(
+        laudo ignore nulls
+        order by laudo.datahora_observacao
+      ) as laudo,
+      array_agg(
+        marcacao ignore nulls
+        order by marcacao.datahora
+      ) as marcacao,
+      array_agg(
+        execucao ignore nulls
+        -- TODO: vai me dar dor de cabeça
+      ) as execucao,
+      fonte,
+      max(_extracted_at) as _extracted_at
+    from joined
+    group by
+      paciente_cpf,
+      paciente_cns,
+      solicitacao,
+      cancelamento,
+      procedimento,
+      solicitante,
+      regulador,
+      fonte
   ),
 
   particionado as (
     select
-      * except (data_particao, tipo, _extracted_at),
-
-      tipo,
+      * except (laudo, marcacao, execucao, fonte, _extracted_at),
+      array(
+        select distinct s
+        from unnest(laudo) as s
+        where (
+          s.situacao is not null
+          or s.datahora_observacao is not null
+        )
+      ) as laudo,
+      array(
+        select distinct s
+        from unnest(marcacao) as s
+        where s.id is not null
+      ) as marcacao,
+      array(
+        select distinct s
+        from unnest(execucao) as s
+        where coalesce(
+          s.profissional_cpf,
+          s.unidade_id_cnes
+        ) is not null
+      ) as execucao,
+      fonte,
       _extracted_at,
       cast(paciente_cpf as int64) as cpf_particao
-    from joined
+    from aggregated
   )
 
 select *

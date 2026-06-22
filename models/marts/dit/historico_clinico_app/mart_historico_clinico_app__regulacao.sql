@@ -65,34 +65,31 @@ with
       }} as unidade_solicitante,
       s.solicitante.profissional_nome as profissional_solicitante,
 
-      s.laudo.cid_id as laudo_cid_id,
-      s.laudo.cid_descricao as laudo_cid_descricao,
-      s.laudo.descricao_tipo as laudo_descricao_tipo,
-      s.laudo.situacao as laudo_situacao,
-      s.laudo.observacao as laudo_observacao,
-      s.laudo.datahora_observacao as laudo_datahora,
-      {{
-        estabelecimento_remove_apendices(
-          proper_estabelecimento("s.laudo.operador_unidade")
-        )
-      }} as laudo_operador_unidade,
+      array(
+        select as struct
+          * except (operador_unidade),
+          {{
+            estabelecimento_remove_apendices(
+              proper_estabelecimento("l.operador_unidade")
+            )
+          }} as operador_unidade,
+        from unnest(s.laudo) as l
+      ) as laudo,
 
-      s.marcacao.id as marcacao_id,
-      s.marcacao.datahora as marcacao_datahora,
-      s.marcacao.aprovacao_datahora,
-      s.marcacao.confirmacao_data,
-      s.marcacao.flag_paciente_avisado,
-      s.marcacao.flag_executada,
-      s.marcacao.flag_falta_registrada,
+      s.marcacao,
 
-      s.execucao.profissional_nome as executante_profissional,
-      {{
-        estabelecimento_remove_apendices(
-          proper_estabelecimento("s.execucao.unidade_nome")
-        )
-      }} as executante_unidade,
-      {{ proper_br("s.execucao.unidade_municipio") }} as executante_municipio,
-      {{ proper_br("s.execucao.unidade_bairro") }} as executante_bairro,
+      array(
+        select as struct
+          e.profissional_nome,
+          {{
+            estabelecimento_remove_apendices(
+              proper_estabelecimento("e.unidade_nome")
+            )
+          }} as unidade_nome,
+          {{ proper_br("e.unidade_municipio") }} as unidade_municipio,
+          {{ proper_br("e.unidade_bairro") }} as unidade_bairro,
+        from unnest(s.execucao) as e
+      ) as execucao,
 
       s.fonte,
       s.cpf_particao
