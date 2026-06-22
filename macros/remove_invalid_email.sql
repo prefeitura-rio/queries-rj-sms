@@ -335,7 +335,11 @@ case
         r'^-+[A-Z0-9][A-Z0-9.-]*\.[A-Z]{2,}$'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@',
             regexp_replace(
                 trim(lower(split({{ texto }}, '@')[safe_offset(1)])),
@@ -404,7 +408,11 @@ case
         r'^GMAIL\.COMX+$'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@gmail.com'
         )
 
@@ -416,7 +424,11 @@ case
         r'^GMAIL\.COM[A-Z]$'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@gmail.com'
         )
 
@@ -453,7 +465,11 @@ case
         'GMAILMAIL.COM.BR'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@gmail.com'
         )
 
@@ -562,7 +578,11 @@ case
         'GMAIL.MAIL.COM'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@gmail.com'
         )
 
@@ -573,7 +593,11 @@ case
         r'^HOTMAIL\.COM[A-Z]$'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@hotmail.com'
         )
 
@@ -602,7 +626,11 @@ case
         'HOTMAIL.COIM.BR'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@hotmail.com.br'
         )
 
@@ -657,7 +685,11 @@ case
         'HGOTMAIL.COM'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@hotmail.com'
         )
 
@@ -668,7 +700,11 @@ case
         r'^OUTLOOK\.COM[A-Z]$'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@outlook.com'
         )
 
@@ -684,7 +720,11 @@ case
         'OUTLOOK.OM.BR'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@outlook.com.br'
         )
 
@@ -700,7 +740,11 @@ case
         'OUTLOOK.OM'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@outlook.com'
         )
 
@@ -711,7 +755,11 @@ case
         r'^YAHOO\.COM[A-Z]$'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@yahoo.com'
         )
 
@@ -754,7 +802,11 @@ case
         'YAHOOCOM.BR'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@yahoo.com.br'
         )
 
@@ -772,7 +824,11 @@ case
         'YAHOO.CO'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@yahoo.com'
         )
 
@@ -786,7 +842,11 @@ case
         'ICLOUD.CM'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@icloud.com'
         )
 
@@ -796,7 +856,11 @@ case
         'UOLL.COM.BR'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@uol.com.br'
         )
 
@@ -827,7 +891,11 @@ case
         'GMAIL.L.COM'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@gmail.com'
         )
 
@@ -839,7 +907,11 @@ case
         'TOHMAIL.COM'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@hotmail.com'
         )
 
@@ -851,7 +923,11 @@ case
         'HYAOO.COM.BR'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@yahoo.com.br'
         )
 
@@ -860,7 +936,11 @@ case
         'YAOOR.COM'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@yahoo.com'
         )
 
@@ -874,7 +954,11 @@ case
         'ICLOUD.COM.BR'
     )
         then concat(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+            regexp_replace(
+                trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+                r'^-+',
+                ''
+            ),
             '@icloud.com'
         )
 
@@ -1076,25 +1160,12 @@ case
     )
         then null
 
-    -- Corrige hífen digitado no início do usuário em provedores populares
-    -- Exemplos: -usuario@gmail.com -> usuario@gmail.com;
-    -- -usuario@hotmail.com -> usuario@hotmail.com
-    when trim(upper(split({{ texto }}, '@')[safe_offset(1)])) in (
-        'GMAIL.COM',
-        'HOTMAIL.COM',
-        'HOTMAIL.COM.BR',
-        'OUTLOOK.COM',
-        'OUTLOOK.COM.BR',
-        'YAHOO.COM',
-        'YAHOO.COM.BR',
-        'ICLOUD.COM',
-        'UOL.COM.BR',
-        'IG.COM.BR'
+    -- Corrige hífen digitado no início do usuário para qualquer domínio.
+    -- Exemplos: -usuario@example.com -> usuario@example.com.
+    when regexp_contains(
+        trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
+        r'^-+[a-z0-9.][a-z0-9._%+\-]*$'
     )
-        and regexp_contains(
-            trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
-            r'^-+[a-z0-9.][a-z0-9._%+\-]*$'
-        )
         and length(
             regexp_replace(
                 regexp_replace(
