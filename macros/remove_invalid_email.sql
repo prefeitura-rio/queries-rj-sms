@@ -191,9 +191,7 @@ case
         'OUTLOOK',
         'YAHOO',
         'TESTE',
-        'TESTETESTE',
-        'XXXXX',
-        'XXXXXX'
+        'TESTETESTE'
     )
         then null
 
@@ -350,11 +348,11 @@ case
     )
         then null
 
-    -- Corrige domínio com hífen digitado antes de provedor conhecido.
-    -- Exemplo: usuario@-hotmail.example -> usuario@hotmail.example.
+    -- Corrige domínio com hífen digitado antes de provedor
+    -- Exemplo: usuario@-dominio.com -> usuario@dominio.com
     when regexp_contains(
         trim(upper(split({{ texto }}, '@')[safe_offset(1)])),
-        r'^-+(GMAIL|HOTMAIL|OUTLOOK|YAHOO)\.COM(\.BR)?$'
+        r'^-+[A-Z0-9][A-Z0-9.-]*\.[A-Z]{2,}$'
     )
         then concat(
             trim(lower(split({{ texto }}, '@')[safe_offset(0)])),
