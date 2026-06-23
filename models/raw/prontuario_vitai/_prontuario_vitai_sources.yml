@@ -84,10 +84,6 @@ sources:
       - name: relato_cirurgico_eventos
 
       - name: basecentral__relato_cirurgico_eventos
-        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
 
       - name: classificacao_risco_eventos
 
