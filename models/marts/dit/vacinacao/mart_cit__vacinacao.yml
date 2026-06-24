@@ -1,5 +1,5 @@
 models:
-  - name: mart_sap__vacinacao
+  - name: mart_cit__vacinacao
     description: Esta tabela contém informações
       detalhadas sobre os registros de vacinação dos pacientes no sistema
       Vitacare. Inclui identificadores para o paciente, a equipe de saúde e o
@@ -19,7 +19,7 @@ models:
           exclusivamente cada registro de vacinação.
         data_tests:
           - unique:
-              name: mart_sap__vacinacao__id_vacinacao__unique
+              name: mart_cit__vacinacao__id_vacinacao__unique
         data_type: string
       - name: id_cnes
         description: Este é o identificador único para o estabelecimento de saúde onde
@@ -123,7 +123,7 @@ models:
         data_type: datetime
         data_tests:
           - not_null:
-              name: mart_sap__vacinacao__data_registro__not_null
+              name: mart_cit__vacinacao__data_registro__not_null
               config:
                 severity: warn
                 warn_if: ">1"

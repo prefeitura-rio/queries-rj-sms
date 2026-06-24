@@ -1,8 +1,9 @@
 {{
     config(
         alias="vacinacao",
-        schema="sap",
+        schema="cit",
         materialized="table",
+        tags=['daily'],
         partition_by={
             "field": "particao_registro_vacinacao",
             "data_type": "date",
