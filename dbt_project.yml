@@ -711,7 +711,6 @@ models:
             dominio: estoque
         cdi:
           +schema: projeto_cdi
-          +tags: ["daily", "cdi", "cdi-4hours"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
