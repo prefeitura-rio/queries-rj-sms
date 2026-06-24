@@ -773,6 +773,13 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+      acolher_mais:
+        +schema: projeto_acolher_mais
+        +tags: ["daily", "acolher_mais"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
 
       iplanrio:
         whatsapp:
