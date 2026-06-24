@@ -1,7 +1,7 @@
 {{
     config(
         alias="vacinacao",
-        schema="cit",
+        schema="saude_vacinacao",
         materialized="table",
         tags=['daily'],
         partition_by={
