@@ -195,6 +195,8 @@ models:
       - name: particao_registro_vacinacao
         description: Coluna particionada pela data de aplicacao a fins de otimização de consultas
         data_type: string
+      - name: origem
+        description: Esta coluna indica a fonte dos dados da vacinação
       - name: loaded_at
         description: Esta coluna indica a data e hora em que os dados foram importados
           para o datalake
