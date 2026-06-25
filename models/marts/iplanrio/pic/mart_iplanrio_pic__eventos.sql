@@ -306,9 +306,23 @@ WITH
         FROM todos_os_eventos e
         JOIN todas_as_fases f
           ON e.cpf = f.cpf
-         AND DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
-        -- esse join por janela garante que a puérpera atual possa ter eventos tanto
-        -- da gestação que originou o puerpério atual quanto do próprio puerpério
+         AND (
+             -- Eventos em geral só entram quando ocorreram dentro da janela da fase
+             DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
+
+             -- Exceção para diagnósticos:
+             -- diagnósticos de HIV, sífilis, hepatite B e hepatite C contam
+             -- mesmo que tenham sido registrados em qualquer outro momento da vida
+             OR (
+                 f.tipo_publico = 'Gestacao'
+                 AND e.tipo_evento IN (
+                     'Diagnóstico - HIV',
+                     'Diagnóstico - Sífilis',
+                     'Diagnóstico - Hepatite B',
+                     'Diagnóstico - Hepatite C'
+                 )
+             )
+         )
     )
 
 SELECT
