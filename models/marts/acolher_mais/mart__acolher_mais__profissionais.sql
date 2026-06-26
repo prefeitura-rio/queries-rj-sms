@@ -61,20 +61,32 @@ padronizando_vinculos as (
   from vinculos_atencao_primaria
 ),
 
+nome_cpf as (
+  select 
+    cpf,
+    nome
+  from padronizando_vinculos
+  qualify row_number() over (
+    partition by cpf
+    order by length(nome) desc
+  ) = 1
+),
+
 sem_duplicados as (
-  select distinct *
+  select distinct cpf, id_cnes, ocupacao_descricao
   from padronizando_vinculos
 ),
 
 agrupado_por_pessoa as (
   select 
     cpf, 
-    max(nome) as nome, 
+    nome_cpf.nome, 
     array_agg(
       struct(id_cnes, ocupacao_descricao)
     ) as vinculos
   from sem_duplicados
-  group by 1
+    left join nome_cpf using(cpf)
+  group by 1, 2
 )
 
 select *
