@@ -19,8 +19,8 @@ with
             safe_cast({{ process_null('no_paciente') }} as string) as paciente_nome,
             safe_cast(dt_nascimento_paciente as date) as paciente_nascimento_data,
             case 
-                when {{ process_null('tp_sexo_paciente') }} = 'M' then 'Masculino'
-                when {{ process_null('tp_sexo_paciente') }} = 'F' then 'Feminino'
+                when {{ process_null('tp_sexo_paciente') }} = 'M' then 'masculino'
+                when {{ process_null('tp_sexo_paciente') }} = 'F' then 'feminino'
                 else null
             end as paciente_sexo,
             safe_cast({{ process_null('no_mae_paciente') }} as string) as paciente_nome_mae,

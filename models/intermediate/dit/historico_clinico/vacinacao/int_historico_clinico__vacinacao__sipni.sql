@@ -94,7 +94,11 @@ with
                 as string)
             ) as vacina_dose,
             safe_cast(v.vacina_lote as string) as vacina_lote,
-            safe_cast(vacina_tipo_registro as string) as vacina_registro_tipo,
+            case
+                when vacina_tipo_registro = "Registro anterior/Transcrição de caderneta"
+                    then "registro de vacinacao anterior"
+                else safe_cast(vacina_tipo_registro as string)
+            end as vacina_registro_tipo,
             safe_cast(vacina_estrategia as string) as vacina_estrategia,
             safe_cast(null as string) as vacina_diff,
             safe_cast(v.vacina_aplicacao_data as date) as vacina_aplicacao_data,
