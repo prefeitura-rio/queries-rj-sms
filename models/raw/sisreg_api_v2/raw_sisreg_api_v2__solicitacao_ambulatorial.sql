@@ -9,7 +9,7 @@
     },
   )
 }}
-
+-- TODO: pensar em incremental, talvez com data_atualizacao?
 
 with
   dedup_source as (

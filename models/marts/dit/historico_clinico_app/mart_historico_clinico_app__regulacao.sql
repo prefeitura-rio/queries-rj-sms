@@ -30,12 +30,11 @@ with
         )
       }} as unidade_desejada,
 
-      s.procedimento.sigtap_id,
-      case 
+      case
         when
           regexp_contains(
-            s.procedimento.sigtap_descricao,
-            R"(?i)ACOMPANHAMENTO\s*E\s*AVALIAÇÃO\s*DOMICILIAR\s*DE\s*PACIENTE\s*SUBMETIDO\s*À\s*VENTILAÇÃO\s*MECANICA"
+            coalesce(s.procedimento.descricao, s.procedimento.sigtap_descricao),
+            r"(?i)ACOMPANHAMENTO\s*E\s*AVALIAÇÃO\s*DOMICILIAR\s*DE\s*PACIENTE\s*SUBMETIDO\s*À\s*VENTILAÇÃO\s*MECANICA"
           )
           then "Avaliação domiciliar de paciente em ventilação mecânica"
         else
@@ -43,20 +42,24 @@ with
             regexp_replace(
               regexp_replace(
                 regexp_replace(
-                  {{ proper_br("s.procedimento.sigtap_descricao") }},
-                  R"(?i)\b(RADIOGRAFIA|RAIO[\-\s]*X)\b",
+                  regexp_replace(
+                    {{ proper_br("coalesce(s.procedimento.descricao, s.procedimento.sigtap_descricao)") }},
+                    r"(?i)\bou\b",  -- proper_br transforma em "Ou" mesmo no meio de frase
+                    "ou"
+                  ),
+                  r"(?i)\b(RADIOGRAFIA|RAIO[\-\s]*X)\b",
                   "RX"
                 ),
-                R"(?i)\bRESSON[AÂ]NCIA\s*MAGN[EÉ]TICA\b",
+                r"(?i)\bRESSON[AÂ]NCIA\s*MAGN[EÉ]TICA\b",
                 "RM"
               ),
-              R"(?i)\bTOMOGRAFIA\s*COMPUTADORIZADA\b",
+              r"(?i)\bTOMOGRAFIA\s*COMPUTADORIZADA\b",
               "TC"
             ),
-            R"(?i)ACIDENTE\s*VASCULAR\s*CEREBRAL\s*-?\s*AVC",
+            r"(?i)ACIDENTE\s*VASCULAR\s*CEREBRAL\s*-?\s*AVC",
             "AVC"
           )
-      end as sigtap_descricao,
+      end as procedimento_descricao,
 
       {{
         estabelecimento_remove_apendices(

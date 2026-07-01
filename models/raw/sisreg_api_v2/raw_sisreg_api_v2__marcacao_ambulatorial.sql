@@ -34,14 +34,14 @@ with
 
       -- Identificação básica da solicitação
       cast({{ process_null("codigo_solicitacao") }} as string) as solicitacao_id,
-      cast({{ process_null("data_solicitacao") }} as timestamp)  as solicitacao_datahora,
-      cast({{ process_null("data_atualizacao") }} as timestamp)  as atualizacao_datahora,
+      cast({{ process_null("data_solicitacao") }} as timestamp) as solicitacao_datahora,
+      cast({{ process_null("data_atualizacao") }} as timestamp) as atualizacao_datahora,
 
 
       -- Status e classificação
       cast({{ process_null("status_solicitacao") }} as string) as solicitacao_status,
       cast({{ process_null("sigla_situacao") }} as string)     as situacao_sigla,
-      case st_visualizado_regulador
+      case cast({{ process_null("st_visualizado_regulador") }} as string)
           when "1" then "sim"
           when "0" then "nao"
           else cast(null as string)
@@ -186,7 +186,7 @@ with
       -- Marcação
       cast({{ process_null("codigo_marcacao") }} as string) as marcacao_id,
       cast({{ process_null("data_marcacao") }} as timestamp) as marcacao_data,
-      case marcacao_executada
+      case cast({{ process_null("marcacao_executada") }} as string)
           when "1" then "sim"
           when "0" then "nao"
           else cast(null as string)
