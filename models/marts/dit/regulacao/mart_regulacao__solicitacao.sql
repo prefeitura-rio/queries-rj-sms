@@ -60,8 +60,16 @@ with
 
   joined as (
     select
-      paciente_cpf,
-      paciente_cns,
+      if(
+        {{ validate_cpf("paciente_cpf") }},
+        paciente_cpf,
+        cast(null as string)
+      ) as paciente_cpf,
+      if(
+        {{ validate_cns("paciente_cns") }},
+        paciente_cns,
+        cast(null as string)
+      ) as paciente_cns,
       solicitacao,
       cancelamento,
       procedimento,
