@@ -3,6 +3,8 @@
         schema="brutos_prontuario_vitacare_historico",
         alias="vacina", 
         materialized="incremental",
+        incremental_strategy="merge",
+        merge_exclude_columns = ['loaded_at'],
         unique_key = ['id_prontuario_global', 'id_vacinacao'],
         cluster_by= ['id_prontuario_global', 'id_vacinacao'],
         partition_by={
@@ -12,6 +14,7 @@
         }
     )
 }}
+
 
 {% set last_partition = get_last_partition_date(this) %}
 
