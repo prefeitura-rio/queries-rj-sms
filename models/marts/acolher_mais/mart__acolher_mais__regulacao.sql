@@ -18,13 +18,12 @@ dados as (
     cast(paciente_cpf as int64) as cpf_particao,
     id_solicitacao,
 
-    solicitacao_status,
-    cid_solicitacao,
+    solicitacao_status, 
+    solicitacao_risco,
 
     paciente_cpf,
 
-    data_solicitacao,
-    data_desejada,        
+    data_solicitacao,     
     data_autorizacao,
     data_execucao,
     data_confirmacao,       
@@ -36,13 +35,21 @@ dados as (
     procedimento_grupo,
     procedimento,
 
-    central_solicitante,
+    id_cnes_unidade_solicitante,
     unidade_executante,
 
     profissional_solicitante_nome,
   from {{ref('mart_sisreg__solicitacoes')}}
   where cast(data_solicitacao as date) > date_sub(current_date(), interval 1 year)
+),
+
+enriquecido as (
+  select 
+    d.*, 
+    e.nome_limpo as unidade_solicitante
+  from dados as d
+    inner join {{ref('dim_estabelecimento')}} e on e.id_cnes = d.id_cnes_unidade_solicitante
 )
 
 select * 
-from dados
+from enriquecido
