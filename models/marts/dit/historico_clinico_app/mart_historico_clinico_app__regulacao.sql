@@ -3,6 +3,7 @@
     schema="app_historico_clinico",
     alias="regulacao",
     materialized="table",
+    tags=["sisreg_v2"],
     partition_by={
       "field": "cpf_particao",
       "data_type": "int64",
@@ -17,11 +18,17 @@ with
       s.solicitacao.id as solicitacao_id,
       s.solicitacao.solicitacao_datahora,
       s.solicitacao.atualizacao_datahora,
-      s.cancelamento.datahora as cancelamento_datahora,
 
       s.solicitacao.detalhe_tipo,
-      s.solicitacao.detalhe_status,
+      case
+        when s.solicitacao.detalhe_status in (
+          "CANCELADO", "CANCELADA"
+        )
+          then "CANCELADO"
+        else upper(s.solicitacao.detalhe_status)
+      end as detalhe_status,
       s.solicitacao.detalhe_responsavel,
+      s.solicitacao.classificacao_risco,
 
       s.solicitacao.data_desejada,
       {{
@@ -70,13 +77,35 @@ with
 
       array(
         select as struct
-          * except (operador_unidade),
-          {{
-            estabelecimento_remove_apendices(
-              proper_estabelecimento("l.operador_unidade")
-            )
-          }} as operador_unidade,
-        from unnest(s.laudo) as l
+          *
+        from (
+          select as struct
+            * except (operador_id_cnes, operador_unidade),
+            {{
+              estabelecimento_remove_apendices(
+                proper_estabelecimento("l.operador_unidade")
+              )
+            }} as operador_unidade,
+          from unnest(s.laudo) as l
+
+          union all
+
+          select as struct
+            cast(null as string) as cid_id,
+            cast(null as string) as cid_descricao,
+            s.cancelamento.perfil as perfil_tipo,
+            "Justificativa" as descricao_tipo,
+            "CANCELADO" as situacao,
+            s.cancelamento.justificativa as observacao,
+            s.cancelamento.datahora as datahora_observacao,
+            cast(null as string) as operador_unidade
+          -- Queremos um UNION ALL condicional a `cancelamento.datahora IS NOT NULL`;
+          -- mas "Query without FROM clause cannot have a WHERE clause";
+          -- então fazemos um `FROM` de mentirinha lendo um array de 1 entrada
+          from unnest([1])
+          where s.cancelamento.datahora is not null
+        )
+        order by datahora_observacao asc
       ) as laudo,
 
       s.marcacao,

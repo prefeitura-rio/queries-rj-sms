@@ -568,8 +568,8 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
         regulacao:
-          +tags: []
           +schema: intermediario_regulacao
+          +tags: ["sisreg_v2"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -717,6 +717,14 @@ models:
         projeto_ocis:
           +schema: projeto_ocis
           +tags: ["projeto_ocis"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+
+        regulacao:
+          +schema: regulacao
+          +tags: ["sisreg_v2"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim

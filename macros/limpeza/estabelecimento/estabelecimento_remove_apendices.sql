@@ -3,7 +3,7 @@
 {% macro estabelecimento_remove_apendices(text) %}
 regexp_replace(
   regexp_replace(
-    {{ text }},
+    trim({{ text }}),
     r"(?i)^(\s|SMS|SES(\sRJ)?|MS|UFRJ)*\b",
     ""
   ),

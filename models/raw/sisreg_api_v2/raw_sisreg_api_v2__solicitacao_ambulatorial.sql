@@ -1,20 +1,33 @@
 {{
   config(
-    schema = "brutos_sisreg_api_v2",
-    alias  = "solicitacao_ambulatorial",
-    partition_by = {
+    schema="brutos_sisreg_api_v2",
+    alias="solicitacao_ambulatorial",
+    materialized="incremental",
+    incremental_strategy="merge",
+    unique_key=["_merge_id"],
+    cluster_by=["_merge_id"],
+    partition_by={
       "field": "data_particao",
       "data_type": "date",
       "granularity": "month"
     },
   )
 }}
--- TODO: pensar em incremental, talvez com data_atualizacao?
+
 
 with
   dedup_source as (
     select *
     from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_ambulatorial_rj") }}
+    {% if is_incremental() %}
+      -- TODO: idealmente faríamos WHERE por data_particao; pensar se vale mais
+      -- que o flow extraia com data_particao = date(_extracted_at), e depois
+      -- a gente gera data_particao via data de solicitação......
+      where datetime(_extracted_at) >= datetime_sub(
+        current_datetime("America/Sao_Paulo"),
+        interval 2 week
+      )
+    {% endif %}
     qualify row_number() over (
       partition by codigo_solicitacao
       order by _extracted_at desc nulls last
@@ -35,8 +48,8 @@ with
     select
       -- Identificação básica da solicitação
       cast({{ process_null("codigo_solicitacao") }} as string) as solicitacao_id,
-      cast({{ process_null("data_solicitacao") }} as timestamp)  as solicitacao_datahora,
-      cast({{ process_null("data_atualizacao") }} as timestamp)  as atualizacao_datahora,
+      cast({{ process_null("data_solicitacao") }} as timestamp) as solicitacao_datahora,
+      cast({{ process_null("data_atualizacao") }} as timestamp) as atualizacao_datahora,
 
 
       -- Status e classificação
@@ -180,5 +193,20 @@ with
     from unnested
   )
 
-select *
+
+select distinct
+  *,
+
+  -- ID único para merge incremental do dbt
+  -- Fizemos unnest em procedimento e laudo, então `solicitacao_id`
+  -- já não é mais suficiente pra distinguir solicitações
+  -- Então também pegamos o ID do procedimento e a datahora de cada
+  -- observação do laudo
+  {{
+    dbt_utils.generate_surrogate_key([
+      "solicitacao_id",
+      "procedimento_sigtap_id",
+      "laudo_datahora_observacao"
+    ])
+  }} as _merge_id
 from sisreg

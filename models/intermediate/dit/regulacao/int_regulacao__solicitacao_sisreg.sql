@@ -47,7 +47,7 @@ with
         datetime(cancelamento_datahora, "America/Sao_Paulo") as datahora,
         cast(null as string) as justificativa,
         -- perfil_cancelamento_codigo,
-        perfil_cancelamento_nome as perfil  -- solicitante, regulador/autorizador, ...
+        {{ proper_br("perfil_cancelamento_nome") }} as perfil  -- solicitante, regulador/autorizador, ...
         -- operador_cancelamento_nome
       ) as cancelamento,
 

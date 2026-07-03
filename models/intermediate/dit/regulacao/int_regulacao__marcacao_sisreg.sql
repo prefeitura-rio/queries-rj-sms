@@ -45,7 +45,7 @@ with
       struct(
         datetime(cancelamento_datahora, "America/Sao_Paulo") as datahora,
         cancelamento_justificativa as justificativa,
-        perfil_cancelamento_nome as perfil
+        {{ proper_br("perfil_cancelamento_nome") }} as perfil
       ) as cancelamento,
 
       ----------------
