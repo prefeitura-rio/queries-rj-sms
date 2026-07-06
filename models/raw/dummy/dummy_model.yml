@@ -1,0 +1,15 @@
+
+models:
+- name: dummy_model
+  description: >
+    Modelo de teste para validação de metadados e configuração do dbt.
+  columns:
+    - name: coluna_teste
+      description: Coluna de teste
+      data_type: string
+      data_tests:
+        - unique:
+            name: dummy_model__test
+            config:
+              where: coluna_teste == "teste"
+              severity: error
