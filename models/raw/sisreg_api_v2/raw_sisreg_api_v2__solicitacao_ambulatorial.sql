@@ -2,10 +2,6 @@
   config(
     schema="brutos_sisreg_api_v2",
     alias="solicitacao_ambulatorial",
-    materialized="incremental",
-    incremental_strategy="merge",
-    unique_key=["_merge_id"],
-    cluster_by=["_merge_id"],
     partition_by={
       "field": "data_particao",
       "data_type": "date",
@@ -19,15 +15,6 @@ with
   dedup_source as (
     select *
     from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_ambulatorial_rj") }}
-    {% if is_incremental() %}
-      -- TODO: idealmente faríamos WHERE por data_particao; pensar se vale mais
-      -- que o flow extraia com data_particao = date(_extracted_at), e depois
-      -- a gente gera data_particao via data de solicitação......
-      where datetime(_extracted_at) >= datetime_sub(
-        current_datetime("America/Sao_Paulo"),
-        interval 2 week
-      )
-    {% endif %}
     qualify row_number() over (
       partition by codigo_solicitacao
       order by _extracted_at desc nulls last
