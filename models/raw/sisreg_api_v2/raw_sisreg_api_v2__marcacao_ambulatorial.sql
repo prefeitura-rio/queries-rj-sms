@@ -231,15 +231,5 @@ with
   )
 
 
-select distinct
-  *,
-
-  -- Vide comentário em raw_..._solicitacao_ambulatorial
-  {{
-    dbt_utils.generate_surrogate_key([
-      "solicitacao_id",
-      "procedimento_sigtap_id",
-      "laudo_datahora_observacao"
-    ])
-  }} as _merge_id
+select distinct *
 from sisreg

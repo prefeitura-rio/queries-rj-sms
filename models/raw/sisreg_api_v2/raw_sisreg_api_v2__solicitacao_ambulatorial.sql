@@ -181,19 +181,5 @@ with
   )
 
 
-select distinct
-  *,
-
-  -- ID único para merge incremental do dbt
-  -- Fizemos unnest em procedimento e laudo, então `solicitacao_id`
-  -- já não é mais suficiente pra distinguir solicitações
-  -- Então também pegamos o ID do procedimento e a datahora de cada
-  -- observação do laudo
-  {{
-    dbt_utils.generate_surrogate_key([
-      "solicitacao_id",
-      "procedimento_sigtap_id",
-      "laudo_datahora_observacao"
-    ])
-  }} as _merge_id
+select distinct *
 from sisreg
