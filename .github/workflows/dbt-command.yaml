@@ -15,6 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
+      # Precisamos de origin/master pra calcular o git diff abaixo; mas não é possível
+      # puxar ela junto do checkout acima (vide https://github.com/actions/checkout/issues/329)
+      # Então aqui fazemos um fetch:
+      - name: Fetch origin/master
+        run: git fetch origin master:master --depth=1
+
       - name: Get changed files
         id: files
         run: |
