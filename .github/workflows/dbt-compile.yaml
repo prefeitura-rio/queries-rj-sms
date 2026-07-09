@@ -60,4 +60,6 @@ jobs:
       run:  dbt deps
 
     - name: Compile dbt models
+      env:
+        HASH_SECRET: ${{ secrets.HASH_SECRET }}
       run: dbt compile --profiles-dir . --profile sms --target ci
