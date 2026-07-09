@@ -43,7 +43,7 @@ jobs:
           issue_number: ${{ github.event.number }}
 
       - name: Comment PR
-        uses: mshick/add-pr-comment/ec328af66588ab8f77cdeb2c264f14aba45bbf59  # v3.12.0
+        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59  # v3.12.0
         with:
           message-path: ./message.txt
           repo-token: ${{ secrets.GITHUB_TOKEN }}
