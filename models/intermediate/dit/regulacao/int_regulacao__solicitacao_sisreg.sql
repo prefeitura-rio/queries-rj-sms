@@ -22,11 +22,13 @@ with
       -- Solicitação
       struct(
         solicitacao_id as id,
-        datetime(
-          cast(solicitacao_datahora as timestamp),
-          "America/Sao_Paulo"
-        ) as solicitacao_datahora,
-        datetime(atualizacao_datahora, "America/Sao_Paulo") as atualizacao_datahora,
+
+      -- [1] Todo campo de data/hora do Sisreg vem no formato '2026-01-01T00:00:00.000Z',
+      --     mas após investigações, creio que esse 'Z' seja mentira!! A hora já vem em
+      --     UTC-3, mas marcada como UTC+0. Então aqui convertemos de string pra TIMESTAMP,
+      --     depois pra DATETIME sem passar um fuso, e ele efetivamente só corta o Z fora.
+        datetime(timestamp(solicitacao_datahora)) as solicitacao_datahora,
+        datetime(timestamp(atualizacao_datahora)) as atualizacao_datahora,
 
         -- ex. "SOLICITAÇÃO / DEVOLVIDA / REGULADOR"
         trim(split(solicitacao_status, "/")[safe_offset(0)]) as detalhe_tipo,
@@ -36,7 +38,7 @@ with
         solicitacao_visualizada_regulador as visualizada_regulador,
         tipo_vaga_solicitada as tipo_vaga,
         classificacao_risco,
-        data_desejada,
+        date(data_desejada) as data_desejada,
         unidade_desejada_id_cnes,
         {{ add_accents_estabelecimento("unidade_desejada_nome") }} as unidade_desejada_nome
       ) as solicitacao,
@@ -44,7 +46,41 @@ with
       ----------------
       -- Cancelamento
       struct(
-        datetime(cancelamento_datahora, "America/Sao_Paulo") as datahora,
+        -- [2] ...EXCETO em data_cancelamento! Nesse caso, mesmo tendo o 'Z' de UTC+0,
+        --     eles parecem estar processando o fuso duas vezes. Então um cancelamento
+        --     às 10:00 vai ser convertido 1x (07:00 UTC-3), depois de novo (04:00 UTC-6),
+        --     e no final recebemos uma data_cancelamento "04:00:00Z".
+        --     Calma que piora!! Porque a conversão não só "subtrai 3", mas sim converte
+        --     fuso, durante horário de verão (durma em paz), vulgo UTC-2, o horário é
+        --     convertido 2x subtraindo 2 e não 3, então o resultado é UTC-4 e não UTC-6!
+        --     Pra resolver, calculamos o offset ao UTC dessa data/hora pra descobrir se
+        --     era horário de verão ou não, e somamos esse offset de volta na hora pra
+        --     desfazer a conversão duplicada.
+        -- Exs.:
+        --  -> "2026-06-03T13:21:36.962Z"  (que deveria ser 16:21)
+        --     # Calcula offset
+        --     datetime_diff(
+        --       datetime(timestamp(cancelamento_datahora), "America/Sao_Paulo"),  # 10:21
+        --       datetime(timestamp(cancelamento_datahora), "UTC"),                # 13:21
+        --       hour
+        --     )
+        --     # Offset é -3; adiciona -(-3) = +3 à hora em UTC
+        --     datetime_add(
+        --       datetime(timestamp(cancelamento_datahora), "UTC"),                # 13:21
+        --       interval -[OFFSET] hour
+        --     )
+        --     => 2026-06-03T16:21:36.962
+        --  -> "2017-11-15T08:27:40.307Z" => 2017-11-15T10:27:40.307
+        datetime_add(
+          datetime(timestamp(cancelamento_datahora), "UTC"),
+          interval -(
+            datetime_diff(
+              datetime(timestamp(cancelamento_datahora), "America/Sao_Paulo"),
+              datetime(timestamp(cancelamento_datahora), "UTC"),
+              hour
+            )
+          ) hour
+        ) as datahora,
         cast(null as string) as justificativa,
         -- perfil_cancelamento_codigo,
         {{ proper_br("perfil_cancelamento_nome") }} as perfil  -- solicitante, regulador/autorizador, ...
@@ -107,14 +143,14 @@ with
         laudo_descricao_tipo as descricao_tipo,
         laudo_situacao as situacao,
         laudo_observacao as observacao,
-        datetime(
-          laudo_datahora_observacao,
-          "America/Sao_Paulo"
-        ) as datahora_observacao
+        -- Vide [1]
+        datetime(timestamp(laudo_datahora_observacao)) as datahora_observacao
       ) as laudo,
 
       tipo_externo as tipo,
       _run_id,
+
+      -- [3] _extract_at é timestamp nossa, então precisa receber fuso sim
       datetime(
         _extracted_at,
         "America/Sao_Paulo"
@@ -140,7 +176,7 @@ with
             solicitacao_hora
           ) as datetime
         ) as solicitacao_datahora,
-        datetime(atualizacao_datahora, "America/Sao_Paulo") as atualizacao_datahora,
+        datetime(timestamp(atualizacao_datahora)) as atualizacao_datahora,
 
         cast(null as string) as detalhe_tipo,
         upper(trim(solicitacao_status)) as detalhe_status,
@@ -149,7 +185,7 @@ with
         cast(null as string) as visualizada_regulador,
         cast(null as string) as tipo_vaga,
         classificacao_risco,
-        data_desejada,
+        date(data_desejada) as data_desejada,
         unidade_desejada_id_cnes,
         {{ add_accents_estabelecimento("unidade_desejada_nome") }} as unidade_desejada_nome
       ) as solicitacao,
@@ -216,6 +252,8 @@ with
 
       tipo_externo as tipo,
       _run_id,
+
+      -- Vide [3]
       datetime(
         _extracted_at,
         "America/Sao_Paulo"

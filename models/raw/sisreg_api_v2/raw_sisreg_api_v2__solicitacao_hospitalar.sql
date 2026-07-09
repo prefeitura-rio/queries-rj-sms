@@ -27,9 +27,9 @@ with
       cast({{ process_null("codigo_solicitacao") }} as string) as solicitacao_id,
       cast({{ process_null("data_solicitacao") }} as string)  as solicitacao_data,
       cast({{ process_null("hora_solicitacao") }} as string) as solicitacao_hora,
-      cast({{ process_null("data_atualizacao") }} as timestamp)  as atualizacao_datahora,
-      cast({{ process_null("data_atualizacao_solicitacao") }} as timestamp) as solicitacao_atualizacao_datahora,
-      cast({{ process_null("data_atualizacao_marcacao") }} as timestamp) as marcacao_atualizacao_datahora,
+      cast({{ process_null("data_atualizacao") }} as string)  as atualizacao_datahora,
+      cast({{ process_null("data_atualizacao_solicitacao") }} as string) as solicitacao_atualizacao_datahora,
+      cast({{ process_null("data_atualizacao_marcacao") }} as string) as marcacao_atualizacao_datahora,
 
 
       -- Status e classificação
@@ -106,9 +106,7 @@ with
 
 
       -- Preferências da solicitação
-      date(
-        cast({{ process_null("data_desejada") }} as timestamp)
-      ) as data_desejada,
+      cast({{ process_null("data_desejada") }} as string) as data_desejada,
       lpad({{ process_null("codigo_unidade_desejada") }}, 7, "0") as unidade_desejada_id_cnes,
       cast({{ process_null("nome_unidade_desejada") }} as string) as unidade_desejada_nome,
 
@@ -121,7 +119,7 @@ with
       cast({{ process_null("no_mae_usuario") }} as string) as paciente_nome_mae,
       cast({{ process_null("telefone") }} as string) as paciente_telefones,
       -- -- Nascimento
-      date({{ process_null("dt_nascimento_usuario") }}) as paciente_nascimento_data,
+      cast({{ process_null("dt_nascimento_usuario") }} as string) as paciente_nascimento_data,
       cast({{ process_null("uf_municipio_nascimento") }} as string) as paciente_nascimento_uf,
       cast({{ process_null("nome_municipio_nascimento") }} as string) as paciente_nascimento_municipio,
       -- -- Residência

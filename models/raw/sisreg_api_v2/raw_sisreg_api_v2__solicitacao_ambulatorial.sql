@@ -35,8 +35,8 @@ with
     select
       -- Identificação básica da solicitação
       cast({{ process_null("codigo_solicitacao") }} as string) as solicitacao_id,
-      cast({{ process_null("data_solicitacao") }} as timestamp) as solicitacao_datahora,
-      cast({{ process_null("data_atualizacao") }} as timestamp) as atualizacao_datahora,
+      cast({{ process_null("data_solicitacao") }} as string) as solicitacao_datahora,
+      cast({{ process_null("data_atualizacao") }} as string) as atualizacao_datahora,
 
 
       -- Status e classificação
@@ -113,7 +113,7 @@ with
 
 
       -- Cancelamento
-      cast({{ process_null("data_cancelamento") }} as timestamp) as cancelamento_datahora,
+      cast({{ process_null("data_cancelamento") }} as string) as cancelamento_datahora,
       cast({{ process_null("nome_operador_cancelamento") }} as string) as operador_cancelamento_nome,
       cast({{ process_null("codigo_perfil_cancelamento") }} as string) as perfil_cancelamento_codigo,
       cast({{ process_null("nome_perfil_cancelamento") }} as string) as perfil_cancelamento_nome,
@@ -124,9 +124,7 @@ with
 
 
       -- Preferências da solicitação
-      date(
-        cast({{ process_null("data_desejada") }} as timestamp)
-      ) as data_desejada,
+      cast({{ process_null("data_desejada") }} as string) as data_desejada,
       lpad({{ process_null("codigo_unidade_desejada") }}, 7, "0") as unidade_desejada_id_cnes,
       cast({{ process_null("nome_unidade_desejada") }} as string) as unidade_desejada_nome,
 
@@ -139,7 +137,7 @@ with
       cast({{ process_null("no_mae_usuario") }} as string) as paciente_nome_mae,
       cast({{ process_null("telefone") }} as string) as paciente_telefones,
       -- -- Nascimento
-      date({{ process_null("dt_nascimento_usuario") }}) as paciente_nascimento_data,
+      cast({{ process_null("dt_nascimento_usuario") }} as string) as paciente_nascimento_data,
       cast({{ process_null("uf_municipio_nascimento") }} as string) as paciente_nascimento_uf,
       cast({{ process_null("nome_municipio_nascimento") }} as string) as paciente_nascimento_municipio,
       -- -- Residência
@@ -161,7 +159,7 @@ with
       json_value(laudo, "$.tipo_descricao") as laudo_descricao_tipo,
       json_value(laudo, "$.situacao") as laudo_situacao,
       {{ process_null("json_value(laudo, '$.observacao')") }} as laudo_observacao,
-      cast(json_value(laudo, "$.data_observacao") as timestamp) as laudo_datahora_observacao,
+      cast(json_value(laudo, "$.data_observacao") as string) as laudo_datahora_observacao,
 
       cast({{ process_null("version") }} as string) as versao_sisreg,
       cast({{ process_null("type") }} as string) as tipo_interno,

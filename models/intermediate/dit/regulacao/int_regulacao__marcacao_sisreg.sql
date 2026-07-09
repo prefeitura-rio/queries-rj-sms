@@ -21,11 +21,10 @@ with
       -- Solicitação
       struct(
         solicitacao_id as id,
-        datetime(
-          solicitacao_datahora,
-          "America/Sao_Paulo"
-        ) as solicitacao_datahora,
-        datetime(atualizacao_datahora, "America/Sao_Paulo") as atualizacao_datahora,
+
+        -- Vide [1] em int_regulacao__solicitacao_sisreg
+        datetime(timestamp(solicitacao_datahora)) as solicitacao_datahora,
+        datetime(timestamp(atualizacao_datahora)) as atualizacao_datahora,
 
         -- ex. "SOLICITAÇÃO / DEVOLVIDA / REGULADOR"
         trim(split(solicitacao_status, "/")[safe_offset(0)]) as detalhe_tipo,
@@ -35,7 +34,7 @@ with
         solicitacao_visualizada_regulador as visualizada_regulador,
         tipo_vaga_solicitada as tipo_vaga,
         classificacao_risco,
-        data_desejada,
+        date(data_desejada) as data_desejada,
         unidade_desejada_id_cnes,
         {{ add_accents_estabelecimento("unidade_desejada_nome") }} as unidade_desejada_nome
       ) as solicitacao,
@@ -43,7 +42,17 @@ with
       ----------------
       -- Cancelamento
       struct(
-        datetime(cancelamento_datahora, "America/Sao_Paulo") as datahora,
+        -- Vide [2] em int_regulacao__solicitacao_sisreg
+        datetime_add(
+          datetime(timestamp(cancelamento_datahora), "UTC"),
+          interval -(
+            datetime_diff(
+              datetime(timestamp(cancelamento_datahora), "America/Sao_Paulo"),
+              datetime(timestamp(cancelamento_datahora), "UTC"),
+              hour
+            )
+          ) hour
+        ) as datahora,
         cancelamento_justificativa as justificativa,
         {{ proper_br("perfil_cancelamento_nome") }} as perfil
       ) as cancelamento,
@@ -104,26 +113,17 @@ with
         laudo_descricao_tipo as descricao_tipo,
         laudo_situacao as situacao,
         laudo_observacao as observacao,
-        datetime(
-          laudo_datahora_observacao,
-          "America/Sao_Paulo"
-        ) as datahora_observacao
+        -- Vide [1] em int_regulacao__solicitacao_sisreg
+        datetime(timestamp(laudo_datahora_observacao)) as datahora_observacao
       ) as laudo,
 
       ----------------
       -- Marcação
       struct(
         marcacao_id as id,
-        datetime(
-          marcacao_data,
-          "America/Sao_Paulo"
-        ) as datahora,
-        datetime(
-          -- TODO: acho que o UTC daqui é fake, e a hora já está no fuso certo
-          -- o que traz o questionamento: os outros também já estão?
-          aprovacao_datahora,
-          "America/Sao_Paulo"
-        ) as aprovacao_datahora,
+        -- Vide [1] em int_regulacao__solicitacao_sisreg
+        datetime(timestamp(marcacao_data)) as datahora,
+        datetime(timestamp(aprovacao_datahora)) as aprovacao_datahora,
         date(confirmacao_data) as confirmacao_data,
         flag_paciente_avisado,
         marcacao_executada as flag_executada,
@@ -149,6 +149,7 @@ with
 
       tipo_externo as tipo,
       _run_id,
+      -- Vide [3] em int_regulacao__solicitacao_sisreg
       datetime(
         _extracted_at,
         "America/Sao_Paulo"

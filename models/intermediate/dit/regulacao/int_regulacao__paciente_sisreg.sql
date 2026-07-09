@@ -20,7 +20,7 @@ with
       paciente_nome as nome,
       paciente_sexo as sexo,
 
-      paciente_nascimento_data as nascimento_data,
+      date(paciente_nascimento_data) as nascimento_data,
       paciente_nascimento_uf as nascimento_uf,
       paciente_nascimento_municipio as nascimento_municipio,
 
@@ -49,7 +49,7 @@ with
       paciente_nome as nome,
       paciente_sexo as sexo,
 
-      paciente_nascimento_data as nascimento_data,
+      date(paciente_nascimento_data) as nascimento_data,
       paciente_nascimento_uf as nascimento_uf,
       paciente_nascimento_municipio as nascimento_municipio,
 
@@ -78,7 +78,7 @@ with
       paciente_nome as nome,
       paciente_sexo as sexo,
 
-      paciente_nascimento_data as nascimento_data,
+      date(paciente_nascimento_data) as nascimento_data,
       paciente_nascimento_uf as nascimento_uf,
       paciente_nascimento_municipio as nascimento_municipio,
 
