@@ -7,17 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Install Python
-        uses: "actions/setup-python@v2"
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
         with:
-          python-version: "3.10"
+          python-version: "3.13"
 
       - name: Install poetry
-        uses: abatilo/actions-poetry@v2
+        uses: abatilo/actions-poetry@65c61eae400c65c9510a584af85138c1ae19bbc0  # v3.0.2
         with:
-          poetry-version: '1.7.1'
+          poetry-version: "1.7.1"
 
       - name: Setup a local virtual environment (if no poetry.toml file)
         run: |
@@ -36,10 +36,10 @@ jobs:
 
       - name: Get changed files
         id: get_file_changes
-        uses: trilom/file-changes-action@v1.2.4
+        uses: trilom/file-changes-action@a6ca26c14274c33b15e6499323aac178af06ad4b  # v1.2.4
         with:
-          output: ' '
-      
+          output: " "
+
       - name: Display changed files
         run: |
           echo "Modified files: ${{ steps.get_file_changes.outputs.files_modified }}"
@@ -63,7 +63,7 @@ jobs:
           grep -E '^models.*[.]sql$' |
           tr -s '\n' ' ')
           )"
-      
+
       - name: Lint each SQL file individually
         run: |
           # Loop through each changed SQL file and lint them individually
@@ -88,7 +88,7 @@ jobs:
         run: sqlfluff lint ./models/ > annotations.json
 
       - name: Annotate
-        uses: yuzutech/annotations-action@v0.3.0
+        uses: yuzutech/annotations-action@00b2d488bcba3bd01014dc073d276ef4a45d5c6c  # v0.6.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           title: "SQLFluff Lint"
