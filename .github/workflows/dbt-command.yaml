@@ -21,7 +21,7 @@ jobs:
         id: files
         run: |
           FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD | xargs)
-          echo "files=$FILES" >> $GITHUB_OUTPUT
+          echo "all=$FILES" >> $GITHUB_OUTPUT
 
       - name: Create DBT Run Command
         id: create-dbtrun-command
