@@ -43,7 +43,7 @@ jobs:
           issue_number: ${{ github.event.number }}
 
       - name: Comment PR
-        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b  # v3.0.1
+        uses: mshick/add-pr-comment/ec328af66588ab8f77cdeb2c264f14aba45bbf59  # v3.12.0
         with:
-          file-path: ./message.txt
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          message-path: ./message.txt
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
