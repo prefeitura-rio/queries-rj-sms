@@ -4,52 +4,71 @@
     materialized = "table"
 ) }}
 
-SELECT
-  {{ normalize_null("regexp_replace(trim(processorio__sei), r'[\\n\\r]', '')") }} AS processorio,
-  {{ normalize_null("regexp_replace(trim(procuradora), r'[\\n\\r\\t]+', '')") }} AS procuradora,
-  {{ normalize_null("regexp_replace(trim(requerente), r'[\\n\\r\\t]+', '')") }} AS requerente,
-  {{ normalize_null("regexp_replace(trim(processo_judicial), r'[\\n\\r]', '')") }} AS processo_judicial,
-  {{ normalize_null("regexp_replace(trim(origem), r'[\\n\\r\\t]+', '')") }} AS origem,
+select
+  {{ normalize_null("regexp_replace(trim(processo_rio__sei), r'[\\n\\r]', '')") }} as processo_rio,
 
-  {{ cdi_parse_date('data_de_entrada', 'processorio__sei', 'processo_judicial') }} AS data_de_entrada,
-  {{ cdi_parse_date('data_de_saida', 'processorio__sei', 'processo_judicial') }} AS data_de_saida,
-  {{ cdi_parse_date('data_de_saida_para_pgm', 'processorio__sei', 'processo_judicial') }} AS data_saida_pgm,
-  {{ cdi_parse_date('prazo', 'processorio__sei', 'processo_judicial') }} AS prazo,
-  {{ cdi_parse_date('mes_ano', 'processorio__sei', 'processo_judicial') }} AS mes_ano,
+  {{ normalize_null("regexp_replace(trim(procurador_a), r'[\\n\\r\\t]+', '')") }} as procurador,
 
-  TRIM({{ normalize_null('sexo') }}) AS sexo,
-  {{ normalize_null('idade') }} AS idade,
+  {{ normalize_null("regexp_replace(trim(requerente), r'[\\n\\r\\t]+', '')") }} as requerente,
 
-  UPPER(
-    CASE
-      WHEN REGEXP_CONTAINS(
-        LOWER(TRIM(REGEXP_REPLACE(REGEXP_REPLACE(NORMALIZE({{ normalize_null('hospital_de_origem') }}, NFD), r'\pM', ''), r'\s+', ' '))),
+  {{ normalize_null("regexp_replace(trim(processo_judicial), r'[\\n\\r]', '')") }} as processo_judicial,
+
+  {{ normalize_null("regexp_replace(trim(origem), r'[\\n\\r\\t]+', '')") }} as origem,
+
+  {{ cdi_parse_date('data_de_entrada', 'processo_rio__sei', 'processo_judicial') }} as data_entrada,
+
+  {{ cdi_parse_date('data_de_saida', 'processo_rio__sei', 'processo_judicial') }} as data_saida,
+
+  {{ cdi_parse_date('data_de_saida_para_pgm', 'processo_rio__sei', 'processo_judicial') }} as data_saida_pgm,
+
+  {{ cdi_parse_date('prazo', 'processo_rio__sei', 'processo_judicial') }} as prazo,
+
+  {{ normalize_null("trim(mes_ano)") }} as mes_ano,
+
+  upper(trim({{ normalize_null('sexo') }})) as sexo,
+
+  {{ normalize_null("regexp_replace(trim(idade), r'[\\n\\r\\t]+', '')") }} as idade,
+
+  upper(
+    case
+      when regexp_contains(
+        lower(trim(regexp_replace(regexp_replace(normalize({{ normalize_null('hospital_de_origem') }}, NFD), r'\pM', ''), r'\s+', ' '))),
         r'do+m'
-      ) THEN 'Domicilio'
-      ELSE TRIM(REGEXP_REPLACE(REGEXP_REPLACE(NORMALIZE({{ normalize_null('hospital_de_origem') }}, NFD), r'\pM', ''), r'\s+', ' '))
-    END
-  ) AS hospital_de_origem,
+      ) then 'Domicilio'
+      else trim(regexp_replace(regexp_replace(normalize({{ normalize_null('hospital_de_origem') }}, NFD), r'\pM', ''), r'\s+', ' '))
+    end
+  ) as hospital_origem,
 
-  TRIM({{ normalize_null('cap') }}) AS cap,
-  TRIM({{ normalize_null('erro_medico') }}) AS erro_medico,
-  TRIM({{ normalize_null('acp') }}) AS acp,
-  TRIM({{ normalize_null('multa_bloqueio_de_verba_indenizacao') }}) AS tipo_indenizacao,
-  {{ normalize_null('valor') }} AS valor,
-  TRIM({{ normalize_null('mandado_de_prisao') }}) AS mandado_de_prisao,
-  TRIM({{ normalize_null('crime_de_desobediencia') }}) AS crime_de_desobediencia,
-  REGEXP_REPLACE(TRIM({{ normalize_null('patologia___assunto') }}), r'\s+', ' ') AS patologia_assunto,
-  REGEXP_REPLACE(TRIM({{ normalize_null('solicitacao') }}), r'\s+', ' ') AS solicitacao,
-  REGEXP_REPLACE(TRIM({{ normalize_null('sintese_de_solicitacao') }}), r'\s+', ' ') AS sintese_solicitacao,
-  {{ normalize_null('setor_responsavel_pela_resposta') }} AS setor_responsavel,
-  SAFE_CAST({{ normalize_null('prazo_dias') }} AS INT64) AS prazo_dias,
+  trim({{ normalize_null('cap') }}) as cap,
 
-  CASE
-    WHEN LOWER(TRIM(CAST(situacao AS STRING))) IN ('#ref!', '#value!')
-      THEN NULL
-    ELSE {{ normalize_null('situacao') }}
-  END AS situacao,
+  trim({{ normalize_null('erro_medico') }}) as erro_medico,
 
-  CAST(NULL AS STRING) AS pendencias, -- Coluna removida a partir de 2026
-  REGEXP_REPLACE(TRIM({{ normalize_null('observacoes') }}), r'\s+', ' ') AS observacoes
+  trim({{ normalize_null('acp') }}) as acp,
 
-FROM {{ source("brutos_cdi_staging", "pgm_2026") }}
+  trim({{ normalize_null('multa_bloqueio_de_verba_indenizacao') }}) as tipo_indenizacao,
+
+  {{ normalize_null('valor') }} as valor,
+
+  trim({{ normalize_null('mandado_de_prisao') }}) as mandado_prisao,
+
+  trim({{ normalize_null('crime_de_desobediencia') }}) as crime_desobediencia,
+
+  regexp_replace(trim({{ normalize_null('patologia__assunto') }}), r'\s+', ' ') as patologia_assunto,
+
+  regexp_replace(trim({{ normalize_null('solicitacao') }}), r'\s+', ' ') as solicitacao,
+
+  regexp_replace(trim({{ normalize_null('sintese_de_solicitacao') }}), r'\s+', ' ') as sintese_solicitacao,
+
+  {{ normalize_null("trim(setor_responsavel_pela_resposta)") }} as setor_responsavel,
+
+  safe_cast({{ normalize_null('prazo__dias') }} as int64) as prazo_dias,
+
+case
+  when lower(trim(cast(situacao as string))) in ('#ref!', '#value!')
+    then null
+  else {{ normalize_null("regexp_replace(trim(situacao), r'\\s+', ' ')") }}
+end as situacao,
+
+  regexp_replace(trim({{ normalize_null('observacoes') }}), r'\s+', ' ') as observacoes
+
+from {{ source("brutos_cdi_staging", "pgm_2026") }}

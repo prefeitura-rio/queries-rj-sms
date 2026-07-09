@@ -18,10 +18,10 @@ with
             codigo_br as id_br,
             nome_padronizado,
             licitacao_realizada__para as licitacao_realizada_para,
-            u___c as apresentacao,
+            u__c as apresentacao,
             processo_licitatorio as id_processo_licitatorio,
             if(
-                regexp_contains(pregao___rp, r'^\d{3,4}/\d{2,4}$'), pregao___rp, null
+                regexp_contains(pregao__rp, r'^\d{3,4}/\d{2,4}$'), pregao__rp, null
             ) as id_registro_preco,
             if(regexp_contains(ata, r'^\d{3}/\d{4}$'), ata, null) as id_ata,
             if(
@@ -31,7 +31,7 @@ with
             ) as vencimento_data,
             empresa as empresa_vencedora,
             fabricante,
-            pregao___rp,
+            pregao__rp,
             ata,
             status
         from source

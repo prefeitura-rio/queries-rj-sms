@@ -1,0 +1,422 @@
+version: 2
+
+models:
+  - name: raw_prontuario_mv__admissao
+    description: "Tabela de admissão neonatal do Prontuário MV. Contém informações detalhadas sobre a mãe, gestação, parto e o recém-nascido."
+    columns:
+      - name: id_hci
+        description: "Identificador único para o atendimento gerada na materialização do DBT. Combinação de id_atendimento e id_cnes para garantir unicidade." 
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_atendimento
+        description: "Identificador único do atendimento gerada pelo sistema MV."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: estabelecimento_nome
+        description: "Nome do estabelecimento de atendimento."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento."
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento."
+      - name: profissional_nome
+        description: "Nome do profissional de saúde responsável."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: diagnostico_primario
+        description: "Diagnóstico primário registrado na admissão."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: diagnostico_secundario
+        description: "Diagnóstico secundário registrado na admissão."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: data_hora_fechamento
+        description: "Data e hora de fechamento do registro de admissão."
+      - name: paciente_nome
+        description: "Nome do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_cns
+        description: "CNS do paciente."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: paciente_mae_nome
+        description: "Nome da mãe do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: paciente_mae_idade
+        description: "Idade da mãe no momento da admissão."
+      - name: gestacoes_numero
+        description: "Número de gestações anteriores."
+      - name: partos_numero
+        description: "Número de partos anteriores."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: aborto_historico
+        description: "Número de abortos no histórico."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: pre_natal_realizado
+        description: "Indicador se o pré-natal foi realizado."
+      - name: pre_natal_consultas
+        description: "Quantidade de consultas de pré-natal."
+      - name: data_ultima_menstruacao
+        description: "Data da última menstruação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_data_provavel
+        description: "Data provável do parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: idade_gestacional_semanas
+        description: "Idade gestacional em semanas."
+      - name: intercorrencias_gestacao
+        description: "Descrição de intercorrências durante a gestação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: uso_drogas_gestacao
+        description: "Descrição sobre uso de drogas durante a gestação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: grupo_sanguineo_mae
+        description: "Grupo sanguíneo da mãe."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_coombs_indireto
+        description: "Resultado do exame Coombs indireto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_sifilis
+        description: "Resultado do exame de sífilis."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_hiv
+        description: "Resultado do exame de HIV."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_outros
+        description: "Resultados de outros exames."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_ultrassonografia
+        description: "Detalhes do exame de ultrassonografia."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_vdrl
+        description: "Resultado do exame VDRL."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_titulacao_vdrl
+        description: "Titulação do exame VDRL."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_titulacao_hiv
+        description: "Titulação do exame de HIV."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_data_vdrl
+        description: "Data do exame VDRL."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_data_hiv
+        description: "Data do exame de HIV."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_usg
+        description: "Resultado do exame de ultrassom (USG)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_usg_data
+        description: "Data do exame de ultrassom (USG)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: outras_sorologias
+        description: "Resultados de outras sorologias."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: volume
+        description: "Volume registrado."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_nascimento_datahora
+        description: "Data e hora do nascimento."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_tipo
+        description: "Tipo de parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_anestesia
+        description: "Tipo de anestesia utilizada no parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_drogas_utilizadas
+        description: "Drogas utilizadas durante o parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_observacoes
+        description: "Observações sobre o parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_tempo_bolsa_rota
+        description: "Tempo de bolsa rota."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_liquido_amniotico
+        description: "Aspecto e volume do líquido amniótico."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_sofrimento_fetal
+        description: "Indicador de sofrimento fetal."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_apresentacao_recem_nascido
+        description: "Apresentação do recém-nascido no parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: parto_uso_vacuo_extrator
+        description: "Indicador de uso de vácuo extrator."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: recem_nascido_nome
+        description: "Nome do recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: recem_nascido_sexo
+        description: "Sexo do recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: recem_nascido_parto_datahora
+        description: "Data e hora do nascimento do recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: recem_nascido_peso
+        description: "Peso do recém-nascido em gramas."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: recem_nascido_altura
+        description: "Altura do recém-nascido em centímetros."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: recem_nascido_perimetro_cefalico
+        description: "Perímetro cefálico do recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: recem_nascido_perimetro_toraxico
+        description: "Perímetro torácico do recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: recem_nascido_perimetro_abdominal
+        description: "Perímetro abdominal do recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: avaliacao_apgar
+        description: "Avaliação APGAR."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: batimento_cardiaco_1min
+        description: "Pontuação do batimento cardíaco no 1º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: batimento_cardiaco_5min
+        description: "Pontuação do batimento cardíaco no 5º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: batimento_cardiaco_10min
+        description: "Pontuação do batimento cardíaco no 10º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: respiracao_1min
+        description: "Pontuação da respiração no 1º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: respiracao_5min
+        description: "Pontuação da respiração no 5º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: respiracao_10min
+        description: "Pontuação da respiração no 10º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: cor_1min
+        description: "Pontuação da cor no 1º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: cor_5min
+        description: "Pontuação da cor no 5º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: cor_10min
+        description: "Pontuação da cor no 10º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tonus_1min
+        description: "Pontuação do tônus muscular no 1º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tonus_5min
+        description: "Pontuação do tônus muscular no 5º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: tonus_10min
+        description: "Pontuação do tônus muscular no 10º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: irritabilidade_1min
+        description: "Pontuação da irritabilidade reflexa no 1º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: irritabilidade_5min
+        description: "Pontuação da irritabilidade reflexa no 5º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: irritabilidade_10min
+        description: "Pontuação da irritabilidade reflexa no 10º minuto (APGAR)."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: total_apgar_1min
+        description: "Pontuação total do APGAR no 1º minuto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: total_apgar_5min
+        description: "Pontuação total do APGAR no 5º minuto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: total_apgar_10min
+        description: "Pontuação total do APGAR no 10º minuto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: manobras_inicias_parto
+        description: "Descrição das manobras iniciais no parto."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: manobras_reanimacao
+        description: "Descrição das manobras de reanimação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: descricao_reanimacao
+        description: "Descrição detalhada da reanimação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: secagem_indicador
+        description: "Indicador se foi realizada a secagem do RN."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: aspiracao_oro_indicador
+        description: "Indicador se foi realizada aspiração orofaríngea."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: aspiracao_gastrica_indicador
+        description: "Indicador se foi realizada aspiração gástrica."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: aspiracao_traqueal_indicador
+        description: "Indicador se foi realizada aspiração traqueal."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: outras_indicador
+        description: "Indicador de outras manobras."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: outras_descricao
+        description: "Descrição de outras manobras."
+      - name: mascaras_ambu_indicador
+        description: "Indicador de uso de máscara"
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: intubacao
+        description: "Indicador de intubação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: massagem_cardiaca
+        description: "Indicador de massagem cardíaca."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: drogas_indicador
+        description: "Indicador de uso de drogas na reanimação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: drogas_descricao
+        description: "Descrição das drogas utilizadas na reanimação."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: contato_seio_materno
+        description: "Indicador de contato com o seio materno."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: contato_seio_justificativa
+        description: "Justificativa para não contato com o seio materno."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: contato_pele_pele
+        description: "Indicador de contato pele a pele."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: contato_pele_justificativa
+        description: "Justificativa para não contato pele a pele."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: banho
+        description: "Indicador se foi dado banho no RN."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: banho_justificativa
+        description: "Justificativa para não dar banho."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profilaxia_inicial
+        description: "Descrição da profilaxia inicial."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: crede
+        description: "Indicador de profilaxia de Credé."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vitamina_k
+        description: "Indicador de administração de Vitamina K."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_hepatite_b
+        description: "Indicador de aplicação da vacina contra Hepatite B."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: exame_fisico_recem_nascido
+        description: "Resultados do exame físico do recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: encaminhamento_pos_nacimento
+        description: "Encaminhamento do RN após o nascimento."
+      - name: plano_terapeutico
+        description: "Plano terapêutico para o recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: metas_tratamento
+        description: "Metas do tratamento para o recém-nascido."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."
+      - name: data_particao
+        description: "Data utilizada para particionamento dos dados, neste caso é a data de carregamento no Data Lake."

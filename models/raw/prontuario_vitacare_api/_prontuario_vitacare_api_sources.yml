@@ -16,10 +16,3 @@ sources:
         freshness:
           warn_after: {count: 4, period: hour}
           error_after: {count: 24, period: hour}
-
-  # Desativar quando estiver tendo envio para o ambiente de prod
-  - name: brutos_prontuario_vitacare_staging_dev
-    database: rj-sms-dev
-    schema: brutos_prontuario_vitacare_staging
-    tables:
-      - name: atendimento_continuo

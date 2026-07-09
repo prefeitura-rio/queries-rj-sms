@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_mv_api_staging
+    database: rj-sms
+    schema: brutos_prontuario_mv_api_staging
+    tables:
+      - name: admissao_continuo
+      - name: alta_continuo
+      - name: anamnese_continuo
+      - name: bam_continuo
+      - name: evolucao_continuo
+      - name: paciente_continuo
+      - name: parecer_continuo
+      - name: profissional_continuo
+      - name: gestante_continuo

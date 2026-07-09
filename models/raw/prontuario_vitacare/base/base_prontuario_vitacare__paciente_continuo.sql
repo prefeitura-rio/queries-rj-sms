@@ -64,12 +64,17 @@ with
 
     paciente_continuo as (
         select
+            -- /!\ Essa tabela é unida com paciente_historico via UNION ALL
+            --     uma camada acima (brutos paciente); portanto, todas as
+            --     colunas daqui precisam estar na exata mesma ordem
+            --     que paciente_historico
+
             -- PK
             id_paciente_global,
+            id_paciente_local,
 
             -- Outras chaves
             json_extract_scalar(data, "$.cnes") as id_cnes,
-            id_paciente_local,
             json_extract_scalar(data, "$.nPront") as numero_prontuario,
             json_extract_scalar(data, "$.cpf") as cpf,
             json_extract_scalar(data, "$.dnv") as dnv,

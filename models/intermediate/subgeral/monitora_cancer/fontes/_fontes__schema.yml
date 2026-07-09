@@ -1,0 +1,698 @@
+version: 2
+
+models:
+  - name: int_monitora_cancer__parametros_ser
+    description: >
+      Procedimentos do SER (regulação estadual ambulatorial) considerados de
+      interesse para o monitoramento de câncer de mama. Cada linha mapeia um
+      cod_recurso do SER (id_procedimento) ao nome amigável e aos critérios
+      clínicos (suspeita / diagnóstico).
+      Usado por int_monitora_cancer__ser_ambulatorial como fonte de verdade
+      para inclusão e classificação dos eventos.
+    columns:
+      - name: id_procedimento
+        description: Código do recurso (cod_recurso_solicitado / cod_recurso_regulado) no SER.
+        data_type: int64
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__parametros_ser__id_procedimento__unique
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__id_procedimento__not_null
+      - name: procedimento
+        description: Nome do procedimento em formato amigável (usado como label final no mart).
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__procedimento__not_null
+      - name: criterio_suspeita
+        description: TRUE se o procedimento, isoladamente, classifica o evento como suspeita.
+        data_type: bool
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__criterio_suspeita__not_null
+      - name: criterio_diagnostico
+        description: TRUE se o procedimento, isoladamente, classifica o evento como diagnóstico.
+        data_type: bool
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__criterio_diagnostico__not_null
+      - name: limite_dias_solicitacao_autorizacao
+        description: >
+          Limite em dias entre data_solicitacao e data_autorizacao para o
+          procedimento estar dentro do prazo de regulação.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__limite_dias_solicitacao_autorizacao__not_null
+      - name: limite_dias_autorizacao_execucao
+        description: >
+          Limite em dias entre data_autorizacao e data_execucao para o
+          procedimento estar dentro do prazo de regulação.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__limite_dias_autorizacao_execucao__not_null
+      - name: limite_dias_regulacao
+        description: >
+          Limite total em dias entre data_solicitacao e data_execucao para o
+          procedimento estar dentro do prazo de regulação. Calculado como
+          limite_dias_solicitacao_autorizacao + limite_dias_autorizacao_execucao.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_ser__limite_dias_regulacao__not_null
+
+  - name: int_monitora_cancer__parametros_sisreg
+    description: >
+      Procedimentos do SISREG (regulação ambulatorial municipal) considerados
+      de interesse para o monitoramento de câncer de mama. Cada linha mapeia
+      um id_procedimento do SISREG ao nome amigável e aos critérios clínicos
+      (suspeita / diagnóstico).
+      Usado por int_monitora_cancer__sisreg como fonte de verdade para
+      inclusão e classificação dos eventos.
+    columns:
+      - name: id_procedimento
+        description: >
+          Código interno do procedimento no SISREG, equivalente a
+          mart_sisreg__solicitacoes.id_procedimento_sisreg sem zeros à
+          esquerda (a coluna fonte tem formato misto: "0703716" em
+          marcacoes e "703716" em solicitacoes; o JOIN no modelo intermediário
+          usa safe_cast as INT para reconciliar).
+        data_type: int64
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__parametros_sisreg__id_procedimento__unique
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__id_procedimento__not_null
+      - name: procedimento
+        description: Nome do procedimento em formato amigável (usado como label final no mart).
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__procedimento__not_null
+      - name: criterio_suspeita
+        description: TRUE se o procedimento, isoladamente, classifica o evento como suspeita.
+        data_type: bool
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__criterio_suspeita__not_null
+      - name: criterio_diagnostico
+        description: TRUE se o procedimento, isoladamente, classifica o evento como diagnóstico.
+        data_type: bool
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__criterio_diagnostico__not_null
+      - name: limite_dias_solicitacao_autorizacao
+        description: >
+          Limite em dias entre data_solicitacao e data_autorizacao para o
+          procedimento estar dentro do prazo de regulação.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__limite_dias_solicitacao_autorizacao__not_null
+      - name: limite_dias_autorizacao_execucao
+        description: >
+          Limite em dias entre data_autorizacao e data_execucao para o
+          procedimento estar dentro do prazo de regulação.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__limite_dias_autorizacao_execucao__not_null
+      - name: limite_dias_regulacao
+        description: >
+          Limite total em dias entre data_solicitacao e data_execucao para o
+          procedimento estar dentro do prazo de regulação. Calculado como
+          limite_dias_solicitacao_autorizacao + limite_dias_autorizacao_execucao.
+        data_type: int64
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__parametros_sisreg__limite_dias_regulacao__not_null
+
+  - name: int_monitora_cancer__sisreg
+    description: >
+      Eventos de procedimentos de mama extraídos do SISREG (regulação
+      ambulatorial municipal). Lê mart_sisreg__solicitacoes restrito a
+      data_solicitacao >= 2021-01-01 e a um conjunto fechado de
+      id_procedimento_sisreg presentes em int_monitora_cancer__parametros_sisreg
+      (INNER JOIN). Emite o schema canônico de evento consumido por
+      mart_monitora_cancer__fatos (1 linha por id_solicitacao). Mapeia o
+      risco do SISREG (solicitacao_risco AZUL/VERDE/AMARELO/VERMELHO →
+      1/2/3/4) e as severidades de atraso comparando date_diff entre
+      etapas aos limites por procedimento do seed de parâmetros.
+    columns:
+      - name: sistema_origem
+        description: Constante "SISREG".
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__sisreg__sistema_origem__not_null
+          - accepted_values:
+              values: ['SISREG']
+              name: int_monitora_cancer__sisreg__sistema_origem__accepted_values
+
+      - name: sistema_tipo
+        description: Constante "REGULACAO".
+        data_type: string
+
+      - name: id_sistema_origem
+        description: >
+          safe_cast(id_solicitacao as int) — identificador da solicitação no
+          SISREG. Único dentro de sistema_origem = 'SISREG'.
+        data_type: int64
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__sisreg__id_sistema_origem__unique
+          - not_null:
+              name: int_monitora_cancer__sisreg__id_sistema_origem__not_null
+
+      - name: paciente_cns
+        description: CNS da paciente, preservado de mart_sisreg__solicitacoes.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: paciente_cpf_sisreg
+        description: >
+          CPF direto do SISREG (safe_cast as int). Usado como fallback em
+          mart_monitora_cancer__fatos quando o lookup CNS→CPF não resolve.
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: id_cnes_unidade_origem
+        description: CNES da unidade solicitante (id_cnes_unidade_solicitante na fonte).
+        data_type: string
+
+      - name: id_cnes_unidade_executante
+        description: CNES da unidade executante.
+        data_type: string
+
+      - name: cid
+        description: CID-10 da solicitação (cid_solicitacao).
+        data_type: string
+
+      - name: evento_status
+        description: >
+          Status da solicitação no SISREG (solicitacao_status). Valores
+          incluem AGENDADO, DEVOLVIDO, FALTA etc.
+        data_type: string
+
+      - name: procedimento
+        description: >
+          Nome amigável do procedimento, vindo de
+          int_monitora_cancer__parametros_sisreg via INNER JOIN (nunca NULL,
+          pois apenas linhas casáveis chegam aqui).
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__sisreg__procedimento__not_null
+
+      - name: data_solicitacao
+        description: Data da solicitação. Sempre preenchida (filtro >= 2021-01-01).
+        data_type: date
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__sisreg__data_solicitacao__not_null
+
+      - name: data_autorizacao
+        description: Data em que a solicitação foi autorizada. NULL quando ainda não autorizada.
+        data_type: date
+
+      - name: data_execucao
+        description: Data em que o procedimento foi executado. NULL quando ainda não executado.
+        data_type: date
+
+      - name: data_exame_resultado
+        description: NULL (não aplicável a SISREG).
+        data_type: date
+
+      - name: mama_esquerda_resultado
+        description: NULL (não aplicável a SISREG).
+        data_type: string
+
+      - name: mama_direita_resultado
+        description: NULL (não aplicável a SISREG).
+        data_type: string
+
+      - name: criterio_suspeita
+        description: >
+          TRUE quando o procedimento isoladamente classifica o evento como
+          suspeita (definido no seed int_monitora_cancer__parametros_sisreg.criterio_suspeita).
+        data_type: bool
+
+      - name: criterio_diagnostico
+        description: >
+          TRUE quando o procedimento classifica o evento como diagnóstico
+          (definido no seed int_monitora_cancer__parametros_sisreg.criterio_diagnostico).
+        data_type: bool
+
+      - name: atraso_solicitacao_autorizacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_autorizacao,
+          comparada ao limite_dias_solicitacao_autorizacao do procedimento.
+          0 = no prazo; 1 = >= limite; 2 = >= limite + 10; 3 = >= limite + 20.
+          NULL se alguma das datas está ausente.
+        data_type: int64
+
+      - name: atraso_autorizacao_execucao
+        description: >
+          Severidade (0-3) do atraso entre data_autorizacao e data_execucao
+          (mesma escala, comparada a limite_dias_autorizacao_execucao). NULL
+          se alguma das datas está ausente.
+        data_type: int64
+
+      - name: atraso_regulacao
+        description: >
+          Severidade (0-3) do atraso total entre data_solicitacao e
+          data_execucao (mesma escala, comparada a limite_dias_regulacao).
+          NULL se alguma das datas está ausente.
+        data_type: int64
+
+      - name: risco
+        description: >
+          Mapeamento do risco da solicitação SISREG (solicitacao_risco) em
+          escala numérica: AZUL=1.0, VERDE=2.0, AMARELO=3.0, VERMELHO=4.0;
+          demais valores e ausência viram NULL.
+        data_type: float64
+
+  - name: int_monitora_cancer__ser_ambulatorial
+    description: >
+      Eventos de procedimentos de mama extraídos do SER (regulação
+      estadual ambulatorial). Lê raw_ser_metabase__ambulatorial restrito a
+      data_solicitacao >= 2021-01-01 e a um conjunto fechado de
+      cod_recurso_solicitado OU cod_recurso_regulado presentes em
+      int_monitora_cancer__parametros_ser. Emite o schema canônico de
+      evento (1 linha por id_solicitacao). Para o nome do procedimento e
+      os critérios clínicos, prioriza o lado REGULADO sobre o
+      SOLICITADO (COALESCE de pr sobre ps). data_autorizacao recebe
+      data_agendamento como alias (no SER, a etapa equivalente à
+      autorização é o agendamento). risco é a prioridade do SER
+      convertida a float64 (valores não-numéricos, como 'nan', viram NULL).
+    columns:
+      - name: sistema_origem
+        description: Constante "SER".
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__ser_ambulatorial__sistema_origem__not_null
+          - accepted_values:
+              values: ['SER']
+              name: int_monitora_cancer__ser_ambulatorial__sistema_origem__accepted_values
+
+      - name: sistema_tipo
+        description: Constante "REGULACAO".
+        data_type: string
+
+      - name: id_sistema_origem
+        description: id_solicitacao do SER. Único dentro de sistema_origem = 'SER'.
+        data_type: int64
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__ser_ambulatorial__id_sistema_origem__unique
+          - not_null:
+              name: int_monitora_cancer__ser_ambulatorial__id_sistema_origem__not_null
+
+      - name: paciente_cns
+        description: CNS da paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: paciente_cpf_sisreg
+        description: NULL (SER não emite CPF direto; o lookup CNS→CPF é feito em mart_monitora_cancer__fatos).
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: id_cnes_unidade_origem
+        description: CNES da unidade solicitante no SER.
+        data_type: string
+
+      - name: id_cnes_unidade_executante
+        description: CNES da unidade executante no SER.
+        data_type: string
+
+      - name: cid
+        description: CID-10 informado na solicitação.
+        data_type: string
+
+      - name: evento_status
+        description: >
+          Status da solicitação no SER (solicitacao_estado): valores incluem
+          PENDENTE, EM_FILA, AGENDADA, AUTORIZADA, CHEGADA_CONFIRMADA,
+          CHEGADA_NAO_CONFIRMADA, CANCELADA, ALTA etc. — preservados com
+          underscores em todo o caminho raw → int_* → mart_fatos.
+        data_type: string
+
+      - name: procedimento
+        description: >
+          Nome amigável do procedimento. COALESCE de procedimento_regulado_seed
+          sobre procedimento_solicitado_seed (prioriza o regulado quando ambos
+          casam no seed). Nunca NULL — o filtro WHERE garante que pelo menos
+          um lado casa no seed.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__ser_ambulatorial__procedimento__not_null
+
+      - name: data_solicitacao
+        description: Data da solicitação. Sempre preenchida (filtro >= 2021-01-01).
+        data_type: date
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__ser_ambulatorial__data_solicitacao__not_null
+
+      - name: data_autorizacao
+        description: Alias de data_agendamento (etapa equivalente à autorização no SER).
+        data_type: date
+
+      - name: data_execucao
+        description: Data em que o procedimento foi executado.
+        data_type: date
+
+      - name: data_exame_resultado
+        description: NULL (não aplicável a SER).
+        data_type: date
+
+      - name: mama_esquerda_resultado
+        description: NULL (não aplicável a SER).
+        data_type: string
+
+      - name: mama_direita_resultado
+        description: NULL (não aplicável a SER).
+        data_type: string
+
+      - name: criterio_suspeita
+        description: >
+          OR entre suspeita_solicitado e suspeita_regulado (COALESCE em FALSE
+          quando o lado não casa no seed).
+        data_type: bool
+
+      - name: criterio_diagnostico
+        description: >
+          OR entre diagnostico_solicitado e diagnostico_regulado (COALESCE em
+          FALSE quando o lado não casa no seed).
+        data_type: bool
+
+      - name: atraso_solicitacao_autorizacao
+        description: >
+          Severidade (0-3) do atraso entre data_solicitacao e data_agendamento,
+          comparada a limite_dias_solicitacao_autorizacao do procedimento.
+          0 = no prazo; 1 = >= limite; 2 = >= limite + 10; 3 = >= limite + 20.
+          NULL se alguma das datas está ausente.
+        data_type: int64
+
+      - name: atraso_autorizacao_execucao
+        description: >
+          Severidade (0-3) do atraso entre data_agendamento e data_execucao
+          (mesma escala, comparada a limite_dias_autorizacao_execucao). NULL
+          se alguma das datas está ausente.
+        data_type: int64
+
+      - name: atraso_regulacao
+        description: >
+          Severidade (0-3) do atraso total entre data_solicitacao e
+          data_execucao (mesma escala, comparada a limite_dias_regulacao).
+          NULL se alguma das datas está ausente.
+        data_type: int64
+
+      - name: risco
+        description: >
+          Prioridade do SER convertida para float64 via safe_cast. Valores
+          não-numéricos (ex.: string 'nan') viram NULL. A constrição ao
+          domínio 1-4 é cobrada downstream em mart_monitora_cancer__fatos.risco
+          (após safe_cast as int) via accepted_values.
+        data_type: float64
+
+  - name: int_monitora_cancer__siscan
+    description: >
+      Laudos radiológicos de mamografia extraídos do SISCAN. Lê
+      raw_siscan_web__laudos restrito a data_solicitacao >= 2021-01-01 e
+      emite o schema canônico de evento (1 linha por protocolo_id).
+      Mapeia mamografia_tipo (Rastreamento/Diagnóstica) para procedimento;
+      classifica criterio_suspeita (BI-RADS 4 ou 5) e criterio_diagnostico
+      (BI-RADS 6) a partir das categorias radiológicas de cada mama;
+      deriva risco do MAIOR entre BI-RADS por mama e tipo de rastreamento
+      (população alvo, alto risco familiar, paciente já tratado).
+    columns:
+      - name: sistema_origem
+        description: Constante "SISCAN".
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__siscan__sistema_origem__not_null
+          - accepted_values:
+              values: ['SISCAN']
+              name: int_monitora_cancer__siscan__sistema_origem__accepted_values
+
+      - name: sistema_tipo
+        description: Constante "EXAME".
+        data_type: string
+
+      - name: id_sistema_origem
+        description: >
+          safe_cast(protocolo_id as int) — identificador do laudo no SISCAN.
+          Único dentro de sistema_origem = 'SISCAN' (espaço de protocolo_id
+          compartilhado com int_monitora_cancer__siscan_histo_mama; a
+          unicidade combinada é cobrada em mart_monitora_cancer__fatos).
+        data_type: int64
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__siscan__id_sistema_origem__unique
+          - not_null:
+              name: int_monitora_cancer__siscan__id_sistema_origem__not_null
+
+      - name: paciente_cns
+        description: CNS da paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: paciente_cpf_sisreg
+        description: NULL (SISCAN não emite CPF direto; o lookup CNS→CPF é feito em mart_monitora_cancer__fatos).
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: id_cnes_unidade_origem
+        description: CNES da unidade solicitante (unidade_solicitante_id_cnes na fonte).
+        data_type: string
+
+      - name: id_cnes_unidade_executante
+        description: CNES da unidade prestadora (unidade_prestadora_id_cnes na fonte).
+        data_type: string
+
+      - name: cid
+        description: NULL (SISCAN não emite CID).
+        data_type: string
+
+      - name: evento_status
+        description: NULL (SISCAN é laudo — não há status de processo).
+        data_type: string
+
+      - name: procedimento
+        description: >
+          Mapeamento de mamografia_tipo: "Rastreamento" → "RESULTADO MAMOGRAFIA
+          DE RASTREIO"; "Diagnóstica" → "RESULTADO MAMOGRAFIA DIAGNOSTICA";
+          demais valores e NULL viram NULL.
+        data_type: string
+
+      - name: data_solicitacao
+        description: Data da solicitação do exame. Sempre preenchida (filtro >= 2021-01-01).
+        data_type: date
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__siscan__data_solicitacao__not_null
+
+      - name: data_autorizacao
+        description: NULL (não aplicável a SISCAN).
+        data_type: date
+
+      - name: data_execucao
+        description: Alias de data_realizacao (data em que o exame foi efetivamente realizado).
+        data_type: date
+
+      - name: data_exame_resultado
+        description: Alias de data_liberacao_resultado (data de liberação do laudo).
+        data_type: date
+
+      - name: mama_esquerda_resultado
+        description: >
+          Classificação radiológica BI-RADS da mama esquerda
+          (mama_esquerda_classif_radiologica), formato "Categoria N - ...".
+        data_type: string
+
+      - name: mama_direita_resultado
+        description: >
+          Classificação radiológica BI-RADS da mama direita
+          (mama_direita_classif_radiologica).
+        data_type: string
+
+      - name: criterio_suspeita
+        description: >
+          TRUE quando ao menos uma das mamas tem classificação BI-RADS
+          Categoria 4 ("achados suspeitos") ou Categoria 5 ("altamente
+          suspeitos"). FALSE caso contrário.
+        data_type: bool
+
+      - name: criterio_diagnostico
+        description: >
+          TRUE quando ao menos uma das mamas tem classificação BI-RADS
+          Categoria 6 ("achados mamográficos" — diagnóstico). FALSE caso
+          contrário.
+        data_type: bool
+
+      - name: atraso_solicitacao_autorizacao
+        description: NULL (não aplicável a SISCAN).
+        data_type: int64
+
+      - name: atraso_autorizacao_execucao
+        description: NULL (não aplicável a SISCAN).
+        data_type: int64
+
+      - name: atraso_regulacao
+        description: NULL (não aplicável a SISCAN).
+        data_type: int64
+
+      - name: risco
+        description: >
+          MAX entre três derivações: (a) BI-RADS por mama (Cat 1/2=1.0,
+          0/3=2.0, 4=3.0, 5/6=4.0); (b) tipo de rastreamento
+          ("População de risco elevado (história familiar)" = 4.0,
+          "Paciente já tratado de câncer de mama" = 3.0, "População alvo"
+          = 1.0). NULL quando nenhuma das fontes casa no mapeamento.
+        data_type: float64
+
+  - name: int_monitora_cancer__siscan_histo_mama
+    description: >
+      Laudos histopatológicos de mama extraídos do SISCAN. Lê
+      raw_siscan_web__laudos_histo_mama restrito a data_solicitacao >=
+      2021-01-01 e emite o schema canônico de evento (1 linha por
+      protocolo_id). Diferenças semânticas em relação ao SISCAN
+      radiológico: criterio_suspeita é sempre FALSE (casos benignos
+      saem da população; quando há neoplasia, o evento vai direto ao
+      diagnóstico) e mama_*_resultado vem do laudo histopatológico
+      (coalesce de lesao_neoplasico e lesao_benigno, restrito por
+      lateralidade, NULL na mama oposta).
+    columns:
+      - name: sistema_origem
+        description: Constante "SISCAN".
+        data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__siscan_histo_mama__sistema_origem__not_null
+          - accepted_values:
+              values: ['SISCAN']
+              name: int_monitora_cancer__siscan_histo_mama__sistema_origem__accepted_values
+
+      - name: sistema_tipo
+        description: Constante "EXAME".
+        data_type: string
+
+      - name: id_sistema_origem
+        description: >
+          safe_cast(protocolo_id as int) — identificador do laudo
+          histopatológico no SISCAN. Único dentro de sistema_origem =
+          'SISCAN' (espaço de protocolo_id compartilhado com
+          int_monitora_cancer__siscan; a unicidade combinada é cobrada em
+          mart_monitora_cancer__fatos).
+        data_type: int64
+        data_tests:
+          - unique:
+              name: int_monitora_cancer__siscan_histo_mama__id_sistema_origem__unique
+          - not_null:
+              name: int_monitora_cancer__siscan_histo_mama__id_sistema_origem__not_null
+
+      - name: paciente_cns
+        description: CNS da paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: paciente_cpf_sisreg
+        description: NULL (SISCAN não emite CPF direto).
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: id_cnes_unidade_origem
+        description: CNES da unidade solicitante.
+        data_type: string
+
+      - name: id_cnes_unidade_executante
+        description: CNES da unidade prestadora.
+        data_type: string
+
+      - name: cid
+        description: NULL (não aplicável a SISCAN).
+        data_type: string
+
+      - name: evento_status
+        description: NULL (não aplicável).
+        data_type: string
+
+      - name: procedimento
+        description: upper(procedimento_cirurgico) — nome do procedimento histopatológico em caixa alta.
+        data_type: string
+
+      - name: data_solicitacao
+        description: Data da solicitação do exame. Sempre preenchida (filtro >= 2021-01-01).
+        data_type: date
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__siscan_histo_mama__data_solicitacao__not_null
+
+      - name: data_autorizacao
+        description: NULL (não aplicável).
+        data_type: date
+
+      - name: data_execucao
+        description: Alias de data_realizacao.
+        data_type: date
+
+      - name: data_exame_resultado
+        description: Alias de data_liberacao_resultado.
+        data_type: date
+
+      - name: mama_esquerda_resultado
+        description: >
+          Para lateralidade "Esquerda", coalesce(lesao_neoplasico,
+          lesao_benigno). NULL para lateralidade oposta. Em
+          int_monitora_cancer__exclusoes, esta coluna NULL em ambas as mamas
+          equivale a "biópsia sem lesão" (regra BIOPSIA_SEM_LESAO).
+        data_type: string
+
+      - name: mama_direita_resultado
+        description: >
+          Para lateralidade "Direita", coalesce(lesao_neoplasico,
+          lesao_benigno). NULL para lateralidade oposta.
+        data_type: string
+
+      - name: criterio_suspeita
+        description: >
+          Constante FALSE. Casos benignos não entram na população;
+          quando há neoplasia, o evento vai direto ao diagnóstico (sem etapa
+          de suspeita).
+        data_type: bool
+
+      - name: criterio_diagnostico
+        description: TRUE quando lesao_neoplasico is not null; FALSE caso contrário.
+        data_type: bool
+
+      - name: atraso_solicitacao_autorizacao
+        description: NULL (não aplicável).
+        data_type: int64
+
+      - name: atraso_autorizacao_execucao
+        description: NULL (não aplicável).
+        data_type: int64
+
+      - name: atraso_regulacao
+        description: NULL (não aplicável).
+        data_type: int64
+
+      - name: risco
+        description: >
+          Mapeamento do grau histológico (agressividade do tumor):
+          I=2.0, II=3.0, III=4.0; demais valores e ausência viram NULL.
+        data_type: float64

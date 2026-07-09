@@ -24,6 +24,107 @@ with gestantes as (
 
 ),
 
+pacientes_sisare as (
+
+    select
+        cast(id_paciente as string) as id_paciente,
+        cpf,
+        municipio as municipio_sisare,
+        uf as uf_sisare
+    from {{ ref('raw_plataforma_subpav_sisare__pacientes') }}
+    where id_paciente is not null
+    qualify row_number() over (
+        partition by cast(id_paciente as string)
+        order by datalake_loaded_at desc
+    ) = 1
+
+),
+
+enderecos_historico as (
+
+    select
+        p.cpf,
+        e.cidade as municipio_historico,
+        e.estado as uf_historico,
+        e.rank,
+        e.datahora_ultima_atualizacao
+    from {{ ref('mart_historico_clinico__paciente') }} p,
+    unnest(p.endereco) as e
+    where p.cpf is not null
+
+),
+
+enderecos_historico_deduplicado as (
+
+    select *
+    from enderecos_historico
+    qualify row_number() over (
+        partition by cpf
+        order by
+            case
+                when upper(trim(municipio_historico)) = 'RIO DE JANEIRO'
+                  and upper(trim(uf_historico)) = 'RJ'
+                    then 1
+                when upper(trim(uf_historico)) = 'RJ'
+                  and (municipio_historico is null or trim(municipio_historico) = '')
+                    then 2
+                when municipio_historico is not null
+                  or uf_historico is not null
+                    then 3
+                else 4
+            end,
+            datahora_ultima_atualizacao desc,
+            rank
+    ) = 1
+
+),
+
+pacientes_com_municipio as (
+
+    select
+        ps.id_paciente,
+        coalesce(
+            nullif(trim(h.municipio_historico), ''),
+            nullif(trim(ps.municipio_sisare), '')
+        ) as municipio,
+        coalesce(
+            nullif(trim(h.uf_historico), ''),
+            nullif(trim(ps.uf_sisare), '')
+        ) as uf
+    from pacientes_sisare ps
+    left join enderecos_historico_deduplicado h
+        on h.cpf = ps.cpf
+
+),
+
+pacientes as (
+
+    select
+        id_paciente,
+        municipio,
+        uf
+    from pacientes_com_municipio
+    where
+        -- Regra:
+        -- A fonte principal para município e UF é o HCI.
+        -- Quando município ou UF não estiverem preenchidos no HCI, utiliza-se o SISARE como fallback.
+        -- Entram na tabela final:
+        -- 1) pacientes com município final igual a Rio de Janeiro;
+        -- 2) pacientes com município final vazio e UF final igual a RJ;
+        -- 3) pacientes com município e UF finais vazios, para evitar perda por ausência completa de endereço nas duas fontes.
+        -- Não entram pacientes de fora da cidade do Rio, com município preenchido diferente de Rio de Janeiro.
+        upper(trim(municipio)) = 'RIO DE JANEIRO'
+        or (
+            upper(trim(uf)) = 'RJ'
+            and (municipio is null or trim(municipio) = '')
+        )
+        or (
+            (municipio is null or trim(municipio) = '')
+            and (uf is null or trim(uf) = '')
+        )
+
+),
+
 internacoes as (
 
     select
@@ -32,7 +133,7 @@ internacoes as (
         cast(unidade_atendimento as string) as cnes_maternidade_alta
     from {{ ref('raw_plataforma_subpav_sisare__internacoes') }}
     where id_internacao is not null
-      and dt_saida >= date('2026-01-01')  -- filtra pelos dados a partir de 2026
+      and dt_saida >= date('2026-01-01')
 
 ),
 
@@ -112,6 +213,8 @@ base as (
     select
         g.cpf,
         g.nome,
+        p.municipio,
+        p.uf,
         a.data_hora_digitacao,
         i.data_alta_internacao,
         regexp_replace(i.cnes_maternidade_alta, r'\D', '') as cnes_maternidade_alta,
@@ -123,6 +226,8 @@ base as (
         vt.telefone as telefone_vitacare,
         vi.telefone as telefone_vitai
     from gestantes g
+    inner join pacientes p
+        on p.id_paciente = g.id_paciente
     inner join internacoes i
         on i.id_internacao = g.id_internacao
     left join altas a
@@ -145,6 +250,8 @@ telefones_explodidos as (
     select
         b.cpf,
         b.nome,
+        b.municipio,
+        b.uf,
         b.data_hora_digitacao,
         b.data_alta_internacao,
         b.cnes_maternidade_alta,
@@ -181,6 +288,8 @@ final as (
     select
         cpf,
         nome,
+        municipio,
+        uf,
         data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,
@@ -202,6 +311,8 @@ final as (
     group by
         cpf,
         nome,
+        municipio,
+        uf,
         data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,
@@ -217,6 +328,8 @@ excecao_disparo_puerperas as (
     select
         cpf,
         nome,
+        municipio,
+        uf,
         cast(null as datetime) as data_hora_digitacao,
         data_alta_internacao,
         cnes_maternidade_alta,

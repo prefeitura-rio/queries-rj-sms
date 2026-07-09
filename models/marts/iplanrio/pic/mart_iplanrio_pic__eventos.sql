@@ -182,6 +182,50 @@ WITH
           ) IS NOT NULL
     ),
 
+    -- DIAGNÓSTICOS
+    -- Identifica CIDs de HIV, sífilis, hepatite B e hepatite C e gera o evento correspondente
+    -- formato "Diagnóstico - <agravo>"
+    diagnosticos AS (
+        SELECT DISTINCT
+            cpf,
+            tipo_evento,
+            dthr
+        FROM (
+            SELECT
+                e.paciente_cpf AS cpf,
+                CASE
+                    WHEN REGEXP_CONTAINS(cid_normalizado, r'^(B20|B21|B22|B23|B24|Z21|O987)')
+                        THEN 'Diagnóstico - HIV'
+
+                    WHEN REGEXP_CONTAINS(cid_normalizado, r'^(A50|A51|A52|A53|O981)')
+                        THEN 'Diagnóstico - Sífilis'
+
+                    WHEN REGEXP_CONTAINS(cid_normalizado, r'^(B16|B180|B181)')
+                        THEN 'Diagnóstico - Hepatite B'
+
+                    WHEN REGEXP_CONTAINS(cid_normalizado, r'^(B171|B182)')
+                        THEN 'Diagnóstico - Hepatite C'
+                END AS tipo_evento,
+                CAST(
+                    SAFE.PARSE_DATE(
+                        '%Y-%m-%d',
+                        SUBSTR(CAST(c.data_diagnostico AS STRING), 1, 10)
+                    ) AS DATETIME
+                ) AS dthr
+            FROM {{ ref("mart_historico_clinico__episodio") }} e
+            LEFT JOIN UNNEST(e.condicoes) c
+            CROSS JOIN UNNEST([
+                REGEXP_REPLACE(UPPER(c.id), r'[^A-Z0-9]', '')
+            ]) AS cid_normalizado
+            WHERE e.paciente_cpf IS NOT NULL
+              AND TRIM(e.paciente_cpf) <> ''
+              AND c.id IS NOT NULL
+              AND c.data_diagnostico IS NOT NULL
+              AND TRIM(CAST(c.data_diagnostico AS STRING)) <> ''
+        )
+        WHERE tipo_evento IS NOT NULL
+    ),
+
     -- VACINAS
     vacinacoes AS (
         SELECT
@@ -246,6 +290,8 @@ WITH
         SELECT * FROM vacinacoes
         UNION ALL
         SELECT * FROM testes_rapidos
+        UNION ALL
+        SELECT * FROM diagnosticos
     ),
 
     eventos_unificados AS (
@@ -260,9 +306,23 @@ WITH
         FROM todos_os_eventos e
         JOIN todas_as_fases f
           ON e.cpf = f.cpf
-         AND DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
-        -- esse join por janela garante que a puérpera atual possa ter eventos tanto
-        -- da gestação que originou o puerpério atual quanto do próprio puerpério
+         AND (
+             -- Eventos em geral só entram quando ocorreram dentro da janela da fase
+             DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
+
+             -- Exceção para diagnósticos:
+             -- diagnósticos de HIV, sífilis, hepatite B e hepatite C contam
+             -- mesmo que tenham sido registrados em qualquer outro momento da vida
+             OR (
+                 f.tipo_publico = 'Gestacao'
+                 AND e.tipo_evento IN (
+                     'Diagnóstico - HIV',
+                     'Diagnóstico - Sífilis',
+                     'Diagnóstico - Hepatite B',
+                     'Diagnóstico - Hepatite C'
+                 )
+             )
+         )
     )
 
 SELECT

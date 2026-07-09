@@ -29,7 +29,7 @@ select
 
     -- qualificadores gerais
     ev.status,
-    coalesce(any_value (grv.gravidade_score), 0) as gravidade_score,
+    safe_cast(coalesce(any_value (grv.gravidade_total_0_100), 0) as int) as gravidade_score,
     any_value (ev.gestante) as gestante,
 
     -- contato paciente
@@ -49,7 +49,7 @@ select
         struct(
             ev.fonte,
             ev.tipo,
-            ev.evento_status,
+            replace(ev.evento_status, '_', ' ') as evento_status,
             ev.procedimento,
             ev.cid,
 
@@ -98,6 +98,11 @@ select
     ) as eventos,
 
     any_value (ev.tempo_total) as tempo_total,
+
+    -- tempos da linha de cuidado, medidos dentro da jornada atual (calculados em
+    -- int_monitora_cancer__eventos_episodios; NULL fora do escopo de cada um)
+    any_value (ev.tempo_diagnostico) as tempo_diagnostico,
+    any_value (ev.tempo_diagnostico_sem_tratamento) as tempo_diagnostico_sem_tratamento,
 
     -- pendências atuais (1 array por paciente, calculado em int_monitora_cancer__pendencias)
     any_value (pend.pendencia_atual) as pendencia_atual

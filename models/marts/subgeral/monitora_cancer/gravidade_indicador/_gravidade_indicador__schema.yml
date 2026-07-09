@@ -1,0 +1,362 @@
+version: 2
+
+models:
+  - name: mart_monitora_cancer__gravidade
+    description: >
+      Score de gravidade da paciente no monitoramento de câncer de mama —
+      ordena a fila de cuidado por urgência de contato. Granularidade: 1
+      linha por paciente (cpf_particao). Inclui pacientes com pelo menos
+      um critério ativo na jornada atual OU que são gestantes (gestantes sem
+      critério recebem gravidade_total = 0 e gravidade_detalhamento NULL
+      — o multiplicador de gestante atua sobre o termo_max e não cria
+      score onde não há critério).
+
+      Ordenação canônica da fila:
+        ORDER BY gravidade_total DESC, gestante DESC
+      O gravidade_total_0_100 é APENAS para apresentação (satura em 100
+      acima do p95 dinâmico; perde informação no topo).
+
+      Cada critério só gera gravidade enquanto o desfecho esperado ainda
+      NÃO chegou — quando o desfecho acontece, o critério é desativado e
+      não aparece no detalhamento. Critérios cujo gatilho está dentro da
+      folga (dias_atraso = 0) também ficam fora do detalhamento.
+
+      Cálculo, por instância de gatilho (Eq. 1):
+        gravidade_criterio = fator_risco · fator_tempo
+      onde fator_risco vem da macro monitora_cancer_fator_risco e
+      fator_tempo = dias_atraso / intervalo_urgencia (linear, sem cap).
+      dias_atraso vem da macro monitora_cancer_dias_atraso.
+
+      Colapso por critério (spec §4.5, evita contagem dupla): um mesmo
+      critério pode disparar várias vezes para a paciente; mantém-se,
+      por critério, a instância de maior gravidade_criterio. Sobre o
+      valor por critério aplica-se o peso clínico:
+        contribuicao_criterio = peso_criterio · gravidade_criterio       (Eq. 2)
+
+      Score composto (multiplicativo na gestação):
+        gravidade_total = max_c(peso_criterio · gravidade_criterio) · (1 + α · 1_{gestante})
+                        + peso_carga_total · sum_c(peso_criterio · gravidade_criterio)
+                                                                         (Eq. 3)
+      onde max e sum percorrem todos os critérios ativos da paciente,
+      peso_carga_total = 0.5 e α = multiplicador_gestante = 1.0 (gestante
+      dobra o termo_max no score). Sem invariante de ordem explícita:
+      gestante-sem-critério tem termo_max = 0 e portanto gravidade_total
+      = 0, de modo que não passa pacientes-com-critério por construção.
+      Como o fator de tempo não tem cap, gravidade_total cresce sem
+      limite teórico.
+
+      Apresentação 0-100 com clip:
+        teto = p95(gravidade_total)  -- dinâmico, recomputado a cada run
+        gravidade_total_0_100
+          = 100 · min(gravidade_total / teto, 1)                          (Eq. 4)
+      Acima do teto (p95), satura em 100 — interpretação operacional:
+      "todas em emergência absoluta". A ordenação interna ao grupo
+      saturado continua sendo via gravidade_total bruto. O teto é
+      computado dinamicamente como o p95 da distribuição de
+      gravidade_total da jornada atual, dispensando recalibração manual
+      após mudança de pesos/parâmetros.
+
+      Considera apenas eventos da JORNADA ATUAL (a sequência de eventos mais
+      recente) de cada paciente.
+
+      Parâmetros (valores vigentes ficam em int_monitora_cancer__gravidade.sql
+      e int_monitora_cancer__gravidade_instancias.sql; pesos clínicos na
+      macro monitora_cancer_pesos_clinicos): amortecedor_risco,
+      peso_carga_total, multiplicador_gestante, risco_maximo_escala,
+      risco_padrao_quando_nulo. (Teto de apresentação é dinâmico —
+      p95 do run, não é parâmetro.)
+
+      Critérios atualmente implementados (intervalo_urgencia e peso
+      clínico parametrizados; pesos vigentes refletem a hierarquia
+      clínica diagnóstico confirmado > SER em curso/falho > rastreio):
+        1. SISCAN mamografia Cat 0/4/5 → SISREG ultrassonografia ou biópsia,
+           intervalo 10 dias, peso 1.0.
+        2. SISCAN mamografia Cat 6 → solicitação SER (mesmo pendente), intervalo 5 dias,
+           peso 3.0.
+        3. SISCAN biópsia neoplásica → solicitação SER (mesmo pendente), intervalo 5 dias,
+           peso 3.0.
+        4. SISREG biópsia → progresso entre datas intra-evento,
+           intervalo 20 dias por leg (legs: solicitacao→autorizacao,
+           autorizacao→execucao), peso 1.0. Os dois legs compartilham
+           critério e peso, distinguidos pela coluna etapa no detalhamento.
+        5. SER status "PENDENTE" → atualização do status da solicitação,
+           intervalo 10 dias, peso 2.0.
+        6. SER status "EM_FILA" → atualização do status da solicitação,
+           intervalo 60 dias, peso 2.0.
+        7. SER status de falha ("CHEGADA_NAO_CONFIRMADA", "CANCELADA")
+           → nova solicitação SER, intervalo 10 dias, peso 2.0.
+
+      Mecanismo de desativação de critérios: ver
+      int_monitora_cancer__gravidade_instancias.sql (cross-evento via
+      anti-join, intra-evento via WHERE direto, sempre filtrando
+      dias_atraso > 0).
+
+      Referência metodológica: Nardo et al. (2008), Handbook on Constructing
+      Composite Indicators (OECD/JRC). Normalização "distance to reference"
+      (§5.4); agregação híbrida max + soma combina lógica não-compensatória
+      (§6.13) e linear-aditiva (§6.10).
+    meta:
+      owner: "SMS/SUBGERAL/CR/NTI"
+
+    columns:
+      - name: cpf_particao
+        description: >
+          CPF da paciente em formato numérico (int64). Chave primária e
+          campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - unique:
+              name: mart_monitora_cancer__gravidade__cpf_particao__unique
+          - not_null:
+              name: mart_monitora_cancer__gravidade__cpf_particao__not_null
+
+      - name: gravidade_total
+        description: >
+          Score final (FLOAT64) da Eq. (3), em ESCALA ABSOLUTA, já com o
+          multiplicador de gestante aplicado sobre o termo_max:
+            gravidade_total = gravidade_termo_max · (1 + α · 1_{gestante})
+                            + peso_carga_total · gravidade_termo_soma
+          com α = multiplicador_gestante = 1.0 (gestante dobra o
+          termo_max). Equivalente algébrico:
+            gravidade_total = gravidade_base + α · gravidade_termo_max · 1_{gestante}
+          ESTA é a coluna canônica para ordenar a fila de cuidado
+          (ORDER BY gravidade_total DESC, gestante DESC). Cresce sem
+          limite teórico — o fator de tempo é linear e sem cap, então
+          atrasos extremos produzem scores altos proporcionalmente. Para
+          apresentação em 0-100 com clip, use gravidade_total_0_100.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__gravidade__gravidade_total__not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1000
+              name: mart_monitora_cancer__gravidade__gravidade_total__accepted_range
+
+      - name: gravidade_total_0_100
+        description: >
+          gravidade_total reescalado para a faixa 0–100 com clip no p95
+          dinâmico:
+            teto = approx_quantiles(gravidade_total, 100)[offset(95)]
+            gravidade_total_0_100 = 100 · min(gravidade_total / teto, 1)
+          O teto é recomputado a cada run a partir da distribuição
+          atual de gravidade_total (sem parâmetro manual a manter).
+          Por construção, ~5% das pacientes saturam em 100. Acima do
+          teto, satura em 100 — "todas em emergência absoluta".
+          Tipo FLOAT64, em [0, 100]. ATENÇÃO: NÃO use esta coluna para
+          ordenar a fila — perde informação no topo (todo paciente
+          acima do teto vira 100) e o teto pode flutuar levemente
+          entre runs se a distribuição mudar. Use gravidade_total (bruto,
+          invariante ao teto) para ordenação. Esta coluna é APENAS para
+          dashboards e apresentação a stakeholders.
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100
+              name: mart_monitora_cancer__gravidade__gravidade_total_0_100__accepted_range
+
+      - name: gravidade_base
+        description: >
+          Score do NÃO-gestante — isola o efeito do multiplicador de
+          gestação para auditoria:
+            gravidade_base = gravidade_termo_max
+                           + peso_carga_total · gravidade_termo_soma
+          com peso_carga_total = 0.5. Tipo FLOAT64, em [0, ∞). Para
+          comparar gestantes vs. não-gestantes em mesma carga clínica,
+          use gravidade_base nas duas pontas (descontando o
+          multiplicador).
+
+      - name: gravidade_termo_max
+        description: >
+          Termo max da Eq. (3): a maior contribuicao_criterio entre os
+          critérios ATIVOS da paciente — o critério mais grave.
+          contribuicao_criterio = peso_criterio · gravidade_criterio, onde
+          gravidade_criterio é a gravidade bruta do critério (Eq. 1, sem
+          normalização). Domina o score: garante que 1 caso muito grave
+          fica acima de muitos casos leves (não-compensatório, Handbook
+          §6.13). Tipo FLOAT64, em [0, ∞). Recebe peso implícito 1 no
+          gravidade_base. Zero para gestantes sem critério ativo.
+
+      - name: gravidade_termo_soma
+        description: >
+          Termo soma da Eq. (3): a soma das contribuicao_criterio de todos
+          os critérios ATIVOS da paciente — a carga total. Bônus de carga:
+          mais pendências aumentam o score linearmente (Handbook §6.10).
+          Tipo FLOAT64, em [0, ∞). Recebe peso peso_carga_total = 0.5 no
+          gravidade_base. Zero para gestantes sem critério ativo.
+
+      - name: gestante
+        description: >
+          TRUE quando a paciente está atualmente gestante (mesma fonte usada
+          em mart_monitora_cancer__pacientes_linha_tempo). Aciona o
+          multiplicador (1 + α) sobre gravidade_termo_max no score, com
+          α = multiplicador_gestante = 1.0 (gestante dobra o termo_max).
+          Gestantes sem critério ativo são incluídas no mart, mas com
+          gravidade_total = 0 (não há termo_max para o multiplicador
+          atuar) — aparecem no fundo da fila.
+
+      - name: gravidade_detalhamento
+        description: >
+          Array de structs com cada critério ATIVO que compõe o score,
+          ordenado por contribuicao_criterio desc. Após o colapso MAX por
+          critério: cada critério aparece no máximo uma vez (instância
+          mais urgente). Critérios cujo desfecho já chegou ou que estão
+          dentro da folga (dias_atraso = 0) não aparecem. NULL para
+          gestantes sem critério ativo. Campos do struct: criterio, etapa
+          (NULL exceto critério 4), data_trigger, dias_atraso,
+          intervalo_urgencia_dias, risco_evento_gatilho, fator_tempo,
+          fator_risco, gravidade_criterio (= fator_tempo · fator_risco),
+          peso_criterio, contribuicao_criterio (= peso_criterio ·
+          gravidade_criterio). Para análises com TODAS as instâncias
+          (antes do colapso MAX), use mart_monitora_cancer__gravidade_instancias.
+
+  - name: mart_monitora_cancer__gravidade_instancias
+    description: >
+      Instâncias ativas dos critérios de gravidade na jornada atual — granula-
+      ridade fina, ANTES do colapso MAX por critério aplicado em
+      mart_monitora_cancer__gravidade. Uma linha por (cpf_particao,
+      criterio, etapa, data_trigger).
+
+      Granularidade: NÃO há chave única única por linha — múltiplos
+      registros por (cpf_particao, criterio) representam diferentes
+      gatilhos ativos do mesmo critério (datas de trigger distintas; legs
+      do critério 4; instâncias SER em status "stuck").
+
+      Filtragem: contém somente instâncias ATIVAS — gatilho disparado,
+      desfecho esperado ainda NÃO chegou, e dias_atraso > 0 (folga já
+      ultrapassada). Pacientes sem instâncias ativas (incluindo gestantes
+      sem critério) NÃO aparecem aqui — para o universo completo com
+      score, use mart_monitora_cancer__gravidade.
+
+      Caso de uso primário: análises em Python (calibração de pesos,
+      sensibilidade a amortecedor_risco/peso_carga_total/multiplicador_gestante,
+      correlação entre critérios) sem precisar fazer UNNEST. Por que
+      tabela separada e não derivar de gravidade_detalhamento: o array
+      do detalhamento já é pós-colapso (apenas a MAX-por-critério); para
+      varrer amortecedor_risco em análise de sensibilidade, a instância
+      "max" pode mudar — precisa-se de TODAS as instâncias, que estão
+      apenas aqui.
+
+      Particionamento: range por cpf_particao (compatível com a família
+      de tabelas do projeto). Clusterização: por `criterio` — acelera
+      filtros típicos das análises (group by criterio, where criterio =
+      'X'). Materialized: table (zera o custo de scan para queries
+      analíticas repetidas).
+
+      Para a fórmula completa e definição de cada critério, ver
+      mart_monitora_cancer__gravidade.
+    meta:
+      owner: "SMS/SUBGERAL/CR/NTI"
+
+    columns:
+      - name: cpf_particao
+        description: >
+          CPF da paciente em formato numérico (int64). Campo de
+          particionamento da tabela. NÃO é chave única — uma paciente pode
+          ter múltiplas linhas (uma por instância de critério ativa).
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__gravidade_instancias__cpf_particao__not_null
+
+      - name: criterio
+        description: >
+          Identificador textual do critério (par gatilho/desfecho-esperado).
+          Valor estável entre execuções; é a chave para joins/agrupa-
+          mentos em análises. Coluna de clusterização da tabela.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__gravidade_instancias__criterio__not_null
+          - accepted_values:
+              values:
+                - SISCAN_MAMA_CAT_0_4_5__SISREG_ULTRA_OU_BIOPSIA
+                - SISCAN_MAMA_CAT_6__SER
+                - SISCAN_BIOPSIA_NEOPLASICA__SER
+                - SISREG_BIOPSIA_PROGRESSO
+                - SER_PENDENTE__STATUS_UPDATE
+                - SER_EM_FILA__STATUS_UPDATE
+                - SER_FALHA__NOVA_SER
+              name: mart_monitora_cancer__gravidade_instancias__criterio__accepted_values
+
+      - name: etapa
+        description: >
+          Sub-etapa do critério. Preenchida apenas no critério 4
+          (SISREG_BIOPSIA_PROGRESSO) para distinguir os legs
+          SOLICITACAO_AUTORIZACAO e AUTORIZACAO_EXECUCAO. NULL nos demais
+          critérios.
+
+      - name: data_trigger
+        description: >
+          Data de referência do evento gatilho (data_referencia_evento,
+          data_solicitacao ou data_autorizacao, conforme o critério). Início
+          do relógio de atraso.
+        data_tests:
+          - not_null:
+              name: mart_monitora_cancer__gravidade_instancias__data_trigger__not_null
+
+      - name: dias_atraso
+        description: >
+          Dias desde data_trigger até hoje, descontado o intervalo_urgencia,
+          com piso 0. Pela filtragem da tabela, é sempre > 0 (instâncias
+          dentro da folga foram removidas).
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              name: mart_monitora_cancer__gravidade_instancias__dias_atraso__accepted_range
+
+      - name: intervalo_urgencia_dias
+        description: >
+          Folga clinicamente tolerável do critério (em dias). Também o
+          divisor do fator de tempo. Valor por critério, parametrizado no
+          topo de int_monitora_cancer__gravidade_instancias.sql.
+
+      - name: risco_evento_gatilho
+        description: >
+          Risco BRUTO do evento gatilho (1..4 ou NULL), sem amortecimento.
+          ESTA é a coluna a usar para recompute em análise de sensibilidade
+          de amortecedor_risco — recompute fator_risco em Python como
+          (risco + amortecedor_risco_novo) / (risco_maximo_escala +
+          amortecedor_risco_novo). NULL deve ser tratado como
+          risco_padrao_quando_nulo (2) para consistência com o cálculo do
+          mart.
+
+      - name: peso_criterio
+        description: >
+          Peso clínico do critério (fonte: macro
+          monitora_cancer_pesos_clinicos). Valores vigentes (calibração
+          2026-05, validada via análise de sensibilidade):
+          C1=1.0, C2=3.0, C3=3.0, C4=1.0, C5=2.0, C6=2.0, C7=2.0.
+          Hierarquia: diagnóstico confirmado (C2, C3) > SER em
+          curso/falho (C5, C6, C7) > rastreio pré-suspeita (C1, C4).
+          Coluna principal para análise de calibração de pesos.
+
+      - name: fator_tempo
+        description: >
+          dias_atraso / intervalo_urgencia_dias. Linear, sem cap. Por defi-
+          nição, sempre > 0 nesta tabela (instâncias na folga foram
+          filtradas).
+
+      - name: fator_risco
+        description: >
+          Fator de risco amortecido com os parâmetros vigentes
+          (ver macro monitora_cancer_fator_risco para a fórmula,
+          intervalo e tratamento de NULL). ATENÇÃO: é um cache — para
+          análise de sensibilidade de amortecedor_risco, NÃO use esta
+          coluna; recompute a partir de risco_evento_gatilho.
+
+      - name: gravidade_criterio
+        description: >
+          fator_tempo · fator_risco com os parâmetros vigentes. Coluna de
+          cache idêntica ao gravidade_criterio do struct gravidade_detalha-
+          mento do mart mart_monitora_cancer__gravidade (para a instância
+          eventualmente escolhida pelo MAX). Para sensibilidade, NÃO use —
+          recompute em Python.
+
+      - name: gestante
+        description: >
+          TRUE quando a paciente está atualmente gestante. Repetido em todas
+          as linhas da mesma paciente (denormalizado para conveniência em
+          Python; evita join com o mart de gravidade para recompute do
+          score). Gestantes-sem-critério NÃO aparecem nesta tabela — para
+          esse universo, ver mart_monitora_cancer__gravidade.
