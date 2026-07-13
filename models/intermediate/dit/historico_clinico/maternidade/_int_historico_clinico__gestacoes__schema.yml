@@ -1,0 +1,152 @@
+version: 2
+
+models:
+  - name: int_historico_clinico__gestacoes__eventos_obstetricos
+    description: >
+      Camada canonica de eventos obstetricos candidatos para gestacao, parto, aborto e puerperio,
+      consolidando evidencias da camada integrada de episodios assistenciais, de tabelas brutas de
+      prontuarios e do SISARE. Cada linha representa uma evidencia datada de evento obstetrico
+      identificada em uma fonte de origem. O modelo nao representa necessariamente uma gestacao
+      unica consolidada; ele organiza eventos que podem ser usados por modelos posteriores para
+      inferir situacao gestacional, puerperio ou encerramento de gestacao.
+    columns:
+      - name: id_evento_obstetrico
+        description: >
+          Identificador unico da linha de evento obstetrico canonico. E gerado a partir da fonte,
+          identificador do registro de origem, tipo/subtipo do evento e data do evento, conforme
+          a regra especifica de cada fonte.
+        tests:
+          - not_null
+          - unique
+      - name: id_paciente
+        description: >
+          Identificador da paciente ou mae quando a fonte fornece esse dado. Pode vir, por exemplo,
+          da camada integrada de episodios assistenciais, do Vitai ou do MV. No SISARE, o
+          identificador da gestante/internacao e preservado em id_evento_origem, mas id_paciente
+          fica nulo neste modelo. Tambem fica nulo quando a fonte do evento nao possui identificador
+          de paciente confiavel nesse ponto do fluxo.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: cpf
+        description: >
+          CPF da paciente ou mae quando disponivel na fonte. O campo e normalizado para manter
+          apenas digitos. Pode ficar nulo em fontes que identificam o evento por prontuario,
+          internacao, episodio ou registro de nascimento sem CPF disponivel.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: id_hci
+        description: >
+          Identificador do episodio, atendimento, boletim ou prontuario relacionado ao evento,
+          quando existe uma chave clinica equivalente na fonte. Apesar do nome, nem toda linha vem
+          diretamente do produto HCI; para fontes de prontuario, o campo guarda o identificador
+          operacional mais proximo do atendimento ou boletim.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: fonte
+        description: >
+          Fonte operacional da informacao. Valores esperados incluem vitacare, vitai, mv,
+          prontuaRio, pcsm, sarah e sisare. Para eventos vindos de mart_historico_clinico__episodio,
+          a fonte e derivada de prontuario.fornecedor, porque HCI e produto integrador e nao
+          prontuario de origem.
+      - name: id_evento_origem
+        description: >
+          Identificador do registro que originou o evento na fonte. Pode ser um id de prontuario
+          global, id_hci, gid, id_gestante combinado com id_internacao ou outro identificador
+          operacional da fonte. Serve para rastrear a evidencia original.
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: data_evento
+        description: >
+          Data principal usada para posicionar o evento obstetrico no tempo. Para parto, tende a
+          ser a data do parto, nascimento, alta ou procedimento. Para prenatal, e a data do
+          atendimento. Para inicio_gestacao e fim_gestacao por CID gestacional no episodio
+          assistencial, e condicoes.data_diagnostico do registro em que a condicao aparece como
+          ATIVO ou RESOLVIDO. Para aborto ou puerperio, e a data registrada na fonte ou uma data
+          auxiliar usada quando a fonte nao possui data especifica do evento.
+        tests:
+          - not_null
+      - name: tipo_evento
+        description: >
+          Tipo canonico do evento. Valores usados pelo modelo: inicio_gestacao, fim_gestacao,
+          parto, aborto e avaliacao_puerperal. Esse campo diz o que o evento representa de forma
+          padronizada, independentemente da fonte original.
+        tests:
+          - not_null
+      - name: subtipo_evento
+        description: >
+          Mecanismo usado para classificar o evento. Exemplos: cid_gestacao para CIDs Z321, Z34 e
+          Z35 nas condicoes do episodio assistencial; prenatal para registros de pre-natal da
+          Vitacare; nascimento_rn para parto identificado por recem-nascido; registro_parto para
+          data de parto estruturada;
+          registro_aborto para data ou desfecho estruturado de aborto; registro_puerperio para
+          indicacao estruturada de puerperio; cid_parto e cid_aborto para evidencias por CID;
+          procedimento_parto, procedimento_aborto e procedimento_puerperio para evidencias por
+          procedimento estruturado ou texto de procedimento.
+      - name: data_inicio_gestacao
+        description: >
+          Data estimada de inicio da gestacao quando calculavel. No episodio assistencial com CID
+          de gestacao ATIVO, recebe condicoes.data_diagnostico. Na Vitacare, quando existe idade
+          gestacional valida, e calculada subtraindo idade_gestacional_dias da data do atendimento.
+          Para esse calculo, pconsulta_idade_gestacional representa semanas completas e
+          pconsulta_idade_gestacional_dias representa dias adicionais de 0 a 6; o mesmo vale para
+          primeira_consulta_idade_gestacional e primeira_consulta_idade_gestacional_dias.
+      - name: data_fim_gestacao
+        description: >
+          Data de fim da gestacao quando o evento indica resolucao, parto ou aborto. E preenchida
+          em eventos como fim_gestacao, parto e aborto. Para fim_gestacao por CID gestacional
+          resolvido, usa condicoes.data_diagnostico do registro em que a condicao aparece como
+          RESOLVIDO, seguindo a mesma logica usada no modelo de gestacoes do monitor da SAP:
+          data_diagnostico de condicao ATIVO como data de inicio e data_diagnostico de condicao
+          RESOLVIDO como data de fim. Para avaliacao puerperal, pode ficar nula ou receber a data
+          de parto quando essa data tambem esta disponivel na fonte.
+      - name: data_parto
+        description: >
+          Data do parto quando a evidencia indica parto. Pode vir de campos estruturados como
+          dt_parto, parto_datahora, parto_nascimento_datahora, de procedimentos obstetricos de
+          parto ou de CIDs/alta que indicam parto. Na alta do MV, quando um texto livre de
+          procedimento e classificado como parto, recebe a data usada para o evento da alta
+          (alta_medica_datahora, alta_datahora_fechamento ou atendimento_datahora), e nao
+          necessariamente a data exata do parto.
+      - name: data_puerperio
+        description: >
+          Data da avaliacao puerperal quando a evidencia indica puerperio. Pode vir de campo
+          estruturado da Vitacare, da marcacao puerpera do SISARE ou de procedimento/texto de alta
+          que indique puerperio.
+      - name: dpp
+        description: >
+          Data provavel do parto quando disponivel. Atualmente e preenchida principalmente a partir
+          de pconsulta_dpp1 da Vitacare, aceitando formatos de data diferentes. Uma DPP valida pode
+          criar evidencia de inicio_gestacao mesmo quando a idade gestacional nao esta calculavel.
+      - name: idade_gestacional_dias
+        description: >
+          Idade gestacional total em dias quando disponivel ou calculavel. Na Vitacare, e calculada
+          combinando semanas completas e dias adicionais: semanas * 7 + dias. Exemplo:
+          pconsulta_idade_gestacional = 20 e pconsulta_idade_gestacional_dias = 3 representam
+          20 semanas e 3 dias, totalizando 143 dias. Os dias adicionais sao considerados validos
+          quando estao entre 0 e 6. Em outras fontes, pode ser calculada a partir de semanas
+          informadas, como gestacao_semanas, idade_gestacional_semanas ou ig.
+      - name: cid
+        description: >
+          CID associado ao evento quando a evidencia vem de diagnostico. Exemplos: Z321, Z34 e Z35
+          para gestacao nas condicoes do episodio assistencial; O80-O89, O90-O92 e Z37 para parto
+          no ProntuaRio; O00 a O08 para aborto no ProntuaRio. Fica nulo quando a evidencia vem de
+          registro estruturado, procedimento, texto livre ou SISARE.
+      - name: procedimento_codigo
+        description: >
+          Codigo de procedimento associado ao evento quando a evidencia vem de procedimento
+          estruturado. Pode vir, por exemplo, de procedimento_codigo/id_procedimento do Vitai ou
+          dos campos procsol, procreal, procprin e procsec do ProntuaRio. Fica nulo para eventos
+          sem procedimento estruturado ou quando a evidencia vem de texto livre.
+      - name: procedimento_descricao
+        description: >
+          Descricao do procedimento quando disponivel. Pode vir do nome do procedimento no Vitai,
+          do dicionario SIGTAP usado para interpretar codigos do ProntuaRio ou do texto livre de
+          procedimentos_realizados da alta do MV.
+      - name: loaded_at
+        description: >
+          Data e hora de carga do registro de origem, quando disponivel. E usada como criterio de
+          desempate na deduplicacao quando mais de uma linha gera a mesma chave de evento.
+      - name: data_particao
+        description: >
+          Data de particao herdada da fonte ou derivada do evento. O modelo incremental particiona
+          por este campo e tambem aplica janela incremental de reprocessamento nas fontes.
