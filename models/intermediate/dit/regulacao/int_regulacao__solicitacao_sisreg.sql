@@ -2,7 +2,8 @@
   config(
     schema="intermediario_regulacao",
     alias="solicitacao_sisreg",
-    materialized="table",
+    materialized="incremental",
+    incremental_strategy="insert_overwrite",
     partition_by={
       "field": "data_particao",
       "data_type": "date",
@@ -158,6 +159,13 @@ with
       data_particao
 
     from {{ ref("raw_sisreg_api_v2__solicitacao_ambulatorial") }}
+    {% if is_incremental() %}
+      -- Só partições dos últimos 13 meses; extração é último ano
+      where data_particao >= date_sub(
+        current_date("America/Sao_Paulo"),
+        interval 13 month
+      )
+    {% endif %}
 
     union all
 
@@ -261,6 +269,13 @@ with
       data_particao
 
     from {{ ref("raw_sisreg_api_v2__solicitacao_hospitalar") }}
+    {% if is_incremental() %}
+      -- Só partições dos últimos 13 meses; extração é último ano
+      where data_particao >= date_sub(
+        current_date("America/Sao_Paulo"),
+        interval 13 month
+      )
+    {% endif %}
   )
 
 select *

@@ -519,7 +519,7 @@ models:
           dado_sensivel: sim
       sisreg_api_v2:
         +schema: brutos_sisreg_api_v2
-        +tags: ["sisreg_v2"]
+        +tags: ["sisreg_v2", "daily"]
         +labels:
           dado_publico: nao
           dado_pessoal: sim
@@ -664,7 +664,7 @@ models:
             dado_sensivel: sim
         regulacao:
           +schema: intermediario_regulacao
-          +tags: ["sisreg_v2"]
+          +tags: ["sisreg_v2", "daily"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -834,7 +834,7 @@ models:
 
         regulacao:
           +schema: regulacao
-          +tags: ["sisreg_v2"]
+          +tags: ["sisreg_v2", "daily"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
