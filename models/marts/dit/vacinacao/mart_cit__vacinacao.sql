@@ -44,7 +44,14 @@ with
 
     final as (
         select
-            id_vacinacao,
+            {{ dbt_utils.generate_surrogate_key([
+                'id_cnes',
+                'vacina_codigo',
+                'vacina_registro_data',
+                'vacina_dose',
+                'coalesce(paciente_cns, paciente_cpf, paciente_nome, id_vacinacao)'
+            ]) }} as id_vacinacao,
+            id_vacinacao as id_vacinacao_fonte,
             id_cnes,
             id_equipe,
             id_ine_equipe,
