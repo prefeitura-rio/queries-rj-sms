@@ -69,7 +69,10 @@ with
             profissional_cpf,
             loaded_at,
             updated_at,
-            origem,
+            case 
+                when origem in ('historico', 'api', 'continuo') then 'vitacare'
+                else origem
+            end as origem,
             vacina_registro_data as particao_registro_vacinacao
         from vacinacoes_dedup
     )

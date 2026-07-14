@@ -5,6 +5,7 @@ models:
       Realiza a união de 4 fontes de dados intermediárias (Vitacare histórico/backup,
       Vitacare API centralizadora, Vitacare API contínua e SIPNI) com deduplicação
       por id_vacinacao, priorizando historico > sipni > api > continuo.
+      A coluna origem é padronizada para vitacare ou sipni.
     columns:
       - name: id_vacinacao
         description: Identificador único da vacinação, composto por id_cnes e id local.
@@ -91,9 +92,6 @@ models:
       - name: origem
         description: >
           Fonte dos dados da vacinação. Valores possíveis:
-          api (Vitacare API centralizadora),
-          historico (Vitacare backup/histórico),
-          sipni (SIPNI),
-          continuo (Vitacare API contínua diária).
+          vitacare e sipni.
       - name: particao_registro_vacinacao
         description: Data de registro da vacina, usada para particionamento da tabela (AAAA-MM-DD).
