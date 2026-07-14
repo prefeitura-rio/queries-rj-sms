@@ -1,0 +1,56 @@
+models:
+  - name: mart_regulacao__solicitacao
+    description: >
+      Solicitações de regulação, incluindo já marcadas ou executadas.
+    columns:
+      - name: paciente_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
+      - name: paciente_cns
+        description: CNS do paciente.
+        policy_tags:
+          - '{{ var ("TAG_CNS") }}'
+
+      - name: solicitacao
+        description: Informações sobre a solicitação de atendimento.
+
+      - name: cancelamento
+        description: Informações sobre o cancelamento da solicitação.
+
+      - name: procedimento
+        description: Informações sobre o procedimento a ser executado.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+
+      - name: solicitante
+        description: >
+          Informações sobre a unidade e o profissional que solicitaram o procedimento.
+
+      - name: regulador
+        description: Informações sobre a central reguladora responsável.
+
+      - name: laudo
+        description: >
+          Informações descrevendo a necessidade do procedimento, quando
+          submetidas pelo solicitante, ou de mais detalhes, quando pelo regulador.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+
+      - name: marcacao
+        description: >
+          Informações sobre a data e hora marcados para a execução do procedimento.
+
+      - name: execucao
+        description: >
+          Informações sobre o profissional e a unidade responsáveis pela
+          execução do procedimento.
+
+      - name: fonte
+        description: Fonte do dado (ex. "sisreg").
+      - name: _extracted_at
+        description: Data/hora da extração do dado da fonte.
+      - name: cpf_particao
+        description: Coluna de particionamento da tabela.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'
