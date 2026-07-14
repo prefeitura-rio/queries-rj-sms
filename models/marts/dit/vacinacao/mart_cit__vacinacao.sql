@@ -49,7 +49,9 @@ with
                 'vacina_codigo',
                 'vacina_registro_data',
                 'vacina_dose',
-                'coalesce(paciente_cns, paciente_cpf, paciente_nome, id_vacinacao)'
+                'coalesce(paciente_cns, paciente_cpf, paciente_nome, id_vacinacao)' 
+                -- usando id_vacinacao como fallback caso n existe info de paciente,
+                -- se for de fontes diferentes, mante, se for da mesma fonte e ter o mesmo id, vai ter o dedup
             ]) }} as id_vacinacao,
             id_vacinacao as id_vacinacao_fonte,
             id_cnes,
@@ -63,7 +65,39 @@ with
             vacina_lote,
             vacina_aplicacao_data,
             vacina_registro_data,
-            vacina_registro_tipo,
+
+            -- Padronizacao do tipo de registro
+            case
+              when lower(trim(vacina_registro_tipo)) in (
+                'administracao', 
+                'administração', 
+                'administrao', 
+                'vaccine administration'
+              ) then 'Administração'
+              
+              when lower(trim(vacina_registro_tipo)) in (
+                'registro de aplicação anterior', 
+                'registro de aplicacao anterior', 
+                'registro de vacinação anterior', 
+                'registro de vacinao anterior', 
+                'registro anterior/transcrição de caderneta', 
+                'register of a past vaccine administration (resgate)'
+              ) then 'Registro de aplicação anterior'
+              
+              when lower(trim(vacina_registro_tipo)) in (
+                'não aplicada', 
+                'nao aplicada', 
+                'no aplicada', 
+                'nao aplicavel', 
+                'non applicable'
+              ) then 'Não aplicada'
+              
+              when lower(trim(vacina_registro_tipo)) in (
+                'vacina no exterior'
+              ) then 'Vacina no exterior'
+              
+              else initcap(vacina_registro_tipo)
+            end as vacina_registro_tipo,
             paciente_cns,
             paciente_cpf,
             paciente_nome,
@@ -84,5 +118,6 @@ with
         from vacinacoes_dedup
     )
 
-select *
-from final
+    select *
+    from final
+    qualify row_number() over (partition by id_vacinacao order by loaded_at desc, updated_at desc) = 1
