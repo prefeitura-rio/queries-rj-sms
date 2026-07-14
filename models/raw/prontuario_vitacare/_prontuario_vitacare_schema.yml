@@ -349,11 +349,11 @@ models:
       Tabela contendo informações dos pacientes a partir do prontuário VitaCare,
       incluindo dados históricos e rotineiros.
     columns:
-      - name: id
+      - name: id_paciente_global
         description: Identificador único do paciente.
         data_tests:
           - unique:
-              name: base_prontuario_vitacare__paciente_historico__id__unique
+              name: base_prontuario_vitacare__paciente_historico__id_paciente_global__unique
               config:
                 severity: warn
                 warn_if: ">1000"
