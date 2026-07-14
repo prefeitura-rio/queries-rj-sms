@@ -71,7 +71,7 @@ with
       -- vacina
       lower(dv.nome_padronizado) as vacina_nome,
       dv.codigo_sipni as vacina_codigo,
-      v.vacina_dose,
+      {{ padronizar_dose('v.vacina_dose') }} as vacina_dose,
       v.vacina_lote,
       v.vacina_aplicacao_data,
       v.vacina_registro_data,
@@ -92,7 +92,7 @@ with
       v.profissional_cpf,
 
       -- metadados
-      v.metadados.loaded_at as loaded_at,
+      cast(v.metadados.loaded_at as datetime) as loaded_at,
       v.metadados.updated_at as updated_at,
       v.particao_data_vacinacao as data_particao
 

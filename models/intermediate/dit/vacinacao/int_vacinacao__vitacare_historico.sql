@@ -28,7 +28,7 @@ with
       -- Variables
       nome_vacina as vacina_nome,
       cod_vacina as vacina_codigo,
-      dose as vacina_dose,
+      {{ padronizar_dose('dose') }} as vacina_dose,
       lote as vacina_lote,
 
       data_aplicacao as vacina_aplicacao_data,

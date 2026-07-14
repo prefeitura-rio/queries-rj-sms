@@ -31,7 +31,7 @@ with
       vacina_tipo_registro,
       profissional_nome,
       loaded_at,
-      updated_at
+      current_datetime('America/Sao_Paulo') as updated_at
     from {{ ref('raw_sipni__vacinacao') }}
   ),
 
@@ -63,7 +63,7 @@ with
       -- vacina
       lower(dv.nome_padronizado) as vacina_nome,
       dv.codigo_sipni as vacina_codigo,
-      v.vacina_dose,
+      {{ padronizar_dose('v.vacina_dose') }} as vacina_dose,
       v.vacina_lote,
       v.vacina_aplicacao_data,
       v.vacina_aplicacao_data as vacina_registro_data,

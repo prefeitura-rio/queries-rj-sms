@@ -82,7 +82,7 @@ with
       -- vacina
       lower(dv.nome_padronizado) as vacina_nome,
       dv.codigo_sipni as vacina_codigo,
-      v.dose as vacina_dose,
+      {{ padronizar_dose('v.dose') }} as vacina_dose,
       v.lote as vacina_lote,
       v.data_aplicacao as vacina_aplicacao_data,
       cast(v.data_registro as date) as vacina_registro_data,
