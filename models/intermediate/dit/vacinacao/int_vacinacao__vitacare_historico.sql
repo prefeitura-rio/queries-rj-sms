@@ -6,6 +6,7 @@
         incremental_strategy="merge",
         unique_key = ['id_vacinacao'],
         cluster_by= ['id_cnes', 'vacina_nome'],
+        tags=['daily', 'vacinacao'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",

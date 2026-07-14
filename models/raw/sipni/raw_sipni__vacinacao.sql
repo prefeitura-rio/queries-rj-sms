@@ -18,6 +18,12 @@ with
         select * from {{ source("brutos_sipni_staging", "vacinacao_historico") }}
     ),
 
+    vacina_dedup as (
+        select *
+        from vacina
+        qualify row_number() over (partition by co_identificador_sistema order by dt_entrada_datalake desc) = 1
+    ),
+
     casted_renamed as (
         select
             cast({{ process_null('co_identificador_sistema') }} as string) as id_vacinacao,
@@ -46,8 +52,10 @@ with
             cast({{ process_null('ds_origem_registro') }} as string) as vacina_tipo_registro,
             cast({{ process_null('co_profissional_vacina') }} as string) as profissional_codigo,
             cast({{ process_null('no_profissional_vacina') }} as string) as profissional_nome,
-            cast(dt_entrada_datalake as datetime) as loaded_at
-        from source
+            cast(dt_entrada_datalake as datetime) as loaded_at,
+            current_datetime('America/Sao_Paulo') as updated_at,
+            cast(dt_vacina as date) as data_particao
+        from vacina_dedup
     )
 
 select *
