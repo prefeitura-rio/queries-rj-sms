@@ -50,9 +50,9 @@ with
                 'vacina_registro_data',
                 'vacina_dose',
                 'coalesce(paciente_cns, paciente_cpf, paciente_nome, id_vacinacao)' 
-                -- usando id_vacinacao como fallback caso n existe info de paciente,
-                -- se for de fontes diferentes, mante, se for da mesma fonte e ter o mesmo id, vai ter o dedup
             ]) }} as id_vacinacao,
+                -- usando id_vacinacao como fallback caso n existe info de paciente,
+                -- se for de fontes diferentes, mantem, se for da mesma fonte e ter o mesmo id, vai ter o dedup
             id_vacinacao as id_vacinacao_fonte,
             id_cnes,
             id_equipe,
