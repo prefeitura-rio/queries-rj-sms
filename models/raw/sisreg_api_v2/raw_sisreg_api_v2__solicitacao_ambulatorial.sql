@@ -9,6 +9,7 @@
       "data_type": "date",
       "granularity": "month"
     },
+    meta={"owner": "avellar", "team": "cit"},
   )
 }}
 

@@ -8,6 +8,7 @@
       "data_type": "int64",
       "range": {"start": 0, "end": 1000000000000000, "interval": 333333333334},
     },
+    meta={"owner": "avellar", "team": "cit"},
   )
 }}
 
