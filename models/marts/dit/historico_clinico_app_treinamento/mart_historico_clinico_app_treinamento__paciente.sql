@@ -23,14 +23,14 @@ select
     false as deceased,
     '912345678' as phone,
     struct(
-        '6664040' as cnes,
-        'CF Heitor dos Prazeres' as name,
-        '994237148' as phone
+        '7015208' as cnes,
+        'CMS Parque União' as name,
+        '999999999' as phone
     ) as family_clinic,
     struct(
-        '0000307831' as ine_code,
-        'Boa Viagem' as name,
-        '991396543' as phone
+        '0000123456' as ine_code,
+        'Equipe Fake II' as name,
+        '999999999' as phone
     ) as family_health_team,
 
     [struct(
@@ -54,6 +54,6 @@ select
         true as indicador,
         [] as motivos,
         ['31'] as ap_cadastro,
-        ['6664040'] as unidades_cadastro
+        ['7015208'] as unidades_cadastro
     ) as exibicao,
     true as validated
