@@ -428,7 +428,7 @@ with
                         cid.descricao
                      ) as descricao,
                     'ATIVO' as situacao,
-                    cast(null as string) as data_diagnostico
+                    cast(date(diagnostico.data) as string) as data_diagnostico
                 )
             ) as condicoes
         from {{ ref('raw_prontuario_vitai__diagnostico')}} as diagnostico

@@ -1,22 +1,27 @@
 -- noqa: disable=LT08
 
 -- Eventos de monitoramento de câncer de mama em forma longa, com janelas
--- temporais (dias_proximo_evento), identificador de episódio (run_id) e
--- agregados por paciente (tempo_total, tempo_diagnostico,
+-- temporais (dias_proximo_evento), identificador de jornada (run_id) e
+-- agregados por paciente (status, tempo_total, tempo_diagnostico,
 -- tempo_diagnostico_sem_tratamento) broadcast em cada linha.
 --
--- Episódios ("runs"): sequências consecutivas de eventos cujos gaps entre
--- data_referencia_evento não excedem `episodio_gap_dias` (default 180 dias).
+-- Jornadas (internamente "runs"): sequências consecutivas de eventos cujos gaps
+-- entre data_referencia_evento não excedem `episodio_gap_dias` (default 180 dias).
 -- O run_id incrementa a cada gap > episodio_gap_dias dentro do mesmo paciente.
 --
--- tempo_total:
---   - pacientes com SER: dias do início da run que contém o primeiro SER até
---     a data desse primeiro SER;
---   - pacientes sem SER: dias do início da última run até a data atual.
+-- status (UNACON / DIAGNOSTICO / SUSPEITA): derivado APENAS dos eventos da
+-- jornada atual (run_id = max(run_id)), pela regra de prioridade SER >
+-- diagnóstico confirmado > suspeita. Antes era calculado em populacao_alvo sobre
+-- todo o histórico; agora reflete só a jornada atual.
 --
--- tempo_diagnostico / tempo_diagnostico_sem_tratamento: medidos no run atual
+-- tempo_total:
+--   - pacientes com SER: dias do início da jornada que contém o primeiro SER até
+--     a data desse primeiro SER;
+--   - pacientes sem SER: dias do início da última jornada até a data atual.
+--
+-- tempo_diagnostico / tempo_diagnostico_sem_tratamento: medidos na jornada atual
 -- (run_id = max(run_id), como int_monitora_cancer__eventos_run_atual):
---   - tempo_diagnostico: dias do início do run atual até o 1º evento que vira
+--   - tempo_diagnostico: dias do início da jornada atual até o 1º evento que vira
 --     DIAGNOSTICO/UNACON (criterio_diagnostico OU fonte = 'SER'). NULL em SUSPEITA.
 --   - tempo_diagnostico_sem_tratamento: dias do 1º diagnóstico confirmado
 --     (criterio_diagnostico) até a 1ª solicitação SER. NULL sem diagnóstico
@@ -60,7 +65,6 @@ with
             pop.clinica_sf_ap as ap,
             pop.clinica_sf as cf,
             pop.equipe_sf,
-            pop.status,
             pop.telefone,
             pop.clinica_sf_telefone as telefone_cf,
             pop.equipe_sf_telefone as telefone_esf,
@@ -155,10 +159,10 @@ with
             )
     ),
 
-    -- "Início" da run = data de solicitação do primeiro evento da sequência.
-    -- A sequência (run) é definida pelas fronteiras em data_referencia_evento
-    -- (gaps > episodio_gap_dias quebram a run); aqui usamos a data_solicitacao
-    -- mais antiga dentro da run como marcador de quando a paciente entrou
+    -- "Início" da jornada = data de solicitação do primeiro evento da sequência.
+    -- A sequência (jornada) é definida pelas fronteiras em data_referencia_evento
+    -- (gaps > episodio_gap_dias quebram a jornada); aqui usamos a data_solicitacao
+    -- mais antiga dentro da jornada como marcador de quando a paciente entrou
     -- naquele percurso de cuidado.
     run_starts as (
         select
@@ -231,7 +235,7 @@ with
             and psi.primeira_ser_run_id = rs_ser.run_id
     ),
 
-    -- Run atual (run_id = max(run_id)). Replica int_monitora_cancer__eventos_run_atual
+    -- Jornada atual (run_id = max(run_id)). Replica int_monitora_cancer__eventos_run_atual
     -- (downstream deste — evita ciclo). Base dos tempos de diagnóstico abaixo.
     eventos_run_atual as (
         select *
@@ -239,7 +243,22 @@ with
         qualify run_id = max(run_id) over (partition by cpf_particao)
     ),
 
-    -- Início do run atual: data_solicitacao mais antiga (mesmo marcador de run_starts).
+    -- Status da paciente derivado APENAS dos eventos da jornada atual (mesma regra
+    -- de prioridade de antes: SER > diagnóstico confirmado > suspeita). Assim
+    -- um SER/diagnóstico de uma jornada antiga não classifica mais a paciente.
+    status_por_paciente as (
+        select
+            cpf_particao,
+            case
+                when max(case when fonte = 'SER' then 1 else 0 end) = 1 then 'UNACON'
+                when max(cast(criterio_diagnostico as int64)) = 1 then 'DIAGNOSTICO'
+                else 'SUSPEITA'
+            end as status
+        from eventos_run_atual
+        group by cpf_particao
+    ),
+
+    -- Início da jornada atual: data_solicitacao mais antiga (mesmo marcador de run_starts).
     run_atual_start as (
         select
             cpf_particao,
@@ -248,7 +267,7 @@ with
         group by cpf_particao
     ),
 
-    -- 1º evento do run atual que vira DIAGNOSTICO/UNACON (criterio_diagnostico OU SER).
+    -- 1º evento da jornada atual que vira DIAGNOSTICO/UNACON (criterio_diagnostico OU SER).
     marco_diagnostico_run_atual as (
         select
             cpf_particao,
@@ -267,7 +286,7 @@ with
             )
     ),
 
-    -- 1º diagnóstico confirmado do run atual (criterio_diagnostico).
+    -- 1º diagnóstico confirmado da jornada atual (criterio_diagnostico).
     diagnostico_run_atual as (
         select
             cpf_particao,
@@ -286,7 +305,7 @@ with
             )
     ),
 
-    -- 1ª solicitação SER do run atual.
+    -- 1ª solicitação SER da jornada atual.
     ser_run_atual as (
         select
             cpf_particao,
@@ -306,11 +325,11 @@ with
     ),
 
     -- Broadcast por paciente. Dirigida por marco_diagnostico_run_atual: quem não
-    -- tem marco no run atual (SUSPEITA) não entra e fica NULL via LEFT JOIN final.
+    -- tem marco na jornada atual (SUSPEITA) não entra e fica NULL via LEFT JOIN final.
     tempos_diagnostico_por_paciente as (
         select
             mdr.cpf_particao,
-            -- (i) >= 0 por construção (o marco está no run que começa no min da solicitação)
+            -- (i) >= 0 por construção (o marco está na jornada que começa no min da solicitação)
             date_diff(mdr.marco_data, ras.run_atual_start_data, day) as tempo_diagnostico,
             -- (ii) NULL quando não há diagnóstico em/antes do SER
             if(
@@ -336,7 +355,7 @@ select
     ev.ap,
     ev.cf,
     ev.equipe_sf,
-    ev.status,
+    spp.status,
     ev.telefone,
     ev.telefone_cf,
     ev.telefone_esf,
@@ -373,5 +392,6 @@ select
     tdp.tempo_diagnostico_sem_tratamento
 
 from eventos_com_run as ev
+    left join status_por_paciente as spp using (cpf_particao)
     left join tempo_total_por_paciente as ttp using (cpf_particao)
     left join tempos_diagnostico_por_paciente as tdp using (cpf_particao)

@@ -4,22 +4,26 @@ models:
   - name: int_monitora_cancer__eventos_episodios
     description: >
       Eventos da população-alvo em forma longa, com janelas temporais
-      (dias_proximo_evento), identificador de episódio de cuidado (run_id)
-      e agregados de tempo da jornada (tempo_total, tempo_diagnostico,
+      (dias_proximo_evento), identificador de jornada de cuidado (run_id)
+      e agregados por paciente (status, tempo_total, tempo_diagnostico,
       tempo_diagnostico_sem_tratamento) broadcasted em cada linha.
 
-      Episódios ("runs"): sequências consecutivas de eventos da mesma
-      paciente cujos gaps entre data_referencia_evento não excedem
+      Jornadas (internamente "runs"): sequências consecutivas de eventos da
+      mesma paciente cujos gaps entre data_referencia_evento não excedem
       episodio_gap_dias (default 180 dias, var() do dbt). O run_id
       incrementa a cada gap > episodio_gap_dias dentro do mesmo paciente.
 
-      tempo_total: para pacientes com SER, dias do início da run que
+      status: derivado APENAS dos eventos da jornada atual (run_id =
+      max(run_id)) — eventos de jornadas antigas não classificam mais a
+      paciente; ver o doc da coluna status.
+
+      tempo_total: para pacientes com SER, dias do início da jornada que
       contém o primeiro SER até a data desse primeiro SER (proxy do tempo
       decorrido até a entrada em UNACON); para pacientes sem SER, dias
-      do início da última run até a data atual.
+      do início da última jornada até a data atual.
 
-      tempo_diagnostico e tempo_diagnostico_sem_tratamento: tempos da jornada
-      medidos no run atual (run_id = max(run_id)); ver a descrição de cada coluna.
+      tempo_diagnostico e tempo_diagnostico_sem_tratamento: tempos medidos
+      na jornada atual (run_id = max(run_id)); ver a descrição de cada coluna.
 
       Granularidade: 1 linha por evento (mesma de mart_monitora_cancer__fatos
       restrita à população-alvo, via LEFT JOIN de pop em fatos por
@@ -80,6 +84,12 @@ models:
       - name: status
         description: '{{ doc("monitora_cancer__status") }}'
         data_type: string
+        data_tests:
+          - not_null:
+              name: int_monitora_cancer__eventos_episodios__status__not_null
+          - accepted_values:
+              values: ['UNACON', 'DIAGNOSTICO', 'SUSPEITA']
+              name: int_monitora_cancer__eventos_episodios__status__accepted_values
 
       - name: telefone
         description: Telefone pessoal da paciente (bcadastro ou fallback em telefones_validos).
@@ -234,10 +244,10 @@ models:
 
       - name: run_id
         description: >
-          Identificador do episódio de cuidado, incrementa a cada gap >
+          Identificador da jornada de cuidado, incrementa a cada gap >
           episodio_gap_dias (default 180) entre data_referencia_evento
           dentro da mesma paciente. Reseta por paciente; o maior run_id
-          de cada paciente é o "run atual" usado pela cadeia de gravidade
+          de cada paciente é a "jornada atual" usada pela cadeia de gravidade
           (int_monitora_cancer__eventos_run_atual).
         data_type: int64
         data_tests:
@@ -246,23 +256,23 @@ models:
 
       - name: tempo_total
         description: >
-          Para pacientes com SER, dias do início da run que contém o
+          Para pacientes com SER, dias do início da jornada que contém o
           primeiro SER até a data desse primeiro SER. Para pacientes sem
-          SER, dias do início da última run até hoje. NULL quando o
+          SER, dias do início da última jornada até hoje. NULL quando o
           cálculo resulta em 0 (mesmo dia). Broadcasted: mesmo valor em
           todas as linhas de uma paciente.
         data_type: int64
 
       - name: tempo_diagnostico
         description: >
-          Dias, no run atual, do início do run (data_solicitacao mais antiga)
-          até o 1º evento que vira DIAGNOSTICO/UNACON (criterio_diagnostico OU
-          fonte = 'SER'). >= 0 por construção; NULL em SUSPEITA. Broadcasted.
+          Dias, na jornada atual, do início da jornada (data_solicitacao mais
+          antiga) até o 1º evento que vira DIAGNOSTICO/UNACON (criterio_diagnostico
+          OU fonte = 'SER'). >= 0 por construção; NULL em SUSPEITA. Broadcasted.
         data_type: int64
 
       - name: tempo_diagnostico_sem_tratamento
         description: >
-          Dias, no run atual, do 1º diagnóstico confirmado (criterio_diagnostico)
+          Dias, na jornada atual, do 1º diagnóstico confirmado (criterio_diagnostico)
           até a 1ª solicitação SER. NULL quando não há diagnóstico em/antes do
           SER — só assume valor para UNACON. Broadcasted.
         data_type: int64

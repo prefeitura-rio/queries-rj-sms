@@ -24,7 +24,7 @@
 
 -- (Sem parâmetro teto_score_apresentacao.) O teto da reescala 0-100 é
 -- computado DINAMICAMENTE como o p95 da distribuição de gravidade_total
--- do run atual — ver CTE teto_apresentacao abaixo. Dispensa
+-- da jornada atual — ver CTE teto_apresentacao abaixo. Dispensa
 -- recalibração manual após mudança de pesos/parâmetros.
 
 -- Sem guard de invariante de ordem: gestante-sem-critério tem termo_max
@@ -158,9 +158,9 @@ with
         group by cpf_particao
     ),
 
-    -- Universo de pacientes do run atual (com OU sem critério ativo).
+    -- Universo de pacientes da jornada atual (com OU sem critério ativo).
     -- Seed do LEFT JOIN abaixo — única via pela qual gestantes-sem-critério
-    -- entram no mart. Fonte: eventos_run_atual (fonte única de "run atual +
+    -- entram no mart. Fonte: eventos_run_atual (fonte única de "jornada atual +
     -- gestante", mesma usada na CTE gestantes de gravidade_instancias), em vez
     -- de reaplicar aqui o filtro qualify run_id = max(run_id).
     universo_pacientes as (

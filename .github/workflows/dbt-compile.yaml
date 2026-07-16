@@ -12,10 +12,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
       with:
         python-version: "<3.14"  # https://github.com/dbt-labs/dbt-core/issues/12098
 
@@ -35,7 +35,7 @@ jobs:
     # Improvement #5: Cache Python dependencies
     # Como não temos um arquivo 'requirements.txt', aqui fazemos cache
     # direto pelo nome dos pacotes que são instalados hardcoded abaixo
-    - uses: actions/cache@v5
+    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
       with:
         path: |
           ~/.cache/pip
@@ -48,7 +48,7 @@ jobs:
       run:  pip install dbt-core dbt-bigquery setuptools
 
     # Cache das dependências do dbt
-    - uses: actions/cache@v5
+    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
       with:
         path: |
           ./dbt_packages
@@ -60,4 +60,6 @@ jobs:
       run:  dbt deps
 
     - name: Compile dbt models
+      env:
+        HASH_SECRET: ${{ secrets.HASH_SECRET }}
       run: dbt compile --profiles-dir . --profile sms --target ci

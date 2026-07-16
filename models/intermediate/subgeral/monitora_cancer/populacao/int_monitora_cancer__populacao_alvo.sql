@@ -16,14 +16,11 @@
 --       documentação completa de cada regra.
 
 with
+    -- Conjunto de CPFs qualificados para o monitoramento. O status da paciente
+    -- NÃO é decidido aqui: ele é derivado da jornada atual em
+    -- int_monitora_cancer__eventos_episodios (onde o run_id existe).
     populacao_interesse as (
-        select
-            paciente_cpf,
-            case
-                when max(case when sistema_origem = 'SER' then 1 else 0 end) = 1 then 'UNACON'
-                when max(cast(criterio_diagnostico as int64)) = 1 then 'DIAGNOSTICO'
-                else 'SUSPEITA'
-            end as status
+        select distinct paciente_cpf
         from {{ ref("mart_monitora_cancer__fatos") }}
         where
             data_solicitacao >= "2025-01-01"
@@ -31,7 +28,6 @@ with
                 criterio_suspeita = true
                 or criterio_diagnostico = true
             )
-        group by paciente_cpf
     ),
 
     gestantes_ativas as (
@@ -42,7 +38,6 @@ with
 
 select
     pop.paciente_cpf,
-    pop.status,
     bcadastro.nome,
 
     -- raça/cor escolhida pela regra de prioridade definida em pacientes_subgeral__dim_paciente:

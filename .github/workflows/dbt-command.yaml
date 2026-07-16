@@ -13,11 +13,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+
+      # Precisamos de origin/master pra calcular o git diff abaixo; mas não é possível
+      # puxar ela junto do checkout acima (vide https://github.com/actions/checkout/issues/329)
+      # Então aqui fazemos um fetch:
+      - name: Fetch origin/master
+        run: git fetch origin master:master --depth=1
 
       - name: Get changed files
         id: files
-        uses: Ana06/get-changed-files@v2.3.0
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD | xargs)
+          echo "all=$FILES" >> $GITHUB_OUTPUT
 
       - name: Create DBT Run Command
         id: create-dbtrun-command
@@ -28,14 +36,14 @@ jobs:
           GITHUB_OUTPUT: $GITHUB_ENV
 
       - name: Delete previous comments
-        uses: izhangzhihao/delete-comment@master
+        uses: izhangzhihao/delete-comment@d075704468e1cf74e60944d9f335351213c34d85  # sem versão
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           delete_user_name: github-actions[bot]
           issue_number: ${{ github.event.number }}
 
       - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v3
+        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59  # v3.12.0
         with:
-          file-path: ./message.txt
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          message-path: ./message.txt
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

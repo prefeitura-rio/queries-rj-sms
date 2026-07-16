@@ -2,8 +2,7 @@
     config(
         alias="estabelecimento",
         materialized="incremental",
-        unique_key="gid",
-        tags=["every_30_min"],
+        unique_key="gid"
     )
 }}
 

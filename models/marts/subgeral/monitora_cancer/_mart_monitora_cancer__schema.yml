@@ -204,7 +204,7 @@ models:
       0-100 da fila de urgência, vindo de mart_monitora_cancer__gravidade),
       tempo total (dias até a UNACON para pacientes com SER, ou dias
       desde o início da última sequência de eventos para pacientes sem SER)
-      e os tempos da linha de cuidado medidos no run atual (tempo_diagnostico
+      e os tempos da linha de cuidado medidos na jornada atual (tempo_diagnostico
       e tempo_diagnostico_sem_tratamento).
       Granularidade: 1 linha por paciente (cpf_particao).
     meta:
@@ -265,11 +265,13 @@ models:
       # ── qualificadores clínicos ───────────────────────────────────────────────
       - name: status
         description: >
-          Classificação da paciente no monitoramento, calculada sobre os eventos que
-          qualificaram a paciente para o monitoramento (data_solicitacao >= 2025-01-01
-          com criterio_suspeita ou criterio_diagnostico):
-          "UNACON" quando há pelo menos um evento vindo do SER (regulação para oncologia);
-          "DIAGNOSTICO" quando há evento com critério de diagnóstico confirmado;
+          Classificação da paciente no monitoramento, calculada APENAS sobre os
+          eventos da jornada atual (jornada_id = max, a sequência de eventos mais
+          recente) — eventos de jornadas antigas não influenciam o status:
+          "UNACON" quando há pelo menos um evento vindo do SER (regulação para oncologia)
+          na jornada atual;
+          "DIAGNOSTICO" quando há evento com critério de diagnóstico confirmado
+          na jornada atual;
           "SUSPEITA" nos demais casos da população-alvo.
 
       - name: gravidade_score
@@ -285,11 +287,11 @@ models:
 
       - name: tempo_diagnostico
         description: >
-          Tempo, em dias, do início do run atual (último episódio, gaps <= 180
-          dias) até a paciente passar a DIAGNOSTICO ou UNACON — 1º evento do run
-          com diagnóstico confirmado (criterio_diagnostico) ou entrada no SER.
-          Preenchido só para quem atinge esse status no run atual; NULL em
-          SUSPEITA. Calculado em int_monitora_cancer__eventos_episodios.
+          Tempo, em dias, do início da jornada atual (a sequência de eventos mais
+          recente, gaps <= 180 dias) até a paciente passar a DIAGNOSTICO ou UNACON
+          — 1º evento da jornada com diagnóstico confirmado (criterio_diagnostico)
+          ou entrada no SER. Preenchido só para quem atinge esse status na jornada
+          atual; NULL em SUSPEITA. Calculado em int_monitora_cancer__eventos_episodios.
         data_tests:
           - dbt_utils.accepted_range:
               min_value: 0
@@ -297,7 +299,7 @@ models:
 
       - name: tempo_diagnostico_sem_tratamento
         description: >
-          Tempo, em dias, no run atual, entre o diagnóstico confirmado
+          Tempo, em dias, na jornada atual, entre o diagnóstico confirmado
           (criterio_diagnostico) e a 1ª solicitação SER — proxy do tempo
           diagnosticada sem encaminhamento para tratamento. Preenchido só para
           UNACON com diagnóstico em/antes do SER; NULL nos demais casos.
@@ -360,10 +362,10 @@ models:
           resultado) em formato date e string, resultados dos exames das mamas,
           severidades de atraso, score de risco (float64) normalizado por sistema,
           o intervalo em dias até o próximo evento (dias_proximo_evento) e o
-          identificador do episódio (jornada_id) ao qual o evento pertence —
-          episódios são sequências consecutivas de eventos cujos gaps entre
-          data_referencia_evento não excedem 180 dias; o id incrementa a cada
-          gap maior, dentro de um mesmo paciente.
+          identificador da jornada de cuidado (jornada_id) ao qual o evento
+          pertence — jornadas são sequências consecutivas de eventos cujos gaps
+          entre data_referencia_evento não excedem 180 dias; o id incrementa a
+          cada gap maior, dentro de um mesmo paciente.
 
       - name: eventos.fonte
         description: Sistema de origem do evento (SISREG, SER ou SISCAN).
@@ -477,10 +479,10 @@ models:
 
       - name: eventos.jornada_id
         description: >
-          Identificador do episódio de cuidado (jornada) ao qual o evento
-          pertence. Episódios são sequências consecutivas de eventos da mesma
-          paciente cujo intervalo entre datas de referência não excede 180
-          dias; o id incrementa a cada gap maior, reiniciando por paciente.
+          Identificador da jornada de cuidado ao qual o evento pertence.
+          Jornadas são sequências consecutivas de eventos da mesma paciente
+          cujo intervalo entre datas de referência não excede 180 dias; o id
+          incrementa a cada gap maior, reiniciando por paciente.
 
       # ── pendências atuais ─────────────────────────────────────────────────────
       - name: pendencia_atual

@@ -171,7 +171,7 @@ Sistemas mencionados nos critérios:
 | Arquivo | Para que serve |
 |---|---|
 | `criterios/int_monitora_cancer__criterio_N_*.sql` (×7) | um arquivo por critério, ephemeral: define gatilho/desfecho (cross-evento) ou `source_filter` (intra-evento) e emite a relação canônica bruta de 8 colunas. Passo a passo em [`criterios/README.md`](criterios/README.md). |
-| `int_monitora_cancer__eventos_run_atual.sql` | ephemeral, fonte única compartilhada do run atual de cada paciente (com `data_expected` pré-calculada), consumida pelos 7 critérios e pela CTE de gestante. |
+| `int_monitora_cancer__eventos_run_atual.sql` | ephemeral, fonte única compartilhada da jornada atual de cada paciente (com `data_expected` pré-calculada), consumida pelos 7 critérios e pela CTE de gestante. |
 | `int_monitora_cancer__gravidade_instancias.sql` | agregador: `UNION ALL` dos 7 critérios, aplica `fator_tempo`/`fator_risco`/`gravidade_criterio`, JOIN de gestante e filtro `dias_atraso > 0` (1 linha por critério ativo). |
 | `int_monitora_cancer__gravidade.sql` | colapso MAX por critério, agregação por paciente (`termo_max` + `termo_soma`), multiplicador de gestante e reescala 0-100 com clip dinâmico no p95. |
 | `mart_monitora_cancer__gravidade.sql` | tabela final que alimenta a fila de contato (passthrough do intermediário). |
