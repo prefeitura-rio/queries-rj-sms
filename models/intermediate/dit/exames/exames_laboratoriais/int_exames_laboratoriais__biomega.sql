@@ -4,6 +4,7 @@
         alias="biomega",
         materialized="table",
         tags=["exames_laboratoriais"],
+        meta = {"owner": "daniel", "team": "cit"}
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -88,6 +89,8 @@ with
   exames_laboratoriais as (
     select
       es.cnes as id_cnes,
+      so.id as id_solicitacao_fonte,
+      ex.id as id_exame_fonte,
       {{ dbt_utils.generate_surrogate_key(['so.id']) }} as id_solicitacao,
       {{ dbt_utils.generate_surrogate_key(['so.id', 'ex.id']) }} as id_exame,
       es.nome_padronizado as unidade_nome,
