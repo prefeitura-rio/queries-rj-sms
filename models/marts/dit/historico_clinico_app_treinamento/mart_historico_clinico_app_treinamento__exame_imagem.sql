@@ -13,7 +13,7 @@
 
 select
     '2277271' as unidade_cnes,
-    'INST DE MEDICINA VETERINARIA JORGE VAITSMAN' as unidade_nome,
+    'CENTRO CARIOCA DE DIAGNOSTICO E TRAT POR IMAGEM' as unidade_nome,
 
     '42298037299' as paciente_cpf,
 
@@ -22,7 +22,7 @@ select
 
     '000001-001' as id_exame,
     '1' as id_laudo,
-    'gs://medilab_laudos/mock/tc-sela-turcica.pdf' as laudo_bucket,
+    'gs://medilab_laudos/mock/mock-medilab.pdf' as laudo_bucket,
 
     cast('2025-10-01' as DATE) as exame_data,
     cast('2025-10-05T12:34:56.0000' as DATETIME) as laudo_data_atualizacao,

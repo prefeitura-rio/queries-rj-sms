@@ -13,7 +13,7 @@
 
 select
     '0123456789abcdeffedcba9876543210' as id_hci,
-    'Inst de Medicina Veterinária Jorge Vaitsman' as estabelecimento,
+    'CMS Parque Uniao' as estabelecimento,
 
     'Ingrid Dahl Christensen' as profissional_nome,
     'Especialista Meridional' as profissional_cargo,
