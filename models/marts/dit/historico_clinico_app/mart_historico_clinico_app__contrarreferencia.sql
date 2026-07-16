@@ -57,7 +57,63 @@ with source as (
     safe_cast(cr.paciente.cpf as int64) as cpf_particao
 
   from {{ ref("mart_historico_clinico__contrarreferencia") }} as cr
+),
+suspeita_hiv as (
+  select *
+  from source
+  where 1=1
+  {% for field in [
+    "conduta", "seguimento",
+    "resumo", "historia_doenca_atual",
+    "hipotese_diagnostica"
+  ] %}
+  and not ifnull(
+    -- Encontra casos com menção a HIV/termos correlatos
+    regexp_contains(
+      lower({{ field }}),
+      -- CID10 B20-B24
+      -- HIV/AIDS
+      -- Imunodeficiência
+      r"\b(b2[0-4][\s\-\.]*[0-9]?|hiv|aids|imuno[\s\-]*defici[eê]ncia)\b"
+    )
+    -- ...exceto se também tiverem menção a teste negativo/não reagente:
+    -- - teste rápido xx/24: hiv neg; sifilis neg; anti hcv neg; hbsag neg
+    -- - lab xx/28: hbsag neg; hcv tr neg; hiv neg; vdrl neg
+    -- - .../ anti-hcv: não reagente/ anti-hiv: não reagente/ hbsg: não reagente/...
+    and not regexp_contains(
+      lower({{ field }}),
+      r"\b(anti[\s\-]*)?hiv[\s\-\:]*\b(neg|nega\s*tivos?|n([aã]o)?[\s\-]*rea?gentes?|nr)\b"
+    )
+    -- - teste rapido hiv hep b hep c sifilis nega tivos xxx 23
+    -- - teste rapido (xx/xx/2023): hiv/ sifilis/ hepatite b,c: não reagentes
+    and not regexp_contains(
+      lower({{ field }}),
+      r"\b(testes?\s*r[aá]pidos|tr)?.{0,50}hiv.{0,50}\b(neg|nega\s*tivos?|n([aã]o)?[\s\-]*re?agentes?|nr)\b"
+    )
+    -- - teste rápido (xx/2023): negativo para hiv, sífilis, hep b e c
+    -- - testes rapidos negativos para hep b e c , sifilis e hiv
+    and not regexp_contains(
+      lower({{ field }}),
+      r"\b(testes?\s*r[aá]pidos|tr)?.{0,50}\b(neg|nega\s*tivos?|n([aã]o)?[\s\-]*rea?gentes?|nr)\b\s*(p|pra|para)?\b.{0,50}hiv\b"
+    )
+    -- - sorologias negativas para hiv, hepatite b e c
+    -- ...ou pedidos ainda não realizados:
+    -- - cd: 1- solicito lac c/ sorologias virais hiv + hepatites;
+    and not regexp_contains(
+      lower({{ field }}),
+      r"\bsorologias?(\s*vira(l|is))?(\s*negativas?)?(\s*(p|pra|para))?\s*hiv\b"
+    )
+    -- - necessita: lab anti-hiv
+    and not regexp_contains(
+      lower({{ field }}),
+      r"\b(necessita|aguard(o|ando)|solicit(o|ar?|ados?))([:,\s\-]|(incluindo|novamente|de\s*novo|lab))*\b(anti[\s\-]*)?hiv\b"
+    ),
+    -- ifnull(..., false); se o campo é nulo, queremos que
+    -- ele seja `false` = não tem referência a HIV
+    false
+  )
+  {% endfor %}
 )
 
 select *
-from source
+from suspeita_hiv
