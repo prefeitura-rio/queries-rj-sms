@@ -150,3 +150,25 @@ models:
         description: >
           Data de particao herdada da fonte ou derivada do evento. O modelo incremental particiona
           por este campo e tambem aplica janela incremental de reprocessamento nas fontes.
+
+  - name: int_historico_clinico__gestacoes__eventos_inicio_fim
+    description: >
+      Modelo intermediario com eventos de inicio_gestacao e fim_gestacao. Consolida evidencias de
+      CIDs gestacionais nas condicoes do episodio assistencial e evidencias de inicio de gestacao
+      por pre-natal da Vitacare.
+
+  - name: int_historico_clinico__gestacoes__eventos_parto
+    description: >
+      Modelo intermediario com eventos de parto. Consolida evidencias de nascimento, data de parto,
+      procedimento obstetrico, CID de parto e texto de procedimento classificado como parto.
+
+  - name: int_historico_clinico__gestacoes__eventos_aborto
+    description: >
+      Modelo intermediario com eventos de aborto. Consolida evidencias de registro estruturado,
+      desfecho gestacional, CID O00-O08, procedimento SIGTAP e texto de procedimento classificado
+      como aborto.
+
+  - name: int_historico_clinico__gestacoes__eventos_puerperio
+    description: >
+      Modelo intermediario com eventos de avaliacao_puerperal. Consolida evidencias de registro
+      puerperal estruturado, flag puerpera e procedimentos/textos compativeis com puerperio.
