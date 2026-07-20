@@ -503,13 +503,35 @@ WITH
             {% endif %}
     ),
 
+-- ProntuaRio: identifica o CID obstetrico que disparou a regra de parto
+    prontuario_altas_cid_parto AS (
+        SELECT
+            *,
+            CASE
+                WHEN REGEXP_CONTAINS(COALESCE(codigo_cid10, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
+                    THEN codigo_cid10
+                WHEN REGEXP_CONTAINS(COALESCE(codigo_cid10_secundario, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
+                    THEN codigo_cid10_secundario
+            END AS cid_parto
+        FROM {{ ref("raw_prontuario_prontuaRio__internacao_alta") }}
+        WHERE
+            alta_data IS NOT NULL
+            {% if is_incremental() %}
+                AND data_particao >= {{ janela_incremental }}
+            {% endif %}
+            AND (
+                REGEXP_CONTAINS(COALESCE(codigo_cid10, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
+                OR REGEXP_CONTAINS(COALESCE(codigo_cid10_secundario, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
+            )
+    ),
+
 -- ProntuaRio: usa alta + CID de parto/puerperio como evidencia indireta
     eventos_prontuario_cid AS (
         SELECT
             {{ dbt_utils.generate_surrogate_key([
                 "'prontuaRio'",
                 "CAST(gid_prontuario AS STRING)",
-                "COALESCE(codigo_cid10, codigo_cid10_secundario)",
+                "cid_parto",
                 "CAST(alta_data AS STRING)"
             ]) }} AS id_evento_obstetrico,
             CAST(NULL AS STRING) AS id_paciente,
@@ -526,21 +548,12 @@ WITH
             CAST(NULL AS DATE) AS data_puerperio,
             CAST(NULL AS DATE) AS dpp,
             CAST(NULL AS INT64) AS idade_gestacional_dias,
-            COALESCE(codigo_cid10, codigo_cid10_secundario) AS cid,
+            cid_parto AS cid,
             CAST(NULL AS STRING) AS procedimento_codigo,
             CAST(NULL AS STRING) AS procedimento_descricao,
             CAST(loaded_at AS DATETIME) AS loaded_at,
             data_particao
-        FROM {{ ref("raw_prontuario_prontuaRio__internacao_alta") }}
-        WHERE
-            alta_data IS NOT NULL
-            {% if is_incremental() %}
-                AND data_particao >= {{ janela_incremental }}
-            {% endif %}
-            AND (
-                REGEXP_CONTAINS(COALESCE(codigo_cid10, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
-                OR REGEXP_CONTAINS(COALESCE(codigo_cid10_secundario, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
-            )
+        FROM prontuario_altas_cid_parto
     ),
 
 -- ProntuaRio: usa alta + procedimento descrito como parto; exclui aborto/intercorrencia
