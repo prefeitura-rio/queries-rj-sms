@@ -529,7 +529,7 @@ WITH
             ON LPAD(CAST(proc.codigo_procedimento AS STRING), 10, '0') = p.codigo_procedimento
         WHERE
             proc.codigo_procedimento IS NOT NULL
-            AND TRIM(CAST(proc.codigo_procedimento AS STRING)) NOT IN ('', '0', '00', '000', '0000', '000000', '0000000000')
+            AND LPAD(TRIM(CAST(proc.codigo_procedimento AS STRING)), 10, '0') != '0000000000'
             {% if is_incremental() %}
                 AND ia.data_particao >= {{ janela_incremental }}
             {% endif %}
