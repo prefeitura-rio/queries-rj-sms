@@ -38,7 +38,8 @@ WITH
         FROM eventos
         WHERE
             data_evento IS NOT NULL
-            AND data_evento BETWEEN DATE '1900-01-01' AND CURRENT_DATE('America/Sao_Paulo')
+            AND data_evento > DATE '1900-01-01'
+            AND data_evento <= CURRENT_DATE('America/Sao_Paulo')
         QUALIFY ROW_NUMBER() OVER (
             PARTITION BY id_evento_obstetrico
             ORDER BY loaded_at DESC, data_particao DESC

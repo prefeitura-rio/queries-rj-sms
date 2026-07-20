@@ -343,10 +343,10 @@ WITH
                     WHEN (
                         REGEXP_CONTAINS(
                             UPPER(procedimentos_realizados),
-                            r'ABORT|AMIU|ESVAZIAMENTO DE UTERO POS-ABORTO'
+                            r'\bABORT[A-Z]*\b|\bAMIU\b|ESVAZIAMENTO\s+DE\s+UTERO\s+POS-ABORTO'
                         )
                         OR (
-                            REGEXP_CONTAINS(UPPER(procedimentos_realizados), r'CURETAGEM|WINTERCURETAGEM')
+                            REGEXP_CONTAINS(UPPER(procedimentos_realizados), r'\bCURETAGEM\b|\bWINTERCURETAGEM\b')
                             AND NOT REGEXP_CONTAINS(
                                 UPPER(procedimentos_realizados),
                                 r'PARTO\s+(NORMAL|VAGINAL|CES|CESAR|CESARE|CESARI|PRETERMO)|OPERACAO\s+CESARIANA|CESARIANA|CESAREANA|CESAREO|CESAREA|CESARIA|CESAREANO|FORCEPS'
@@ -479,7 +479,8 @@ WITH
         FROM eventos
         WHERE
             data_evento IS NOT NULL
-            AND data_evento BETWEEN DATE '1900-01-01' AND CURRENT_DATE('America/Sao_Paulo')
+            AND data_evento > DATE '1900-01-01'
+            AND data_evento <= CURRENT_DATE('America/Sao_Paulo')
         QUALIFY ROW_NUMBER() OVER (
             PARTITION BY id_evento_obstetrico
             ORDER BY loaded_at DESC, data_particao DESC
