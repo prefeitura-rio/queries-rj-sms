@@ -3,7 +3,7 @@
     schema = "projeto_aps_reports",
     alias = "indicadores_acesso_aps",
     unique_key = "data_referencia",
-    meta={"owner": "karen"}
+    meta={"owner": "karen", "team": "subgeral"}
 ) }}
 
 -- Seleciona tipos de atendimento com pelo menos 30% realizados por médicos (CBO 225 ou 2231)
