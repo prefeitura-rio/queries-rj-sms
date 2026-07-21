@@ -3,7 +3,7 @@
         alias="indicadores_cg_variavel_1",
         materialized="incremental",
         unique_key="id_surrogate",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy="merge",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
