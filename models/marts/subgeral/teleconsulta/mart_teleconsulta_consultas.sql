@@ -161,11 +161,12 @@ with
                 nome, cpf, cns, data_nascimento,
                 id_agendamento, id_atendimento,
                 motivo, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
-            )
-        from enriquecimento
+            ), 
 
-    -- Restringe a granularidade da data de nascimento para preservar a privacidade
-        FORMAT_DATE('%Y-%m', data_nascimento) AS mes_ano_nascimento
+            -- Restringe a granularidade da data de nascimento para preservar a privacidade
+            FORMAT_DATE('%Y-%m', data_nascimento) AS mes_ano_nascimento
+
+        from enriquecimento
     )
 select *
 from anonimizacao
