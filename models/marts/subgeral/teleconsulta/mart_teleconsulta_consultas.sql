@@ -40,8 +40,9 @@ with
             age.id_cnes,
 
             upper(cad.nome) as nome,
-            cad.cpf,
+            cad.cpf, 
             cad.cns,
+            cad.data_nascimento,
             cad.sexo,
             cad.raca_cor,
             cad.bairro as bairro_residencia,
@@ -86,6 +87,7 @@ with
             upper(cad.nome) as nome,
             cad.cpf,
             cad.cns,
+            cad.data_nascimento,
             cad.sexo,
             cad.raca_cor,
             cad.bairro as bairro_residencia,
@@ -123,7 +125,7 @@ with
     ),
     juncao as (
         select 
-            id_agendamento, id_atendimento, id_cnes, nome, cpf, cns, sexo, raca_cor, 
+            id_agendamento, id_atendimento, id_cnes, nome, cpf, cns, data_nascimento, sexo, raca_cor, 
             bairro_residencia, id_unidade_referencia, equipe, ine_equipe, 
             profissional_nome, profissional_cbo, profissional_cbo_descricao, profissional_equipe_nome, profissional_equipe_cod_ine,
             tipo_consulta, dthr_marcacao, dthr_inicio_atendimento, dthr_fim_atendimento, 
@@ -133,7 +135,7 @@ with
         union all
 
         select 
-            id_agendamento, id_atendimento, id_cnes, nome, cpf, cns, sexo, raca_cor, 
+            id_agendamento, id_atendimento, id_cnes, nome, cpf, cns, data_nascimento, sexo, raca_cor, 
             bairro_residencia, id_unidade_referencia, equipe, ine_equipe, 
             profissional_nome, profissional_cbo, profissional_cbo_descricao, profissional_equipe_nome, profissional_equipe_cod_ine,
             tipo_consulta, dthr_marcacao, dthr_inicio_atendimento, dthr_fim_atendimento, 
@@ -156,11 +158,14 @@ with
     anonimizacao as (
         select
             * except (
-                nome, cpf, cns, 
+                nome, cpf, cns, data_nascimento,
                 id_agendamento, id_atendimento,
                 motivo, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
             )
         from enriquecimento
+
+    -- Restringe a granularidade da data de nascimento para preservar a privacidade
+        FORMAT_DATE('%Y-%m', data_nascimento) AS mes_ano_nascimento
     )
 select *
 from anonimizacao
