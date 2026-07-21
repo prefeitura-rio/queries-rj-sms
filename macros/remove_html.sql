@@ -6,6 +6,7 @@
     {% set tags = {
         '<p>':'',       '</p>':'',
         '<div>':'',     '</div>':'',
+        '<h2>':'',      '</h2>':'',
         '<h3>':'',      '</h3>':'\\n',
         '<b>':'',       '</b>':'',
         '<strong>':'',  '</strong>':'',
@@ -19,7 +20,6 @@
         '<li>':'- ',    '</li>':'\\n',
         '<ul>':'\\n',   '</ul>':'\\n',
         '<ol>':'\\n',   '</ol>':'\\n',
-
     } %}
 
     {% for tag, value in tags.items() %}
@@ -28,11 +28,7 @@
 
     -- tags com atributos
     {% set patterns = {
-        '<a\s+[^>]*>': '', '</a>': '',
-        '<div\s+[^>]*>': '', '</div>': '',
-        '<p\s+align="[^"]*">': '',
-        '<img\s+[^>]*>': '',
-        '</?(table|tbody|tr|td)\b[^>]*>': '',
+        '</?(a|b|p|h1|h2|h3|h4|h5|h6|em|div|img|span|strong|table|tbody|tr|td)\b[^>]*>': '',
     } %}
 
     {% for pattern, replacement in patterns.items() %}
