@@ -144,10 +144,19 @@ with
             gid_boletim,
             array_agg(
                 struct(
-                    upper({{ remove_html("lower(nome)") }}) as nome,
+                    -- Alguns `nome`s e `uso`s vêm com tags HTML
+                    -- ex.: `<SPAN STYLE="COLOR: WHITE; ...">ALTA VIGILÂNCIA</SPAN>`
+                    upper(trim({{ remove_html("lower(nome)") }})) as nome,
                     quantidade,
                     unidade_medida,
-                    upper({{ remove_html("lower(uso)") }}) as uso,
+                    upper(trim(
+                        regexp_replace(
+                            {{ remove_html("lower(uso)") }},
+                            -- `uso` também tem uma tag não-fechada, "<SPAN ..."
+                            r"</?span[^>]*(>|$)",
+                            ""
+                        )
+                    )) as uso,
                     via_administracao,
                     {{ parse_and_filter_future_date('data_prescricao') }} as prescricao_data
                 )
