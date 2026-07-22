@@ -22,6 +22,7 @@ with
     alta_adm as ( -- Alta administrativa (consultas)
         select
             gid_boletim,
+            alta_data,
             CASE
                 WHEN
                     {{ process_null("alta_tipo_detalhado") }} is null and {{clean_abe_obs('abe_obs')}} is null THEN null 
@@ -92,7 +93,11 @@ with
             b.imported_at,
             b.updated_at,
             {{ parse_and_filter_future_datetime('b.data_entrada') }} as entrada_datahora,
-            {{ parse_and_filter_future_datetime('b.alta_data') }} as saida_datahora,
+            coalesce(
+                b.alta_data,
+                aa.alta_data,
+                ai.resumo_alta_datahora
+            ) as saida_datahora,
             if(
                 {{ process_null(clean_numeric("b.cpf")) }} is null,
                 {{ process_null(clean_numeric("paciente_mrg.cpf")) }},
@@ -102,6 +107,8 @@ with
             paciente_mrg.data_nascimento
         from {{ ref("raw_prontuario_vitai__boletim") }} as b
         left join paciente_mrg on b.gid_paciente = paciente_mrg.id_paciente
+        left join alta_adm aa on b.gid = aa.gid_boletim
+        left join alta_internacao ai on b.gid = ai.gid_boletim
     ),
     -- Profissional com nome próprio tratado
     profissional_int as (
@@ -535,8 +542,8 @@ with
             exames_realizados,
 
             -- Entrada e Saída
-            atendimento_struct.entrada_datahora as entrada_datahora,
-            atendimento_struct.saida_datahora as saida_datahora,
+            {{ parse_and_filter_future_datetime('atendimento_struct.entrada_datahora') }} as entrada_datahora,
+            {{ parse_and_filter_future_datetime('atendimento_struct.saida_datahora') }} as saida_datahora,
 
             -- Motivo e Desfecho
             safe_cast(
