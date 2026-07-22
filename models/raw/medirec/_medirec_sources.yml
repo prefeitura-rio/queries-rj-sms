@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: brutos_medirec_staging
+    database: rj-sms
+    schema: brutos_medirec_staging
+    tables:
+    - name: cielab_exams_sms
+    - name: cielab_sectionitems_sms
