@@ -92,7 +92,7 @@ with
             internacao_data,
             b.imported_at,
             b.updated_at,
-            {{ parse_and_filter_future_datetime('b.data_entrada') }} as entrada_datahora,
+            b.data_entrada as entrada_datahora,
             coalesce(
                 b.alta_data,
                 aa.alta_data,
