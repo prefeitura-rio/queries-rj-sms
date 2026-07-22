@@ -771,6 +771,8 @@ models:
             dado_sensivel: sim
             dominio: cie
       dit:
+        +meta:
+          team: cit
         dashboard_ingestao_vitacare:
           +schema: relatorio_ingestao_vitacare
           +tags: ["daily", "vitacare", "ingestao"]
