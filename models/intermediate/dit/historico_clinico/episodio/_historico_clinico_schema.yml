@@ -197,12 +197,14 @@ models:
       - name: metadados.imported_at
         description: |
           Data de importação do registro.
-      - name: data_particao
+      - name: mes_particao
         description: >
-          Campo utilizado para particionamento de dados através da data do evento.
+          Mês do evento (data de entrada ou, caso nula, de saída)
+          usado para particionamento dos dados.
       - name: cpf_particao
         description: >
-          Campo utilizado para particionamento de dados através do CPF. Valor representado em inteiro.
+          CPF convertido para número inteiro, usado para particionamento
+          dos dados em camadas seguintes.
         policy_tags:
           - '{{ var ("TAG_CPF") }}'
 

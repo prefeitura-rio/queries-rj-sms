@@ -96,3 +96,7 @@ models:
       - name: data_particao
         description: "Data de particionamento do evento."
         data_type: date
+
+      - name: mes_particao
+        description: "Mês de particionamento do evento."
+        data_type: date
