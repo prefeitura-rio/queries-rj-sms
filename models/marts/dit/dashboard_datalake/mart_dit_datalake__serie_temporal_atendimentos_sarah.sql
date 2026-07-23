@@ -17,7 +17,7 @@
 
 select
   {{ parse_and_filter_future_date('datahora_entrada') }} as data_registro,
-  count(atendimento_numero) as atendimento
+  count(atendimento_numero) as atendimentos
 from {{ ref('raw_prontuario_sarah__atendimento') }}
 {% if is_incremental() %}
     where {{ parse_and_filter_future_date('datahora_entrada') }} >= date('{{ last_partition }}')
