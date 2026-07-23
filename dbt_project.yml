@@ -789,7 +789,10 @@ models:
             dado_sensivel: sim
         dashboard_datalake:
           +schema: dashboard_datalake
-          +tags: ["daily", "datalake"]
+          +tags: ["daily", "dashboard_monitoramento"]
+          +meta:
+            owners: ['herian', 'daniel']
+            team: ['cit']
           +labels:
             dado_publico: nao
             dado_pessoal: nao

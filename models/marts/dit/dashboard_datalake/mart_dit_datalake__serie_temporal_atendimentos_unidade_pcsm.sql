@@ -9,8 +9,7 @@
             "granularity": "day"
         },
         unique_key=['cnes', 'data_registro'],
-        description='Série temporal de atendimentos por data de entrada no prontuário do PCSM, segmentada por unidade de saúde',
-        tags=['datalake']
+        description='Série temporal de atendimentos por data de entrada no prontuário do PCSM, segmentada por unidade de saúde'
     )
 }}
 
