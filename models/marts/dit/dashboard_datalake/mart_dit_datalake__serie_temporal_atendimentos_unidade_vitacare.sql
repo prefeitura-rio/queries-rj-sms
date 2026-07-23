@@ -23,7 +23,7 @@ with
         {{ parse_and_filter_future_date('datahora_inicio')}} as data_registro,
         cnes_unidade as id_cnes,
         count(id_prontuario_global) as atendimentos
-        from `rj-sms.brutos_prontuario_vitacare.atendimento` 
+        from {{ref('raw_prontuario_vitacare__atendimento')}}
         {% if is_incremental() %}
             where {{ parse_and_filter_future_date('datahora_inicio') }} >= date('{{ last_partition }}')
         {% endif %}
