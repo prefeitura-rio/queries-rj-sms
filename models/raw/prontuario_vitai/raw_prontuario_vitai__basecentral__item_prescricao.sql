@@ -4,7 +4,7 @@
         materialized="incremental",
         unique_key="gid",
         partition_by={
-            "field": "mes_particao",
+            "field": "data_particao",
             "data_type": "date",
             "granularity": "month"
         },
