@@ -11,7 +11,6 @@
         cluster_by=['data_registro'],
         unique_key=['cnes', 'data_registro'],
         description='Série temporal de atendimentos por data de entrada no prontuário Sarah, segmentada por unidade de saúde',
-        tags=['datalake']
     )
 }}
 
@@ -25,10 +24,10 @@ with
         {{ parse_and_filter_future_date('datahora_entrada') }} as data_registro,
         count(distinct atendimento_numero) as atendimentos
       from {{ ref('raw_prontuario_sarah__atendimento') }}
-      group by 1,2
       {% if is_incremental() %}
           where {{ parse_and_filter_future_date('datahora_entrada') }} >= date('{{ last_partition }}')
       {% endif %}
+      group by 1,2
     ),
 
     estabelecimentos as (

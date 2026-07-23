@@ -9,8 +9,7 @@
             "granularity": "day"
         },
         unique_key=['cnes', 'data_registro'],
-        description='Série temporal de atendimentos por data de entrada no prontuário ProntuaRio, segmentada por unidade de saúde',
-        tags=['datalake']
+        description='Série temporal de atendimentos por data de entrada no prontuário ProntuaRio, segmentada por unidade de saúde'
     )
 }}
 
@@ -27,10 +26,10 @@ with
         {{ parse_and_filter_future_date('registro_data') }} as data_registro,
         count(distinct gid_prontuario) as atendimentos
       from {{ ref('raw_prontuario_prontuaRio__evolucao') }}
-      group by 1,2
       {% if is_incremental() %}
           where {{ parse_and_filter_future_date('registro_data') }} >= date('{{ last_partition }}')
       {% endif %}
+      group by 1,2
     ),
 
     estabelecimentos as (

@@ -9,8 +9,7 @@
             "granularity": "month"
         },
         unique_key=['data_registro'],
-        description='Série temporal de atendimentos por data de entrada no prontuário Sarah',
-        tags=['datalake']
+        description='Série temporal de atendimentos por data de entrada no prontuário Sarah'
     )
 }}
 
@@ -21,6 +20,6 @@ select
   count(atendimento_numero) as atendimento
 from {{ ref('raw_prontuario_sarah__atendimento') }}
 {% if is_incremental() %}
-    where {{ parse_and_filter_future_date('data_entrada') }} >= date('{{ last_partition }}')
+    where {{ parse_and_filter_future_date('datahora_entrada') }} >= date('{{ last_partition }}')
 {% endif %}
 group by 1

@@ -9,8 +9,7 @@
             "granularity": "month"
         },
         unique_key=['cnes', 'nome', 'data_registro'],
-        description='Série temporal de atendimentos por data de entrada no prontuário Vitai, segmentada por unidade de saúde',
-        tags=['datalake'],
+        description='Série temporal de atendimentos por data de entrada no prontuário Vitai, segmentada por unidade de saúde'
     )
 }}
 
