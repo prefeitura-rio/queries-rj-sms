@@ -410,9 +410,6 @@ with
                 'vitacare' as fornecedor
             ) as prontuario,
 
-            -- Origem
-            atendimento.origem,
-
             -- Metadados
             struct(
                 updated_at, loaded_at as imported_at, datetime(current_timestamp(),'America/Sao_Paulo') as processed_at
