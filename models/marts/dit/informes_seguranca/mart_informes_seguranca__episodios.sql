@@ -40,9 +40,9 @@ with
       metadados,
       cpf_particao,
     from {{ ref("int_historico_clinico__episodio__vitai") }}
-    where mes_particao >= '2025-01-01'
+    where data_particao >= '2025-01-01'
     {% if is_incremental() %}
-      and date(metadados.imported_at) > (select max(mes_particao) from {{ this }})
+      and date(metadados.imported_at) > (select max(data_particao) from {{ this }})
     {% endif %}
 
     union all

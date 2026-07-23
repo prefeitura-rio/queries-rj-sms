@@ -4,7 +4,7 @@
         materialized="incremental",
         unique_key="gid",
         partition_by={
-            "field": "mes_particao",
+            "field": "data_particao",
             "data_type": "date",
             "granularity": "month"
         },
@@ -15,9 +15,7 @@
 {% set seven_days_ago = (
     modules.datetime.date.today() - modules.datetime.timedelta(days=7)
 ).isoformat() %}
-{% set last_month = (
-    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
-).replace(day=1).isoformat() %}
+
 
 with
     -- Seleciona eventos dos últimos 7 dias se for uma execução incremental
@@ -25,8 +23,7 @@ with
         select *
         from {{ source("brutos_prontuario_vitai_staging", "basecentral__item_prescricao_eventos") }}
         {% if is_incremental() %}
-            where mes_particao >= '{{ last_month }}'
-                and data_particao > '{{ seven_days_ago }}'
+            where data_particao > '{{ seven_days_ago }}'
         {% endif %}
     ),
 
@@ -78,10 +75,6 @@ select
     timestamp_add(datetime(timestamp({{process_null('created_at')}}), 'America/Sao_Paulo'),interval 3 hour) as centralized_at,
     datetime(timestamp({{ process_null('datalake_loaded_at')}}), 'America/Sao_Paulo') as loaded_at,
 
-    safe_cast(data_particao as date) as data_particao,
-    date_trunc(
-        safe_cast(data_particao as date),
-        MONTH
-    ) as mes_particao
+    safe_cast(data_particao as date) as data_particao
 
 from latest_events
