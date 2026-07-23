@@ -24,7 +24,7 @@ with
         count(id_atendimento) as atendimentos
       from {{ ref('raw_prontuario_mv__atendimento') }}
       {% if is_incremental() %}
-          where cast(atendimento_datahora as date) >= date('{{ last_partition }}')
+          where {{ parse_and_filter_future_date('atendimento_datahora') }} >= date('{{ last_partition }}')
       {% endif %}
       group by 1,2
     ),
