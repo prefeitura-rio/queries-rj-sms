@@ -9,7 +9,7 @@
         partition_by={
             "field": "data_particao",
             "data_type": "date",
-            "granularity": "day",
+            "granularity": "month",
         },
     )
 }}
@@ -409,6 +409,9 @@ with
                 ) as id_prontuario_local,
                 'vitacare' as fornecedor
             ) as prontuario,
+
+            -- Origem
+            atendimento.origem,
 
             -- Metadados
             struct(
