@@ -17,10 +17,10 @@
 {% set last_partition = get_last_partition_date(this) %}
 
 select 
-    cast(data_entrada as date) as data_registro,
+    {{ parse_and_filter_future_date('data_entrada') }} as data_registro,
     count(gid) as atendimentos
 from {{ ref('raw_prontuario_vitai__boletim') }}
 {% if is_incremental() %}
-    where cast(data_entrada as date) >= date('{{ last_partition }}')
+    where {{ parse_and_filter_future_date('data_entrada') }} >= date('{{ last_partition }}')
 {% endif %}
 group by 1

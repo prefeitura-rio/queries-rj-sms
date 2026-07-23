@@ -22,12 +22,12 @@ with
     atendimento_unidade as(
       select
         id_cnes,
-        date(datahora_entrada) as data_registro,
+        {{ parse_and_filter_future_date('datahora_entrada') }} as data_registro,
         count(distinct atendimento_numero) as atendimentos
       from {{ ref('raw_prontuario_sarah__atendimento') }}
       group by 1,2
       {% if is_incremental() %}
-          where cast(datahora_entrada as date) >= date('{{ last_partition }}')
+          where {{ parse_and_filter_future_date('datahora_entrada') }} >= date('{{ last_partition }}')
       {% endif %}
     ),
 

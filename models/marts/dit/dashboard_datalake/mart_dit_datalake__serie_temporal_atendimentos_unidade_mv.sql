@@ -21,7 +21,7 @@ with
     atendimento_unidade as(
       select
         id_cnes,
-        date(atendimento_datahora) as data_registro,
+        {{ parse_and_filter_future_date('atendimento_datahora') }} as data_registro,
         count(id_atendimento) as atendimentos
       from {{ ref('raw_prontuario_mv__atendimento') }}
       group by 1,2
