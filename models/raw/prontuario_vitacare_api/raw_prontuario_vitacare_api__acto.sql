@@ -10,7 +10,9 @@
   }
 ) }}
 
-{% set last_partition = get_last_partition_date(this) %}
+{% set max_loaded_at %}
+  select max(loaded_at) from {{ this }}
+{% endset %}
 
 with
   bruto_atendimento as (
@@ -24,7 +26,7 @@ with
       data
     from {{ source("brutos_prontuario_vitacare_api_staging", "atendimento_continuo") }}
     {% if is_incremental() %}
-      WHERE DATE(datalake_loaded_at, 'America/Sao_Paulo') >= DATE('{{ last_partition }}')
+      where datalake_loaded_at >= ({{ max_loaded_at }})
     {% endif %}
     qualify row_number() over (partition by id_prontuario_global order by loaded_at desc) = 1
   ),
@@ -58,7 +60,7 @@ with
       safe_cast({{ process_null("json_extract_scalar(data,'$.consulta_realizada')") }} as boolean) as realizado,
       {{ process_null("json_extract_scalar(data,'$.saude_bucal[0].tipo_atendimento')") }} as tipo_atendimento,
       loaded_at,
-      date(datahora_fim_atendimento) as data_particao
+      date(loaded_at) as data_particao
     from bruto_atendimento
   )
 
