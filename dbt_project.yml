@@ -662,6 +662,8 @@ models:
             dado_publico: sim
             dado_pessoal: sim
             dado_sensivel: sim
+        exames:
+          +tags: ["daily", "exames"]
         regulacao:
           +schema: intermediario_regulacao
           +tags: ["sisreg_v2", "daily"]

@@ -603,3 +603,21 @@ models:
       - name: observacoes
         description: Comentários/metadados deixados durante o preenchimento
         data_type: string
+  - name: raw_sheets__unidades_exames_laboratoriais
+    description: >
+      Esta tabela contem o depara de nomes das unidades vindas das fontes cientificalab e biomega
+      Contém o cnes para cruzar com a tabela de estabelecimentos
+    columns:
+      - name: nome_original
+        description: Nome da unidade de origem na tabela de exames laboratoriais (não padronizado)
+        data_type: string
+      - name: nome_padronizado
+        description: Nome da unidade de origem de acordo com o datasus cnes (padronizado)
+        data_type: string
+      - name: cnes
+        description: Código da unidade
+        data_type: string
+      - name: ap
+        description: Area programatica da unidade
+        data_type: string
+        

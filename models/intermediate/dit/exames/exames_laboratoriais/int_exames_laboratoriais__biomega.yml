@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: int_exames_laboratoriais__biomega
+    description: Informações sobre exames laboratoriais originados da Biomega
+    columns:
+      - name: id_cnes
+        description: Código CNES da unidade de saúde
+      - name: id_solicitacao_fonte
+        description: ID da solicitação de exame na tabela de origem
+      - name: id_exame_fonte
+        description: ID do exame na tabela de origem
+      - name: id_solicitacao
+        description: Chave surrogate da solicitação de exame
+      - name: id_exame
+        description: Chave surrogate do exame
+      - name: unidade_nome
+        description: Nome padronizado da unidade de saúde
+      - name: unidade_ap
+        description: Área programática da unidade
+      - name: paciente_nome
+        description: Nome completo do paciente
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_cns
+        description: Código Nacional de Saúde (CNS) do paciente
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_cpf
+        description: CPF do paciente
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_sexo
+        description: Sexo do paciente (masculino/feminino)
+      - name: exame_coleta_datahora
+        description: Data e hora da coleta do exame
+      - name: exame_data
+        description: Data da coleta do exame
+      - name: exame_nome
+        description: Nome do exame
+      - name: exame_codigo
+        description: Código do exame no sistema de apoio
+      - name: exame_tipo
+        description: Tipo do exame
+      - name: exame_metodo
+        description: Método utilizado no exame
+      - name: exame_laudo_descricao
+        description: Descrição do laudo do exame
+      - name: exame_laudo
+        description: URL do laudo em PDF
+      - name: exame_status
+        description: Status do exame (e.g., concluído)
+      - name: exame_laudo_datahora
+        description: Data e hora da assinatura do laudo
+      - name: resultados
+        description: Array com os resultados do exame
+      - name: profissional_solicitante_cbo
+        description: Código CBO do profissional que solicitou o exame
+      - name: profissional_solicitante_cpf
+        description: CPF do profissional que solicitou o exame
+      - name: profissional_solicitante_crm
+        description: CRM do profissional que solicitou o exame
+        policy_tags:
+          - '{{ var("TAG_CONSELHO_DE_CLASSE") }}'
+      - name: profissional_solicitante_nome
+        description: Nome do profissional que solicitou o exame
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: profesional_laudista_cbo
+        description: Código CBO do profissional que emitiu o laudo
+      - name: profissional_laudista_cpf
+        description: CPF do profissional que emitiu o laudo
+      - name: profissional_laudista_nome
+        description: Nome do profissional que emitiu o laudo
+      - name: loaded_at
+        description: Data e hora em que o registro foi carregado no datalake
+      - name: data_particao
+        description: Data de particionamento da tabela
