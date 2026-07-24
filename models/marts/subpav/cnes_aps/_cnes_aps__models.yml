@@ -1,0 +1,755 @@
+version: 2
+
+models:
+  - name: mart_subpav_cnes_aps__competencias
+    description: >
+      Dimensão de competências do CNES APS para a camada final compatível com o
+      schema operacional do Panorama. Deve ser usada como referência mensal das
+      cargas e como base para resolução de competencia_id nas tabelas históricas
+      e de quantitativos.
+    columns:
+      - name: competencia_id
+        description: "Identificador numérico de referência da competência no Panorama."
+      - name: id
+        description: "Campo de compatibilidade com o schema MySQL de competências."
+      - name: ds_competencia
+        description: "Competência no formato AAAA-MM, usada como chave natural de carga."
+      - name: competencia
+        description: "Competência no formato AAAA-MM."
+      - name: data_particao
+        description: "Data de partição correspondente ao primeiro dia da competência."
+      - name: dt_final
+        description: "Data final da competência, quando disponível na base de referência."
+      - name: base_final
+        description: "Indicador ou descrição da base final utilizada para a competência."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__unidades
+    description: >
+      Dimensão final de unidades CNES utilizada pelos produtos da APS e por integrações operacionais.
+      A tabela não se restringe a unidades de Atenção Primária: inclui estabelecimentos CNES ativos e inativos
+      de diferentes tipos, como unidades básicas, hospitais, clínicas, policlínicas, consultórios, SADT,
+      farmácias e demais estabelecimentos públicos ou privados. O campo is_unidade_aps_panorama identifica
+      as unidades classificadas como APS no escopo do Panorama..
+    columns:
+      - name: data_particao_origem
+        description: "Competência de origem usada para selecionar a versão mais recente da unidade."
+      - name: id
+        description: "Identificador da unidade no MySQL; preenchido pela rotina de carga quando aplicável."
+      - name: cnes
+        description: "Código CNES da unidade, normalizado com 7 dígitos."
+      - name: ap
+        description: "Área Programática da unidade em formato numérico."
+      - name: nome_fanta
+        description: "Nome fantasia da unidade."
+      - name: r_social
+        description: "Razão social da unidade."
+      - name: dt_atualiza
+        description: "Data de atualização da unidade informada no CNES."
+      - name: tp_gestao
+        description: "Tipo ou sigla de gestão da unidade informado no CNES."
+      - name: tp_estab_sempre_aberto
+        description: "Indicador do CNES para estabelecimento sempre aberto."
+      - name: dt_inaugura
+        description: "Data de inauguração da unidade, quando disponível."
+      - name: tipo_unidade_id
+        description: "Identificador do tipo de unidade conforme domínio do CNES."
+      - name: cod_turnat_id
+        description: "Identificador do turno de atendimento, quando disponível."
+      - name: motivo_desativacao_unidade_id
+        description: "Identificador do motivo de desativação da unidade, quando preenchido."
+      - name: natureza_juridica_id
+        description: "Identificador da natureza jurídica da unidade."
+      - name: tipo_estabelecimento_id
+        description: "Identificador do tipo de estabelecimento, quando disponível."
+      - name: atividade_principal_id
+        description: "Identificador da atividade principal da unidade, quando disponível."
+      - name: prof_diretor_id
+        description: "Identificador do profissional diretor no MySQL, resolvido na carga quando aplicável."
+      - name: cpf_diretor_clinico
+        description: "CPF do diretor clínico, normalizado com 11 dígitos quando disponível."
+      - name: tipo_unidade_sms
+        description: "Classificação SMS da unidade, usada para identificação de CF, CMS, CSE e demais tipos."
+      - name: is_unidade_aps_panorama
+        description: "Flag que indica se a unidade compõe o universo APS utilizado no Panorama."
+      - name: unidade_ativa
+        description: "Flag que indica se a unidade está ativa na competência de origem."
+      - name: status
+        description: "Status cadastral da unidade no CNES."
+      - name: status_movimento
+        description: "Status de movimentação da unidade no CNES."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__profissionais
+    description: >
+      Dimensão final de profissionais do CNES APS. Mantém uma linha por CPF,
+      usando a versão cadastral mais recente disponível, para resolução de
+      profissionais nas tabelas históricas e de quantitativos.
+    columns:
+      - name: data_particao_origem
+        description: "Competência de origem usada para selecionar a versão mais recente do profissional."
+      - name: id
+        description: "Identificador do profissional no MySQL; preenchido pela rotina de carga quando aplicável."
+      - name: cpf
+        description: "CPF do profissional, normalizado com 11 dígitos."
+      - name: cns
+        description: "Cartão Nacional de Saúde do profissional, quando disponível."
+      - name: nome
+        description: "Nome do profissional."
+      - name: dt_nasc
+        description: "Data de nascimento do profissional, quando disponível."
+      - name: telefone
+        description: "Telefone cadastral do profissional, quando disponível."
+      - name: email
+        description: "E-mail cadastral do profissional, quando disponível."
+      - name: nome_pais
+        description: "País de origem/nacionalidade do profissional, quando disponível."
+      - name: ind_nacio
+        description: "Indicador de nacionalidade informado no CNES."
+      - name: dt_atualiza
+        description: "Data de atualização cadastral do profissional no CNES."
+      - name: sexo_id
+        description: "Identificador do sexo do profissional conforme domínio do CNES/Panorama."
+      - name: raca_cor_id
+        description: "Identificador de raça/cor do profissional conforme domínio do CNES/Panorama."
+      - name: nivel_escolaridade_id
+        description: "Identificador do nível de escolaridade do profissional."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__cbos
+    description: >
+      Dimensão de CBOs extraída do GDB CNES - Tabela NFCES026. Mantém uma linha por cod_cbo e deve
+      ser usada como domínio de referência para resolução de cbo_id na carga para
+      o schema operacional do Panorama.
+    columns:
+      - name: id
+        description: "Identificador do CBO no MySQL; preenchido pela rotina de carga quando aplicável."
+      - name: cod_cbo
+        description: "Código Brasileiro de Ocupação informado no CNES."
+      - name: ds_cbo
+        description: "Descrição do CBO."
+      - name: tp_cbo_saude
+        description: "Indicador do tipo de CBO de saúde informado no CNES."
+      - name: nivel_superior
+        description: "Flag de compatibilidade para indicação de CBO de nível superior."
+      - name: nivel_medio
+        description: "Flag de compatibilidade para indicação de CBO de nível médio."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__unidades_tipos
+    description: "Dimensão de tipos de unidade extraída do GDB CNES - Tabela NFCES010."
+    columns:
+      - name: id
+        description: "Identificador do tipo de unidade no domínio CNES."
+      - name: descricao
+        description: "Descrição do tipo de unidade."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__unidades_motivos_desativacoes
+    description: "Dimensão de motivos de desativação de unidades extraída do GDB CNES - Tabela NFCES049."
+    columns:
+      - name: id
+        description: "Identificador do motivo de desativação da unidade."
+      - name: descricao
+        description: "Descrição do motivo de desativação da unidade."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__naturezas_juridicas
+    description: "Dimensão de naturezas jurídicas extraída do GDB CNES - Tabela NFCES085."
+    columns:
+      - name: id
+        description: "Código da natureza jurídica no CNES."
+      - name: descricao
+        description: "Descrição da natureza jurídica."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__equipes_tipos
+    description: >
+      Dimensão de tipos de equipe extraída do GDB CNES - Tabela NFCES046, enriquecida com o nome do
+      grupo da equipe quando disponível.
+    columns:
+      - name: id
+        description: "Identificador do tipo de equipe no CNES."
+      - name: ds_tipo_equipe
+        description: "Descrição do tipo de equipe."
+      - name: grupo
+        description: "Nome do grupo de equipe associado ao tipo de equipe."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__equipes_motivos_desativacoes
+    description: "Dimensão de motivos de desativação de equipes extraída do GDB CNES - Tabela NFCES053 ."
+    columns:
+      - name: id
+        description: "Identificador do motivo de desativação de equipe."
+      - name: descricao
+        description: "Descrição do motivo de desativação de equipe."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__vinculacoes_unidades
+    description: >
+      Dimensão de vinculações de unidades extraída do GDB CNES - Tabela NFCES056. Inclui o código 0
+      "A CONFIRMAR" para manter integridade lógica com os subtipos de vinculação
+      referenciados pelo próprio GDB.
+    columns:
+      - name: id
+        description: "Identificador da vinculação da unidade."
+      - name: ds_vinculacao_unidade
+        description: "Descrição da vinculação da unidade."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__vinculacoes_empregadores
+    description: "Dimensão de tipos de vínculo do empregador extraída do GDB CNES - Tabela NFCES057."
+    columns:
+      - name: id
+        description: "Identificador da vinculação do empregador."
+      - name: ds_vinculacao_empregador
+        description: "Descrição da vinculação do empregador."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__vinculacoes
+    description: >
+      Dimensão de subtipos de vinculação extraída do GDB CNES - Tabela NFCES058, relacionando o
+      vínculo da unidade ao vínculo do empregador.
+    columns:
+      - name: id
+        description: "Identificador do subtipo de vinculação."
+      - name: tp_subvinculo
+        description: "Código do subtipo de vinculação."
+      - name: ds_subvinculo
+        description: "Descrição do subtipo de vinculação."
+      - name: st_habilitado
+        description: "Status de habilitação do subtipo de vinculação."
+      - name: vinculacao_unidade_id
+        description: "Identificador da vinculação da unidade."
+      - name: vinculacao_empregador_id
+        description: "Identificador da vinculação do empregador."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__equipes
+    description: >
+      Tabela histórica final de equipes CNES APS, no padrão de campos esperado
+      pelo schema operacional do Panorama. Mantém uma linha por competência e INE.
+    columns:
+      - name: data_particao
+        description: "Data de partição correspondente ao primeiro dia da competência."
+      - name: competencia
+        description: "Competência no formato AAAA-MM."
+      - name: competencia_id
+        description: "Identificador numérico de referência da competência."
+      - name: id
+        description: "Identificador da equipe no MySQL; preenchido pela rotina de carga quando aplicável."
+      - name: unidade_id
+        description: "Identificador da unidade no MySQL; resolvido pela rotina de carga a partir do CNES."
+      - name: cnes
+        description: "Código CNES da unidade, normalizado com 7 dígitos."
+      - name: ine
+        description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
+      - name: cod_area
+        description: "Código da área da equipe informado no CNES."
+      - name: nm_referencia
+        description: "Nome de referência da equipe."
+      - name: dt_ativacao
+        description: "Data de ativação da equipe."
+      - name: dt_desativacao
+        description: "Data de desativação da equipe, quando preenchida."
+      - name: tp_pop_assist_quilomb
+        description: "Indicador de população assistida quilombola."
+      - name: tp_pop_assist_assent
+        description: "Indicador de população assistida em assentamento."
+      - name: tp_pop_assist_geral
+        description: "Indicador de população assistida geral."
+      - name: tp_pop_assist_escola
+        description: "Indicador de população assistida escolar."
+      - name: tp_pop_assist_pronasci
+        description: "Indicador de população assistida PRONASCI."
+      - name: tp_pop_assist_indigena
+        description: "Indicador de população assistida indígena."
+      - name: tp_pop_assist_ribeirinha
+        description: "Indicador de população assistida ribeirinha."
+      - name: tp_pop_assist_situacao_rua
+        description: "Indicador de população em situação de rua assistida."
+      - name: tp_pop_assist_priv_liberdade
+        description: "Indicador de população privada de liberdade assistida."
+      - name: tp_pop_assist_conflito_lei
+        description: "Indicador de população em conflito com a lei assistida."
+      - name: tp_pop_assist_adol_conf_lei
+        description: "Indicador de adolescentes em conflito com a lei assistidos."
+      - name: co_prof_sus_preceptor
+        description: "Código SUS do profissional preceptor informado para a equipe, quando disponível."
+      - name: dt_atualiza
+        description: "Data de atualização da equipe no CNES."
+      - name: tipo_equipe_id
+        description: "Identificador do tipo de equipe."
+      - name: subtipo_equipe_id
+        description: "Identificador do subtipo de equipe, quando disponível."
+      - name: motivo_desativacao_equipe_id
+        description: "Identificador do motivo de desativação da equipe, quando preenchido."
+      - name: tipo_desativacao_id
+        description: "Identificador do tipo de desativação, quando disponível."
+      - name: seq_equipe
+        description: "Sequencial da equipe no CNES."
+      - name: tipo_equipe_descricao
+        description: "Descrição do tipo de equipe."
+      - name: classificacao_equipe
+        description: "Classificação consolidada da equipe para uso no Panorama."
+      - name: equipe_ativa
+        description: "Flag que indica se a equipe está ativa na competência."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__profissionais_unidades
+    description: >
+      Tabela histórica final de vínculos entre profissionais e unidades. Mantém
+      uma linha por competência, CPF, CNES e CBO, com chaves naturais para
+      resolução dos IDs durante a carga no schema operacional do Panorama.
+    columns:
+      - name: data_particao
+        description: "Data de partição correspondente ao primeiro dia da competência."
+      - name: competencia
+        description: "Competência no formato AAAA-MM."
+      - name: competencia_id
+        description: "Identificador numérico de referência da competência."
+      - name: id
+        description: "Identificador do vínculo profissional-unidade no MySQL; preenchido pela rotina de carga quando aplicável."
+      - name: unidade_id
+        description: "Identificador da unidade no MySQL; resolvido pela rotina de carga a partir do CNES."
+      - name: profissional_id
+        description: "Identificador do profissional no MySQL; resolvido pela rotina de carga a partir do CPF."
+      - name: cbo_id
+        description: "Identificador do CBO no MySQL; resolvido pela rotina de carga a partir do cod_cbo."
+      - name: cpf
+        description: "CPF do profissional, normalizado com 11 dígitos."
+      - name: cnes
+        description: "Código CNES da unidade, normalizado com 7 dígitos."
+      - name: cod_cbo
+        description: "Código Brasileiro de Ocupação do vínculo."
+      - name: cg_horaamb
+        description: "Carga horária ambulatorial informada para o vínculo."
+      - name: cg_horahosp
+        description: "Carga horária hospitalar informada para o vínculo."
+      - name: cg_horaoutr
+        description: "Outras cargas horárias informadas para o vínculo."
+      - name: n_registro
+        description: "Número de registro no conselho profissional, quando disponível."
+      - name: sg_uf_crm
+        description: "UF do registro no conselho profissional."
+      - name: tp_preceptor
+        description: "Indicador de preceptor informado no CNES."
+      - name: tp_residente
+        description: "Indicador de residente informado no CNES."
+      - name: dt_atualiza
+        description: "Data de atualização do vínculo profissional-unidade no CNES."
+      - name: vinculacao_id
+        description: "Identificador do subtipo de vinculação."
+      - name: conselho_id
+        description: "Identificador do conselho profissional, quando disponível."
+      - name: tipo_sus_nao_sus
+        description: "Indicador de vínculo SUS ou não SUS."
+      - name: detalhe_terceirizado_sih
+        description: "Detalhamento de terceirização SIH, quando disponível."
+      - name: cnpj_detalhe_vinculo
+        description: "CNPJ associado ao detalhe de vínculo, quando disponível."
+      - name: chave_profissional_unidade_cbo
+        description: "Chave natural formada por CPF, CNES e CBO."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__equipes_profissionais
+    description: >
+      Tabela histórica final de vínculos entre equipes e profissionais. Mantém as
+      chaves naturais de competência, CPF, INE e CBO para resolução dos IDs na
+      carga do schema operacional do Panorama.
+    columns:
+      - name: data_particao
+        description: "Data de partição correspondente ao primeiro dia da competência."
+      - name: competencia
+        description: "Competência no formato AAAA-MM."
+      - name: competencia_id
+        description: "Identificador numérico de referência da competência."
+      - name: id
+        description: "Identificador do vínculo equipe-profissional no MySQL; preenchido pela rotina de carga quando aplicável."
+      - name: equipe_id
+        description: "Identificador da equipe no MySQL; resolvido pela rotina de carga a partir da competência e INE."
+      - name: profissional_id
+        description: "Identificador do profissional no MySQL; resolvido pela rotina de carga a partir do CPF."
+      - name: cbo_id
+        description: "Identificador do CBO no MySQL; resolvido pela rotina de carga a partir do cod_cbo."
+      - name: cpf
+        description: "CPF do profissional, normalizado com 11 dígitos."
+      - name: cnes
+        description: "Código CNES da unidade da equipe, normalizado com 7 dígitos."
+      - name: ine
+        description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
+      - name: cod_cbo
+        description: "Código Brasileiro de Ocupação do vínculo na equipe."
+      - name: dt_entrada
+        description: "Data de entrada do profissional na equipe."
+      - name: dt_desligamento
+        description: "Data de desligamento do profissional da equipe, quando preenchida."
+      - name: possui_dt_desligamento
+        description: "Flag que indica se há data de desligamento informada."
+      - name: fl_equipeminima
+        description: "Flag que indica se o profissional compõe equipe mínima."
+      - name: vinculo_equipe_ativo
+        description: "Flag que indica se o vínculo com a equipe está ativo na competência."
+      - name: inconsistente
+        description: "Flag de inconsistência do vínculo quando aplicável."
+      - name: dt_atualiza
+        description: "Data de atualização do vínculo equipe-profissional no CNES."
+      - name: tipo_enriquecimento_vinculo_unidade
+        description: "Tipo de correspondência usada para relacionar o vínculo de equipe ao vínculo profissional-unidade."
+      - name: chave_profissional_equipe_cbo
+        description: "Chave natural formada por CPF, INE e CBO."
+      - name: chave_profissional_unidade_cbo
+        description: "Chave natural formada por CPF, CNES e CBO."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__profissionais_consolidacao
+    description: >
+      Tabela final consolidada de profissionais por competência, unidade, CBO e
+      equipe quando houver vínculo de equipe. Mantém a estrutura necessária para
+      substituir a atualização operacional do Panorama sem alterar a aplicação.
+      Vínculos de equipe são considerados na consolidação quando a correspondência
+      com o vínculo profissional-unidade é compatível por CBO.
+    columns:
+      - name: data_particao
+        description: "Data de partição correspondente ao primeiro dia da competência."
+      - name: competencia
+        description: "Competência no formato AAAA-MM."
+      - name: competencia_id
+        description: "Identificador numérico de referência da competência."
+      - name: cpf
+        description: "CPF do profissional, normalizado com 11 dígitos."
+      - name: cns
+        description: "Cartão Nacional de Saúde do profissional, quando disponível."
+      - name: nome_profissional
+        description: "Nome do profissional."
+      - name: profissional_id_original
+        description: "Identificador original do profissional na fonte CNES."
+      - name: cnes
+        description: "Código CNES da unidade, normalizado com 7 dígitos."
+      - name: unidade_id_original
+        description: "Identificador original da unidade na fonte CNES."
+      - name: nome_unidade
+        description: "Nome da unidade."
+      - name: cod_cbo
+        description: "Código Brasileiro de Ocupação do vínculo consolidado."
+      - name: ine
+        description: "Identificador Nacional de Equipe, quando houver vínculo de equipe; pode ser nulo para vínculos apenas de unidade."
+      - name: nm_referencia
+        description: "Nome de referência da equipe, quando houver vínculo de equipe."
+      - name: tipo_equipe_id
+        description: "Identificador do tipo de equipe, quando houver vínculo de equipe."
+      - name: tipo_equipe_descricao
+        description: "Descrição do tipo de equipe, quando houver vínculo de equipe."
+      - name: sexo_id
+        description: "Identificador do sexo do profissional, quando disponível."
+      - name: sexo
+        description: "Descrição ou sigla de sexo do profissional, quando disponível."
+      - name: profissional_id
+        description: "Identificador do profissional no MySQL; resolvido pela rotina de carga a partir do CPF."
+      - name: unidade_id
+        description: "Identificador da unidade no MySQL; resolvido pela rotina de carga a partir do CNES."
+      - name: cbo_id
+        description: "Identificador do CBO no MySQL; resolvido pela rotina de carga a partir do cod_cbo."
+      - name: equipe_id
+        description: "Identificador da equipe no MySQL; resolvido pela rotina de carga quando houver INE."
+      - name: cg_horaamb
+        description: "Carga horária ambulatorial consolidada."
+      - name: cg_horahosp
+        description: "Carga horária hospitalar consolidada."
+      - name: cg_horaoutr
+        description: "Outras cargas horárias consolidadas."
+      - name: carga_horaria_total
+        description: "Soma das cargas horárias informadas para o vínculo consolidado."
+      - name: dt_entrada
+        description: "Data de entrada do vínculo consolidado."
+      - name: dt_desligamento
+        description: "Data de desligamento do vínculo consolidado, quando preenchida."
+      - name: possui_dt_desligamento
+        description: "Flag que indica se há data de desligamento informada."
+      - name: dias_desligado
+        description: "Quantidade de dias entre o desligamento e a data de referência da competência."
+      - name: fl_equipeminima
+        description: "Flag que indica se o profissional compõe equipe mínima."
+      - name: inconsistente
+        description: "Flag de inconsistência do vínculo consolidado."
+      - name: dt_atualiza
+        description: "Data de atualização do vínculo consolidado."
+      - name: dt_atualiza_profissional
+        description: "Data de atualização cadastral do profissional."
+      - name: dt_atualiza_unidade
+        description: "Data de atualização cadastral da unidade."
+      - name: dt_atualiza_equipe
+        description: "Data de atualização cadastral da equipe, quando houver vínculo de equipe."
+      - name: possui_vinculo_equipe
+        description: "Flag que indica se o registro consolidado possui vínculo com equipe."
+      - name: vinculo_equipe_ativo
+        description: "Flag que indica se o vínculo com equipe está ativo na competência."
+      - name: equipe_ativa
+        description: "Flag que indica se a equipe está ativa na competência."
+      - name: chave_profissional_unidade_cbo_base
+        description: "Chave base de consolidação formada por profissional, unidade e CBO."
+      - name: chave_profissional_equipe_cbo
+        description: "Chave de vínculo de equipe formada por profissional, equipe e CBO, quando disponível."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__quantitativos_profissionais_equipes
+    description: >
+      Tabela final de quantitativos de profissionais por equipe, CBO e categoria
+      profissional. Inclui linhas originais e linhas sintéticas para categorias
+      obrigatórias ausentes, permitindo cálculo de incompletude por categoria.
+    columns:
+      - name: data_particao
+        description: "Data de partição correspondente ao primeiro dia da competência."
+      - name: competencia
+        description: "Competência no formato AAAA-MM."
+      - name: competencia_id
+        description: "Identificador numérico de referência da competência."
+      - name: cnes
+        description: "Código CNES da unidade, normalizado com 7 dígitos."
+      - name: ine
+        description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
+      - name: nm_referencia
+        description: "Nome de referência da equipe."
+      - name: cod_cbo
+        description: "Código Brasileiro de Ocupação."
+      - name: categoria_profissional_composicao
+        description: "Categoria profissional usada nas regras de composição da equipe."
+      - name: categoria_profissional_vacancia_panorama
+        description: "Categoria profissional usada para cálculo de vacância no Panorama."
+      - name: cbo_id
+        description: "Identificador do CBO no MySQL; resolvido pela rotina de carga a partir do cod_cbo."
+      - name: categ_prof_id
+        description: "Identificador da categoria profissional no MySQL; resolvido pela rotina de carga."
+      - name: equipe_id
+        description: "Identificador da equipe no MySQL; resolvido pela rotina de carga a partir de competência e INE."
+      - name: unidade_id
+        description: "Identificador da unidade no MySQL; resolvido pela rotina de carga a partir do CNES."
+      - name: total_profissionais
+        description: "Total de profissionais ativos considerados no recorte."
+      - name: total_prof_masculino
+        description: "Total de profissionais ativos do sexo masculino, quando informado."
+      - name: total_prof_feminino
+        description: "Total de profissionais ativos do sexo feminino, quando informado."
+      - name: total_sem_sexo
+        description: "Total de profissionais ativos sem sexo informado."
+      - name: total_40_horas
+        description: "Total de profissionais ativos com carga horária de 40 horas ou mais."
+      - name: total_20_horas
+        description: "Total de profissionais ativos com carga horária de 20 a menos de 40 horas."
+      - name: total_24_horas
+        description: "Total de profissionais ativos com carga horária de 24 horas."
+      - name: total_outras_horas
+        description: "Total de profissionais ativos em outras faixas de carga horária."
+      - name: total_residentes
+        description: "Total de profissionais marcados como residentes."
+      - name: total_preceptores
+        description: "Total de profissionais marcados como preceptores."
+      - name: total_contratados
+        description: "Total de profissionais com entrada na própria competência."
+      - name: total_desligados
+        description: "Total de profissionais com desligamento registrado na competência de referência."
+      - name: tp_eqp_por_carga_hor
+        description: "Código derivado da classificação da equipe para compatibilidade com a tabela operacional."
+      - name: tipo_equipe_id
+        description: "Identificador do tipo de equipe."
+      - name: data_eqp_incompleta
+        description: "Data de referência da incompletude da equipe, quando aplicável."
+      - name: data_eqp_vacancia
+        description: "Data de referência da vacância da equipe, quando aplicável."
+      - name: origem_linha_qpe
+        description: "Origem da linha do quantitativo: original ou sintética para CBO/categoria ausente."
+      - name: created_at
+        description: "Timestamp de criação do registro na tabela final do BigQuery."
+      - name: updated_at
+        description: "Timestamp de atualização do registro na tabela final do BigQuery."
+
+  - name: mart_subpav_cnes_aps__quantitativos_consolidados_equipes
+    description: >
+      Tabela final de composição e situação consolidada das equipes APS, ESF e
+      ESB por competência e INE. Consolida totais por categoria, desligamentos
+      nos últimos 60 dias e flags de completude/incompletude usadas pelo Panorama.
+    columns:
+      - name: data_particao
+        description: "Data de partição correspondente ao primeiro dia da competência."
+      - name: competencia
+        description: "Competência no formato AAAA-MM."
+      - name: competencia_id
+        description: "Identificador numérico de referência da competência."
+      - name: cnes
+        description: "Código CNES da unidade, normalizado com 7 dígitos."
+      - name: ine
+        description: "Identificador Nacional de Equipe, normalizado com 10 dígitos."
+      - name: nm_referencia
+        description: "Nome de referência da equipe."
+      - name: unidade_id
+        description: "Identificador da unidade no MySQL; resolvido pela rotina de carga a partir do CNES."
+      - name: equipe_id
+        description: "Identificador da equipe no MySQL; resolvido pela rotina de carga a partir de competência e INE."
+      - name: tipo_equipe_id
+        description: "Identificador do tipo de equipe."
+      - name: desligados_60_med
+        description: "Total de médicos desligados dentro da janela de 60 dias."
+      - name: desligados_60_enf
+        description: "Total de enfermeiros desligados dentro da janela de 60 dias."
+      - name: desligados_60_aux
+        description: "Total de técnicos/auxiliares de enfermagem desligados dentro da janela de 60 dias."
+      - name: desligados_60_acs
+        description: "Total de ACS desligados dentro da janela de 60 dias."
+      - name: desligados_60_dent
+        description: "Total de cirurgiões-dentistas desligados dentro da janela de 60 dias."
+      - name: desligados_60_aux_bucal
+        description: "Total de auxiliares de saúde bucal desligados dentro da janela de 60 dias."
+      - name: desligados_60_tec_bucal
+        description: "Total de técnicos de saúde bucal desligados dentro da janela de 60 dias."
+      - name: medico
+        description: "Total de médicos com carga horária de 40 horas ou composição equivalente."
+      - name: medico_20
+        description: "Total de médicos com carga horária de 20 horas."
+      - name: enfermeiro
+        description: "Total de enfermeiros com carga horária mínima considerada na composição."
+      - name: tec_aux
+        description: "Total de técnicos/auxiliares de enfermagem com carga horária mínima considerada na composição."
+      - name: acs
+        description: "Total de ACS com carga horária mínima considerada na composição."
+      - name: cirurgiao
+        description: "Total de cirurgiões-dentistas com carga horária de 40 horas ou composição equivalente."
+      - name: cirurgiao_20
+        description: "Total de cirurgiões-dentistas com carga horária de 20 horas."
+      - name: aux_bucal
+        description: "Total de auxiliares de saúde bucal com carga horária de 40 horas ou composição equivalente."
+      - name: aux_bucal_20
+        description: "Total de auxiliares de saúde bucal com carga horária de 20 horas."
+      - name: tec_bucal
+        description: "Total de técnicos de saúde bucal com carga horária de 40 horas ou composição equivalente."
+      - name: tec_bucal_20
+        description: "Total de técnicos de saúde bucal com carga horária de 20 horas."
+      - name: aps_completa
+        description: "Flag que indica equipe APS completa na competência."
+      - name: esb_completa
+        description: "Flag que indica equipe de Saúde Bucal completa na competência."
+      - name: esf_completa
+        description: "Flag que indica equipe ESF completa na competência."
+      - name: inconsistente
+        description: "Flag de inconsistência de quantitativo/composição da equipe."
+      - name: data_eqp_incompleta
+        description: "Data de referência da incompletude da equipe, quando aplicável."
+      - name: data_eqp_vacancia
+        description: "Data de referência da vacância da equipe, quando aplicável."
+      - name: loaded_at
+        description: "Timestamp de geração da linha no mart final."
+
+  - name: mart_subpav_cnes_aps__panorama_historico_equipes
+    description: >
+      Mart operacional com os indicadores históricos de equipes no mesmo formato tabular usado para montar o JSON do Panorama CNES.
+      Cada linha representa uma competência e contém os campos de contagem, completude e cobertura exibidos no histórico do Panorama.
+    columns:
+      - name: data_particao
+        description: Data de partição da competência CNES.
+      - name: competencia
+        description: Competência no formato AAAA-MM.
+      - name: ano_competencia
+        description: Ano da competência.
+      - name: APS
+        description: Total de equipes APS conforme regra histórica do Panorama.
+      - name: ESF
+        description: Total de equipes de Saúde da Família conforme regra histórica do Panorama.
+      - name: ESB
+        description: Total de equipes de Saúde Bucal.
+      - name: ENASF
+        description: Total de equipes NASF/eMulti conforme classificação histórica disponível.
+      - name: ECR
+        description: Total de equipes de Consultório na Rua.
+      - name: EACS
+        description: Total de equipes de Agentes Comunitários de Saúde no recorte histórico aplicável.
+      - name: EAB
+        description: Total de equipes de Atenção Básica no recorte compatível com o Panorama.
+      - name: EAP
+        description: Total de equipes de Atenção Primária.
+      - name: EAPP
+        description: Total de equipes de Atenção Primária Prisional no recorte do Panorama.
+      - name: EMAD
+        description: Total de equipes EMAD no recorte do Panorama.
+      - name: EMAP
+        description: Total de equipes EMAP.
+      - name: INCONSISTENTE
+        description: Total de equipes com inconsistência identificada na composição.
+      - name: ANO_POPULACAO_REFERENCIA
+        description: Ano da população de referência utilizada no cálculo das coberturas.
+      - name: POPULACAO
+        description: População municipal de referência usada no cálculo das coberturas, obtida da raw materializada da Base dos Dados/IBGE.
+      - name: APS_COMPLETA
+        description: Total de equipes APS completas.
+      - name: APS_INCOMPLETA
+        description: Total de equipes APS incompletas.
+      - name: ESF_COMPLETA
+        description: Total de equipes eSF completas.
+      - name: ESF_INCOMPLETA
+        description: Total de equipes eSF incompletas.
+      - name: ESB_COMPLETA
+        description: Total de equipes eSB completas.
+      - name: ESB_INCOMPLETA
+        description: Total de equipes eSB incompletas.
+      - name: COMPETENCIA_ID
+        description: Identificador operacional da competência.
+      - name: ERES
+        description: Total de equipes ERES considerado no Panorama.
+      - name: COBERTURA_APS
+        description: Cobertura APS formatada com duas casas decimais.
+      - name: COBERTURA_ESF_COMPLETA
+        description: Cobertura eSF completa formatada com duas casas decimais.
+      - name: COBERTURA_ESF
+        description: Cobertura eSF formatada com duas casas decimais.
+      - name: COBERTURA_ESF_COMPLETA_GRAFICO
+        description: Cobertura eSF completa para gráficos, formatada com duas casas decimais.
+      - name: COBERTURA_ESF_GRAFICO
+        description: Cobertura eSF para gráficos, formatada com duas casas decimais.
+      - name: loaded_at
+        description: Data e hora de geração do mart.
