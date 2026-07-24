@@ -20,6 +20,14 @@ with bruto_atendimento as (
         safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime) as datahora_fim,
         date(safe_cast(json_extract_scalar(data, '$.datahora_fim_atendimento') as datetime)) as data_particao,
         safe_cast(datalake_loaded_at as datetime)                         as loaded_at,
+        {{ process_null("json_extract_scalar(data, '$.ut_id')") }}       as ut_id,
+        {{ process_null("json_extract_scalar(data, '$.profissional.nome')") }} as profissional_nome,
+        {{ process_null("json_extract_scalar(data, '$.profissional.cbo')") }} as profissional_cbo,
+        {{ process_null("json_extract_scalar(data, '$.profissional.cns')") }} as profissional_cns,
+        {{ process_null("json_extract_scalar(data, '$.profissional.cpf')") }} as profissional_cpf,
+        {{ process_null("json_extract_scalar(data, '$.profissional.equipe.cod_equipe')") }} as id_equipe,
+        {{ process_null("json_extract_scalar(data, '$.profissional.equipe.cod_ine')") }} as id_ine_equipe,
+        current_datetime('America/Sao_Paulo')                        as updated_at,
         data
     from {{ source("brutos_prontuario_vitacare_api_staging", "atendimento_continuo") }}
     WHERE JSON_EXTRACT(data, '$.vacinas') IS NOT NULL
@@ -37,6 +45,14 @@ exploded as (
       id_cnes,
       data_particao,
       loaded_at,
+      ut_id,
+      profissional_nome,
+      profissional_cbo,
+      profissional_cns,
+      profissional_cpf,
+      id_equipe,
+      id_ine_equipe,
+      updated_at,
       vac
     from bruto_atendimento,
     unnest(json_extract_array(data, '$.vacinas')) as vac
@@ -86,6 +102,14 @@ select
   {{ process_null("json_extract_scalar(vac, '$.estrategia_imunizacao')") }}                as estrategia_imunizacao,
   CAST(NULL AS STRING)                                                                      as foi_aplicada,
   CAST(NULL AS STRING)                                                                      as justificativa,
+  ut_id,
+  profissional_nome,
+  profissional_cbo,
+  profissional_cns,
+  profissional_cpf,
+  id_equipe,
+  id_ine_equipe,
   loaded_at,
+  updated_at,
   data_particao
 from fato_vacinas
