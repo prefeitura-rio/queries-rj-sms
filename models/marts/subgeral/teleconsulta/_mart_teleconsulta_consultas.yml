@@ -40,6 +40,11 @@ models:
         data_type: string
         quote: true
 
+      - name: mes_ano_nascimento
+        description: Data de nascimento do paciente com granularidade restrita a mês e ano, no formato YYYY-MM, para preservar a privacidade.
+        data_type: string
+        quote: true
+
       - name: sexo
         description: Sexo do paciente conforme cadastro.
         data_type: string
