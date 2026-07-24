@@ -4,7 +4,7 @@
         alias="episodio_assistencial_vitai",
         materialized="table",
         partition_by={
-            "field": "mes_particao",
+            "field": "data_particao",
             "data_type": "date",
             "granularity": "month"
         },
@@ -573,13 +573,10 @@ with
                 datetime(current_timestamp(),'America/Sao_Paulo') as processed_at
             ) as metadados,
             safe_cast(atendimento_struct.paciente.cpf as int64) as cpf_particao,
-            date_trunc(
-                coalesce(
-                    safe_cast(entrada_datahora as date),
-                    safe_cast(saida_datahora as date)
-                ),
-                MONTH
-            ) as mes_particao
+            coalesce(
+              safe_cast(entrada_datahora as date),
+              safe_cast(saida_datahora as date)
+            ) as data_particao
         from atendimento_struct
         left join cid_agg
             on atendimento_struct.id = cid_agg.gid_boletim
