@@ -16,14 +16,14 @@ with
             id_tipo_subvinculo,
             descricao_subvinculo,
             descricao_conceito,
-            habilitado, 
+            habilitado,
             solicita_cnpj
         from {{ ref("raw_gdb_cnes__vinculo_detalhe") }}
         where data_particao = (select max(data_particao) from {{ ref("raw_gdb_cnes__vinculo_detalhe") }})
     ),
 
     vinculo_empregador as (
-        select distinct 
+        select distinct
             id_vinculacao,
             id_tipo_vinculo,
             descricao_vinculo
@@ -48,7 +48,7 @@ select
     descricao_subvinculo,
     descricao_conceito,
     descricao_vinculacao,
-    habilitado, 
+    habilitado,
     solicita_cnpj
 from vinculo
 left join vinculo_empregador using (id_tipo_vinculo, id_vinculacao)
