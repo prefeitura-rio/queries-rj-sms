@@ -36,11 +36,14 @@ renamed as (
         cast({{ process_null("TP_SUBVINCULO") }} as string) as id_tipo_subvinculo,
         cast({{ process_null("DS_SUBVINCULO") }} as string) as descricao_subvinculo,
         cast({{ process_null("DS_CONCEITO") }} as string) as descricao_conceito,
+
+        -- "Indica se o Vínculo se encontra ativo"
         case
             when lower(trim(ST_HABILITADO)) = 's' then true
             when lower(trim(ST_HABILITADO)) = 'n' then false
             else null
         end as habilitado,
+        -- "Indica se o Vínculo exige CNPJ do Empregador"
         case
             when lower(trim(ST_SOLICITA_CNPJ)) = 's' then true
             when lower(trim(ST_SOLICITA_CNPJ)) = 'n' then false
