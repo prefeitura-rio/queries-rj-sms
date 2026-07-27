@@ -1,6 +1,9 @@
 {% macro validate_cpf(cpf_column) %}
 -- cpf validation based on https://homepages.dcc.ufmg.br/~rodolfo/aedsi-2-10/regrasDigitosVerificadoresCPF.html
-CASE 
+CASE
+    WHEN {{ cpf_column }} IS NULL
+        THEN FALSE
+
     WHEN LENGTH({{ cpf_column }}) != 11
         THEN FALSE
 

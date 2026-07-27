@@ -96,7 +96,7 @@ with
             p.updated_at_rank
         from {{ ref('raw_prontuario_vitacare__paciente') }} p
         where {{ process_null('p.id_ine') }} is not null
-          and p.situacao = 'Ativo'
+          and p.situacao = 'Ativo'  -- TODO: remover? cadastros temporários são 'null' aqui
 
     ),
 
@@ -123,7 +123,7 @@ with
             cpf as cpf_indice
         from {{ ref('mart_historico_clinico_app__indice') }}
         where cns_particao is not null
-        and cpf is not null
+          and cpf is not null
     ),
 
     -- Enriquece os pacientes elegíveis que nao tem CPF cadastrado via CNS
@@ -131,7 +131,11 @@ with
 
         select
             p.* except (cpf_paciente),
-            coalesce(p.cpf_paciente, i.cpf_indice) as cpf_paciente
+            if(
+                {{ validate_cpf("p.cpf_paciente") }},
+                p.cpf_paciente,
+                i.cpf_indice
+            ) as cpf_paciente
         from pacientes_elegiveis p
         left join indice_cpf i
             on p.cns_paciente = i.cns_paciente
@@ -301,8 +305,14 @@ select
     id_profissional_sus,
     tipo_profissional,
     funcionario_ativo_indicador,
-    data_atualizacao_vinculo_equipe,
+    datetime(
+        nullif(
+            data_atualizacao_vinculo_equipe,
+            '1900-01-01 00:00:00'  -- Remove data padrão não preenchida
+        ),
+        "America/Sao_Paulo"
+    ) as data_atualizacao_vinculo_equipe,
     data_ultima_atualizacao_cadastral,
     source_updated_at,
-    updated_at_rank
+    datetime(updated_at_rank, "America/Sao_Paulo") as updated_at_rank
 from profissional_paciente

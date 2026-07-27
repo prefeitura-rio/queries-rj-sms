@@ -11,8 +11,11 @@ models:
       dentro da mesma equipe.
 
     columns:
-      - name: id_paciente
+      - name: id_paciente_global
         description: Identificador único do paciente na base de prontuário Vitacare.
+
+      - name: id_paciente_local
+        description: Identificador único do paciente na unidade de cadastro.
 
       - name: cpf_paciente
         description: >
