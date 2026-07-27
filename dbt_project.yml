@@ -887,9 +887,18 @@ models:
             dominio: ivisa
 
       minha_saude:
+        +meta:
+          team: subgeral
         exames:
           +schema: projeto_minha_saude
           +tags: ["daily", "minha_saude", "exames"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+        paciente:
+          +schema: projeto_minha_saude
+          +tags: ["daily", "minha_saude"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
