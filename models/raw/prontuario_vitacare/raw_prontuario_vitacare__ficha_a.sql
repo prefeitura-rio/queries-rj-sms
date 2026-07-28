@@ -47,6 +47,7 @@ with
         select 
             id, 
             safe_cast(cpf as string) as cpf,
+            safe_cast( {{ process_null('cns') }}  as string) as cns,
             {{
             dbt_utils.generate_surrogate_key(
                     [
@@ -73,7 +74,7 @@ with
                             regexp_replace(
                                 trim(lower(nome_mae)),
                                 r'(ausente)|(pai desconhecido)|(desconhecid[ao])|(desconhece)|(ignorad[oa])|(^x+$)|-|\?',
-                                ''),
+                                ''),acompanhamento
                             r'sem {0,1}(nome|registro|informa{0,1}[cçãa][aã]{0,1}(oes|ões|o)|info{0,1}|identifica[cç][aã]o){0,1}',
                             ''
                             ),
@@ -292,7 +293,7 @@ with
             familia_beneficiaria_cfc as familia_beneficiaria_cfc,
             timestamp_add(timestamp(data_atualizacao_cadastro, "America/Sao_Paulo"),interval 3 hour) as data_atualizacao_cadastro,
             participa_grupo_comunitario as participa_grupo_comunitario,
-            case 
+            case acompanhamento
                 when lower(relacao_responsavel_familiar) not in ('filho(a)','cônjuge/companheiro(a)','outro parente',
                 'não parente','pai/mãe','neto(a)/bisneto(a)','irmão/irmã','genro/nora','enteado(a)','sogro(a)') then null 
                 else relacao_responsavel_familiar
@@ -340,6 +341,7 @@ with
         select 
             id,
             cpf,
+            cns,
             id_paciente,
             id_paciente_vitacare,
             numero_prontuario,

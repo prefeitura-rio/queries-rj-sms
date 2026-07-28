@@ -11,19 +11,33 @@
     )
 }}
 
-with cadastro as (
-    select distinct
-        nome,
-        mae_nome,
-        data_nascimento,
-        cpf
-    from {{ ref('int_prontuario_vitacare__paciente') }}
+with 
+
+paciente as (
+  SELECT 
+    cpf,
+    cns,
+    dados,
+    cpf_particao,
+    contato,
+    endereco 
+  FROM {{ ref('mart_historico_clinico__paciente') }}
 )
 
-select      
-    cpf,
-    nome,
-    data_nascimento,        
-    mae_nome,
-    safe_cast(cpf as int64) as cpf_particao
-from cadastro
+select
+  cpf,
+  cns,
+  dados.nome,
+  dados.nome_social,
+  dados.data_nascimento,
+  dados.genero,
+  dados.raca,
+  dados.obito_indicador,
+  dados.obito_data,
+  dados.mae_nome,
+  dados.pai_nome,
+  dados.identidade_validada_indicador,
+  dados.cpf_valido_indicador,
+  contato.telefone,
+  cpf_particao,
+from paciente 
