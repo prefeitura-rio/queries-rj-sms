@@ -1,14 +1,14 @@
 {{
     config(
         schema="brutos_sipni",
-        alias="vacinacao", 
+        alias="vacinacao",
         materialized="table",
         unique_key = ['id_vacinacao'],
         cluster_by= ['id_cnes', 'vacina_nome'],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
-            "granularity": "day"
+            "granularity": "month"
         }
     )
 }}
