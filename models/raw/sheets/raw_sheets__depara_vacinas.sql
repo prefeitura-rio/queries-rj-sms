@@ -3,11 +3,14 @@
         schema="brutos_sheets",
         alias="depara_vacinas",
         tags=["monthly", "vacinacao"],
-        meta={"owner": "daniel"}
+        meta={
+            "owner": "daniel",
+            "team": "cit"
+        }
     )
 }}
 
--- Depara criado para padronizar nomes das vacinas de diversas fontes
+-- De/para criado para padronizar nomes das vacinas de diversas fontes
 
 with
     source as (
