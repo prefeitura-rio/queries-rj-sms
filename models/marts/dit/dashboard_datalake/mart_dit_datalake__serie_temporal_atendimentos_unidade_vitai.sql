@@ -9,8 +9,7 @@
             "granularity": "month"
         },
         unique_key=['cnes', 'nome', 'data_registro'],
-        description='Série temporal de atendimentos por data de entrada no prontuário Vitai, segmentada por unidade de saúde',
-        tags=['datalake'],
+        description='Série temporal de atendimentos por data de entrada no prontuário Vitai, segmentada por unidade de saúde'
     )
 }}
 
@@ -28,11 +27,11 @@ with
       gid_estabelecimento,
       cnes,
       {{ proper_estabelecimento('nome') }} as nome,
-      cast(inicio_datahora as date) as data_registro,
+      {{ parse_and_filter_future_date('inicio_datahora') }} as data_registro
     from {{ref('raw_prontuario_vitai__atendimento')}} a
     inner join estabelecimentos e on a.gid_estabelecimento = e.gid
     {% if is_incremental() %}
-        where cast(inicio_datahora as date) >= date('{{ last_partition }}')
+        where {{ parse_and_filter_future_date('inicio_datahora') }} >= date('{{ last_partition }}')
     {% endif %}
   )
 

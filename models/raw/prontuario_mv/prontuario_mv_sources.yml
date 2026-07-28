@@ -6,11 +6,43 @@ sources:
     schema: brutos_prontuario_mv_api_staging
     tables:
       - name: admissao_continuo
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
       - name: alta_continuo
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
       - name: anamnese_continuo
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
       - name: bam_continuo
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
       - name: evolucao_continuo
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
       - name: paciente_continuo
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
       - name: parecer_continuo
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
       - name: profissional_continuo
       - name: gestante_continuo
+        loaded_at_field: "CAST(datalake_loaded_at AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}

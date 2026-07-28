@@ -271,12 +271,28 @@ with
             obito_indicador as deceased,
             case
                 when estabelecimento.estabelecimento_tipo is null
-                then []
-                when
-                    estabelecimento.estabelecimento_tipo
+                    then []
+                when trim(estabelecimento.estabelecimento_tipo)
                     in ('CLINICA DA FAMILIA', 'CENTRO MUNICIPAL DE SAUDE')
-                then ['CF/CMS']
-                else array(select estabelecimento.estabelecimento_tipo)
+                    then ['CF/CMS']
+                when trim(estabelecimento.estabelecimento_tipo)
+                    in ('CENTRO DE ATENCAO PSICOSSOCIAL')
+                    then ['CAPS']
+                when trim(estabelecimento.estabelecimento_tipo)
+                    in ('CLINICA/CENTRO DE ESPECIALIDADE', 'CE')
+                    then ['ESPECIALIDADE']
+                when trim(estabelecimento.estabelecimento_tipo)
+                    in ('CENTRO SAUDE ESCOLA')
+                    then ['CSE']
+                when trim(estabelecimento.estabelecimento_tipo)
+                    in ('CENTRO DE EMERGENCIA REGIONAL')
+                    then ['CER']
+                when trim(estabelecimento.estabelecimento_tipo)
+                    in ('UNIDADE PRISIONAL')
+                    then ['PRISIONAL']
+                else array(
+                    select trim(estabelecimento.estabelecimento_tipo)
+                )
             end as filter_tags,
             struct(
                 not (

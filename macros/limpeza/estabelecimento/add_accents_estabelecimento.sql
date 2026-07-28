@@ -1,4 +1,3 @@
-
 {% macro add_accents_estabelecimento(text) %}
 case
     when upper({{text}}) = 'CF NELIO DE OLIVEIRA' then 'CF NÉLIO DE OLIVEIRA'
@@ -148,5 +147,4 @@ case
     when upper({{text}}) = 'SUPER CENTRO CARIOCA DE VACINACAO' then 'SUPER CENTRO CARIOCA DE VACINAÇÃO'
     else upper({{text}})
 end 
-
 {% endmacro %}

@@ -777,3 +777,64 @@ models:
         description: Particionamento pelo CPF do paciente
         policy_tags:
           - '{{ var("TAG_CPF") }}'
+
+  - name: mart_historico_clinico_app__regulacao
+    description: Solicitações de regulação.
+    columns:
+      - name: solicitacao_id
+        description: Identificador da solicitação.
+        policy_tags:
+          - '{{ var ("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: solicitacao_datahora
+        description: Data/hora da solicitação.
+      - name: atualizacao_datahora
+        description: Data/hora de atualização da solicitação.
+
+      - name: detalhe_tipo
+        description: Tipo da entrada (ex. agendamento, solicitação, ...)
+      - name: detalhe_status
+        description: >
+          Situação atual da solicitação/agendamento (ex. aprovada, negada, ...)
+      - name: detalhe_responsavel
+        description: Responsável pela situação atual da solicitação/agendamento.
+      - name: classificacao_risco
+        description: >
+          Classificação de risco do paciente, de azul (menos urgente) a vermelho (mais urgente).
+
+      - name: data_desejada
+        description: Data requisitada para a execução do procedimento.
+      - name: unidade_desejada
+        description: Nome do estabelecimento requisitado para a execução do procedimento.
+
+      - name: procedimento_descricao
+        description: Descrição do procedimento a ser executado.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+
+      - name: unidade_solicitante
+        description: Nome do estabelecimento que submeteu a solicitação.
+      - name: profissional_solicitante
+        description: Nome do profissional que submeteu a solicitação.
+
+      - name: laudo
+        description: >
+          Informações descrevendo a necessidade do procedimento, quando
+          submetidas pelo solicitante, ou de mais detalhes, quando pelo regulador.
+        policy_tags:
+          - '{{ var ("TAG_DADO_CLINICO") }}'
+
+      - name: marcacao
+        description: >
+          Informações sobre a data e hora marcados para a execução do procedimento.
+
+      - name: execucao
+        description: >
+          Informações sobre o profissional e a unidade responsáveis pela
+          execução do procedimento.
+
+      - name: fonte
+        description: Fonte do dado (ex. "sisreg").
+      - name: cpf_particao
+        description: Coluna de particionamento da tabela.
+        policy_tags:
+          - '{{ var ("TAG_CPF") }}'

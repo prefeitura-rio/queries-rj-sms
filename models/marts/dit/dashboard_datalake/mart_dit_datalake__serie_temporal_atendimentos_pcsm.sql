@@ -11,7 +11,6 @@
         cluster_by=['data_registro'],
         unique_key=['data_registro'],
         description='Série temporal de atendimentos por data de entrada no prontuário do PCSM',
-        tags=['datalake']
     )
 }}
 

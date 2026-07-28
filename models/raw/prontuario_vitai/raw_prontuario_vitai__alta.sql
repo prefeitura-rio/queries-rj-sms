@@ -61,7 +61,7 @@ select
     safe_cast(tipo_alta_detalhada as string) as alta_tipo_detalhado,
     safe_cast(tipo_alta as string) as alta_tipo,
     safe_cast(data_obito as string) as obito_data,
-    safe_cast(data_alta as string) as alta_data,
+    safe_cast(data_alta as datetime) as alta_data,
     safe_cast(motivo_saida as string) as saida_motivo,
     safe_cast(alta_medica as string) as alta_medica,
     safe_cast(alta_administrativa as timestamp) as alta_administrativa_data,

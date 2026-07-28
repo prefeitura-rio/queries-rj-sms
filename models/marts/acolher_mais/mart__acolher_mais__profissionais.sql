@@ -12,13 +12,31 @@ ultima_particao_disponivel as (
   from {{ref('raw_gdb_cnes__vinculo')}}
 ),
 
+profissionais as (
+  select *
+  from {{ref('raw_gdb_cnes__profissional')}}
+  where data_particao = (select data_particao from ultima_particao_disponivel)
+),
+
+equipes as (
+  select *
+  from {{ref('raw_gdb_cnes__equipe')}}
+  where data_particao = (select data_particao from ultima_particao_disponivel)
+),
+
+equipe_profissionais as (
+  select *
+  from {{ref('raw_gdb_cnes__equipe_profissionais')}}
+  where data_particao = (select data_particao from ultima_particao_disponivel)
+),
+
 vinculos as (
   select p.cpf, p.nome, right(v.id_unidade,7) as id_cnes, ep.id_cbo as ocupacao_cbo, e.equipe_ine, e.equipe_nome
   from {{ref('raw_gdb_cnes__vinculo')}} v
-    inner join {{ref('raw_gdb_cnes__profissional')}} p using (id_profissional_sus)
-    inner join {{ref('raw_gdb_cnes__equipe_profissionais')}} ep using (id_profissional_sus)
-    inner join {{ref('raw_gdb_cnes__equipe')}} e on e.equipe_sequencial = ep.equipe_sequencial
-    inner join {{ref('raw_datasus__cbo')}} c on (ep.id_cbo = c.id_cbo)
+    inner join profissionais p using (id_profissional_sus)
+    inner join equipe_profissionais ep using (id_profissional_sus)
+    inner join equipes e on e.equipe_sequencial = ep.equipe_sequencial
+    left join {{ref('raw_datasus__cbo')}} c on (ep.id_cbo = c.id_cbo)
     where
       v.data_particao = (select data_particao from ultima_particao_disponivel) and (
       ep.id_cbo in (
@@ -27,7 +45,7 @@ vinculos as (
           '322245', -- Tecnico de Enfermagem da ESF
           '322205', -- Tecnico de Enfermagem
           '223565', -- Enfermeiro
-          '223505'  -- Enfermeiro
+          '223505',  -- Enfermeiro
           '225142', -- Medico da estrategia de saude da familia
           '225124', -- Medico Pediatra
           '225130', -- Medico de Fam e Comunidade
