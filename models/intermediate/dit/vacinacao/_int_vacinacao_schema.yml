@@ -1,0 +1,358 @@
+version: 2
+
+models:
+  - name: int_vacinacao__vitacare_historico
+    description: >
+      Modelo intermediário que padroniza os dados de vacinação do Vitacare (histórico/backup).
+      Realiza joins com cadastro, profissional, dimensão de estabelecimento e depara de vacinas
+      para produzir um schema unificado de 26 colunas.
+    columns:
+      - name: id_vacinacao
+        description: Identificador único da vacinação, composto por id_cnes e id local.
+        data_tests:
+          - unique:
+              config:
+                severity: warn
+      - name: id_cnes
+        description: Identificador CNES do estabelecimento de saúde onde a vacina foi administrada.
+      - name: id_equipe
+        description: Identificador da equipe de saúde vinculada ao paciente.
+      - name: id_ine_equipe
+        description: Identificador INE da equipe de saúde conforme o CNES.
+      - name: id_microarea
+        description: Identificador da microárea de atuação da equipe de saúde.
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de saúde (limpo, via dim_estabelecimento).
+      - name: vacina_nome
+        description: Nome padronizado da vacina administrada (via depara_vacinas).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_codigo
+        description: Código SIPNI da vacina (via depara_vacinas).
+      - name: vacina_dose
+        description: Dose da vacina.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_lote
+        description: Número do lote da vacina.
+      - name: vacina_aplicacao_data
+        description: Data de aplicação da vacina.
+      - name: vacina_registro_data
+        description: Data em que o registro da vacina foi efetivado no sistema.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: vacina_registro_tipo
+        description: Tipo de registro da vacina.
+      - name: paciente_cns
+        description: CNS (Cartão Nacional de Saúde) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: Nome do paciente vacinado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: paciente_obito
+        description: Indicador de óbito do paciente (true se falecido).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profissional_nome
+        description: Nome do profissional de saúde que registrou a vacina.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: profissional_cbo
+        description: Código CBO do profissional.
+      - name: profissional_cns
+        description: CNS do profissional.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: profissional_cpf
+        description: CPF do profissional.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: loaded_at
+        description: Data/hora de carga no Data Lake.
+      - name: updated_at
+        description: Data/hora da última atualização do registro.
+      - name: data_particao
+        description: Data de partição para otimização de consultas.
+
+  - name: int_vacinacao__vitacare_api
+    description: >
+      Modelo intermediário que padroniza os dados de vacinação do Vitacare (centralizadora API).
+      Utiliza dados já enriquecidos do modelo centralizadora com informações de paciente,
+      profissional e equipe embutidas no payload JSON.
+    columns:
+      - name: id_vacinacao
+        description: Identificador único da vacinação, composto por id_cnes e id local.
+        data_tests:
+          - unique:
+              config:
+                severity: warn
+      - name: id_cnes
+        description: Identificador CNES do estabelecimento de saúde onde a vacina foi administrada.
+      - name: id_equipe
+        description: Identificador da equipe de saúde vinculada ao paciente.
+      - name: id_ine_equipe
+        description: Identificador INE da equipe de saúde conforme o CNES.
+      - name: id_microarea
+        description: Identificador da microárea de atuação da equipe de saúde.
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de saúde (limpo, via dim_estabelecimento).
+      - name: vacina_nome
+        description: Nome padronizado da vacina administrada (via depara_vacinas).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_codigo
+        description: Código SIPNI da vacina (via depara_vacinas).
+      - name: vacina_dose
+        description: Dose da vacina.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_lote
+        description: Número do lote da vacina.
+      - name: vacina_aplicacao_data
+        description: Data de aplicação da vacina.
+      - name: vacina_registro_data
+        description: Data em que o registro da vacina foi efetivado no sistema.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: vacina_registro_tipo
+        description: Tipo de registro da vacina.
+      - name: paciente_cns
+        description: CNS (Cartão Nacional de Saúde) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: Nome do paciente vacinado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: paciente_obito
+        description: Indicador de óbito do paciente (true se falecido).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profissional_nome
+        description: Nome do profissional de saúde que registrou a vacina.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: profissional_cbo
+        description: Código CBO do profissional.
+      - name: profissional_cns
+        description: CNS do profissional.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: profissional_cpf
+        description: CPF do profissional.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: loaded_at
+        description: Data/hora de carga no Data Lake.
+      - name: updated_at
+        description: Data/hora da última atualização do registro.
+      - name: data_particao
+        description: Data de partição para otimização de consultas.
+
+  - name: int_vacinacao__vitacare_continuo
+    description: >
+      Modelo intermediário que padroniza os dados de vacinação do Vitacare (API diária contínua).
+      Realiza joins com cadastro (para dados do paciente) e dimensões de estabelecimento e vacinas
+      para produzir um schema unificado de 26 colunas.
+    columns:
+      - name: id_vacinacao
+        description: Identificador único da vacinação, composto por id_cnes e id local.
+        data_tests:
+          - unique:
+              config:
+                severity: warn
+      - name: id_cnes
+        description: Identificador CNES do estabelecimento de saúde onde a vacina foi administrada.
+      - name: id_equipe
+        description: Identificador da equipe de saúde vinculada ao paciente.
+      - name: id_ine_equipe
+        description: Identificador INE da equipe de saúde conforme o CNES.
+      - name: id_microarea
+        description: Identificador da microárea de atuação da equipe de saúde.
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de saúde (limpo, via dim_estabelecimento).
+      - name: vacina_nome
+        description: Nome padronizado da vacina administrada (via depara_vacinas).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_codigo
+        description: Código SIPNI da vacina (via depara_vacinas).
+      - name: vacina_dose
+        description: Dose da vacina.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_lote
+        description: Número do lote da vacina.
+      - name: vacina_aplicacao_data
+        description: Data de aplicação da vacina.
+      - name: vacina_registro_data
+        description: Data em que o registro da vacina foi efetivado no sistema.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: vacina_registro_tipo
+        description: Tipo de registro da vacina.
+      - name: paciente_cns
+        description: CNS (Cartão Nacional de Saúde) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: Nome do paciente vacinado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: paciente_obito
+        description: Indicador de óbito do paciente (true se falecido).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profissional_nome
+        description: Nome do profissional de saúde que registrou a vacina.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: profissional_cbo
+        description: Código CBO do profissional.
+      - name: profissional_cns
+        description: CNS do profissional.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: profissional_cpf
+        description: CPF do profissional.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: loaded_at
+        description: Data/hora de carga no Data Lake.
+      - name: updated_at
+        description: Data/hora da última atualização do registro.
+      - name: data_particao
+        description: Data de partição para otimização de consultas.
+
+  - name: int_vacinacao__sipni
+    description: >
+      Modelo intermediário que padroniza os dados de vacinação do SIPNI (Sistema de Informação
+      do Programa Nacional de Imunizações). Algumas colunas são preenchidas com NULL pois não
+      estão disponíveis na fonte SIPNI (equipe, obito, profissional_cbo/cns/cpf).
+    columns:
+      - name: id_vacinacao
+        description: Identificador único da vacinação, composto por id_cnes e id local.
+        data_tests:
+          - unique:
+              config:
+                severity: warn
+      - name: id_cnes
+        description: Identificador CNES do estabelecimento de saúde onde a vacina foi administrada.
+      - name: id_equipe
+        description: Identificador da equipe de saúde (não disponível no SIPNI, preenchido com NULL).
+      - name: id_ine_equipe
+        description: Identificador INE da equipe de saúde (não disponível no SIPNI, preenchido com NULL).
+      - name: id_microarea
+        description: Identificador da microárea (não disponível no SIPNI, preenchido com NULL).
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de saúde (limpo, via dim_estabelecimento).
+      - name: vacina_nome
+        description: Nome padronizado da vacina administrada (via depara_vacinas).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_codigo
+        description: Código SIPNI da vacina (via depara_vacinas).
+      - name: vacina_dose
+        description: Dose da vacina.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_lote
+        description: Número do lote da vacina.
+      - name: vacina_aplicacao_data
+        description: Data de aplicação da vacina.
+      - name: vacina_registro_data
+        description: Data de registro da vacina (no SIPNI, igual à data de aplicação).
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: vacina_registro_tipo
+        description: Tipo de registro da vacina.
+      - name: paciente_cns
+        description: CNS (Cartão Nacional de Saúde) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: Nome do paciente vacinado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: paciente_obito
+        description: Indicador de óbito do paciente (não disponível no SIPNI, preenchido com NULL).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profissional_nome
+        description: Nome do profissional de saúde que registrou a vacina.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: profissional_cbo
+        description: Código CBO do profissional (não disponível no SIPNI, preenchido com NULL).
+      - name: profissional_cns
+        description: CNS do profissional (não disponível no SIPNI, preenchido com NULL).
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: profissional_cpf
+        description: CPF do profissional (não disponível no SIPNI, preenchido com NULL).
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: loaded_at
+        description: Data/hora de carga no Data Lake.
+      - name: updated_at
+        description: Data/hora da última atualização do registro.
+      - name: data_particao
+        description: Data de partição para otimização de consultas.
