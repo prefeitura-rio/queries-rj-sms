@@ -17,7 +17,7 @@ select
 
   {{ normalize_null("regexp_replace(trim(orgao), r'[\\n\\r\\t]+', '')") }} as orgao,
 
-  {{ normalize_null("regexp_replace(trim(vara_do), r'[\\n\\r\\t]+', '')") }} as processo,
+  {{ normalize_null("regexp_replace(trim(processo), r'[\\n\\r\\t]+', '')") }} as processo,
 
   regexp_replace(trim({{ normalize_null('assunto') }}), r'\s+', ' ') as assunto,
 
