@@ -28,6 +28,8 @@ select
     id_unidade,
     {{ proper_estabelecimento('nome_razao_social') }} as razao_social,
     {{ add_accents_estabelecimento('nome_fantasia') }} as nome_fantasia,
+    
+    -- Metadados
     data_atualizao_registro as atualizado_em,
     current_date('America/Sao_Paulo') processado_em
 from estabelecimento
