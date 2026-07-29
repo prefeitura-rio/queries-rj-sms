@@ -12,7 +12,6 @@
     )
 }}
 
--- TODO: Adiciona particionamento e desenvolver lógica incremental 
 
 {% set partitions_to_replace = (
     "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
@@ -50,7 +49,8 @@ select
    coalesce(
     safe_cast(datahora_inicio as date),
     safe_cast(datahora_fim as date)
-   ) as data_particao
+   ) as data_particao,
+   safe_cast(cpf as int64) as cpf_particao
 from atendimento
 where 
     {{ parse_and_filter_future_datetime('datahora_inicio') }} is not null
