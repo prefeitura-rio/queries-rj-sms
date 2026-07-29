@@ -2,11 +2,11 @@
     config(
         alias="gestante_acompanhamento_mensal",
         schema="projeto_ipp",
-        materialized="incremental",
+        materialized="table",
         unique_key='id',
         partition_by={
             'field': 'cpf_particao',
-            'data_type': 'int64'
+            'data_type': 'int64',
             'range': {'start': 0, 'end': 100000000000, 'interval': 34722222},
         }
     )
@@ -31,9 +31,6 @@ with
       periodo_extracao,
       metadados
     from {{ ref('raw_informes_vitacare__acompanhamento_mensal_gestantes') }}
-    {% if is_incremental() %}
-        where data_particao >= {{ 'last_partition' }}
-    {% endif %}
   )
 
 select

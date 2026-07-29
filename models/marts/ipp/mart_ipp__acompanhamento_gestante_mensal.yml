@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: mart_ipp__acompanhamento_gestante_mensal
+    description: >
+      Acompanhamento mensal de gestantes da atenção primária, originado dos
+      informes Vitacare. Modelo incremental particionado por CPF (int64).
+      Cada linha representa uma extração periódica de dados de pré-natal
+      de uma gestante, identificada de forma única pelo campo id.
+    columns:
+      - name: id
+        description: Identificador surrogate único do registro de acompanhamento (gerado na fonte).
+        tests:
+          - unique
+          - not_null
+
+      - name: cpf
+        description: CPF da gestante.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: cpf_valido
+        description: Indica se o CPF da gestante é válido segundo os dígitos verificadores.
+
+      - name: nome
+        description: Nome completo da gestante.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: data_nascimento
+        description: Data de nascimento da gestante.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: mae_nome
+        description: Nome da mãe da gestante.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+
+      - name: semana_gestacional_1o_pre_natal
+        description: Semana gestacional no momento da primeira consulta de pré-natal.
+
+      - name: data_ultimo_pre_natal
+        description: Data da última consulta de pré-natal registrada.
+
+      - name: risco_gestacional
+        description: Classificação de risco gestacional atribuída à gestante (ex. habitual, alto risco).
+
+      - name: periodo_extracao_inicio
+        description: Data de início do período de extração dos dados desta competência.
+
+      - name: periodo_extracao_fim
+        description: Data de fim do período de extração dos dados desta competência.
+
+      - name: periodo_extracao
+        description: Identificador do período de extração (ex. "2024-01").
+
+      - name: criado_em
+        description: Data e hora de criação do registro no sistema de origem (timezone America/Sao_Paulo).
+
+      - name: processado_em
+        description: Data e hora em que o registro foi processado por este pipeline (timezone America/Sao_Paulo).
+
+      - name: cpf_particao
+        description: CPF da gestante convertido para inteiro (int64), utilizado como campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
