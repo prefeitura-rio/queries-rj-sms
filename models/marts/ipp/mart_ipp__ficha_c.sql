@@ -2,12 +2,15 @@
     config(
         alias="ficha_c",
         schema="projeto_ipp",
-        materialized="incremental",
-        description='Tabela contendo os atendimentos da atenção primária do município do Rio de Janeiro. Dados oriundos do prontuário Vitacare'
+        materialized="table",
+        partition_by={
+            "field": "cpf_particao",
+            "data_type": "int64",
+            "range": {"start": 0, "end": 100000000000, "interval": 34722222},
+        },
     )
 }}
 
--- TODO: Adiciona particionamento e desenvolver lógica incremental 
 
 with 
 ficha_c as (
@@ -28,6 +31,7 @@ ficha_c as (
     ano_particao,
     mes_particao,
     data_particao,
+    metadados
   from {{ ref('raw_informes_vitacare__ficha_c_v2') }}
 )
 
@@ -48,4 +52,10 @@ select
     ano_particao,
     mes_particao,
     data_particao,
+    
+    -- Metadados
+    metadados.criado_em as criado_em,
+    current_datetime('America/Sao_Paulo') as processado_em,
+
+    safe_cast(cpf as int64) as cpf_particao
 from ficha_c
