@@ -339,6 +339,29 @@ models:
           dado_sensivel: sim
           dominio: subpav
 
+      medirec:
+        +schema: brutos_medirec
+        +tags: ["monthly", "medirec"]
+        +meta:
+          owner: daniel
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+      rnds_historico:
+        +schema: brutos_rnds_historico
+        +tags: ["monthly", "rnds_historico"]
+        +meta:
+          owner: daniel
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+
       ##################
       ## Prontuários
       prontuario_vitacare:
