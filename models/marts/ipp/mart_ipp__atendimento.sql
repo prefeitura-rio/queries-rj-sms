@@ -27,6 +27,7 @@ with
       {{ parse_and_filter_future_datetime('datahora_inicio') }} as datahora_inicio,
       datahora_fim,
       updated_at,
+      loaded_at,
       data_particao
     from {{ ref('raw_prontuario_vitacare__atendimento') }}
     {% if is_incremental() %}
@@ -43,6 +44,7 @@ select
    datahora_fim as fim_datahora,
 
    -- Metadados
+   loaded_at as carregado_em,
    updated_at as atualizado_em,
    current_datetime('America/Sao_Paulo') as processado_em,
   

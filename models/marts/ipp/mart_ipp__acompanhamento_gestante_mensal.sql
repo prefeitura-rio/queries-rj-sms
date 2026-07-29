@@ -49,6 +49,7 @@ select
     
     -- Metadados
     datetime(metadados.criado_em, 'America/Sao_Paulo') as criado_em,
+    datetime(metadados.carregado_em, 'America/Sao_Paulo') as carregado_em,
     current_datetime('America/Sao_Paulo') as processado_em,
 
     safe_cast(cpf as int64) as cpf_particao    

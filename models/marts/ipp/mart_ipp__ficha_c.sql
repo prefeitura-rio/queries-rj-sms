@@ -49,12 +49,13 @@ select
     estado_nutricional,
     atraso_desenvolvimento,
     sinais_risco,
+    
+    -- Metadados
     ano_particao,
     mes_particao,
     data_particao,
-    
-    -- Metadados
-    metadados.criado_em as criado_em,
+    datetime(metadados.criado_em, 'America/Sao_Paulo') as criado_em,
+    datetime(metadados.carregado_em, 'America/Sao_Paulo') as carregado_em,
     current_datetime('America/Sao_Paulo') as processado_em,
 
     safe_cast(cpf as int64) as cpf_particao

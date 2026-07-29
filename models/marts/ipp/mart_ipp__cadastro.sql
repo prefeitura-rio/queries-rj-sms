@@ -39,5 +39,12 @@ select
   dados.identidade_validada_indicador,
   dados.cpf_valido_indicador,
   contato.telefone,
+  
+  -- Metadados
+  current_datetime('America/Sao_Paulo') as processado_em,
+  
   cpf_particao,
+
+
+
 from paciente 

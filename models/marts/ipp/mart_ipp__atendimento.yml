@@ -27,6 +27,9 @@ models:
 
       - name: fim_datahora
         description: Data e hora de término do atendimento (timezone America/Sao_Paulo).
+      
+      - name: carregado_em
+        description: Data e hora do carregamento no Data Lake da SMS.
 
       - name: atualizado_em
         description: Data e hora da última atualização do registro no sistema de origem.

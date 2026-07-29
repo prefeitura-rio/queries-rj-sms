@@ -31,7 +31,9 @@ with
             familia_beneficiaria_cfc,
             familia_beneficiaria_auxilio_brasil,
             -- hanseniase,
-            -- tuberculose
+            -- tuberculose,
+            updated_at,
+            loaded_at
         from {{ ref('raw_prontuario_vitacare__ficha_a') }}
     )
 
@@ -53,5 +55,11 @@ select
         true, 
         false
     ) as recebe_algum_beneficio,
+
+    -- Metadados
+    loaded_at as carregado_em,
+    updated_at as atualizado_em, 
+    current_datetime('America/Sao_Paulo') as processado_em,
+    
     safe_cast(cpf as int64) as cpf_particao
 from ficha_a

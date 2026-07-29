@@ -68,6 +68,9 @@ models:
         policy_tags:
           - '{{ var("TAG_TELEFONE") }}'
 
+      - name: processado_em
+        description: Data e hora em que o registro foi processado por este pipeline.
+
       - name: cpf_particao
         description: CPF do paciente convertido para inteiro, utilizado como campo de particionamento da tabela.
         policy_tags:
