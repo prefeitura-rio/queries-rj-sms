@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: mart_ipp__cadastro
+    description: >
+      Visão consolidada dos cadastros de pacientes da atenção primária,
+      originada do histórico clínico integrado (HCI). Cada linha representa
+      um paciente identificado por CPF.
+    columns:
+      - name: cpf
+        description: CPF do paciente.
+        tests:
+          - unique
+          - not_null
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: nome
+        description: Nome completo do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: nome_social
+        description: Nome social do paciente, quando informado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: genero
+        description: Gênero do paciente conforme cadastro.
+
+      - name: raca
+        description: Raça/cor do paciente conforme cadastro.
+
+      - name: obito_indicador
+        description: Indicador booleano de óbito do paciente (true = falecido).
+
+      - name: obito_data
+        description: Data de óbito do paciente, quando disponível.
+
+      - name: mae_nome
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+
+      - name: pai_nome
+        description: Nome do pai do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_PAI") }}'
+
+      - name: identidade_validada_indicador
+        description: Indica se a identidade do paciente foi validada (true = validada).
+
+      - name: cpf_valido_indicador
+        description: Indica se o CPF do paciente é válido segundo dígitos verificadores.
+
+      - name: telefone
+        description: Telefone de contato do paciente.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: cpf_particao
+        description: CPF do paciente convertido para inteiro, utilizado como campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

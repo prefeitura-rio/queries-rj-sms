@@ -14,14 +14,14 @@
 with 
 
 paciente as (
-  SELECT 
+  select 
     cpf,
     cns,
     dados,
     cpf_particao,
     contato,
     endereco 
-  FROM {{ ref('mart_historico_clinico__paciente') }}
+  from {{ ref('mart_historico_clinico__paciente') }}
 )
 
 select
