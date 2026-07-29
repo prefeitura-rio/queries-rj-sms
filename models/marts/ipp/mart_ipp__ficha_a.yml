@@ -58,3 +58,8 @@ models:
           Indica se a família recebe algum benefício social (CFC ou Auxílio Brasil).
           Derivado da combinação dos campos familia_beneficiaria_cfc e
           familia_beneficiaria_auxilio_brasil da fonte.
+          
+      - name: cpf_particao
+        description: CPF do paciente convertido para inteiro, utilizado como campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
