@@ -1,18 +1,18 @@
 {{
-    config(
-        schema="intermediario_vacinacao",
-        alias="vitacare_continuo", 
-        materialized="incremental",
-        incremental_strategy="merge",
-        unique_key = ['id_vacinacao'],
-        cluster_by= ['id_cnes', 'vacina_nome'],
-        tags=['daily', 'vacinacao'],
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "day"
-        }
-    )
+  config(
+    schema="intermediario_vacinacao",
+    alias="vitacare_continuo", 
+    materialized="incremental",
+    incremental_strategy="merge",
+    unique_key = ['id_vacinacao'],
+    cluster_by= ['id_cnes', 'vacina_nome'],
+    tags=['daily', 'vacinacao'],
+    partition_by={
+      "field": "data_particao",
+      "data_type": "date",
+      "granularity": "day"
+    }
+  )
 }}
 
 with
@@ -38,6 +38,12 @@ with
       updated_at,
       data_particao
     from {{ ref('raw_prontuario_vitacare_api__vacina') }}
+    qualify row_number() over(
+      partition by id_vacinacao
+      -- Prioriza o mais recentemente atualizado e, se igual, o
+      -- menos recentemente carregado (= preserva o primeiro loaded_at)
+      order by updated_at desc, loaded_at asc
+    ) = 1
   ),
 
   cadastro as (

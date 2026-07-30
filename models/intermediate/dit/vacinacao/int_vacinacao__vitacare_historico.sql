@@ -1,23 +1,23 @@
 {{
-    config(
-        schema="intermediario_vacinacao",
-        alias="vitacare_historico", 
-        materialized="incremental",
-        incremental_strategy="merge",
-        unique_key = ['id_vacinacao'],
-        cluster_by= ['id_cnes', 'vacina_nome'],
-        tags=['daily', 'vacinacao'],
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "day"
-        }
-    )
+  config(
+    schema="intermediario_vacinacao",
+    alias="vitacare_historico", 
+    materialized="incremental",
+    incremental_strategy="merge",
+    unique_key = ['id_vacinacao'],
+    cluster_by= ['id_cnes', 'vacina_nome'],
+    tags=['daily', 'vacinacao'],
+    partition_by={
+      "field": "data_particao",
+      "data_type": "date",
+      "granularity": "day"
+    }
+  )
 }}
 
 with
   vacinacao as (
-    select 
+    select
 
       -- keys
       id_vacinacao,
@@ -32,7 +32,7 @@ with
       lote as vacina_lote,
 
       data_aplicacao as vacina_aplicacao_data,
-      data_registro as vacina_registro_data, 
+      data_registro as vacina_registro_data,
 
       calendario_vacinal_atualizado as vacina_calendario_atualizado,
       tipo_registro as vacina_registro_tipo,
@@ -44,12 +44,18 @@ with
       loaded_at,
       updated_at,
       data_registro as data_particao
-    
+
     from {{ ref('raw_prontuario_vitacare_historico__vacina') }}
+    qualify row_number() over(
+      partition by id_vacinacao
+      -- Prioriza o mais recentemente atualizado e, se igual, o
+      -- menos recentemente carregado (= preserva o primeiro loaded_at)
+      order by updated_at desc, loaded_at asc
+    ) = 1
   ),
 
   paciente as (
-    select 
+    select
         id_global as id_paciente,
         id_cnes,
         ap as area_programatica,
@@ -68,19 +74,26 @@ with
         npront as paciente_id_prontuario
         
     from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
-    qualify row_number() over( partition by id_local, id_cnes order by greatest(data_cadastro, data_atualizacao_cadastro, updated_at) desc
+    qualify row_number() over(
+        partition by id_local, id_cnes
+        order by greatest(
+          data_cadastro, data_atualizacao_cadastro, updated_at
+        ) desc
     ) = 1
   ),
 
   profissional as (
-    select 
+    select
       id_global as id_profissional,
       profissional_cns,
       profissional_cpf,
       profissional_cbo,
       profissional_nome
     from {{ ref('raw_prontuario_vitacare_historico__profissional') }}
-    qualify row_number() over( partition by id_global order by loaded_at desc) = 1
+    qualify row_number() over(
+      partition by id_global
+      order by loaded_at desc
+    ) = 1
   ),
 
   estabelecimento as (
@@ -129,17 +142,15 @@ with
       va.updated_at,
       va.vacina_registro_data as data_particao
 
-    
     from vacinacao va
     left join paciente pa
       on va.id_cadastro = pa.id_paciente
-    left join estabelecimento es 
+    left join estabelecimento es
       on va.id_cnes = es.id_cnes
-    left join profissional pr 
+    left join profissional pr
       on va.id_profissional = pr.id_profissional
     left join {{ ref("raw_sheets__depara_vacinas") }} dv 
-      on va.vacina_nome = dv.nome_original 
+      on va.vacina_nome = dv.nome_original
   )
 
 select * from final
-    
