@@ -43,3 +43,8 @@ models:
           inicio_datahora, com fallback para fim_datahora quando nula.
         tests:
           - not_null
+
+      - name: cpf_particao
+        description: CPF do paciente convertido para inteiro, utilizado como campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

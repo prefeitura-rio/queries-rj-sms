@@ -3,7 +3,6 @@
         alias="gestante_acompanhamento_mensal",
         schema="projeto_ipp",
         materialized="table",
-        unique_key='id',
         partition_by={
             'field': 'cpf_particao',
             'data_type': 'int64',
@@ -11,8 +10,6 @@
         }
     )
 }}
-
-{% set last_partition = get_last_partition_date(this) %}
 
 with 
   acompanhamento_gestante as (

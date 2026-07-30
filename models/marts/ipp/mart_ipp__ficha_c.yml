@@ -5,8 +5,8 @@ models:
     description: >
       Ficha C de acompanhamento de crianças da atenção primária, originada
       dos informes Vitacare (ficha_c_v2). Contém indicadores de saúde e
-      desenvolvimento infantil por competência mensal. Modelo incremental
-      particionado por data de competência.
+      desenvolvimento infantil por competência mensal. Modelo tabela
+      particionado por CPF (int64 range).
     columns:
       - name: cpf
         description: CPF da criança.

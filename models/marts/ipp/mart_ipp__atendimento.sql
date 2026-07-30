@@ -7,8 +7,7 @@
             "field": "data_particao",
             "data_type": "date",
             "granularity": "month"
-        },
-        description='Tabela contendo os atendimentos da atenção primária do município do Rio de Janeiro. Dados oriundos do prontuário Vitacare'
+        }
     )
 }}
 

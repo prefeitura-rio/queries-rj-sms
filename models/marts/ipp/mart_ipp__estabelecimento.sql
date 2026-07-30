@@ -31,7 +31,7 @@ select
     
     -- Metadados
     data_atualizao_registro as atualizado_em,
-    current_date('America/Sao_Paulo') processado_em
+    current_date('America/Sao_Paulo') as processado_em
 from estabelecimento
 
 

@@ -4,7 +4,7 @@ models:
   - name: mart_ipp__acompanhamento_gestante_mensal
     description: >
       Acompanhamento mensal de gestantes da atenção primária, originado dos
-      informes Vitacare. Modelo incremental particionado por CPF (int64).
+      informes Vitacare. Modelo tabela particionado por CPF (int64).
       Cada linha representa uma extração periódica de dados de pré-natal
       de uma gestante, identificada de forma única pelo campo id.
     columns:

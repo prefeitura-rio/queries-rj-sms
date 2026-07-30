@@ -59,8 +59,8 @@ models:
           Derivado da combinação dos campos familia_beneficiaria_cfc e
           familia_beneficiaria_auxilio_brasil da fonte.
 
-      - name: criado_em
-        description: Data e hora de criação do registro no sistema de origem (timezone America/Sao_Paulo).
+      - name: atualizado_em
+        description: Data e hora da última atualização do registro no sistema de origem (timezone America/Sao_Paulo).
 
       - name: carregado_em
         description: Data e hora de carregamento do registro no Data Lake da SMS (timezone America/Sao_Paulo).
