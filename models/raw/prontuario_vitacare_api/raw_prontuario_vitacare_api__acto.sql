@@ -61,7 +61,7 @@ with
       {{ process_null("json_extract_scalar(data,'$.ut_id')") }} as ut_id,
       safe_cast({{ process_null("json_extract_scalar(data,'$.consulta_realizada')") }} as boolean) as realizado,
       loaded_at,
-      date(loaded_at  ) as data_particao
+      date(loaded_at) as data_particao
     from bruto_atendimento
   )
 

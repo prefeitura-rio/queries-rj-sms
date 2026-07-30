@@ -64,5 +64,3 @@ with
 
 select * from final
 
-  
-  
