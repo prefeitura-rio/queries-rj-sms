@@ -29,11 +29,11 @@ Nenhuma lógica de tratamento avançado aqui
 - Datas com valor <= 1900-01-01 são bug conhecido da fonte (ausência de data
   real) — tratadas como inválidas já nesta camada.
 - **Preservação de proveniência (Metadados):** Como o arquivo de origem é cumulativo, 
-- cada novo backup mensal traz todos os registros antigos novamente. Para evitar que a 
-- data original de ingestão seja perdida em cada atualização, utilizamos a estratégia 
-- incremental com `merge_exclude_columns` no dbt. Isso garante que a coluna `loaded_at` 
-- represente fielmente a data da *primeira vez* que o registro entrou no Data Lake, 
-- sem ser sobrescrita pelas cargas subsequentes.
+  cada novo backup mensal traz todos os registros antigos novamente. Para evitar que a 
+  data original de ingestão seja perdida em cada atualização, utilizamos a estratégia 
+  incremental com `merge_exclude_columns` no dbt. Isso garante que a coluna `loaded_at` 
+  represente fielmente a data da *primeira vez* que o registro entrou no Data Lake, 
+  sem ser sobrescrita pelas cargas subsequentes.
 
 ## Dependências
 - **Upstream:** brutos_prontuario_vitacare_historico_staging.vacinas
