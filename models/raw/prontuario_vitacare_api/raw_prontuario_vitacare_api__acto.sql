@@ -1,14 +1,17 @@
-{{ config(
-  alias="acto",
-  schema="brutos_prontuario_vitacare_api",
-  materialized="incremental",
-  incremental_strategy="insert_overwrite",
-  partition_by={
-    "field": "data_particao",
-    "data_type": "date",
-    "granularity": "day"
-  }
-) }}
+{{
+  config(
+    alias="acto", 
+    schema="brutos_prontuario_vitacare_api",
+    materialized="incremental",
+    incremental_strategy="insert_overwrite",
+    cluster_by= ['id_cnes', 'tipo_atendimento'],
+    partition_by={
+      "field": "data_particao",
+      "data_type": "date",
+      "granularity": "day"
+    },
+  )
+}}
 
 {% set last_partition = get_last_partition_date(this) %}
 
@@ -48,6 +51,7 @@ with
       datahora_fim_atendimento,
       safe_cast(json_extract_scalar(data,'$.datahora_marcacao_atendimento') as datetime) as datahora_marcacao_atendimento,
       {{ process_null("json_extract_scalar(data,'$.tipo_consulta')") }} as tipo_consulta,
+      {{ process_null("json_extract_scalar(data,'$.tipo_atendimento')") }} as tipo_atendimento,
       safe_cast({{ process_null("json_extract_scalar(data,'$.eh_coleta')") }} as boolean) as eh_coleta,
       {{ process_null("json_extract_scalar(data,'$.soap_subjetivo_motivo')") }} as subjetivo_motivo,
       {{ process_null("json_extract_scalar(data,'$.soap_plano_observacoes')") }} as plano_observacoes,
@@ -56,9 +60,8 @@ with
       {{ process_null("json_extract_scalar(data,'$.notas_observacoes')") }} as notas_observacoes,
       {{ process_null("json_extract_scalar(data,'$.ut_id')") }} as ut_id,
       safe_cast({{ process_null("json_extract_scalar(data,'$.consulta_realizada')") }} as boolean) as realizado,
-      {{ process_null("json_extract_scalar(data,'$.saude_bucal[0].tipo_atendimento')") }} as tipo_atendimento,
       loaded_at,
-      date(datahora_fim_atendimento) as data_particao
+      date(loaded_at  ) as data_particao
     from bruto_atendimento
   )
 
