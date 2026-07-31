@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: mart_ipp__ficha_a
+    description: >
+      Ficha A de cadastro domiciliar e territorial da atenção primária,
+      originada do prontuário Vitacare. Cada linha representa o cadastro
+      de um indivíduo com informações socioeconômicas e de vulnerabilidade.
+    columns:
+      - name: cpf
+        description: CPF do indivíduo cadastrado.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: cpf_valido
+        description: Indica se o CPF do indivíduo é válido segundo os dígitos verificadores.
+
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do indivíduo.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: nome
+        description: Nome completo do indivíduo cadastrado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: nome_social
+        description: Nome social do indivíduo, quando informado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: mae_nome
+        description: Nome da mãe do indivíduo.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+
+      - name: data_cadastro
+        description: Data de criação do cadastro na ficha A.
+
+      - name: cadastro_atualizacao
+        description: Data da última atualização do cadastro na ficha A.
+
+      - name: obito
+        description: Indica se o indivíduo está registrado como óbito (true = falecido).
+
+      - name: possui_filtro_agua
+        description: Indica se o domicílio possui filtro de água (true = sim).
+
+      - name: vulnerabilidade_social
+        description: Indicador de situação de vulnerabilidade social do indivíduo ou domicílio.
+
+      - name: territorio_social
+        description: Território social ao qual o indivíduo está vinculado, conforme classificação da equipe de saúde.
+
+      - name: recebe_algum_beneficio
+        description: >
+          Indica se a família recebe algum benefício social (CFC ou Auxílio Brasil).
+          Derivado da combinação dos campos familia_beneficiaria_cfc e
+          familia_beneficiaria_auxilio_brasil da fonte.
+
+      - name: atualizado_em
+        description: Data e hora da última atualização do registro no sistema de origem (timezone America/Sao_Paulo).
+
+      - name: carregado_em
+        description: Data e hora de carregamento do registro no Data Lake da SMS (timezone America/Sao_Paulo).
+
+      - name: processado_em
+        description: Data e hora em que o registro foi processado por este pipeline (timezone America/Sao_Paulo).
+
+      - name: cpf_particao
+        description: CPF do paciente convertido para inteiro, utilizado como campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
