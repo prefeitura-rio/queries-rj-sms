@@ -76,9 +76,10 @@ with
     from {{ ref('raw_prontuario_vitacare_historico__cadastro') }}
     qualify row_number() over(
         partition by id_local, id_cnes
-        order by greatest(
-          data_cadastro, data_atualizacao_cadastro, updated_at
-        ) desc
+        order by
+            cpf desc,  -- prioriza registros com CPF (NULLs ficam por último no DESC)
+            cns desc,  -- depois prioriza registros com CNS
+            greatest(data_cadastro, data_atualizacao_cadastro, updated_at) desc
     ) = 1
   ),
 
@@ -150,7 +151,7 @@ with
     left join profissional pr
       on va.id_profissional = pr.id_profissional
     left join {{ ref("raw_sheets__depara_vacinas") }} dv 
-      on va.vacina_nome = dv.nome_original
+      on lower(va.vacina_nome) = lower(dv.nome_original)
   )
 
 select * from final
