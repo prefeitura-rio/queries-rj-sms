@@ -25,7 +25,7 @@ WITH
                 NULLIF(REPLACE(acto_id, '.0', ''), '')
             ) AS id_prontuario_global,
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'acto') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'atendimentos') }} 
         {% if is_incremental() %}
         where data_particao > '{{ last_partition }}'
         {% endif %}

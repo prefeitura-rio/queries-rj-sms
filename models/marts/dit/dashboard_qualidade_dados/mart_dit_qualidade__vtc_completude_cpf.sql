@@ -12,7 +12,7 @@ WITH
             ut_id,
             cnes,
             case when {{ validate_cpf("cpf") }} then 1 else 0 end as indicador_cpf_valido
-        FROM {{ source("brutos_prontuario_vitacare_historico_staging", "cadastro") }}
+        FROM {{ source("brutos_prontuario_vitacare_historico_staging", "pacientes") }}
     ),
     cadastros_dedup as (
         SELECT distinct
