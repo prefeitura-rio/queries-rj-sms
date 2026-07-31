@@ -66,7 +66,7 @@ with
             {{ process_null("replace(acto_id, '.0', '')") }} as id_prontuario_local,
 
             {{ process_null(
-                "id_cnes || '.' || replace(ut_id, '.0', '')"
+                "id_cnes || '.' || replace(" ~ remove_null_bytes('ut_id') ~ ", '.0', '')"
             ) }} as id_cadastro,
             
             {{ process_null(
