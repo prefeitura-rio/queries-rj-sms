@@ -90,7 +90,7 @@ with
 
     from vacinacao v
     left join estabelecimento e on v.id_cnes = e.id_cnes
-    left join depara dv on v.vacina_nome = dv.nome_original
+    left join depara dv on lower(v.vacina_nome) = lower(dv.nome_original)
   )
 
 select * from final
