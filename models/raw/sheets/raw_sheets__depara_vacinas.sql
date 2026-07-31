@@ -17,5 +17,8 @@ with
         select *
         from {{ source("brutos_sheets_staging", "depara_vacinas") }}
     )
-select *
+select
+    lower(nome_original) as nome_original,
+    nome_padronizado,
+    codigo_sipni
 from source

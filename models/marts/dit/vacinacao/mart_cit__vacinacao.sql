@@ -34,8 +34,8 @@ with
             partition by id_vacinacao 
             order by 
                 case 
-                    when origem = 'historico' then 1 
-                    when origem = 'sipni' then 2 
+                    when origem = 'sipni' then 1 
+                    when origem = 'historico' then 2 
                     when origem = 'api' then 3 
                     else 4 
                 end

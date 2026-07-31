@@ -21,7 +21,7 @@ WITH
     source_pacientes AS (
         SELECT
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'cadastro') }}
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'pacientes') }}
         {% if is_incremental() %}
             WHERE data_particao > '{{last_partition}}'
         {% endif %}
@@ -35,8 +35,10 @@ WITH
             SELECT
                 *,
                 ROW_NUMBER() OVER (
-                    PARTITION BY id_cnes, ut_id
+                    PARTITION BY id_cnes, {{ remove_null_bytes('ut_id') }}
                     ORDER BY
+                        cpf DESC,  -- prioriza registros com CPF (NULLs ficam por último no DESC)
+                        cns DESC,  -- depois prioriza registros com CNS
                         SAFE_CAST(dataatualizacaocadastro AS DATETIME) DESC,
                         SAFE_CAST(dataatualizacaovinculoequipe AS DATETIME) DESC,
                         SAFE_CAST(extracted_at AS DATETIME) DESC
@@ -52,9 +54,9 @@ WITH
             CONCAT(
                 id_cnes,
                 '.',
-                REPLACE({{ process_null('ut_id') }}, '.0', '')
+                REPLACE({{ process_null(remove_null_bytes('ut_id')) }}, '.0', '')
             ) as id_global,
-            REPLACE({{ process_null('ut_id') }}, '.0', '') as id_local,
+            REPLACE({{ process_null(remove_null_bytes('ut_id')) }}, '.0', '') as id_local,
             id_cnes,
 
             {{ process_null('ap') }} AS ap,

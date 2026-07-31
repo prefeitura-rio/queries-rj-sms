@@ -116,7 +116,7 @@ with
     from vacinacao v
     left join cadastro ca on v.id_prontuario_global = ca.id_paciente
     left join estabelecimento e on v.id_cnes = e.id_cnes
-    left join depara dv on v.nome_vacina = dv.nome_original
+    left join depara dv on lower(v.nome_vacina) = lower(dv.nome_original)
   )
 
 select * from final

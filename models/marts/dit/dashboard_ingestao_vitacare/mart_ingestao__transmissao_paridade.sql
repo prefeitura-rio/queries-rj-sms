@@ -33,7 +33,7 @@ with
       cnes as id_cnes,
       'historico' as origem,
       format_datetime('%Y-%m', datetime(updated_at)) as mes
-    from {{ source('brutos_prontuario_vitacare_historico_staging', 'cadastro') }}
+    from {{ source('brutos_prontuario_vitacare_historico_staging', 'pacientes') }}
     where cnes is not null
       -- Pega somente ocorrências dos últimos 6 meses
       and current_datetime("America/Sao_Paulo") >= datetime(updated_at)
