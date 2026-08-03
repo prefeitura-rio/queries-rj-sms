@@ -54,6 +54,16 @@ with
     ) = 1
   ),
 
+  depara as (
+    select
+      nome_original,
+      nome_padronizado,
+      codigo_sipni
+    from {{ ref("raw_sheets__depara_vacinas") }}
+    qualify row_number() over (partition by nome_original order by nome_padronizado) = 1
+    -- Dedup aqui garante que n vamos ter uma cardinalidade > 1 - evitando id_duplicado de vacinacao
+  ),
+
   paciente as (
     select
         id_global as id_paciente,
@@ -150,7 +160,7 @@ with
       on va.id_cnes = es.id_cnes
     left join profissional pr
       on va.id_profissional = pr.id_profissional
-    left join {{ ref("raw_sheets__depara_vacinas") }} dv 
+    left join depara_vacinas dv
       on lower(va.vacina_nome) = lower(dv.nome_original)
   )
 

@@ -73,6 +73,8 @@ with
       nome_padronizado,
       codigo_sipni
     from {{ ref('raw_sheets__depara_vacinas') }}
+    qualify row_number() over (partition by nome_original order by nome_padronizado) = 1
+    -- Dedup aqui garante que n vamos ter uma cardinalidade > 1 - evitando id_duplicado de vacinacao
   ),
 
   final as (
