@@ -54,7 +54,7 @@ with
       cast({{ process_null("json_extract_scalar(data,'$.unidade_cnes')") }} as string) as id_cnes,
       cast({{ process_null("json_extract_scalar(data,'$.ut_id')") }} as string) as ut_id,
 
-      cast({{ process_null('datalake_loaded_at') }} as date) as data_particao
+      cast(datalake_loaded_at as date) as data_particao
     from source_agendamento
   ),
 
