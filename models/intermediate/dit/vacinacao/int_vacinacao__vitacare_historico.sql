@@ -160,7 +160,7 @@ with
       on va.id_cnes = es.id_cnes
     left join profissional pr
       on va.id_profissional = pr.id_profissional
-    left join depara_vacinas dv
+    left join depara dv
       on lower(va.vacina_nome) = lower(dv.nome_original)
   )
 
