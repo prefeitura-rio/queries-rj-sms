@@ -45,11 +45,6 @@ models:
         data_type: string
         quote: true
 
-      - name: id_unidade_referencia
-        description: Código CNES da unidade de referência do paciente, quando aplicável.
-        data_type: string
-        quote: true
-
       - name: equipe
         description: Nome da equipe de Saúde da Família ou equipe assistencial responsável.
         data_type: string
