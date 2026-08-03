@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_api__agendamento
+    description: >
+      Tabela contendo registros de agendamentos extraídos do prontuário VitaCare (API).
+      Inclui informações do paciente, do profissional responsável, da unidade de saúde,
+      tipo e horários do agendamento, estado da marcação e motivo de cancelamento quando
+      aplicável.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [id_agendamento]
+          where: "safe_cast(data_particao as date) = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: id_agendamento
+        description: >
+          Identificador global do agendamento, composto pela concatenação de
+          `payload_cnes` e `source_id`.
+        data_tests:
+          - not_null
+        data_type: string
+
+      - name: patient_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+
+      - name: source_updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: datahora_agendamento
+        description: Data e hora em que o agendamento foi criado no sistema.
+        data_type: datetime
+
+      - name: datahora_marcacao_atendimento
+        description: Data e hora para a qual o atendimento foi agendado.
+        data_type: datetime
+
+      - name: profissional_cns
+        description: CNS do profissional de saúde responsável pelo agendamento.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+        data_type: string
+
+      - name: profissional_cpf
+        description: CPF do profissional de saúde responsável pelo agendamento.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_type: string
+
+      - name: profissional_nome
+        description: Nome completo do profissional de saúde.
+        data_type: string
+
+      - name: profissional_cbo
+        description: Código da Classificação Brasileira de Ocupações (CBO) do profissional.
+        data_type: string
+
+      - name: profissional_cbo_descricao
+        description: Descrição do CBO do profissional.
+        data_type: string
+
+      - name: profissional_equipe_nome
+        description: Nome da equipe do profissional.
+        data_type: string
+
+      - name: profissional_equipe_codigo
+        description: Código interno da equipe do profissional.
+        data_type: string
+
+      - name: profissional_equipe_ine
+        description: Código INE da equipe do profissional.
+        data_type: string
+
+      - name: motivo_cancelamento
+        description: Motivo informado para o cancelamento do agendamento, quando aplicável.
+        data_type: string
+
+      - name: consulta_realizada
+        description: Indica se a consulta foi efetivamente realizada ('true'/'false').
+        data_type: string
+
+      - name: tipo_atendimento
+        description: Tipo do atendimento agendado (ex. 'Agendamento Online', 'TELECONSULTA').
+        data_type: string
+
+      - name: estado_marcacao
+        description: >
+          Estado atual da marcação do agendamento
+          (ex. 'Executado', 'Ausente', 'Cancelado pelo Paciente', 'Cancelado pelo Profissional').
+        data_type: string
+
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde o atendimento foi agendado.
+        data_type: string
+
+      - name: ut_id
+        description: Identificador do paciente no sistema.
+        data_type: string
+
+      - name: data_particao
+        description: Data de particionamento da tabela, derivada de `datalake_loaded_at`.
+        data_type: date
