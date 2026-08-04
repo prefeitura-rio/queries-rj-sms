@@ -229,57 +229,19 @@ WITH
     -- VACINAS
     vacinacoes AS (
         SELECT
-            cpf,
-            CONCAT('Vacina - ', imuno, ' - ', tipo, ordem) AS tipo_evento,
-            dthr
-        FROM (
-            SELECT
-                a.patient_cpf AS cpf,
-                'Pentavalente' AS imuno,
-                CASE
-                    WHEN dose LIKE '%eforço%' THEN 'R'
-                    WHEN dose LIKE '%nica%' THEN 'U'
-                    ELSE 'D'
-                END AS tipo,
-                CASE
-                    WHEN dose LIKE '%1%' THEN '1'
-                    WHEN dose LIKE '%2%' THEN '2'
-                    WHEN dose LIKE '%3%' THEN '3'
-                    WHEN dose LIKE '%4%' THEN '4'
-                    ELSE ''
-                END AS ordem,
-                CAST(v.data_aplicacao AS DATETIME) AS dthr
-            FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v
-            JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a USING(id_prontuario_global)
-            WHERE LOWER(normalize_and_casefold(v.dose, NFKD)) NOT IN ('dose unica', 'outro')
-              AND v.cod_vacina IN ('DTP/HB/Hib', 'Hexa')
-
-            UNION ALL
-
-            SELECT
-                paciente_cpf AS cpf,
-                'Pentavalente',
-                CASE
-                    WHEN vacina_dose LIKE '%eforço%' THEN 'R'
-                    WHEN vacina_dose LIKE '%nica%' THEN 'U'
-                    ELSE 'D'
-                END AS tipo,
-                CASE
-                    WHEN vacina_dose LIKE '%1%' THEN '1'
-                    WHEN vacina_dose LIKE '%2%' THEN '2'
-                    WHEN vacina_dose LIKE '%3%' THEN '3'
-                    WHEN vacina_dose LIKE '%4%' THEN '4'
-                    ELSE ''
-                END AS ordem,
-                CAST(vacina_aplicacao_data AS DATETIME) AS dthr
-            FROM {{ ref("raw_sipni__vacinacao") }}
-            WHERE paciente_cpf IS NOT NULL
-              AND vacina_nome IN (
-                    'Vacina penta (DTP/HepB/Hib)',
-                    'Vacina penta acelular (DTPa/VIP/Hib)',
-                    'Vacina hexa (DTPa/HepB/VIP/Hib)'
-              )
-        )
+            paciente_cpf AS cpf,
+            'Vacina - Pentavalente - D3' AS tipo_evento,
+            CAST(vacina_aplicacao_data AS DATETIME) AS dthr
+        FROM {{ ref("mart_cit__vacinacao") }}
+        WHERE paciente_cpf IS NOT NULL
+          AND vacina_aplicacao_data IS NOT NULL
+          AND COALESCE(vacina_registro_tipo, '') != 'Não aplicada'
+          AND vacina_dose = '3ª Dose'
+          AND vacina_nome IN (
+                'vacina penta (dtp/hepb/hib)',
+                'vacina penta acelular (dtpa/vip/hib)',
+                'vacina hexa (dtpa/hepb/vip/hib)'
+          )
     ),
 
     todos_os_eventos AS (
