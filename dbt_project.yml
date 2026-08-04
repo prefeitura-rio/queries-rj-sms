@@ -222,7 +222,7 @@ models:
           dominio: subgeral
       ergon:
         +schema: brutos_ergon
-        +tags: ["daily", "ergon"]
+        +tags: ["ergon"]
         +meta:
           team: subgeral
         +labels:
