@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: int_prontuario_vitacare__paciente_cpf_enriquecido
+    description: >
+      Resultado semanal da busca de CPF para pacientes da VitaCare cujo CPF é
+      nulo. O CPF é disponibilizado somente quando nome, data de nascimento e
+      nome da mãe encontram exatamente um CPF distinto no índice do bcadastro.
+    columns:
+      - name: id_paciente_global
+        description: Identificador do paciente na VitaCare.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: cpf_enriquecido
+        description: CPF obtido do bcadastro quando há um único candidato.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: quantidade_cpf_candidatos
+        description: Quantidade de CPFs distintos encontrados para o paciente.
+
+      - name: resultado_enriquecimento
+        description: >
+          Resultado da busca: CPF_UNICO, SEM_CANDIDATO ou MULTIPLOS_CPFS.
+

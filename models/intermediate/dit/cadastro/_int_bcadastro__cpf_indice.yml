@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: int_bcadastro__cpf_indice
+    description: >
+      Índice semanal do bcadastro para busca de CPF por nome, data de nascimento
+      e nome da mãe normalizados. Contém somente CPFs válidos e cadastros com os
+      três atributos necessários para o cruzamento.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cpf
+            - nome_normalizado
+            - data_nascimento
+            - mae_nome_normalizado
+    columns:
+      - name: cpf
+        description: CPF válido disponível para enriquecimento.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+        data_tests:
+          - not_null
+
+      - name: nome_normalizado
+        description: Nome sem acentos, em maiúsculas e sem espaços duplicados.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: primeiro_nome_normalizado
+        description: Primeiro nome usado na geração da partição de busca.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: data_nascimento
+        description: Data de nascimento usada na correspondência exata.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: mae_nome_normalizado
+        description: Nome da mãe normalizado usado na correspondência exata.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+
+      - name: hash_particao
+        description: Partição de busca derivada do primeiro nome normalizado.
+        data_tests:
+          - not_null
+
+      - name: hash_match
+        description: Hash de nome, data de nascimento e nome da mãe normalizados.
