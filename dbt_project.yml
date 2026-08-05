@@ -933,6 +933,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      central_estrategica:
+        +schema: projeto_central_estrategica
+        +tags: ["daily", "central_estrategica"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
 
       iplanrio:
         whatsapp:
@@ -1129,6 +1136,17 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subgeral
+      central_estrategica:
+        +schema: projeto_central_estrategica
+        +tags: ["daily", "central_estrategica", "sisreg_v2"]
+        +meta:
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_sensivel: nao
+          dominio: central_estrategica
+
       ipp:
         +schema: projeto_ipp
         +tags: ['monthly', 'ipp']

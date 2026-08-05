@@ -1,0 +1,112 @@
+version: 2
+
+models:
+  - name: mart__central_estrategica__regulacao_indicadores
+    description: >
+      Indicadores de regulação ambulatorial agregados por procedimento SIGTAP, mês de referência
+      e unidade de saúde. Cada linha representa uma combinação única de (unidade, procedimento, mês).
+
+      Uma mesma unidade pode aparecer como solicitante e/ou executante — os indicadores
+      coexistem na mesma linha, com valor zero quando a unidade não teve atividade naquele papel.
+
+      - quantidade_solicitacoes: contada pela data de criação da solicitação, papel solicitante.
+      - quantidade_execucoes / absenteismo: contados pela data da marcação, papel executante.
+
+      Fonte: raw_sisreg_api_v2__solicitacao_ambulatorial e raw_sisreg_api_v2__marcacao_ambulatorial.
+      Enriquecido com dim_estabelecimento para nome oficial e área programática.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cnes_unidade_solicitante
+            - cnes_unidade_executante
+            - sigtap_procedimento
+            - mes_referencia
+
+    columns:
+      - name: sigtap_procedimento
+        description: Código do procedimento conforme tabela SIGTAP.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: nome_procedimento
+        description: Descrição do procedimento (SIGTAP ou interno do SISREG quando SIGTAP indisponível).
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: mes_referencia
+        description: >
+          Primeiro dia do mês de referência (formato DATE). Para solicitantes, é o mês de criação
+          da solicitação; para executantes, é o mês da marcação agendada.
+        data_type: date
+        quote: true
+        tests:
+          - not_null
+
+      - name: mes_ano
+        description: Mês e ano de referência no formato MM/AAAA.
+        data_type: string
+        quote: true
+
+      - name: cnes_unidade
+        description: Código CNES da unidade de saúde.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: nome_unidade
+        description: >
+          Nome oficial da unidade conforme dim_estabelecimento (nome_acentuado).
+          Quando a unidade não está cadastrada na dimensão, utiliza o nome vindo do SISREG.
+        data_type: string
+        quote: true
+
+      - name: area_programatica_unidade
+        description: >
+          Área Programática (AP) da unidade conforme dim_estabelecimento.
+          Nulo quando a unidade não está mapeada na dimensão SMS.
+        data_type: string
+        quote: true
+
+      - name: quantidade_solicitacoes
+        description: >
+          Quantidade de solicitações distintas criadas no período para o procedimento e unidade
+          solicitante. Preenchido apenas para linhas com tipo_unidade = "SOLICITANTE".
+        data_type: int64
+        quote: true
+
+      - name: quantidade_execucoes
+        description: >
+          Quantidade de marcações executadas (marcacao_executada = 'sim') no período para o
+          procedimento e unidade executante. Preenchido apenas para linhas com
+          tipo_unidade = "EXECUTANTE".
+        data_type: int64
+        quote: true
+
+      - name: quantidade_marcacoes_agendadas
+        description: >
+          Total de marcações agendadas (com data de marcação definida) no período para o
+          procedimento e unidade executante, independente de execução ou falta.
+          Base do cálculo de absenteísmo. Preenchido apenas para tipo_unidade = "EXECUTANTE".
+        data_type: int64
+        quote: true
+
+      - name: quantidade_faltas
+        description: >
+          Quantidade de marcações com falta registrada (flag_falta_registrada = 'sim') no período.
+          Preenchido apenas para linhas com tipo_unidade = "EXECUTANTE".
+        data_type: int64
+        quote: true
+
+      - name: absenteismo_pct
+        description: >
+          Percentual de absenteísmo calculado como (quantidade_faltas / quantidade_marcacoes_agendadas) * 100.
+          Arredondado em 2 casas decimais. Nulo quando não há marcações agendadas no período.
+          Preenchido apenas para linhas com tipo_unidade = "EXECUTANTE".
+        data_type: float64
+        quote: true
