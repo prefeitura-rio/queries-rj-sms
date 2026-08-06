@@ -8,7 +8,7 @@
 
 /*
   Fluxo de regulação entre unidades solicitantes e executantes por procedimento.
-  Granularidade: (sigtap_id, cnes_solicitante, cnes_executante).
+  Granularidade: (procedimento_id, cnes_solicitante, cnes_executante).
 
   Contabiliza a quantidade de solicitações que percorreram cada combinação
   (procedimento, solicitante → executante). Inclui coordenadas geográficas para
@@ -22,7 +22,7 @@ with
     -- Extrai (procedimento, solicitante, executante) de cada solicitação
     pares as (
         select
-            s.procedimento.sigtap_id                            as sigtap_id,
+            s.procedimento.id                                   as procedimento_id,
             r.procedimento_descricao,
             s.solicitante.unidade_id_cnes                       as cnes_solicitante,
             s.solicitante.unidade_nome                          as nome_solicitante_sisreg,
@@ -43,13 +43,13 @@ with
             on r.solicitacao_id = s.solicitacao.id
         where
             s.solicitante.unidade_id_cnes is not null
-            and s.procedimento.sigtap_id is not null
+            and s.procedimento.id is not null
     ),
 
     -- Agrega quantidade por (procedimento, par solicitante-executante)
     fluxo as (
         select
-            sigtap_id,
+            procedimento_id,
             procedimento_descricao,
             cnes_solicitante,
             nome_solicitante_sisreg,
@@ -59,7 +59,7 @@ with
         from pares
         where cnes_executante is not null
         group by
-            sigtap_id,
+            procedimento_id,
             procedimento_descricao,
             cnes_solicitante,
             nome_solicitante_sisreg,
@@ -70,7 +70,7 @@ with
     -- Enriquece com dim_estabelecimento
     final as (
         select
-            f.sigtap_id,
+            f.procedimento_id,
             f.procedimento_descricao,
 
             f.cnes_solicitante,

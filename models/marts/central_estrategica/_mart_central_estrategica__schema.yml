@@ -6,22 +6,22 @@ models:
     description: >
       Lista de procedimentos distintos registrados nas solicitações de regulação ambulatorial,
       com a contagem total de solicitações associadas a cada procedimento.
-      Granularidade: um registro por código SIGTAP (sigtap_id).
+      Granularidade: um registro por procedimento_id.
 
       A descrição normalizada é extraída de mart_historico_clinico_app__regulacao
       (padronização de abreviações RX, RM, TC, AVC e filtro de privacidade).
-      Em caso de múltiplas descrições para o mesmo SIGTAP, mantém a mais frequente.
+      Em caso de múltiplas descrições para o mesmo procedimento_id, mantém a mais frequente.
 
       Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao.
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - sigtap_id
+            - procedimento_id
 
     columns:
-      - name: sigtap_id
-        description: Código do procedimento conforme tabela SIGTAP. Chave primária.
+      - name: procedimento_id
+        description: Identificador do procedimento conforme SISREG. Chave primária.
         data_type: string
         quote: true
         tests:
@@ -32,24 +32,24 @@ models:
         description: >
           Descrição normalizada do procedimento, conforme padronização aplicada em
           mart_historico_clinico_app__regulacao (ex. abreviações RX, RM, TC, AVC).
-          Corresponde à descrição mais frequente associada ao sigtap_id.
+          Corresponde à descrição mais frequente associada ao procedimento_id.
         data_type: string
         quote: true
         tests:
           - not_null
 
-      - name: sigtap_grupo_codigo
-        description: Código do grupo de procedimentos conforme tabela SIGTAP.
+      - name: grupo_codigo
+        description: Código do grupo de procedimentos conforme SISREG.
         data_type: string
         quote: true
 
       - name: nome_grupo
-        description: Descrição do grupo de procedimentos conforme tabela SIGTAP.
+        description: Descrição do grupo de procedimentos conforme SISREG.
         data_type: string
         quote: true
 
       - name: total_solicitacoes
-        description: Total de solicitações registradas para esse código SIGTAP.
+        description: Total de solicitações registradas para esse procedimento_id.
         data_type: int64
         quote: true
 
@@ -221,7 +221,7 @@ models:
   - name: mart__central_estrategica__regulacao_fluxo
     description: >
       Fluxo de regulação entre pares de unidades solicitantes e executantes por procedimento.
-      Cada linha representa uma combinação única de (sigtap_id, solicitante, executante)
+      Cada linha representa uma combinação única de (procedimento_id, solicitante, executante)
       com a quantidade total de solicitações que percorreram esse fluxo.
 
       Inclui coordenadas geográficas para visualização cartográfica do fluxo
@@ -233,13 +233,13 @@ models:
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - sigtap_id
+            - procedimento_id
             - cnes_solicitante
             - cnes_executante
 
     columns:
-      - name: sigtap_id
-        description: Código do procedimento conforme tabela SIGTAP. Parte da chave primária.
+      - name: procedimento_id
+        description: Identificador do procedimento conforme SISREG. Parte da chave primária.
         data_type: string
         quote: true
         tests:
