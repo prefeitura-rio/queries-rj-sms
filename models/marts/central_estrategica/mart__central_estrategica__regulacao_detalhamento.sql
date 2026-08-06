@@ -19,16 +19,16 @@
   As datas de aprovação da marcação e da marcação em si são extraídas do array
   marcacao[], considerando a marcação mais recente com aprovacao_datahora preenchido.
 
-  Filtro temporal: apenas solicitações criadas nos últimos 30 dias
-  (solicitacao_datahora). Para uso operacional, interessa o que chegou recentemente
-  — solicitações antigas sem desfecho já são capturadas em acumulados_na_fila.
+  Filtro temporal: apenas solicitações com marcação agendada nos últimos 30 dias
+  (marcacao_datahora — última marcação com aprovacao_datahora preenchido). Mostra
+  o que está efetivamente agendado no período para acompanhamento operacional.
 
   Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
          + int_regulacao__paciente_sisreg
 */
 
 with
-    -- Base: solicitações do app (já sem HIV) criadas nos últimos 30 dias
+    -- Base: todas as solicitações do app (já sem HIV)
     regulacao as (
         select
             r.solicitacao_id,
@@ -59,14 +59,11 @@ with
         from {{ ref('mart_historico_clinico_app__regulacao') }} as r
         inner join {{ ref('mart_regulacao__solicitacao') }} as s
             on r.solicitacao_id = s.solicitacao.id
-        where
-            date(r.solicitacao_datahora)
-                >= date_sub(current_date(), interval 30 day)
     ),
 
-    -- Extrai a marcação mais relevante:
+    -- Extrai a marcação mais relevante por solicitação:
     -- a última marcação com aprovacao_datahora preenchida
-    com_marcacao as (
+    com_marcacao_extraida as (
         select
             solicitacao_id,
             solicitacao_datahora,
@@ -95,6 +92,15 @@ with
                 limit 1
             )                                               as marcacao_datahora
         from regulacao
+    ),
+
+    -- Aplica filtro temporal: apenas marcações agendadas nos últimos 30 dias
+    com_marcacao as (
+        select *
+        from com_marcacao_extraida
+        where
+            date(marcacao_datahora)
+                >= date_sub(current_date(), interval 30 day)
     ),
 
     -- Enriquece com dados do paciente (iniciais do nome e idade)

@@ -25,10 +25,10 @@
     - quantidade_com_aprovacao: número de solicitações que chegaram à etapa de aprovação.
     - quantidade_com_marcacao: número de solicitações com data de marcação definida após aprovação.
 
-  Filtro temporal: apenas solicitações criadas nos últimos 30 dias
-  (solicitacao.solicitacao_datahora). Usar a data de criação como âncora garante que
-  os tempos calculados reflitam o ritmo atual do fluxo, sem distorção de solicitações
-  antigas que ficaram paradas na fila.
+  Filtro temporal: apenas solicitações com marcação agendada nos últimos 30 dias
+  (marcacao.datahora — última marcação com aprovacao_datahora preenchido). Foca nos
+  procedimentos que chegaram a ser efetivamente agendados no período, tornando os
+  indicadores de tempo representativos do fluxo ativo.
 
   Somente solicitações presentes em mart_historico_clinico_app__regulacao são consideradas
   (já filtrado por critérios de privacidade, ex. HIV).
@@ -72,8 +72,6 @@ with
         where
             r.procedimento_descricao is not null
             and s.solicitante.unidade_id_cnes is not null
-            and date(r.solicitacao_datahora)
-                >= date_sub(current_date(), interval 30 day)
     ),
 
     -- Calcula intervalos em dias por solicitação
@@ -107,6 +105,9 @@ with
                 else null
             end                                                 as dias_aprovacao_ate_marcacao
         from base
+        where
+            date(marcacao_datahora)
+                >= date_sub(current_date(), interval 30 day)
     ),
 
     -- Agrega por (procedimento_id, procedimento, solicitante, executante)
