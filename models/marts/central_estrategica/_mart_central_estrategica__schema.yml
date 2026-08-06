@@ -212,6 +212,11 @@ models:
       As datas de aprovação e marcação são extraídas do array marcacao[], considerando
       a marcação mais recente com aprovacao_datahora preenchido.
 
+      Filtro temporal: apenas solicitações criadas nos últimos 30 dias
+      (solicitacao_datahora). Para uso operacional, interessa o que chegou recentemente;
+      solicitações antigas sem desfecho já são capturadas em regulacao_procedimentos_resumo
+      (acumulados_na_fila).
+
       Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
              + int_regulacao__paciente_sisreg + dim_estabelecimento.
 
@@ -308,10 +313,14 @@ models:
     description: >
       Fluxo de regulação entre pares de unidades solicitantes e executantes por procedimento.
       Cada linha representa uma combinação única de (procedimento_id, solicitante, executante)
-      com a quantidade total de solicitações que percorreram esse fluxo.
+      com a quantidade de solicitações que percorreram esse fluxo nos últimos 30 dias.
 
       Inclui coordenadas geográficas para visualização cartográfica do fluxo
       (ex. mapa de fluxo com linhas de origem/destino filtradas por procedimento).
+
+      Filtro temporal: apenas solicitações criadas nos últimos 30 dias
+      (solicitacao.solicitacao_datahora). Reflete os fluxos ativos recentemente,
+      ou seja, quais caminhos foram efetivamente demandados no período.
 
       Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
              + dim_estabelecimento.
@@ -416,6 +425,11 @@ models:
         - mediana_dias_aprovacao_ate_marcacao: mediana de dias entre a aprovação e
           a data/hora da marcação agendada.
         - media_dias_*: médias aritméticas dos mesmos intervalos.
+
+      Filtro temporal: apenas solicitações criadas nos últimos 30 dias
+      (solicitacao_datahora). Usar a data de criação como âncora garante que os tempos
+      calculados reflitam o ritmo atual do fluxo, sem distorção de solicitações antigas
+      que ficaram paradas na fila.
 
       Apenas solicitações presentes em mart_historico_clinico_app__regulacao são
       consideradas (já filtrado por critérios de privacidade, ex. HIV).

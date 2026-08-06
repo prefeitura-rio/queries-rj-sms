@@ -19,12 +19,16 @@
   As datas de aprovação da marcação e da marcação em si são extraídas do array
   marcacao[], considerando a marcação mais recente com aprovacao_datahora preenchido.
 
+  Filtro temporal: apenas solicitações criadas nos últimos 30 dias
+  (solicitacao_datahora). Para uso operacional, interessa o que chegou recentemente
+  — solicitações antigas sem desfecho já são capturadas em acumulados_na_fila.
+
   Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
          + int_regulacao__paciente_sisreg
 */
 
 with
-    -- Base: todas as solicitações do app (já sem HIV)
+    -- Base: solicitações do app (já sem HIV) criadas nos últimos 30 dias
     regulacao as (
         select
             r.solicitacao_id,
@@ -55,6 +59,9 @@ with
         from {{ ref('mart_historico_clinico_app__regulacao') }} as r
         inner join {{ ref('mart_regulacao__solicitacao') }} as s
             on r.solicitacao_id = s.solicitacao.id
+        where
+            date(r.solicitacao_datahora)
+                >= date_sub(current_date(), interval 30 day)
     ),
 
     -- Extrai a marcação mais relevante:

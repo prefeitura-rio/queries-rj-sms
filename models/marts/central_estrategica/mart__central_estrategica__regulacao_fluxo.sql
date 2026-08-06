@@ -14,6 +14,10 @@
   (procedimento, solicitante → executante). Coordenadas geográficas e informações
   adicionais das unidades são obtidas via join com regulacao_unidades.
 
+  Filtro temporal: apenas solicitações criadas nos últimos 30 dias
+  (solicitacao.solicitacao_datahora). Reflete os fluxos ativos recentemente,
+  ou seja, quais caminhos foram efetivamente demandados no período.
+
   Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
 */
 
@@ -36,6 +40,8 @@ with
         where
             s.solicitante.unidade_id_cnes is not null
             and s.procedimento.id is not null
+            and date(s.solicitacao.solicitacao_datahora)
+                >= date_sub(current_date(), interval 30 day)
     ),
 
     -- Agrega quantidade por (procedimento, par solicitante-executante)
