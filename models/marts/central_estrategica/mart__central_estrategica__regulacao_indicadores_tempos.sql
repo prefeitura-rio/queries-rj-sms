@@ -3,6 +3,11 @@
     enabled=true,
     alias="regulacao_indicadores_tempos",
     materialized='table',
+    partition_by={
+      "field": "procedimento_id",
+      "data_type": "int64",
+      "range": {"start": 0, "end": 10000000, "interval": 100000}
+    }
   )
 }}
 
@@ -31,6 +36,7 @@ with
     base as (
         select
             r.solicitacao_id,
+            safe_cast(s.procedimento.id as int64)               as procedimento_id,
             r.procedimento_descricao,
             r.solicitacao_datahora,
             s.solicitante.unidade_id_cnes                       as cnes_solicitante,
@@ -67,6 +73,7 @@ with
     com_tempos as (
         select
             solicitacao_id,
+            procedimento_id,
             procedimento_descricao,
             cnes_solicitante,
             cnes_executante,
@@ -95,9 +102,10 @@ with
         from base
     ),
 
-    -- Agrega por (procedimento, solicitante, executante)
+    -- Agrega por (procedimento_id, procedimento, solicitante, executante)
     final as (
         select
+            procedimento_id,
             procedimento_descricao,
             cnes_solicitante,
             cnes_executante,
@@ -116,10 +124,10 @@ with
             round(avg(dias_aprovacao_ate_marcacao), 1)          as media_dias_aprovacao_ate_marcacao
         from com_tempos
         group by
+            procedimento_id,
             procedimento_descricao,
             cnes_solicitante,
             cnes_executante
     )
 
 select * from final
-order by quantidade_solicitacoes desc

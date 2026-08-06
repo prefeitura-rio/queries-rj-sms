@@ -3,6 +3,11 @@
     enabled=true,
     alias="regulacao_detalhamento",
     materialized='table',
+    partition_by={
+      "field": "procedimento_id",
+      "data_type": "int64",
+      "range": {"start": 0, "end": 10000000, "interval": 100000}
+    }
   )
 }}
 
@@ -44,6 +49,7 @@ with
                 where ex.unidade_id_cnes is not null
                 limit 1
             )                                                   as nome_unidade_executante_sisreg,
+            safe_cast(s.procedimento.id as int64)              as procedimento_id,
             s.paciente_cpf,
             s.paciente_cns
         from {{ ref('mart_historico_clinico_app__regulacao') }} as r
@@ -59,6 +65,7 @@ with
             solicitacao_datahora,
             detalhe_status,
             classificacao_risco,
+            procedimento_id,
             procedimento_descricao,
             unidade_solicitante,
             cnes_unidade_solicitante,
@@ -99,6 +106,7 @@ with
     final as (
         select
             cp.solicitacao_id,
+            cp.procedimento_id,
 
             -- Paciente (anonimizado)
             case
