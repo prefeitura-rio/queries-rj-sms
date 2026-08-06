@@ -220,12 +220,12 @@ models:
 
   - name: mart__central_estrategica__regulacao_fluxo
     description: >
-      Fluxo de regulação entre pares de unidades solicitantes e executantes.
-      Cada linha representa um par único (solicitante, executante) com a quantidade
-      total de solicitações que percorreram esse fluxo.
+      Fluxo de regulação entre pares de unidades solicitantes e executantes por procedimento.
+      Cada linha representa uma combinação única de (sigtap_id, solicitante, executante)
+      com a quantidade total de solicitações que percorreram esse fluxo.
 
       Inclui coordenadas geográficas para visualização cartográfica do fluxo
-      (ex. mapa de fluxo com linhas de origem/destino).
+      (ex. mapa de fluxo com linhas de origem/destino filtradas por procedimento).
 
       Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
              + dim_estabelecimento.
@@ -233,12 +233,27 @@ models:
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
+            - sigtap_id
             - cnes_solicitante
             - cnes_executante
 
     columns:
+      - name: sigtap_id
+        description: Código do procedimento conforme tabela SIGTAP. Parte da chave primária.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: procedimento_descricao
+        description: >
+          Descrição normalizada do procedimento, conforme padronização aplicada em
+          mart_historico_clinico_app__regulacao (ex. abreviações RX, RM, TC, AVC).
+        data_type: string
+        quote: true
+
       - name: cnes_solicitante
-        description: Código CNES da unidade solicitante.
+        description: Código CNES da unidade solicitante. Parte da chave primária.
         data_type: string
         quote: true
         tests:

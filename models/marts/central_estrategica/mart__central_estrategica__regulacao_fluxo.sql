@@ -7,11 +7,11 @@
 }}
 
 /*
-  Fluxo de regulação entre unidades solicitantes e executantes.
-  Granularidade: (cnes_unidade_solicitante, cnes_unidade_executante).
+  Fluxo de regulação entre unidades solicitantes e executantes por procedimento.
+  Granularidade: (sigtap_id, cnes_solicitante, cnes_executante).
 
-  Contabiliza a quantidade de solicitações que percorreram cada par
-  solicitante → executante. Inclui coordenadas geográficas para
+  Contabiliza a quantidade de solicitações que percorreram cada combinação
+  (procedimento, solicitante → executante). Inclui coordenadas geográficas para
   visualização cartográfica do fluxo.
 
   Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
@@ -19,9 +19,11 @@
 */
 
 with
-    -- Extrai par (solicitante, executante) de cada solicitação
+    -- Extrai (procedimento, solicitante, executante) de cada solicitação
     pares as (
         select
+            s.procedimento.sigtap_id                            as sigtap_id,
+            r.procedimento_descricao,
             s.solicitante.unidade_id_cnes                       as cnes_solicitante,
             s.solicitante.unidade_nome                          as nome_solicitante_sisreg,
             (
@@ -39,12 +41,16 @@ with
         from {{ ref('mart_historico_clinico_app__regulacao') }} as r
         inner join {{ ref('mart_regulacao__solicitacao') }} as s
             on r.solicitacao_id = s.solicitacao.id
-        where s.solicitante.unidade_id_cnes is not null
+        where
+            s.solicitante.unidade_id_cnes is not null
+            and s.procedimento.sigtap_id is not null
     ),
 
-    -- Agrega quantidade por par
+    -- Agrega quantidade por (procedimento, par solicitante-executante)
     fluxo as (
         select
+            sigtap_id,
+            procedimento_descricao,
             cnes_solicitante,
             nome_solicitante_sisreg,
             cnes_executante,
@@ -53,6 +59,8 @@ with
         from pares
         where cnes_executante is not null
         group by
+            sigtap_id,
+            procedimento_descricao,
             cnes_solicitante,
             nome_solicitante_sisreg,
             cnes_executante,
@@ -62,6 +70,9 @@ with
     -- Enriquece com dim_estabelecimento
     final as (
         select
+            f.sigtap_id,
+            f.procedimento_descricao,
+
             f.cnes_solicitante,
             coalesce(
                 dim_sol.nome_acentuado,
