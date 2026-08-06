@@ -35,7 +35,7 @@ with
         where ex.unidade_id_cnes is not null
     ),
 
-    -- União de todas as unidades
+    -- União de todas as unidades das solicitações
     todas_unidades as (
         select id_cnes, nome_sisreg from solicitantes
         union all
@@ -43,26 +43,42 @@ with
     ),
 
     -- Agrega por unidade, mantendo nome mais frequente
-    unidades_agrupadas as (
+    unidades_regulacao as (
         select
             id_cnes,
-            -- Nome mais frequente no SISREG para essa unidade
             array_agg(nome_sisreg order by nome_sisreg)[safe_ordinal(1)] as nome_sisreg
         from todas_unidades
         group by id_cnes
     ),
 
+    -- Unidades do dim_estabelecimento não presentes nas solicitações
+    unidades_dim as (
+        select
+            d.id_cnes,
+            cast(null as string) as nome_sisreg
+        from {{ ref('dim_estabelecimento') }} as d
+        where d.id_cnes not in (select id_cnes from unidades_regulacao)
+    ),
+
+    -- União final: regulacao + dim_estabelecimento
+    todas as (
+        select id_cnes, nome_sisreg from unidades_regulacao
+        union all
+        select id_cnes, nome_sisreg from unidades_dim
+    ),
+
     final as (
         select
-            u.id_cnes,
-            coalesce(d.nome_acentuado, u.nome_sisreg)   as nome,
-            u.nome_sisreg,
+            t.id_cnes,
+            coalesce(d.nome_acentuado, t.nome_sisreg)   as nome,
+            t.nome_sisreg,
+            d.tipo_sms_simplificado,
             d.area_programatica,
             d.endereco_latitude                          as latitude,
             d.endereco_longitude                         as longitude
-        from unidades_agrupadas as u
+        from todas as t
         left join {{ ref('dim_estabelecimento') }} as d
-            on u.id_cnes = d.id_cnes
+            on t.id_cnes = d.id_cnes
     )
 
 select * from final
