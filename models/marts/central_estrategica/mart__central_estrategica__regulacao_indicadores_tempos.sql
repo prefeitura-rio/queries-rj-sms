@@ -24,7 +24,6 @@
   (já filtrado por critérios de privacidade, ex. HIV).
 
   Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
-         + dim_estabelecimento
 */
 
 with
@@ -35,19 +34,12 @@ with
             r.procedimento_descricao,
             r.solicitacao_datahora,
             s.solicitante.unidade_id_cnes                       as cnes_solicitante,
-            s.solicitante.unidade_nome                          as nome_solicitante_sisreg,
             (
                 select ex.unidade_id_cnes
                 from unnest(s.execucao) as ex
                 where ex.unidade_id_cnes is not null
                 limit 1
             )                                                   as cnes_executante,
-            (
-                select ex.unidade_nome
-                from unnest(s.execucao) as ex
-                where ex.unidade_id_cnes is not null
-                limit 1
-            )                                                   as nome_executante_sisreg,
             -- Marcação mais recente com aprovação
             (
                 select m.aprovacao_datahora
@@ -77,9 +69,7 @@ with
             solicitacao_id,
             procedimento_descricao,
             cnes_solicitante,
-            nome_solicitante_sisreg,
             cnes_executante,
-            nome_executante_sisreg,
             -- Tempo da criação até a aprovação (quando existe aprovação)
             case
                 when marcacao_aprovacao_datahora is not null
@@ -106,13 +96,11 @@ with
     ),
 
     -- Agrega por (procedimento, solicitante, executante)
-    agregado as (
+    final as (
         select
             procedimento_descricao,
             cnes_solicitante,
-            nome_solicitante_sisreg,
             cnes_executante,
-            nome_executante_sisreg,
             count(distinct solicitacao_id)                      as quantidade_solicitacoes,
             countif(dias_solicitacao_ate_aprovacao is not null) as quantidade_com_aprovacao,
             countif(dias_aprovacao_ate_marcacao is not null)    as quantidade_com_marcacao,
@@ -130,42 +118,7 @@ with
         group by
             procedimento_descricao,
             cnes_solicitante,
-            nome_solicitante_sisreg,
-            cnes_executante,
-            nome_executante_sisreg
-    ),
-
-    -- Enriquece com nomes oficiais via dim_estabelecimento
-    final as (
-        select
-            a.procedimento_descricao,
-
-            a.cnes_solicitante,
-            coalesce(
-                dim_sol.nome_acentuado,
-                a.nome_solicitante_sisreg
-            )                                                   as nome_unidade_solicitante,
-            dim_sol.area_programatica                           as area_programatica_solicitante,
-
-            a.cnes_executante,
-            coalesce(
-                dim_exe.nome_acentuado,
-                a.nome_executante_sisreg
-            )                                                   as nome_unidade_executante,
-            dim_exe.area_programatica                           as area_programatica_executante,
-
-            a.quantidade_solicitacoes,
-            a.quantidade_com_aprovacao,
-            a.quantidade_com_marcacao,
-            a.mediana_dias_solicitacao_ate_aprovacao,
-            a.mediana_dias_aprovacao_ate_marcacao,
-            a.media_dias_solicitacao_ate_aprovacao,
-            a.media_dias_aprovacao_ate_marcacao
-        from agregado as a
-        left join {{ ref('dim_estabelecimento') }} as dim_sol
-            on a.cnes_solicitante = dim_sol.id_cnes
-        left join {{ ref('dim_estabelecimento') }} as dim_exe
-            on a.cnes_executante = dim_exe.id_cnes
+            cnes_executante
     )
 
 select * from final
