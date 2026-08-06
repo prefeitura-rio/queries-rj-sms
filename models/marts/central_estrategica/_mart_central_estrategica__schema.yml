@@ -1,112 +1,425 @@
 version: 2
 
 models:
-  - name: mart__central_estrategica__regulacao_indicadores
+
+  - name: mart__central_estrategica__regulacao_procedimentos
     description: >
-      Indicadores de regulação ambulatorial agregados por procedimento SIGTAP, mês de referência
-      e unidade de saúde. Cada linha representa uma combinação única de (unidade, procedimento, mês).
+      Lista de procedimentos distintos registrados nas solicitações de regulação ambulatorial,
+      com a contagem total de solicitações associadas a cada procedimento.
+      Granularidade: um registro por código SIGTAP (sigtap_id).
 
-      Uma mesma unidade pode aparecer como solicitante e/ou executante — os indicadores
-      coexistem na mesma linha, com valor zero quando a unidade não teve atividade naquele papel.
+      A descrição normalizada é extraída de mart_historico_clinico_app__regulacao
+      (padronização de abreviações RX, RM, TC, AVC e filtro de privacidade).
+      Em caso de múltiplas descrições para o mesmo SIGTAP, mantém a mais frequente.
 
-      - quantidade_solicitacoes: contada pela data de criação da solicitação, papel solicitante.
-      - quantidade_execucoes / absenteismo: contados pela data da marcação, papel executante.
-
-      Fonte: raw_sisreg_api_v2__solicitacao_ambulatorial e raw_sisreg_api_v2__marcacao_ambulatorial.
-      Enriquecido com dim_estabelecimento para nome oficial e área programática.
+      Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao.
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - cnes_unidade_solicitante
-            - cnes_unidade_executante
-            - sigtap_procedimento
-            - mes_referencia
+            - sigtap_id
 
     columns:
-      - name: sigtap_procedimento
-        description: Código do procedimento conforme tabela SIGTAP.
+      - name: sigtap_id
+        description: Código do procedimento conforme tabela SIGTAP. Chave primária.
         data_type: string
         quote: true
         tests:
           - not_null
+          - unique
 
-      - name: nome_procedimento
-        description: Descrição do procedimento (SIGTAP ou interno do SISREG quando SIGTAP indisponível).
-        data_type: string
-        quote: true
-        tests:
-          - not_null
-
-      - name: mes_referencia
+      - name: procedimento_descricao
         description: >
-          Primeiro dia do mês de referência (formato DATE). Para solicitantes, é o mês de criação
-          da solicitação; para executantes, é o mês da marcação agendada.
-        data_type: date
+          Descrição normalizada do procedimento, conforme padronização aplicada em
+          mart_historico_clinico_app__regulacao (ex. abreviações RX, RM, TC, AVC).
+          Corresponde à descrição mais frequente associada ao sigtap_id.
+        data_type: string
         quote: true
         tests:
           - not_null
 
-      - name: mes_ano
-        description: Mês e ano de referência no formato MM/AAAA.
+      - name: sigtap_grupo_codigo
+        description: Código do grupo de procedimentos conforme tabela SIGTAP.
         data_type: string
         quote: true
 
-      - name: cnes_unidade
+      - name: nome_grupo
+        description: Descrição do grupo de procedimentos conforme tabela SIGTAP.
+        data_type: string
+        quote: true
+
+      - name: total_solicitacoes
+        description: Total de solicitações registradas para esse código SIGTAP.
+        data_type: int64
+        quote: true
+
+  - name: mart__central_estrategica__regulacao_unidades
+    description: >
+      Tabela de unidades de saúde envolvidas no fluxo de regulação ambulatorial
+      (como solicitantes e/ou executantes), enriquecida com coordenadas geográficas
+      e área programática provenientes de dim_estabelecimento.
+      Granularidade: um registro por unidade (id_cnes) distinta.
+
+      Fonte: mart_regulacao__solicitacao + dim_estabelecimento.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id_cnes
+
+    columns:
+      - name: id_cnes
         description: Código CNES da unidade de saúde.
         data_type: string
         quote: true
         tests:
           - not_null
+          - unique
 
-      - name: nome_unidade
+      - name: nome
         description: >
           Nome oficial da unidade conforme dim_estabelecimento (nome_acentuado).
           Quando a unidade não está cadastrada na dimensão, utiliza o nome vindo do SISREG.
         data_type: string
         quote: true
 
-      - name: area_programatica_unidade
+      - name: nome_sisreg
+        description: Nome da unidade conforme registrado no SISREG.
+        data_type: string
+        quote: true
+
+      - name: area_programatica
         description: >
           Área Programática (AP) da unidade conforme dim_estabelecimento.
           Nulo quando a unidade não está mapeada na dimensão SMS.
         data_type: string
         quote: true
 
+      - name: latitude
+        description: Latitude do endereço da unidade (WGS84), proveniente de dim_estabelecimento.
+        data_type: float64
+        quote: true
+
+      - name: longitude
+        description: Longitude do endereço da unidade (WGS84), proveniente de dim_estabelecimento.
+        data_type: float64
+        quote: true
+
+      - name: flag_solicitante
+        description: >
+          Indica se a unidade aparece como solicitante em pelo menos uma solicitação de regulação.
+        data_type: bool
+        quote: true
+
+      - name: flag_executante
+        description: >
+          Indica se a unidade aparece como executante em pelo menos uma solicitação de regulação.
+        data_type: bool
+        quote: true
+
+  - name: mart__central_estrategica__regulacao_detalhamento
+    description: >
+      Detalhamento das solicitações de regulação ambulatorial, uma linha por solicitação.
+      Os dados de identificação do paciente são anonimizados: exibe apenas as iniciais do
+      nome e a idade calculada a partir da data de nascimento.
+
+      As datas de aprovação e marcação são extraídas do array marcacao[], considerando
+      a marcação mais recente com aprovacao_datahora preenchido.
+
+      Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
+             + int_regulacao__paciente_sisreg + dim_estabelecimento.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - solicitacao_id
+
+    columns:
+      - name: solicitacao_id
+        description: Identificador único da solicitação.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+          - unique
+
+      - name: paciente_iniciais
+        description: >
+          Iniciais do nome do paciente (ex. "J.S."), derivadas do campo nome em
+          int_regulacao__paciente_sisreg. Nulo quando o paciente não é localizado.
+        data_type: string
+        quote: true
+
+      - name: paciente_idade
+        description: >
+          Idade atual do paciente em anos completos, calculada como a diferença entre
+          a data atual e a data de nascimento registrada no SISREG.
+        data_type: int64
+        quote: true
+
+      - name: solicitacao_datahora
+        description: Data e hora de criação da solicitação.
+        data_type: datetime
+        quote: true
+
+      - name: marcacao_aprovacao_datahora
+        description: >
+          Data e hora em que a marcação foi aprovada pelo regulador.
+          Corresponde à aprovacao_datahora da marcação mais recente com aprovação.
+          Nulo quando nenhuma marcação foi aprovada.
+        data_type: datetime
+        quote: true
+
+      - name: marcacao_datahora
+        description: >
+          Data e hora agendada para a execução do procedimento.
+          Corresponde à datahora da marcação mais recente com aprovação.
+          Nulo quando não há marcação agendada.
+        data_type: datetime
+        quote: true
+
+      - name: classificacao_risco
+        description: >
+          Classificação de risco do paciente, de azul (menos urgente) a vermelho (mais urgente).
+        data_type: string
+        quote: true
+
+      - name: detalhe_status
+        description: Situação atual da solicitação (ex. APROVADA, NEGADA, CANCELADO).
+        data_type: string
+        quote: true
+
+      - name: procedimento_descricao
+        description: Descrição normalizada do procedimento solicitado.
+        data_type: string
+        quote: true
+
+      - name: cnes_unidade_solicitante
+        description: Código CNES da unidade que submeteu a solicitação.
+        data_type: string
+        quote: true
+
+      - name: nome_unidade_solicitante
+        description: >
+          Nome oficial da unidade solicitante (dim_estabelecimento) ou nome SISREG
+          quando não cadastrada na dimensão.
+        data_type: string
+        quote: true
+
+      - name: cnes_unidade_executante
+        description: Código CNES da unidade responsável pela execução do procedimento.
+        data_type: string
+        quote: true
+
+      - name: nome_unidade_executante
+        description: >
+          Nome oficial da unidade executante (dim_estabelecimento) ou nome SISREG
+          quando não cadastrada na dimensão.
+        data_type: string
+        quote: true
+
+  - name: mart__central_estrategica__regulacao_fluxo
+    description: >
+      Fluxo de regulação entre pares de unidades solicitantes e executantes.
+      Cada linha representa um par único (solicitante, executante) com a quantidade
+      total de solicitações que percorreram esse fluxo.
+
+      Inclui coordenadas geográficas para visualização cartográfica do fluxo
+      (ex. mapa de fluxo com linhas de origem/destino).
+
+      Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
+             + dim_estabelecimento.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cnes_solicitante
+            - cnes_executante
+
+    columns:
+      - name: cnes_solicitante
+        description: Código CNES da unidade solicitante.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: nome_unidade_solicitante
+        description: >
+          Nome oficial da unidade solicitante (dim_estabelecimento) ou nome SISREG
+          quando não cadastrada na dimensão.
+        data_type: string
+        quote: true
+
+      - name: area_programatica_solicitante
+        description: Área Programática da unidade solicitante conforme dim_estabelecimento.
+        data_type: string
+        quote: true
+
+      - name: latitude_solicitante
+        description: Latitude do endereço da unidade solicitante (WGS84).
+        data_type: float64
+        quote: true
+
+      - name: longitude_solicitante
+        description: Longitude do endereço da unidade solicitante (WGS84).
+        data_type: float64
+        quote: true
+
+      - name: cnes_executante
+        description: Código CNES da unidade executante.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: nome_unidade_executante
+        description: >
+          Nome oficial da unidade executante (dim_estabelecimento) ou nome SISREG
+          quando não cadastrada na dimensão.
+        data_type: string
+        quote: true
+
+      - name: area_programatica_executante
+        description: Área Programática da unidade executante conforme dim_estabelecimento.
+        data_type: string
+        quote: true
+
+      - name: latitude_executante
+        description: Latitude do endereço da unidade executante (WGS84).
+        data_type: float64
+        quote: true
+
+      - name: longitude_executante
+        description: Longitude do endereço da unidade executante (WGS84).
+        data_type: float64
+        quote: true
+
       - name: quantidade_solicitacoes
         description: >
-          Quantidade de solicitações distintas criadas no período para o procedimento e unidade
-          solicitante. Preenchido apenas para linhas com tipo_unidade = "SOLICITANTE".
+          Quantidade total de solicitações que percorreram o fluxo
+          desse par (solicitante → executante).
+        data_type: int64
+        quote: true
+        tests:
+          - not_null
+
+  - name: mart__central_estrategica__regulacao_indicadores_tempos
+    description: >
+      Indicadores de tempo no fluxo de regulação ambulatorial, agrupados por
+      (procedimento, unidade solicitante, unidade executante).
+
+      Indicadores calculados:
+        - mediana_dias_solicitacao_ate_aprovacao: mediana de dias entre a criação da
+          solicitação e a aprovação da marcação pelo regulador.
+        - mediana_dias_aprovacao_ate_marcacao: mediana de dias entre a aprovação e
+          a data/hora da marcação agendada.
+        - media_dias_*: médias aritméticas dos mesmos intervalos.
+
+      Apenas solicitações presentes em mart_historico_clinico_app__regulacao são
+      consideradas (já filtrado por critérios de privacidade, ex. HIV).
+
+      Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
+             + dim_estabelecimento.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - procedimento_descricao
+            - cnes_solicitante
+            - cnes_executante
+
+    columns:
+      - name: procedimento_descricao
+        description: Descrição normalizada do procedimento solicitado.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: cnes_solicitante
+        description: Código CNES da unidade que submeteu a solicitação.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+
+      - name: nome_unidade_solicitante
+        description: >
+          Nome oficial da unidade solicitante (dim_estabelecimento) ou nome SISREG
+          quando não cadastrada na dimensão.
+        data_type: string
+        quote: true
+
+      - name: area_programatica_solicitante
+        description: Área Programática da unidade solicitante conforme dim_estabelecimento.
+        data_type: string
+        quote: true
+
+      - name: cnes_executante
+        description: Código CNES da unidade executante do procedimento.
+        data_type: string
+        quote: true
+
+      - name: nome_unidade_executante
+        description: >
+          Nome oficial da unidade executante (dim_estabelecimento) ou nome SISREG
+          quando não cadastrada na dimensão.
+        data_type: string
+        quote: true
+
+      - name: area_programatica_executante
+        description: Área Programática da unidade executante conforme dim_estabelecimento.
+        data_type: string
+        quote: true
+
+      - name: quantidade_solicitacoes
+        description: Total de solicitações no grupo (procedimento, solicitante, executante).
+        data_type: int64
+        quote: true
+        tests:
+          - not_null
+
+      - name: quantidade_com_aprovacao
+        description: >
+          Número de solicitações que chegaram à etapa de aprovação da marcação
+          (possuem marcacao.aprovacao_datahora preenchido).
         data_type: int64
         quote: true
 
-      - name: quantidade_execucoes
+      - name: quantidade_com_marcacao
         description: >
-          Quantidade de marcações executadas (marcacao_executada = 'sim') no período para o
-          procedimento e unidade executante. Preenchido apenas para linhas com
-          tipo_unidade = "EXECUTANTE".
+          Número de solicitações com data de marcação definida após aprovação
+          (possuem tanto aprovacao_datahora quanto datahora preenchidos).
         data_type: int64
         quote: true
 
-      - name: quantidade_marcacoes_agendadas
+      - name: mediana_dias_solicitacao_ate_aprovacao
         description: >
-          Total de marcações agendadas (com data de marcação definida) no período para o
-          procedimento e unidade executante, independente de execução ou falta.
-          Base do cálculo de absenteísmo. Preenchido apenas para tipo_unidade = "EXECUTANTE".
+          Mediana (percentil 50) do número de dias corridos entre a criação da solicitação
+          (solicitacao_datahora) e a aprovação da marcação (marcacao.aprovacao_datahora).
+          Nulo quando nenhuma solicitação do grupo possui aprovação.
         data_type: int64
         quote: true
 
-      - name: quantidade_faltas
+      - name: mediana_dias_aprovacao_ate_marcacao
         description: >
-          Quantidade de marcações com falta registrada (flag_falta_registrada = 'sim') no período.
-          Preenchido apenas para linhas com tipo_unidade = "EXECUTANTE".
+          Mediana (percentil 50) do número de dias corridos entre a aprovação da marcação
+          (marcacao.aprovacao_datahora) e a data agendada para o procedimento
+          (marcacao.datahora). Nulo quando nenhuma solicitação do grupo possui marcação.
         data_type: int64
         quote: true
 
-      - name: absenteismo_pct
+      - name: media_dias_solicitacao_ate_aprovacao
         description: >
-          Percentual de absenteísmo calculado como (quantidade_faltas / quantidade_marcacoes_agendadas) * 100.
-          Arredondado em 2 casas decimais. Nulo quando não há marcações agendadas no período.
-          Preenchido apenas para linhas com tipo_unidade = "EXECUTANTE".
+          Média aritmética do número de dias corridos entre a criação da solicitação
+          e a aprovação da marcação. Arredondada em 1 casa decimal.
+        data_type: float64
+        quote: true
+
+      - name: media_dias_aprovacao_ate_marcacao
+        description: >
+          Média aritmética do número de dias corridos entre a aprovação da marcação
+          e a data agendada para o procedimento. Arredondada em 1 casa decimal.
         data_type: float64
         quote: true

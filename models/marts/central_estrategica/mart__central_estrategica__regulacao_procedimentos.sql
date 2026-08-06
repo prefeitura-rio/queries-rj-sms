@@ -7,61 +7,71 @@
 }}
 
 /*
-  Lista de procedimentos existentes no SISREG (regulação ambulatorial).
-  Granularidade: um registro por procedimento SIGTAP distinto.
-  Fonte: raw_sisreg_api_v2__solicitacao_ambulatorial
+  Lista de procedimentos distintos registrados nas solicitações de regulação.
+  Granularidade: um registro por código SIGTAP (sigtap_id).
+
+  O código SIGTAP é a chave primária. A descrição normalizada é extraída de
+  mart_historico_clinico_app__regulacao (já com padronização de abreviações e
+  filtro de privacidade), associada ao SIGTAP via mart_regulacao__solicitacao.
+
+  Em caso de múltiplas descrições para o mesmo SIGTAP, mantém a mais frequente.
+
+  Fonte: mart_historico_clinico_app__regulacao + mart_regulacao__solicitacao
 */
 
 with
-    procedimentos as (
+    -- Associa cada solicitacao_id ao seu sigtap_id e descrição normalizada
+    base as (
         select
-            procedimento_sigtap_id                          as sigtap_procedimento,
-            coalesce(
-                procedimento_sigtap_descricao,
-                procedimento_descricao
-            )                                               as nome_procedimento,
-            procedimento_grupo_codigo                       as sigtap_grupo_codigo,
-            procedimento_grupo_nome                         as nome_grupo
-        from {{ ref('raw_sisreg_api_v2__solicitacao_ambulatorial') }}
-        where procedimento_sigtap_id is not null
+            s.procedimento.sigtap_id        as sigtap_id,
+            s.procedimento.grupo_codigo     as sigtap_grupo_codigo,
+            s.procedimento.grupo_nome       as nome_grupo,
+            r.procedimento_descricao
+        from {{ ref('mart_historico_clinico_app__regulacao') }} as r
+        inner join {{ ref('mart_regulacao__solicitacao') }} as s
+            on r.solicitacao_id = s.solicitacao.id
+        where
+            s.procedimento.sigtap_id is not null
+            and r.procedimento_descricao is not null
     ),
 
-    -- Pré-agrega para contar frequência por combinação
+    -- Conta frequência por (sigtap_id, descricao) para resolver conflitos de nome
     contagem as (
         select
-            sigtap_procedimento,
-            nome_procedimento,
+            sigtap_id,
             sigtap_grupo_codigo,
             nome_grupo,
-            count(*)                                        as frequencia
-        from procedimentos
+            procedimento_descricao,
+            count(*) as frequencia
+        from base
         group by
-            sigtap_procedimento,
-            nome_procedimento,
+            sigtap_id,
             sigtap_grupo_codigo,
-            nome_grupo
+            nome_grupo,
+            procedimento_descricao
     ),
 
-    -- Garante unicidade por sigtap_procedimento:
-    -- em caso de conflito de nomes/grupos, mantém o valor mais frequente
+    -- Para cada sigtap_id, mantém a descrição mais frequente
     ranked as (
         select
-            sigtap_procedimento,
-            nome_procedimento,
+            sigtap_id,
             sigtap_grupo_codigo,
             nome_grupo,
+            procedimento_descricao,
+            sum(frequencia) over (partition by sigtap_id) as total_solicitacoes,
             row_number() over (
-                partition by sigtap_procedimento
-                order by frequencia desc
-            )                                               as rn
+                partition by sigtap_id
+                order by frequencia desc, procedimento_descricao
+            ) as rn
         from contagem
     )
 
 select
-    sigtap_procedimento,
-    nome_procedimento,
+    sigtap_id,
+    procedimento_descricao,
     sigtap_grupo_codigo,
-    nome_grupo
+    nome_grupo,
+    total_solicitacoes
 from ranked
 where rn = 1
-order by nome_grupo, nome_procedimento
+order by total_solicitacoes desc, procedimento_descricao
