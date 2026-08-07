@@ -25,3 +25,8 @@ models:
         description: >
           Resultado da busca: CPF_UNICO, SEM_CANDIDATO ou MULTIPLOS_CPFS.
 
+      - name: processed_at
+        description: >
+          Data e hora em que o enriquecimento foi executado. Indica a validade
+          do dado, pois o modelo é atualizado semanalmente.
+

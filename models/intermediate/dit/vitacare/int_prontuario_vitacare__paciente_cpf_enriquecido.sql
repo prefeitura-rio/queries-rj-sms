@@ -73,5 +73,6 @@ select
         when quantidade_cpf_candidatos = 0 then "SEM_CANDIDATO"
         when quantidade_cpf_candidatos = 1 then "CPF_UNICO"
         else "MULTIPLOS_CPFS"
-    end as resultado_enriquecimento
+    end as resultado_enriquecimento,
+    current_timestamp() as processed_at
 from candidatos
