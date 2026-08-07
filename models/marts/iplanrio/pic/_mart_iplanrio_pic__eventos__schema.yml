@@ -24,6 +24,8 @@ models:
         description: >
           CPF da pessoa associada ao evento. É a chave de vinculação entre os eventos
           assistenciais e as fases do público-alvo do PIC.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
 
       - name: tipo_evento
         description: >
