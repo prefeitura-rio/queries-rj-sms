@@ -52,7 +52,7 @@ with
                         primeiro_mes,
                         date_trunc(date_sub(current_date(), interval 2 year), month)
                     ),
-                    date_trunc(current_date(), month),
+                    date_trunc(date_sub(current_date(), interval 1 month), month),
                     interval 1 month
                 )
             ) as mes
