@@ -1,6 +1,7 @@
 {{
     config(
-        alias="bcadastro_cpf_indice",
+        schema="intermediario_cadastro",
+        alias="cpf_indice",
         materialized="table",
         partition_by={
             "field": "hash_particao",
