@@ -26,7 +26,7 @@ with
                 {{ remove_duplicate_whitespace(remove_accents_upper("mae_nome")) }},
                 ""
             ) as mae_nome_normalizado
-        from {{ ref("raw_bcadastro__cpf") }}
+        from {{ ref("raw_bcadastro__cpf") }} as bcadastro
     ),
 
     com_primeiro_nome as (
