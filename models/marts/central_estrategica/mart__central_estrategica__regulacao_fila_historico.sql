@@ -48,7 +48,10 @@ with
             meses,
             unnest(
                 generate_date_array(
-                    primeiro_mes,
+                    greatest(
+                        primeiro_mes,
+                        date_trunc(date_sub(current_date(), interval 2 year), month)
+                    ),
                     date_trunc(current_date(), month),
                     interval 1 month
                 )
