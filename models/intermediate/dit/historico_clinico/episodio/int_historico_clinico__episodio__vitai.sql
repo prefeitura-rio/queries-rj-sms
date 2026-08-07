@@ -3,12 +3,15 @@
         schema="intermediario_historico_clinico",
         alias="episodio_assistencial_vitai",
         materialized="table",
+        partition_by={
+            "field": "mes_particao",
+            "data_type": "date",
+            "granularity": "month"
+        },
+        cluster_by=["cpf_particao"],
     )
 }}
--- TODO: partition, cluster, incremental?
--- Partição não pode ser por data_particao porque
--- a coluna tem >4700 valores distintos
--- Talvez por mês?
+-- TODO: incremental?
 
 with
     -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -19,6 +22,7 @@ with
     alta_adm as ( -- Alta administrativa (consultas)
         select
             gid_boletim,
+            alta_data,
             CASE
                 WHEN
                     {{ process_null("alta_tipo_detalhado") }} is null and {{clean_abe_obs('abe_obs')}} is null THEN null 
@@ -88,8 +92,12 @@ with
             internacao_data,
             b.imported_at,
             b.updated_at,
-            {{ parse_and_filter_future_datetime('b.data_entrada') }} as entrada_datahora,
-            {{ parse_and_filter_future_datetime('b.alta_data') }} as saida_datahora,
+            b.data_entrada as entrada_datahora,
+            coalesce(
+                b.alta_data,
+                aa.alta_data,
+                ai.resumo_alta_datahora
+            ) as saida_datahora,
             if(
                 {{ process_null(clean_numeric("b.cpf")) }} is null,
                 {{ process_null(clean_numeric("paciente_mrg.cpf")) }},
@@ -99,6 +107,8 @@ with
             paciente_mrg.data_nascimento
         from {{ ref("raw_prontuario_vitai__boletim") }} as b
         left join paciente_mrg on b.gid_paciente = paciente_mrg.id_paciente
+        left join alta_adm aa on b.gid = aa.gid_boletim
+        left join alta_internacao ai on b.gid = ai.gid_boletim
     ),
     -- Profissional com nome próprio tratado
     profissional_int as (
@@ -113,25 +123,27 @@ with
     prescricoes_limpo as (
         select distinct
             gid_prescricao,
-            gid_boletim, 
-            CASE 
-                WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO') THEN upper(observacao)
+            gid_boletim,
+            CASE
+                WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO')
+                    THEN upper(observacao)
                 ELSE upper(item_prescrito)
             END as nome,
             quantidade,
             unidade_medida,
-            CASE 
-                WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO') THEN null
-                ELSE coalesce(upper(observacao),upper(orientacao_uso))
+            CASE
+                WHEN regexp_contains(upper(item_prescrito), 'MEDICAMENTO N[Ã|A]O PADRONIZADO')
+                    THEN null
+                ELSE coalesce(upper(observacao), upper(orientacao_uso))
             END as uso,
             via_administracao
         from {{ ref("raw_prontuario_vitai__basecentral__item_prescricao") }} 
         where trim(tipo_produto) = 'MEDICACAO'
     ),
     prescricao_datahora as (
-        select distinct 
-            gid, 
-            data_prescricao 
+        select distinct
+            gid,
+            data_prescricao
         from {{ ref("raw_prontuario_vitai__basecentral__prescricao") }}
     ),
     prescricoes_agg as (
@@ -139,10 +151,19 @@ with
             gid_boletim,
             array_agg(
                 struct(
-                    nome,
+                    -- Alguns `nome`s e `uso`s vêm com tags HTML
+                    -- ex.: `<SPAN STYLE="COLOR: WHITE; ...">ALTA VIGILÂNCIA</SPAN>`
+                    upper(trim({{ remove_html("lower(nome)") }})) as nome,
                     quantidade,
                     unidade_medida,
-                    uso,
+                    upper(trim(
+                        regexp_replace(
+                            {{ remove_html("lower(uso)") }},
+                            -- `uso` também tem uma tag não-fechada, "<SPAN ..."
+                            r"</?span[^>]*(>|$)",
+                            ""
+                        )
+                    )) as uso,
                     via_administracao,
                     {{ parse_and_filter_future_date('data_prescricao') }} as prescricao_data
                 )
@@ -521,8 +542,8 @@ with
             exames_realizados,
 
             -- Entrada e Saída
-            atendimento_struct.entrada_datahora as entrada_datahora,
-            atendimento_struct.saida_datahora as saida_datahora,
+            {{ parse_and_filter_future_datetime('atendimento_struct.entrada_datahora') }} as entrada_datahora,
+            {{ parse_and_filter_future_datetime('atendimento_struct.saida_datahora') }} as saida_datahora,
 
             -- Motivo e Desfecho
             safe_cast(
@@ -551,11 +572,19 @@ with
                 imported_at,
                 datetime(current_timestamp(),'America/Sao_Paulo') as processed_at
             ) as metadados,
-            safe_cast(entrada_datahora as date) as data_particao,
-            safe_cast(atendimento_struct.paciente.cpf as int64) as cpf_particao
+            safe_cast(atendimento_struct.paciente.cpf as int64) as cpf_particao,
+            date_trunc(
+                coalesce(
+                    safe_cast(entrada_datahora as date),
+                    safe_cast(saida_datahora as date)
+                ),
+                MONTH
+            ) as mes_particao
         from atendimento_struct
-        left join cid_agg on atendimento_struct.id = cid_agg.gid_boletim
-        left join prescricoes_agg on atendimento_struct.id = prescricoes_agg.gid_boletim
+        left join cid_agg
+            on atendimento_struct.id = cid_agg.gid_boletim
+        left join prescricoes_agg
+            on atendimento_struct.id = prescricoes_agg.gid_boletim
     )
 
 select *

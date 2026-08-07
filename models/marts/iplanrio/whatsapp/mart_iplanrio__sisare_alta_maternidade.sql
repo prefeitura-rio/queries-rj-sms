@@ -15,7 +15,8 @@ with gestantes as (
         nome,
         dt_parto as data_parto,
         id_desfecho_internacao,
-        id_desfecho_gestacao
+        id_desfecho_gestacao,
+        desfecho_gestacao
     from {{ ref('int_subpav__sisare_gestantes') }}
     where id_gestante is not null
       and id_paciente is not null
@@ -147,15 +148,6 @@ altas as (
 
 ),
 
-desfechos_gestacao as (
-
-    select
-        id_desfecho_gestacao,
-        descricao as desfecho_gestacao
-    from {{ ref('raw_plataforma_subpav_sisare__desfechos_gestacao') }}
-
-),
-
 estabelecimento as (
 
     select
@@ -221,7 +213,7 @@ base as (
         e.nome_maternidade_alta,
         g.data_parto,
         g.id_desfecho_gestacao,
-        d.desfecho_gestacao,
+        g.desfecho_gestacao,
         cg.telefone_cegonha,
         vt.telefone as telefone_vitacare,
         vi.telefone as telefone_vitai
@@ -232,8 +224,6 @@ base as (
         on i.id_internacao = g.id_internacao
     left join altas a
         on a.id_internacao = g.id_internacao
-    left join desfechos_gestacao d
-        on d.id_desfecho_gestacao = g.id_desfecho_gestacao
     left join estabelecimento e
         on e.cnes_maternidade_alta = regexp_replace(i.cnes_maternidade_alta, r'\D', '')
     left join cegonha_tel cg

@@ -158,9 +158,16 @@ with
     anonimizacao as (
         select
             * except (
-                nome, cpf, cns, data_nascimento,
-                id_agendamento, id_atendimento,
-                motivo, subjetivo_motivo, plano_observacoes, avaliacao_observacoes, notas_observacoes
+                nome, 
+                cpf, 
+                cns, 
+                data_nascimento,
+                id_agendamento, 
+                id_atendimento,
+                motivo, 
+                plano_observacoes, 
+                avaliacao_observacoes,
+                notas_observacoes
             ), 
 
             -- Restringe a granularidade da data de nascimento para preservar a privacidade

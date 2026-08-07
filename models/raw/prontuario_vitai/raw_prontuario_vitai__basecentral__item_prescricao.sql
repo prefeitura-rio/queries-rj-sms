@@ -2,34 +2,44 @@
     config(
         alias="basecentral__item_prescricao",
         materialized="incremental",
-        unique_key="gid"
+        unique_key="gid",
+        partition_by={
+            "field": "mes_particao",
+            "data_type": "date",
+            "granularity": "month"
+        },
+        cluster_by=["data_particao"],
     )
 }}
 
 {% set seven_days_ago = (
     modules.datetime.date.today() - modules.datetime.timedelta(days=7)
 ).isoformat() %}
+{% set last_month = (
+    modules.datetime.date.today() - modules.datetime.timedelta(days=7)
+).replace(day=1).isoformat() %}
 
 with
     -- Seleciona eventos dos últimos 7 dias se for uma execução incremental
     events_from_window as (
         select *
         from {{ source("brutos_prontuario_vitai_staging", "basecentral__item_prescricao_eventos") }}
-        {% if is_incremental() %} 
-            where data_particao > '{{seven_days_ago}}' 
+        {% if is_incremental() %}
+            where mes_particao >= '{{ last_month }}'
+                and data_particao > '{{ seven_days_ago }}'
         {% endif %}
     ),
-    
+
     -- Ranqueia os eventos por frescor dentro de cada grupo
     events_ranked_by_freshness as (
-        select *, 
+        select *,
             row_number() over (partition by gid order by datahora desc) as rank
         from events_from_window
     ),
     
     -- Seleciona apenas os eventos mais recentes de cada grupo
     latest_events as (
-        select * 
+        select *
         from events_ranked_by_freshness 
         where rank = 1
     )
@@ -68,6 +78,10 @@ select
     timestamp_add(datetime(timestamp({{process_null('created_at')}}), 'America/Sao_Paulo'),interval 3 hour) as centralized_at,
     datetime(timestamp({{ process_null('datalake_loaded_at')}}), 'America/Sao_Paulo') as loaded_at,
 
-    safe_cast(data_particao as date) as data_particao
+    safe_cast(data_particao as date) as data_particao,
+    date_trunc(
+        safe_cast(data_particao as date),
+        MONTH
+    ) as mes_particao
 
 from latest_events
