@@ -12,9 +12,9 @@ with
     pacientes_sem_cpf as (
         select
             id_paciente_global,
-            nullif({{ remove_duplicate_whitespace("nome") }}, "") as nome_normalizado,
+            nullif({{ remove_duplicate_whitespace(remove_accents_upper("nome")) }}, "") as nome_normalizado,
             data_nascimento,
-            nullif({{ remove_duplicate_whitespace("mae_nome") }}, "") as mae_nome_normalizado
+            nullif({{ remove_duplicate_whitespace(remove_accents_upper("mae_nome")) }}, "") as mae_nome_normalizado
         from {{ ref("raw_prontuario_vitacare__paciente") }}
         where cpf is null
     ),
