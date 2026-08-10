@@ -26,9 +26,7 @@ with atendimentos_diarios as (
         count(*) as atendimentos_no_dia
     from {{ ref('raw_prontuario_vitai__boletim') }}
     {% if is_incremental() %}
-    -- precisamos de 30 dias extras de histórico (60 no total) para poder calcular
-    -- a mediana móvel de cada uma das datas que serão reprocessadas
-    where data_entrada >= date_sub({{ partitions_to_replace }}, interval 30 day)
+    where data_entrada >= {{ partitions_to_replace }}
     {% endif %}   
     group by data_dia, dia_semana_num, dia_semana_nome
 ),

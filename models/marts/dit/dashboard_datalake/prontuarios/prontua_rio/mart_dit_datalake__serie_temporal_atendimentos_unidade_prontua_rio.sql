@@ -27,13 +27,10 @@ with atendimentos_diarios as (
         count(*) as atendimentos_no_dia
     from {{ ref('raw_prontuario_prontuaRio__evolucao') }}
     {% if is_incremental() %}
-    where registro_data >= date_sub({{ partitions_to_replace }}, interval 30 day)
+    where registro_data >= {{ partitions_to_replace }}
     {% endif %}   
     group by data_dia, id_cnes, dia_semana_num, dia_semana_nome
 ),
-
--- para cada data e unidade, calcula a mediana de atendimentos do mesmo dia
--- da semana, na mesma unidade, considerando os 30 dias anteriores (janela móvel)
 mediana_movel as (
     select
         a.data_dia,
@@ -51,7 +48,6 @@ mediana_movel as (
     where a.data_dia >= {{ partitions_to_replace }}
     {% endif %}
 ),
-
 mediana_dia_semana as (
     select distinct
         data_dia,
@@ -59,14 +55,12 @@ mediana_dia_semana as (
         mediana_ultimos_30_dias
     from mediana_movel
 ),
-
 estabelecimentos as (
   select 
     id_cnes, 
     nome_acentuado as nome
   from {{ref('dim_estabelecimento')}}
 ),
-
 final as (
     select 
         {{ parse_and_filter_future_date('d.data_dia') }} as data_registro,

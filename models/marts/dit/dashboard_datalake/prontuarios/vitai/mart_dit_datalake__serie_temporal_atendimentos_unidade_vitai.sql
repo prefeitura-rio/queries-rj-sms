@@ -28,13 +28,10 @@ with atendimentos_diarios as (
     left join {{ ref('raw_prontuario_vitai__m_estabelecimento')}} e
       on b.gid_estabelecimento = e.gid
     {% if is_incremental() %}
-    where data_entrada >= date_sub({{ partitions_to_replace }}, interval 30 day)
+    where data_entrada >= {{ partitions_to_replace }}
     {% endif %}   
     group by data_dia, id_cnes, dia_semana_num, dia_semana_nome
 ),
-
--- para cada data e unidade, calcula a mediana de atendimentos do mesmo dia
--- da semana, na mesma unidade, considerando os 30 dias anteriores (janela móvel)
 mediana_movel as (
     select
         a.data_dia,

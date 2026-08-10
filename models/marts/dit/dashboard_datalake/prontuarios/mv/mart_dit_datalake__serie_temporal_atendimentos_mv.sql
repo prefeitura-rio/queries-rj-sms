@@ -25,15 +25,10 @@ with atendimentos_diarios as (
         count(*) as atendimentos_no_dia
     from `rj-sms.brutos_prontuario_mv.atendimento`
     {% if is_incremental() %}
-    -- precisamos de 30 dias extras de histórico (60 no total) para poder calcular
-    -- a mediana móvel de cada uma das datas que serão reprocessadas
-    where atendimento_datahora >= date_sub({{ partitions_to_replace }}, interval 30 day)
+    where atendimento_datahora >= {{ partitions_to_replace }}
     {% endif %}   
     group by data_dia, dia_semana_num, dia_semana_nome
 ),
-
--- para cada data, calcula a mediana de atendimentos do mesmo dia da semana
--- considerando apenas os 30 dias anteriores a ela (janela móvel)
 mediana_movel as (
     select
         a.data_dia,
@@ -49,14 +44,12 @@ mediana_movel as (
     where a.data_dia >= {{ partitions_to_replace }}
     {% endif %}
 ),
-
 mediana_dia_semana as (
     select distinct
         data_dia,
         mediana_ultimos_30_dias
     from mediana_movel
 ),
-
 final as (
     select 
         d.data_dia as data_registro,

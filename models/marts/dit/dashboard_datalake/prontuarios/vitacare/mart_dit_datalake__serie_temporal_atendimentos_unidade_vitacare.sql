@@ -27,13 +27,10 @@ with atendimentos_diarios as (
         count(*) as atendimentos_no_dia
     from {{ ref('raw_prontuario_vitacare__atendimento') }} 
     {% if is_incremental() %}
-    where datahora_inicio >= date_sub({{ partitions_to_replace }}, interval 30 day)
+    where datahora_inicio >= {{ partitions_to_replace }}
     {% endif %}   
     group by data_dia, id_cnes, dia_semana_num, dia_semana_nome
 ),
-
--- para cada data e unidade, calcula a mediana de atendimentos do mesmo dia
--- da semana, na mesma unidade, considerando os 30 dias anteriores (janela móvel)
 mediana_movel as (
     select
         a.data_dia,

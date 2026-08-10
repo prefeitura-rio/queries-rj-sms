@@ -33,9 +33,6 @@ with atendimentos_diarios as (
     {% endif %}   
     group by data_dia, id_cnes, dia_semana_num, dia_semana_nome
 ),
-
--- para cada data e unidade, calcula a mediana de atendimentos do mesmo dia
--- da semana, na mesma unidade, considerando os 30 dias anteriores (janela móvel)
 mediana_movel as (
     select
         a.data_dia,
