@@ -88,7 +88,7 @@ final as (
         on d.data_dia = m.data_dia
         and d.id_cnes = m.id_cnes
     join estabelecimentos e on e.id_cnes = d.id_cnes
-    {% if is_incremental() %}s
+    {% if is_incremental() %}
     where d.data_dia >= {{ partitions_to_replace }}
     {% endif %}
 )
