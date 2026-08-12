@@ -54,7 +54,7 @@ staging as (
 
   select 
     'paciente' as tabela,
-    source_id,
+    patient_cpf as source_id,
     datalake_loaded_at,
     safe.parse_datetime('%Y-%m-%dT%H:%M:%S', source_updated_at) as source_updated_at,
     datetime_diff(
