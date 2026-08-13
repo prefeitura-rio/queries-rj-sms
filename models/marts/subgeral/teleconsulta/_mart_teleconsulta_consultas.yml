@@ -110,6 +110,11 @@ models:
         data_type: string
         quote: true
 
+      - name: subjetivo_motivo
+        description: Motivo relatado pelo paciente para a realização da consulta.
+        data_type: string
+        quote: true
+
       - name: condicoes_ativas
         description: >
           Lista de condições ativas do paciente associadas ao atendimento,
