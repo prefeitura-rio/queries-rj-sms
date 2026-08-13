@@ -113,7 +113,7 @@ with
             equipe_descricao
         from equipe_dedup
         left join equipe_tipo_dedup
-        using (id_equipe_tipo)
+            using (id_equipe_tipo)
     ),
     equipe_profissionais_dedup as (
         select *
@@ -130,7 +130,7 @@ with
             equipe_descricao
         from equipe_profissionais_dedup
         left join equipe_consultorio_rua
-        using (equipe_sequencial)
+            using (equipe_sequencial)
         where id_equipe_tipo = '73'
     ),
     -- -----------------------------------------
@@ -155,9 +155,17 @@ with
             left join profissionais_cnes using (id_profissional_sus)
             left join profissionais_consultorio_rua using (id_profissional_sus)
     ),
+
     -- -----------------------------------------
     -- Filtrando funcionários com acesso autorizado
     -- -----------------------------------------
+    ergon_ativos as (
+        select distinct
+            cpf
+        from {{ ref("raw_ergon_funcionarios")}},
+            unnest(dados) as dados
+        where dados.status_ativo = true
+    ),
     funcionarios_ativos_enriquecido_autorizados as (
         select
             cpf,
@@ -178,6 +186,10 @@ with
                 'DENTISTAS',
                 'DIRETORES DE SAUDE',
                 'ADMINISTRATIVO'
+            )
+            and cpf in (
+                select *
+                from ergon_ativos
             )
     ),
     -- -----------------------------------------
