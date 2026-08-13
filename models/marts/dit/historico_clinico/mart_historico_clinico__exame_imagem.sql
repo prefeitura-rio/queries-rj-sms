@@ -11,9 +11,9 @@
     )
 }}
 
-with 
+with
     medilab_exames as (
-        select 
+        select
             *
         from {{ ref('int_historico_clinico__exames__medilab') }}
     ),
@@ -37,7 +37,7 @@ with
             medico_responsavel as medico_responsavel,
             medico_revisor as medico_revisor,
 
-            safe_cast(paciente_cpf as int) as cpf_particao 
+            safe_cast(paciente_cpf as int) as cpf_particao
         from medilab_exames
     )
 

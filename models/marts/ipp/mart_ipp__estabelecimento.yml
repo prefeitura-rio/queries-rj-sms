@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: mart_ipp__estabelecimento
+    description: >
+      Dimensão de estabelecimentos de saúde do município do Rio de Janeiro,
+      originada do CNES histórico. Contém a versão mais recente de cada par
+      id_cnes/id_unidade, com nomes padronizados e acentuados.
+      Clusterizada por id_cnes.
+    columns:
+      - name: id_cnes
+        description: Código CNES (Cadastro Nacional de Estabelecimentos de Saúde) do estabelecimento.
+
+      - name: id_unidade
+        description: Identificador interno da unidade de saúde no sistema municipal.
+
+      - name: razao_social
+        description: Razão social do estabelecimento com formatação padronizada (macro proper_estabelecimento).
+
+      - name: nome_fantasia
+        description: Nome fantasia do estabelecimento com acentuação corrigida (macro add_accents_estabelecimento).
+
+      - name: atualizado_em
+        description: Data da última atualização do registro no CNES.
+
+      - name: processado_em
+        description: Data em que o registro foi processado por este pipeline.

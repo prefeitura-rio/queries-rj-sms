@@ -16,10 +16,20 @@ with
         select
             id,
             paciente_cpf,
-            -- Remove "SMS RIO" do início do nome da unidade
+            -- Limpa nome da unidade
             REGEXP_REPLACE(
-                unidade,
-                r"(?i)^SMS\s+(RIO)?\s*",
+                REGEXP_REPLACE(
+                    REGEXP_REPLACE(
+                        unidade,
+                        r"(?i)\bCl[ií]nica da Fam[ií]lia\b",
+                        "CF"
+                    ),
+                    -- Remove "SMS RIO", número de AP do início
+                    r"(?i)^(SMS|RIO\b|(AP)?[0-9\.\s]*\b|\s)+",
+                    ""
+                ),
+                -- Remove número de AP do final
+                r"(?i)\bAP[0-9\.\s]+$",
                 ""
             ) as unidade_nome,
             laudo_url,

@@ -13,7 +13,7 @@ with
 
     source as (
         select *, 
-                concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
+            concat(nullif(payload_cnes, ''), '.', nullif(source_id, '')) as id
             from {{ source("brutos_prontuario_vitacare_api_staging", "paciente_continuo") }}
             where {{process_null('payload_cnes')}} is not null
             {% if is_incremental() %} 
@@ -37,6 +37,7 @@ with
             cast(id as string) as id,
             
             nullif(JSON_EXTRACT_SCALAR(data, '$.cpf'), '') AS cpf,
+            nullif(JSON_EXTRACT_SCALAR(data, '$.cns'), '') AS cns,
             nullif(JSON_EXTRACT_SCALAR(data, '$.id'), '') AS id_paciente,
             nullif(JSON_EXTRACT_SCALAR(data, '$.nPront'), '') AS numero_prontuario,
 

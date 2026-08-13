@@ -16,20 +16,24 @@ models:
 
       A tabela unifica eventos de visitas domiciliares, consultas, consultas com
       médico/enfermeiro, testes rápidos e vacinação, vinculando cada evento ao tipo
-      de público e à fase em que ocorreu.
+      de público e à fase em que ocorreu. Os eventos de vacinação são classificados
+      a partir da fonte consolidada mart_cit__vacinacao.
 
     columns:
       - name: cpf
         description: >
           CPF da pessoa associada ao evento. É a chave de vinculação entre os eventos
           assistenciais e as fases do público-alvo do PIC.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
 
       - name: tipo_evento
         description: >
           Tipo padronizado do evento identificado no prontuário ou em bases
           complementares. Pode assumir valores como Visita Domiciliar, Consulta,
           Consulta - Médico/Enfermeiro, Teste rápido - HIV, Teste rápido - Sífilis,
-          Teste rápido - Hepatite B, Teste rápido - Hepatite C e eventos de vacinação.
+          Teste rápido - Hepatite B, Teste rápido - Hepatite C e
+          Vacina - Pentavalente - D3.
 
       - name: data_evento
         description: >

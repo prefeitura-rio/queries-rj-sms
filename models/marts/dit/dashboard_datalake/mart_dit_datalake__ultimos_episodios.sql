@@ -16,7 +16,7 @@ SELECT
     when 'vitacare' then 'Vitacare'
     else upper(prontuario.fornecedor)
   end as fornecedor,
-  cast(MAX(entrada_data) as datetime) as ultima_atualizacao,
-  DATE_DIFF(CURRENT_DATETIME('America/Sao_Paulo'), DATETIME(MAX(entrada_data)), DAY) as dias_sem_atualizar
-FROM {{ref('mart_historico_clinico__episodio')}}d
+  MAX(entrada_data) as ultima_atualizacao,
+  DATE_DIFF(CURRENT_DATE('America/Sao_Paulo'), DATE(MAX(entrada_data)), DAY) as dias_sem_atualizar
+FROM {{ref('mart_historico_clinico__episodio')}}
 GROUP BY 1
