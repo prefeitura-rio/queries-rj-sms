@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: mart_dit_datalake__serie_temporal_vacinacoes
+    description: >
+      Série temporal de vacinações dos últimos 60 dias, desagregada por estabelecimento
+      de saúde e dia. Utiliza um produto cartesiano entre todas as datas do período e todos
+      os estabelecimentos Vitacare, preenchendo com zero os dias sem registro de vacinação.
+      Os dados de vacinação são provenientes de `mart_cie__vacinacao`.
+    columns:
+      - name: nome_limpo
+        description: Nome do estabelecimento de saúde sem caracteres especiais ou abreviações.
+        data_type: string
+
+      - name: area_programatica
+        description: Área Programática (AP) de saúde à qual o estabelecimento pertence.
+        data_type: string
+
+      - name: id_cnes
+        description: Código CNES do estabelecimento de saúde.
+        data_type: string
+
+      - name: date
+        description: Data de referência das vacinações.
+        data_type: date
+
+      - name: qtd_vacinacoes
+        description: >
+          Quantidade de vacinações realizadas no estabelecimento na data de referência.
+          Assume valor `0` quando não há registro para o estabelecimento naquele dia.
+        data_type: int64

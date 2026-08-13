@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: mart_dit_datalake__ultimos_episodios
+    description: >
+      Monitoramento da atualidade dos dados por fornecedor de prontuário eletrônico.
+      Para cada sistema (PCSM, SARAH, MV, ProntuaRio, TiMed/Vitai e Vitacare), retorna a
+      data do episódio mais recente registrado no histórico clínico unificado
+      (`mart_historico_clinico__episodio`) e a quantidade de dias sem atualização.
+      Útil para alertar atrasos ou interrupções na ingestão de dados.
+    columns:
+      - name: fornecedor
+        description: >
+          Nome do sistema fornecedor do prontuário eletrônico. Valores possíveis:
+          `PCSM`, `SARAH`, `MV`, `ProntuaRio`, `TiMed` (Vitai) e `Vitacare`.
+        data_type: string
+
+      - name: ultima_atualizacao
+        description: Data do episódio mais recente registrado pelo fornecedor.
+        data_type: date
+
+      - name: dias_sem_atualizar
+        description: >
+          Número de dias transcorridos desde a última atualização do fornecedor até
+          a data de execução do modelo.
+        data_type: int64
