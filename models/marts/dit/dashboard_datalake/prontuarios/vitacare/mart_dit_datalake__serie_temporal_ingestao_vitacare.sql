@@ -30,7 +30,7 @@ staging as (
       safe.parse_datetime('%Y-%m-%d %H:%M:%S', source_updated_at), 
       second
     ) as diferenca_segundos
-  from `rj-sms.brutos_prontuario_vitacare_api_staging.agendamento_continuo`
+  from {{ source('brutos_prontuario_vitacare_api_staging', 'agendamento_continuo') }}
   {% if is_incremental() %}
     where date(datalake_loaded_at, 'America/Sao_Paulo') >= {{ partitions_to_replace }}
   {% endif %}
@@ -46,7 +46,7 @@ staging as (
       safe.parse_datetime('%Y-%m-%d %H:%M:%S', source_updated_at), 
       second
     ) as diferenca_segundos
-  from `rj-sms.brutos_prontuario_vitacare_api_staging.atendimento_continuo`
+  from {{ source('brutos_prontuario_vitacare_api_staging', 'atendimento_continuo') }}
   {% if is_incremental() %}
     where date(datalake_loaded_at, 'America/Sao_Paulo') >= {{ partitions_to_replace }}
   {% endif %}
@@ -62,7 +62,7 @@ staging as (
       safe.parse_datetime('%Y-%m-%dT%H:%M:%S', source_updated_at), 
       second
     ) as diferenca_segundos
-  from `rj-sms.brutos_prontuario_vitacare_api_staging.paciente_continuo`
+  from {{ source('brutos_prontuario_vitacare_api_staging', 'paciente_continuo') }}
     {% if is_incremental() %}
     where date(datalake_loaded_at, 'America/Sao_Paulo') >= {{ partitions_to_replace }}
   {% endif %}

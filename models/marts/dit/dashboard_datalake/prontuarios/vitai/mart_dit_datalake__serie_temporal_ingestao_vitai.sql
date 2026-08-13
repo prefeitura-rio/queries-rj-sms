@@ -40,7 +40,7 @@ staging as (
         cast(created_at as datetime), 
         second
       ) as diferenca_segundos
-    from `rj-sms.brutos_prontuario_vitai_staging.{{ item.tabela_origem }}`
+    from {{ source('brutos_prontuario_vitai_staging', item.tabela_origem) }}
     {% if is_incremental() %}
       where date(parse_timestamp('%Y-%m-%d %H:%M:%E*S%Ez', datalake_loaded_at), 'America/Sao_Paulo') >= {{ partitions_to_replace }}
     {% endif %}
