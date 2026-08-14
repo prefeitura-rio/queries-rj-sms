@@ -84,7 +84,7 @@ with
                     '131225',  -- Sanitarista
                     '1312C1'   -- Sanitarista
                 )
-                    then 'SANITARISTA'
+                    then 'SANITARISTAS'
                 -- Ago/2025 - Personas de acesso:
                 -- * Assistentes administrativos do Complexo Regulador (CNES 7106513/3304557106513)
                 when id_cnes = '7106513' and id_cbo = '411010'
@@ -194,7 +194,7 @@ with
             funcao_grupo in (
                 'MEDICOS',
                 'ENFERMEIROS',
-                'SANITARISTA',
+                'SANITARISTAS',
                 'DENTISTAS',
                 'DIRETORES DE SAUDE',
                 'ADMINISTRATIVO'
@@ -221,23 +221,25 @@ with
                     funcao_detalhada,
                     funcao_grupo,
                     case
-                        when eh_equipe_consultorio_rua is true 
-                        then 'full_permission'
+                        when eh_equipe_consultorio_rua is true
+                            then 'full_permission'
+                        when funcao_grupo = 'SANITARISTAS'
+                            then 'full_permission'
                         when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO','CASS')
-                        then 'full_permission'
+                            then 'full_permission'
                         when unidade_tipo in ('CGS','CAPS') and funcao_grupo in ('MEDICOS','DENTISTAS')
-                        then 'full_permission'
+                            then 'full_permission'
                         when unidade_tipo in ('CGS','CAPS') and funcao_grupo not in ('MEDICOS','DENTISTAS')
-                        then 'only_from_same_ap'
+                            then 'only_from_same_ap'
                         when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo in ('MEDICOS','DENTISTAS')
-                        then 'full_permission'
+                            then 'full_permission'
                         when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo not in ('MEDICOS','DENTISTAS')
-                        then 'only_from_same_cnes'
+                            then 'only_from_same_cnes'
                         else null
                     end as nivel_acesso,
                     case
                         when (unidade_cnes = '7106513' and funcao_grupo = 'ADMINISTRATIVO')
-                        then 'only_header'
+                            then 'only_header'
                         else 'full_permission'
                     end as granularidade_acesso
                 )
