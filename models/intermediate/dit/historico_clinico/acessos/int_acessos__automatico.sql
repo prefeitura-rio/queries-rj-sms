@@ -74,6 +74,17 @@ with
                 when cbo_datasus.descricao in ('Dirigente do servico publico municipal',
                 'Diretor de servicos de saude','Gerente de servicos de saude')
                     then 'DIRETORES DE SAUDE'
+                -- Ago/2026 - Sanitaristas:
+                -- Médicos e enfermeiros sanitaristas terão sido filtrados pelas condicionais
+                -- anteriores, mas não custa deixar aqui por completude
+                when id_cbo in (
+                    '223560',  -- Enfermeiro sanitarista
+                    '223156',  -- Medico sanitarista
+                    '225139',  -- Medico sanitarista
+                    '131225',  -- Sanitarista
+                    '1312C1'   -- Sanitarista
+                )
+                    then 'SANITARISTA'
                 -- Ago/2025 - Personas de acesso:
                 -- * Assistentes administrativos do Complexo Regulador (CNES 7106513/3304557106513)
                 when id_cnes = '7106513' and id_cbo = '411010'
@@ -183,6 +194,7 @@ with
             funcao_grupo in (
                 'MEDICOS',
                 'ENFERMEIROS',
+                'SANITARISTA',
                 'DENTISTAS',
                 'DIRETORES DE SAUDE',
                 'ADMINISTRATIVO'
