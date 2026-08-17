@@ -15,6 +15,7 @@
         tags=["daily"],
     )
 }}
+-- FIXME: unificar esse modelo e `mart_dit_infraestrutura__queries`
 
 {% set first_day_of_month = "date_trunc(current_date('America/Sao_Paulo'), month)" %}
 
@@ -28,15 +29,57 @@ with
     -- SOURCES
 
     usage_rj_sms as (
-        select * from `rj-sms`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+        select
+            project_id,
+            job_id,
+            user_email,
+            job_type,
+            query,
+            state,
+            destination_table,
+            error_result,
+            creation_time,
+            end_time,
+            total_bytes_processed,
+            total_bytes_billed,
+            statement_type
+        from `rj-sms`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
     ),
 
     usage_rj_sms_dev as (
-        select * from `rj-sms-dev`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+        select
+            project_id,
+            job_id,
+            user_email,
+            job_type,
+            query,
+            state,
+            destination_table,
+            error_result,
+            creation_time,
+            end_time,
+            total_bytes_processed,
+            total_bytes_billed,
+            statement_type
+        from `rj-sms-dev`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
     ),
 
     usage_rj_sms_sandbox as (
-        select * from `rj-sms-sandbox`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+        select
+            project_id,
+            job_id,
+            user_email,
+            job_type,
+            query,
+            state,
+            destination_table,
+            error_result,
+            creation_time,
+            end_time,
+            total_bytes_processed,
+            total_bytes_billed,
+            statement_type
+        from `rj-sms-sandbox`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
     ),
 
     -- UNION ALL
