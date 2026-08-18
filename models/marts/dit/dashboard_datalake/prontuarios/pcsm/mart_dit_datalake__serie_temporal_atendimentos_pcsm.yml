@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: mart_dit_datalake__serie_temporal_atendimentos_pcsm
+    description: >
+      Série temporal diária de atendimentos do sistema PCSM (Prontuário Carioca de Saúde
+      Mental) agregados para toda a cidade do Rio de Janeiro. Para cada dia, calcula o total
+      de atendimentos e a mediana móvel dos últimos 30 dias considerando apenas o mesmo dia
+      da semana. A data de referência é extraída do campo `data_entrada_atendimento`.
+      O modelo é incremental com particionamento diário por `data_registro` e agrupamento
+      por `data_registro`.
+    columns:
+      - name: data_registro
+        description: Data de referência dos atendimentos. Chave de partição do modelo.
+        data_type: date
+
+      - name: dia_semana_nome
+        description: Nome do dia da semana em português (ex. `Segunda-feira`, `Sábado`).
+        data_type: string
+
+      - name: atendimentos_no_dia
+        description: Total de atendimentos registrados no sistema PCSM na data de referência.
+        data_type: int64
+
+      - name: mediana_ultimos_30_dias
+        description: >
+          Mediana do total de atendimentos nos 30 dias anteriores à data de referência,
+          considerando apenas registros do mesmo dia da semana.
+        data_type: float64

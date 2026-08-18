@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: mart_dit_datalake__serie_temporal_atendimentos_unidade_vitai
+    description: >
+      Série temporal diária de atendimentos do sistema Vitai/TiMed (hospitais e UPAs)
+      desagregada por estabelecimento de saúde (CNES). A identificação da unidade é
+      feita via join entre `raw_prontuario_vitai__boletim` e
+      `raw_prontuario_vitai__m_estabelecimento` pelo campo `gid_estabelecimento`,
+      cruzado com `dim_estabelecimento` para obter o CNES. Inclui correções manuais de
+      nome para CER Barra, CER Leblon e CER Centro. O modelo é incremental com
+      particionamento mensal por `data_registro`.
+    columns:
+      - name: data_registro
+        description: Data de referência dos atendimentos. Chave de partição do modelo.
+        data_type: date
+
+      - name: cnes
+        description: Código CNES do estabelecimento de saúde.
+        data_type: string
+
+      - name: nome
+        description: Nome do estabelecimento de saúde.
+        data_type: string
+
+      - name: dia_semana_nome
+        description: Nome do dia da semana em português (ex. `Segunda-feira`, `Sábado`).
+        data_type: string
+
+      - name: atendimentos
+        description: Total de atendimentos registrados no estabelecimento na data de referência.
+        data_type: int64
+
+      - name: mediana_ultimos_30_dias
+        description: >
+          Mediana do total de atendimentos nos 30 dias anteriores à data de referência,
+          considerando apenas registros do mesmo dia da semana para o mesmo estabelecimento.
+        data_type: float64
