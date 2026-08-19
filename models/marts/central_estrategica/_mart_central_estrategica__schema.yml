@@ -2,6 +2,207 @@ version: 2
 
 models:
 
+  - name: mart__central_estrategica__areas_programaticas
+    description: >
+      Quantidade de pacientes cadastrados com situação ativa por Área Programática (AP).
+      Granularidade: um registro por área programática distinta.
+
+      Os pacientes são contados a partir dos registros de cadastro do Vitacare
+      (raw_prontuario_vitacare_historico__cadastro), filtrando apenas cadastros
+      permanentes com situação ativa. A Área Programática é resolvida via
+      dim_estabelecimento a partir do CNES da unidade de saúde do cadastro.
+
+      Fonte: raw_prontuario_vitacare_historico__cadastro + dim_estabelecimento.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - area_programatica
+
+    columns:
+      - name: area_programatica
+        description: >
+          Código da Área Programática (AP) da unidade de saúde, proveniente de
+          dim_estabelecimento. Chave primária.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+          - unique
+
+      - name: total_pacientes_ativos
+        description: >
+          Quantidade de pacientes com cadastro permanente e situação ativa
+          (situacao_usuario = 'Ativo') vinculados a unidades de saúde pertencentes
+          a esta área programática.
+        data_type: int64
+        quote: true
+        tests:
+          - not_null
+
+  - name: mart__central_estrategica__equipes
+    description: >
+      Catálogo de equipes de saúde com atividade registrada no Vitacare,
+      enriquecido com metadados cadastrais provenientes de dim_equipe.
+      Granularidade: um registro por equipe (INE distinto).
+
+      O nome e o CNES da unidade são extraídos do valor mais frequente nos
+      atendimentos; tipo de equipe, área programática e telefone vêm de
+      dim_equipe quando o INE é localizado na dimensão.
+
+      Fonte: raw_prontuario_vitacare__atendimento + dim_equipe.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ine
+
+    columns:
+      - name: ine
+        description: Código INE (Identificador Nacional de Equipes) da equipe de saúde. Chave primária.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+          - unique
+
+      - name: nome_equipe
+        description: >
+          Nome da equipe. Preferência para o nome cadastrado em dim_equipe (nome_referencia);
+          quando não encontrado, usa o nome mais frequente nos registros de atendimento Vitacare.
+        data_type: string
+        quote: true
+
+      - name: cnes_unidade
+        description: >
+          Código CNES da unidade à qual a equipe está vinculada. Preferência para o CNES
+          em dim_equipe; quando não encontrado, usa o CNES mais frequente nos atendimentos.
+        data_type: string
+        quote: true
+
+      - name: area_programatica
+        description: >
+          Área Programática (AP) da unidade de saúde à qual a equipe está vinculada,
+          proveniente de dim_estabelecimento. Nulo quando o CNES não está mapeado na dimensão.
+        data_type: string
+        quote: true
+
+      - name: tipo_equipe
+        description: Descrição do tipo de equipe conforme CNES (ex. Equipe de Saúde da Família).
+        data_type: string
+        quote: true
+
+      - name: area
+        description: Área de abrangência da equipe conforme cadastro CNES.
+        data_type: string
+        quote: true
+
+      - name: telefone
+        description: Telefone de contato da equipe, proveniente de dim_equipe.
+        data_type: string
+        quote: true
+
+      - name: data_primeiro_atendimento
+        description: Data do atendimento mais antigo registrado no Vitacare para essa equipe.
+        data_type: date
+        quote: true
+        tests:
+          - not_null
+
+      - name: data_ultimo_atendimento
+        description: Data do atendimento mais recente registrado no Vitacare para essa equipe.
+        data_type: date
+        quote: true
+        tests:
+          - not_null
+
+      - name: total_atendimentos
+        description: Quantidade total de atendimentos realizados pela equipe registrados no Vitacare.
+        data_type: int64
+        quote: true
+        tests:
+          - not_null
+
+      - name: total_pacientes_ativos
+        description: >
+          Quantidade de pacientes com cadastro permanente e situação ativa
+          (situacao_usuario = 'Ativo') vinculados a esta equipe (ine_equipe),
+          proveniente de raw_prontuario_vitacare_historico__cadastro.
+          Zero quando nenhum cadastro ativo está associado ao INE.
+        data_type: int64
+        quote: true
+        tests:
+          - not_null
+
+  - name: mart__central_estrategica__unidades
+    description: >
+      Catálogo de unidades de saúde presentes no fluxo de regulação ou cadastradas em
+      dim_estabelecimento, enriquecido com coordenadas geográficas, área programática
+      e quantidade de pacientes ativos.
+      Granularidade: um registro por unidade (id_cnes) distinta.
+
+      Fonte: mart_regulacao__solicitacao + dim_estabelecimento
+             + raw_prontuario_vitacare_historico__cadastro.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - id_cnes
+
+    columns:
+      - name: id_cnes
+        description: Código CNES da unidade de saúde. Chave primária.
+        data_type: string
+        quote: true
+        tests:
+          - not_null
+          - unique
+
+      - name: nome
+        description: >
+          Nome oficial da unidade conforme dim_estabelecimento (nome_acentuado).
+          Quando a unidade não está cadastrada na dimensão, utiliza o nome vindo do SISREG.
+        data_type: string
+        quote: true
+
+      - name: nome_sisreg
+        description: Nome da unidade conforme registrado no SISREG.
+        data_type: string
+        quote: true
+
+      - name: tipo_sms_simplificado
+        description: Tipo simplificado da unidade conforme classificação SMS.
+        data_type: string
+        quote: true
+
+      - name: area_programatica
+        description: >
+          Área Programática (AP) da unidade conforme dim_estabelecimento.
+          Nulo quando a unidade não está mapeada na dimensão SMS.
+        data_type: string
+        quote: true
+
+      - name: latitude
+        description: Latitude do endereço da unidade (WGS84), proveniente de dim_estabelecimento.
+        data_type: float64
+        quote: true
+
+      - name: longitude
+        description: Longitude do endereço da unidade (WGS84), proveniente de dim_estabelecimento.
+        data_type: float64
+        quote: true
+
+      - name: total_pacientes_ativos
+        description: >
+          Quantidade de pacientes com cadastro permanente e situação ativa
+          (situacao_usuario = 'Ativo') vinculados a esta unidade (id_cnes),
+          proveniente de raw_prontuario_vitacare_historico__cadastro.
+          Zero quando nenhum cadastro ativo está associado ao CNES.
+        data_type: int64
+        quote: true
+        tests:
+          - not_null
+
   - name: mart__central_estrategica__regulacao_fila_historico
     description: >
       Série histórica mensal de procedimentos em fila de regulação ambulatorial.

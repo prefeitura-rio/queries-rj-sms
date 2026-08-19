@@ -1,7 +1,7 @@
 {{
   config(
     enabled=true,
-    alias="regulacao_unidades",
+    alias="unidades",
     materialized='table',
   )
 }}
@@ -51,6 +51,18 @@ with
         group by id_cnes
     ),
 
+    -- Cadastros ativos por unidade (CNES)
+    pacientes_por_unidade as (
+        select
+            c.id_cnes,
+            count(*) as total_pacientes_ativos
+        from {{ ref('raw_prontuario_vitacare_historico__cadastro') }} as c
+        where
+            c.situacao_usuario = 'Ativo'
+            and c.cadastro_permanente = true
+        group by c.id_cnes
+    ),
+
     -- Unidades do dim_estabelecimento não presentes nas solicitações
     unidades_dim as (
         select
@@ -75,10 +87,13 @@ with
             d.tipo_sms_simplificado,
             d.area_programatica,
             d.endereco_latitude                          as latitude,
-            d.endereco_longitude                         as longitude
+            d.endereco_longitude                         as longitude,
+            coalesce(p.total_pacientes_ativos, 0)        as total_pacientes_ativos
         from todas as t
         left join {{ ref('dim_estabelecimento') }} as d
             on t.id_cnes = d.id_cnes
+        left join pacientes_por_unidade as p
+            on p.id_cnes = t.id_cnes
     )
 
 select * from final
