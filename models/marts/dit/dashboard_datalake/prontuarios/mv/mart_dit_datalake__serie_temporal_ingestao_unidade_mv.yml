@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: mart_dit_datalake__serie_temporal_ingestao_unidade_mv
+    description: >
+      Monitoramento diário da latência de ingestão das tabelas de staging do sistema MV
+      (`brutos_prontuario_mv_api_staging`), desagregado por estabelecimento de saúde (CNES).
+      Para cada tabela, dia e unidade, mede o atraso entre o momento em que o registro foi
+      atualizado na fonte (`source_updated_at`) e o momento em que chegou ao Datalake
+      (`datalake_loaded_at`), em segundos. Cobre 9 tabelas: `admissao`, `alta`, `anamnese`,
+      `bam`, `evolucao`, `gestante`, `atendimento`, `parecer` e `profissional`. O modelo é
+      incremental com particionamento mensal por `data_registro` e janela de substituição
+      dos últimos 7 dias.
+    columns:
+      - name: data_registro
+        description: Data de referência da ingestão. Chave de partição do modelo.
+        data_type: date
+
+      - name: cnes
+        description: Código CNES do estabelecimento de saúde.
+        data_type: string
+
+      - name: nome
+        description: Nome do estabelecimento de saúde.
+        data_type: string
+
+      - name: tabela
+        description: Nome da tabela de staging monitorada.
+        data_type: string
+
+      - name: start_time
+        description: Menor valor de `datalake_loaded_at` registrado para a tabela e unidade na data de referência.
+        data_type: datetime
+
+      - name: end_time
+        description: Maior valor de `datalake_loaded_at` registrado para a tabela e unidade na data de referência.
+        data_type: datetime
+
+      - name: registros
+        description: Quantidade de registros ingeridos para a tabela e unidade na data de referência.
+        data_type: int64
+
+      - name: min_diff
+        description: Menor latência de ingestão observada na data de referência, em segundos.
+        data_type: float64
+
+      - name: media_diff
+        description: Latência média de ingestão na data de referência, em segundos.
+        data_type: float64
+
+      - name: mediana_diff
+        description: Latência mediana de ingestão na data de referência, em segundos.
+        data_type: float64
+
+      - name: max_diff
+        description: Maior latência de ingestão observada na data de referência, em segundos.
+        data_type: float64
