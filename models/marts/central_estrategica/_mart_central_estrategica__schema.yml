@@ -411,7 +411,7 @@ models:
         data_type: int64
         quote: true
 
-  - name: mart__central_estrategica__unidades
+  - name: mart__central_estrategica__regulacao_unidades
     description: >
       Tabela de unidades de saúde envolvidas no fluxo de regulação ambulatorial
       (como solicitantes e/ou executantes), enriquecida com coordenadas geográficas

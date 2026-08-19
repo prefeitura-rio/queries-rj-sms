@@ -13,11 +13,7 @@ with
             nome,
             cns,
             cpf
-        from {{ ref("raw_gdb_cnes__profissional") }}
-        qualify row_number() over (
-            partition by cpf
-            order by data_particao desc
-        ) = 1
+        from {{ ref("int_gdb_cnes__profissional") }}
     ),
     unidades_de_saude as (
         select
@@ -29,15 +25,12 @@ with
         from {{ ref("dim_estabelecimento") }}
     ),
     cbo_datasus as (
-        select * from {{ ref("raw_datasus__cbo") }}
-    ),
-    vinctulos_dedup as (
         select *
-        from {{ ref("raw_gdb_cnes__vinculo") }}
-        qualify row_number() over (
-            partition by id_profissional_sus, id_unidade, id_cbo
-            order by data_particao desc
-        ) = 1
+        from {{ ref("raw_datasus__cbo") }}
+    ),
+    vinculos_dedup as (
+        select *
+        from {{ ref("int_gdb_cnes__vinculo") }}
     ),
     vinculos_profissionais_cnes as (
         select
@@ -93,56 +86,22 @@ with
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
             data_ultima_atualizacao,
-        from vinctulos_dedup as gdb_profissional
+        from vinculos_dedup
         left join cbo_datasus using (id_cbo)
         inner join unidades_de_saude using (id_unidade)
     ),
     -- -----------------------------------------
     -- Lista profissionais alocados em consultórios de rua
     -- -----------------------------------------
-    equipe_dedup as (
-        select *
-        from {{ ref('raw_gdb_cnes__equipe')}}
-        qualify row_number() over (
-            partition by id_unidade, equipe_ine
-            order by data_particao desc
-        ) = 1
-    ),
-    equipe_tipo_dedup as (
-        select *
-        from {{ ref('raw_gdb_cnes__equipe_tipo')}}
-        qualify row_number() over (
-            partition by id_equipe_tipo
-            order by data_particao desc
-        ) = 1
-    ),
-    equipe_consultorio_rua as (
-        select
-            equipe_ine,
-            equipe_sequencial,
-            id_equipe_tipo,
-            equipe_descricao
-        from equipe_dedup
-        left join equipe_tipo_dedup
-            using (id_equipe_tipo)
-    ),
-    equipe_profissionais_dedup as (
-        select *
-        from {{ ref('raw_gdb_cnes__equipe_profissionais') }}
-        qualify row_number() over (
-            partition by id_profissional_sus, id_unidade, id_cbo, equipe_sequencial
-            order by data_particao desc
-        ) = 1
-    ),
     profissionais_consultorio_rua as (
         select
-            id_profissional_sus,
-            id_equipe_tipo,
-            equipe_descricao
-        from equipe_profissionais_dedup
-        left join equipe_consultorio_rua
+            prof.id_profissional_sus,
+            eq.id_equipe_tipo,
+            eq.equipe_descricao
+        from {{ ref("int_gdb_cnes__equipe_profissionais") }} as prof
+        left join {{ ref("int_gdb_cnes__equipe") }} as eq
             using (equipe_sequencial)
-        where id_equipe_tipo = '73'
+        where eq.id_equipe_tipo = '73'
     ),
     -- -----------------------------------------
     -- Enriquecimento de Dados dos Funcionários
@@ -163,8 +122,8 @@ with
             {{ remove_accents_upper('cbo_agrupador') }} as funcao_grupo,
             data_ultima_atualizacao
         from vinculos_profissionais_cnes
-            left join profissionais_cnes using (id_profissional_sus)
-            left join profissionais_consultorio_rua using (id_profissional_sus)
+        left join profissionais_cnes using (id_profissional_sus)
+        left join profissionais_consultorio_rua using (id_profissional_sus)
     ),
 
     -- -----------------------------------------
@@ -173,9 +132,9 @@ with
     ergon_ativos as (
         select distinct
             cpf
-        from {{ ref("raw_ergon_funcionarios")}},
-            unnest(dados) as dados
-        where dados.status_ativo = true
+        from {{ ref("raw_ergon_funcionarios_sheets")}}--, unnest(dados) as dados
+        -- Planilha temporária do Ergon, só constam os ativos
+        -- where dados.status_ativo = true
     ),
     funcionarios_ativos_enriquecido_autorizados as (
         select
@@ -248,8 +207,8 @@ with
         group by 1,2
     )
 
-    select
-        cpf,
-        nome_completo,
-        {{ dedup_array_of_struct('vinculos')}} as vinculos
-    from funcionario_vinculos
+select
+    cpf,
+    nome_completo,
+    {{ dedup_array_of_struct('vinculos')}} as vinculos
+from funcionario_vinculos

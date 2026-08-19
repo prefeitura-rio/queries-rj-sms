@@ -1,6 +1,6 @@
 {{
     config(
-        schema = 'intermediario_gdb_cnes',
+        schema="intermediario_gdb_cnes",
         alias="estabelecimento",
         materialized="table",
         tags=["gdb_cnes"],
@@ -12,45 +12,42 @@
     )
 }}
 
-with base as (
+with
+    base as (
+        select
+            * except(data_particao),
+            safe_cast(data_particao as date) as data_particao
+        from {{ ref('raw_gdb_cnes__estabelecimento') }}
+        where data_particao = (
+            select max(data_particao)
+            from {{ ref('raw_gdb_cnes__estabelecimento') }}
+        )
+        qualify row_number() over (
+            partition by id_unidade
+            order by data_carga desc
+        ) = 1
+    ),
 
-    select
-        * except(data_particao),
-        safe_cast(data_particao as date) as data_particao
-    from {{ ref('raw_gdb_cnes__estabelecimento') }}
+    final as (
+        select
+            base.*,
 
-),
+            regexp_extract(
+                upper(trim(nome_fantasia)),
+                r'^(SMS(?:\s+RIO)?|SES\s+RJ|MS|UFRJ|UERJ\s+HUPE|FIOTEC\s+IFF)\b'
+            ) as sigla,
 
-estabelecimento as (
+            nullif(
+                {{ remove_duplicate_whitespace(
+                    "trim(regexp_replace(regexp_replace(upper(trim(nome_fantasia)), r'^(SMS(?:\\s+RIO)?|SES\\s+RJ|MS|UFRJ|UERJ\\s+HUPE|FIOTEC\\s+IFF)\\b[\\s\\-–:/]*', ''), r'\\s*-?\\s*AP\\s*\\d{1,2}$', ''))"
+                ) }},
+                ''
+            ) as nome_limpo,
 
-    select *
-    from base
-    where data_particao = (select max(data_particao) from base)
+            nullif(trim(id_distrito_sanitario), '') as area_programatica
 
-),
-
-final as (
-
-    select
-        estabelecimento.*,
-
-        regexp_extract(
-            upper(trim(nome_fantasia)),
-            r'^(SMS(?:\s+RIO)?|SES\s+RJ|MS|UFRJ|UERJ\s+HUPE|FIOTEC\s+IFF)\b'
-        ) as sigla,
-
-        nullif(
-            {{ remove_duplicate_whitespace(
-                "trim(regexp_replace(regexp_replace(upper(trim(nome_fantasia)), r'^(SMS(?:\\s+RIO)?|SES\\s+RJ|MS|UFRJ|UERJ\\s+HUPE|FIOTEC\\s+IFF)\\b[\\s\\-–:/]*', ''), r'\\s*-?\\s*AP\\s*\\d{1,2}$', ''))"
-            ) }},
-            ''
-        ) as nome_limpo,
-
-        nullif(trim(id_distrito_sanitario), '') as area_programatica
-
-    from estabelecimento
-
-)
+        from base
+    )
 
 select *
 from final
