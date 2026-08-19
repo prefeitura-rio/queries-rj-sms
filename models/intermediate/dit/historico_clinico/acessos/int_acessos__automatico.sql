@@ -28,7 +28,7 @@ with
         select *
         from {{ ref("raw_datasus__cbo") }}
     ),
-    vinctulos_dedup as (
+    vinculos_dedup as (
         select *
         from {{ ref("int_gdb_cnes__vinculo") }}
     ),
@@ -86,7 +86,7 @@ with
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
             data_ultima_atualizacao,
-        from vinctulos_dedup as gdb_profissional
+        from vinculos_dedup
         left join cbo_datasus using (id_cbo)
         inner join unidades_de_saude using (id_unidade)
     ),
