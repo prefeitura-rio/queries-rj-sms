@@ -1,6 +1,6 @@
 {{
     config(
-        schema = 'intermediario_gdb_cnes',
+        schema="intermediario_gdb_cnes",
         alias="profissional",
         materialized="table",
         tags=["gdb_cnes"],
@@ -13,10 +13,18 @@
 }}
 
 
-with 
+with
     profissional as (
-        select * from {{ ref("raw_gdb_cnes__profissional") }}
-        where data_particao = (select max(data_particao) from {{ ref("raw_gdb_cnes__profissional") }})
+        select *
+        from {{ ref("raw_gdb_cnes__profissional") }}
+        where data_particao = (
+            select max(data_particao)
+            from {{ ref("raw_gdb_cnes__profissional") }}
+        )
+        qualify row_number() over (
+            partition by id_profissional_cnes
+            order by data_carga desc
+        ) = 1
     )
 
 select *
