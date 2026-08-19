@@ -180,6 +180,55 @@ WITH
                 t.resultado_teste_hepatite_c,
                 t.resultado_teste_hepatite_c_positivo
           ) IS NOT NULL
+
+        UNION ALL
+
+        -- Fonte API Vitacare
+        SELECT
+            a.patient_cpf AS cpf,
+            'Teste rápido - HIV' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
+        FROM {{ ref("raw_prontuario_vitacare_api__testerapido") }} t
+        JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} a USING(id_prontuario_global)
+        WHERE a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
+          AND COALESCE(t.hiv01testresult, t.hiv02testresult) IS NOT NULL
+
+        UNION ALL
+
+        SELECT
+            a.patient_cpf AS cpf,
+            'Teste rápido - Sífilis' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
+        FROM {{ ref("raw_prontuario_vitacare_api__testerapido") }} t
+        JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} a USING(id_prontuario_global)
+        WHERE a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
+          AND COALESCE(t.syphilistestresult, t.positivesyphilistestresult) IS NOT NULL
+
+        UNION ALL
+
+        SELECT
+            a.patient_cpf AS cpf,
+            'Teste rápido - Hepatite B' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
+        FROM {{ ref("raw_prontuario_vitacare_api__testerapido") }} t
+        JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} a USING(id_prontuario_global)
+        WHERE a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
+          AND COALESCE(t.hepatitisbtestresult, t.positivehepatitisbtestresult) IS NOT NULL
+
+        UNION ALL
+
+        SELECT
+            a.patient_cpf AS cpf,
+            'Teste rápido - Hepatite C' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
+        FROM {{ ref("raw_prontuario_vitacare_api__testerapido") }} t
+        JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} a USING(id_prontuario_global)
+        WHERE a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
+          AND COALESCE(t.hepatitisctestresult, t.positivehepatitisctestresult) IS NOT NULL
     ),
 
     -- DIAGNÓSTICOS
