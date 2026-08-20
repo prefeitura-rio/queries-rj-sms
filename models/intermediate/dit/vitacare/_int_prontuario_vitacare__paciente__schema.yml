@@ -4,7 +4,9 @@ models:
   - name: int_prontuario_vitacare__paciente
     description: >
       Tabela intermediária derivada de `raw_prontuario_vitacare__paciente`,
-      contendo apenas registros com CPF e CNES preenchidos.
+      contendo apenas registros com CPF e CNES preenchidos. Para pacientes cujo
+      CPF original é nulo, utiliza o CPF enriquecido pelo bcadastro quando a
+      correspondência cadastral possui um único CPF candidato.
 
     columns:
       - name: id_paciente_global
@@ -34,7 +36,9 @@ models:
         description: Número do prontuário do paciente.
 
       - name: cpf
-        description: CPF do paciente.
+        description: >
+          CPF original da VitaCare ou, quando o original é nulo, CPF enriquecido
+          pelo bcadastro por correspondência cadastral única.
         policy_tags:
           - '{{ var("TAG_CPF") }}'
         data_tests:
