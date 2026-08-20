@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: basedosdados_br_ibge_populacao
+    database: basedosdados
+    schema: br_ibge_populacao
+    tables:
+      - name: municipio
+        description: Tabela pública da Base dos Dados com população municipal do IBGE.

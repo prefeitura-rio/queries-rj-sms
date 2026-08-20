@@ -1,0 +1,1164 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__lfces004
+    description: "Tabela bruta do CNES LFCES004 / TB_ESTABELECIMENTO. Contém os estabelecimentos de saúde, incluindo identificação da unidade, CNES, nome fantasia, endereço, tipo de unidade, natureza jurídica, motivo de desabilitação e dados cadastrais."
+    columns:
+      - name: UNIDADE_ID
+        description: "Código do estabelecimento de saúde."
+
+      - name: CNES
+        description: "Código Nacional do Estabelecimento de Saúde."
+
+      - name: CNPJ_MANT
+        description: "CNPJ da mantenedora."
+
+      - name: PFPJ_IND
+        description: "Indica se o estabelecimento é pessoa física ou jurídica. Domínios documentados: 1 - Pessoa Física; 3 - Pessoa Jurídica."
+
+      - name: NIVEL_DEP
+        description: "Identificador da situação do estabelecimento. Domínios documentados: 1 - Individual; 3 - Mantido."
+
+      - name: R_SOCIAL
+        description: "Razão social do estabelecimento."
+
+      - name: NOME_FANTA
+        description: "Nome fantasia do estabelecimento."
+
+      - name: LOGRADOURO
+        description: "Logradouro do endereço do estabelecimento."
+
+      - name: NUMERO
+        description: "Número do endereço do estabelecimento."
+
+      - name: COMPLEMENT
+        description: "Complemento do endereço do estabelecimento."
+
+      - name: BAIRRO
+        description: "Bairro do endereço do estabelecimento."
+
+      - name: COD_CEP
+        description: "Código de Endereçamento Postal."
+
+      - name: REG_SAUDE
+        description: "Código da região de saúde."
+
+      - name: MICRO_REG
+        description: "Código da microrregião de saúde."
+
+      - name: DIST_SANIT
+        description: "Código do distrito sanitário."
+
+      - name: DIST_AMIN
+        description: "Código do distrito administrativo ou módulo assistencial."
+
+      - name: TELEFONE
+        description: "Telefone do estabelecimento."
+
+      - name: FAX
+        description: "Fax do estabelecimento."
+
+      - name: E_MAIL
+        description: "E-mail do estabelecimento."
+
+      - name: CPF
+        description: "CPF do estabelecimento, preenchido quando o estabelecimento for pessoa física."
+
+      - name: CNPJ
+        description: "CNPJ do estabelecimento, preenchido quando o estabelecimento for pessoa jurídica."
+
+      - name: COD_ATIV
+        description: "Código da atividade de ensino/pesquisa."
+
+      - name: COD_CLIENT
+        description: "Código de fluxo da clientela."
+
+      - name: NUM_ALVARA
+        description: "Número do alvará da Vigilância Sanitária."
+
+      - name: DATA_EXPED
+        description: "Data de expedição do alvará da Vigilância Sanitária."
+
+      - name: IND_ORGEXP
+        description: "Órgão expedidor do alvará da Vigilância Sanitária. Domínios documentados: 1 - SES; 2 - SMS."
+
+      - name: DT_VAL_LIC_SANI
+        description: "Data de validade do licenciamento sanitário."
+
+      - name: TP_LIC_SANI
+        description: "Tipo do licenciamento sanitário. Domínios documentados: 1 - Total; 2 - Parcial/Restrições."
+
+      - name: TP_UNID_ID
+        description: "Tipo de estabelecimento/unidade."
+
+      - name: COD_TURNAT
+        description: "Código do turno de atendimento."
+
+      - name: SIGESTGEST
+        description: "Sigla do estado gestor."
+
+      - name: CODMUNGEST
+        description: "Código do município gestor."
+
+      - name: STATUS
+        description: "Controle interno do registro."
+
+      - name: STATUSMOV
+        description: "Status do estabelecimento de saúde. Domínios documentados: 1 - Não aprovado; 2 - Consistido; 3 - Exportado; B - Registro bloqueado; U - Registro em uso."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: NMUSUARIOEMUSO
+        description: "Controle interno referente ao usuário em uso."
+
+      - name: CPFDIRETORCLINICO
+        description: "CPF do diretor clínico ou gerente/administrador."
+
+      - name: REGDIRETORCLINICO
+        description: "Registro no conselho de classe do diretor clínico."
+
+      - name: FL_ADESAO_FILANTROP
+        description: "Indica se o hospital fez adesão ao Programa de Reestruturação de Hospital Filantrópico. Domínios documentados: 1 - Sim; 2 - Não."
+
+      - name: CD_MOTIVO_DESAB
+        description: "Código do motivo de desabilitação/desativação do estabelecimento."
+
+      - name: NO_URL
+        description: "Endereço URL do estabelecimento."
+
+      - name: NU_LATITUDE
+        description: "Latitude do endereço do estabelecimento."
+
+      - name: NU_LONGITUDE
+        description: "Longitude do endereço do estabelecimento."
+
+      - name: DT_ATU_GEO
+        description: "Data de atualização das coordenadas geográficas."
+
+      - name: NO_USUARIO_GEO
+        description: "Nome do usuário que atualizou as coordenadas geográficas."
+
+      - name: CO_NATUREZA_JUR
+        description: "Código da natureza jurídica do estabelecimento."
+
+      - name: TP_ESTAB_SEMPRE_ABERTO
+        description: "Indica se o estabelecimento funciona sempre aberto/ininterrupto. Domínios documentados: S - Sim; N - Não."
+
+      - name: ST_GERACREDITO_GERENTE_SGIF
+        description: "Indica se o crédito gerado pelo estabelecimento será direcionado para o gerente/administrador no SGIF. Domínios documentados: S - Sim; N - Não."
+
+      - name: ST_NAT_JUR_WEBSERVICE
+        description: "Identifica se a natureza jurídica foi obtida via webservice."
+
+      - name: ST_DADOS_CADONLINE_WEBSERV
+        description: "Identifica se os dados do estabelecimento foram obtidos via webservice."
+
+      - name: ST_CONEXAOINTERNET
+        description: "Indica se o estabelecimento possui conexão com internet. Domínios documentados: S - Sim; N - Não."
+
+      - name: CHKSUM
+        description: "Campo de controle/checksum do CNES."
+
+      - name: DT_VALIDACAO
+        description: "Data de validação do registro."
+
+      - name: CO_TIPO_ESTABELECIMENTO
+        description: "Código do tipo de estabelecimento."
+
+      - name: CO_ATIVIDADE_PRINCIPAL
+        description: "Código da atividade principal."
+
+      - name: ST_CONTRATO_FORMALIZADO
+        description: "Indica se o estabelecimento possui contrato formalizado com o SUS. Domínios documentados: S - Sim; N - Não."
+
+      - name: CO_TIPO_UNIDADE
+        description: "Sem uso."
+
+      - name: NO_FANTASIA_ABREV
+        description: "Sem uso."
+
+      - name: TP_GESTAO
+        description: "Tipo de gestão. Domínios documentados: M - Municipal; E - Estadual; D - Dupla; S - Sem Gestão."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: CO_TIPO_ABRANGENCIA
+        description: "Código da abrangência Telessaúde do estabelecimento."
+
+      - name: ST_COWORKING
+        description: "Indica se o estabelecimento funciona em regime de coworking. Domínios documentados: S - Sim; N - Não."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__lfces018
+    description: "Tabela bruta do CNES LFCES018 / TB_DADOS_PROFISSIONAL_SUS. Contém os dados cadastrais dos profissionais de saúde, como identificador do profissional, CPF, CNS, nome, data de nascimento, sexo, raça/cor, escolaridade e informações complementares."
+    columns:
+      - name: PROF_ID
+        description: "Código do Profissional de Saúde."
+
+      - name: CPF_PROF
+        description: "CPF do Profissional."
+
+      - name: PISPASEP
+        description: "Número do PIS / PASEP."
+
+      - name: NOME_PROF
+        description: "Nome do Profissional."
+
+      - name: NOME_MAE
+        description: "Nome da Mãe do Profissional."
+
+      - name: DATA_NASC
+        description: "Data de Nascimento."
+
+      - name: COD_MUN
+        description: "Código do Município de Nascimento do Profissional."
+
+      - name: SEXO
+        description: "Sexo do Profissional. Domínios documentados: F - Feminino; M - Masculino."
+
+      - name: NUM_LIVRO
+        description: "Número do Livro da Certidão."
+
+      - name: NUM_FOLHA
+        description: "Número da Folha do Livro da Certidão."
+
+      - name: NUM_TERMO
+        description: "Número do Termo da Certidão."
+
+      - name: CODORGEMIS
+        description: "Órgão Emissor da Identidade."
+
+      - name: DATA_EMISS
+        description: "Data de Emissão da Certidão."
+
+      - name: NUM_IDENT
+        description: "Número da Identidade."
+
+      - name: SIGLA_EST
+        description: "UF do Órgão Emissor da Identidade."
+
+      - name: DTEMIIDENT
+        description: "Data de Emissão da Identidade."
+
+      - name: DATA_ENTRA
+        description: "Data de Entrada no Brasil, se estrangeiro."
+
+      - name: CTPS_NUMER
+        description: "Número da Carteira de Trabalho."
+
+      - name: SERIE
+        description: "Série da Carteira de Trabalho."
+
+      - name: SIGESTCTPS
+        description: "Sigla da UF da Carteira de Trabalho."
+
+      - name: DTEMISCTPS
+        description: "Data de Emissão da Carteira de Trabalho."
+
+      - name: LOGRADOURO
+        description: "Logradouro do Endereço do Profissional."
+
+      - name: NUMERO
+        description: "Número do Endereço."
+
+      - name: COMPLEMENT
+        description: "Complemento do Endereço."
+
+      - name: BAIRRODIST
+        description: "Bairro do Endereço."
+
+      - name: COD_CEP
+        description: "Código de Endereçamento Postal."
+
+      - name: SIGLA_UF
+        description: "Sigla do Estado."
+
+      - name: CODESCOLAR
+        description: "Código do Grau de Escolaridade."
+
+      - name: COD_CERTID
+        description: "Código da Certidão Informada."
+
+      - name: IND_NACIO
+        description: "Indica a nacionalidade do profissional. Domínios documentados: 1 - Brasileira; 2 - Estrangeira; 3 - Naturalizada."
+
+      - name: NOME_CARTO
+        description: "Nome do Cartório Emissor da Certidão."
+
+      - name: COD_BANCO
+        description: "Código do Banco do Profissional."
+
+      - name: NUM_AGENC
+        description: "Número da Agência Bancária."
+
+      - name: CONTA_CC
+        description: "Número da Conta Corrente."
+
+      - name: NOME_PAIS
+        description: "Nome do País de Origem, se estrangeiro."
+
+      - name: COD_CNS
+        description: "Código do Cartão Nacional de Saúde."
+
+      - name: D_TERCSIH
+        description: "Sem uso."
+
+      - name: STATUS
+        description: "Controle interno do registro."
+
+      - name: STATUSMOV
+        description: "Status do profissional de saúde. Domínios documentados: 1 - Não aprovado; 2 - Consistido; 3 - Exportado; B - Registro bloqueado; U - Registro em uso."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: NMUSUARIOEMUSO
+        description: "Controle interno referente ao usuário em uso."
+
+      - name: CD_RACA
+        description: "Código da raça/cor."
+
+      - name: NOME_PAI
+        description: "Nome do Pai do Profissional."
+
+      - name: TELEFONE
+        description: "Telefone do Profissional."
+
+      - name: CD_TP_LOGR
+        description: "Código do Tipo de Logradouro."
+
+      - name: PORTARIA
+        description: "Número da Portaria."
+
+      - name: DT_NATUR
+        description: "Data de Naturalização no Brasil, se estrangeiro."
+
+      - name: CD_PAIS
+        description: "Código do País de Origem, se estrangeiro."
+
+      - name: COD_MUN_RES
+        description: "Código do Município de Residência."
+
+      - name: UF_RES
+        description: "UF de Residência."
+
+      - name: CHKSUM
+        description: "Campo de controle/checksum do CNES."
+
+      - name: CO_ETNIA
+        description: "Código da Etnia."
+
+      - name: NO_EMAIL
+        description: "E-mail do Profissional."
+
+      - name: ST_NMPROF_CADSUS
+        description: "Indica se o nome do profissional veio do CadWeb. Domínios documentados: S - Sim; N - Não."
+
+      - name: CO_PAIS_RESID
+        description: "Código do País de Residência."
+
+      - name: NU_CARTEIRA_HAB
+        description: "Número da Carteira de Habilitação."
+
+      - name: DT_EMIS_CARTEIRA_HAB
+        description: "Data de Emissão da Carteira de Habilitação."
+
+      - name: UF_CARTEIRA_HAB
+        description: "UF da Carteira de Habilitação."
+
+      - name: CO_NACIONALIDADE
+        description: "Código de Nacionalidade."
+
+      - name: CO_SEQ_INCLUSAO
+        description: "Código Sequencial de Inclusão."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: NO_SOCIAL
+        description: "Nome social."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__lfces021
+    description: "Tabela bruta do CNES LFCES021 / TB_CARGA_HORARIA_SUS. Contém os vínculos dos profissionais nos estabelecimentos, incluindo unidade, profissional, CBO, carga horária ambulatorial, hospitalar e outros vínculos."
+    columns:
+      - name: UNIDADE_ID
+        description: "Código do Estabelecimento de Saúde."
+
+      - name: PROF_ID
+        description: "Código do Profissional de Saúde."
+
+      - name: COD_CBO
+        description: "Código Brasileiro de Ocupação."
+
+      - name: TP_SUS_NAO_SUS
+        description: "Indica se o profissional faz atendimento ao SUS. Domínios documentados: S - Sim; N - Não."
+
+      - name: IND_VINC
+        description: "Indica a vinculação, o tipo e o subtipo de vínculo do profissional com o estabelecimento de saúde."
+
+      - name: D_TERCSIH
+        description: "Sem uso."
+
+      - name: CG_HORAAMB
+        description: "Quantidade de carga horária ambulatorial."
+
+      - name: CGHORAHOSP
+        description: "Quantidade de carga horária hospitalar."
+
+      - name: CGHORAOUTR
+        description: "Quantidade de carga horária outros."
+
+      - name: CONSELHOID
+        description: "Código do órgão emissor."
+
+      - name: N_REGISTRO
+        description: "Número do registro no conselho de classe."
+
+      - name: SG_UF_CRM
+        description: "UF do CRM."
+
+      - name: STATUS
+        description: "Controle interno do registro."
+
+      - name: STATUSMOV
+        description: "Status do vínculo do profissional. Domínios documentados: 1 - Não aprovado; 2 - Consistido; 3 - Exportado."
+
+      - name: TP_PRECEPTOR
+        description: "Indica se o profissional é preceptor na equipe. Domínios documentados: 1 - Sim; 2 - Não."
+
+      - name: TP_RESIDENTE
+        description: "Indica se o profissional é residente na equipe. Domínios documentados: 1 - Sim; 2 - Não."
+
+      - name: NU_CNPJ_DET_VINC
+        description: "Número do CNPJ do empregador."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: CHKSUM
+        description: "Campo de controle/checksum do CNES."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__lfces037
+    description: "Tabela bruta do CNES LFCES037 / TB_EQUIPE. Contém as equipes cadastradas no CNES, incluindo município, área, sequencial da equipe, unidade, tipo de equipe, INE, datas de ativação/desativação e população assistida."
+    columns:
+      - name: COD_MUN
+        description: "Código do município."
+
+      - name: COD_AREA
+        description: "Código da área da equipe."
+
+      - name: SEQ_EQUIPE
+        description: "Sequencial da equipe."
+
+      - name: UNIDADE_ID
+        description: "Código do estabelecimento de saúde."
+
+      - name: TP_EQUIPE
+        description: "Tipo de equipe."
+
+      - name: CO_SUB_TIPO_EQUIPE
+        description: "Subtipo de equipe."
+
+      - name: NM_REFERENCIA
+        description: "Nome de referência da equipe."
+
+      - name: DT_ATIVACAO
+        description: "Data de ativação da equipe."
+
+      - name: DT_DESATIVACAO
+        description: "Data de desativação da equipe."
+
+      - name: TP_POP_ASSIST_QUILOMB
+        description: "Indica se a equipe atende população assistida quilombola. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_ASSENT
+        description: "Indica se a equipe atende população assistida de assentados. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_GERAL
+        description: "Indica se a equipe atende população assistida geral. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_ESCOLA
+        description: "Indica se a equipe atende população assistida escolar. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_PRONASCI
+        description: "Indica se a equipe atende população assistida vinculada ao PRONASCI. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_INDIGENA
+        description: "Indica se a equipe atende população assistida indígena. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_RIBEIRINHA
+        description: "Indica se a equipe atende população assistida ribeirinha. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_SITUACAO_RUA
+        description: "Indica se a equipe atende população assistida em situação de rua. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_PRIV_LIBERDADE
+        description: "Indica se a equipe atende população assistida privada de liberdade. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_CONFLITO_LEI
+        description: "Indica se a equipe atende população assistida com transtorno mental em conflito com a lei. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_ADOL_CONF_LEI
+        description: "Indica se a equipe atende população assistida adolescente em conflito com a lei."
+
+      - name: CO_CNES_UOM
+        description: "CNES da Unidade Odontológica Móvel."
+
+      - name: NU_CH_AMB_UOM
+        description: "Quantidade de carga horária ambulatorial da Unidade Odontológica Móvel."
+
+      - name: CD_MOTIVO_DESATIV
+        description: "Código do motivo de desativação da equipe."
+
+      - name: CD_TP_DESATIV
+        description: "Código do tipo de desativação da equipe."
+
+      - name: CO_PROF_SUS_PRECEPTOR
+        description: "Código do profissional SUS preceptor na equipe."
+
+      - name: CO_CNES_PRECEPTOR
+        description: "CNES no qual o profissional está vinculado como preceptor."
+
+      - name: CO_EQUIPE
+        description: "Código da equipe. Identificador Nacional de Equipe, INE."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: STATUSMOV
+        description: "Status da equipe no CNES. Domínios documentados: 1 - Não Aprovado; 2 - Consistido; 3 - Exportado."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__lfces038
+    description: "Tabela bruta do CNES LFCES038 / RL_ESTAB_EQUIPE_PROF. Contém os profissionais vinculados às equipes, incluindo equipe, unidade, profissional, CBO, vínculo, data de entrada, data de desligamento, microárea e indicação de equipe mínima."
+    columns:
+      - name: COD_MUN
+        description: "Código do Município."
+
+      - name: COD_AREA
+        description: "Código da área da equipe."
+
+      - name: SEQ_EQUIPE
+        description: "Sequencial da equipe."
+
+      - name: PROF_ID
+        description: "Código do Profissional de Saúde."
+
+      - name: UNIDADE_ID
+        description: "Código do Estabelecimento de Saúde."
+
+      - name: COD_CBO
+        description: "Código Brasileiro de Ocupação."
+
+      - name: TP_SUS_NAO_SUS
+        description: "Indica se o profissional faz atendimento ao SUS. Domínios documentados: S - Sim; N - Não."
+
+      - name: IND_VINC
+        description: "Indica a vinculação, o tipo e o subtipo de vínculo do profissional com o estabelecimento de saúde."
+
+      - name: MICROAREA
+        description: "Microárea da equipe."
+
+      - name: DT_ENTRADA
+        description: "Data de entrada do profissional na equipe."
+
+      - name: DT_DESLIGAMENTO
+        description: "Data de desligamento do profissional na equipe."
+
+      - name: CNES_OUTRAEQUIPE
+        description: "CNES no qual o profissional completa a carga horária."
+
+      - name: COD_MUN_OUTRAEQUIPE
+        description: "Código do município no qual o profissional completa a carga horária."
+
+      - name: COD_AREA_OUTRAEQUIPE
+        description: "Código da área na qual o profissional completa a carga horária."
+
+      - name: PROF_ID_CH_COMPL
+        description: "Profissional de carga horária complementar."
+
+      - name: COD_CBO_CH_COMPL
+        description: "CBO do profissional de carga horária complementar."
+
+      - name: FL_EQUIPEMINIMA
+        description: "Indica se o profissional pertence à equipe mínima. Domínios documentados: 1 - Sim; 2 - Não."
+
+      - name: CO_MUN_ATUACAO
+        description: "Código do município de atuação da microárea do profissional na equipe."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__lfces057
+    description: "Tabela bruta do CNES LFCES057. Tabela de CNES válidos, utilizada como apoio à identificação e validação de estabelecimentos."
+    columns:
+      - name: CNES
+        description: "Código Nacional do Estabelecimento de Saúde."
+
+      - name: COD_MUN
+        description: "Código do Município."
+
+      - name: COMPETENCIA
+        description: "Competência."
+
+      - name: CD_MOTIVO_DESAB
+        description: "Código do motivo de desativação do estabelecimento."
+
+      - name: TP_GESTAO
+        description: "Tipo de gestão do estabelecimento."
+
+      - name: STATUS_ESTAB
+        description: "Status do estabelecimento."
+
+      - name: ST_ESTRUTURA
+        description: "Tipo de estrutura do estabelecimento. Domínios documentados: 1 - Imóvel; 2 - Móvel."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__lfces098
+    description: "Tabela bruta do CNES LFCES098 / TB_ESTAB_HORARIO_ATEND. Contém os horários de funcionamento dos estabelecimentos de saúde."
+    columns:
+      - name: UNIDADE_ID
+        description: "Código do Estabelecimento de Saúde."
+
+      - name: CO_DIA_SEMANA
+        description: "Código do dia da semana. Domínios documentados: 1 - Domingo; 2 - Segunda-feira; 3 - Terça-feira; 4 - Quarta-feira; 5 - Quinta-feira; 6 - Sexta-feira; 7 - Sábado."
+
+      - name: HR_INICIO_ATENDIMENTO
+        description: "Horário de início de funcionamento."
+
+      - name: HR_FIM_ATENDIMENTO
+        description: "Horário de fim de funcionamento."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces010
+    description: "Tabela bruta do CNES NFCES010 / TB_TIPO_UNIDADE. Tabela auxiliar de tipos de estabelecimento/unidade, usada como referência para o campo TP_UNID_ID das unidades."
+    columns:
+      - name: TP_UNID_ID
+        description: "Código do Tipo de Estabelecimento."
+
+      - name: DESCRICAO
+        description: "Descrição do Tipo de Estabelecimento."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces026
+    description: "Tabela bruta do CNES NFCES026 / TB_ATIVIDADE_PROFISSIONAL. Tabela auxiliar de CBO, usada para identificação da atividade profissional."
+    columns:
+      - name: COD_CBO
+        description: "Código Brasileiro de Ocupação."
+
+      - name: DESCRICAO
+        description: "Descrição da ocupação."
+
+      - name: INDPROFISS
+        description: "Indica o nível de escolaridade exigida."
+
+      - name: TP_CBO_SAUDE
+        description: "Indica se o CBO é de saúde. Domínios documentados: S - Sim; N - Não."
+
+      - name: ST_CBO_REGULA
+        description: "Indica se o CBO é regulamentado. Domínios documentados: S - Sim; N - Não."
+
+      - name: NO_ANO_CMPT
+        description: "Ano competência."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces046
+    description: "Tabela bruta do CNES NFCES046 / TB_TIPO_EQUIPE. Tabela auxiliar de tipos de equipe, como eSF, eSB, eAP, eCR, eNASF, eAPP, eMAD e eMAP."
+    columns:
+      - name: TP_EQUIPE
+        description: "Código do Tipo de Equipe."
+
+      - name: DS_EQUIPE
+        description: "Descrição do Tipo de Equipe."
+
+      - name: CO_GRUPO_EQUIPE
+        description: "Código do Grupo da Equipe."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces049
+    description: "Tabela bruta do CNES NFCES049 / TB_MOTIVO_DESATIVACAO. Tabela auxiliar de motivos de desativação do estabelecimento de saúde."
+    columns:
+      - name: CD_MOTIVO_DESAB
+        description: "Código do Motivo de Desativação."
+
+      - name: DS_MOTIVO_DESAB
+        description: "Descrição do Motivo de Desativação."
+
+      - name: TP_MOTIVO_DESAB
+        description: "Tipo de Desativação. Domínios documentados: 1 - Manual; 2 - Automática."
+
+      - name: FL_DEFINITIVO
+        description: "Indica se o motivo de desativação é do tipo Desativação Definitiva. Domínios documentados: S - Sim; N - Não."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces053
+    description: "Tabela bruta do CNES NFCES053 / TB_MOTIVO_DESATIV_EQUIPE. Tabela auxiliar de motivos de desativação de equipes."
+    columns:
+      - name: CD_MOTIVO_DESATIV
+        description: "Código do Motivo de Desativação da Equipe."
+
+      - name: DS_MOTIVO_DESATIV
+        description: "Descrição do Motivo de Desativação da Equipe."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces056
+    description: "Tabela bruta do CNES NFCES056 / TB_MOD_VINCULO. Tabela auxiliar de vínculo com o estabelecimento."
+    columns:
+      - name: CD_VINCULACAO
+        description: "Código da Vinculação."
+
+      - name: DS_VINCULACAO
+        description: "Descrição da Vinculação."
+
+      - name: ST_HABILITADO
+        description: "Indica se o vínculo se encontra ativo. Domínios documentados: S - Sim; N - Não."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces057
+    description: "Tabela bruta do CNES NFCES057 / TB_TP_MOD_VINCULO. Tabela auxiliar de vínculo com o empregador."
+    columns:
+      - name: CD_VINCULACAO
+        description: "Código da Vinculação."
+
+      - name: TP_VINCULO
+        description: "Tipo do Vínculo."
+
+      - name: DS_VINCULO
+        description: "Descrição do Vínculo."
+
+      - name: ST_HABILITADO
+        description: "Indica se o vínculo se encontra ativo. Domínios documentados: S - Sim; N - Não."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces058
+    description: "Tabela bruta do CNES NFCES058 / TB_SUB_TP_MOD_VINCULO. Tabela auxiliar de detalhamento do vínculo profissional."
+    columns:
+      - name: IND_VINC
+        description: "Indica a vinculação, o tipo e o subtipo de vínculo."
+
+      - name: CD_VINCULACAO
+        description: "Código da Vinculação."
+
+      - name: TP_VINCULO
+        description: "Tipo do Vínculo."
+
+      - name: TP_SUBVINCULO
+        description: "Subtipo do Vínculo."
+
+      - name: DS_SUBVINCULO
+        description: "Descrição do Subtipo do Vínculo."
+
+      - name: ST_HABILITADO
+        description: "Indica se o vínculo se encontra ativo. Domínios documentados: S - Sim; N - Não."
+
+      - name: ST_SOLICITA_CNPJ
+        description: "Indica se o vínculo exige CNPJ do empregador. Domínios documentados: S - Sim; N - Não."
+
+      - name: TP_CATEGORIA
+        description: "Tipo de categoria do vínculo do profissional."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces085
+    description: "Tabela bruta do CNES NFCES085 / TB_NATUREZA_JURIDICA. Tabela auxiliar de natureza jurídica, usada como referência para classificação da esfera administrativa dos estabelecimentos."
+    columns:
+      - name: CO_NATUREZA_JUR
+        description: "Código da Natureza Jurídica."
+
+      - name: DS_NATUREZA_JUR
+        description: "Descrição da Natureza Jurídica."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: ST_MOVIMENTACAO
+        description: "Sem uso."
+
+      - name: DT_CMTP_INICIO
+        description: "Sem uso."
+
+      - name: DT_CMTP_FIM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
+
+  - name: raw_gdb_cnes__nfces090
+    description: "Tabela bruta do CNES NFCES090 / TB_GRUPO_EQUIPE. Tabela auxiliar de grupos de equipes."
+    columns:
+      - name: CO_GRUPO_EQUIPE
+        description: "Código do Grupo de Equipe."
+
+      - name: NO_GRUPO_EQUIPE
+        description: "Nome do Grupo de Equipe."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
