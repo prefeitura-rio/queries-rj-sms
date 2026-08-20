@@ -40,3 +40,27 @@
         else null
     end
 {% endmacro %}
+
+{% macro process_type_null(texto) %}
+    case
+        when {{ texto }} is null then null
+
+        when lower(
+            trim(
+                cast({{ texto }} as string)
+            )
+        ) in (
+            '',
+            '-',
+            'null',
+            'none',
+            'n/a',
+            'na',
+            'nan',
+            'nat',
+            '<na>'
+        ) then null
+
+        else {{ texto }}
+    end
+{% endmacro %}

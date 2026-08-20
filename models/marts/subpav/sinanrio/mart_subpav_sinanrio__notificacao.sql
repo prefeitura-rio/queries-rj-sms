@@ -240,23 +240,45 @@ with
         from {{ ref("raw_plataforma_subpav_sinanrio_legado__notificacao") }} as l
     ),
 
-    conciliado as (
+    novo_conciliado as (
         select
-            *,
-            row_number() over (
-                partition by nu_notificacao, dt_notificacao, co_cid, co_municipio_notificacao
-                order by
-                    case when sistema_origem = 'novo' then 1 else 2 end,
-                    coalesce(timestamp, datalake_loaded_at) desc
-            ) as rn
-        from (
-            select * from novo
-            union all
-            select * from legado
-        )
+            n.* replace (
+                coalesce(
+                    n.co_unidade_notificacao,
+                    l.co_unidade_notificacao
+                ) as co_unidade_notificacao
+            )
+        from novo as n
+        left join legado as l
+            using (
+                nu_notificacao,
+                dt_notificacao,
+                co_cid,
+                co_municipio_notificacao
+            )
+    ),
+
+    legado_sem_correspondencia as (
+        select
+            l.*
+        from legado as l
+        left join novo as n
+            using (
+                nu_notificacao,
+                dt_notificacao,
+                co_cid,
+                co_municipio_notificacao
+            )
+        where n.nu_notificacao is null
+    ),
+
+    conciliado as (
+        select * from novo_conciliado
+
+        union all
+
+        select * from legado_sem_correspondencia
     )
 
-select
-    *
+select *
 from conciliado
-where rn = 1
