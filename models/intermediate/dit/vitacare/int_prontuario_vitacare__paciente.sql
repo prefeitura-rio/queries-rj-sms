@@ -22,3 +22,4 @@ left join {{ ref("int_prontuario_vitacare__paciente_cpf_enriquecido") }} as enri
 where
     coalesce(paciente.cpf, enriquecimento.cpf_enriquecido) is not null
     and paciente.id_cnes is not null
+    and not regexp_contains(upper(paciente.nome), r'\bTESTE\b')
