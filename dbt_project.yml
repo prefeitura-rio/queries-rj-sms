@@ -941,6 +941,15 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
 
+      riosaude:
+        +schema: projeto_riosaude
+        +tags: ["daily", "riosaude"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: riosaude
+
       iplanrio:
         whatsapp:
           +tags: ["daily", "iplanrio", "whatsapp"]
