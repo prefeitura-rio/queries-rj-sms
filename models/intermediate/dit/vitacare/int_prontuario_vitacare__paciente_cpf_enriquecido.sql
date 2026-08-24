@@ -28,6 +28,10 @@ with
             nome_normalizado is not null
             and data_nascimento is not null
             and mae_nome_normalizado is not null
+            and nome_normalizado not like '%TESTE%'
+            and nome_normalizado not like '%SEM INFORMACAO%'
+            and mae_nome_normalizado not like '%TESTE%'
+            and mae_nome_normalizado not like '%SEM INFORMACAO%'
     ),
 
     pacientes_com_hashes as (
