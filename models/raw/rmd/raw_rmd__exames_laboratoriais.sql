@@ -2,7 +2,7 @@
     config(
         alias="exames_laboratoriais",
         materialized="incremental",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy="merge",
         unique_key=['id', 'fornecedor_id'],
         schema="brutos_rmd",
         partition_by={
