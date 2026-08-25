@@ -1,3 +1,4 @@
+-- MOTIVOS DE DESATIVAÇÃO DA EQUIPE
 {{
     config(
         alias = "NFCES053",

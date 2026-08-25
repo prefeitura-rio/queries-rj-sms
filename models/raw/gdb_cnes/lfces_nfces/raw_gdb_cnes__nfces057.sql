@@ -1,3 +1,4 @@
+-- VÍNCULO COM O EMPREGADOR
 {{
     config(
         alias = "NFCES057",

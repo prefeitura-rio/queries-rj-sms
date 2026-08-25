@@ -1,3 +1,4 @@
+-- TIPO DE ESTABELECIMENTO
 {{
     config(
         alias = "NFCES010",

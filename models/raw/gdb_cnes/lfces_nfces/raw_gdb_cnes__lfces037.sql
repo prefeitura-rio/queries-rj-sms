@@ -1,3 +1,4 @@
+-- EQUIPES
 {{
     config(
         alias = "LFCES037",

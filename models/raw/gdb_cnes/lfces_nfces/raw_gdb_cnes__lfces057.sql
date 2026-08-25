@@ -1,3 +1,4 @@
+-- CNES VALIDOS
 {{
     config(
         alias = "LFCES057",

@@ -1,3 +1,4 @@
+-- PROFISSIONAIS
 {{
     config(
         alias = "LFCES018",

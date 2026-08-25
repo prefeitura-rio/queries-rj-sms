@@ -1,3 +1,4 @@
+-- VÍNCULO COM O ESTABELECIMENTO
 {{
     config(
         alias = "NFCES056",

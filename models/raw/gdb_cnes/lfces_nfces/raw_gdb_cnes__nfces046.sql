@@ -1,3 +1,4 @@
+-- TIPOS DE EQUIPE
 {{
     config(
         alias = "NFCES046",

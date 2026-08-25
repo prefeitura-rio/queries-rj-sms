@@ -1,3 +1,4 @@
+-- MOTIVO DESATIVAÇÃO DO ESTAB. DE SAÚDE
 {{
     config(
         alias = "NFCES049",

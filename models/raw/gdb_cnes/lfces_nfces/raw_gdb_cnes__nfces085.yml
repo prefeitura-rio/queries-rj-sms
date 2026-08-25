@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__nfces085
+    description: "Tabela bruta do CNES NFCES085 / TB_NATUREZA_JURIDICA. Tabela auxiliar de natureza jurídica, usada como referência para classificação da esfera administrativa dos estabelecimentos."
+    columns:
+      - name: CO_NATUREZA_JUR
+        description: "Código da Natureza Jurídica."
+
+      - name: DS_NATUREZA_JUR
+        description: "Descrição da Natureza Jurídica."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: ST_MOVIMENTACAO
+        description: "Sem uso."
+
+      - name: DT_CMTP_INICIO
+        description: "Sem uso."
+
+      - name: DT_CMTP_FIM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

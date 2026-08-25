@@ -1,3 +1,4 @@
+-- HORÁRIO DE FUNCIONAMENTO DO ESTABELECIMENTO
 {{
     config(
         alias = "LFCES098",

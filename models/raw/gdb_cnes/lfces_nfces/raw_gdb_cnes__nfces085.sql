@@ -1,3 +1,4 @@
+-- NATUREZA JURÍDICA
 {{
     config(
         alias = "NFCES085",

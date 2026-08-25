@@ -1,3 +1,4 @@
+-- GRUPOS DE EQUIPES
 {{
     config(
         alias = "NFCES090",

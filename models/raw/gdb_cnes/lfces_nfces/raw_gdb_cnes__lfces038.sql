@@ -1,3 +1,4 @@
+-- PROFISSIONAIS DAS EQUIPES
 {{
     config(
         alias = "LFCES038",

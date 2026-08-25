@@ -1,3 +1,4 @@
+-- VÍNCULOS DO PROFISSIONAL NO ESTABELECIMENTO
 {{
     config(
         alias = "LFCES021",

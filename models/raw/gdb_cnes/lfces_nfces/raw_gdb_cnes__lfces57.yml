@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__lfces057
+    description: "Tabela bruta do CNES LFCES057. Tabela de CNES válidos, utilizada como apoio à identificação e validação de estabelecimentos."
+    columns:
+      - name: CNES
+        description: "Código Nacional do Estabelecimento de Saúde."
+
+      - name: COD_MUN
+        description: "Código do Município."
+
+      - name: COMPETENCIA
+        description: "Competência."
+
+      - name: CD_MOTIVO_DESAB
+        description: "Código do motivo de desativação do estabelecimento."
+
+      - name: TP_GESTAO
+        description: "Tipo de gestão do estabelecimento."
+
+      - name: STATUS_ESTAB
+        description: "Status do estabelecimento."
+
+      - name: ST_ESTRUTURA
+        description: "Tipo de estrutura do estabelecimento. Domínios documentados: 1 - Imóvel; 2 - Móvel."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

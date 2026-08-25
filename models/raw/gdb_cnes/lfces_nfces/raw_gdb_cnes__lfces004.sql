@@ -1,3 +1,4 @@
+-- ESTABELECIMENTOS DE SAÚDE
 {{
     config(
         alias = "LFCES004",
