@@ -3,7 +3,8 @@
     alias='alerta_historico',
     materialized='incremental',
     cluster_by=['fim_datahora', 'id_contato'],
-    tags=['cegonha_digital_15min']
+    tags=['cegonha_digital_15min'],
+    enabled=false
 ) }}
 
 with alerta_historico_teste as (

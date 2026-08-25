@@ -3,7 +3,8 @@
     alias='alerta_historico_teste',
     materialized='incremental',
     cluster_by=['fim_datahora', 'registro_identificado_na_maternidade'],
-    tags=['cegonha_digital_15min']
+    tags=['cegonha_digital_15min'],
+    enabled=false
 ) }}
 
 with dados_nascimento_base as (
@@ -12,7 +13,7 @@ with dados_nascimento_base as (
     select
         cpf,
         safe.parse_date('%Y-%m-%d', cast(data_nascimento as string)) as data_nascimento
-    from {{ source('brutos_iplanrio', 'registro_municipal_integrado') }}
+    from {{ source('brutos_iplanrio', 'registro_municipal_integrado') }} --remover essa fonte
     where cpf is not null
       and cpf != ''
 

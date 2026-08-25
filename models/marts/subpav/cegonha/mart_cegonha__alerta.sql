@@ -2,7 +2,8 @@
     schema='projeto_cegonha',
     alias='alerta',
     materialized='incremental',
-    tags=['cegonha_digital_15min']
+    tags=['cegonha_digital_15min'],
+    enabled=false
 ) }}
 
 with novas_interacoes as (
