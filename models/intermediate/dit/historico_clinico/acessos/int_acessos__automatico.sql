@@ -184,7 +184,11 @@ with
                             then 'full_permission'
                         when funcao_grupo = 'SANITARISTAS'
                             then 'full_permission'
-                        when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO','CASS')
+                        when unidade_tipo in (
+                            'UPA', 'HOSPITAL', 'CER', 'CE',
+                            'MATERNIDADE', 'CENTRAL DE REGULACAO', 'CASS',
+                            'PRISIONAL'
+                        )
                             then 'full_permission'
                         when unidade_tipo in ('CGS','CAPS') and funcao_grupo in ('MEDICOS','DENTISTAS')
                             then 'full_permission'
