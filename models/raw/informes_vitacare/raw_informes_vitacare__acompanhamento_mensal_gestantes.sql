@@ -3,7 +3,7 @@
         alias="acompanhamento_mensal_gestantes",
         materialized="incremental",
         unique_key="id_surrogate",
-        incremental_strategy="insert_overwrite",
+        incremental_strategy="merge",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -41,8 +41,8 @@ extrair_informacoes as (
                 ]
             )
         }} as id_surrogate,
-        REGEXP_EXTRACT(_source_file, r'^(AP\d+)') AS ap,
-        REGEXP_EXTRACT(_source_file, r'^AP\d+/(\d{4}-\d{2})') AS mes_referencia,
+        REGEXP_EXTRACT(_source_file, r'/(AP\d+)/') AS ap,
+        REGEXP_EXTRACT(_source_file, r'/AP\d+/(\d{4}-\d{2})') AS mes_referencia,
         {{ process_null('nome') }} as nome,
         {{ process_null('no_cartao') }} as no_cartao,
         {{ process_null('codigo_entidade') }} as codigo_entidade,

@@ -5,7 +5,10 @@ versao_atual as (
 ),
 
 estabelecimentos_mrj_sus as (
-    select distinct safe_cast(id_cnes as int64) as id_cnes from {{ ref("dim_estabelecimento_sus_rio_historico") }} where safe_cast(data_particao as string) = (select versao from versao_atual)
+    select distinct
+        safe_cast(id_cnes as int64) as id_cnes
+    from {{ ref("dim_estabelecimento_sus_rio_historico") }}
+    where safe_cast(data_particao as string) = (select versao from versao_atual)
 ),
 
 equip_non_unique as (
@@ -19,7 +22,13 @@ equip_non_unique as (
     safe_cast(quantidade_equipamentos_ativos as int64) as equipamentos_quantidade_ativos,
 
   from {{ ref("raw_cnes_ftp__equipamento") }}
-  where indicador_equipamento_disponivel_sus = 1 and ano >= 2010 and safe_cast(id_estabelecimento_cnes as int64) in (select id_cnes from estabelecimentos_mrj_sus)
+  where safe_cast(indicador_equipamento_disponivel_sus as int64) = 1
+    and ano >= 2010
+    and safe_cast(id_estabelecimento_cnes as int64) in (
+        select id_cnes
+        from estabelecimentos_mrj_sus
+    )
 )
 
-select distinct * from equip_non_unique
+select distinct *
+from equip_non_unique

@@ -3,6 +3,8 @@
         schema="brutos_prontuario_vitacare_historico",
         alias="vacina", 
         materialized="incremental",
+        incremental_strategy="merge",
+        merge_exclude_columns = ['loaded_at'],
         unique_key = ['id_prontuario_global', 'id_vacinacao'],
         cluster_by= ['id_prontuario_global', 'id_vacinacao'],
         partition_by={
@@ -12,6 +14,7 @@
         }
     )
 }}
+
 
 {% set last_partition = get_last_partition_date(this) %}
 
@@ -63,7 +66,7 @@ with
             {{ process_null("replace(acto_id, '.0', '')") }} as id_prontuario_local,
 
             {{ process_null(
-                "id_cnes || '.' || replace(ut_id, '.0', '')"
+                "id_cnes || '.' || replace(" ~ remove_null_bytes('ut_id') ~ ", '.0', '')"
             ) }} as id_cadastro,
             
             {{ process_null(
@@ -98,6 +101,7 @@ with
 
              -- Metadata
             cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
+            current_datetime('America/Sao_Paulo') as updated_at,
             cast({{ process_null('data_particao') }} as date) as data_particao,
           
         from vacina_dedup

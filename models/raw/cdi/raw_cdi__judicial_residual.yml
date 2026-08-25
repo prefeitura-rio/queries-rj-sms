@@ -1,0 +1,161 @@
+version: 2
+
+models:
+  - name: raw_cdi__judicial_residual_2025
+    description: >
+      Modelo bruto da equipe JR referente ao ano de 2025
+      Contém registros de demandas judiciais residuais encaminhadas à CDI,
+      com informações sobre processo, ofício, demandante, órgão, assunto,
+      solicitação, prazos, retornos e situação do atendimento
+    config:
+      schema: brutos_cdi
+    columns:
+      - name: processo_rio
+        description: Número de identificação do processo no sistema Processo.Rio ou SEI
+
+      - name: envolve_mrj
+        description: Indica se o Município do Rio de Janeiro é parte no processo
+
+      - name: oficio
+        description: Número do ofício recebido
+
+      - name: data_oficio_origem
+        description: Data informada na coluna original DATA da planilha de origem
+
+      - name: demandante
+        description: Órgão ou instituição demandante da solicitação
+
+      - name: orgao
+        description: Órgão judicial, ministerial ou institucional relacionado à demanda
+
+      - name: processo
+        description: Número do processo judicial ou administrativo associado à demanda
+
+      - name: assunto
+        description: Assunto principal da demanda
+
+      - name: solicitacao
+        description: Descrição da solicitação encaminhada à CDI
+
+      - name: area
+        description: Área programática ou área responsável relacionada à demanda
+
+      - name: sexo
+        description: Sexo informado para a pessoa relacionada à demanda, quando aplicável
+
+      - name: idade
+        description: Faixa etária ou classificação etária informada na planilha de origem
+
+      - name: entrada_gat3
+        description: Data de entrada da demanda no GAT-3
+
+      - name: prazo_dias
+        description: Prazo em dias definido para atendimento da demanda
+
+      - name: vencimento
+        description: Data de vencimento do prazo da demanda
+
+      - name: data_saida
+        description: Data de saída ou encaminhamento da demanda
+
+      - name: orgao_para_subsidiar
+        description: Órgão ou setor acionado para subsidiar a resposta da demanda
+
+      - name: retorno
+        description: Data de retorno da resposta ou manifestação
+
+      - name: no_oficio
+        description: Número do ofício emitido em resposta à demanda
+
+      - name: data_oficio
+        description: Data do ofício emitido em resposta à demanda
+
+      - name: data_pg_pas_dta_sfc
+        description: Data registrada na coluna original PG/PAS/DTA/SFC da planilha
+
+      - name: observacoes
+        description: Observações operacionais sobre o andamento da demanda
+
+      - name: situacao
+        description: Situação atual da demanda
+
+  - name: raw_cdi__judicial_residual_2026
+    description: >
+      Modelo bruto da equipe JR referente ao ano de 2026
+      Contém registros de demandas judiciais residuais encaminhadas à CDI,
+      com informações sobre processo, ofício, demandante, órgão, assunto,
+      solicitação, prazos, retornos, conclusão e situação do atendimento
+    config:
+      schema: brutos_cdi
+    columns:
+      - name: processo_rio
+        description: Número de identificação do processo no sistema Processo.Rio ou SEI
+
+      - name: envolve_mrj
+        description: Indica se o Município do Rio de Janeiro é parte no processo
+
+      - name: oficio
+        description: Número do ofício recebido
+
+      - name: data_oficio_origem
+        description: Data informada na coluna original DATA da planilha de origem
+
+      - name: demandante
+        description: Órgão ou instituição demandante da solicitação
+
+      - name: orgao
+        description: Órgão judicial, ministerial ou institucional relacionado à demanda
+
+      - name: processo
+        description: Número do processo judicial ou administrativo associado à demanda
+
+      - name: assunto
+        description: Assunto principal da demanda
+
+      - name: solicitacao
+        description: Descrição da solicitação encaminhada à CDI
+
+      - name: area
+        description: Área programática ou área responsável relacionada à demanda
+
+      - name: sexo
+        description: Sexo informado para a pessoa relacionada à demanda, quando aplicável
+
+      - name: idade
+        description: Faixa etária ou classificação etária informada na planilha de origem
+
+      - name: entrada_gat3
+        description: Data de entrada da demanda no GAT-3
+
+      - name: prazo_dias
+        description: Prazo em dias definido para atendimento da demanda
+
+      - name: vencimento
+        description: Data de vencimento do prazo da demanda
+
+      - name: data_saida
+        description: Data de saída ou encaminhamento da demanda
+
+      - name: orgao_para_subsidiar
+        description: Órgão ou setor acionado para subsidiar a resposta da demanda
+
+      - name: retorno
+        description: Data de retorno da resposta ou manifestação
+
+      - name: no_oficio
+        description: Número do ofício emitido em resposta à demanda
+
+      - name: data_oficio
+        description: Data do ofício emitido em resposta à demanda
+
+      - name: data_pg_pas_dta_sfc
+        description: Data registrada na coluna original PG/PAS/DTA/SFC da planilha
+
+      - name: data_conclusao
+        description: Data de conclusão da demanda, presente a partir do layout de 2026
+
+      - name: observacoes
+        description: Observações operacionais sobre o andamento da demanda
+
+      - name: situacao
+        description: Situação atual da demanda

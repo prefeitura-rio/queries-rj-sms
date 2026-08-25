@@ -49,8 +49,8 @@ categorias_risco_gestacional AS (
         ) AS categorias_risco,
         --cat_risco_encaminhada
         STRING_AGG(DISTINCT c.id, '; ' ORDER BY c.id) AS cid_alto_risco,
-        STRING_AGG(DISTINCT r.Encaminhamento_Alto_Risco, '; ' ORDER BY r.Encaminhamento_Alto_Risco) AS encaminhamento_alto_risco,
-        STRING_AGG(DISTINCT r.justificativa___condicao, '; ' ORDER BY r.justificativa___condicao) AS justificativa_condicao, 
+        STRING_AGG(DISTINCT r.encaminhamento_alto_risco, '; ' ORDER BY r.encaminhamento_alto_risco) AS encaminhamento_alto_risco,
+        STRING_AGG(DISTINCT r.justificativa_condicao, '; ' ORDER BY r.justificativa_condicao) AS justificativa_condicao, 
     FROM
         filtrado f -- Usa 'filtrado' que já tem 'id_gestacao' e as datas corretas
         -- JOIN {{ ref('mart_historico_clinico__episodio') }} ea 
@@ -73,8 +73,8 @@ categorias_risco_gestacional AS (
         f.id_gestacao
         --cat_risco_encaminhada
         -- c.id,
-        -- r.Encaminhamento_Alto_Risco,
-        -- r.justificativa___condicao
+        -- r.encaminhamento_alto_risco,
+        -- r.justificativa_condicao
 ),
 
 
@@ -1060,17 +1060,17 @@ encaminhamento_hipertensao_sisreg AS (
         AND (
             s.sisreg_primeira_cid LIKE 'O10%'
             OR -- Hipertensão prévia
-            REGEXP_CONTAINS(s.sisreg_primeira_cid, r'\bI1[0-5]\b')
+            REGEXP_CONTAINS(s.sisreg_primeira_cid, r'^I1[0-5]')
             OR -- Hipertensão essencial
-            s.sisreg_primeira_cid = 'O11'
+            s.sisreg_primeira_cid LIKE 'O11%'
             OR -- Pré-eclâmpsia superposta
-            s.sisreg_primeira_cid = 'O13'
+            s.sisreg_primeira_cid LIKE 'O13%'
             OR -- Hipertensão gestacional
-            s.sisreg_primeira_cid = 'O14'
+            s.sisreg_primeira_cid LIKE 'O14%'
             OR -- Pré-eclâmpsia
-            s.sisreg_primeira_cid = 'O15'
+            s.sisreg_primeira_cid LIKE 'O15%'
             OR -- Eclâmpsia
-            s.sisreg_primeira_cid = 'O16' -- Hipertensão não especificada
+            s.sisreg_primeira_cid LIKE 'O16%' -- Hipertensão não especificada
         )
         AND DATE(s.sisreg_primeira_data_solicitacao) BETWEEN f.data_inicio AND COALESCE(
             f.data_fim_efetiva,
@@ -1113,17 +1113,17 @@ encaminhamento_hipertensao_SER AS (
         AND (
             s.ser_descricao_cid LIKE 'O10%'
             OR -- Hipertensão prévia
-            REGEXP_CONTAINS(s.ser_descricao_cid, r'\bI1[0-5]\b')
+            REGEXP_CONTAINS(s.ser_descricao_cid, r'^I1[0-5]')
             OR -- Hipertensão essencial
-            s.ser_descricao_cid = 'O11'
+            s.ser_descricao_cid LIKE 'O11%'
             OR -- Pré-eclâmpsia superposta
-            s.ser_descricao_cid = 'O13'
+            s.ser_descricao_cid LIKE 'O13%'
             OR -- Hipertensão gestacional
-            s.ser_descricao_cid = 'O14'
+            s.ser_descricao_cid LIKE 'O14%'
             OR -- Pré-eclâmpsia
-            s.ser_descricao_cid = 'O15'
+            s.ser_descricao_cid LIKE 'O15%'
             OR -- Eclâmpsia
-            s.ser_descricao_cid = 'O16' -- Hipertensão não especificada
+            s.ser_descricao_cid LIKE 'O16%' -- Hipertensão não especificada
         )
         AND DATE(s.ser_data_agendamento) BETWEEN f.data_inicio AND COALESCE(
             f.data_fim_efetiva,

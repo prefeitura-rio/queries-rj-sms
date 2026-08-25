@@ -2,8 +2,7 @@
     config(
         alias="paciente",
         materialized="incremental",
-        unique_key="gid",
-        tags=["every_30_min"],
+        unique_key="gid"
     )
 }}
 
@@ -42,7 +41,7 @@ select
 
     -- Campos
     safe_cast(idcidadao as string) as id_cidadao,
-    if(gid="7EA7D533-31AE-4B5C-9939-B1C08015461A", "46402634816", safe_cast(cpf as string)) as cpf,
+    safe_cast(cpf as string) as cpf,
     safe_cast(cns as string) as cns,
     safe_cast(racacor as string) as raca_cor,
     safe_cast(nome_alternativo as string) as nome_alternativo,

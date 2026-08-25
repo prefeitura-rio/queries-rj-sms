@@ -27,7 +27,7 @@ with
     agregado as (
         select
             ex.id_cnes,
-            nome_limpo as unidade_nome,
+            {{ proper_estabelecimento("nome_limpo") }} as unidade_nome,
 
             paciente_cpf,
             paciente_cns,

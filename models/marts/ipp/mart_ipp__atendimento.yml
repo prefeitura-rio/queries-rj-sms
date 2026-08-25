@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: mart_ipp__atendimento
+    description: >
+      Atendimentos da atenção primária do município do Rio de Janeiro,
+      originados do prontuário Vitacare. Modelo incremental particionado
+      mensalmente por data de início do atendimento. Filtra registros
+      com datas futuras inválidas.
+    columns:
+      - name: cpf
+        description: CPF do paciente atendido.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde ocorreu o atendimento.
+
+      - name: nome_equipe_profissional
+        description: Nome da equipe ou profissional responsável pelo atendimento.
+
+      - name: tipo_consulta
+        description: Tipo de consulta realizada no atendimento (ex. consulta médica, visita domiciliar).
+
+      - name: inicio_datahora
+        description: Data e hora de início do atendimento (timezone America/Sao_Paulo).
+
+      - name: fim_datahora
+        description: Data e hora de término do atendimento (timezone America/Sao_Paulo).
+      
+      - name: carregado_em
+        description: Data e hora do carregamento no Data Lake da SMS.
+
+      - name: atualizado_em
+        description: Data e hora da última atualização do registro no sistema de origem.
+
+      - name: processado_em
+        description: Data e hora em que o registro foi processado por este pipeline.
+
+      - name: data_particao
+        description: >
+          Data utilizada para particionamento mensal da tabela. Derivada de
+          inicio_datahora, com fallback para fim_datahora quando nula.
+        tests:
+          - not_null
+
+      - name: cpf_particao
+        description: CPF do paciente convertido para inteiro, utilizado como campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

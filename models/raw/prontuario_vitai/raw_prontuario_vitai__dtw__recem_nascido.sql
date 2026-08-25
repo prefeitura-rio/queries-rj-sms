@@ -3,7 +3,6 @@
         alias="dtw__recem_nascido",
         materialized="incremental",
         unique_key="gid",
-        tags=["every_30_min"],
         partition_by={
             "field": "data_particao", 
             "data_type": "date", 

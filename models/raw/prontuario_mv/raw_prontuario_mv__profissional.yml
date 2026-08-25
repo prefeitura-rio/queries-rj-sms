@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: raw_prontuario_mv__profissional
+    description: "Tabela de informações sobre profissionais do Prontuário MV."
+    columns:
+      - name: id_hci
+        description: "Identificador único do registro (não materializado no select final, mas listado como unique_key nas configurações)."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: nome
+        description: "Nome do profissional."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: cns
+        description: "CNS do profissional."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: cpf
+        description: "CPF do profissional."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: id_cbo
+        description: "Identificador CBO (Classificação Brasileira de Ocupações) do profissional."
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: data_particao
+        description: "Data utilizada para particionamento dos dados, neste caso é a data de carregamento no Data Lake."

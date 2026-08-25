@@ -5,11 +5,11 @@ sources:
     database: rj-sms
     schema: brutos_prontuario_vitacare_historico_staging
     tables:
-      - name: acto
+      - name: atendimentos
       - name: agendamentos
       - name: alergias
       - name: arboviroses
-      - name: cadastro
+      - name: pacientes
       - name: condicoes
       - name: curativos
       - name: encaminhamentos

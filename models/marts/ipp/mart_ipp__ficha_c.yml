@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: mart_ipp__ficha_c
+    description: >
+      Ficha C de acompanhamento de crianças da atenção primária, originada
+      dos informes Vitacare (ficha_c_v2). Contém indicadores de saúde e
+      desenvolvimento infantil por competência mensal. Modelo tabela
+      particionado por CPF (int64 range).
+    columns:
+      - name: cpf
+        description: CPF da criança.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: cpf_valido
+        description: Indica se o CPF da criança é válido segundo os dígitos verificadores.
+
+      - name: competencia
+        description: Competência (mês/ano) a que se refere o registro da ficha C.
+
+      - name: data_cadastro
+        description: Data de criação do cadastro da criança na ficha C.
+
+      - name: nome
+        description: Nome completo da criança cadastrada.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: data_nascimento
+        description: Data de nascimento da criança.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: obito
+        description: Indica se a criança está registrada como óbito (true = falecida).
+
+      - name: perfil_bpc
+        description: Indica se a criança possui perfil para o Benefício de Prestação Continuada (BPC).
+
+      - name: afastada_da_escola_por_motivo_saude
+        description: Indica se a criança está afastada da escola por motivo de saúde.
+
+      - name: vacinas_em_dia
+        description: Indica se o calendário vacinal da criança está em dia.
+
+      - name: estado_nutricional
+        description: Estado nutricional da criança conforme avaliação registrada (ex. eutrófico, sobrepeso, desnutrição).
+
+      - name: atraso_desenvolvimento
+        description: Indica se a criança apresenta atraso no desenvolvimento neuropsicomotor.
+
+      - name: sinais_risco
+        description: Indica se foram identificados sinais de risco na avaliação da criança.
+
+      - name: ano_particao
+        description: Ano extraído da competência, utilizado como campo auxiliar de particionamento.
+
+      - name: mes_particao
+        description: Mês extraído da competência, utilizado como campo auxiliar de particionamento.
+
+      - name: data_particao
+        description: Data de particionamento da tabela, derivada da competência mensal.
+
+      - name: criado_em
+        description: Data e hora de criação do registro no sistema de origem (timezone America/Sao_Paulo).
+
+      - name: carregado_em
+        description: Data e hora de carregamento do registro no Data Lake da SMS (timezone America/Sao_Paulo).
+
+      - name: processado_em
+        description: Data e hora em que o registro foi processado por este pipeline (timezone America/Sao_Paulo).
+
+      - name: cpf_particao
+        description: CPF do paciente convertido para inteiro, utilizado como campo de particionamento da tabela.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

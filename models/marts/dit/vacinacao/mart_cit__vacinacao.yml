@@ -1,0 +1,97 @@
+models:
+  - name: mart_cit__vacinacao
+    description: >
+      Tabela consolidada de registros de vacinação do município do Rio de Janeiro.
+      Realiza a união de 4 fontes de dados intermediárias (Vitacare histórico/backup,
+      Vitacare API centralizadora, Vitacare API contínua e SIPNI) com deduplicação
+      por id_vacinacao, priorizando historico > sipni > api > continuo.
+      A coluna origem é padronizada para vitacare ou sipni.
+    columns:
+      - name: id_vacinacao
+        description: Identificador único da vacinação, composto por id_cnes e id local.
+        data_tests:
+          - unique:
+              name: mart_cit__vacinacao__id_vacinacao__unique
+              config:
+                severity: warn
+      - name: id_cnes
+        description: Identificador CNES do estabelecimento de saúde onde a vacina foi administrada.
+      - name: id_equipe
+        description: Identificador da equipe de saúde vinculada ao paciente.
+      - name: id_ine_equipe
+        description: Identificador INE da equipe de saúde conforme o CNES.
+      - name: id_microarea
+        description: Identificador da microárea de atuação da equipe de saúde.
+      - name: estabelecimento_nome
+        description: Nome do estabelecimento de saúde.
+      - name: vacina_nome
+        description: Nome padronizado da vacina administrada (via depara_vacinas).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_codigo
+        description: Código SIPNI da vacina (via depara_vacinas).
+      - name: vacina_dose
+        description: Dose da vacina.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: vacina_lote
+        description: Número do lote da vacina.
+      - name: vacina_aplicacao_data
+        description: Data de aplicação da vacina (AAAA-MM-DD).
+      - name: vacina_registro_data
+        description: Data em que o registro da vacina foi efetivado no sistema.
+        data_tests:
+          - not_null:
+              name: mart_cit__vacinacao__vacina_registro_data__not_null
+              config:
+                severity: warn
+      - name: vacina_registro_tipo
+        description: Tipo de registro da vacina.
+      - name: paciente_cns
+        description: CNS (Cartão Nacional de Saúde) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_nome
+        description: Nome do paciente vacinado.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente (AAAA-MM-DD).
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_nome_mae
+        description: Nome da mãe do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME_MAE") }}'
+      - name: paciente_obito
+        description: Indicador de óbito do paciente (true se falecido).
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: profissional_nome
+        description: Nome do profissional de saúde que registrou a vacina.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: profissional_cbo
+        description: Código CBO do profissional.
+      - name: profissional_cns
+        description: CNS do profissional.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: profissional_cpf
+        description: CPF do profissional.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: loaded_at
+        description: Data/hora de carga no Data Lake.
+      - name: updated_at
+        description: Data/hora da última atualização do registro.
+      - name: origem
+        description: >
+          Fonte dos dados da vacinação. Valores possíveis:
+          vitacare e sipni.
+      - name: particao_registro_vacinacao
+        description: Data de registro da vacina, usada para particionamento da tabela (AAAA-MM-DD).

@@ -39,7 +39,7 @@ with
 
             e_medicamento_controlado as controlado_indicador,
             
-            se_controlado_qual_tipo as controlado_tipo,
+            se_controlado__qual_tipo as controlado_tipo,
             
             -- ativo
 
@@ -61,7 +61,7 @@ with
             medicamento_disponivel_em_gratuidade_na_farmacia_popular
             as farmacia_popular_disponibilidade_indicador,
             
-            classificacao_de_importancia_xyz as classificacao_xyz,
+            classificacao_de_importancia__xyz as classificacao_xyz,
 
             -- remume listagem
 
@@ -95,7 +95,7 @@ with
             precisa_estar_disponivel_nas_upas_e_cers
             as remume_disponibilidade_upa_cer_indicador,
             
-            excecoes_preencher_os_cnes_das_unidades_onde_o_medicamento_precisa_estar_disponivel_por_alguma_particularidade_de_unidade_separar_por_ponto_e_virgula
+            excecoes__preencher_os_cnes_das_unidades_onde_o_medicamento_precisa_estar_disponivel_por_alguma_particularidade_de_unidade__separar_por_ponto_e_virgula
             as remume_disponibilidade_unidades_especificas_lista,
             
             -- cadastro nos prontuarios

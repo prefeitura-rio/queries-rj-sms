@@ -3,7 +3,12 @@
         alias="basecentral__item_prescricao",
         materialized="incremental",
         unique_key="gid",
-        tags=["every_30_min"],
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "month"
+        },
+        cluster_by=["data_particao"],
     )
 }}
 
@@ -11,26 +16,27 @@
     modules.datetime.date.today() - modules.datetime.timedelta(days=7)
 ).isoformat() %}
 
+
 with
     -- Seleciona eventos dos últimos 7 dias se for uma execução incremental
     events_from_window as (
         select *
         from {{ source("brutos_prontuario_vitai_staging", "basecentral__item_prescricao_eventos") }}
-        {% if is_incremental() %} 
-            where data_particao > '{{seven_days_ago}}' 
+        {% if is_incremental() %}
+            where data_particao > '{{ seven_days_ago }}'
         {% endif %}
     ),
-    
+
     -- Ranqueia os eventos por frescor dentro de cada grupo
     events_ranked_by_freshness as (
-        select *, 
+        select *,
             row_number() over (partition by gid order by datahora desc) as rank
         from events_from_window
     ),
     
     -- Seleciona apenas os eventos mais recentes de cada grupo
     latest_events as (
-        select * 
+        select *
         from events_ranked_by_freshness 
         where rank = 1
     )

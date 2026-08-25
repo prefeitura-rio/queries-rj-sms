@@ -1,0 +1,126 @@
+version: 2
+
+models:
+  - name: raw_prontuario_mv__alta
+    description: "Tabela do sumário de alta do Prontuário MV. Contém informações sobre a alta médica de internações."
+    columns:
+      - name: id_hci
+        description: "Identificador único para o atendimento gerada na materialização do DBT. Combinação de id_atendimento e id_cnes para garantir unicidade."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_atendimento
+        description: "Identificador único do atendimento."
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+      - name: id_cnes
+        description: "Identificador CNES do estabelecimento de saúde."
+      - name: estabelecimento_nome
+        description: "Nome do estabelecimento de atendimento."
+      - name: atendimento_datahora
+        description: "Data e hora do atendimento inicial."
+      - name: atendimento_tipo
+        description: "Tipo de atendimento"
+      - name: atendimento_especialidade
+        description: "Especialidade do atendimento."
+      - name: profissional_nome
+        description: "Nome do profissional de saúde que deu a alta."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: cid_principal
+        description: "Código CID principal da alta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: cid_principal_ativo
+        description: "CID principal ativo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: cid_principal_inativo
+        description: "CID principal inativo."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: procedimentos_realizados
+        description: "Descrição dos procedimentos realizados durante o atendimento."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: resultados_obtidos
+        description: "Descrição dos resultados obtidos."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: medicamentos_utilizados
+        description: "Descrição dos medicamentos utilizados."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: evolucao_paciente
+        description: "Descrição da evolução do paciente."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: paciente_nome
+        description: "Nome do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_cpf
+        description: "CPF do paciente."
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+      - name: paciente_cns
+        description: "CNS do paciente."
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+      - name: paciente_nome_social
+        description: "Nome social do paciente."
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+      - name: paciente_data_nascimento
+        description: "Data de nascimento do paciente."
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+      - name: paciente_sexo
+        description: "Sexo do paciente."
+      - name: paciente_pcd
+        description: "Indicador se o paciente é Pessoa com Deficiência (PCD)."
+      - name: alta_medica_datahora
+        description: "Data e hora da alta médica."
+      - name: alta_datahora_fechamento
+        description: "Data e hora de fechamento do registro de alta."
+      - name: dias_internado
+        description: "Número de dias que o paciente ficou internado."
+      - name: local_transferencia
+        description: "Local para onde o paciente foi transferido, se aplicável."
+      - name: plano_alta_orientacao_nutricionista
+        description: "Orientações de nutrição no plano de alta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: plano_alta_orientacao_enfermagem
+        description: "Orientações de enfermagem no plano de alta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: plano_alta_orientacao_fisioterapia
+        description: "Orientações de fisioterapia no plano de alta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: plano_alta_orientacao_psicologia
+        description: "Orientações de psicologia no plano de alta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: orientacao_medica
+        description: "Orientações médicas para a alta."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: necessidade_retorno
+        description: "Indicador da necessidade de retorno."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: retorno_agendado_nao
+        description: "Indicador se o retorno não foi agendado."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: retorno_agendado_sim
+        description: "Indicador se o retorno foi agendado."
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
+      - name: loaded_at
+        description: "Data e hora de carregamento dos dados no Datalake."
+      - name: updated_at
+        description: "Data e hora de atualização dos dados na origem."
+      - name: data_particao
+        description: "Data utilizada para particionamento dos dados, neste caso é a data de carregamento no Data Lake."

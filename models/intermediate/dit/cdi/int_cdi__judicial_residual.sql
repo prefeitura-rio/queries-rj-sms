@@ -6,103 +6,167 @@
       meta={"owner": "karen"}
 ) }}
 
-WITH src AS (
-  SELECT * FROM {{ ref('raw_cdi__judicial_residual') }}
-  
-  -- Remove linhas nao preenchidas
-  WHERE NOT (
-    entrada_gat_3 IS NULL
-    AND processo_rio IS NULL
-    AND processo IS NULL
-    AND oficio IS NULL
-  )
+with judicial_residual_2025 as (
+
+  select
+    processo_rio,
+    envolve_mrj,
+    oficio,
+    data_oficio_origem,
+    demandante,
+    orgao,
+    processo,
+    assunto,
+    solicitacao,
+    area,
+    sexo,
+    idade,
+    entrada_gat3,
+    prazo_dias,
+    vencimento,
+    data_saida,
+    orgao_para_subsidiar,
+    retorno,
+    no_oficio,
+    data_oficio,
+    data_pg_pas_dta_sfc,
+    cast(null as date) as data_conclusao,
+    observacoes,
+    situacao
+
+  from {{ ref('raw_cdi__judicial_residual_2025') }}
+
 ),
 
-calc AS (
-  SELECT
-    -- ID CANÔNICO para casos sem numero de processo
-    CASE
-        WHEN processo_rio IS NOT NULL
-            AND UPPER(processo_rio) != 'E-MAIL'
-          THEN processo_rio
+judicial_residual_2026 as (
 
-        WHEN no_oficio IS NOT NULL
-          THEN no_oficio
-
-        WHEN oficio IS NOT NULL
-          THEN oficio
-        
-        WHEN processo IS NOT NULL
-          THEN processo
-
-        -- Caso não exista nenhum identificador
-        ELSE CONCAT(
-              'SEM_ID_',
-              CAST(entrada_gat_3 AS STRING), '_',
-              REGEXP_REPLACE(TRIM(COALESCE(solicitacao, 'sem_solicitacao')), r'\s+', '_'), '_',
-              REGEXP_REPLACE(TRIM(COALESCE(orgao_para_subsidiar, 'sem_orgao')), r'\s+', '_')
-        )
-    END AS id,
+  select
     processo_rio,
-    mrj_e_parte,
+    envolve_mrj,
     oficio,
+    data_oficio_origem,
+    demandante,
+    orgao,
+    processo,
+    assunto,
+    solicitacao,
+    area,
+    sexo,
+    idade,
+    entrada_gat3,
+    prazo_dias,
+    vencimento,
+    data_saida,
+    orgao_para_subsidiar,
+    retorno,
+    no_oficio,
+    data_oficio,
+    data_pg_pas_dta_sfc,
+    data_conclusao,
+    observacoes,
+    situacao
+
+  from {{ ref('raw_cdi__judicial_residual_2026') }}
+
+),
+
+src as (
+
+  select * from judicial_residual_2025
+
+  union all
+
+  select * from judicial_residual_2026
+
+),
+
+base as (
+
+  select *
+  from src
+
+  where not (
+    entrada_gat3 is null
+    and processo_rio is null
+    and processo is null
+    and oficio is null
+  )
+
+),
+
+calc as (
+
+  select
+    case
+      when processo_rio is not null
+        and upper(processo_rio) != 'E-MAIL'
+        then processo_rio
+
+      when no_oficio is not null
+        then no_oficio
+
+      when oficio is not null
+        then oficio
+
+      when processo is not null
+        then processo
+
+      else concat(
+        'SEM_ID_',
+        cast(entrada_gat3 as string), '_',
+        regexp_replace(coalesce(solicitacao, 'sem_solicitacao'), r'\s+', '_'), '_',
+        regexp_replace(coalesce(orgao_para_subsidiar, 'sem_orgao'), r'\s+', '_')
+      )
+    end as id,
+
+    processo_rio,
+    envolve_mrj,
+    oficio,
+    demandante,
     orgao,
     processo,
     assunto,
 
-    CASE
-      WHEN LOWER(TRIM(solicitacao)) IN ('exame', 'exames') THEN 'exame'
-      ELSE LOWER(TRIM(solicitacao))
-    END AS solicitacao,
+    case
+      when lower(solicitacao) = 'exames' then 'exame'
+      else lower(regexp_replace(solicitacao, r'\s*,\s*', ', '))
+    end as solicitacao,
 
     area,
     sexo,
     idade,
+
+    case
+      when idade is null then null
+      when regexp_contains(lower(idade), r'\d') then null
+      when regexp_contains(lower(idade), r'idos.*adult|adult.*idos') then 'adulto e idoso'
+      when regexp_contains(lower(idade), r'\brn\b|rec[eé]m[- ]?nascid') then 'rn'
+      when regexp_contains(lower(idade), r'idos') then 'idoso'
+      when regexp_contains(lower(idade), r'adult') then 'adulto'
+      when regexp_contains(lower(idade), r'crian[cç]a') then 'crianca'
+      when regexp_contains(lower(idade), r'adolesc') then 'adolescente'
+      when regexp_contains(lower(idade), r'n[uú]cleo\s+familiar|nucleo\s+familiar|fam[ií]li') then 'nucleo_familiar'
+      else null
+    end as idade_categoria,
+
     prazo_dias,
     orgao_para_subsidiar,
     no_oficio,
     observacoes,
+    situacao,
 
-    CASE
-      WHEN UPPER(TRIM(situacao)) = '#REF!' THEN NULL
-      ELSE UPPER(TRIM(situacao))
-    END AS situacao,
-
-    -- Datas
-    data,
-    entrada_gat_3,
+    data_oficio_origem,
+    entrada_gat3,
     vencimento,
     retorno,
-    data_de_saida,
-    data_do_oficio,
-    pg_pas_dta_sfc,
+    data_saida,
+    data_oficio,
+    data_pg_pas_dta_sfc,
+    data_conclusao
 
-    EXTRACT(YEAR FROM entrada_gat_3)       AS ano_ref,
-    EXTRACT(MONTH FROM entrada_gat_3)      AS mes_ref,
-    EXTRACT(QUARTER FROM entrada_gat_3)    AS trimestre_ref,
+  from base
 
-    DATE_TRUNC(entrada_gat_3,  MONTH)      AS ano_mes_dt,
-    DATE_TRUNC(vencimento,     MONTH)      AS ano_mes_venc_dt,
-    DATE_TRUNC(retorno,        MONTH)      AS ano_mes_retorno_dt,
-
-    -- Prazo restante (dias)
-    CASE WHEN vencimento IS NULL THEN NULL
-         ELSE DATE_DIFF(vencimento, CURRENT_DATE(), DAY)
-    END AS dias_para_vencer,
-
-    -- Status de prazo
-    CASE
-      WHEN vencimento IS NULL THEN 'sem_vencimento'
-      WHEN CURRENT_DATE() > vencimento AND (retorno IS NULL OR retorno > vencimento)
-        THEN 'atrasado'
-      WHEN retorno IS NOT NULL AND retorno <= vencimento
-        THEN 'concluido_no_prazo'
-      WHEN retorno IS NOT NULL AND retorno > vencimento
-        THEN 'concluido_fora_do_prazo'
-      ELSE 'em_andamento'
-    END AS status_prazo
-
-  FROM src
 )
 
-SELECT * FROM calc
+select *
+from calc

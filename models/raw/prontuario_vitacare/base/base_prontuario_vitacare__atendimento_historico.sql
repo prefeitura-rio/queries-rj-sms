@@ -9,7 +9,7 @@
         partition_by={
             "field": "data_particao",
             "data_type": "date",
-            "granularity": "day",
+            "granularity": "month",
         },
         tags=['monthly']
     )
@@ -75,6 +75,7 @@ with
             dim_equipe on atendimentos.profissional_equipe_cod_ine = dim_equipe.n_ine
         {% if is_incremental() %} 
         where atendimentos.data_particao >=  {{ partitions_to_replace }}
+
         {% endif %}
     ),
 

@@ -180,62 +180,117 @@ WITH
                 t.resultado_teste_hepatite_c,
                 t.resultado_teste_hepatite_c_positivo
           ) IS NOT NULL
+
+        UNION ALL
+
+        -- Fonte API Vitacare
+        SELECT
+            a.patient_cpf AS cpf,
+            'Teste rápido - HIV' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
+        FROM {{ ref("raw_prontuario_vitacare_api__testerapido") }} t
+        JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} a USING(id_prontuario_global)
+        WHERE a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
+          AND COALESCE(t.hiv01testresult, t.hiv02testresult) IS NOT NULL
+
+        UNION ALL
+
+        SELECT
+            a.patient_cpf AS cpf,
+            'Teste rápido - Sífilis' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
+        FROM {{ ref("raw_prontuario_vitacare_api__testerapido") }} t
+        JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} a USING(id_prontuario_global)
+        WHERE a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
+          AND COALESCE(t.syphilistestresult, t.positivesyphilistestresult) IS NOT NULL
+
+        UNION ALL
+
+        SELECT
+            a.patient_cpf AS cpf,
+            'Teste rápido - Hepatite B' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
+        FROM {{ ref("raw_prontuario_vitacare_api__testerapido") }} t
+        JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} a USING(id_prontuario_global)
+        WHERE a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
+          AND COALESCE(t.hepatitisbtestresult, t.positivehepatitisbtestresult) IS NOT NULL
+
+        UNION ALL
+
+        SELECT
+            a.patient_cpf AS cpf,
+            'Teste rápido - Hepatite C' AS tipo_evento,
+            CAST(t.loaded_at AS DATETIME) AS dthr
+        FROM {{ ref("raw_prontuario_vitacare_api__testerapido") }} t
+        JOIN {{ ref("raw_prontuario_vitacare_api__acto") }} a USING(id_prontuario_global)
+        WHERE a.patient_cpf IS NOT NULL
+          AND TRIM(a.patient_cpf) <> ''
+          AND COALESCE(t.hepatitisctestresult, t.positivehepatitisctestresult) IS NOT NULL
+    ),
+
+    -- DIAGNÓSTICOS
+    -- Identifica CIDs de HIV, sífilis, hepatite B e hepatite C e gera o evento correspondente
+    -- formato "Diagnóstico - <agravo>"
+    diagnosticos AS (
+        SELECT DISTINCT
+            cpf,
+            tipo_evento,
+            dthr
+        FROM (
+            SELECT
+                e.paciente_cpf AS cpf,
+                CASE
+                    WHEN REGEXP_CONTAINS(cid_normalizado, r'^(B20|B21|B22|B23|B24|Z21|O987)')
+                        THEN 'Diagnóstico - HIV'
+
+                    WHEN REGEXP_CONTAINS(cid_normalizado, r'^(A50|A51|A52|A53|O981)')
+                        THEN 'Diagnóstico - Sífilis'
+
+                    WHEN REGEXP_CONTAINS(cid_normalizado, r'^(B16|B180|B181)')
+                        THEN 'Diagnóstico - Hepatite B'
+
+                    WHEN REGEXP_CONTAINS(cid_normalizado, r'^(B171|B182)')
+                        THEN 'Diagnóstico - Hepatite C'
+                END AS tipo_evento,
+                CAST(
+                    SAFE.PARSE_DATE(
+                        '%Y-%m-%d',
+                        SUBSTR(CAST(c.data_diagnostico AS STRING), 1, 10)
+                    ) AS DATETIME
+                ) AS dthr
+            FROM {{ ref("mart_historico_clinico__episodio") }} e
+            LEFT JOIN UNNEST(e.condicoes) c
+            CROSS JOIN UNNEST([
+                REGEXP_REPLACE(UPPER(c.id), r'[^A-Z0-9]', '')
+            ]) AS cid_normalizado
+            WHERE e.paciente_cpf IS NOT NULL
+              AND TRIM(e.paciente_cpf) <> ''
+              AND c.id IS NOT NULL
+              AND c.data_diagnostico IS NOT NULL
+              AND TRIM(CAST(c.data_diagnostico AS STRING)) <> ''
+        )
+        WHERE tipo_evento IS NOT NULL
     ),
 
     -- VACINAS
     vacinacoes AS (
         SELECT
-            cpf,
-            CONCAT('Vacina - ', imuno, ' - ', tipo, ordem) AS tipo_evento,
-            dthr
-        FROM (
-            SELECT
-                a.patient_cpf AS cpf,
-                'Pentavalente' AS imuno,
-                CASE
-                    WHEN dose LIKE '%eforço%' THEN 'R'
-                    WHEN dose LIKE '%nica%' THEN 'U'
-                    ELSE 'D'
-                END AS tipo,
-                CASE
-                    WHEN dose LIKE '%1%' THEN '1'
-                    WHEN dose LIKE '%2%' THEN '2'
-                    WHEN dose LIKE '%3%' THEN '3'
-                    WHEN dose LIKE '%4%' THEN '4'
-                    ELSE ''
-                END AS ordem,
-                CAST(v.data_aplicacao AS DATETIME) AS dthr
-            FROM {{ ref("raw_prontuario_vitacare_historico__vacina") }} v
-            JOIN {{ ref("raw_prontuario_vitacare_historico__acto") }} a USING(id_prontuario_global)
-            WHERE LOWER(normalize_and_casefold(v.dose, NFKD)) NOT IN ('dose unica', 'outro')
-              AND v.cod_vacina IN ('DTP/HB/Hib', 'Hexa')
-
-            UNION ALL
-
-            SELECT
-                paciente_cpf AS cpf,
-                'Pentavalente',
-                CASE
-                    WHEN vacina_dose LIKE '%eforço%' THEN 'R'
-                    WHEN vacina_dose LIKE '%nica%' THEN 'U'
-                    ELSE 'D'
-                END AS tipo,
-                CASE
-                    WHEN vacina_dose LIKE '%1%' THEN '1'
-                    WHEN vacina_dose LIKE '%2%' THEN '2'
-                    WHEN vacina_dose LIKE '%3%' THEN '3'
-                    WHEN vacina_dose LIKE '%4%' THEN '4'
-                    ELSE ''
-                END AS ordem,
-                CAST(vacina_aplicacao_data AS DATETIME) AS dthr
-            FROM {{ ref("raw_sipni__vacinacao") }}
-            WHERE paciente_cpf IS NOT NULL
-              AND vacina_nome IN (
-                    'Vacina penta (DTP/HepB/Hib)',
-                    'Vacina penta acelular (DTPa/VIP/Hib)',
-                    'Vacina hexa (DTPa/HepB/VIP/Hib)'
-              )
-        )
+            paciente_cpf AS cpf,
+            'Vacina - Pentavalente - D3' AS tipo_evento,
+            CAST(vacina_aplicacao_data AS DATETIME) AS dthr
+        FROM {{ ref("mart_cit__vacinacao") }}
+        WHERE paciente_cpf IS NOT NULL
+          AND vacina_aplicacao_data IS NOT NULL
+          AND COALESCE(vacina_registro_tipo, '') != 'Não aplicada'
+          AND vacina_dose = '3ª Dose'
+          AND vacina_nome IN (
+                'vacina penta (dtp/hepb/hib)',
+                'vacina penta acelular (dtpa/vip/hib)',
+                'vacina hexa (dtpa/hepb/vip/hib)'
+          )
     ),
 
     todos_os_eventos AS (
@@ -246,6 +301,8 @@ WITH
         SELECT * FROM vacinacoes
         UNION ALL
         SELECT * FROM testes_rapidos
+        UNION ALL
+        SELECT * FROM diagnosticos
     ),
 
     eventos_unificados AS (
@@ -260,9 +317,23 @@ WITH
         FROM todos_os_eventos e
         JOIN todas_as_fases f
           ON e.cpf = f.cpf
-         AND DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
-        -- esse join por janela garante que a puérpera atual possa ter eventos tanto
-        -- da gestação que originou o puerpério atual quanto do próprio puerpério
+         AND (
+             -- Eventos em geral só entram quando ocorreram dentro da janela da fase
+             DATE(e.dthr) BETWEEN f.inicio_fase AND f.fim_fase
+
+             -- Exceção para diagnósticos:
+             -- diagnósticos de HIV, sífilis, hepatite B e hepatite C contam
+             -- mesmo que tenham sido registrados em qualquer outro momento da vida
+             OR (
+                 f.tipo_publico = 'Gestacao'
+                 AND e.tipo_evento IN (
+                     'Diagnóstico - HIV',
+                     'Diagnóstico - Sífilis',
+                     'Diagnóstico - Hepatite B',
+                     'Diagnóstico - Hepatite C'
+                 )
+             )
+         )
     )
 
 SELECT
