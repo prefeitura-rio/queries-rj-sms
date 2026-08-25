@@ -1,6 +1,6 @@
 {{ config(
     schema = 'projeto_whatsapp',
-    alias = 'sisare_alta_maternidade',
+    alias = 'alta_maternidade',
     materialized = 'table',
     cluster_by = ['cpf', 'cnes_maternidade_alta']
 ) }}

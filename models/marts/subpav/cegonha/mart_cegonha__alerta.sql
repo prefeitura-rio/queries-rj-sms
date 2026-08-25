@@ -60,7 +60,7 @@ dados_maternidade as (
         data_alta_internacao,
         desfecho_gestacao
     -- from `rj-sms.projeto_whatsapp.sisare_alta_maternidade`
-    from {{ ref('mart_iplanrio__sisare_alta_maternidade') }}
+    from {{ ref('mart_iplanrio__alta_maternidade') }}
     where cpf in (select cpf_paciente from cpfs_alvo)
     qualify row_number() over (
         partition by cpf

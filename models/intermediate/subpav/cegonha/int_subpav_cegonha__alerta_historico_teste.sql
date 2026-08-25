@@ -27,7 +27,7 @@ sisare_flat as (
         a.desfecho_gestacao,
         a.data_alta_internacao,
         a.data_parto
-    from {{ ref('mart_iplanrio__sisare_alta_maternidade') }} a
+    from {{ ref('mart_iplanrio__alta_maternidade') }} a
     cross join unnest(a.telefones_gestante) t
     where a.desfecho_gestacao is not null
       and t.telefone_valido_whatsapp is not null
@@ -43,7 +43,7 @@ sisare_por_cpf as (
         desfecho_gestacao,
         data_alta_internacao,
         data_parto
-    from {{ ref('mart_iplanrio__sisare_alta_maternidade') }}
+    from {{ ref('mart_iplanrio__alta_maternidade') }}
     where desfecho_gestacao is not null
       and cpf is not null
       and cpf != ''

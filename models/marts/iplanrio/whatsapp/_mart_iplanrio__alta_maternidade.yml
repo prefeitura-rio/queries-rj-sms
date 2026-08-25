@@ -12,7 +12,7 @@ sources:
           para permitir união no modelo final sem expor dados pessoais no repositório.
 
 models:
-  - name: mart_iplanrio__sisare_alta_maternidade
+  - name: mart_iplanrio__alta_maternidade
     description: >
           Tabela do projeto Cegonha Digital que consolida eventos hospitalares de parto e aborto
           registrados no SISARE, com dados de contato da gestante validados para disparo via WhatsApp.
