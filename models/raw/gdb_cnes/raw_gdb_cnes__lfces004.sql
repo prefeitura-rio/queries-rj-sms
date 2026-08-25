@@ -28,7 +28,7 @@
     'REG_SAUDE',
     'MICRO_REG',
     'DIST_SANIT',
-    'DIST_AMIN',
+    'DIST_ADMIN',
     'TELEFONE',
     'FAX',
     'E_MAIL',

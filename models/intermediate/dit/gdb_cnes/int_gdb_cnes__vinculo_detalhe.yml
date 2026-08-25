@@ -20,7 +20,7 @@ models:
         description: "Indica se o vínculo está habilitado (S/N)."
       - name: solicita_cnpj
         description: "Indica se é solicitado CNPJ para o vínculo (S/N)."
-      - name: data_particao
-        description: "Data da partição dos dados, utilizada para otimização de consultas."
-      - name: data_carga
-        description: "Timestamp da carga dos dados na tabela."
+      - name: competencia
+        description: Data que indica a qual mês o dado se refere
+      - name: _loaded_at
+        description: Data e hora em que os dados foram carregados no banco de dados

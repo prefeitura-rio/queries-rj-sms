@@ -7,57 +7,58 @@
 
 with
 
-ultima_particao_disponivel as (
-  select max(data_particao) as data_particao
-  from {{ref('raw_gdb_cnes__vinculo')}}
-),
-
 profissionais as (
   select *
-  from {{ref('raw_gdb_cnes__profissional')}}
-  where data_particao = (select data_particao from ultima_particao_disponivel)
+  from {{ ref("int_gdb_cnes__profissional") }}
 ),
 
 equipes as (
   select *
-  from {{ref('raw_gdb_cnes__equipe')}}
-  where data_particao = (select data_particao from ultima_particao_disponivel)
+  from {{ ref("int_gdb_cnes__equipe") }}
 ),
 
 equipe_profissionais as (
   select *
-  from {{ref('raw_gdb_cnes__equipe_profissionais')}}
-  where data_particao = (select data_particao from ultima_particao_disponivel)
+  from {{ ref("int_gdb_cnes__equipe_profissionais") }}
 ),
 
 vinculos as (
-  select p.cpf, p.nome, right(v.id_unidade,7) as id_cnes, ep.id_cbo as ocupacao_cbo, e.equipe_ine, e.equipe_nome
-  from {{ref('raw_gdb_cnes__vinculo')}} v
-    inner join profissionais p using (id_profissional_sus)
-    inner join equipe_profissionais ep using (id_profissional_sus)
-    inner join equipes e on e.equipe_sequencial = ep.equipe_sequencial
-    left join {{ref('raw_datasus__cbo')}} c on (ep.id_cbo = c.id_cbo)
-    where
-      v.data_particao = (select data_particao from ultima_particao_disponivel) and (
-      ep.id_cbo in (
-          '515105', -- ACS
-          '322255', -- Tecnico ACS
-          '322245', -- Tecnico de Enfermagem da ESF
-          '322205', -- Tecnico de Enfermagem
-          '223565', -- Enfermeiro
-          '223505',  -- Enfermeiro
-          '225142', -- Medico da estrategia de saude da familia
-          '225124', -- Medico Pediatra
-          '225130', -- Medico de Fam e Comunidade
-          '223116'  -- Medico de Saude da familia
-        )
-      ) and
-      ep.data_desligamento_profissional is null and e.data_desativacao is null and 
-      e.id_equipe_tipo in (
-        '70', -- eSF: Equipe de Saúde da Família
-        '74', -- eABP: Equipe de Atenção Primária Prisional
-        '76' -- eAP: Equipe de Atenção Primária
-      )
+  select
+    p.cpf,
+    p.nome,
+    right(v.id_unidade, 7) as id_cnes,
+    ep.id_cbo as ocupacao_cbo,
+    e.equipe_ine,
+    e.equipe_nome
+  from {{ ref("int_gdb_cnes__vinculo") }} v
+  inner join profissionais p
+    using (id_profissional_sus)
+  inner join equipe_profissionais ep
+    using (id_profissional_sus)
+  inner join equipes e
+    on e.equipe_sequencial = ep.equipe_sequencial
+  left join {{ref('raw_datasus__cbo')}} c
+    on (ep.id_cbo = c.id_cbo)
+  where
+    ep.id_cbo in (
+      '515105', -- ACS
+      '322255', -- Tecnico ACS
+      '322245', -- Tecnico de Enfermagem da ESF
+      '322205', -- Tecnico de Enfermagem
+      '223565', -- Enfermeiro
+      '223505', -- Enfermeiro
+      '225142', -- Medico da estrategia de saude da familia
+      '225124', -- Medico Pediatra
+      '225130', -- Medico de Fam e Comunidade
+      '223116'  -- Medico de Saude da familia
+    )
+    and ep.data_desligamento_profissional is null
+    and e.data_desativacao is null
+    and e.id_equipe_tipo in (
+      '70', -- eSF: Equipe de Saúde da Família
+      '74', -- eABP: Equipe de Atenção Primária Prisional
+      '76'  -- eAP: Equipe de Atenção Primária
+    )
 ),
 
 vinculos_atencao_primaria as (

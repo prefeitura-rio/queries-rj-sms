@@ -128,9 +128,7 @@ models:
         description: Nome do Usuário que atualizou as Coordenadas
       - name: data_atualizacao_geolocalizacao
         description: Data de atualização das Coordenadas
-      - name: data_carga
+      - name: competencia
+        description: Data que indica a qual mês o dado se refere
+      - name: _loaded_at
         description: Data e hora em que os dados foram carregados no banco de dados
-        data_type: string
-      - name: data_particao
-        description: Data e hora de particionamento da tabela crua
-        data_type: string

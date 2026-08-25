@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: raw_gdb_cnes__equipe_motivo_desativacao
+  - name: int_gdb_cnes__equipe_motivo_desativacao
     description: |-
       Tabela de motivos para desativação de equipes
       Tabela CNES: NFCES053
@@ -11,10 +11,7 @@ models:
         description: Código do motivo da desativação da equipe
       - name: motivo_desativacao
         description: Descrição legível do motivo para desativação da equipe
-
-      - name: data_particao
-        description: Data e hora de particionamento da tabela crua
-        data_type: string
-      - name: data_carga
+      - name: competencia
+        description: Data que indica a qual mês o dado se refere
+      - name: _loaded_at
         description: Data e hora em que os dados foram carregados no banco de dados
-        data_type: string
