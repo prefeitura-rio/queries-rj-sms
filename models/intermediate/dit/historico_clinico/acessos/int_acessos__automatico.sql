@@ -64,8 +64,11 @@ with
                         (not regexp_contains(lower(cbo_datasus.descricao),'atendente')) 
                     )
                     then 'ENFERMEIROS'
-                when cbo_datasus.descricao in ('Dirigente do servico publico municipal',
-                'Diretor de servicos de saude','Gerente de servicos de saude')
+                when lower(cbo_datasus.descricao) in (
+                    --'dirigente do servico publico municipal',
+                    'diretor de servicos de saude',
+                    'gerente de servicos de saude'
+                )
                     then 'DIRETORES DE SAUDE'
                 -- Ago/2026 - Sanitaristas:
                 -- Médicos e enfermeiros sanitaristas terão sido filtrados pelas condicionais
@@ -190,6 +193,8 @@ with
                             'PRISIONAL'
                         )
                             then 'full_permission'
+                        when funcao_grupo = 'DIRETORES DE SAUDE'
+                            then 'only_from_same_ap'
                         when unidade_tipo in ('CGS','CAPS') and funcao_grupo in ('MEDICOS','DENTISTAS')
                             then 'full_permission'
                         when unidade_tipo in ('CGS','CAPS') and funcao_grupo not in ('MEDICOS','DENTISTAS')
