@@ -2,7 +2,7 @@
     config(
         alias='serie_temporal_ingestao_sarah',
         materialized='incremental',
-        incremental_strategy='insert_overwrite',
+        incremental_strategy='merge',
         partition_by={
             "field": "data_registro",
             "data_type": "date",

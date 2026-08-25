@@ -2,7 +2,8 @@
     config(
         alias='numeros_principais',
         materialized='incremental',
-        unique_id=['data_registro'],
+        incremental_strategy='merge',
+        unique_key=['data_registro'],
     )
 }}
 
