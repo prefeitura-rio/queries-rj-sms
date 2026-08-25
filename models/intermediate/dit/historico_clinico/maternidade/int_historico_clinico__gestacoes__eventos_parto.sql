@@ -19,39 +19,51 @@
 {% set janela_incremental = "DATE_SUB(CURRENT_DATE('America/Sao_Paulo'), INTERVAL 7 DAY)" %}
 
 WITH
+-- CPF da mae recuperado via boletim de internacao vinculado ao registro do RN
+    boletim_mae AS (
+        SELECT gid, cpf
+        FROM {{ ref("raw_prontuario_vitai__boletim") }}
+        WHERE cpf IS NOT NULL
+        {% if is_incremental() %}
+            AND data_particao >= DATE_SUB({{ janela_incremental }}, INTERVAL 30 DAY)
+        {% endif %}
+    ),
+
 -- Vitai identifica puerperio por nascimento/RN vinculado a mae
     eventos_vitai_parto AS (
         SELECT
             {{ dbt_utils.generate_surrogate_key([
                 "'vitai'",
-                "gid",
+                "rn.gid",
                 "'parto'",
-                "CAST(parto_datahora AS STRING)"
+                "CAST(rn.parto_datahora AS STRING)"
             ]) }} AS id_evento_obstetrico,
-            CAST(id_paciente_rede_mae AS STRING) AS id_paciente,
-            CAST(NULL AS STRING) AS cpf,
-            CAST(gid_boletim_mae AS STRING) AS id_hci,
+            CAST(rn.id_paciente_rede_mae AS STRING) AS id_paciente,
+            b.cpf,
+            CAST(rn.gid_boletim_mae AS STRING) AS id_hci,
             'vitai' AS fonte,
-            CAST(gid AS STRING) AS id_evento_origem,
-            DATE(parto_datahora) AS data_evento,
+            CAST(rn.gid AS STRING) AS id_evento_origem,
+            DATE(rn.parto_datahora) AS data_evento,
             'parto' AS tipo_evento,
             'nascimento_rn' AS subtipo_evento,
             CAST(NULL AS DATE) AS data_inicio_gestacao,
-            DATE(parto_datahora) AS data_fim_gestacao,
-            DATE(parto_datahora) AS data_parto,
+            DATE(rn.parto_datahora) AS data_fim_gestacao,
+            DATE(rn.parto_datahora) AS data_parto,
             CAST(NULL AS DATE) AS data_puerperio,
             CAST(NULL AS DATE) AS dpp,
-            SAFE_CAST(gestacao_semanas AS INT64) * 7 AS idade_gestacional_dias,
+            SAFE_CAST(rn.gestacao_semanas AS INT64) * 7 AS idade_gestacional_dias,
             CAST(NULL AS STRING) AS cid,
             CAST(NULL AS STRING) AS procedimento_codigo,
             CAST(NULL AS STRING) AS procedimento_descricao,
-            CAST(imported_at AS DATETIME) AS loaded_at,
-            data_particao
-        FROM {{ ref("raw_prontuario_vitai__dtw__recem_nascido") }}
+            CAST(rn.imported_at AS DATETIME) AS loaded_at,
+            rn.data_particao
+        FROM {{ ref("raw_prontuario_vitai__dtw__recem_nascido") }} rn
+        LEFT JOIN boletim_mae b
+            ON b.gid = CAST(rn.gid_boletim_mae AS STRING)
         WHERE
-            parto_datahora IS NOT NULL
+            rn.parto_datahora IS NOT NULL
             {% if is_incremental() %}
-                AND DATE(imported_at) >= {{ janela_incremental }}
+                AND DATE(rn.imported_at) >= {{ janela_incremental }}
             {% endif %}
     ),
 
@@ -60,34 +72,34 @@ WITH
         SELECT
             {{ dbt_utils.generate_surrogate_key([
                 "'vitai_cirurgia'",
-                "gid",
-                "procedimento_codigo_normalizado",
-                "tipo_evento",
-                "CAST(data_evento AS STRING)"
+                "c.gid",
+                "c.procedimento_codigo_normalizado",
+                "c.tipo_evento",
+                "CAST(c.data_evento AS STRING)"
             ]) }} AS id_evento_obstetrico,
-            CAST(gid_paciente AS STRING) AS id_paciente,
-            CAST(NULL AS STRING) AS cpf,
-            CAST(gid_boletim AS STRING) AS id_hci,
+            CAST(c.gid_paciente AS STRING) AS id_paciente,
+            b.cpf,
+            CAST(c.gid_boletim AS STRING) AS id_hci,
             'vitai' AS fonte,
-            CAST(gid AS STRING) AS id_evento_origem,
-            data_evento,
-            tipo_evento,
+            CAST(c.gid AS STRING) AS id_evento_origem,
+            c.data_evento,
+            c.tipo_evento,
             CASE
-                WHEN tipo_evento = 'parto' THEN 'procedimento_parto'
-                WHEN tipo_evento = 'aborto' THEN 'procedimento_aborto'
-                WHEN tipo_evento = 'avaliacao_puerperal' THEN 'procedimento_puerperio'
+                WHEN c.tipo_evento = 'parto' THEN 'procedimento_parto'
+                WHEN c.tipo_evento = 'aborto' THEN 'procedimento_aborto'
+                WHEN c.tipo_evento = 'avaliacao_puerperal' THEN 'procedimento_puerperio'
             END AS subtipo_evento,
             CAST(NULL AS DATE) AS data_inicio_gestacao,
-            IF(tipo_evento IN ('parto', 'aborto'), data_evento, NULL) AS data_fim_gestacao,
-            IF(tipo_evento = 'parto', data_evento, NULL) AS data_parto,
-            IF(tipo_evento = 'avaliacao_puerperal', data_evento, NULL) AS data_puerperio,
+            IF(c.tipo_evento IN ('parto', 'aborto'), c.data_evento, NULL) AS data_fim_gestacao,
+            IF(c.tipo_evento = 'parto', c.data_evento, NULL) AS data_parto,
+            IF(c.tipo_evento = 'avaliacao_puerperal', c.data_evento, NULL) AS data_puerperio,
             CAST(NULL AS DATE) AS dpp,
             CAST(NULL AS INT64) AS idade_gestacional_dias,
             CAST(NULL AS STRING) AS cid,
-            procedimento_codigo_normalizado AS procedimento_codigo,
-            procedimento_nome AS procedimento_descricao,
-            CAST(imported_at AS DATETIME) AS loaded_at,
-            data_particao
+            c.procedimento_codigo_normalizado AS procedimento_codigo,
+            c.procedimento_nome AS procedimento_descricao,
+            CAST(c.imported_at AS DATETIME) AS loaded_at,
+            c.data_particao
         FROM (
             SELECT
                 *,
@@ -136,8 +148,9 @@ WITH
                 {% if is_incremental() %}
                     AND data_particao >= {{ janela_incremental }}
                 {% endif %}
-        )
-        WHERE tipo_evento IS NOT NULL
+        ) c
+        LEFT JOIN boletim_mae b ON b.gid = CAST(c.gid_boletim AS STRING)
+        WHERE c.tipo_evento IS NOT NULL
     ),
 
 -- Vitai internacao traz procedimento principal da internacao como evidencia obstetrica adicional
