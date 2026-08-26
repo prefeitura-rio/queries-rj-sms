@@ -8,6 +8,7 @@
             "data_type": "date",
             "granularity": "day"
         },
+        cluster_by=['data_registro'],
         unique_key=['cnes', 'data_registro'],
         description='Série temporal de atendimentos por data de entrada no prontuário ProntuaRio, segmentada por unidade de saúde'
     )

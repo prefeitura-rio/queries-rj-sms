@@ -8,6 +8,7 @@
             "data_type": "date",
             "granularity": "month"
         },
+        cluster_by=['data_registro'],
         unique_key=['data_registro', 'cnes', 'tabela'],
         description='Série temporal de ingestão de dados por data de envio do prontuário PCSM'
     )

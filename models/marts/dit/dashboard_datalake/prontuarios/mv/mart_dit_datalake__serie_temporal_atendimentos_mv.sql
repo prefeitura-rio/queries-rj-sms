@@ -9,6 +9,7 @@
             "granularity": "month"
         },
         unique_key=['data_registro'],
+        cluster_by=['data_registro'],
         description='Série temporal de atendimentos por data de entrada no prontuário MV'
     )
 }}
