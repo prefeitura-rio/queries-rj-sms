@@ -521,9 +521,9 @@ WITH
         SELECT
             *,
             CASE
-                WHEN REGEXP_CONTAINS(COALESCE(codigo_cid10, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
+                WHEN REGEXP_CONTAINS(COALESCE(codigo_cid10, ''), r'^(O[6-8][0-9]|O9[0-2]|Z37)')
                     THEN codigo_cid10
-                WHEN REGEXP_CONTAINS(COALESCE(codigo_cid10_secundario, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
+                WHEN REGEXP_CONTAINS(COALESCE(codigo_cid10_secundario, ''), r'^(O[6-8][0-9]|O9[0-2]|Z37)')
                     THEN codigo_cid10_secundario
             END AS cid_parto
         FROM {{ ref("raw_prontuario_prontuaRio__internacao_alta") }}
@@ -533,8 +533,8 @@ WITH
                 AND data_particao >= {{ janela_incremental }}
             {% endif %}
             AND (
-                REGEXP_CONTAINS(COALESCE(codigo_cid10, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
-                OR REGEXP_CONTAINS(COALESCE(codigo_cid10_secundario, ''), r'^(O8[0-9]|O9[0-2]|Z37)')
+                REGEXP_CONTAINS(COALESCE(codigo_cid10, ''), r'^(O[6-8][0-9]|O9[0-2]|Z37)')
+                OR REGEXP_CONTAINS(COALESCE(codigo_cid10_secundario, ''), r'^(O[6-8][0-9]|O9[0-2]|Z37)')
             )
     ),
 
