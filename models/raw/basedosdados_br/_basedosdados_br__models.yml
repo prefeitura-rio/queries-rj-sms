@@ -11,11 +11,6 @@ models:
         data_tests:
           - not_null
 
-      - name: id_municipio
-        description: Código IBGE de 7 dígitos do município.
-        data_tests:
-          - not_null
-
       - name: populacao
         description: População municipal de referência.
         data_tests:

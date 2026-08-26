@@ -47,6 +47,14 @@ with fonte as (
         NU_SEQ_PROCESSO
 
     from {{ ref("raw_gdb_cnes__lfces038") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces038") }}
+    )
+    qualify row_number() over (
+        partition by PROF_ID, UNIDADE_ID, COD_CBO, SEQ_EQUIPE
+        order by loaded_at desc
+    ) = 1
 ),
 
 profissionais_lookup as (
@@ -60,14 +68,15 @@ profissionais_lookup as (
         safe_cast(_loaded_at as timestamp) as loaded_at_profissional
 
     from {{ ref("raw_gdb_cnes__lfces018") }}
-
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces018") }}
+    )
     qualify row_number() over (
-        partition by
-            safe_cast(data_particao as date),
-            nullif(cast(PROF_ID as string), '')
+        partition by profissional_id_original
         order by
-            safe_cast(_loaded_at as timestamp) desc,
-            safe_cast(nullif(cast(DATA_ATU as string), '') as date) desc
+            loaded_at_profissional desc,
+            dt_atualiza_profissional desc
     ) = 1
 ),
 
@@ -94,17 +103,17 @@ profissionais_unidades_cbo as (
         safe_cast(_loaded_at as timestamp) as loaded_at_vinculo_unidade
 
     from {{ ref("raw_gdb_cnes__lfces021") }}
-
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces021") }}
+    )
     qualify row_number() over (
         partition by
-            safe_cast(data_particao as date),
-            nullif(cast(UNIDADE_ID as string), ''),
-            nullif(cast(PROF_ID as string), ''),
-            upper(nullif(cast(COD_CBO as string), ''))
+            profissional_id_original, unidade_id_original, cod_cbo
         order by
-            safe_cast(_loaded_at as timestamp) desc,
-            safe_cast(nullif(cast(DATA_ATU as string), '') as date) desc,
-            safe_cast(nullif(cast(CG_HORAAMB as string), '') as int64) desc
+            loaded_at_vinculo_unidade desc,
+            dt_atualiza_vinculo_unidade desc,
+            cg_horaamb desc
     ) = 1
 ),
 

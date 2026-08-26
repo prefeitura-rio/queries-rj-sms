@@ -16,17 +16,30 @@
 with fonte as (
     select
         *
-    from {{ref("raw_gdb_cnes__lfces004")}}
+    from {{ ref("raw_gdb_cnes__lfces004") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces004") }}
+    )
+    qualify row_number() over (
+        partition by UNIDADE_ID
+        order by _loaded_at desc
+    ) = 1
 ),
 
 tipo_unidade as (
     select
         data_particao,
         nullif(TP_UNID_ID, '') as tipo_unidade_id,
-        nullif(DESCRICAO, '') as tipo_unidade_descricao
+        nullif(DESCRICAO, '') as tipo_unidade_descricao,
+        _loaded_at
     from {{ ref("raw_gdb_cnes__nfces010") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__nfces010") }}
+    )
     qualify row_number() over (
-        partition by data_particao, nullif(TP_UNID_ID, '')
+        partition by tipo_unidade_id
         order by _loaded_at desc
     ) = 1
 ),
@@ -35,10 +48,15 @@ motivo_desabilitacao as (
     select
         data_particao,
         nullif(CD_MOTIVO_DESAB, '') as motivo_desativacao_unidade_id,
-        nullif(DS_MOTIVO_DESAB, '') as motivo_desativacao_unidade
+        nullif(DS_MOTIVO_DESAB, '') as motivo_desativacao_unidade,
+        _loaded_at
     from {{ ref("raw_gdb_cnes__nfces049") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__nfces049") }}
+    )
     qualify row_number() over (
-        partition by data_particao, nullif(CD_MOTIVO_DESAB, '')
+        partition by motivo_desativacao_unidade_id
         order by _loaded_at desc
     ) = 1
 ),
@@ -47,10 +65,15 @@ natureza_juridica as (
     select
         data_particao,
         nullif(CO_NATUREZA_JUR, '') as natureza_juridica_id,
-        nullif(DS_NATUREZA_JUR, '') as natureza_juridica
+        nullif(DS_NATUREZA_JUR, '') as natureza_juridica,
+        _loaded_at
     from {{ ref("raw_gdb_cnes__nfces085") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__nfces085") }}
+    )
     qualify row_number() over (
-        partition by data_particao, nullif(CO_NATUREZA_JUR, '')
+        partition by natureza_juridica_id
         order by _loaded_at desc
     ) = 1
 ),
@@ -64,19 +87,21 @@ cnes_validos as (
         nullif(STATUS_ESTAB, '') as status_estabelecimento_cnes,
         nullif(CD_MOTIVO_DESAB, '') as motivo_desativacao_cnes_id,
         nullif(TP_GESTAO, '') as tipo_gestao_cnes,
-        nullif(ST_ESTRUTURA, '') as estrutura_estabelecimento
+        nullif(ST_ESTRUTURA, '') as estrutura_estabelecimento,
+        _loaded_at
     from {{ ref("raw_gdb_cnes__lfces057") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces057") }}
+    )
     qualify row_number() over (
-        partition by
-            data_particao,
-            lpad(nullif(regexp_replace(CNES, r'[^0-9]', ''), ''), 7, '0')
+        partition by cnes
         order by _loaded_at desc
     ) = 1
 ),
 
 extraido as (
     select
-        
         data_particao,
         ano_particao,
         mes_particao,
@@ -84,14 +109,12 @@ extraido as (
         _loaded_at,
         _source_file,
 
-        
         lpad(nullif(regexp_replace(CNES, r'[^0-9]', ''), ''), 7, '0') as cnes,
         nullif(UNIDADE_ID, '') as unidade_id_original,
         nullif(DIST_SANIT, '') as ap_original,
         nullif(NOME_FANTA, '') as nome_fanta,
         nullif(R_SOCIAL, '') as razao_social,
 
-        
         nullif(LOGRADOURO, '') as logradouro,
         nullif(NUMERO, '') as numero,
         nullif(COMPLEMENT, '') as complemento,
@@ -107,7 +130,6 @@ extraido as (
         safe_cast(nullif(DT_ATU_GEO, '') as date) as dt_atualiza_geo,
         nullif(NO_USUARIO_GEO, '') as usuario_geo,
 
-        
         nullif(TP_UNID_ID, '') as tipo_unidade_id,
         nullif(COD_TURNAT, '') as turno_atendimento_id,
         nullif(CD_MOTIVO_DESAB, '') as motivo_desativacao_unidade_id,
@@ -117,7 +139,6 @@ extraido as (
         nullif(CO_TIPO_UNIDADE, '') as tipo_unidade_federal_id,
         nullif(CO_TIPO_ABRANGENCIA, '') as tipo_abrangencia_id,
 
-        
         nullif(CODMUNGEST, '') as cod_municipio_gestor,
         nullif(SIGESTGEST, '') as sigla_gestao,
         nullif(TP_GESTAO, '') as tipo_gestao_id,
@@ -126,13 +147,11 @@ extraido as (
         nullif(PFPJ_IND, '') as pessoa_fisica_juridica_id,
         nullif(NIVEL_DEP, '') as nivel_dependencia_id,
 
-        
         nullif(TP_ESTAB_SEMPRE_ABERTO, '') as tipo_estab_sempre_aberto,
         nullif(ST_CONEXAOINTERNET, '') as possui_conexao_internet_original,
         nullif(ST_CONTRATO_FORMALIZADO, '') as contrato_formalizado_original,
         nullif(ST_COWORKING, '') as coworking_original,
 
-        
         safe_cast(nullif(DATA_ATU, '') as date) as dt_atualiza,
         safe_cast(nullif(DATA_EXPED, '') as date) as dt_expedicao,
         safe_cast(nullif(DT_VAL_LIC_SANI, '') as date) as dt_validade_licenca_sanitaria,
@@ -141,13 +160,11 @@ extraido as (
         safe_cast(nullif(DT_CMTP_INICIO, '') as date) as dt_cmtp_inicio,
         safe_cast(nullif(DT_CMTP_FIM, '') as date) as dt_cmtp_fim,
 
-        
         lpad(nullif(regexp_replace(CPFDIRETORCLINICO, r'[^0-9]', ''), ''), 11, '0') as cpf_diretor_clinico,
         nullif(REGDIRETORCLINICO, '') as registro_diretor_clinico,
         lpad(nullif(regexp_replace(CNPJ, r'[^0-9]', ''), ''), 14, '0') as cnpj,
         lpad(nullif(regexp_replace(CNPJ_MANT, r'[^0-9]', ''), ''), 14, '0') as cnpj_mantenedora,
 
-        
         nullif(USUARIO, '') as usuario_atualizacao,
         nullif(NMUSUARIOEMUSO, '') as usuario_em_uso,
         nullif(CHKSUM, '') as checksum
@@ -428,14 +445,12 @@ deduplicado as (
 )
 
 select
-    
     cnes,
     unidade_id_original,
     nome_fanta,
     nome_fanta_upper,
     razao_social,
 
-    
     ap,
     ap_formatada,
     ap_original,
@@ -443,7 +458,6 @@ select
     cod_municipio_gestor,
     is_municipio_rio,
 
-    
     tipo_unidade_sms,
     is_unidade_aps_panorama,
     is_unidade_aps,
@@ -451,7 +465,6 @@ select
     is_centro_municipal_saude,
     is_centro_saude_escola,
 
-    
     tipo_unidade_id,
     tipo_unidade_descricao,
     tipo_unidade_federal_id,
@@ -464,7 +477,6 @@ select
     natureza_juridica,
     esfera_administrativa_id,
 
-    
     unidade_ativa,
     motivo_desativacao_unidade_id,
     motivo_desativacao_unidade,
@@ -478,7 +490,6 @@ select
     competencia_cnes,
     estrutura_estabelecimento,
 
-    
     logradouro,
     numero,
     complemento,
@@ -487,13 +498,11 @@ select
     latitude,
     longitude,
 
-    
     telefone,
     fax,
     email,
     url,
 
-    
     turno_atendimento_id,
     tipo_estab_sempre_aberto,
     estab_sempre_aberto,
@@ -504,7 +513,6 @@ select
     coworking_original,
     coworking,
 
-    
     pessoa_fisica_juridica_id,
     nivel_dependencia_id,
     cnpj,
@@ -512,7 +520,6 @@ select
     cpf_diretor_clinico,
     registro_diretor_clinico,
 
-    
     dt_atualiza,
     dt_expedicao,
     dt_validade_licenca_sanitaria,
@@ -522,13 +529,11 @@ select
     dt_cmtp_inicio,
     dt_cmtp_fim,
 
-    
     usuario_atualizacao,
     usuario_em_uso,
     usuario_geo,
     checksum,
 
-    
     competencia_mes,
     data_particao,
     ano_particao,

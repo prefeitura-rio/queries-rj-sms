@@ -80,6 +80,16 @@ with fonte as (
         CO_SEQ_INCLUSAO
 
     from {{ ref("raw_gdb_cnes__lfces018") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces018") }}
+    )
+    qualify row_number() over (
+        partition by PROF_ID
+        order by
+            loaded_at desc,
+            safe_cast(nullif(cast(DATA_ATU as string), '') as date) desc
+    ) = 1
 ),
 
 extraido as (

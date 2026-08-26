@@ -47,6 +47,14 @@ with fonte as (
         NU_SEQ_PROCESSO
 
     from {{ ref("raw_gdb_cnes__lfces021") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces021") }}
+    )
+    qualify row_number() over (
+        partition by PROF_ID, UNIDADE_ID, COD_CBO
+        order by loaded_at desc
+    ) = 1
 ),
 
 profissionais_lookup as (
@@ -68,14 +76,13 @@ profissionais_lookup as (
         safe_cast(_loaded_at as timestamp) as loaded_at_profissional
 
     from {{ ref("raw_gdb_cnes__lfces018") }}
-
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces018") }}
+    )
     qualify row_number() over (
-        partition by
-            safe_cast(data_particao as date),
-            nullif(cast(PROF_ID as string), '')
-        order by
-            safe_cast(_loaded_at as timestamp) desc,
-            safe_cast(nullif(cast(DATA_ATU as string), '') as date) desc
+        partition by profissional_id_original
+        order by loaded_at_profissional desc, dt_atualiza_profissional desc
     ) = 1
 ),
 
@@ -147,13 +154,11 @@ tratado as (
     select
         e.*,
 
-        
         p.cpf,
         p.cns,
         p.nome_profissional,
         p.dt_atualiza_profissional,
 
-        
         u.cnes,
         u.nome_unidade,
         u.ap,
@@ -163,7 +168,6 @@ tratado as (
         u.is_unidade_aps_panorama,
         u.unidade_ativa,
 
-        
         concat(
             coalesce(p.cpf, ''),
             coalesce(u.cnes, ''),
@@ -240,13 +244,11 @@ deduplicado as (
 )
 
 select
-    
     cpf,
     cns,
     nome_profissional,
     profissional_id_original,
 
-    
     cnes,
     unidade_id_original,
     nome_unidade,
@@ -254,14 +256,12 @@ select
     ap_formatada,
     is_municipio_rio,
 
-    
     cod_cbo,
     vinculacao_id_original,
     tipo_sus_nao_sus,
     detalhe_terceirizado_sih,
     cnpj_detalhe_vinculo,
 
-    
     cg_horaamb,
     cg_horahosp,
     cg_horaoutr,
@@ -269,28 +269,23 @@ select
     carga_horaria_classificacao,
     possui_carga_horaria,
 
-    
     conselho_id_original,
     numero_registro,
     uf_registro,
 
-    
     tp_preceptor_original,
     tp_preceptor,
     tp_residente_original,
     tp_residente,
 
-    
     tipo_unidade_sms,
     is_unidade_aps_panorama,
     unidade_ativa,
 
-    
     chave_profissional_unidade_cbo,
     profissional_encontrado,
     unidade_encontrada,
 
-    
     status,
     status_movimento,
     dt_atualiza,
@@ -302,7 +297,6 @@ select
     checksum,
     nu_seq_processo,
 
-    
     competencia_mes,
     data_particao,
     ano_particao,

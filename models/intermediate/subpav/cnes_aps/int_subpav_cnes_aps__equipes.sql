@@ -57,6 +57,14 @@ with fonte as (
         NU_SEQ_PROCESSO
 
     from {{ ref("raw_gdb_cnes__lfces037") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__lfces037") }}
+    )
+    qualify row_number() over (
+        partition by UNIDADE_ID, CO_EQUIPE
+        order by loaded_at desc
+    ) = 1
 ),
 
 unidades as (
@@ -79,12 +87,15 @@ tipo_equipe as (
         data_particao,
         safe_cast(nullif(TP_EQUIPE, '') as int64) as tipo_equipe_id,
         nullif(DS_EQUIPE, '') as tipo_equipe_descricao,
-        nullif(CO_GRUPO_EQUIPE, '') as grupo_equipe_id
+        nullif(CO_GRUPO_EQUIPE, '') as grupo_equipe_id,
+        _loaded_at
     from {{ ref("raw_gdb_cnes__nfces046") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__nfces046") }}
+    )
     qualify row_number() over (
-        partition by
-            data_particao,
-            safe_cast(nullif(TP_EQUIPE, '') as int64)
+        partition by tipo_equipe_id
         order by _loaded_at desc
     ) = 1
 ),
@@ -93,33 +104,32 @@ motivo_desativacao as (
     select
         data_particao,
         lpad(nullif(CD_MOTIVO_DESATIV, ''), 2, '0') as motivo_desativacao_equipe_id,
-        nullif(DS_MOTIVO_DESATIV, '') as motivo_desativacao_equipe
+        nullif(DS_MOTIVO_DESATIV, '') as motivo_desativacao_equipe,
+        _loaded_at
     from {{ ref("raw_gdb_cnes__nfces053") }}
+    where data_particao = (
+        select max(data_particao)
+        from {{ ref("raw_gdb_cnes__nfces053") }}
+    )
     qualify row_number() over (
-        partition by
-            data_particao,
-            lpad(nullif(CD_MOTIVO_DESATIV, ''), 2, '0')
+        partition by motivo_desativacao_equipe_id
         order by _loaded_at desc
     ) = 1
 ),
 
 extraido as (
     select
-        
         lpad(nullif(regexp_replace(CO_EQUIPE, r'[^0-9]', ''), ''), 10, '0') as ine,
         nullif(UNIDADE_ID, '') as unidade_id_original,
         nullif(COD_MUN, '') as cod_mun,
         nullif(COD_AREA, '') as cod_area,
         nullif(SEQ_EQUIPE, '') as seq_equipe,
         nullif(NM_REFERENCIA, '') as nm_referencia,
-
-        
         safe_cast(nullif(TP_EQUIPE, '') as int64) as tipo_equipe_id,
         nullif(CO_SUB_TIPO_EQUIPE, '') as subtipo_equipe_id,
         lpad(nullif(CD_MOTIVO_DESATIV, ''), 2, '0') as motivo_desativacao_equipe_id,
         lpad(nullif(CD_TP_DESATIV, ''), 2, '0') as tipo_desativacao_id,
 
-        
         safe_cast(nullif(DT_ATIVACAO, '') as date) as dt_ativacao,
         safe_cast(nullif(DT_DESATIVACAO, '') as date) as dt_desativacao,
         safe_cast(nullif(DATA_ATU, '') as date) as dt_atualiza,
@@ -127,7 +137,6 @@ extraido as (
         safe_cast(nullif(DT_CMTP_INICIO, '') as date) as dt_cmtp_inicio,
         safe_cast(nullif(DT_CMTP_FIM, '') as date) as dt_cmtp_fim,
 
-        
         nullif(TP_POP_ASSIST_QUILOMB, '') as pop_assist_quilomb_original,
         nullif(TP_POP_ASSIST_ASSENT, '') as pop_assist_assent_original,
         nullif(TP_POP_ASSIST_GERAL, '') as pop_assist_geral_original,
@@ -140,7 +149,6 @@ extraido as (
         nullif(TP_POP_ASSIST_CONFLITO_LEI, '') as pop_assist_conflito_lei_original,
         nullif(TP_POP_ASSIST_ADOL_CONF_LEI, '') as pop_assist_adol_conf_lei_original,
 
-        
         nullif(CO_CNES_UOM, '') as cnes_unidade_odontologica_movel,
         safe_cast(nullif(NU_CH_AMB_UOM, '') as int64) as carga_horaria_ambulatorial_uom,
         nullif(CO_PROF_SUS_PRECEPTOR, '') as co_prof_sus_preceptor,
@@ -149,7 +157,6 @@ extraido as (
         nullif(STATUSMOV, '') as status_movimento,
         nullif(NU_SEQ_PROCESSO, '') as nu_seq_processo,
 
-        
         data_particao,
         ano_particao,
         mes_particao,
