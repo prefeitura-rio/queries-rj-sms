@@ -1,0 +1,217 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__lfces004
+    description: "Tabela bruta do CNES LFCES004 / TB_ESTABELECIMENTO. Contém os estabelecimentos de saúde, incluindo identificação da unidade, CNES, nome fantasia, endereço, tipo de unidade, natureza jurídica, motivo de desabilitação e dados cadastrais."
+    columns:
+      - name: UNIDADE_ID
+        description: "Código do estabelecimento de saúde."
+
+      - name: CNES
+        description: "Código Nacional do Estabelecimento de Saúde."
+
+      - name: CNPJ_MANT
+        description: "CNPJ da mantenedora."
+
+      - name: PFPJ_IND
+        description: "Indica se o estabelecimento é pessoa física ou jurídica. Domínios documentados: 1 - Pessoa Física; 3 - Pessoa Jurídica."
+
+      - name: NIVEL_DEP
+        description: "Identificador da situação do estabelecimento. Domínios documentados: 1 - Individual; 3 - Mantido."
+
+      - name: R_SOCIAL
+        description: "Razão social do estabelecimento."
+
+      - name: NOME_FANTA
+        description: "Nome fantasia do estabelecimento."
+
+      - name: LOGRADOURO
+        description: "Logradouro do endereço do estabelecimento."
+
+      - name: NUMERO
+        description: "Número do endereço do estabelecimento."
+
+      - name: COMPLEMENT
+        description: "Complemento do endereço do estabelecimento."
+
+      - name: BAIRRO
+        description: "Bairro do endereço do estabelecimento."
+
+      - name: COD_CEP
+        description: "Código de Endereçamento Postal."
+
+      - name: REG_SAUDE
+        description: "Código da região de saúde."
+
+      - name: MICRO_REG
+        description: "Código da microrregião de saúde."
+
+      - name: DIST_SANIT
+        description: "Código do distrito sanitário."
+
+      - name: DIST_AMIN
+        description: "Código do distrito administrativo ou módulo assistencial."
+
+      - name: TELEFONE
+        description: "Telefone do estabelecimento."
+
+      - name: FAX
+        description: "Fax do estabelecimento."
+
+      - name: E_MAIL
+        description: "E-mail do estabelecimento."
+
+      - name: CPF
+        description: "CPF do estabelecimento, preenchido quando o estabelecimento for pessoa física."
+
+      - name: CNPJ
+        description: "CNPJ do estabelecimento, preenchido quando o estabelecimento for pessoa jurídica."
+
+      - name: COD_ATIV
+        description: "Código da atividade de ensino/pesquisa."
+
+      - name: COD_CLIENT
+        description: "Código de fluxo da clientela."
+
+      - name: NUM_ALVARA
+        description: "Número do alvará da Vigilância Sanitária."
+
+      - name: DATA_EXPED
+        description: "Data de expedição do alvará da Vigilância Sanitária."
+
+      - name: IND_ORGEXP
+        description: "Órgão expedidor do alvará da Vigilância Sanitária. Domínios documentados: 1 - SES; 2 - SMS."
+
+      - name: DT_VAL_LIC_SANI
+        description: "Data de validade do licenciamento sanitário."
+
+      - name: TP_LIC_SANI
+        description: "Tipo do licenciamento sanitário. Domínios documentados: 1 - Total; 2 - Parcial/Restrições."
+
+      - name: TP_UNID_ID
+        description: "Tipo de estabelecimento/unidade."
+
+      - name: COD_TURNAT
+        description: "Código do turno de atendimento."
+
+      - name: SIGESTGEST
+        description: "Sigla do estado gestor."
+
+      - name: CODMUNGEST
+        description: "Código do município gestor."
+
+      - name: STATUS
+        description: "Controle interno do registro."
+
+      - name: STATUSMOV
+        description: "Status do estabelecimento de saúde. Domínios documentados: 1 - Não aprovado; 2 - Consistido; 3 - Exportado; B - Registro bloqueado; U - Registro em uso."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: NMUSUARIOEMUSO
+        description: "Controle interno referente ao usuário em uso."
+
+      - name: CPFDIRETORCLINICO
+        description: "CPF do diretor clínico ou gerente/administrador."
+
+      - name: REGDIRETORCLINICO
+        description: "Registro no conselho de classe do diretor clínico."
+
+      - name: FL_ADESAO_FILANTROP
+        description: "Indica se o hospital fez adesão ao Programa de Reestruturação de Hospital Filantrópico. Domínios documentados: 1 - Sim; 2 - Não."
+
+      - name: CD_MOTIVO_DESAB
+        description: "Código do motivo de desabilitação/desativação do estabelecimento."
+
+      - name: NO_URL
+        description: "Endereço URL do estabelecimento."
+
+      - name: NU_LATITUDE
+        description: "Latitude do endereço do estabelecimento."
+
+      - name: NU_LONGITUDE
+        description: "Longitude do endereço do estabelecimento."
+
+      - name: DT_ATU_GEO
+        description: "Data de atualização das coordenadas geográficas."
+
+      - name: NO_USUARIO_GEO
+        description: "Nome do usuário que atualizou as coordenadas geográficas."
+
+      - name: CO_NATUREZA_JUR
+        description: "Código da natureza jurídica do estabelecimento."
+
+      - name: TP_ESTAB_SEMPRE_ABERTO
+        description: "Indica se o estabelecimento funciona sempre aberto/ininterrupto. Domínios documentados: S - Sim; N - Não."
+
+      - name: ST_GERACREDITO_GERENTE_SGIF
+        description: "Indica se o crédito gerado pelo estabelecimento será direcionado para o gerente/administrador no SGIF. Domínios documentados: S - Sim; N - Não."
+
+      - name: ST_NAT_JUR_WEBSERVICE
+        description: "Identifica se a natureza jurídica foi obtida via webservice."
+
+      - name: ST_DADOS_CADONLINE_WEBSERV
+        description: "Identifica se os dados do estabelecimento foram obtidos via webservice."
+
+      - name: ST_CONEXAOINTERNET
+        description: "Indica se o estabelecimento possui conexão com internet. Domínios documentados: S - Sim; N - Não."
+
+      - name: CHKSUM
+        description: "Campo de controle/checksum do CNES."
+
+      - name: DT_VALIDACAO
+        description: "Data de validação do registro."
+
+      - name: CO_TIPO_ESTABELECIMENTO
+        description: "Código do tipo de estabelecimento."
+
+      - name: CO_ATIVIDADE_PRINCIPAL
+        description: "Código da atividade principal."
+
+      - name: ST_CONTRATO_FORMALIZADO
+        description: "Indica se o estabelecimento possui contrato formalizado com o SUS. Domínios documentados: S - Sim; N - Não."
+
+      - name: CO_TIPO_UNIDADE
+        description: "Sem uso."
+
+      - name: NO_FANTASIA_ABREV
+        description: "Sem uso."
+
+      - name: TP_GESTAO
+        description: "Tipo de gestão. Domínios documentados: M - Municipal; E - Estadual; D - Dupla; S - Sem Gestão."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: CO_TIPO_ABRANGENCIA
+        description: "Código da abrangência Telessaúde do estabelecimento."
+
+      - name: ST_COWORKING
+        description: "Indica se o estabelecimento funciona em regime de coworking. Domínios documentados: S - Sim; N - Não."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

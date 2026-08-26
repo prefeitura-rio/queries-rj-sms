@@ -1,0 +1,220 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__lfces018
+    description: "Tabela bruta do CNES LFCES018 / TB_DADOS_PROFISSIONAL_SUS. Contém os dados cadastrais dos profissionais de saúde, como identificador do profissional, CPF, CNS, nome, data de nascimento, sexo, raça/cor, escolaridade e informações complementares."
+    columns:
+      - name: PROF_ID
+        description: "Código do Profissional de Saúde."
+
+      - name: CPF_PROF
+        description: "CPF do Profissional."
+
+      - name: PISPASEP
+        description: "Número do PIS / PASEP."
+
+      - name: NOME_PROF
+        description: "Nome do Profissional."
+
+      - name: NOME_MAE
+        description: "Nome da Mãe do Profissional."
+
+      - name: DATA_NASC
+        description: "Data de Nascimento."
+
+      - name: COD_MUN
+        description: "Código do Município de Nascimento do Profissional."
+
+      - name: SEXO
+        description: "Sexo do Profissional. Domínios documentados: F - Feminino; M - Masculino."
+
+      - name: NUM_LIVRO
+        description: "Número do Livro da Certidão."
+
+      - name: NUM_FOLHA
+        description: "Número da Folha do Livro da Certidão."
+
+      - name: NUM_TERMO
+        description: "Número do Termo da Certidão."
+
+      - name: CODORGEMIS
+        description: "Órgão Emissor da Identidade."
+
+      - name: DATA_EMISS
+        description: "Data de Emissão da Certidão."
+
+      - name: NUM_IDENT
+        description: "Número da Identidade."
+
+      - name: SIGLA_EST
+        description: "UF do Órgão Emissor da Identidade."
+
+      - name: DTEMIIDENT
+        description: "Data de Emissão da Identidade."
+
+      - name: DATA_ENTRA
+        description: "Data de Entrada no Brasil, se estrangeiro."
+
+      - name: CTPS_NUMER
+        description: "Número da Carteira de Trabalho."
+
+      - name: SERIE
+        description: "Série da Carteira de Trabalho."
+
+      - name: SIGESTCTPS
+        description: "Sigla da UF da Carteira de Trabalho."
+
+      - name: DTEMISCTPS
+        description: "Data de Emissão da Carteira de Trabalho."
+
+      - name: LOGRADOURO
+        description: "Logradouro do Endereço do Profissional."
+
+      - name: NUMERO
+        description: "Número do Endereço."
+
+      - name: COMPLEMENT
+        description: "Complemento do Endereço."
+
+      - name: BAIRRODIST
+        description: "Bairro do Endereço."
+
+      - name: COD_CEP
+        description: "Código de Endereçamento Postal."
+
+      - name: SIGLA_UF
+        description: "Sigla do Estado."
+
+      - name: CODESCOLAR
+        description: "Código do Grau de Escolaridade."
+
+      - name: COD_CERTID
+        description: "Código da Certidão Informada."
+
+      - name: IND_NACIO
+        description: "Indica a nacionalidade do profissional. Domínios documentados: 1 - Brasileira; 2 - Estrangeira; 3 - Naturalizada."
+
+      - name: NOME_CARTO
+        description: "Nome do Cartório Emissor da Certidão."
+
+      - name: COD_BANCO
+        description: "Código do Banco do Profissional."
+
+      - name: NUM_AGENC
+        description: "Número da Agência Bancária."
+
+      - name: CONTA_CC
+        description: "Número da Conta Corrente."
+
+      - name: NOME_PAIS
+        description: "Nome do País de Origem, se estrangeiro."
+
+      - name: COD_CNS
+        description: "Código do Cartão Nacional de Saúde."
+
+      - name: D_TERCSIH
+        description: "Sem uso."
+
+      - name: STATUS
+        description: "Controle interno do registro."
+
+      - name: STATUSMOV
+        description: "Status do profissional de saúde. Domínios documentados: 1 - Não aprovado; 2 - Consistido; 3 - Exportado; B - Registro bloqueado; U - Registro em uso."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: NMUSUARIOEMUSO
+        description: "Controle interno referente ao usuário em uso."
+
+      - name: CD_RACA
+        description: "Código da raça/cor."
+
+      - name: NOME_PAI
+        description: "Nome do Pai do Profissional."
+
+      - name: TELEFONE
+        description: "Telefone do Profissional."
+
+      - name: CD_TP_LOGR
+        description: "Código do Tipo de Logradouro."
+
+      - name: PORTARIA
+        description: "Número da Portaria."
+
+      - name: DT_NATUR
+        description: "Data de Naturalização no Brasil, se estrangeiro."
+
+      - name: CD_PAIS
+        description: "Código do País de Origem, se estrangeiro."
+
+      - name: COD_MUN_RES
+        description: "Código do Município de Residência."
+
+      - name: UF_RES
+        description: "UF de Residência."
+
+      - name: CHKSUM
+        description: "Campo de controle/checksum do CNES."
+
+      - name: CO_ETNIA
+        description: "Código da Etnia."
+
+      - name: NO_EMAIL
+        description: "E-mail do Profissional."
+
+      - name: ST_NMPROF_CADSUS
+        description: "Indica se o nome do profissional veio do CadWeb. Domínios documentados: S - Sim; N - Não."
+
+      - name: CO_PAIS_RESID
+        description: "Código do País de Residência."
+
+      - name: NU_CARTEIRA_HAB
+        description: "Número da Carteira de Habilitação."
+
+      - name: DT_EMIS_CARTEIRA_HAB
+        description: "Data de Emissão da Carteira de Habilitação."
+
+      - name: UF_CARTEIRA_HAB
+        description: "UF da Carteira de Habilitação."
+
+      - name: CO_NACIONALIDADE
+        description: "Código de Nacionalidade."
+
+      - name: CO_SEQ_INCLUSAO
+        description: "Código Sequencial de Inclusão."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: NO_SOCIAL
+        description: "Nome social."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

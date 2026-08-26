@@ -108,18 +108,14 @@ with
     --=-=-=-=--=-=-=-=-=-=-=-==-=
     --  ENRIQUECIMENTO DE CPF  --
     --=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    -- GDB  
+    -- GDB
     profissionais_cnes_gdb as (
-        select distinct 
+        select distinct
             id_profissional_sus,
             cpf,
             cns,
             upper(nome) as nome,
-        from {{ ref('raw_gdb_cnes__profissional') }}
-        qualify row_number() over (
-            partition by cpf
-            order by data_particao desc
-        ) = 1
+        from {{ ref("int_gdb_cnes__profissional") }}
     ),
 
     -- Cópia de mart_historico_clinico__paciente na parte de cns

@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__nfces056
+    description: "Tabela bruta do CNES NFCES056 / TB_MOD_VINCULO. Tabela auxiliar de vínculo com o estabelecimento."
+    columns:
+      - name: CD_VINCULACAO
+        description: "Código da Vinculação."
+
+      - name: DS_VINCULACAO
+        description: "Descrição da Vinculação."
+
+      - name: ST_HABILITADO
+        description: "Indica se o vínculo se encontra ativo. Domínios documentados: S - Sim; N - Não."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

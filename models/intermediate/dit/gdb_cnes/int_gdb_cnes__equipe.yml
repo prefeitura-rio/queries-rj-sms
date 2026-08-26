@@ -1,0 +1,77 @@
+version: 2
+models:
+  - name: int_gdb_cnes__equipe
+    description: |-
+      Tabelas contendo as equipes de unidades de saúde
+      Arquivo CNES: LFCES037
+    columns:
+      - name: id_equipe_tipo
+        description: ""
+      - name: equipe_descricao
+        description: ""
+      - name: id_equipe_grupo
+        description: ""
+      - name: id_equipe_tipo
+        description: "TP_EQUIPE: FK NFCES046"
+      - name:  id_unidade
+        description: "UNIDADE_ID: FK LFCES004"
+      - name: id_municipio
+        description: "COD_MUN: FK LFCES041"
+      - name: id_area
+        description: "COD_AREA: FK LFCES041"
+      - name: id_motivacao_desativacao_equipe
+        description: "CD_MOTIVO_DESATIV: FK NFCES053"
+      - name: id_tipo_desativacao_equipe
+        description: "CD_TP_DESATIV: FK NFCES050"
+      - name: tipo_desativacao_equipe
+        description: ""
+      - name: equipe_ine
+        description: ""
+      - name: equipe_sequencial
+        description: ""
+      - name: equipe_nome
+        description: ""
+      - name: id_subtipo_equipe
+        description: ""
+      - name: data_ativacao
+        description: ""
+      - name: data_desativacao
+        description: ""
+      - name: atende_pop_quilombola
+        description: ""
+      - name: atende_pop_assentados
+        description: ""
+      - name: atende_pop_geral
+        description: ""
+      - name: atende_pop_escola
+        description: ""
+      - name: atende_pop_pronasci
+        description: ""
+      - name: atende_pop_indigena
+        description: ""
+      - name: atende_pop_ribeirinha
+        description: ""
+      - name: atende_pop_situacao_rua
+        description: ""
+      - name: atende_pop_privada_liberdade
+        description: ""
+      - name: atende_pop_conflito_lei
+        description: ""
+      - name: atende_pop_adolescente_conflito_lei
+        description: ""
+      - name: id_cnes_uom
+        description: ""
+      - name: carga_horaria_uom
+        description: ""
+      - name: id_profissional_preceptor
+        description: ""
+      - name: id_cnes_preceptor
+        description: ""
+      - name: data_atualizacao
+        description: ""
+      - name: usuario
+        description: ""
+      - name: competencia
+        description: Data que indica a qual mês o dado se refere
+      - name: _loaded_at
+        description: Data e hora em que os dados foram carregados no banco de dados
