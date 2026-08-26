@@ -812,7 +812,7 @@ models:
             dado_sensivel: sim
         dashboard_datalake:
           +schema: dashboard_datalake
-          +tags: ["daily", "dashboard_monitoramento"]
+          +tags: ["daily", "datalake"]
           +meta:
             owners: ['herian', 'daniel']
             team: ['cit']

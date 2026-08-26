@@ -8,7 +8,7 @@
             "data_type": "date",
             "granularity": "month"
         },
-        unique_key=['data_registro'],
+        unique_key=['data_registro', 'tabela'],
         description='Série temporal de ingestão de dados por data de envio do prontuário Vitacare'
     )
 }}

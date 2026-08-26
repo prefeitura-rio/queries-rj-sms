@@ -8,7 +8,8 @@
             "data_type": "date",
             "granularity": "month"
         },
-        unique_key=['data_registro'],
+        unique_key=['data_registro', 'tabelas'],
+        cluster=['data_registro'],
         description='Série temporal de ingestão de dados por data de envio do prontuário MV'
     )
 }}
