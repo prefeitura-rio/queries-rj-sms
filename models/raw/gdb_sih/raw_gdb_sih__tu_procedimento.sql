@@ -43,22 +43,26 @@ extracted as (
 renamed as (
     select
 
-        cast({{ process_null("CO_PROCEDIMENTO") }} as string) as codigo_procedimento,
-        cast({{ process_null("NO_PROCEDIMENTO") }} as string) as nome_procedimento,
-        cast({{ process_null("TP_COMPLEXIDADE") }} as string) as complexidade,
-        cast({{ process_null("TP_SEXO") }} as string) as sexo,
-        cast({{ process_null("QT_MAXIMA_EXECUCAO") }} as string) as maximo_execucoes,
-        cast({{ process_null("QT_DIAS_PERMANENCIA") }} as string) as dias_permanencia,
-        cast({{ process_null("QT_PONTOS") }} as string) as quantidade_pontos,
-        cast({{ process_null("VL_IDADE_MINIMA") }} as string) as idade_minima,
-        cast({{ process_null("VL_IDADE_MAXIMA") }} as string) as idade_maxima,
-        cast({{ process_null("VL_SH") }} as string) as valor_sh,
-        cast({{ process_null("VL_SA") }} as string) as valor_sa,
-        cast({{ process_null("VL_SP") }} as string) as valor_sp,
-        cast({{ process_null("DT_INICIO_VIGENCIA") }} as string) as data_inicio_vigencia,
-        cast({{ process_null("DT_FIM_VIGENCIA") }} as string) as data_fim_vigencia,
-        cast({{ process_null("CO_FINANCIAMENTO") }} as string) as codigo_financiamento,
-        cast({{ process_null("CO_RUBRICA") }} as string) as codigo_rubrica,
+        trim(cast({{ process_null("CO_PROCEDIMENTO") }} as string)) as codigo_procedimento,
+        regexp_replace(
+            trim(cast({{ process_null("NO_PROCEDIMENTO") }} as string)),
+            r'\s+',
+            ' '
+        ) as nome_procedimento,
+        trim(cast({{ process_null("TP_COMPLEXIDADE") }} as string)) as complexidade,
+        trim(cast({{ process_null("TP_SEXO") }} as string)) as sexo,
+        trim(cast({{ process_null("QT_MAXIMA_EXECUCAO") }} as string)) as maximo_execucoes,
+        trim(cast({{ process_null("QT_DIAS_PERMANENCIA") }} as string)) as dias_permanencia,
+        trim(cast({{ process_null("QT_PONTOS") }} as string)) as quantidade_pontos,
+        trim(cast({{ process_null("VL_IDADE_MINIMA") }} as string)) as idade_minima,
+        trim(cast({{ process_null("VL_IDADE_MAXIMA") }} as string)) as idade_maxima,
+        trim(cast({{ process_null("VL_SH") }} as string)) as valor_sh,
+        trim(cast({{ process_null("VL_SA") }} as string)) as valor_sa,
+        trim(cast({{ process_null("VL_SP") }} as string)) as valor_sp,
+        trim(cast({{ process_null("DT_INICIO_VIGENCIA") }} as string)) as data_inicio_vigencia,
+        trim(cast({{ process_null("DT_FIM_VIGENCIA") }} as string)) as data_fim_vigencia,
+        trim(cast({{ process_null("CO_FINANCIAMENTO") }} as string)) as codigo_financiamento,
+        trim(cast({{ process_null("CO_RUBRICA") }} as string)) as codigo_rubrica,
 
         -- Podem ser usados posteriormente para deduplicação
         safe_cast(data_particao as date) as data_particao,

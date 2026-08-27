@@ -71,10 +71,12 @@ suspeita_hiv as (
     -- Encontra casos com menção a HIV/termos correlatos
     regexp_contains(
       lower({{ field }}),
-      -- CID10 B20-B24
-      -- HIV/AIDS
-      -- Imunodeficiência
-      r"\b(b2[0-4][\s\-\.]*[0-9]?|hiv|aids|imuno[\s\-]*defici[eê]ncia)\b"
+      -- B20-B24 são CIDs de HIV
+      -- PVHIV - Pessoa Vivendo com HIV
+      -- CD4 - Linfócito referência em testes de HIV
+      -- TARV - Terapia Antirretroviral
+      -- Tenofovir - Nome de medicamento antirretroviral
+      r"\b(b2[0-4][\s\-\.]*[0-9]?|(pv)?hiv|aids|imuno[\s\-]*defici[eê]ncia|cd4|tarv|tenofovir)\b"
     )
     -- ...exceto se também tiverem menção a teste negativo/não reagente:
     -- - teste rápido xx/24: hiv neg; sifilis neg; anti hcv neg; hbsag neg

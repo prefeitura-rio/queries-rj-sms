@@ -112,6 +112,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      basedosdados:
+        +schema: brutos_basedosdados_br
+        +tags: "monthly"
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       cnes_web:
         +schema: brutos_cnes_web
         +tags: "weekly"
@@ -222,7 +229,7 @@ models:
           dominio: subgeral
       ergon:
         +schema: brutos_ergon
-        +tags: ["daily", "ergon"]
+        +tags: ["ergon"]
         +meta:
           team: subgeral
         +labels:
@@ -330,7 +337,7 @@ models:
           dado_sensivel: sim
       informes_vitacare:
         +schema: brutos_informes_vitacare
-        +tags: ["vitacare", "weekly"]
+        +tags: ["vitacare", "weekly", "informes_vitacare"]
         +meta:
           team: subpav
         +labels:
@@ -338,6 +345,29 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: subpav
+
+      medirec:
+        +schema: brutos_medirec
+        +tags: ["monthly", "medirec"]
+        +meta:
+          owner: daniel
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
+      rnds_historico:
+        +schema: brutos_rnds_historico
+        +tags: ["monthly", "rnds_historico"]
+        +meta:
+          owner: daniel
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
 
       ##################
       ## Prontuários
@@ -376,7 +406,7 @@ models:
           dominio: historico_clinico
       prontuario_vitacare_historico:
         +schema: brutos_prontuario_vitacare_historico
-        +tags: ["vitacare", "vitacare_historico"]
+        +tags: ["vitacare", "vitacare_historico", "monthly"]
         +meta:
           owner: daniel
           team: cit
@@ -773,6 +803,8 @@ models:
             dado_sensivel: sim
             dominio: cie
       dit:
+        +meta:
+          team: cit
         dashboard_ingestao_vitacare:
           +schema: relatorio_ingestao_vitacare
           +tags: ["daily", "vitacare", "ingestao"]
@@ -790,6 +822,9 @@ models:
         dashboard_datalake:
           +schema: dashboard_datalake
           +tags: ["daily", "datalake"]
+          +meta:
+            owners: ['herian', 'daniel']
+            team: ['cit']
           +labels:
             dado_publico: nao
             dado_pessoal: nao
@@ -884,9 +919,18 @@ models:
             dominio: ivisa
 
       minha_saude:
+        +meta:
+          team: subgeral
         exames:
           +schema: projeto_minha_saude
           +tags: ["daily", "minha_saude", "exames"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+        paciente:
+          +schema: projeto_minha_saude
+          +tags: ["daily", "minha_saude"]
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -898,6 +942,22 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      central_estrategica:
+        +schema: projeto_central_estrategica
+        +tags: ["daily", "central_estrategica"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+
+      riosaude:
+        +schema: projeto_riosaude
+        +tags: ["daily", "riosaude"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: riosaude
 
       iplanrio:
         whatsapp:
@@ -969,6 +1029,15 @@ models:
           +meta: 
             owner: dayaners
             team: subpav
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
+        cnes_aps:
+          +schema: projeto_cnes_aps
+          +tags: ["monthly", "subpav", "cnes_aps"]
+          +meta: {"owner": "dayaners"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
@@ -1094,6 +1163,28 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subgeral
+      central_estrategica:
+        +schema: projeto_central_estrategica
+        +tags: ["daily", "central_estrategica", "sisreg_v2"]
+        +meta:
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_sensivel: nao
+          dominio: central_estrategica
+
+      ipp:
+        +schema: projeto_ipp
+        +tags: ['monthly', 'ipp']
+        +meta: 
+          team: ipp
+          owner: 'herian'
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: ipp
 
 data_tests:
   rj_sms:

@@ -127,7 +127,38 @@ with
       s.cpf_particao
     from {{ ref("mart_regulacao__solicitacao") }} as s
     where s.cpf_particao is not null
+  ),
+
+  suspeita_hiv as (
+    select *
+    from source
+    -- `laudo` é um array de structs, então pra filtrar a linha inteira
+    -- caso um elemento dentro dele seja 'proibido', usamos exists(), que
+    -- retorna true se receber 1 ou mais linhas, e false caso contrário
+    where not exists(
+      select 1
+      from unnest(laudo) as ld
+      where 1=2  -- Queremos qualquer match, então `false OR ... OR ...`
+      {% for field in [
+        "procedimento_descricao",
+        "ld.cid_id",
+        "ld.observacao",
+      ] %}
+      or ifnull(
+        regexp_contains(
+          lower({{ field }}),
+          -- B20-B24 são CIDs de HIV
+          -- PVHIV - Pessoa Vivendo com HIV
+          -- CD4 - Linfócito referência em testes de HIV
+          -- TARV - Terapia Antirretroviral
+          -- Tenofovir - Nome de medicamento antirretroviral
+          r"\b(b2[0-4][\s\-\.]*[0-9]?|(pv)?hiv|aids|imuno[\s\-]*defici[eê]ncia|cd4|tarv|tenofovir)\b"
+        ),
+        false
+      )
+      {% endfor %}
+    )
   )
 
 select *
-from source
+from suspeita_hiv

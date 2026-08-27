@@ -25,6 +25,19 @@ with gestantes as (
 
 ),
 
+desfechos_gestacao as (
+
+    select
+        safe_cast(id_desfecho_gestacao as int64) as id_desfecho_gestacao,
+        descricao as desfecho_gestacao
+    from {{ ref('raw_plataforma_subpav_sisare__desfechos_gestacao') }}
+    qualify row_number() over (
+        partition by safe_cast(id_desfecho_gestacao as int64)
+        order by datalake_loaded_at desc
+    ) = 1
+
+),
+
 pacientes as (
 
     select
@@ -83,6 +96,7 @@ final as (
         g.dt_parto,
         g.id_desfecho_internacao,
         g.id_desfecho_gestacao,
+        d.desfecho_gestacao,
         g.puerpera,
         p.cns_digits as cns,
         nullif(p.cpf_sisare, '') as cpf_sisare,
@@ -118,6 +132,8 @@ final as (
         p.updated_at_paciente,
         p.datalake_loaded_at_paciente
     from gestantes g
+    left join desfechos_gestacao d
+        on d.id_desfecho_gestacao = g.id_desfecho_gestacao
     left join pacientes p
         on p.id_paciente = g.id_paciente
     left join indice_cns_cpf i

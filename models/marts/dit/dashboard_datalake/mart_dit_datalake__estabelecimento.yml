@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: mart_dit_datalake__estabelecimento
+    description: >
+      Dimensão de estabelecimentos de saúde do município do Rio de Janeiro utilizada
+      no dashboard do Datalake. Baseada em `dim_estabelecimento`, com correções manuais
+      de coordenadas geográficas para três unidades específicas: CAPSi Carim,
+      CF Arthur Bispo do Rosário e CF Wilma Costa.
+    columns:
+      - name: cnes
+        description: Código Nacional de Estabelecimentos de Saúde (CNES) do estabelecimento.
+        data_type: string
+
+      - name: nome
+        description: Nome do estabelecimento de saúde.
+        data_type: string
+
+      - name: bairro
+        description: Bairro onde o estabelecimento está localizado.
+        data_type: string
+
+      - name: area_programatica
+        description: Área Programática (AP) de saúde à qual o estabelecimento pertence.
+        data_type: string
+
+      - name: tipo
+        description: Tipo do estabelecimento de saúde (ex. Clínica da Família, UPA, Hospital).
+        data_type: string
+
+      - name: latitude
+        description: Coordenada geográfica de latitude do estabelecimento.
+        data_type: float64
+
+      - name: longitude
+        description: Coordenada geográfica de longitude do estabelecimento.
+        data_type: float64

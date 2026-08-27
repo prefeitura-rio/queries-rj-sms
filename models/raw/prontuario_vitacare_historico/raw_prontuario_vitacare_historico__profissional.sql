@@ -1,59 +1,58 @@
 {{
-    config(
-        alias="profissional", 
-        materialized="incremental",
-        unique_key = 'id_global',
-        cluster_by= 'id_global',
-        schema="brutos_prontuario_vitacare_historico",
-        partition_by={
-            "field": "data_particao",
-            "data_type": "date",
-            "granularity": "day"
-        }
-    )
+  config(
+    alias="profissional",
+    materialized="incremental",    
+    incremental_strategy="merge",
+    schema="brutos_prontuario_vitacare_historico",
+    partition_by={
+      "field": "data_particao",
+      "data_type": "date",
+      "granularity": "day"
+    },
+    unique_key=['id_global'],
+    cluster_by=['id_global']
+  )
 }}
 
 {% set last_partition = get_last_partition_date(this) %}
 
-WITH
+with
+  source_profissionais as (
+    select 
+      *
+    from {{ source('brutos_prontuario_vitacare_historico_staging', 'profissionais') }} 
+    {% if is_incremental() %}
+      where data_particao > '{{last_partition}}'
+    {% endif %}
+  ),
 
-    source_profissionais AS (
-        SELECT 
-            *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'profissionais') }} 
-        {% if is_incremental() %}
-            WHERE data_particao > '{{last_partition}}'
-        {% endif %}
-    ),
+  dedup_profissionais as (
+       select
+           *
+       from source_profissionais 
+       qualify row_number() over (partition by id_cnes, prof_id order by extracted_at desc) = 1
+   ),
 
-
-
-    fato_profissionais AS (
-        SELECT
-            -- PKs e Chaves
-            CONCAT(
-                id_cnes,
-                '.',
-                REPLACE(prof_id, '.0', '')
-            ) AS id_global,
-            REPLACE(prof_id, '.0', '') as id_local,
-
-            {{ process_null('profissional_cns') }} AS profissional_cns,
-            {{ process_null('profissional_cpf') }} AS profissional_cpf,
-            {{ process_null(proper_br('profissional_nome')) }} AS profissional_nome,
-            {{ process_null('n_registro') }} AS n_registro,
-            {{ process_null('profissional_cbo') }} AS profissional_cbo,
-            {{ process_null('profissional_cbo_descricao') }} AS profissional_cbo_descricao,
-            {{ process_null('profissional_equipe_nome') }} AS profissional_equipe_nome,
-            {{ process_null('profissional_equipe_cod_equipe') }} AS profissional_equipe_cod_equipe,
-            {{ process_null('profissional_equipe_cod_ine') }} AS profissional_equipe_cod_ine,
+  fato_profissionais as (
+    select
+      concat(id_cnes, '.', replace(prof_id, '.0', '')) as id_global,
+      replace(prof_id, '.0', '') as id_local,
+      
+      {{ process_null('profissional_cns') }} as profissional_cns,
+      {{ process_null('profissional_cpf') }} as profissional_cpf,
+      {{ process_null(proper_br('profissional_nome')) }} as profissional_nome,
+      {{ process_null('n_registro') }} as n_registro,
+      {{ process_null('profissional_cbo') }} as profissional_cbo,
+      {{ process_null('profissional_cbo_descricao') }} as profissional_cbo_descricao,
+      {{ process_null('profissional_equipe_nome') }} as profissional_equipe_nome,
+      {{ process_null('profissional_equipe_cod_equipe') }} as profissional_equipe_cod_equipe,
+      {{ process_null('profissional_equipe_cod_ine') }} as profissional_equipe_cod_ine,
    
-            cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
-            DATE(SAFE_CAST(extracted_at AS DATETIME)) AS data_particao
+      cast({{ process_null('extracted_at') }} as datetime) as loaded_at,
+      date(cast(extracted_at as datetime)) as data_particao
 
-        FROM source_profissionais
-    )
+    from dedup_profissionais
+  )
 
-SELECT
-    *
-FROM fato_profissionais
+select *
+from fato_profissionais

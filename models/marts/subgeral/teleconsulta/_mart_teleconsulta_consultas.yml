@@ -10,13 +10,13 @@ models:
       ou atendimento individual.
 
     columns:
-      - name: id_agendamento
-        description: Identificador único do agendamento registrado no sistema.
+      - name: area_programatica
+        description: Área Programática (AP) à qual a unidade de saúde pertence.
         data_type: string
         quote: true
 
-      - name: id_atendimento
-        description: Identificador único do atendimento executado, quando existente.
+      - name: nome_limpo
+        description: Nome padronizado da unidade de saúde onde o atendimento foi agendado ou executado.
         data_type: string
         quote: true
 
@@ -25,18 +25,8 @@ models:
         data_type: string
         quote: true
 
-      - name: nome
-        description: Nome completo do paciente.
-        data_type: string
-        quote: true
-
-      - name: cpf
-        description: Número do CPF do paciente.
-        data_type: string
-        quote: true
-
-      - name: cns
-        description: Número do Cartão Nacional de Saúde (CNS) do paciente.
+      - name: mes_ano_nascimento
+        description: Data de nascimento do paciente com granularidade restrita a mês e ano, no formato YYYY-MM, para preservar a privacidade.
         data_type: string
         quote: true
 
@@ -55,11 +45,6 @@ models:
         data_type: string
         quote: true
 
-      - name: id_unidade_referencia
-        description: Código CNES da unidade de referência do paciente, quando aplicável.
-        data_type: string
-        quote: true
-
       - name: equipe
         description: Nome da equipe de Saúde da Família ou equipe assistencial responsável.
         data_type: string
@@ -72,6 +57,31 @@ models:
 
       - name: profissional_nome
         description: Nome do profissional responsável pelo atendimento.
+        data_type: string
+        quote: true
+
+      - name: profissional_cbo
+        description: Código CBO (Classificação Brasileira de Ocupações) do profissional responsável pelo atendimento.
+        data_type: string
+        quote: true
+
+      - name: profissional_cbo_descricao
+        description: Descrição da ocupação do profissional conforme tabela CBO.
+        data_type: string
+        quote: true
+
+      - name: profissional_equipe_nome
+        description: Nome da equipe à qual o profissional está vinculado.
+        data_type: string
+        quote: true
+
+      - name: profissional_equipe_cod_ine
+        description: Código INE da equipe à qual o profissional está vinculado.
+        data_type: string
+        quote: true
+
+      - name: tipo_consulta
+        description: Tipo de consulta realizada, conforme categorização do sistema (ex. consulta de rotina, retorno, urgência).
         data_type: string
         quote: true
 
@@ -91,38 +101,17 @@ models:
         quote: true
 
       - name: estado_marcacao
-        description: Estado atual da marcação (AGENDADO, CANCELADO, REALIZADO, etc.).
+        description: Estado atual da marcação (Executado, Faltou, Cancelado pelo Paciente, Cancelado pelo Profissional, etc.).
         data_type: string
         quote: true
 
-      - name: motivo
-        description: Motivo do atendimento conforme categorização do sistema.
+      - name: eh_coleta
+        description: Indicador se o atendimento corresponde a uma coleta de exames.
         data_type: string
         quote: true
 
       - name: subjetivo_motivo
-        description: >
-          Texto subjetivo relatando a queixa principal, tal como registrada pelo
-          paciente ou transcrita pelo profissional.
-        data_type: string
-        quote: true
-
-      - name: plano_observacoes
-        description: >
-          Campo textual contendo observações relativas ao plano de cuidado,
-          orientações ou condutas definidas pelo profissional.
-        data_type: string
-        quote: true
-
-      - name: avaliacao_observacoes
-        description: >
-          Observações referentes à avaliação clínica realizada durante o atendimento.
-        data_type: string
-        quote: true
-
-      - name: notas_observacoes
-        description: >
-          Campo livre de anotações complementares sobre o atendimento.
+        description: Motivo relatado pelo paciente para a realização da consulta.
         data_type: string
         quote: true
 

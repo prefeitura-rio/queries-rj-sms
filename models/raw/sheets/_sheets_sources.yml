@@ -35,6 +35,7 @@ sources:
       - name: projeto_odontologia_sigtap_odo
       - name: medicamentos_uso_continuo
       - name: unidades_exames_laboratoriais
+      - name: depara_vacinas
 
   - name: brutos_sheets
     database: rj-sms

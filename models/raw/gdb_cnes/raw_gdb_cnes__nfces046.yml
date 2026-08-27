@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__nfces046
+    description: "Tabela bruta do CNES NFCES046 / TB_TIPO_EQUIPE. Tabela auxiliar de tipos de equipe, como eSF, eSB, eAP, eCR, eNASF, eAPP, eMAD e eMAP."
+    columns:
+      - name: TP_EQUIPE
+        description: "Código do Tipo de Equipe."
+
+      - name: DS_EQUIPE
+        description: "Descrição do Tipo de Equipe."
+
+      - name: CO_GRUPO_EQUIPE
+        description: "Código do Grupo da Equipe."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

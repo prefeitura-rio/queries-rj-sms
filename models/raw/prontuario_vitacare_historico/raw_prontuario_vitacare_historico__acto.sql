@@ -25,7 +25,7 @@ WITH
                 NULLIF(REPLACE(acto_id, '.0', ''), '')
             ) AS id_prontuario_global,
             *
-        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'acto') }} 
+        FROM {{ source('brutos_prontuario_vitacare_historico_staging', 'atendimentos') }} 
         {% if is_incremental() %}
         where data_particao > '{{ last_partition }}'
         {% endif %}
@@ -58,7 +58,7 @@ WITH
             CONCAT(
                 id_cnes,
                 '.',
-                ut_id
+                {{ remove_null_bytes('ut_id') }}
             ) as id_paciente_global,
 
             -- ------------------------
@@ -66,7 +66,7 @@ WITH
             -- ------------------------
             id_prontuario_global,
             REPLACE(acto_id, '.0', '') AS id_prontuario_local,
-            ut_id AS ut_id,
+            {{ remove_null_bytes('ut_id') }} AS ut_id,
             -- ------------------------
 
             unidade_ap AS unidade_ap,

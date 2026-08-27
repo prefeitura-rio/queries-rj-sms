@@ -13,11 +13,7 @@ with
             nome,
             cns,
             cpf
-        from {{ ref("raw_gdb_cnes__profissional") }}
-        qualify row_number() over (
-            partition by cpf
-            order by data_particao desc
-        ) = 1
+        from {{ ref("int_gdb_cnes__profissional") }}
     ),
     unidades_de_saude as (
         select
@@ -29,15 +25,12 @@ with
         from {{ ref("dim_estabelecimento") }}
     ),
     cbo_datasus as (
-        select * from {{ ref("raw_datasus__cbo") }}
-    ),
-    vinctulos_dedup as (
         select *
-        from {{ ref("raw_gdb_cnes__vinculo") }}
-        qualify row_number() over (
-            partition by id_profissional_sus, id_unidade, id_cbo
-            order by data_particao desc
-        ) = 1
+        from {{ ref("raw_datasus__cbo") }}
+    ),
+    vinculos_dedup as (
+        select *
+        from {{ ref("int_gdb_cnes__vinculo") }}
     ),
     vinculos_profissionais_cnes as (
         select
@@ -71,9 +64,24 @@ with
                         (not regexp_contains(lower(cbo_datasus.descricao),'atendente')) 
                     )
                     then 'ENFERMEIROS'
-                when cbo_datasus.descricao in ('Dirigente do servico publico municipal',
-                'Diretor de servicos de saude','Gerente de servicos de saude')
+                when lower(cbo_datasus.descricao) = 'dirigente do servico publico municipal'
+                    then 'DIRIGENTES DE SAUDE'
+                when lower(cbo_datasus.descricao) in (
+                    'diretor de servicos de saude',
+                    'gerente de servicos de saude'
+                )
                     then 'DIRETORES DE SAUDE'
+                -- Ago/2026 - Sanitaristas:
+                -- Médicos e enfermeiros sanitaristas terão sido filtrados pelas condicionais
+                -- anteriores, mas não custa deixar aqui por completude
+                when id_cbo in (
+                    '223560',  -- Enfermeiro sanitarista
+                    '223156',  -- Medico sanitarista
+                    '225139',  -- Medico sanitarista
+                    '131225',  -- Sanitarista
+                    '1312C1'   -- Sanitarista
+                )
+                    then 'SANITARISTAS'
                 -- Ago/2025 - Personas de acesso:
                 -- * Assistentes administrativos do Complexo Regulador (CNES 7106513/3304557106513)
                 when id_cnes = '7106513' and id_cbo = '411010'
@@ -82,56 +90,22 @@ with
                     'OUTROS PROFISSIONAIS'
             end as cbo_agrupador,
             data_ultima_atualizacao,
-        from vinctulos_dedup as gdb_profissional
+        from vinculos_dedup
         left join cbo_datasus using (id_cbo)
         inner join unidades_de_saude using (id_unidade)
     ),
     -- -----------------------------------------
     -- Lista profissionais alocados em consultórios de rua
     -- -----------------------------------------
-    equipe_dedup as (
-        select *
-        from {{ ref('raw_gdb_cnes__equipe')}}
-        qualify row_number() over (
-            partition by id_unidade, equipe_ine
-            order by data_particao desc
-        ) = 1
-    ),
-    equipe_tipo_dedup as (
-        select *
-        from {{ ref('raw_gdb_cnes__equipe_tipo')}}
-        qualify row_number() over (
-            partition by id_equipe_tipo
-            order by data_particao desc
-        ) = 1
-    ),
-    equipe_consultorio_rua as (
-        select
-            equipe_ine,
-            equipe_sequencial,
-            id_equipe_tipo,
-            equipe_descricao
-        from equipe_dedup
-        left join equipe_tipo_dedup
-        using (id_equipe_tipo)
-    ),
-    equipe_profissionais_dedup as (
-        select *
-        from {{ ref('raw_gdb_cnes__equipe_profissionais') }}
-        qualify row_number() over (
-            partition by id_profissional_sus, id_unidade, id_cbo, equipe_sequencial
-            order by data_particao desc
-        ) = 1
-    ),
     profissionais_consultorio_rua as (
         select
-            id_profissional_sus,
-            id_equipe_tipo,
-            equipe_descricao
-        from equipe_profissionais_dedup
-        left join equipe_consultorio_rua
-        using (equipe_sequencial)
-        where id_equipe_tipo = '73'
+            prof.id_profissional_sus,
+            eq.id_equipe_tipo,
+            eq.equipe_descricao
+        from {{ ref("int_gdb_cnes__equipe_profissionais") }} as prof
+        left join {{ ref("int_gdb_cnes__equipe") }} as eq
+            using (equipe_sequencial)
+        where eq.id_equipe_tipo = '73'
     ),
     -- -----------------------------------------
     -- Enriquecimento de Dados dos Funcionários
@@ -152,12 +126,20 @@ with
             {{ remove_accents_upper('cbo_agrupador') }} as funcao_grupo,
             data_ultima_atualizacao
         from vinculos_profissionais_cnes
-            left join profissionais_cnes using (id_profissional_sus)
-            left join profissionais_consultorio_rua using (id_profissional_sus)
+        left join profissionais_cnes using (id_profissional_sus)
+        left join profissionais_consultorio_rua using (id_profissional_sus)
     ),
+
     -- -----------------------------------------
     -- Filtrando funcionários com acesso autorizado
     -- -----------------------------------------
+    ergon_ativos as (
+        select distinct
+            cpf
+        from {{ ref("raw_ergon__funcionarios_sms")}},
+            unnest(vinculos) as vinculo
+        where vinculo.status_ativo = true
+    ),
     funcionarios_ativos_enriquecido_autorizados as (
         select
             cpf,
@@ -175,9 +157,15 @@ with
             funcao_grupo in (
                 'MEDICOS',
                 'ENFERMEIROS',
+                'SANITARISTAS',
                 'DENTISTAS',
                 'DIRETORES DE SAUDE',
+                'DIRIGENTES DE SAUDE',
                 'ADMINISTRATIVO'
+            )
+            and cpf in (
+                select *
+                from ergon_ativos
             )
     ),
     -- -----------------------------------------
@@ -197,23 +185,33 @@ with
                     funcao_detalhada,
                     funcao_grupo,
                     case
-                        when eh_equipe_consultorio_rua is true 
-                        then 'full_permission'
-                        when unidade_tipo in ('UPA','HOSPITAL', 'CER', 'CE','MATERNIDADE','CENTRAL DE REGULACAO','CASS')
-                        then 'full_permission'
+                        when eh_equipe_consultorio_rua is true
+                            then 'full_permission'
+                        when funcao_grupo = 'SANITARISTAS'
+                            then 'full_permission'
+                        when unidade_tipo in (
+                            'UPA', 'HOSPITAL', 'CER', 'CE',
+                            'MATERNIDADE', 'CENTRAL DE REGULACAO', 'CASS',
+                            'PRISIONAL'
+                        )
+                            then 'full_permission'
+                        when funcao_grupo = 'DIRIGENTES DE SAUDE'
+                            then 'full_permission'
+                        when funcao_grupo = 'DIRETORES DE SAUDE'
+                            then 'only_from_same_ap'
                         when unidade_tipo in ('CGS','CAPS') and funcao_grupo in ('MEDICOS','DENTISTAS')
-                        then 'full_permission'
+                            then 'full_permission'
                         when unidade_tipo in ('CGS','CAPS') and funcao_grupo not in ('MEDICOS','DENTISTAS')
-                        then 'only_from_same_ap'
+                            then 'only_from_same_ap'
                         when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo in ('MEDICOS','DENTISTAS')
-                        then 'full_permission'
+                            then 'full_permission'
                         when unidade_tipo in ('CMS','POLICLINICA','CF','CMR','CSE') and funcao_grupo not in ('MEDICOS','DENTISTAS')
-                        then 'only_from_same_cnes'
+                            then 'only_from_same_cnes'
                         else null
                     end as nivel_acesso,
                     case
                         when (unidade_cnes = '7106513' and funcao_grupo = 'ADMINISTRATIVO')
-                        then 'only_header'
+                            then 'only_header'
                         else 'full_permission'
                     end as granularidade_acesso
                 )
@@ -222,8 +220,8 @@ with
         group by 1,2
     )
 
-    select
-        cpf,
-        nome_completo,
-        {{ dedup_array_of_struct('vinculos')}} as vinculos
-    from funcionario_vinculos
+select
+    cpf,
+    nome_completo,
+    {{ dedup_array_of_struct('vinculos')}} as vinculos
+from funcionario_vinculos

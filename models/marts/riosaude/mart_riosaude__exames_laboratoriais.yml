@@ -1,0 +1,140 @@
+version: 2
+
+models:
+  - name: mart_riosaude__exames_laboratoriais
+    description: >
+      Exames laboratoriais realizados nas unidades de saúde do programa RioSaúde,
+      originados do sistema RMD (fornecedor Blessing). Contém apenas os estabelecimentos
+      pertencentes à rede: Hospital Federal de Andaraí, CER Barra, UPAs e Maternidade Rocinha.
+      Granularidade: um registro por exame (id_exame).
+    columns:
+      - name: id
+        description: Identificador único do registro na tabela de origem.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: fornecedor_id
+        description: Identificador do fornecedor do dado (Blessing).
+        data_tests:
+          - not_null
+
+      - name: fornecedor_nome
+        description: Nome do fornecedor do dado.
+
+      - name: validado
+        description: Indica se o registro foi validado na ingestão.
+
+      - name: recebido_em
+        description: Data e hora em que o registro foi recebido pelo pipeline.
+
+      - name: loaded_at
+        description: Data e hora em que o registro foi carregado na camada bruta.
+
+      - name: data_particao
+        description: Data de particionamento mensal da tabela.
+
+      - name: id_exame
+        description: Identificador único do exame no sistema de origem.
+
+      - name: exame_solicitacao_id
+        description: Identificador da solicitação do exame.
+
+      - name: exame_nome
+        description: Nome do exame solicitado, em letras minúsculas.
+
+      - name: exame_tipo
+        description: Tipo do exame (ex. bioquímica), em letras minúsculas.
+
+      - name: exame_metodo
+        description: Método utilizado na realização do exame, em letras minúsculas.
+
+      - name: exame_status
+        description: Status atual do exame (ex. concluído), em letras minúsculas.
+
+      - name: exame_data
+        description: Data de referência do exame.
+
+      - name: exame_solicitacao_data_hora
+        description: Data e hora da solicitação do exame.
+
+      - name: exame_coleta_data_hora
+        description: Data e hora da coleta da amostra.
+
+      - name: exame_laudo_data_hora
+        description: Data e hora de emissão do laudo do exame.
+
+      - name: exame_resultado_classificacao
+        description: Classificação do resultado (ex. normal, alterado), em letras minúsculas.
+
+      - name: exame_laudo_descricao
+        description: Descrição textual do laudo do exame.
+
+      - name: exame_resultado_laudo
+        description: Caminho do arquivo PDF do laudo no Google Cloud Storage.
+
+      - name: exame_resultado_valor
+        description: >
+          Array de resultados do exame. Cada elemento contém:
+          nome (nome do resultado), valor (valor numérico), unidade (unidade de medida)
+          e referencia (faixas de referência).
+
+      - name: paciente_cpf
+        description: CPF do paciente.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: paciente_cns
+        description: Cartão Nacional de Saúde (CNS) do paciente.
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: paciente_sexo
+        description: Sexo do paciente, em letras minúsculas.
+
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente.
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: paciente_nome
+        description: Nome completo do paciente.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: estabelecimento_nome
+        description: >
+          Nome do estabelecimento de saúde, em letras minúsculas.
+          Filtrado para as unidades da rede RioSaúde.
+
+      - name: profissional_solicitante_nome
+        description: Nome do profissional que solicitou o exame.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: profissional_solicitante_cpf
+        description: CPF do profissional solicitante.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: profissional_solicitante_crm
+        description: CRM do profissional solicitante.
+
+      - name: profissional_solicitante_cbo
+        description: Código CBO da especialidade do profissional solicitante.
+
+      - name: profissional_laudista_nome
+        description: Nome do profissional que assinou o laudo.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: profissional_laudista_cpf
+        description: CPF do profissional laudista.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: profissional_laudista_cbo
+        description: Código CBO da especialidade do profissional laudista.
+
+      - name: processado_em
+        description: Data e hora em que o registro foi processado por este modelo.

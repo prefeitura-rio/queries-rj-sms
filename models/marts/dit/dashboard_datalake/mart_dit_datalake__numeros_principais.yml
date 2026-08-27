@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: mart_dit_datalake__numeros_principais
+    description: >
+      Snapshot diário com os totais acumulados das principais métricas do Datalake de Saúde:
+      atendimentos, cadastros, exames de imagem, exames laboratoriais e vacinações. O modelo
+      é incremental com chave única em `data_registro`. Em ambientes de desenvolvimento (`dev`
+      e `ci`), os dados são gerados aleatoriamente para o intervalo 2026-07-01 a 2026-08-10.
+      Em produção, registra o snapshot do dia corrente.
+    columns:
+      - name: data_registro
+        description: Data de referência do snapshot. Chave de partição e chave única do modelo.
+        data_type: date
+
+      - name: qtd_atendimentos
+        description: >
+          Total de atendimentos registrados no histórico clínico unificado
+          (`mart_historico_clinico__episodio`) até a data de registro.
+        data_type: int64
+
+      - name: qtd_cadastros
+        description: >
+          Total de pacientes cadastrados no histórico clínico unificado
+          (`mart_historico_clinico__paciente`) até a data de registro.
+        data_type: int64
+
+      - name: qtd_exames_imagem
+        description: >
+          Total de exames de imagem registrados no histórico clínico unificado
+          (`mart_historico_clinico__exame_imagem`) até a data de registro.
+        data_type: int64
+
+      - name: qtd_exames_laboratoriais
+        description: >
+          Total de exames laboratoriais registrados no histórico clínico unificado
+          (`mart_historico_clinico__exame_laboratorial`) até a data de registro.
+        data_type: int64
+
+      - name: qtd_vacinacoes
+        description: >
+          Total de vacinações registradas no histórico clínico unificado
+          (`mart_historico_clinico__vacinacao`) até a data de registro.
+        data_type: int64

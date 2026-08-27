@@ -26,15 +26,57 @@ with
     -- SOURCES
 
     usage_rj_sms as (
-        select * from `rj-sms`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+        select
+            project_id,
+            job_id,
+            user_email,
+            job_type,
+            query,
+            state,
+            destination_table,
+            error_result,
+            creation_time,
+            end_time,
+            total_bytes_processed,
+            total_bytes_billed,
+            statement_type
+        from `rj-sms`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
     ),
 
     usage_rj_sms_dev as (
-        select * from `rj-sms-dev`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+        select
+            project_id,
+            job_id,
+            user_email,
+            job_type,
+            query,
+            state,
+            destination_table,
+            error_result,
+            creation_time,
+            end_time,
+            total_bytes_processed,
+            total_bytes_billed,
+            statement_type
+        from `rj-sms-dev`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
     ),
 
     usage_rj_sms_sandbox as (
-        select * from `rj-sms-sandbox`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+        select
+            project_id,
+            job_id,
+            user_email,
+            job_type,
+            query,
+            state,
+            destination_table,
+            error_result,
+            creation_time,
+            end_time,
+            total_bytes_processed,
+            total_bytes_billed,
+            statement_type
+        from `rj-sms-sandbox`.`region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
     ),
 
     usuarios_bigquery as (
@@ -69,12 +111,11 @@ with
             extract(date from end_time at time zone 'PST8PDT') as billing_date,  -- Jobs are billed by end_time in PST8PDT timezone, regardless of where the job ran.
             total_bytes_processed / 1024 / 1024 / 1024 / 1024 as total_tib_processed,
             total_bytes_billed / 1024 / 1024 / 1024 / 1024 as total_tib_billed,
-            case
-                statement_type
+            case statement_type
                 when 'SCRIPT'
-                then 0
+                    then 0
                 when 'CREATE_MODEL'
-                then 50 * 6.25
+                    then 50 * 6.25
                 else 6.25
             end as multiplier,
         from all_usage

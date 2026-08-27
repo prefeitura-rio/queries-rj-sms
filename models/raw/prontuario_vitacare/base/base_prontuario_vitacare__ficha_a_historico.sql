@@ -34,6 +34,7 @@ with
             cast(id as string) as id,
             
             cast(cpf as string) as cpf,
+            cast(cns as string) as cns,
             id_local as id_paciente,
             npront as numero_prontuario,
             

@@ -146,19 +146,16 @@ with
     ),
 
     enriquecimento_cpf_gdb as (
-        select ec.* except (cpf_temp), coalesce(ec.cpf_enriq, gdb.cpf) as cpf
+        select
+            ec.* except (cpf_temp),
+            coalesce(ec.cpf_enriq, gdb.cpf) as cpf
         from enriquecimento_cpf as ec
-
-        left join
-            (
-                select distinct safe_cast(cns as int64) as cns, cpf
-                from {{ ref("raw_gdb_cnes__profissional") }}
-                qualify row_number() over (
-                    partition by cpf
-                    order by data_particao desc
-                ) = 1
-            ) as gdb
-
+        left join (
+            select distinct
+                safe_cast(cns as int64) as cns,
+                cpf
+            from {{ ref("int_gdb_cnes__profissional") }}
+        ) as gdb
             on safe_cast(ec.cns as int64) = gdb.cns
     ),
 
@@ -171,7 +168,6 @@ with
         left join
             duracao_contrato as dc
             on ec.profissional_codigo_sus = dc.id_profissional_sus
-
     )
 
 select *

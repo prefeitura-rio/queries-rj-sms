@@ -22,7 +22,7 @@ select
     )] as exames,
 
     "Pedro Marques" as medico_solicitante,
-    "Inst de Medicina Veterinária Jorge Vaitsman" as unidade_nome,
+    "CMS Parque União" as unidade_nome,
 
     "https://storage.googleapis.com/sms_dit_arquivos_publicos/hci/mock-cientificalab.pdf" as laudo_url,
     cast("2025-01-04T16:43:00" as datetime) as datahora_pedido,

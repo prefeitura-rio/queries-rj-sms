@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: mart_dit_datalake__serie_temporal_ingestao_pcsm
+    description: >
+      Monitoramento diário da latência de ingestão da tabela de staging do sistema PCSM
+      (Prontuário Carioca de Saúde Mental), especificamente
+      `brutos_prontuario_carioca_saude_mental_staging.gh_atendimentos`. Para cada dia,
+      mede o atraso entre o momento em que o registro foi atualizado na fonte
+      (`source_updated_at`) e o momento em que chegou ao Datalake (`datalake_loaded_at`),
+      em segundos. Importante: a tabela de staging do PCSM retém apenas os dados do dia
+      corrente e não mantém histórico, o que limita o uso retroativo deste modelo.
+      O modelo é incremental com particionamento mensal por `data_registro`.
+    columns:
+      - name: data_registro
+        description: Data de referência da ingestão. Chave de partição do modelo.
+        data_type: date
+
+      - name: tabela
+        description: Nome da tabela de staging monitorada.
+        data_type: string
+
+      - name: start_time
+        description: Menor valor de `datalake_loaded_at` registrado na data de referência.
+        data_type: datetime
+
+      - name: end_time
+        description: Maior valor de `datalake_loaded_at` registrado na data de referência.
+        data_type: datetime
+
+      - name: registros
+        description: Quantidade de registros ingeridos na data de referência.
+        data_type: int64
+
+      - name: min_diff
+        description: Menor latência de ingestão observada na data de referência, em segundos.
+        data_type: float64
+
+      - name: media_diff
+        description: Latência média de ingestão na data de referência, em segundos.
+        data_type: float64
+
+      - name: mediana_diff
+        description: Latência mediana de ingestão na data de referência, em segundos.
+        data_type: float64
+
+      - name: max_diff
+        description: Maior latência de ingestão observada na data de referência, em segundos.
+        data_type: float64

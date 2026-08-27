@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__lfces038
+    description: "Tabela bruta do CNES LFCES038 / RL_ESTAB_EQUIPE_PROF. Contém os profissionais vinculados às equipes, incluindo equipe, unidade, profissional, CBO, vínculo, data de entrada, data de desligamento, microárea e indicação de equipe mínima."
+    columns:
+      - name: COD_MUN
+        description: "Código do Município."
+
+      - name: COD_AREA
+        description: "Código da área da equipe."
+
+      - name: SEQ_EQUIPE
+        description: "Sequencial da equipe."
+
+      - name: PROF_ID
+        description: "Código do Profissional de Saúde."
+
+      - name: UNIDADE_ID
+        description: "Código do Estabelecimento de Saúde."
+
+      - name: COD_CBO
+        description: "Código Brasileiro de Ocupação."
+
+      - name: TP_SUS_NAO_SUS
+        description: "Indica se o profissional faz atendimento ao SUS. Domínios documentados: S - Sim; N - Não."
+
+      - name: IND_VINC
+        description: "Indica a vinculação, o tipo e o subtipo de vínculo do profissional com o estabelecimento de saúde."
+
+      - name: MICROAREA
+        description: "Microárea da equipe."
+
+      - name: DT_ENTRADA
+        description: "Data de entrada do profissional na equipe."
+
+      - name: DT_DESLIGAMENTO
+        description: "Data de desligamento do profissional na equipe."
+
+      - name: CNES_OUTRAEQUIPE
+        description: "CNES no qual o profissional completa a carga horária."
+
+      - name: COD_MUN_OUTRAEQUIPE
+        description: "Código do município no qual o profissional completa a carga horária."
+
+      - name: COD_AREA_OUTRAEQUIPE
+        description: "Código da área na qual o profissional completa a carga horária."
+
+      - name: PROF_ID_CH_COMPL
+        description: "Profissional de carga horária complementar."
+
+      - name: COD_CBO_CH_COMPL
+        description: "CBO do profissional de carga horária complementar."
+
+      - name: FL_EQUIPEMINIMA
+        description: "Indica se o profissional pertence à equipe mínima. Domínios documentados: 1 - Sim; 2 - Não."
+
+      - name: CO_MUN_ATUACAO
+        description: "Código do município de atuação da microárea do profissional na equipe."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."
