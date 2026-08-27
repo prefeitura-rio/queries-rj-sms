@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: mart_iplanrio__alta_maternidade
+    description: >
+          Tabela do projeto Cegonha Digital que consolida eventos hospitalares de parto
+          registrados no SISARE, ProntuaRio, MV e Vitai, com dados de contato da gestante
+          validados para disparo via WhatsApp. Para cada gestante, os telefones são consolidados
+          a partir do agendamento do Cegonha Digital e enriquecidos com os prontuários da SMS
+          (Vitacare, Vitai e ProntuaRio), sendo armazenados em um array ordenado por prioridade.
+
+    columns:
+      - name: cpf
+        description: >
+          CPF da gestante.
+
+      - name: nome
+        description: >
+          Nome completo da gestante conforme cadastro na fonte de origem.
+
+      - name: municipio
+        description: >
+          Município de residência da gestante.
+
+      - name: uf
+        description: >
+          UF de residência da gestante.
+
+      - name: prontuario_origem
+        description: >
+          Fonte de dados que originou o registro. Valores possíveis:
+          sisare, prontuaRio, mv, vitai, interno (exceções manuais).
+
+      - name: data_hora_digitacao
+        description: >
+          Data e hora de digitação da alta no SISARE, obtida a partir do campo created_at
+          da tabela altas. Nulo para registros de outros prontuários.
+
+      - name: datalake_loaded_at
+        description: >
+          Data e hora em que o dado foi carregado no datalake pela pipeline de ingestão.
+          Nulo para exceções manuais (prontuario_origem = 'interno').
+
+      - name: data_alta_internacao
+        description: >
+          Data em que a paciente recebeu alta do hospital após o parto. Não necessariamente
+          coincide com data_parto, pois a paciente pode permanecer internada por alguns dias
+          após o parto.
+
+      - name: cnes_maternidade_alta
+        description: >
+          Código CNES da unidade hospitalar onde ocorreu o parto.
+
+      - name: nome_maternidade_alta
+        description: >
+          Nome da maternidade obtido através do CNES.
+
+      - name: data_parto
+        description: >
+          Data em que ocorreu o parto.
+
+      - name: id_desfecho_gestacao
+        description: >
+          Identificador numérico do desfecho da gestação conforme tabela de domínio do SISARE.
+          Valores possíveis:
+          1 = RN Nascido Vivo,
+          2 = Óbito | Aborto | Com Alta Natimorto,
+          3 = RN Internado.
+          Nulo para registros de prontuários que não utilizam essa codificação.
+
+      - name: desfecho_gestacao
+        description: >
+          Descrição textual do desfecho da gestação. Nulo para registros de prontuários
+          que não utilizam essa codificação.
+
+      - name: telefones_gestante
+        description: >
+          Array de structs com os telefones da gestante consolidados a partir das fontes válidas
+          para disparo via WhatsApp, ordenados por prioridade. Cada elemento contém:
+          - telefone_original: número bruto conforme registrado na origem.
+          - origem: fonte do telefone. Valores possíveis: cegonha, vitacare, vitai, prontuaRio.
+          - prioridade: ordem de preferência do telefone (1 = cegonha, 2 = vitacare, 3 = vitai, 4 = prontuaRio).
+          - telefone_valido_whatsapp: telefone validado e padronizado no formato 55DDD9XXXXXXXX
+            para disparo via WhatsApp. Nulo quando o número não atende aos critérios de validade.
+          - motivo_invalidacao_telefone: motivo pelo qual o telefone foi considerado inválido.
+            Valores possíveis: poucos_digitos, ddd_invalido, todos_digitos_iguais,
+            numero_institucional, texto_indefinido, numero_compartilhado, telefone_formatado_nulo.
+            Nulo quando o telefone é válido.

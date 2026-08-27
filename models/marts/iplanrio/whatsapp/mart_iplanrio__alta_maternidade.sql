@@ -5,6 +5,10 @@
     cluster_by = ['cpf', 'cnes_maternidade_alta']
 ) }}
 
+-- Telefones por fonte e prioridade:
+-- SISARE: SisCegonha (1) > Vitacare (2) > Vitai (3), pois consideramos esses números mais atualizados que o registrado na internação.
+-- ProntuaRio: mesma ordem, com telefone do cadastro de internação como fallback adicional (4).
+
 with gestantes as (
 
     select
@@ -16,7 +20,8 @@ with gestantes as (
         dt_parto as data_parto,
         id_desfecho_internacao,
         id_desfecho_gestacao,
-        desfecho_gestacao
+        desfecho_gestacao,
+        datalake_loaded_at
     from {{ ref('int_subpav__sisare_gestantes') }}
     where id_gestante is not null
       and id_paciente is not null
@@ -216,7 +221,10 @@ base as (
         g.desfecho_gestacao,
         cg.telefone_cegonha,
         vt.telefone as telefone_vitacare,
-        vi.telefone as telefone_vitai
+        vi.telefone as telefone_vitai,
+        cast(null as string) as telefone_prontuario,
+        'sisare' as prontuario_origem,
+        cast(g.datalake_loaded_at as datetime) as datalake_loaded_at
     from gestantes g
     inner join pacientes p
         on p.id_paciente = g.id_paciente
@@ -235,6 +243,216 @@ base as (
 
 ),
 
+prontuario_alta_dedup as (
+    select *
+    from {{ ref('raw_prontuario_prontuaRio__internacao_alta') }}
+    qualify row_number() over (partition by gid_prontuario order by loaded_at desc) = 1
+),
+
+prontuario_cadastro_dedup as (
+    select *
+    from {{ ref('raw_prontuario_prontuaRio__internacao_cadastro') }}
+    where paciente_cpf is not null
+    qualify row_number() over (partition by gid_prontuario order by loaded_at desc) = 1
+),
+
+prontuario_altas as (
+    select
+        ep.id_hci as gid_prontuario,
+        ep.data_parto,
+        alta.alta_data as data_alta_internacao,
+        alta.cnes as cnes_prontuario,
+        regexp_replace(cad.paciente_cpf, r'\D', '') as cpf,
+        cad.paciente_nome as nome,
+        coalesce(nullif(trim(cad.endereco_municipio), ''), 'Rio de Janeiro') as municipio,
+        coalesce(nullif(trim(cad.endereco_uf), ''), 'RJ') as uf,
+        case
+            when cad.paciente_telefone like '%000%' then cast(null as string)
+            when cad.paciente_telefone = '0' then cast(null as string)
+            else {{ normalize_null("trim(cad.paciente_telefone)") }}
+        end as telefone_prontuario,
+        cad.loaded_at as datalake_loaded_at
+    from {{ ref('int_historico_clinico__gestacoes__eventos_parto') }} ep
+    left join prontuario_alta_dedup alta on alta.gid_prontuario = ep.id_hci
+    left join prontuario_cadastro_dedup cad on cad.gid_prontuario = ep.id_hci
+    where ep.fonte = 'prontuaRio'
+      and ep.tipo_evento = 'parto'
+      and cad.paciente_cpf is not null
+),
+
+base_prontuario as (
+    select
+        pa.cpf,
+        pa.nome,
+        pa.municipio,
+        pa.uf,
+        cast(null as datetime) as data_hora_digitacao,
+        pa.data_alta_internacao,
+        regexp_replace(pa.cnes_prontuario, r'\D', '') as cnes_maternidade_alta,
+        e.nome_maternidade_alta,
+        pa.data_parto,
+        cast(null as int64) as id_desfecho_gestacao,
+        cast(null as string) as desfecho_gestacao,
+        cg.telefone_cegonha,
+        vt.telefone as telefone_vitacare,
+        vi.telefone as telefone_vitai,
+        pa.telefone_prontuario,
+        'prontuaRio' as prontuario_origem,
+        pa.datalake_loaded_at
+    from prontuario_altas pa
+    left join estabelecimento e
+        on e.cnes_maternidade_alta = regexp_replace(pa.cnes_prontuario, r'\D', '')
+    left join cegonha_tel cg on cg.cpf = pa.cpf
+    left join vitacare_tel vt on vt.cpf = pa.cpf
+    left join vitai_tel vi on vi.cpf = pa.cpf
+),
+
+mv_admissao_dedup as (
+    select *
+    from {{ ref('raw_prontuario_mv__admissao') }}
+    qualify row_number() over (partition by id_hci order by updated_at desc) = 1
+),
+
+mv_alta_dedup as (
+    select *
+    from {{ ref('raw_prontuario_mv__alta') }}
+    qualify row_number() over (partition by id_hci order by updated_at desc) = 1
+),
+
+mv_altas as (
+    select
+        coalesce(
+            nullif(regexp_replace(ep.cpf, r'\D', ''), ''),
+            nullif(regexp_replace(adm.paciente_cpf, r'\D', ''), '')
+        ) as cpf,
+        coalesce(
+            nullif(trim(adm.paciente_nome_social), ''),
+            adm.paciente_nome
+        ) as nome,
+        'Rio de Janeiro' as municipio,
+        'RJ' as uf,
+        ep.data_parto,
+        date(alta.alta_datahora_fechamento) as data_alta_internacao,
+        coalesce(adm.id_cnes, alta.id_cnes) as cnes_mv,
+        coalesce(adm.loaded_at, alta.loaded_at) as datalake_loaded_at
+    from {{ ref('int_historico_clinico__gestacoes__eventos_parto') }} ep
+    left join mv_admissao_dedup adm on adm.id_hci = ep.id_hci
+    left join mv_alta_dedup alta on alta.id_hci = ep.id_hci
+    where ep.fonte = 'mv'
+      and ep.tipo_evento = 'parto'
+      and coalesce(
+            nullif(regexp_replace(ep.cpf, r'\D', ''), ''),
+            nullif(regexp_replace(adm.paciente_cpf, r'\D', ''), '')
+          ) is not null
+),
+
+base_mv as (
+    select
+        ma.cpf,
+        ma.nome,
+        ma.municipio,
+        ma.uf,
+        cast(null as datetime) as data_hora_digitacao,
+        ma.data_alta_internacao,
+        regexp_replace(ma.cnes_mv, r'\D', '') as cnes_maternidade_alta,
+        e.nome_maternidade_alta,
+        ma.data_parto,
+        cast(null as int64) as id_desfecho_gestacao,
+        cast(null as string) as desfecho_gestacao,
+        cg.telefone_cegonha,
+        vt.telefone as telefone_vitacare,
+        vi.telefone as telefone_vitai,
+        cast(null as string) as telefone_prontuario,
+        'mv' as prontuario_origem,
+        ma.datalake_loaded_at
+    from mv_altas ma
+    left join estabelecimento e
+        on e.cnes_maternidade_alta = regexp_replace(ma.cnes_mv, r'\D', '')
+    left join cegonha_tel cg on cg.cpf = ma.cpf
+    left join vitacare_tel vt on vt.cpf = ma.cpf
+    left join vitai_tel vi on vi.cpf = ma.cpf
+),
+
+vitai_boletim_dedup as (
+    select *
+    from {{ ref('raw_prontuario_vitai__boletim') }}
+    qualify row_number() over (partition by gid order by alta_data desc) = 1
+),
+
+vitai_estabelecimento_dedup as (
+    select gid, cnes
+    from {{ ref('raw_prontuario_vitai__m_estabelecimento') }}
+    qualify row_number() over (partition by gid order by updated_at desc) = 1
+),
+
+vitai_paciente_dedup as (
+    select gid, nome, cpf
+    from {{ ref('raw_prontuario_vitai__paciente') }}
+    qualify row_number() over (partition by gid order by updated_at desc) = 1
+),
+
+vitai_altas as (
+    select
+        coalesce(
+            nullif(regexp_replace(ep.cpf, r'\D', ''), ''),
+            nullif(regexp_replace(b.cpf, r'\D', ''), '')
+        ) as cpf,
+        pac.nome,
+        'Rio de Janeiro' as municipio,
+        'RJ' as uf,
+        ep.data_parto,
+        date(b.alta_data) as data_alta_internacao,
+        est.cnes as cnes_vitai,
+        b.imported_at as datalake_loaded_at
+    from {{ ref('int_historico_clinico__gestacoes__eventos_parto') }} ep
+    left join vitai_boletim_dedup b on b.gid = ep.id_hci
+    left join vitai_estabelecimento_dedup est on est.gid = b.gid_estabelecimento
+    left join vitai_paciente_dedup pac on pac.gid = b.gid_paciente
+    where ep.fonte = 'vitai'
+      and ep.tipo_evento = 'parto'
+      and coalesce(
+            nullif(regexp_replace(ep.cpf, r'\D', ''), ''),
+            nullif(regexp_replace(b.cpf, r'\D', ''), '')
+          ) is not null
+),
+
+base_vitai as (
+    select
+        va.cpf,
+        va.nome,
+        va.municipio,
+        va.uf,
+        cast(null as datetime) as data_hora_digitacao,
+        va.data_alta_internacao,
+        regexp_replace(va.cnes_vitai, r'\D', '') as cnes_maternidade_alta,
+        e.nome_maternidade_alta,
+        va.data_parto,
+        cast(null as int64) as id_desfecho_gestacao,
+        cast(null as string) as desfecho_gestacao,
+        cg.telefone_cegonha,
+        vt.telefone as telefone_vitacare,
+        vi.telefone as telefone_vitai,
+        cast(null as string) as telefone_prontuario,
+        'vitai' as prontuario_origem,
+        va.datalake_loaded_at
+    from vitai_altas va
+    left join estabelecimento e
+        on e.cnes_maternidade_alta = regexp_replace(va.cnes_vitai, r'\D', '')
+    left join cegonha_tel cg on cg.cpf = va.cpf
+    left join vitacare_tel vt on vt.cpf = va.cpf
+    left join vitai_tel vi on vi.cpf = va.cpf
+),
+
+base_unificada as (
+    select * from base
+    union all
+    select * from base_prontuario
+    union all
+    select * from base_mv
+    union all
+    select * from base_vitai
+),
+
 telefones_explodidos as (
 
     select
@@ -249,14 +467,17 @@ telefones_explodidos as (
         b.data_parto,
         b.id_desfecho_gestacao,
         b.desfecho_gestacao,
+        b.prontuario_origem,
+        b.datalake_loaded_at,
         tel.telefone,
         tel.origem,
         tel.prioridade
-    from base b,
+    from base_unificada b,
     unnest([
-        struct(b.telefone_cegonha  as telefone, 'cegonha'   as origem, 1 as prioridade),
-        struct(b.telefone_vitacare as telefone, 'vitacare'  as origem, 2 as prioridade),
-        struct(b.telefone_vitai    as telefone, 'vitai'     as origem, 3 as prioridade)
+        struct(b.telefone_cegonha    as telefone, 'cegonha'     as origem, 1 as prioridade),
+        struct(b.telefone_vitacare   as telefone, 'vitacare'    as origem, 2 as prioridade),
+        struct(b.telefone_vitai      as telefone, 'vitai'       as origem, 3 as prioridade),
+        struct(b.telefone_prontuario as telefone, 'prontuaRio'  as origem, 4 as prioridade)
     ]) as tel
     where {{ normalize_null("trim(tel.telefone)") }} is not null
 
@@ -287,6 +508,8 @@ final as (
         data_parto,
         id_desfecho_gestacao,
         desfecho_gestacao,
+        prontuario_origem,
+        datalake_loaded_at,
         array_agg(
             struct(
                 telefone as telefone_original,
@@ -309,7 +532,9 @@ final as (
         nome_maternidade_alta,
         data_parto,
         id_desfecho_gestacao,
-        desfecho_gestacao
+        desfecho_gestacao,
+        prontuario_origem,
+        datalake_loaded_at
 
 ),
 
@@ -327,6 +552,8 @@ excecao_disparo_puerperas as (
         data_parto,
         id_desfecho_gestacao,
         desfecho_gestacao,
+        'interno' as prontuario_origem,
+        cast(null as datetime) as datalake_loaded_at,
         telefones_gestante
     from {{ source("projeto_whatsapp", "excecao_disparo_puerperas") }}
 
