@@ -136,9 +136,9 @@ with
     ergon_ativos as (
         select distinct
             cpf
-        from {{ ref("raw_ergon_funcionarios_sheets")}}--, unnest(dados) as dados
-        -- Planilha temporária do Ergon, só constam os ativos
-        -- where dados.status_ativo = true
+        from {{ ref("raw_ergon__funcionarios_sms")}},
+            unnest(vinculos) as vinculo
+        where vinculo.status_ativo = true
     ),
     funcionarios_ativos_enriquecido_autorizados as (
         select

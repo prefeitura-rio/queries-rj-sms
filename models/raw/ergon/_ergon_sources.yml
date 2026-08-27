@@ -5,11 +5,4 @@ sources:
     database: rj-sms
     schema: brutos_ergon_staging
     tables:
-      - name: funcionarios
-
-  # FIXME: tabela temporária
-  - name: brutos_ergon_sheets_staging
-    database: rj-sms
-    schema: brutos_ergon_sheets_staging
-    tables:
-      - name: funcionarios
+      - name: funcionarios_sms
