@@ -1,0 +1,314 @@
+version: 2
+
+models:
+  - name: raw_prontuario_sarah_padi__atendimento_domiciliar_entrada
+    description: Dados referentes a entradas de pacientes em atendimento domiciliar no período.
+    columns:
+      - name: id_registro
+        description: Número do atendimento do paciente.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_entrada__id_registro__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - unique:
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_entrada__id_registro__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: registro_data
+        description: Data de registro do paciente.
+        data_type: date
+
+      - name: captacao
+        description: Indicador se houve captação do paciente.
+        data_type: string
+
+      - name: captacao_data
+        description: Data de início da captação do paciente.
+        data_type: date
+
+      # Dados do Paciente
+      - name: id_paciente
+        description: Identificador do paciente.
+        data_type: string
+
+      - name: paciente_cpf
+        description: Número do CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: paciente_nome
+        description: Nome do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: paciente_sexo
+        description: Sexo do paciente.
+        data_type: string
+
+      - name: paciente_raca_cor
+        description: Raça/cor referenciada pelo paciente.
+        data_type: string
+
+      - name: paciente_id_genero
+        description: Identificador do gênero referenciado pelo paciente.
+        data_type: integer
+
+      - name: paciente_genero
+        description: Gênero referenciado pelo paciente.
+        data_type: string
+
+      - name: paciente_nascimento_data
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: paciente_idade
+        description: Idade do paciente.
+        data_type: string
+
+      - name: paciente_id_faixa_etaria
+        description: Identificador da faixa etária do paciente.
+        data_type: integer
+
+      - name: paciente_faixa_etaria
+        description: Nome da faixa etária do paciente.
+        data_type: string
+
+      - name: paciente_municipio_uf
+        description: Município e UF do paciente.
+        data_type: string
+
+      - name: paciente_bairro
+        description: Nome do bairro do paciente.
+        data_type: string
+
+      - name: paciente_endereco
+        description: Endereço do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
+
+      - name: paciente_contato
+        description: Nome do contato com o paciente.
+        data_type: string
+
+      # Encaminhamento
+      - name: origem
+        description: Origem do paciente para o atendimento.
+        data_type: string
+
+      - name: id_origem
+        description: Identificador da origem do paciente para o atendimento.
+        data_type: integer
+
+      - name: tipo_origem
+        description: Tipo de origem do paciente.
+        data_type: string
+
+      - name: id_tipo_origem
+        description: Identificador do tipo de origem do paciente.
+        data_type: integer
+
+      - name: demanda_judicial
+        description: Indicador se é uma demanda judicial.
+        data_type: string
+
+      - name: sisreg_numero
+        description: Número do SISREG para o atendimento.
+        data_type: string
+
+      - name: rota
+        description: Nome da rota de atendimento.
+        data_type: string
+
+      - name: rota_id
+        description: Identificador da rota de atendimento.
+        data_type: string
+
+      - name: clinica
+        description: Nome da clínica de atendimento do paciente.
+        data_type: string
+
+      - name: id_clinica
+        description: Identificador da clínica de atendimento do paciente.
+        data_type: integer
+
+      - name: especialidade
+        description: Especialidade do paciente no atendimento.
+        data_type: string
+
+      - name: id_especialidade
+        description: Identificador da especialidade do paciente no atendimento.
+        data_type: integer
+
+      - name: dados_clinicos
+        description: Indicador se o paciente possui dados clínicos no prontuário.
+        data_type: string
+
+      - name: dados_clinicos_data
+        description: Data de realização dos dados clínicos.
+        data_type: date
+
+      - name: dados_clinicos_dias
+        description: Dias decorridos do registro até a realização dos dados clínicos.
+        data_type: integer
+
+      - name: dados_clinicos_profissional
+        description: Nome do profissional responsável pelos dados clínicos.
+        data_type: string
+
+      - name: dados_clinicos_cargo
+        description: Cargo do responsável pelos dados clínicos.
+        data_type: string
+
+      - name: cids
+        description: Lista de códigos CID10 do paciente.
+        data_type: string
+
+      # Atividades de Vida Diária
+      - name: avd
+        description: Indicador se o paciente já tem AVD.
+        data_type: string
+
+      - name: avd_periodo
+        description: AVD realizada no período.
+        data_type: string
+
+      - name: avd_data
+        description: Data da realização da AVD no paciente.
+        data_type: date
+
+      - name: avd_dias
+        description: Dias decorridos do registro até a realização da AVD no paciente.
+        data_type: integer
+
+      - name: avd_elegivel
+        description: Indicador se a AVD realizada resultou em elegibilidade do paciente.
+        data_type: string
+
+      - name: avd_modalidade
+        description: Modalidade da elegibilidade do paciente na AVD realizada.
+        data_type: string
+
+      - name: avd_motivo
+        description: Motivo da inelegibilidade do paciente na AVD realizada.
+        data_type: string
+
+      - name: avd_motivo_detalhe
+        description: Detalhe do motivo da inelegibilidade do paciente na AVD realizada.
+        data_type: string
+
+      - name: avd_profissional
+        description: Nome do profissional responsável em realizar a AVD no paciente.
+        data_type: string
+
+      - name: avd_cargo
+        description: Cargo do prestador que realizou a AVD no paciente.
+        data_type: string
+
+      - name: respiracao
+        description: Forma de respiração do paciente.
+        data_type: string
+
+      - name: interface
+        description: Tipo de interface da respiração do paciente.
+        data_type: string
+
+      - name: modo_ventilatorio
+        description: Nome do modo ventilatório do paciente.
+        data_type: string
+
+      - name: dispositivo_invasivo
+        description: Dispositivos invasivos no paciente.
+        data_type: string
+
+      - name: spict_br
+        description: Pontuação da escala SPICT-BR para o paciente.
+        data_type: integer
+
+      - name: iaec_ad
+        description: Pontuação da escala IAEC-AD do paciente.
+        data_type: integer
+
+      # Linha de Cuidado
+      - name: linha_cuidado
+        description: Linhas de cuidado do paciente.
+        data_type: string
+
+      - name: cuidado_paliativo
+        description: Indicador se a linha de cuidado é paliativa.
+        data_type: string
+
+      - name: barthel_inicial
+        description: Pontuação da escala BARTHEL inicial aplicada no paciente.
+        data_type: integer
+
+      - name: barthel_final
+        description: Pontuação da escala BARTHEL final aplicada no paciente.
+        data_type: integer
+
+      # Serviço
+      - name: unidade_nome
+        description: Nome da unidade de atendimento do paciente.
+        data_type: string
+
+      - name: id_unidade
+        description: Identificador da unidade de atendimento do paciente.
+        data_type: string
+
+      - name: servico
+        description: Nome do serviço do atendimento.
+        data_type: string
+
+      - name: id_servico
+        description: Identificador do serviço do atendimento.
+        data_type: integer
+
+      - name: registro_alta
+        description: Data de alta do registro.
+        data_type: date
+
+      - name: motivo_alta
+        description: Motivo da alta do paciente.
+        data_type: string
+
+      - name: id_motivo_alta
+        description: Identificador do motivo da alta do paciente.
+        data_type: integer
+
+      - name: permanencia
+        description: Quantidade de dias de permanência do paciente.
+        data_type: integer
+
+      - name: quantidade
+        description: Quantidade de fatos.
+        data_type: integer
+
+      # Metadados
+      - name: extracted_at
+        description: Data e hora de extração do dado na origem.
+        data_type: datetime
+
+      - name: processed_at
+        description: Data e hora de processamento do dado.
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano de particionamento do dado.
+        data_type: integer
+
+      - name: mes_particao
+        description: Mês de particionamento do dado.
+        data_type: integer
+
+      - name: data_particao
+        description: Data de particionamento do dado.
+        data_type: date
