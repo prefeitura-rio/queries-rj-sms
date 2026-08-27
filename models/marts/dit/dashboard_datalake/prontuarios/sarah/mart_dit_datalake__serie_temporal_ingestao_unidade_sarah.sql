@@ -2,13 +2,14 @@
     config(
         alias='serie_temporal_ingestao_unidade_sarah',
         materialized='incremental',
-        incremental_strategy='insert_overwrite',
+        incremental_strategy='merge',
         partition_by={
             "field": "data_registro",
             "data_type": "date",
             "granularity": "month"
         },
-        unique_key=['data_registro'],
+        cluster_by=['data_registro'],
+        unique_key=['data_registro', 'cnes', 'tabela'],
         description='Série temporal de ingestão de dados por data de envio do prontuário Sarah'
     )
 }}

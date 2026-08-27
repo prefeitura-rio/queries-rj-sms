@@ -2,19 +2,20 @@
     config(
         alias='serie_temporal_atendimentos_unidade_mv',
         materialized='incremental',
-        incremental_strategy='insert_overwrite',
+        incremental_strategy='merge',
         partition_by={
             "field": "data_registro",
             "data_type": "date",
             "granularity": "month"
         },
         unique_key=['data_registro', 'id_cnes'],
+        cluster_by=['data_registro'],
         description='Série temporal de atendimentos por data de entrada no prontuário MV, por unidade de saúde'
     )
 }}
 
 {% set partitions_to_replace = (
-    "date_sub(current_date('America/Sao_Paulo'), interval 30 day)"
+    "date_sub(current_date('America/Sao_Paulo'), interval 90 day)"
 ) %}
 
 with atendimentos_diarios as (
@@ -26,25 +27,25 @@ with atendimentos_diarios as (
         count(*) as atendimentos_no_dia
     from `rj-sms.brutos_prontuario_mv.atendimento`
     {% if is_incremental() %}
-    where atendimento_datahora >= date_sub({{ partitions_to_replace }}, interval 30 day)
+    where atendimento_datahora >= {{ partitions_to_replace }}
     {% endif %}   
     group by data_dia, id_cnes, dia_semana_num, dia_semana_nome
 ),
 
 -- para cada data e unidade, calcula a mediana de atendimentos do mesmo dia
--- da semana, na mesma unidade, considerando os 30 dias anteriores (janela móvel)
+-- da semana, na mesma unidade, considerando os 90 dias anteriores (janela móvel)
 mediana_movel as (
     select
         a.data_dia,
         a.id_cnes,
         percentile_cont(b.atendimentos_no_dia, 0.5) over (
             partition by a.data_dia, a.id_cnes
-        ) as mediana_ultimos_30_dias
+        ) as mediana_ultimos_90_dias
     from atendimentos_diarios a
     join atendimentos_diarios b
         on b.id_cnes = a.id_cnes
         and b.dia_semana_num = a.dia_semana_num
-        and b.data_dia between date_sub(a.data_dia, interval 30 day) 
+        and b.data_dia between date_sub(a.data_dia, interval 90 day) 
                            and date_sub(a.data_dia, interval 1 day)
     {% if is_incremental() %}
     where a.data_dia >= {{ partitions_to_replace }}
@@ -55,7 +56,7 @@ mediana_dia_semana as (
     select distinct
         data_dia,
         id_cnes,
-        mediana_ultimos_30_dias
+        mediana_ultimos_90_dias
     from mediana_movel
 ),
 
@@ -84,7 +85,7 @@ final as (
             when 'Sunday' then 'Domingo'
         end as dia_semana_nome,
         d.atendimentos_no_dia as atendimentos,
-        m.mediana_ultimos_30_dias
+        m.mediana_ultimos_90_dias
     from atendimentos_diarios d
     join mediana_dia_semana m 
         on d.data_dia = m.data_dia
