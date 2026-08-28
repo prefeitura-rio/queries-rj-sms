@@ -1,20 +1,20 @@
 version: 2
 
 models:
-  - name: raw_prontuario_sarah_padi__atendimento_domiciliar_saida
-    description: Dados referentes a saídas de pacientes em atendimento domiciliar no período.
+  - name: raw_prontuario_sarah_padi__atendimento_domiciliar_entradas
+    description: Dados referentes a entradas de pacientes em atendimento domiciliar no período.
     columns:
       - name: id_registro
         description: Número do atendimento do paciente.
         data_type: string
         data_tests:
           - not_null:
-              name: raw_prontuario_sarah_padi__atendimento_domiciliar_saida__id_registro__not_null
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_entrada__id_registro__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
           - unique:
-              name: raw_prontuario_sarah_padi__atendimento_domiciliar_saida__id_registro__unique
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_entrada__id_registro__unique
               config:
                 severity: warn
                 warn_if: ">1000"
@@ -109,6 +109,14 @@ models:
         description: Identificador da origem do paciente para o atendimento.
         data_type: integer
 
+      - name: tipo_origem
+        description: Tipo de origem do paciente.
+        data_type: string
+
+      - name: id_tipo_origem
+        description: Identificador do tipo de origem do paciente.
+        data_type: integer
+
       - name: demanda_judicial
         description: Indicador se é uma demanda judicial.
         data_type: string
@@ -168,6 +176,10 @@ models:
       # Atividades de Vida Diária
       - name: avd
         description: Indicador se o paciente já tem AVD.
+        data_type: string
+
+      - name: avd_periodo
+        description: AVD realizada no período.
         data_type: string
 
       - name: avd_data
@@ -252,10 +264,6 @@ models:
         description: Identificador da unidade de atendimento do paciente.
         data_type: string
 
-      - name: unidade_origem
-        description: Nome da unidade de origem do atendimento do paciente.
-        data_type: string
-
       - name: servico
         description: Nome do serviço do atendimento.
         data_type: string
@@ -264,33 +272,16 @@ models:
         description: Identificador do serviço do atendimento.
         data_type: integer
 
-      # Saída
       - name: registro_alta
         description: Data de alta do registro.
         data_type: date
 
-      - name: motivo
-        description: Motivo da saída do paciente do atendimento.
+      - name: motivo_alta
+        description: Motivo da alta do paciente.
         data_type: string
 
-      - name: id_motivo
-        description: Identificador do motivo da saída do paciente do atendimento.
-        data_type: integer
-
-      - name: destino
-        description: Destino do paciente após a saída do atendimento.
-        data_type: string
-
-      - name: id_destino
-        description: Identificador do destino do paciente após a saída do atendimento.
-        data_type: integer
-
-      - name: tipo_destino
-        description: Tipo de destino do paciente.
-        data_type: string
-
-      - name: id_tipo_destino
-        description: Identificador do tipo de destino do paciente.
+      - name: id_motivo_alta
+        description: Identificador do motivo da alta do paciente.
         data_type: integer
 
       - name: permanencia
@@ -304,10 +295,6 @@ models:
       # Metadados
       - name: extracted_at
         description: Data e hora de extração do dado na origem.
-        data_type: datetime
-
-      - name: processed_at
-        description: Data e hora de processamento do dado.
         data_type: datetime
 
       - name: ano_particao

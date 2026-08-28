@@ -1,0 +1,124 @@
+version: 2
+
+models:
+  - name: raw_prontuario_sarah_padi__prescricao_medica_itens
+    description: Dados referentes a itens de prescrições médicas realizadas em pacientes no período.
+    columns:
+      - name: data_prescricao
+        description: Data da realização da prescrição médica.
+        data_type: date
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__prescricao_medica_itens__data_prescricao__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: prescricao
+        description: Identificador da prescrição médica.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__prescricao_medica_itens__prescricao__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: prestador_prescricao
+        description: Nome do profissional responsável pela prescrição médica.
+        data_type: string
+
+      - name: paciente
+        description: Nome do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: tipo
+        description: Tipo de item prescrito.
+        data_type: string
+
+      - name: id_item
+        description: Identificador do item prescrito.
+        data_type: integer
+
+      - name: item_nome
+        description: Nome do item prescrito.
+        data_type: string
+
+      - name: item_quantidade
+        description: Quantidade do item prescrito.
+        data_type: numeric
+
+      - name: unidade
+        description: Unidade de medida do item prescrito.
+        data_type: string
+
+      - name: via_administracao_nome
+        description: Nome da via de administração do item prescrito.
+        data_type: string
+
+      - name: via_administracao_sigla
+        description: Sigla da via de administração do item prescrito.
+        data_type: string
+
+      - name: posologia
+        description: Posologia do item prescrito.
+        data_type: string
+
+      - name: referencia
+        description: Referência do item prescrito.
+        data_type: integer
+
+      - name: inicio
+        description: Início da vigência do item prescrito.
+        data_type: string
+
+      - name: situacao
+        description: Situação do item prescrito.
+        data_type: string
+
+      - name: data_aprazamento
+        description: Data do aprazamento do item prescrito.
+        data_type: date
+
+      - name: hora_aprazamento
+        description: Hora do aprazamento do item prescrito.
+        data_type: time
+
+      - name: prestador_checagem
+        description: Nome do profissional responsável pela checagem da prescrição.
+        data_type: string
+
+      - name: data_evento
+        description: Data do evento de checagem da prescrição.
+        data_type: date
+
+      - name: hora_evento
+        description: Hora do evento de checagem da prescrição.
+        data_type: time
+
+      - name: suspenso
+        description: Indicador se o item prescrito está suspenso.
+        data_type: string
+
+      - name: quantidade
+        description: Quantidade de fatos.
+        data_type: integer
+
+      # Metadados
+      - name: extracted_at
+        description: Data e hora de extração do dado na origem.
+        data_type: string
+
+      - name: ano_particao
+        description: Ano de particionamento do dado.
+        data_type: string
+
+      - name: mes_particao
+        description: Mês de particionamento do dado.
+        data_type: string
+
+      - name: data_particao
+        description: Data de particionamento do dado.
+        data_type: date

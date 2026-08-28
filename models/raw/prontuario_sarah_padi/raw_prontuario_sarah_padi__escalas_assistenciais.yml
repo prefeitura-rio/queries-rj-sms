@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: raw_prontuario_sarah_padi__escalas_assistenciais
+    description: Dados referentes a escalas assistenciais aplicadas em pacientes no período.
+    columns:
+      - name: id_atendimento
+        description: Identificador do atendimento.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__escalas_assistenciais__id_atendimento__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - unique:
+              name: raw_prontuario_sarah_padi__escalas_assistenciais__id_atendimento__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      # Dados do Paciente
+      - name: id_paciente
+        description: Identificador do paciente.
+        data_type: string
+
+      - name: paciente_nome
+        description: Nome do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: paciente_sexo
+        description: Sexo do paciente.
+        data_type: string
+
+      - name: paciente_dtnasc
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: paciente_idade
+        description: Idade do paciente.
+        data_type: integer
+
+      # Escala
+      - name: data
+        description: Data da realização da escala assistencial.
+        data_type: date
+
+      - name: id_escala
+        description: Identificador da escala assistencial.
+        data_type: integer
+
+      - name: escala_nome
+        description: Nome da escala assistencial.
+        data_type: string
+
+      - name: escala_sigla
+        description: Sigla da escala assistencial.
+        data_type: string
+
+      - name: id_prestador
+        description: Identificador do profissional que realizou a escala assistencial.
+        data_type: string
+
+      - name: prestador_nome
+        description: Nome do profissional que realizou a escala assistencial.
+        data_type: string
+
+      - name: prestador_cargo
+        description: Cargo do profissional que realizou a escala assistencial.
+        data_type: string
+
+      - name: avaliacao
+        description: Avaliação da escala aplicada no paciente.
+        data_type: string
+
+      - name: id_avaliacao
+        description: Identificador da avaliação da escala aplicada no paciente.
+        data_type: integer
+
+      - name: pontuacao
+        description: Pontuação do paciente na escala assistencial.
+        data_type: integer
+
+      - name: quantidade
+        description: Quantidade de fatos.
+        data_type: integer
+
+      # Metadados
+      - name: extracted_at
+        description: Data e hora de extração do dado na origem.
+        data_type: string
+
+      - name: ano_particao
+        description: Ano de particionamento do dado.
+        data_type: string
+
+      - name: mes_particao
+        description: Mês de particionamento do dado.
+        data_type: string
+
+      - name: data_particao
+        description: Data de particionamento do dado.
+        data_type: date

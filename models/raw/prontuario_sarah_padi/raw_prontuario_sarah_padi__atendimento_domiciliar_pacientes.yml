@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: raw_prontuario_sarah_padi__atendimento_domiciliar_paciente
+  - name: raw_prontuario_sarah_padi__atendimento_domiciliar_pacientes
     description: Dados referentes a pacientes em atendimento domiciliar no período.
     columns:
       - name: id_atendimento

@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: raw_prontuario_sarah_padi__log_acessos
+    description: Dados referentes ao log de acessos de usuários ao sistema no período.
+    columns:
+      - name: data
+        description: Data da realização do log.
+        data_type: date
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__log_acessos__data__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: hora
+        description: Hora do evento no log de acessos.
+        data_type: time
+
+      - name: evento
+        description: Nome do evento no log de acesso.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__log_acessos__evento__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: usuario
+        description: Nome do usuário do log de acessos.
+        data_type: string
+
+      - name: cargo
+        description: Cargo do usuário.
+        data_type: string
+
+      - name: agenda_data_inicio
+        description: Data de início da agenda.
+        data_type: date
+
+      - name: agenda_hora_inicio
+        description: Hora de início da agenda.
+        data_type: time
+
+      - name: quantidade
+        description: Quantidade de fatos.
+        data_type: integer
+
+      # Metadados
+      - name: extracted_at
+        description: Data e hora de extração do dado na origem.
+        data_type: string
+
+      - name: ano_particao
+        description: Ano de particionamento do dado.
+        data_type: string
+
+      - name: mes_particao
+        description: Mês de particionamento do dado.
+        data_type: string
+
+      - name: data_particao
+        description: Data de particionamento do dado.
+        data_type: date
