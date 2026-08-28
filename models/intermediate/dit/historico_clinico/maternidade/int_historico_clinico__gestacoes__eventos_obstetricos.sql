@@ -273,7 +273,7 @@ WITH
                 CASE
                     WHEN e.fonte = 'prontuaRio' THEN e.prontuario_cnes
                     WHEN e.fonte = 'vitai' THEN e.vitai_cnes
-                    WHEN e.fonte = 'sisare' THEN e.sisare_cnes
+                    WHEN e.fonte = 'sisare' THEN CAST(e.sisare_cnes AS STRING)
                     WHEN e.fonte = 'mv' THEN COALESCE(
                         e.mv_admissao_cnes,
                         e.mv_alta_cnes,
