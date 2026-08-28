@@ -12,6 +12,22 @@ models:
           ordenado por prioridade.
 
     columns:
+      - name: id_evento_obstetrico
+        description: >
+          Identificador da evidencia obstetrica selecionada para representar o parto materno.
+          Para excecoes manuais, e gerado a partir do CPF, data de alta e CNES.
+
+      - name: subtipo_evento
+        description: >
+          Forma pela qual o parto foi identificado. Valores esperados: nascimento_rn,
+          registro_parto, desfecho_internacao, procedimento_parto, cid_parto e excecao_manual.
+
+      - name: origem_data_alta
+        description: >
+          Registro que forneceu a data de alta selecionada. Exemplos: prontuario_alta,
+          vitai_boletim, vitai_internacao, sisare_internacao, mv_alta_medica, mv_atendimento,
+          mv_gestante, mv_alta_fechamento e excecao_manual.
+
       - name: cpf
         description: >
           CPF da gestante.

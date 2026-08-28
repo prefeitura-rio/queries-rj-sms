@@ -188,6 +188,20 @@ WITH
                   )
                     THEN vin.saida_data
             END AS vitai_data_alta,
+            CASE
+                WHEN vb.alta_data IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(vb.alta_data) >= e.data_parto
+                  )
+                    THEN 'vitai_boletim'
+                WHEN vin.saida_data IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(vin.saida_data) >= e.data_parto
+                  )
+                    THEN 'vitai_internacao'
+            END AS vitai_origem_data_alta,
             COALESCE(veb.cnes, vei.cnes) AS vitai_cnes,
             sg.cpf AS sisare_cpf,
             sg.id_desfecho_gestacao AS sisare_id_desfecho_gestacao,
@@ -282,23 +296,81 @@ WITH
                       OR DATE(e.sisare_data_alta) >= e.data_parto
                   )
                     THEN DATE(e.sisare_data_alta)
-                WHEN e.fonte = 'mv' THEN
-                    CASE
-                        WHEN e.data_parto IS NULL
-                          OR DATE(COALESCE(
-                                e.mv_alta_medica_datahora,
-                                e.mv_atendimento_data_alta,
-                                e.mv_gestante_data_alta,
-                                e.mv_alta_datahora_fechamento
-                            )) >= e.data_parto
-                            THEN DATE(COALESCE(
-                                e.mv_alta_medica_datahora,
-                                e.mv_atendimento_data_alta,
-                                e.mv_gestante_data_alta,
-                                e.mv_alta_datahora_fechamento
-                            ))
-                    END
+                WHEN e.fonte = 'mv'
+                  AND e.mv_alta_medica_datahora IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.mv_alta_medica_datahora) >= e.data_parto
+                  )
+                    THEN DATE(e.mv_alta_medica_datahora)
+                WHEN e.fonte = 'mv'
+                  AND e.mv_atendimento_data_alta IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.mv_atendimento_data_alta) >= e.data_parto
+                  )
+                    THEN DATE(e.mv_atendimento_data_alta)
+                WHEN e.fonte = 'mv'
+                  AND e.mv_gestante_data_alta IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.mv_gestante_data_alta) >= e.data_parto
+                  )
+                    THEN DATE(e.mv_gestante_data_alta)
+                WHEN e.fonte = 'mv'
+                  AND e.mv_alta_datahora_fechamento IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.mv_alta_datahora_fechamento) >= e.data_parto
+                  )
+                    THEN DATE(e.mv_alta_datahora_fechamento)
             END AS data_alta_internacao,
+            CASE
+                WHEN e.fonte = 'prontuaRio'
+                  AND e.prontuario_data_alta IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.prontuario_data_alta) >= e.data_parto
+                  )
+                    THEN 'prontuario_alta'
+                WHEN e.fonte = 'vitai'
+                    THEN e.vitai_origem_data_alta
+                WHEN e.fonte = 'sisare'
+                  AND e.sisare_data_alta IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.sisare_data_alta) >= e.data_parto
+                  )
+                    THEN 'sisare_internacao'
+                WHEN e.fonte = 'mv'
+                  AND e.mv_alta_medica_datahora IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.mv_alta_medica_datahora) >= e.data_parto
+                  )
+                    THEN 'mv_alta_medica'
+                WHEN e.fonte = 'mv'
+                  AND e.mv_atendimento_data_alta IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.mv_atendimento_data_alta) >= e.data_parto
+                  )
+                    THEN 'mv_atendimento'
+                WHEN e.fonte = 'mv'
+                  AND e.mv_gestante_data_alta IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.mv_gestante_data_alta) >= e.data_parto
+                  )
+                    THEN 'mv_gestante'
+                WHEN e.fonte = 'mv'
+                  AND e.mv_alta_datahora_fechamento IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(e.mv_alta_datahora_fechamento) >= e.data_parto
+                  )
+                    THEN 'mv_alta_fechamento'
+            END AS origem_data_alta,
             NULLIF(REGEXP_REPLACE(CAST(
                 CASE
                     WHEN e.fonte = 'prontuaRio' THEN e.prontuario_cnes

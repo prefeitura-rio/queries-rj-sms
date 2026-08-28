@@ -18,6 +18,7 @@ with eventos_obstetricos_evidencias as (
         cpf,
         fonte,
         subtipo_evento,
+        origem_data_alta,
         data_parto,
         data_alta_internacao,
         cnes_estabelecimento,
@@ -243,6 +244,8 @@ base as (
 
     select
         g.id_evento_obstetrico,
+        g.subtipo_evento,
+        g.origem_data_alta,
         g.cpf,
         coalesce(ph.nome_hci, p.nome_sisare) as nome,
         p.municipio,
@@ -288,6 +291,8 @@ prontuario_cadastro_dedup as (
 prontuario_altas as (
     select
         ep.id_evento_obstetrico,
+        ep.subtipo_evento,
+        ep.origem_data_alta,
         ep.id_hci as gid_prontuario,
         ep.data_parto,
         ep.data_alta_internacao,
@@ -307,6 +312,8 @@ prontuario_altas as (
 base_prontuario as (
     select
         pa.id_evento_obstetrico,
+        pa.subtipo_evento,
+        pa.origem_data_alta,
         pa.cpf,
         pa.nome,
         pa.municipio,
@@ -366,6 +373,8 @@ mv_gestante_dedup as (
 mv_altas as (
     select
         ep.id_evento_obstetrico,
+        ep.subtipo_evento,
+        ep.origem_data_alta,
         ep.cpf,
         coalesce(
             ph.nome_hci,
@@ -397,6 +406,8 @@ mv_altas as (
 base_mv as (
     select
         ma.id_evento_obstetrico,
+        ma.subtipo_evento,
+        ma.origem_data_alta,
         ma.cpf,
         ma.nome,
         ma.municipio,
@@ -439,6 +450,8 @@ vitai_paciente_dedup as (
 vitai_altas as (
     select
         ep.id_evento_obstetrico,
+        ep.subtipo_evento,
+        ep.origem_data_alta,
         ep.cpf,
         coalesce(ph.nome_hci, nullif(trim(pac.nome), '')) as nome,
         'Rio de Janeiro' as municipio,
@@ -458,6 +471,8 @@ vitai_altas as (
 base_vitai as (
     select
         va.id_evento_obstetrico,
+        va.subtipo_evento,
+        va.origem_data_alta,
         va.cpf,
         va.nome,
         va.municipio,
@@ -542,6 +557,9 @@ telefones_agregados as (
 final as (
 
     select
+        b.id_evento_obstetrico,
+        b.subtipo_evento,
+        b.origem_data_alta,
         b.cpf,
         b.nome,
         b.municipio,
@@ -565,6 +583,14 @@ final as (
 excecao_disparo_puerperas as (
 
     select
+        {{ dbt_utils.generate_surrogate_key([
+            "'interno'",
+            "cpf",
+            "CAST(data_alta_internacao AS STRING)",
+            "cnes_maternidade_alta"
+        ]) }} as id_evento_obstetrico,
+        'excecao_manual' as subtipo_evento,
+        'excecao_manual' as origem_data_alta,
         cpf,
         nome,
         municipio,

@@ -150,6 +150,11 @@ models:
           gestante e o fechamento do sumario. No Vitai, usa a alta do boletim e, quando o boletim
           nao esta disponivel, a data de saida da internacao que originou o evento. Em todas as
           fontes, datas anteriores a data_parto sao descartadas.
+      - name: origem_data_alta
+        description: >
+          Registro de origem da data escolhida para data_alta_internacao. Exemplos:
+          prontuario_alta, vitai_boletim, vitai_internacao, sisare_internacao, mv_alta_medica,
+          mv_atendimento, mv_gestante e mv_alta_fechamento. Fica nulo quando nao ha data de alta.
       - name: cnes_estabelecimento
         description: >
           Codigo CNES do estabelecimento relacionado ao atendimento do evento, normalizado para
