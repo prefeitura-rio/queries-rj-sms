@@ -4,7 +4,7 @@
         alias="cientificalab",
         materialized="table",
         tags=["exames_laboratoriais"],
-        meta = {"owner": "daniel", "team": "cit"}
+        meta = {"owner": "daniel", "team": "cit"},
         partition_by={
             "field": "data_particao",
             "data_type": "date",
