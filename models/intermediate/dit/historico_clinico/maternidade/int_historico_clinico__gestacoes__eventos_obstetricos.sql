@@ -116,6 +116,15 @@ WITH
         ) = 1
     ),
 
+    vitai_internacao_deduplicada AS (
+        SELECT *
+        FROM {{ ref("raw_prontuario_vitai__internacao") }}
+        QUALIFY ROW_NUMBER() OVER (
+            PARTITION BY CAST(gid AS STRING)
+            ORDER BY updated_at DESC, imported_at DESC
+        ) = 1
+    ),
+
     vitai_estabelecimento_deduplicado AS (
         SELECT gid, cnes
         FROM {{ ref("raw_prontuario_vitai__m_estabelecimento") }}
@@ -164,8 +173,22 @@ WITH
             COALESCE(mg.id_cnes, mg.cnes) AS mv_gestante_cnes,
             mg.alta_medica_datahora AS mv_gestante_data_alta,
             vb.cpf AS vitai_boletim_cpf,
-            vb.alta_data AS vitai_data_alta,
-            ve.cnes AS vitai_cnes,
+            vin.cpf AS vitai_internacao_cpf,
+            CASE
+                WHEN vb.alta_data IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(vb.alta_data) >= e.data_parto
+                  )
+                    THEN vb.alta_data
+                WHEN vin.saida_data IS NOT NULL
+                  AND (
+                      e.data_parto IS NULL
+                      OR DATE(vin.saida_data) >= e.data_parto
+                  )
+                    THEN vin.saida_data
+            END AS vitai_data_alta,
+            COALESCE(veb.cnes, vei.cnes) AS vitai_cnes,
             sg.cpf AS sisare_cpf,
             sg.id_desfecho_gestacao AS sisare_id_desfecho_gestacao,
             sg.desfecho_gestacao AS sisare_desfecho_gestacao,
@@ -193,9 +216,15 @@ WITH
         LEFT JOIN vitai_boletim_deduplicado vb
             ON e.fonte = 'vitai'
             AND CAST(vb.gid AS STRING) = e.id_hci
-        LEFT JOIN vitai_estabelecimento_deduplicado ve
+        LEFT JOIN vitai_internacao_deduplicada vin
             ON e.fonte = 'vitai'
-            AND CAST(ve.gid AS STRING) = CAST(vb.gid_estabelecimento AS STRING)
+            AND CAST(vin.gid AS STRING) = e.id_evento_origem
+        LEFT JOIN vitai_estabelecimento_deduplicado veb
+            ON e.fonte = 'vitai'
+            AND CAST(veb.gid AS STRING) = CAST(vb.gid_estabelecimento AS STRING)
+        LEFT JOIN vitai_estabelecimento_deduplicado vei
+            ON e.fonte = 'vitai'
+            AND CAST(vei.gid AS STRING) = CAST(vin.gid_estabelecimento AS STRING)
         LEFT JOIN sisare_gestante_deduplicada sg
             ON e.fonte = 'sisare'
             AND CAST(sg.id_internacao AS STRING) = e.id_hci
@@ -216,6 +245,7 @@ WITH
                 NULLIF(REGEXP_REPLACE(CAST(e.mv_atendimento_cpf AS STRING), r'\D', ''), ''),
                 NULLIF(REGEXP_REPLACE(CAST(e.mv_gestante_cpf AS STRING), r'\D', ''), ''),
                 NULLIF(REGEXP_REPLACE(CAST(e.vitai_boletim_cpf AS STRING), r'\D', ''), ''),
+                NULLIF(REGEXP_REPLACE(CAST(e.vitai_internacao_cpf AS STRING), r'\D', ''), ''),
                 NULLIF(REGEXP_REPLACE(CAST(e.sisare_cpf AS STRING), r'\D', ''), '')
             ) AS cpf,
             e.id_hci,
