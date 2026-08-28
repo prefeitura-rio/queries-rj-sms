@@ -21,10 +21,9 @@ models:
       - name: id_paciente
         description: >
           Identificador da paciente ou mae quando a fonte fornece esse dado. Pode vir, por exemplo,
-          da camada integrada de episodios assistenciais, do Vitai ou do MV. No SISARE, o
-          identificador da gestante/internacao e preservado em id_evento_origem, mas id_paciente
-          fica nulo neste modelo. Tambem fica nulo quando a fonte do evento nao possui identificador
-          de paciente confiavel nesse ponto do fluxo.
+          da camada integrada de episodios assistenciais, do Vitai, do MV ou do SISARE. Tambem
+          fica nulo quando a fonte do evento nao possui identificador de paciente confiavel nesse
+          ponto do fluxo.
         policy_tags:
           - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
       - name: cpf
@@ -76,8 +75,8 @@ models:
         description: >
           Mecanismo usado para classificar o evento. Exemplos: cid_gestacao para CIDs Z321, Z34 e
           Z35 nas condicoes do episodio assistencial; prenatal para registros de pre-natal da
-          Vitacare; nascimento_rn para parto identificado por recem-nascido; registro_parto para
-          data de parto estruturada;
+          Vitacare; nascimento_rn para parto identificado pelo registro do recem-nascido no Vitai
+          ou pela admissao neonatal do MV; registro_parto para data de parto estruturada;
           registro_aborto para data ou desfecho estruturado de aborto; registro_puerperio para
           indicacao estruturada de puerperio; cid_parto e cid_aborto para evidencias por CID;
           procedimento_parto, procedimento_aborto e procedimento_puerperio para evidencias por
@@ -106,7 +105,9 @@ models:
           parto ou de CIDs/alta que indicam parto. Na alta do MV, quando um texto livre de
           procedimento e classificado como parto, recebe a data usada para o evento da alta
           (alta_medica_datahora, alta_datahora_fechamento ou atendimento_datahora), e nao
-          necessariamente a data exata do parto.
+          necessariamente a data exata do parto. No SISARE, permanece nula quando dt_parto nao e
+          informado; nesse caso, dt_saida posiciona o evento em data_evento sem ser tratado como
+          data efetiva do parto.
       - name: data_puerperio
         description: >
           Data da avaliacao puerperal quando a evidencia indica puerperio. Pode vir de campo
@@ -142,6 +143,24 @@ models:
           Descricao do procedimento quando disponivel. Pode vir do nome do procedimento no Vitai,
           do dicionario SIGTAP usado para interpretar codigos do ProntuaRio ou do texto livre de
           procedimentos_realizados da alta do MV.
+      - name: data_alta_internacao
+        description: >
+          Data de alta do atendimento hospitalar relacionado ao evento, quando disponivel. No MV,
+          consolida, nesta ordem, a alta medica do sumario, a alta do atendimento, a alta da
+          gestante e o fechamento do sumario. Em todas as fontes, datas anteriores a data_parto
+          sao descartadas.
+      - name: cnes_estabelecimento
+        description: >
+          Codigo CNES do estabelecimento relacionado ao atendimento do evento, normalizado para
+          conter apenas digitos.
+      - name: id_desfecho_gestacao
+        description: >
+          Identificador do desfecho da gestacao quando fornecido pela fonte. Atualmente preenchido
+          para eventos do SISARE.
+      - name: desfecho_gestacao
+        description: >
+          Descricao do desfecho da gestacao quando fornecida pela fonte. Atualmente preenchida
+          para eventos do SISARE.
       - name: loaded_at
         description: >
           Data e hora de carga do registro de origem, quando disponivel. E usada como criterio de

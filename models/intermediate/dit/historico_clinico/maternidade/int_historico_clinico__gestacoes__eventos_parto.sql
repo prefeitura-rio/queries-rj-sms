@@ -284,7 +284,13 @@ WITH
             ]) }} AS id_evento_obstetrico,
             CAST(NULL AS STRING) AS id_paciente,
             REGEXP_REPLACE(CAST(paciente_cpf AS STRING), r'\D', '') AS cpf,
-            CAST(id_hci AS STRING) AS id_hci,
+            -- A admissao gera id_hci com os componentes em ordem diferente das demais
+            -- tabelas do MV. Recriamos a chave na ordem canonica para vincular o mesmo
+            -- atendimento a gestante, atendimento e alta.
+            {{ dbt_utils.generate_surrogate_key([
+                "id_atendimento",
+                "id_cnes"
+            ]) }} AS id_hci,
             'mv' AS fonte,
             CAST(id_hci AS STRING) AS id_evento_origem,
             DATE(COALESCE(
@@ -292,7 +298,7 @@ WITH
                 SAFE.PARSE_DATETIME('%Y/%m/%d %H:%M:%S', parto_nascimento_datahora)
             )) AS data_evento,
             'parto' AS tipo_evento,
-            'registro_parto' AS subtipo_evento,
+            'nascimento_rn' AS subtipo_evento,
             CAST(NULL AS DATE) AS data_inicio_gestacao,
             DATE(COALESCE(
                 SAFE_CAST(parto_nascimento_datahora AS DATETIME),
@@ -414,9 +420,9 @@ WITH
 -- SISARE: base enriquecida de gestantes, mantendo a fonte operacional separada dos prontuarios
     sisare_gestantes AS (
         SELECT
-            CAST(NULL AS STRING) AS id_paciente,
+            CAST(s.id_paciente AS STRING) AS id_paciente,
             NULLIF(REGEXP_REPLACE(CAST(s.cpf AS STRING), r'\D', ''), '') AS cpf,
-            CAST(NULL AS STRING) AS id_hci,
+            CAST(s.id_internacao AS STRING) AS id_hci,
             CAST(s.id_gestante AS STRING) AS id_gestante,
             CAST(s.id_paciente AS STRING) AS id_paciente_sisare,
             CAST(s.id_internacao AS STRING) AS id_internacao,
@@ -446,7 +452,9 @@ WITH
             {% endif %}
     ),
 
--- SISARE: parto informado diretamente na gestante
+-- SISARE: parto informado diretamente na gestante ou inferido pelo desfecho da internacao.
+-- Quando dt_parto nao esta disponivel, dt_saida posiciona o evento no tempo, mas data_parto
+-- permanece nula para nao confundir alta hospitalar com a data efetiva do parto.
     eventos_sisare_parto AS (
         SELECT
             {{ dbt_utils.generate_surrogate_key([
@@ -454,18 +462,21 @@ WITH
                 "id_gestante",
                 "id_internacao",
                 "'parto'",
-                "CAST(dt_parto AS STRING)"
+                "CAST(COALESCE(dt_parto, dt_saida) AS STRING)"
             ]) }} AS id_evento_obstetrico,
             id_paciente,
             cpf,
             id_hci,
             'sisare' AS fonte,
             CONCAT(id_gestante, '|', COALESCE(id_internacao, '')) AS id_evento_origem,
-            dt_parto AS data_evento,
+            COALESCE(dt_parto, dt_saida) AS data_evento,
             'parto' AS tipo_evento,
-            'registro_parto' AS subtipo_evento,
+            CASE
+                WHEN dt_parto IS NOT NULL THEN 'registro_parto'
+                ELSE 'desfecho_internacao'
+            END AS subtipo_evento,
             CAST(NULL AS DATE) AS data_inicio_gestacao,
-            dt_parto AS data_fim_gestacao,
+            COALESCE(dt_parto, dt_saida) AS data_fim_gestacao,
             dt_parto AS data_parto,
             CAST(NULL AS DATE) AS data_puerperio,
             CAST(NULL AS DATE) AS dpp,
@@ -476,7 +487,11 @@ WITH
             loaded_at,
             data_particao
         FROM sisare_gestantes
-        WHERE dt_parto IS NOT NULL
+        WHERE id_gestante IS NOT NULL
+          AND id_paciente_sisare IS NOT NULL
+          AND id_internacao IS NOT NULL
+          AND id_desfecho_internacao IN (1, 3)
+          AND COALESCE(dt_parto, dt_saida) IS NOT NULL
     ),
 
 -- Dicionario de procedimentos para interpretar codigos do ProntuaRio

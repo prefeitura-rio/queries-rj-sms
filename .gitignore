@@ -13,3 +13,7 @@ target-base/
 .cursorignore
 .cursor/
 dbt_internal_packages/
+/analysis/
+.claude/settings.json
+/:USERPROFILE\\.claude\\settings.json
+seeds/

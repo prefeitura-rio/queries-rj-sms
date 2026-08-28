@@ -5,9 +5,11 @@ models:
     description: >
           Tabela do projeto Cegonha Digital que consolida eventos hospitalares de parto
           registrados no SISARE, ProntuaRio, MV e Vitai, com dados de contato da gestante
-          validados para disparo via WhatsApp. Para cada gestante, os telefones são consolidados
-          a partir do agendamento do Cegonha Digital e enriquecidos com os prontuários da SMS
-          (Vitacare, Vitai e ProntuaRio), sendo armazenados em um array ordenado por prioridade.
+          validados para disparo via WhatsApp. As diferentes evidencias de um mesmo parto,
+          incluindo registros de recem-nascido, procedimentos e CIDs, sao consolidadas em uma
+          unica linha materna por fonte e atendimento. Para cada gestante, os telefones sao
+          consolidados a partir do Cegonha Digital, Vitacare e Vitai e armazenados em um array
+          ordenado por prioridade.
 
     columns:
       - name: cpf
@@ -16,7 +18,8 @@ models:
 
       - name: nome
         description: >
-          Nome completo da gestante conforme cadastro na fonte de origem.
+          Nome da gestante. Prioriza o cadastro consolidado do Histórico Clínico Integrado e usa
+          o nome do prontuário de origem como fallback.
 
       - name: municipio
         description: >
@@ -75,11 +78,12 @@ models:
 
       - name: telefones_gestante
         description: >
-          Array de structs com os telefones da gestante consolidados a partir das fontes válidas
-          para disparo via WhatsApp, ordenados por prioridade. Cada elemento contém:
+          Array de structs com os telefones da gestante consolidados no proprio mart a partir das
+          fontes validas para disparo via WhatsApp, ordenados por prioridade. O array fica vazio
+          quando nenhuma das tres fontes possui telefone. Cada elemento contem:
           - telefone_original: número bruto conforme registrado na origem.
-          - origem: fonte do telefone. Valores possíveis: cegonha, vitacare, vitai, prontuaRio.
-          - prioridade: ordem de preferência do telefone (1 = cegonha, 2 = vitacare, 3 = vitai, 4 = prontuaRio).
+          - origem: fonte do telefone. Valores possíveis: cegonha, vitacare e vitai.
+          - prioridade: ordem de preferência do telefone (1 = cegonha, 2 = vitacare, 3 = vitai).
           - telefone_valido_whatsapp: telefone validado e padronizado no formato 55DDD9XXXXXXXX
             para disparo via WhatsApp. Nulo quando o número não atende aos critérios de validade.
           - motivo_invalidacao_telefone: motivo pelo qual o telefone foi considerado inválido.
