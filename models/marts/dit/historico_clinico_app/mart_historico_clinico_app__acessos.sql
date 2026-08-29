@@ -34,26 +34,30 @@ with
     select *, 1 as prioridade
     from acessos_automatico
   ),
-  remove_vinculos_sem_acesso as (
-      select 
-        cpf, 
-        nome_completo, 
-        prioridade,
-        array_agg(
-          struct(
-            unidade_nome,
-            unidade_tipo,
-            unidade_cnes,
-            unidade_ap,
-            funcao_detalhada,
-            funcao_grupo,
-            nivel_acesso,
-            granularidade_acesso
-          )
-        ) as vinculos
-      from uniao as p, unnest(p.vinculos) as v
-      where v.nivel_acesso is not null
-      group by 1,2,3
+  remove_sem_acesso_adiciona_equipe as (
+    select
+      p.cpf,
+      p.nome_completo,
+      p.prioridade,
+      array_agg(
+        struct(
+          v.unidade_nome,
+          v.unidade_tipo,
+          v.unidade_cnes,
+          v.unidade_ap,
+          v.funcao_detalhada,
+          v.funcao_grupo,
+          v.nivel_acesso,
+          v.granularidade_acesso,
+          equipe.equipe_ine,
+          equipe.equipe_nome
+        )
+      ) as vinculos
+    from uniao as p, unnest(p.vinculos) as v
+    left join {{ ref("int_cadastro__equipe_saude_familia") }} as equipe
+      on (p.cpf = equipe.cpf and v.unidade_cnes = equipe.id_cnes)
+    where v.nivel_acesso is not null
+    group by 1,2,3
   ),
 
   -- -----------------------------------------
@@ -61,11 +65,11 @@ with
   -- -----------------------------------------
   busca_maior_prioridade as (
     select *
-    from remove_vinculos_sem_acesso
+    from remove_sem_acesso_adiciona_equipe
     qualify row_number() over (partition by cpf order by prioridade desc) = 1
   ),
 
-  removendo_treinamento as (
+  remove_treinamento as (
     select busca_maior_prioridade.*
     from busca_maior_prioridade, unnest(vinculos) as v
     where v.nivel_acesso != 'training'
@@ -78,7 +82,7 @@ with
     select
       *,
       row_number() over (partition by cpf order by prioridade desc) as rn
-    from removendo_treinamento
+    from remove_treinamento
   ),
   deduped as (
     select * except(rn, prioridade)
