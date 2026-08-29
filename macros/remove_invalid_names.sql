@@ -4,10 +4,17 @@ case
     when {{ process_null(text) }} is null
         then null
 
-    when upper({{text}}) like '%CMS%'
+    -- Vááááários casos de nome de unidade/referência de onde está
+    -- ex.: "CLINICA MEDICA CMS EA", "OBSERVACAO CLINICA CMSRPS", "SMS CMS MILTON FONTES MAGARAO", ...
+    -- Ao que parece indicando pacientes que não devem ter atendimentos agendados
+    -- por serem de outra unidade
+    when regexp_contains(
+        {{ text }},
+        r'(?i)^(SMS|GERENCIA|SETORES|FARMACIA|OC|(SALA\s*DE\s*)?OBSERVACAO(\s*CLINICA)?|CLINICA\s*MEDICA|(SALA\s*DE\s*)?CURATIVOS?|SAUDE\s*BUCAL|ODONTO(LOGIA)?|PROCEDIMENTOS?|EQUIPE(\s+[A-Z]+)?|(PACIENTES?)?\s*(D[AOE]|PERTENCE(\s*AO)?|FORA(\s*D[AOE])?(\s*AREA)?)?|MUDOU|POLO\s*DE\s*[A-Z]*|[\-\s])*(CMS|CF)'
+    )
         then null
 
-    -- Valores que são só uma letra, repetida 1 ou mais vezes
+    -- Textos que são só uma letra, repetida 1 ou mais vezes
     -- ou só uma corrente de dígitos, sem letras (ex. CNS)
     -- Não, não tem como fazer mais bonitinho, o RegEx daqui não suporta backreference
     -- [Ref] https://github.com/google/re2/issues/512
@@ -21,24 +28,56 @@ case
     )
         then null
 
+    -- Textos que são somente consoantes
+    -- Não podemos considerar W e Y como consoantes porque
+    -- existem 'Wlly's (https://nomesdobrasil.net/nomes/wlly) etc
+    when '' = REGEXP_REPLACE(
+        NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
+        r'(?i)[^AEIOUWY]', -- Substitui tudo que não for vogal (com leniência pra W/Y)
+        ''                 -- por nada
+    )
+        then null
+
+    when REGEXP_CONTAINS(
+        REGEXP_REPLACE(
+            NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
+            r'[^\p{Letter} ]', -- Substitui tudo que não for letra ou espaço
+            ''                 -- por nada
+        ),
+        r'(?i)^\s*T\s*E\s*S\s*T\s*E\b'
+    )
+        then null
+
+    -- Uma quantidade absurda de "IGNORADO"s escrito errado
+    -- Aqui queremos pegar:
+    -- * Basicamente todas as escritas incorretas de 'ignorado' encontradas
+    -- * pai/mãe ignorad@
+    -- * foi ignorado
+    -- * "IGN.. M" ou "IGN.. F" (descrevendo sexo no nome desconhecido)
+    -- Mas precisamos ter cuidado pra não apagar nomes reais
+    -- ex.: Ignacio, Igor, etc
+    when REGEXP_CONTAINS(
+        REGEXP_REPLACE(
+            NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
+            r'[^\p{Letter}]', -- Substitui tudo que não for letra
+            ''                 -- por nada
+        ),
+        r'(?i)^(PAI|E|OU|MAE|FOI)*((IN?G(N|M)?)+(X|M|F)*$|(GNO|IGBNO|IGINO|IGN|IGNA|IGNBO|IGNO|IGNOA|IGNOI|IGNOP|IGNRO|IGONA|IGONO|IGORA|IGTNO|IGUNO|INGNO|INO|UGNO)R*A?N?D?(O|A|AO|OA|OS|R|FO|OU)?$)'
+    )
+        then null
 
     -- Descrições de falta de dados
-    when REGEXP_REPLACE(
-        TRIM(
-            UPPER(
-                REGEXP_REPLACE(
-                    NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
-                    r'[^\p{Letter} ]', -- Substitui tudo que não for letra ou espaço
-                    ''                 -- por nada
-                )
-            )
-        ),
-        r'\s{2,}', -- Substitui múltiplos whitespaces
-        ' '        -- por um espaço só
+    when 
+    UPPER(
+        REGEXP_REPLACE(
+            NORMALIZE({{ text }}, NFD), -- Remove acentos, marcas
+            r'[^\p{Letter}]', -- Substitui tudo que não for letra
+            ''                -- por nada
+        )
     ) in (
         ----------------------
         -- Todos os casos abaixo são exemplos reais com
-        -- pelo menos 10 ocorrências na base da Vitai :x
+        -- múltiplas ocorrências :x
         ----------------------
         -- "Avellar que coisa horrível por que não usar um RegEx ou um LLM ou-"
         -- Porque tem muita variação e complexidade, e eu tenho medo de apagar
@@ -47,215 +86,488 @@ case
         '',
         'SIM', 'NAO',
         'TRUE', 'FALSE',
-        ----------------------
-        'NC',
-        'N C',
-        'N CONSTA',
-        'NAO CONSTA',
-        'NAO CONSTA NO RG',
-        'NAO CONSTA NO DOC',
-        'NAO CONSTA NO DOCUMENTO',
         -- Typos
-        'NAO CONTA',
-        'NAO COSTA',
-        'NAO COSNTA',
+        'NAP', 'NAAO', 'NAON',
         ----------------------
-        'ND', 'NDC',
-        'N D',
-        'N DECLARADO', 'N DECLARADA',
-        'NAO DEC',
-        'NAO DECLARO', 'NAO DECLARA',
-        'NAO DECLARAD',
-        'NAO DECLARADO', 'NAO DECLARADA',
-        'NAO DECLARADO NO DOCUMENTO',
-        'NAO DECLAROU',
-        'NAO DECLARANTE',
-        -- Typos
-        'N AO DECLARADO',
-        'NAO DE CLARADO',
-        'NAO DECALARADO',
-        'NAO DECALRADO',
-        'NAO DECLADO',
-        'NAO DECLARACAO',
-        'NAO DECLARARDO',
-        'NAO DECLARDA',
-        'NAO DECLARDO',
-        'NAO DECLRADO',
-        'NAO DELARADO',
-        'NAO DELCARADO',
+        -- Não consta
         ----------------------
-        'NI', 'IN', 'NIF', 'N F',
-        'N I',
-        'N IN',
-        'N INF',
-        'N INFO',
-        'N INFOR',
-        'N INFORM',
-        'N INFORMA',
-        'N INFORMOU',
-        'N INFORMADO', 'N INFORMADA',
-        'NAO I',
-        'NAO IN',
-        'NAO INF',
-        'NAO INFO',
-        'NAO INFOR',
-        'NAO INFORM',
-        'NAO INFORMA',
-        'NAO INFORMAD',
-        'NAO INFORMADO', 'NAO INFORMADA',
-        'NAO INFORMOU', 'NAO  INFORMOU',
-        'NAO INFPELO BOMB', 'NAO INF PELO BOMB',
-        'NAO INFORMADO PELO BOMB', 'NAO INFORMADO PELO BOMBEIRO', 
-        'NAO INFORMADO PELO ACOMPANHANTE', 'NAO INFORMADO PELA ACOMPANHANTE',
-        'NAO INFORMADO SEM DOC',
-        'NAO QUIS INFORMAR',
-        'NAO FOI INFORMADO',
+        'NAOC',
+        'NAOCO',
+        'CONSTA',
+        'NCONST',
+        'NCONSTA',
+        'NAOCONST',
+        'NAOCONSTA',
+        'NAOCONSTANORG',
+        'NAOCONSTANODOC',
+        'NAOCONSTANODOCUMENTO',
+        'FALTA',
+        'NAODIZ',
         -- Typos
-        'N AO INFORMADO',
-        'N IFORMADO',
-        'N NIFORMADO',
-        'NAO ,INF',
-        'NAO IF',
-        'NAO IFN',
-        'NAO IFORMADO',
-        'NAO IINF',
-        'NAO IMF',
-        'NAO IMFORMADO',
-        'NAO IN F',
-        'NAO INDORMADO',
-        'NAO INFIRMADO',
-        'NAO INFOEMADO',
-        'NAO INFOIRMADO',
-        'NAO INFOMADO',
-        'NAO INFORAMADO',
-        'NAO INFORAMDO',
-        'NAO INFORMA DO',
-        'NAO INFORMACAO',
-        'NAO INFORMAFO',
-        'NAO INFORMANDO',
-        'NAO INFORMAO',
-        'NAO INFORMAOD',
-        'NAO INFORMAR',
-        'NAO INFORMARDO',
-        'NAO INFORMDO',
-        'NAO INFORME',
-        'NAO INFORNADO',
-        'NAO INFRMADO',
-        'NAO INFROMADO',
-        'NAO INOFRMADO',
-        'NAO INORMADO',
-        'NAO IONFORMADO',
-        'NAO NFORMADO',
-        'NAO NINFORMADO',
+        'NCOSTA',
+        'NCOSNTA',
+        'NAOCONTA',
+        'NAOCONSA',
+        'NAOCOSTA',
+        'NAOCOSNTA',
+        'NCE',
+        ----------------------
+        'NDO', 'NDA',
+        'NDEC',
+        'NDECL',
+        'NDECLARADO', 'NDECLARADA',
+        'NAOD',
+        'NAODE',
+        'NAODEC',
+        'NAODECLARO', 'NAODECLARA',
+        'NAODECLARAD',
+        'NAODECLARADO', 'NAODECLARADA',
+        'NAODECLARADONODOCUMENTO',
+        'NAODECLAROU',
+        'NAODECLARANTE',
+        -- Typos
+        'NADECLA',
+        'NAODECALARADO',
+        'NAODECALRADO',
+        'NAODECLADO',
+        'NAODECLARACAO',
+        'NAODECLARARDO',
+        'NAODECLARDA',
+        'NAODECLARDO',
+        'NAODECLRADO',
+        'NAODELARADO',
+        'NAODELCARADO',
+        ----------------------
+        -- Não informa
+        ----------------------
+        'INFO',
+        'INFOR',
+        'INFORM',
+        'INFORMA',
+        'INFORMAR',
+        'INFORMADO',
+        'NI', 'IN',
+        'NIF', 'INF',
+        'NIN',
+        'NINF',
+        'NINFO',
+        'NINFOR',
+        'NINFORM',
+        'NINFORMA',
+        'NINFORMOU',
+        'NINFORMADO', 'NINFORMADA',
+        'NAOI',
+        'NAOIN',
         'NAOINF',
+        'NAOINFO',
+        'NAOINFOR',
+        'NAOINFORM',
         'NAOINFORMA',
-        'NAOINFORMADO',
+        'NAOINFORMAD',
+        'NAOINFORMADO', 'NAOINFORMADA',
+        'NAOINFORMOU',
+        'NAOINFPELOBOMB', 'NAOINFPELOBOMB',
+        'NAOINFORMADOPELOBOMB',
+        'NAOINFORMADOPELOBOMBEIRO',
+        'NAOINFORMADOPELOACOMPANHANTE', 'NAOINFORMADOPELAACOMPANHANTE',
+        'NAOINFORMADOSEMDOC',
+        'NAOQUISINFORMAR',
+        'NAOFOIINFORMADO',
+        'NAODISSE',
+        'NAODITO',
+        'NAODEU',
+        -- Typos
+        'INFORN',
+        'INFOPR',
+        'MINF',
+        'NFOR',
+        'NIFORMADO',
+        'NNIFORMADO',
+        'NUNF',
+        'NINDF',
+        'NINFOT',
+        'NAIINF',
+        'NAOENF',
+        'NAOIF',
+        'NAOIFN',
+        'NAOIFORMADO',
+        'NAOIINF',
+        'NAOIMF',
+        'NAOIMFORMADO',
+        'NAOINFR',
+        'NAOINDORMADO',
+        'NAOINFIRMADO',
+        'NAOINFOEMADO',
+        'NAOINFOIRMADO',
+        'NAOINFOMADO',
+        'NAOINFORAMADO',
+        'NAOINFORAMDO',
+        'NAOINFORMACAO',
+        'NAOINFORMAFO',
+        'NAOINFORMANDO',
+        'NAOINFORMAO',
+        'NAOINFORMAOD',
+        'NAOINFORMAR',
+        'NAOINFORMARDO',
+        'NAOINFORMDO',
+        'NAOINFORME',
+        'NAOINFORNADO',
+        'NAOINFRMADO',
+        'NAOINFROMADO',
+        'NAOINOFRMADO',
+        'NAOINORMADO',
+        'NAOIONFORMADO',
+        'NAONFORMADO',
+        'NAONINFORMADO',
+        'NAOIMF',
+        'NAOINFF',
+        'NAONF',
         'NAOMINF',
-        'NSO INF',
-        'NSO INFORMADO',
+        'NSOINF',
+        'NSOINFORMADO',
+        'NOAINF',
         ----------------------
-        'NAO IDEN',
-        'NAO IDENT',
-        'NAO IDENTI',
-        'NAO IDENTIFICADO', 'NAO IDENTIFICADA',
-        -- Typos
-        'NAO IDENFICADO',
-        'NAO IND',
-        'NAO INDENT',
-        'NAO INDENTIFICADO', 'NAO INDENTIFICADA',
+        -- Não identificado
         ----------------------
-        'NP',
-        'NAO HA',
-        'N TEM', 'NAO TEM',
-        'NAO POSSUI',
-        'NAO TROUXE', 'NAO TROUXE DOC',
+        'NID',
+        'NAOID',
+        'NAOIDE',
+        'NAOIDEN',
+        'NAOIDENT',
+        'NAOIDENTI',
+        'NAOIDENTIFICADO', 'NAOIDENTIFICADA',
         -- Typos
+        'NIDENT',
+        'NIDENF',
+        'NAIID',
+        'NAOIDENFICADO',
+        'NAOIND',
+        'NAOINDENT',
+        'NAOINDENTIFICADO', 'NAOINDENTIFICADA',
+        ----------------------
+        -- Não possui/tem/há/trouxe
+        ----------------------
+        'POSSUI',
+        'NAOP',
+        'NPOSSUI',
         'NAOPOSSUI',
+
+        'TEM',
+        'NTEM',
+        'NAOT',
+        'NAOTEM',
+        'TEMNAUM',
+
+        'NHA', 'HA',
+        'NAOHA',
+
+        'NAOTROUXE', 'NAOTROUXEDOC',
+
+        'NFEZ',
+        'NAOFEZ',
+
+        'EXISTE',
+        'NEXISTE',
+        'NAOEXISTE',
+        'INEXISTE',
+        -- Typos
+        'NATEM',
+        'NAATEM',
+        'NAAOTEM',
+        'NAOTE',
+        'NAOTM',
+        'NAITEM',
+        'NOATEM',
+        'ANOTEM',
+        'NAOTEN',
+        'NAOTEMN',
+        'NA',
+        'NAOJA',
+        'NAIHA',
+        'NAPTEM',
+        'NATTEM',
+        'NAOTWM',
+        'INESISTE',
         ----------------------
-        'NS',
-        'N S',
-        'N SABE',
-        'NAO SEI',
-        'NAO SABE',
-        'NAO SABER',
-        'NAO SABE INF',
-        'NAO SABE INFORMAR',
-        'NAO SOUBE',
-        'NAO SOUBE INFORMAR',
-        'NAO LEMBRA',
+        -- Não sabe
+        ----------------------
+        'NSA',
+        'SABE',
+        'NSEI',
+        'NSABE',
+        'NAOSEI',
+        'NAOSABE',
+        'NAOSABER',
+        'NAOSABEINF',
+        'NAOSABEINFORMAR',
+        'NAOSOUBE',
+        'NAOSOUBEINFORMAR',
+        'NAOLEMBRA',
+        'SEILA',
+        -- Typos
+        'SOUBE',
+        'NAOSBE',
+        'NAOSBAE',
+        ----------------------
+        -- Sem informação
         ----------------------
         'SI',
+        'SIN',
+        'SINF',
+        'SINFO',
+        'SINF',
+        'SINFO',
+        'SINFOR',
+        'SINFORM',
         'SEM',
-        'SEM IN',
-        'SEM INF',
-        'SEM INFO',
-        'SEM INFOR',
-        'SEM INFORM',
-        'SEM INFORMA',
-        'SEM INFORMACA',
-        'SEM INFORMACAO',
-        'SEM INFORMACOES',
+        'SEMI',
+        'SEMIN',
+        'SEMINF',
+        'SEMINFO',
+        'SEMINFOR',
+        'SEMINFORM',
+        'SEMINFORMA',
+        'SEMINFORMACA',
+        'SEMINFORMACAO',
+        'SEMINFORMACOES',
+        'INFORMACAO',
         -- Typos
-        'SEM IFORMACAO',
-        'SEM INFOMACAO',
-        'SEM INFORMADO',
-        'SEM INFORMAO',
-        'SEM INFORMAAO',
-        'SEM INFORMAAAO',
-        'SEM INFORMCAO',
-        'SEM IMFORMACAO',
+        'DEMINF',
+        'INFSEM',
+        'SE',
+        'SEINF',
+        'SEN',
+        'SENINF',
+        'SEMNF',
+        'SEMIF',
+        'SEMIR',
+        'SEMIFORMACAO',
+        'SEMINFOMACAO',
+        'SEMINFORMADO',
+        'SEMINFORMAO',
+        'SEMINFORMAAO',
+        'SEMINFORMAAAO',
+        'SEMINFORMCAO',
+        'SEMIM',
+        'SEMIMFORMACAO',
+        'SEMIF',
+        'SEMIN',
+        'SEMINFOR',
+        'SEMM',
+        'SEMIMF',
+        'SEMIND',
+        'SRMINF',
+        'SMIN',
+        'SMINF',
+        'SMINFO',
         ----------------------
-        'SN',
-        'SEM N',
-        'SEM NOME',
-        'SEM IDENTIFICACAO',
-        'SEM REGISTRO',
-        'SEM CADASTRO',
-        'SEM DADOS',
-        'SEM DOC',
-        'SEM DOCUMENTO',
-        'SEM DOCUMENTACAO',
+        -- Sem nome
+        ----------------------
+        'SNOME',
+        'SEMN',
+        'SEMNOM',
+        'SEMNOME',
+        'NOMESEM',
+        'SID',
+        'SIDENT',
+        'SEMID',
+        'SEMIDEN',
+        'SEMIDENT',
+        'SEMIDENTIFICACAO',
+        'SEMR',
+        'SEMRG',
+        'SEMREG',
+        'SEMREGISTRO',
+        'SEMCADASTRO',
+        'SEMDOC',
+        'SEMDOCUMENTO',
+        'SEMDOCUMENTACAO',
+        'SEMDADOS',
         -- Typos
-        'SEM IDENTIFICAO',
-        'SEM INDENTIFICACAO',
+        'SENOME',
+        'SMNOME',
+        'SENNOME',
+        'SEMNME',
+        'SMENOME',
+        'SEIDE',
+        'SEIDEN',
+        'SENRG',
+        'SEMR',
+        'SEMIDENTIFICAO',
+        'SEMINDENTIFICACAO',
         ----------------------
-        'SEM FILIACAO',
-        'SEM MAE', 'SEM PAI',
+        -- Não registrado
         ----------------------
+        'NREG',
+        'NAOREG',
+        ----------------------
+        -- Sem filiação/pai/mãe
+        ----------------------
+        'SEMF',
+        'SEMFILIACAO',
+        'SMAE', 'SSMAE',
+        'SMMAE',
+        'SOMAE', 'SOAMAE',
+        'SEMMAE', 'TEMMAE',
+        'MAE', 'MAEDE',
+        'MAEIG',
+        'MAENAO',
+        'NOMEMAE',
+        'MAEVIVA',
+        'FALTAMAE',
+
+        'SPAI', 'SSPAI',
+        'SMPAI',
+        'SOPAI', 'SOOPAI',
+        'SEMPAI', 'TEMPAI',
+        'PAI', 'PAIDE',
+        'PAIIG',
+        'PAINAO',
+        'NOMEPAI',
+        'PAIVIVO',
+        'FALTAPAI',
+
+        'SEMNADA',
+
+        'ORFA', 'ORFAO',
+        -- Typos
+        'SEEMMAE', 'SEEMPAI',
+        'SEMMMAE', 'SEMMPAI',
+        'SEMPAIO', 'SEMPAOI',
+        ----------------------
+        -- Desconhecido
+        ----------------------
+        'DES',
+        'DESC',
+        'DESCC', 'DESCD',
+        'CDESC', 'DDESC',
+        'DESCO',
+        'DESCON',
+        'DESCONH',
+        'DESCONHE',
+        'DESCONHEC',
         'DESCONHECIDO', 'DESCONHECIDA',
-        'IGNORADO', 'IGNORADA',
+        'CONHECIDO', 'CONHECIDA',
+        'PAIDESC',
+
+        'NOME', 'NADA', 'NXX',
+        'NE', 'NEM', 'NENHUM',
+        'NINGUEM',
+
+        'ANONIMO',
+        -- Typos
+        'DEC',
+        'DSEC',
+        'DESCX',
+        'DESXC',
+        'DESWC',
+        'DEWSC',
+        'DESCOHECE',
+        'DESCONHCE',
+        'DESOCNHCE',
+        'DESONHECE',
+        'NEHUM',
+        'NENHM',
         ----------------------
-        'TESTE', 'TESTE TESTE', 'TESTE TESTE TESTE',
-        'TESTE MAE',
-        'TESTE NOME SOCIAL',
+        -- Mudança/ausência
         ----------------------
-        'NR',
+        'NAOMORA',
         'MUDOU',
-        'MUDOU SE', 'MUDOUSE', 'SE MUDOU',
-        'MUDOU NITEROI',
-        'NAO RESIDE', 'NAO MORA',
-        'VIVE COM C',
-        'FORA DO TERRITORIO',
-        'FORA DE AREA',
+        'MUDOUSE', 'MUDOUSE', 'SEMUDOU',
+        'MUDOUNITEROI',
+        'FOI',
+        'NAORESIDE',
+        'VIVECOMC',
+        'FORADOTERRITORIO',
+        'FORADEAREA',
+        'AUSENTE',
+        'INDISP',
+        'INDISPONIVEL',
+        'NAOESTA',
+        -- Typo
+        'OUSENTE',
+        'AUSENE',
+        'AUSENT',
+        'AUSETE',
+        'AUDENTE',
+        'AUSNETE',
+        'AUXENTE',
+        'AUJSENTE',
         ----------------------
-        'PLANO EMPRESA',
-        'PLANO INDIVIDUAL',
+        -- Óbito
         ----------------------
         'INATIVADO', 'INATIVADA',
         'FALECEU',
         'FALECIDO', 'FALECIDA',
-        'PACIENTEFALECEU', 'PACIENTE FALECEU',
+        'FALECIDOS',
+        'PACIENTEFALECEU',
         'OBITO',
-        'SEM FUTURO', 'PROVISORIO',
+        'MORTO',
+        'NAO VIVO',
+        -- Typos
+        'FELECIDO', 'FELECIDA',
         ----------------------
-        'CADEIRANTE',
+        -- Descrições
+        ----------------------
         'NENEM',
+        'CADEIRANTE',
         'PROFESSOR', 'PROFESSORA',
-        'ATUALIZADO SMS'
+        'ATUALIZADO SMS',
+        'CASADO', 'CASADA',
+        'MASCULINO', 'FEMININO',
+        'PACIENTE',
+        'PRESENTE',
+        ----------------------
+        -- Outros
+        ----------------------
+        'OUTRO', 'OUTROS',
+        'OUTRA', 'OUTRAS',
+        'MESMO', 'MESMA',
+
+        'INSERIR',
+        'PREENCHER',
+        'COMPLETAR',
+        'CONFERIR',
+        'PENDENTE',
+        'PROVISORIO',
+        'CADASTRAR',
+        'CONFIRMAR',
+        'DECLARADO', 'DECLARADA',
+
+        'OCULTO', 'OCULTA',
+        'OMITIDO', 'OMITIDA',
+        'ILEGIVEL',
+        'INVALIDO',
+
+        'PROCESSO',
+        'REGISTRO',
+
+        'ISNOT',
+        'PROPRIO',
+        'RELATOU',
+        'INDICADO', 'INDICADA',
+        'DEFINIDO',
+        'NAOPODE',
+        'NAORESP',
+        'SEMFUTURO',
+        -- Typos
+        'OMITISO',
+        'OMOTIDO',
+        'DECALRADO',
+        ----------------------
+        'PLANOEMPRESA',
+        'PLANOINDIVIDUAL',
+        ----------------------
+        'ABC', 'ASD', 'AAABBB'
         ----------------------
     )
         then null
 
-    else {{ process_null(aux_remove_person_description(text)) }}
+    else trim(regexp_replace(
+        {{ process_null(aux_remove_person_description(text)) }},
+        r"(?i)\bATENDID[AO]\s*PELO\s*CMS\b",
+        ""
+    ))
+    -- TODO: filtrar nomes de CFs/CMSs do final
 end
 {% endmacro %}
