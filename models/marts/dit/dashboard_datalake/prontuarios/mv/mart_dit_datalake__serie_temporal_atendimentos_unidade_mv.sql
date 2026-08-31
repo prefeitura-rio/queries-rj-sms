@@ -8,7 +8,7 @@
             "data_type": "date",
             "granularity": "month"
         },
-        unique_key=['data_registro', 'id_cnes'],
+        unique_key=['data_registro', 'cnes'],
         cluster_by=['data_registro'],
         description='Série temporal de atendimentos por data de entrada no prontuário MV, por unidade de saúde'
     )
