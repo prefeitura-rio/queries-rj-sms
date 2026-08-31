@@ -16,7 +16,8 @@ with gestantes as (
         dt_parto as data_parto,
         id_desfecho_internacao,
         id_desfecho_gestacao,
-        desfecho_gestacao
+        desfecho_gestacao,
+        cast(datalake_loaded_at as datetime) as datalake_loaded_at
     from {{ ref('int_subpav__sisare_gestantes') }}
     where id_gestante is not null
       and id_paciente is not null
@@ -214,6 +215,7 @@ base as (
         g.data_parto,
         g.id_desfecho_gestacao,
         g.desfecho_gestacao,
+        g.datalake_loaded_at,
         cg.telefone_cegonha,
         vt.telefone as telefone_vitacare,
         vi.telefone as telefone_vitai
@@ -249,6 +251,7 @@ telefones_explodidos as (
         b.data_parto,
         b.id_desfecho_gestacao,
         b.desfecho_gestacao,
+        b.datalake_loaded_at,
         tel.telefone,
         tel.origem,
         tel.prioridade
@@ -287,6 +290,7 @@ final as (
         data_parto,
         id_desfecho_gestacao,
         desfecho_gestacao,
+        datalake_loaded_at,
         array_agg(
             struct(
                 telefone as telefone_original,
@@ -309,7 +313,8 @@ final as (
         nome_maternidade_alta,
         data_parto,
         id_desfecho_gestacao,
-        desfecho_gestacao
+        desfecho_gestacao,
+        datalake_loaded_at
 
 ),
 
@@ -327,6 +332,7 @@ excecao_disparo_puerperas as (
         data_parto,
         id_desfecho_gestacao,
         desfecho_gestacao,
+        cast(null as datetime) as datalake_loaded_at,
         telefones_gestante
     from {{ source("projeto_whatsapp", "excecao_disparo_puerperas") }}
 
