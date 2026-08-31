@@ -16,34 +16,48 @@ models:
         description: >
           Identificador da evidencia obstetrica selecionada para representar o parto materno.
           Para excecoes manuais, e gerado a partir do CPF, data de alta e CNES.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: subtipo_evento
         description: >
           Forma pela qual o parto foi identificado. Valores esperados: nascimento_rn,
           registro_parto, desfecho_internacao, procedimento_parto, cid_parto e excecao_manual.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: origem_data_alta
         description: >
           Registro que forneceu a data de alta selecionada. Exemplos: prontuario_alta,
           vitai_boletim, vitai_internacao, sisare_internacao, mv_alta_medica, mv_atendimento,
           mv_gestante, mv_alta_fechamento e excecao_manual.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: cpf
         description: >
           CPF da gestante.
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
 
       - name: nome
         description: >
           Nome da gestante. Prioriza o cadastro consolidado do Histórico Clínico Integrado e usa
           o nome do prontuário de origem como fallback.
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
 
       - name: municipio
         description: >
           Município de residência da gestante.
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
 
       - name: uf
         description: >
           UF de residência da gestante.
+        policy_tags:
+          - '{{ var("TAG_ENDERECO") }}'
 
       - name: prontuario_origem
         description: >
@@ -65,18 +79,26 @@ models:
           Data em que a paciente recebeu alta do hospital após o parto. Não necessariamente
           coincide com data_parto, pois a paciente pode permanecer internada por alguns dias
           após o parto.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: cnes_maternidade_alta
         description: >
           Código CNES da unidade hospitalar onde ocorreu o parto.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: nome_maternidade_alta
         description: >
           Nome da maternidade obtido através do CNES.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: data_parto
         description: >
           Data em que ocorreu o parto.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: id_desfecho_gestacao
         description: >
@@ -86,11 +108,15 @@ models:
           2 = Óbito | Aborto | Com Alta Natimorto,
           3 = RN Internado.
           Nulo para registros de prontuários que não utilizam essa codificação.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: desfecho_gestacao
         description: >
           Descrição textual do desfecho da gestação. Nulo para registros de prontuários
           que não utilizam essa codificação.
+        policy_tags:
+          - '{{ var("TAG_DADO_CLINICO") }}'
 
       - name: telefones_gestante
         description: >
@@ -106,3 +132,15 @@ models:
             Valores possíveis: poucos_digitos, ddd_invalido, todos_digitos_iguais,
             numero_institucional, texto_indefinido, numero_compartilhado, telefone_formatado_nulo.
             Nulo quando o telefone é válido.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: telefones_gestante.telefone_original
+        description: Número de telefone bruto conforme registrado na origem.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
+
+      - name: telefones_gestante.telefone_valido_whatsapp
+        description: Número de telefone validado e padronizado para disparo via WhatsApp.
+        policy_tags:
+          - '{{ var("TAG_TELEFONE") }}'
