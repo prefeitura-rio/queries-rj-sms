@@ -5,7 +5,7 @@
     partition_by = {
         'field': 'data_alta_internacao',
         'data_type': 'date',
-        'granularity': 'day'
+        'granularity': 'month'
     },
     cluster_by = ['cpf', 'cnes_maternidade_alta']
 ) }}
