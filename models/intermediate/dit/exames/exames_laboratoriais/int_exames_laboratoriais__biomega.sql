@@ -66,11 +66,12 @@ with
         {{ dbt_utils.generate_surrogate_key(['id_solicitacao', 'id_exame']) }} as id_exame,
         array_agg(
           struct(
-            codigo_apoio,
-            descricao_apoio,
+            codigo_apoio as codigo,
+            descricao_apoio as nome,
             resultado as valor,
             unidade,
-            alterado
+            alterado,
+            cast(null as string) as referencia
           )
         ) as resultados
       from resultados

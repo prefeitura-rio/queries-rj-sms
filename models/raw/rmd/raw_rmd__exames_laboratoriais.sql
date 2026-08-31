@@ -5,6 +5,7 @@
         incremental_strategy="merge",
         unique_key=['id', 'fornecedor_id'],
         schema="brutos_rmd",
+        tags=["daily"],
         partition_by={
             "field": "data_particao",
             "data_type": "date",
