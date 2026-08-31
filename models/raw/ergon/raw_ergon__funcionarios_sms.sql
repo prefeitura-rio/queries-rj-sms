@@ -13,7 +13,8 @@
 with
     source as (
         select
-            * except(cpf_particao),
+            lpad(cpf, 11, '0') as cpf,
+            * except(cpf, cpf_particao),
             cpf_particao
         from {{ source("brutos_ergon_staging", "funcionarios_sms") }}
     )
