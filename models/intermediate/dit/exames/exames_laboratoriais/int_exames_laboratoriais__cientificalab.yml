@@ -57,7 +57,11 @@ models:
       - name: exame_laudo_datahora
         description: Data e hora da assinatura do laudo
       - name: resultados
-        description: Array com os resultados do exame
+        description: >
+          Array com os resultados do exame. Campos: codigo (código do exame no
+          sistema de apoio), nome (nome/descrição do resultado), valor (valor
+          obtido), unidade (unidade de medida), alterado (se o valor está fora
+          do padrão), referencia (faixa de referência, nulo nesta fonte).
       - name: profissional_solicitante_cbo
         description: Código CBO do profissional que solicitou o exame
       - name: profissional_solicitante_cpf
