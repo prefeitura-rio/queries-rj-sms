@@ -823,7 +823,7 @@ models:
           +schema: dashboard_datalake
           +tags: ["daily", "datalake"]
           +meta:
-            owners: ['herian', 'daniel']
+            owner: ['herian', 'daniel']
             team: ['cit']
           +labels:
             dado_publico: nao
