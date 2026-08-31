@@ -2,6 +2,11 @@
     schema = 'projeto_whatsapp',
     alias = 'alta_maternidade',
     materialized = 'table',
+    partition_by = {
+        'field': 'data_alta_internacao',
+        'data_type': 'date',
+        'granularity': 'day'
+    },
     cluster_by = ['cpf', 'cnes_maternidade_alta']
 ) }}
 
