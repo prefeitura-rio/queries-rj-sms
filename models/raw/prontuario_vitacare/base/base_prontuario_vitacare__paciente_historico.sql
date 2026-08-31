@@ -32,12 +32,12 @@ with
     selecao_pacientes as (
         select
             -- PK
-            id_global as id_paciente_global,
+            {{ remove_null_bytes('id_global') }} as id_paciente_global,
 
             -- Chave identificadora para pacientes sem CPF
             -- cnes + ut_id = id_paciente_global
             -- ut_id = id_paciente_local
-            id_local as id_paciente_local,
+            {{ remove_null_bytes('id_local') }} as id_paciente_local,
 
             -- Outras Chaves
             id_cnes,

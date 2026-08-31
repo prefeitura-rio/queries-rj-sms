@@ -241,10 +241,10 @@ emerg_prescricao_agg as (
 -------------------------------
 inter_cadastro as (
   select distinct
-    gid_registro as gid_prontuario, 
+    gid_prontuario,
     paciente_cpf
   from {{ref("raw_prontuario_prontuaRio__internacao_cadastro")}}
-  qualify row_number() over(partition by gid_registro order by paciente_cpf) = 1
+  qualify row_number() over(partition by gid_prontuario order by paciente_cpf) = 1
 ),
 
 

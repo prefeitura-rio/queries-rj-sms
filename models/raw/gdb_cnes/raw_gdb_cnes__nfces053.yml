@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__nfces053
+    description: "Tabela bruta do CNES NFCES053 / TB_MOTIVO_DESATIV_EQUIPE. Tabela auxiliar de motivos de desativação de equipes."
+    columns:
+      - name: CD_MOTIVO_DESATIV
+        description: "Código do Motivo de Desativação da Equipe."
+
+      - name: DS_MOTIVO_DESATIV
+        description: "Descrição do Motivo de Desativação da Equipe."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

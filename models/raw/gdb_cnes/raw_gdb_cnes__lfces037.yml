@@ -1,0 +1,124 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__lfces037
+    description: "Tabela bruta do CNES LFCES037 / TB_EQUIPE. Contém as equipes cadastradas no CNES, incluindo município, área, sequencial da equipe, unidade, tipo de equipe, INE, datas de ativação/desativação e população assistida."
+    columns:
+      - name: COD_MUN
+        description: "Código do município."
+
+      - name: COD_AREA
+        description: "Código da área da equipe."
+
+      - name: SEQ_EQUIPE
+        description: "Sequencial da equipe."
+
+      - name: UNIDADE_ID
+        description: "Código do estabelecimento de saúde."
+
+      - name: TP_EQUIPE
+        description: "Tipo de equipe."
+
+      - name: CO_SUB_TIPO_EQUIPE
+        description: "Subtipo de equipe."
+
+      - name: NM_REFERENCIA
+        description: "Nome de referência da equipe."
+
+      - name: DT_ATIVACAO
+        description: "Data de ativação da equipe."
+
+      - name: DT_DESATIVACAO
+        description: "Data de desativação da equipe."
+
+      - name: TP_POP_ASSIST_QUILOMB
+        description: "Indica se a equipe atende população assistida quilombola. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_ASSENT
+        description: "Indica se a equipe atende população assistida de assentados. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_GERAL
+        description: "Indica se a equipe atende população assistida geral. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_ESCOLA
+        description: "Indica se a equipe atende população assistida escolar. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_PRONASCI
+        description: "Indica se a equipe atende população assistida vinculada ao PRONASCI. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_INDIGENA
+        description: "Indica se a equipe atende população assistida indígena. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_RIBEIRINHA
+        description: "Indica se a equipe atende população assistida ribeirinha. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_SITUACAO_RUA
+        description: "Indica se a equipe atende população assistida em situação de rua. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_PRIV_LIBERDADE
+        description: "Indica se a equipe atende população assistida privada de liberdade. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_CONFLITO_LEI
+        description: "Indica se a equipe atende população assistida com transtorno mental em conflito com a lei. No CNES, 1 indica sim e 2 indica não."
+
+      - name: TP_POP_ASSIST_ADOL_CONF_LEI
+        description: "Indica se a equipe atende população assistida adolescente em conflito com a lei."
+
+      - name: CO_CNES_UOM
+        description: "CNES da Unidade Odontológica Móvel."
+
+      - name: NU_CH_AMB_UOM
+        description: "Quantidade de carga horária ambulatorial da Unidade Odontológica Móvel."
+
+      - name: CD_MOTIVO_DESATIV
+        description: "Código do motivo de desativação da equipe."
+
+      - name: CD_TP_DESATIV
+        description: "Código do tipo de desativação da equipe."
+
+      - name: CO_PROF_SUS_PRECEPTOR
+        description: "Código do profissional SUS preceptor na equipe."
+
+      - name: CO_CNES_PRECEPTOR
+        description: "CNES no qual o profissional está vinculado como preceptor."
+
+      - name: CO_EQUIPE
+        description: "Código da equipe. Identificador Nacional de Equipe, INE."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: STATUSMOV
+        description: "Status da equipe no CNES. Domínios documentados: 1 - Não Aprovado; 2 - Consistido; 3 - Exportado."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

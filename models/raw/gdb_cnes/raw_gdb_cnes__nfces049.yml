@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__nfces049
+    description: "Tabela bruta do CNES NFCES049 / TB_MOTIVO_DESATIVACAO. Tabela auxiliar de motivos de desativação do estabelecimento de saúde."
+    columns:
+      - name: CD_MOTIVO_DESAB
+        description: "Código do Motivo de Desativação."
+
+      - name: DS_MOTIVO_DESAB
+        description: "Descrição do Motivo de Desativação."
+
+      - name: TP_MOTIVO_DESAB
+        description: "Tipo de Desativação. Domínios documentados: 1 - Manual; 2 - Automática."
+
+      - name: FL_DEFINITIVO
+        description: "Indica se o motivo de desativação é do tipo Desativação Definitiva. Domínios documentados: S - Sim; N - Não."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

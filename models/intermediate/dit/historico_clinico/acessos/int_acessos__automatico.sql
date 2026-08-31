@@ -64,8 +64,9 @@ with
                         (not regexp_contains(lower(cbo_datasus.descricao),'atendente')) 
                     )
                     then 'ENFERMEIROS'
+                when lower(cbo_datasus.descricao) = 'dirigente do servico publico municipal'
+                    then 'DIRIGENTES DE SAUDE'
                 when lower(cbo_datasus.descricao) in (
-                    --'dirigente do servico publico municipal',
                     'diretor de servicos de saude',
                     'gerente de servicos de saude'
                 )
@@ -135,9 +136,9 @@ with
     ergon_ativos as (
         select distinct
             cpf
-        from {{ ref("raw_ergon_funcionarios_sheets")}}--, unnest(dados) as dados
-        -- Planilha temporária do Ergon, só constam os ativos
-        -- where dados.status_ativo = true
+        from {{ ref("raw_ergon__funcionarios_sms")}},
+            unnest(vinculos) as vinculo
+        where vinculo.status_ativo = true
     ),
     funcionarios_ativos_enriquecido_autorizados as (
         select
@@ -159,6 +160,7 @@ with
                 'SANITARISTAS',
                 'DENTISTAS',
                 'DIRETORES DE SAUDE',
+                'DIRIGENTES DE SAUDE',
                 'ADMINISTRATIVO'
             )
             and cpf in (
@@ -192,6 +194,8 @@ with
                             'MATERNIDADE', 'CENTRAL DE REGULACAO', 'CASS',
                             'PRISIONAL'
                         )
+                            then 'full_permission'
+                        when funcao_grupo = 'DIRIGENTES DE SAUDE'
                             then 'full_permission'
                         when funcao_grupo = 'DIRETORES DE SAUDE'
                             then 'only_from_same_ap'

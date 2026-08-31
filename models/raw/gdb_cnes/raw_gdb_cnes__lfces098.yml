@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__lfces098
+    description: "Tabela bruta do CNES LFCES098 / TB_ESTAB_HORARIO_ATEND. Contém os horários de funcionamento dos estabelecimentos de saúde."
+    columns:
+      - name: UNIDADE_ID
+        description: "Código do Estabelecimento de Saúde."
+
+      - name: CO_DIA_SEMANA
+        description: "Código do dia da semana. Domínios documentados: 1 - Domingo; 2 - Segunda-feira; 3 - Terça-feira; 4 - Quarta-feira; 5 - Quinta-feira; 6 - Sexta-feira; 7 - Sábado."
+
+      - name: HR_INICIO_ATENDIMENTO
+        description: "Horário de início de funcionamento."
+
+      - name: HR_FIM_ATENDIMENTO
+        description: "Horário de fim de funcionamento."
+
+      - name: DATA_ATU
+        description: "Data da última atualização do registro."
+
+      - name: USUARIO
+        description: "Último usuário que atualizou o registro."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Data da primeira entrada no Banco de Produção Federal."
+
+      - name: DT_CMTP_INICIO
+        description: "Data da primeira entrada ou data do retorno no Banco de Produção Federal."
+
+      - name: DT_CMTP_FIM
+        description: "Data final de competência."
+
+      - name: NU_SEQ_PROCESSO
+        description: "Número do processo da última carga."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

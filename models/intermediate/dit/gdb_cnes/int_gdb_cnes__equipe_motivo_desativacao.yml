@@ -1,0 +1,17 @@
+version: 2
+models:
+  - name: int_gdb_cnes__equipe_motivo_desativacao
+    description: |-
+      Tabela de motivos para desativação de equipes
+      Tabela CNES: NFCES053
+      Granularidade: equipe de saúde
+      Atualização: mensal
+    columns:
+      - name: id_motivo_desativacao
+        description: Código do motivo da desativação da equipe
+      - name: motivo_desativacao
+        description: Descrição legível do motivo para desativação da equipe
+      - name: competencia
+        description: Data que indica a qual mês o dado se refere
+      - name: _loaded_at
+        description: Data e hora em que os dados foram carregados no banco de dados

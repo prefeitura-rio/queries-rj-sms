@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__nfces058
+    description: "Tabela bruta do CNES NFCES058 / TB_SUB_TP_MOD_VINCULO. Tabela auxiliar de detalhamento do vínculo profissional."
+    columns:
+      - name: IND_VINC
+        description: "Indica a vinculação, o tipo e o subtipo de vínculo."
+
+      - name: CD_VINCULACAO
+        description: "Código da Vinculação."
+
+      - name: TP_VINCULO
+        description: "Tipo do Vínculo."
+
+      - name: TP_SUBVINCULO
+        description: "Subtipo do Vínculo."
+
+      - name: DS_SUBVINCULO
+        description: "Descrição do Subtipo do Vínculo."
+
+      - name: ST_HABILITADO
+        description: "Indica se o vínculo se encontra ativo. Domínios documentados: S - Sim; N - Não."
+
+      - name: ST_SOLICITA_CNPJ
+        description: "Indica se o vínculo exige CNPJ do empregador. Domínios documentados: S - Sim; N - Não."
+
+      - name: TP_CATEGORIA
+        description: "Tipo de categoria do vínculo do profissional."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

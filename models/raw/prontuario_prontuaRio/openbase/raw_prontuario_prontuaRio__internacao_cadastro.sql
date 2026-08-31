@@ -133,7 +133,6 @@ select
         ]
       )
     }} as id,
-    concat(cnes, '.', id_prontuario1) as gid_prontuario,
-    concat(cnes, '.', id_registro) as gid_registro,
+    concat(cnes, '.', id_registro) as gid_prontuario,
     *
 from final

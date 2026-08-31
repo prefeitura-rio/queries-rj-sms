@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__nfces026
+    description: "Tabela bruta do CNES NFCES026 / TB_ATIVIDADE_PROFISSIONAL. Tabela auxiliar de CBO, usada para identificação da atividade profissional."
+    columns:
+      - name: COD_CBO
+        description: "Código Brasileiro de Ocupação."
+
+      - name: DESCRICAO
+        description: "Descrição da ocupação."
+
+      - name: INDPROFISS
+        description: "Indica o nível de escolaridade exigida."
+
+      - name: TP_CBO_SAUDE
+        description: "Indica se o CBO é de saúde. Domínios documentados: S - Sim; N - Não."
+
+      - name: ST_CBO_REGULA
+        description: "Indica se o CBO é regulamentado. Domínios documentados: S - Sim; N - Não."
+
+      - name: NO_ANO_CMPT
+        description: "Ano competência."
+
+      - name: DT_ATUALIZACAO_ORIGEM
+        description: "Sem uso."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

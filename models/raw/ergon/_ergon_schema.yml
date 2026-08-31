@@ -1,92 +1,168 @@
+version: 2
+
 models:
-  - name: raw_ergon_funcionarios
-    description: Contém dados organizacionais e pessoais relacionados a funcionários, seus cargos, setores e empresas. Também inclui informações sobre o status e provimento dos funcionários, além de datas de início e término de atividades nos setores.
+  - name: raw_ergon__funcionarios_sms
+    description: >
+      Tabela construída pela Iplan para uso da SMS, clonada do
+      projeto rj-sma. Possui funcionários ativos e inativos da
+      SMS e das Oraganizações Sociais, com informações sobre vínculos,
+      lotação, cargo e secretaria.
+
+    # Schema adaptado de:
+    # https://github.com/prefeitura-rio/queries-rj-iplanrio/blob/857505e7bfc9af19d18d2f9215d26becf473970d/models/mart/sma/ergon_saude/mart_ergon_saude_funcionarios_sms.yml
     columns:
       - name: cpf
-        description: CPF (Cadastro de Pessoas Físicas) do funcionário, utilizado como identificador único. Armazenado como string.
+        description: "CPF do funcionário, armazenado como string."
         data_type: string
         policy_tags:
           - '{{ var("TAG_CPF") }}'
-        quote: true
-      - name: nome
-        description: Nome completo do funcionário. Armazenado como string.
+
+      - name: id_funcionario
+        description: "Identificador único do funcionário no Ergon."
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: nome_funcionario
+        description: "Nome completo do funcionário."
         data_type: string
         policy_tags:
           - '{{ var("TAG_NOME") }}'
-        quote: true
-      - name: status_ativo
-        description: Status de atividade do funcionário. Indica se o funcionário está atualmente ativo (valor booleano).
-        data_type: boolean
-        quote: true
-      - name: provimento_inicio
-        description: Data de início do provimento do cargo do funcionário.
+
+      - name: contagem_vinculos
+        description: "Quantidade de vínculos do funcionário na SMS."
+        data_type: int64
+
+      # Estrutura de vínculos do funcionário
+      - name: vinculos
+        description: "Array contendo informações detalhadas de cada vínculo do funcionário com a SMS."
+        data_type: array<struct>
+
+      - name: vinculos.vinculo_id
+        description: "Identificador único do vínculo."
+        data_type: int64
+
+      - name: vinculos.vinculo_matricula
+        description: "Número de matrícula do vínculo."
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_IDENTIFICADOR_SISTEMA") }}'
+
+      - name: vinculos.vinculo_tipo
+        description: "Tipo de vínculo do funcionário (ex: CLT, Estatutário, Temporário)."
+        data_type: string
+      
+      - name: vinculos.vinculo_regime_juridico
+        description: "Regime jurídico do vínculo (ex: EFETIVO, ESTÁGIO, CLT, BOLSISTA, RPA, etc)."
+        data_type: string
+
+      - name: vinculos.vinculo_data_exercicio
+        description: "Data de início de exercício do vínculo."
         data_type: date
-        quote: true
-      - name: provimento_fim
-        description: Data de término do provimento do cargo do funcionário.
+
+      - name: vinculos.status_ativo
+        description: "Indicador de status ativo do vínculo. True se ativo, False se inativo. É considerado ativo apenas se a data de vacância do vinculo e a data de fim de provimento forem nulas."
+        data_type: bool
+
+      # Estrutura de vacância do vínculo
+      - name: vinculos.vacancia_vinculo
+        description: "Estrutura contendo informações sobre vacância do vínculo."
+        data_type: struct
+
+      - name: vinculos.vacancia_vinculo.vacancia_data
+        description: "Data de vacância do vínculo."
         data_type: date
-        quote: true
-      - name: data_vacancia
-        description: Data de vacância do cargo, indicando quando o funcionário deixou o cargo.
+
+      - name: vinculos.vacancia_vinculo.vacancia_motivo
+        description: "Motivo da vacância do vínculo."
+        data_type: string
+
+      - name: vinculos.provimento_inicio
+        description: "Data de início do provimento no vínculo."
         data_type: date
-        quote: true
-      - name: id_secretaria
-        description: Identificador único da secretaria associada ao funcionário.
-        data_type: string
-        quote: true
-      - name: secretaria_sigla
-        description: Sigla da secretaria associada ao funcionário.
-        data_type: string
-        quote: true
-      - name: secretaria_nome
-        description: Nome completo da secretaria associada ao funcionário.
-        data_type: string
-        quote: true
-      - name: id_empresa
-        description: Identificador único da empresa empregadora do funcionário.
-        data_type: string
-        quote: true
-      - name: setor_nome
-        description: Nome do setor no qual o funcionário trabalha.
-        data_type: string
-        quote: true
-      - name: setor_sigla
-        description: Sigla do setor no qual o funcionário trabalha.
-        data_type: string
-        quote: true
-      - name: setor_inicio
-        description: Data de início do funcionário no setor.
+
+      - name: vinculos.provimento_fim
+        description: "Data de fim do provimento no vínculo."
         data_type: date
-        quote: true
-      - name: setor_fim
-        description: Data de término do funcionário no setor.
-        data_type: date
-        quote: true
-      - name: cargo_nome
-        description: Nome do cargo ocupado pelo funcionário.
+
+      # Estrutura de lotação
+      - name: vinculos.lotacao
+        description: "Estrutura contendo informações da lotação (setor, empresa, secretaria)."
+        data_type: struct
+
+      - name: vinculos.lotacao.setor_id
+        description: "Identificador do setor de lotação."
+        data_type: int64
+
+      - name: vinculos.lotacao.setor_sigla
+        description: "Sigla do setor de lotação."
         data_type: string
-        quote: true
-      - name: cargo_categoria
-        description: Categoria do cargo ocupado pelo funcionário.
+
+      - name: vinculos.lotacao.setor_nome
+        description: "Nome do setor de lotação."
         data_type: string
-        quote: true
-      - name: cargo_subcategoria
-        description: Subcategoria do cargo ocupado pelo funcionário.
+
+      # Estrutura de empresa dentro de lotação
+      - name: vinculos.lotacao.empresa
+        description: "Estrutura contendo informações da empresa responsável pela lotação."
+        data_type: struct
+
+      - name: vinculos.lotacao.empresa.empresa_id
+        description: "Identificador da empresa."
+        data_type: int64
+
+      - name: vinculos.lotacao.empresa.empresa_nome
+        description: "Nome da empresa."
         data_type: string
-        quote: true
-      - name: empresa_nome
-        description: Nome da empresa empregadora.
+
+      - name: vinculos.lotacao.empresa.empresa_cnpj
+        description: "CNPJ da empresa."
         data_type: string
-        quote: true
-      - name: empresa_sigla
-        description: Sigla da empresa empregadora.
+
+      - name: vinculos.lotacao.empresa.empresa_sigla
+        description: "Sigla da empresa."
         data_type: string
-        quote: true
-      - name: empresa_cnpj
-        description: CNPJ (Cadastro Nacional da Pessoa Jurídica) da empresa empregadora.
+
+      # Estrutura de secretaria dentro de lotação
+      - name: vinculos.lotacao.secretaria
+        description: "Estrutura contendo informações da secretaria responsável pela lotação."
+        data_type: struct
+
+      - name: vinculos.lotacao.secretaria.secretaria_id
+        description: "Identificador da secretaria."
+        data_type: int64
+
+      - name: vinculos.lotacao.secretaria.secretaria_sigla
+        description: "Sigla da secretaria."
         data_type: string
-        quote: true
+
+      - name: vinculos.lotacao.secretaria.secretaria_nome
+        description: "Nome da secretaria."
+        data_type: string
+
+      # Estrutura de cargo
+      - name: vinculos.cargo
+        description: "Estrutura contendo informações do cargo ocupado."
+        data_type: struct
+
+      - name: vinculos.cargo.cargo_id
+        description: "Identificador do cargo."
+        data_type: int64
+
+      - name: vinculos.cargo.cargo_nome
+        description: "Nome do cargo."
+        data_type: string
+
+      - name: vinculos.cargo.cargo_categoria
+        description: "Categoria do cargo."
+        data_type: string
+
+      - name: vinculos.cargo.cargo_subcategoria
+        description: "Subcategoria do cargo."
+        data_type: string
+
       - name: cpf_particao
-        description: Identificador numérico para partição de dados com base no CPF.
-        data_type: integer
-        quote: true
+        description: "CPF em formato numérico para particionamento da tabela."
+        data_type: int64
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'

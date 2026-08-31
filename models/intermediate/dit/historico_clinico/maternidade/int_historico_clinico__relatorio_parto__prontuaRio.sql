@@ -216,8 +216,8 @@ boletim_operatorio as (
 
 
 paciente as (
-  select 
-    gid_registro,
+  select
+    gid_prontuario,
     paciente_cpf,
     cns,
     paciente_nome,
@@ -286,7 +286,7 @@ extracao_final as (
   left join data_parto_extraida using(gid_registro)
   left join recem_nascido using(gid_registro)
   left join boletim_operatorio using(gid_registro)
-  left join paciente using(gid_registro)
+  left join paciente on paciente.gid_prontuario = be.gid_registro
 )
 
 

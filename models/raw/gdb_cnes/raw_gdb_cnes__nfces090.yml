@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: raw_gdb_cnes__nfces090
+    description: "Tabela bruta do CNES NFCES090 / TB_GRUPO_EQUIPE. Tabela auxiliar de grupos de equipes."
+    columns:
+      - name: CO_GRUPO_EQUIPE
+        description: "Código do Grupo de Equipe."
+
+      - name: NO_GRUPO_EQUIPE
+        description: "Nome do Grupo de Equipe."
+
+      - name: _source_file
+        description: "Arquivo GDB de origem do registro."
+
+      - name: _loaded_at
+        description: "Timestamp de carga do registro na camada staging."
+
+      - name: data_particao
+        description: "Data de partição/competência da base CNES."
+        data_tests:
+          - not_null
+
+      - name: ano_particao
+        description: "Ano da partição da base CNES."
+
+      - name: mes_particao
+        description: "Mês da partição da base CNES."

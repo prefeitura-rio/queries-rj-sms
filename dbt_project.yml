@@ -112,6 +112,13 @@ models:
           dado_publico: nao
           dado_pessoal: sim
           dado_sensivel: sim
+      basedosdados:
+        +schema: brutos_basedosdados_br
+        +tags: "monthly"
+        +labels:
+          dado_publico: sim
+          dado_pessoal: nao
+          dado_sensivel: nao
       cnes_web:
         +schema: brutos_cnes_web
         +tags: "weekly"
@@ -685,6 +692,8 @@ models:
             dado_publico: sim
             dado_pessoal: sim
             dado_sensivel: sim
+        exames:
+          +tags: ["daily", "exames"]
         regulacao:
           +schema: intermediario_regulacao
           +tags: ["sisreg_v2", "daily"]
@@ -941,6 +950,15 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
 
+      riosaude:
+        +schema: projeto_riosaude
+        +tags: ["daily", "riosaude"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: riosaude
+
       iplanrio:
         whatsapp:
           +tags: ["daily", "iplanrio", "whatsapp"]
@@ -1011,6 +1029,15 @@ models:
           +meta: 
             owner: dayaners
             team: subpav
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: subpav
+        cnes_aps:
+          +schema: projeto_cnes_aps
+          +tags: ["monthly", "subpav", "cnes_aps"]
+          +meta: {"owner": "dayaners"}
           +labels:
             dado_publico: nao
             dado_pessoal: sim
