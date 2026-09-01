@@ -4,6 +4,21 @@ models:
   - name: raw_prontuario_sarah_padi__prescricao_medica_itens
     description: Dados referentes a itens de prescrições médicas realizadas em pacientes no período.
     columns:
+      - name: id_surrogate
+        description: Chave surrogate gerada a partir dos campos identificadores da prescrição.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__prescricao_medica_itens__id_surrogate__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - unique:
+              name: raw_prontuario_sarah_padi__prescricao_medica_itens__id_surrogate__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+
       - name: prescricao_data
         description: Data da realização da prescrição médica.
         data_type: date
@@ -78,11 +93,11 @@ models:
         description: Situação do item prescrito.
         data_type: string
 
-      - name: data_aprazamento
+      - name: aprazamento_data
         description: Data do aprazamento do item prescrito.
         data_type: date
 
-      - name: hora_aprazamento
+      - name: aprazamento_hora
         description: Hora do aprazamento do item prescrito.
         data_type: time
 
@@ -90,11 +105,11 @@ models:
         description: Nome do profissional responsável pela checagem da prescrição.
         data_type: string
 
-      - name: data_evento
+      - name: evento_data
         description: Data do evento de checagem da prescrição.
         data_type: date
 
-      - name: hora_evento
+      - name: evento_hora
         description: Hora do evento de checagem da prescrição.
         data_type: time
 
