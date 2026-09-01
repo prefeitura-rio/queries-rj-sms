@@ -19,11 +19,11 @@ models:
                 severity: warn
                 warn_if: ">1000"
 
-      - name: data_procedimento
+      - name: procedimento_data
         description: Data de realização do procedimento.
         data_type: date
 
-      - name: hora_procedimento
+      - name: procedimento_hora
         description: Hora de realização do procedimento.
         data_type: time
 
@@ -45,7 +45,7 @@ models:
         description: Cargo do profissional que realizou o procedimento.
         data_type: string
 
-      - name: profissional_id
+      - name: id_profissional
         description: Identificador do profissional que realizou o procedimento.
         data_type: integer
 
@@ -70,7 +70,7 @@ models:
         description: Procedimento realizado no paciente.
         data_type: string
 
-      - name: procedimento_id
+      - name: id_procedimento
         description: Identificador do procedimento realizado no paciente.
         data_type: integer
 

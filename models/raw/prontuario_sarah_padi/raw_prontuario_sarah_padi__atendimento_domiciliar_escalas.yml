@@ -4,17 +4,17 @@ models:
   - name: raw_prontuario_sarah_padi__atendimento_domiciliar_escalas
     description: Dados referentes a escalas assistenciais aplicadas em pacientes durante o atendimento domiciliar no período.
     columns:
-      - name: atendimento_id
+      - name: id_atendimento
         description: Identificador do atendimento.
         data_type: string
         data_tests:
           - not_null:
-              name: raw_prontuario_sarah_padi__atendimento_domiciliar_escalas__atendimento_id__not_null
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_escalas__id_atendimento__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
           - unique:
-              name: raw_prontuario_sarah_padi__atendimento_domiciliar_escalas__atendimento_id__unique
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_escalas__id_atendimento__unique
               config:
                 severity: warn
                 warn_if: ">1000"
@@ -27,11 +27,11 @@ models:
         description: Data da alta do paciente.
         data_type: date
 
-      - name: alta_no_periodo
+      - name: alta_periodo
         description: Indicador se o paciente teve alta no período.
         data_type: string
 
-      - name: admitido_no_periodo
+      - name: admitido_periodo
         description: Indicador se o paciente foi admitido no período.
         data_type: string
 
@@ -39,7 +39,7 @@ models:
         description: Nome da unidade de atendimento do paciente.
         data_type: string
 
-      - name: unidade_id
+      - name: id_unidade
         description: Identificador da unidade de atendimento do paciente.
         data_type: string
 
@@ -47,7 +47,7 @@ models:
         description: Nome do serviço do atendimento.
         data_type: string
 
-      - name: servico_id
+      - name: id_servico
         description: Identificador do serviço do atendimento.
         data_type: integer
 
@@ -55,12 +55,12 @@ models:
         description: Nome da rota de atendimento.
         data_type: string
 
-      - name: rota_id
+      - name: id_rota
         description: Identificador da rota de atendimento.
         data_type: string
 
       # Dados do Paciente
-      - name: paciente_id
+      - name: id_paciente
         description: Identificador do paciente.
         data_type: string
 
@@ -84,7 +84,7 @@ models:
         description: Raça/cor referenciada pelo paciente.
         data_type: string
 
-      - name: paciente_genero_id
+      - name: id_paciente_genero
         description: Identificador do gênero referenciado pelo paciente.
         data_type: integer
 
@@ -92,7 +92,7 @@ models:
         description: Gênero referenciado pelo paciente.
         data_type: string
 
-      - name: paciente_dtnasc
+      - name: paciente_data_nascimento
         description: Data de nascimento do paciente.
         data_type: date
         policy_tags:
@@ -102,11 +102,11 @@ models:
         description: Idade do paciente.
         data_type: integer
 
-      - name: bairro
+      - name: paciente_bairro
         description: Nome do bairro do paciente.
         data_type: string
 
-      - name: municipio_uf
+      - name: paciente_municipio_uf
         description: Município e UF do paciente.
         data_type: string
 
@@ -119,7 +119,7 @@ models:
         description: Ordem da escala assistencial.
         data_type: integer
 
-      - name: escala_id
+      - name: id_escala
         description: Identificador da escala assistencial.
         data_type: integer
 
@@ -131,7 +131,7 @@ models:
         description: Sigla da escala assistencial.
         data_type: string
 
-      - name: prestador_id
+      - name: id_prestador
         description: Identificador do profissional que realizou a escala assistencial.
         data_type: string
 
@@ -147,7 +147,7 @@ models:
         description: Avaliação da escala aplicada no paciente.
         data_type: string
 
-      - name: avaliacao_id
+      - name: id_avaliacao
         description: Identificador da avaliação da escala aplicada no paciente.
         data_type: string
 

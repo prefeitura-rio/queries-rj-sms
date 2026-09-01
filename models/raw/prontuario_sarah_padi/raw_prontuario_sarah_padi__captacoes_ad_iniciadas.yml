@@ -68,7 +68,7 @@ models:
         policy_tags:
           - '{{ var("TAG_NOME") }}'
 
-      - name: nomesocial
+      - name: nome_social
         description: Nome social do paciente.
         data_type: string
         policy_tags:

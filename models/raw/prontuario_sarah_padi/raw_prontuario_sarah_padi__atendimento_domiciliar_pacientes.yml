@@ -284,10 +284,6 @@ models:
         description: Data e hora de extração do dado na origem.
         data_type: datetime
 
-      - name: processed_at
-        description: Data e hora de processamento do dado.
-        data_type: datetime
-
       - name: ano_particao
         description: Ano de particionamento do dado.
         data_type: integer

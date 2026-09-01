@@ -4,17 +4,17 @@ models:
   - name: raw_prontuario_sarah_padi__atendimento_domiciliar_linhas_cuidado
     description: Dados referentes às linhas de cuidado de pacientes em atendimento domiciliar no período.
     columns:
-      - name: atendimento_id
+      - name: id_atendimento
         description: Identificador do atendimento.
         data_type: string
         data_tests:
           - not_null:
-              name: raw_prontuario_sarah_padi__atendimento_domiciliar_linhas_cuidado__atendimento_id__not_null
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_linhas_cuidado__id_atendimento__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
           - unique:
-              name: raw_prontuario_sarah_padi__atendimento_domiciliar_linhas_cuidado__atendimento_id__unique
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_linhas_cuidado__id_atendimento__unique
               config:
                 severity: warn
                 warn_if: ">1000"

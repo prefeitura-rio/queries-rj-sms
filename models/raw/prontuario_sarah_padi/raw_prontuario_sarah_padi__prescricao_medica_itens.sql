@@ -2,7 +2,7 @@
     config(
         alias="prescricao_medica_itens",
         materialized="incremental",
-        unique_key="id_atendimento",
+        unique_key='id_surrogate',
         schema='brutos_prontuario_sarah_padi',
         partition_by={
             "field": "data_particao",
@@ -58,8 +58,8 @@ base64_para_string as (
 renomeado as (
     select
         safe_cast(data_prescricao as date) as prescricao_data,
-        safe_cast(prescricao as string) as prescricao,
-        safe_cast(prestador_prescricao as string) as prestador,
+        safe_cast(prescricao as string) as id_prescricao,
+        safe_cast(prestador_prescricao as string) as prestador, 
         safe_cast(paciente as string) as paciente,
         safe_cast(tipo as string) as tipo,
         safe_cast(item_id as int64) as id_item,
@@ -72,11 +72,11 @@ renomeado as (
         safe_cast(referencia as int64) as referencia,
         safe_cast(inicio as string) as inicio,
         safe_cast(situacao as string) as situacao,
-        safe_cast(data_aprazamento as date) as data_aprazamento,
-        safe_cast(hora_aprazamento as time) as hora_aprazamento,
+        safe_cast(data_aprazamento as date) as aprazamento_data,
+        safe_cast(hora_aprazamento as time) as aprazamento_hora,
         safe_cast(prestador_checagem as string) as prestador_checagem,
-        safe_cast(data_evento as date) as data_evento,
-        safe_cast(hora_evento as time) as hora_evento,
+        safe_cast(data_evento as date) as evento_data,
+        safe_cast(hora_evento as time) as evento_hora,
         safe_cast(suspenso as string) as suspenso,
         safe_cast(quantidade as int64) as quantidade,
         
@@ -87,9 +87,24 @@ renomeado as (
         safe_cast(data_particao as date) as data_particao
     
     from base64_para_string
+    qualify row_number() over (
+        partition by 
+            prescricao_data, 
+            prescricao, 
+            id_item 
+        order by extracted_at desc) = 1
 )
 
 select
+    {{
+        dbt_utils.generate_surrogate_key(
+            [
+                "id_item",
+                "id_prescricao",
+                "prescricao_data",
+            ]
+        )
+    }} as id_surrogate,
     *
 
 from renomeado

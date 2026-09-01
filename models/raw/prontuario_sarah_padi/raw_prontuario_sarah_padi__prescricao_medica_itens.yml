@@ -4,27 +4,27 @@ models:
   - name: raw_prontuario_sarah_padi__prescricao_medica_itens
     description: Dados referentes a itens de prescrições médicas realizadas em pacientes no período.
     columns:
-      - name: data_prescricao
+      - name: prescricao_data
         description: Data da realização da prescrição médica.
         data_type: date
         data_tests:
           - not_null:
-              name: raw_prontuario_sarah_padi__prescricao_medica_itens__data_prescricao__not_null
+              name: raw_prontuario_sarah_padi__prescricao_medica_itens__prescricao_data__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
 
-      - name: prescricao
+      - name: id_prescricao
         description: Identificador da prescrição médica.
         data_type: string
         data_tests:
           - not_null:
-              name: raw_prontuario_sarah_padi__prescricao_medica_itens__prescricao__not_null
+              name: raw_prontuario_sarah_padi__id_prescricao_medica_itens__prescricao__not_null
               config:
                 severity: warn
                 warn_if: ">1000"
 
-      - name: prestador_prescricao
+      - name: prestador
         description: Nome do profissional responsável pela prescrição médica.
         data_type: string
 
