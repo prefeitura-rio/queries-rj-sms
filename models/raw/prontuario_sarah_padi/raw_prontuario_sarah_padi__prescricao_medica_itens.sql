@@ -3,12 +3,12 @@
         alias="prescricao_medica_itens",
         materialized="incremental",
         unique_key="id_atendimento",
+        schema='brutos_prontuario_sarah_padi',
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "day",
         },
-        schema='brutos_prontuario_sarah_padi',
     )
 }}
 
@@ -57,9 +57,9 @@ base64_para_string as (
 
 renomeado as (
     select
-        safe_cast(data_prescricao as date) as data_prescricao,
+        safe_cast(data_prescricao as date) as prescricao_data,
         safe_cast(prescricao as string) as prescricao,
-        safe_cast(prestador_prescricao as string) as prestador_prescricao,
+        safe_cast(prestador_prescricao as string) as prestador,
         safe_cast(paciente as string) as paciente,
         safe_cast(tipo as string) as tipo,
         safe_cast(item_id as int64) as id_item,
@@ -81,12 +81,15 @@ renomeado as (
         safe_cast(quantidade as int64) as quantidade,
         
         -- Metadados
-        safe_cast(extracted_at as string) as extracted_at,
-        safe_cast(ano_particao as string) as ano_particao,
-        safe_cast(mes_particao as string) as mes_particao,
+        safe_cast(extracted_at as datetime) as extracted_at,
+        safe_cast(ano_particao as int64) as ano_particao,
+        safe_cast(mes_particao as int64) as mes_particao,
         safe_cast(data_particao as date) as data_particao
     
     from base64_para_string
 )
 
-select * from renomeado
+select
+    *
+
+from renomeado

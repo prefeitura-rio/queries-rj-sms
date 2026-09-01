@@ -2,13 +2,13 @@
     config(
         alias="procedimentos_realizados",
         materialized="incremental",
-        unique_key="id_atendimento",
+        unique_key=['id_atendimento', 'id_procedimento', 'data_procedimento'],
+        schema='brutos_prontuario_sarah_padi',
         partition_by={
             "field": "data_particao",
             "data_type": "date",
             "granularity": "day",
         },
-        schema='brutos_prontuario_sarah_padi',
     )
 }}
 
@@ -57,32 +57,40 @@ base64_para_string as (
 renomeado as (
     select
         safe_cast(numero_atendimento as string) as id_atendimento,
-        safe_cast(data_procedimento as date) as data_procedimento,
-        safe_cast(hora_procedimento as time) as hora_procedimento,
+        safe_cast(procedimento_id as int64) as id_procedimento,
+        safe_cast(procedimento as string) as procedimento,
+        safe_cast(data_procedimento as date) as procedimento_data,
+        safe_cast(hora_procedimento as time) as procedimento_hora,
         safe_cast(paciente_nome as string) as paciente_nome,
         safe_cast(paciente_cpf as string) as paciente_cpf,
         safe_cast(cargo as string) as cargo,
-        safe_cast(profissional_id as int64) as profissional_id,
+        safe_cast(profissional_id as int64) as id_profissional,
         safe_cast(nome_profissional as string) as nome_profissional,
         safe_cast(cpf_profissional as string) as cpf_profissional,
         safe_cast(cns_profissional as string) as cns_profissional,
-        safe_cast(procedimento as string) as procedimento,
-        safe_cast(procedimento_id as int64) as procedimento_id,
         safe_cast(sexo as string) as sexo,
         safe_cast(municipio_ibge as int64) as municipio_ibge,
         safe_cast(municipio_uf as string) as municipio_uf,
         safe_cast(uf as string) as uf,
         safe_cast(clinica as string) as clinica,
         safe_cast(clinica_especialidade as string) as clinica_especialidade,
-        safe_cast(local as string) as local,
+        safe_cast(`local` as string) as `local`,
         safe_cast(unidade as string) as unidade,
         safe_cast(quantidade as int64) as quantidade,
-        safe_cast(extracted_at as string) as extracted_at,
-        safe_cast(ano_particao as string) as ano_particao,
-        safe_cast(mes_particao as string) as mes_particao,
+
+        -- Metadados
+        safe_cast(extracted_at as datetime) as extracted_at,
+        safe_cast(ano_particao as int64) as ano_particao,
+        safe_cast(mes_particao as int64) as mes_particao,
         safe_cast(data_particao as date) as data_particao
+        
     from base64_para_string
-    qualify row_number() over (partition by numero_atendimento order by extracted_at desc) = 1
+    qualify row_number() over (
+        partition by 
+            numero_atendimento, 
+            procedimento_id, 
+            data_procedimento 
+        order by extracted_at desc) = 1
 )
 
 select * from renomeado

@@ -69,9 +69,11 @@ renomeado as (
        safe_cast(avaliacao_id as int64) as id_avaliacao,
        safe_cast(pontuacao as int64) as pontuacao,
        safe_cast(quantidade as int64) as quantidade,
-       safe_cast(extracted_at as string) as extracted_at,
-       safe_cast(ano_particao as string) as ano_particao,
-       safe_cast(mes_particao as string) as mes_particao,
+
+       -- Metadados
+       safe_cast(extracted_at as datetime) as extracted_at,
+       safe_cast(ano_particao as int64) as ano_particao,
+       safe_cast(mes_particao as int64) as mes_particao,
        safe_cast(data_particao as date) as data_particao
     from base64_para_string
     qualify row_number() over (partition by atendimento_id order by extracted_at desc) = 1

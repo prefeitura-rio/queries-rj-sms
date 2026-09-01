@@ -88,7 +88,7 @@ renomeado as (
        safe_cast(genero_id as int64) as id_genero,
        safe_cast(genero as string) as genero,
        safe_cast(nome as string) as nome,
-       safe_cast(nomesocial as string) as nomesocial,
+       safe_cast(nomesocial as string) as nome_social,
        safe_cast(nascimento as date) as nascimento,
        safe_cast(idade as int64) as idade,
        safe_cast(racacor as string) as raca_cor,
@@ -119,9 +119,9 @@ renomeado as (
        safe_cast(quantidade as int64) as quantidade,
         
        -- Metadados
-       safe_cast(extracted_at as string) as extracted_at,
-       safe_cast(ano_particao as string) as ano_particao,
-       safe_cast(mes_particao as string) as mes_particao,
+       safe_cast(extracted_at as datetime) as extracted_at,
+       safe_cast(ano_particao as int64) as ano_particao,
+       safe_cast(mes_particao as int64) as mes_particao,
        safe_cast(data_particao as date) as data_particao
     from base64_para_string
     qualify row_number() over (partition by captacao_id order by extracted_at desc) = 1

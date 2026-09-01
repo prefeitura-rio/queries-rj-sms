@@ -97,7 +97,7 @@ models:
           - '{{ var("TAG_ENDERECO") }}'
 
       - name: paciente_contato
-        description: Nome do contato com o paciente.
+        description: Telefone de contato com o paciente.
         data_type: string
 
       # Encaminhamento

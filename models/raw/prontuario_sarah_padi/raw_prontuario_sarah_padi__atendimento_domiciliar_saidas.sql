@@ -185,8 +185,7 @@ renomeado as (
         safe_cast(quantidade as int64) as quantidade,
 
         -- Metadados
-        datetime(extracted_at) as extracted_at,
-        current_datetime('America/Sao_Paulo') as processed_at,
+        safe_cast(extracted_at as datetime) as extracted_at,
         safe_cast(ano_particao as int64) as ano_particao,
         safe_cast(mes_particao as int64) as mes_particao,
         date(data_particao) as data_particao

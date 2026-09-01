@@ -81,12 +81,13 @@ renomeado as (
         safe_cast(quantidade as int64) as quantidade,
 
         -- Metadados
-        safe_cast(extracted_at as string) as extracted_at,
-        safe_cast(ano_particao as string) as ano_particao,
-        safe_cast(mes_particao as string) as mes_particao,
+        safe_cast(extracted_at as datetime) as extracted_at,
+        safe_cast(ano_particao as int64) as ano_particao,
+        safe_cast(mes_particao as int64) as mes_particao,
         safe_cast(data_particao as date) as data_particao
 
     from base64_para_string
+    qualify row_number() over (partition by pesquisa_id order by extracted_at desc) = 1 
 )
 
 select * from renomeado

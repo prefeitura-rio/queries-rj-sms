@@ -2,7 +2,7 @@
     config(
         alias="atendimento_domiciliar_entradas",
         materialized="incremental",
-        unique_key="registro_id",
+        unique_key="id_registro",
         partition_by={
             "field": "data_particao",
             "data_type": "date",
@@ -175,11 +175,11 @@ renomeado as (
         date(registro_alta) as registro_alta,
         safe_cast(motivo_alta as string) as motivo_alta,
         safe_cast(motivo_alta_id as int64) as id_motivo_alta,
-        safe_cast(permanencia as string) as permanencia,
-        safe_cast(quantidade as string) as quantidade,
+        safe_cast(permanencia as int64) as permanencia,
+        safe_cast(quantidade as int64) as quantidade,
 
         -- Metadados
-        datetime(extracted_at) as extracted_at,
+        safe_cast(extracted_at as datetime) as extracted_at,
         safe_cast(ano_particao as int64) as ano_particao,
         safe_cast(mes_particao as int64) as mes_particao,
         date(data_particao) as data_particao
