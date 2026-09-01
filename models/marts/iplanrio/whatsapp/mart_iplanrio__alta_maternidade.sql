@@ -312,6 +312,7 @@ prontuario_altas as (
     left join pacientes_hci ph on ph.cpf = ep.cpf
     where ep.fonte = 'prontuaRio'
       and ep.cpf is not null
+      and ep.data_alta_internacao >= date('2026-01-01')
 ),
 
 base_prontuario as (
@@ -406,6 +407,7 @@ mv_altas as (
     left join pacientes_hci ph on ph.cpf = ep.cpf
     where ep.fonte = 'mv'
       and ep.cpf is not null
+      and ep.data_alta_internacao >= date('2026-01-01')
 ),
 
 base_mv as (
@@ -471,6 +473,7 @@ vitai_altas as (
     left join pacientes_hci ph on ph.cpf = ep.cpf
     where ep.fonte = 'vitai'
       and ep.cpf is not null
+      and ep.data_alta_internacao >= date('2026-01-01')
 ),
 
 base_vitai as (
