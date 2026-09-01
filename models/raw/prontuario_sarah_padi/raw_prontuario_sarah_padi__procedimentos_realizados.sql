@@ -2,7 +2,7 @@
     config(
         alias="procedimentos_realizados",
         materialized="incremental",
-        unique_key=['id_atendimento', 'id_procedimento', 'data_procedimento'],
+        unique_key=['id_atendimento', 'id_procedimento', 'procedimento_data'],
         schema='brutos_prontuario_sarah_padi',
         partition_by={
             "field": "data_particao",
@@ -89,7 +89,7 @@ renomeado as (
         partition by 
             numero_atendimento, 
             procedimento_id, 
-            data_procedimento 
+            data_procedimento
         order by extracted_at desc) = 1
 )
 
