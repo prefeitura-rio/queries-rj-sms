@@ -6,8 +6,6 @@ models:
     columns:
       - name: gid_prontuario
         description: "ID global único do prontuário."
-      - name: gid_registro
-        description: "ID global único do registro cadastral."
       - name: id_registro
         description: "Identificador local do registro."
       - name: id_prontuario1
