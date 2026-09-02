@@ -56,7 +56,7 @@ models:
         description: Raça/cor referenciada pelo paciente.
         data_type: string
 
-      - name: paciente_id_genero
+      - name: id_paciente_genero
         description: Identificador do gênero referenciado pelo paciente.
         data_type: integer
 
@@ -72,7 +72,7 @@ models:
 
       - name: paciente_idade
         description: Idade do paciente.
-        data_type: string
+        data_type: integer
 
       - name: paciente_id_faixa_etaria
         description: Identificador da faixa etária do paciente.

@@ -92,15 +92,15 @@ models:
       # Metadados
       - name: extracted_at
         description: Data e hora de extração do dado na origem.
-        data_type: string
+        data_type: datetime
 
       - name: ano_particao
         description: Ano de particionamento do dado.
-        data_type: string
+        data_type: integer
 
       - name: mes_particao
         description: Mês de particionamento do dado.
-        data_type: string
+        data_type: integer
 
       - name: data_particao
         description: Data de particionamento do dado.

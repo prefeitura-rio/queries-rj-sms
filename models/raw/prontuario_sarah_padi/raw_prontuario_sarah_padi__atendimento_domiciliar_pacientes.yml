@@ -55,7 +55,7 @@ models:
         description: Nome da unidade de origem do atendimento do paciente.
         data_type: string
 
-      - name: servico_id
+      - name: id_servico
         description: Identificador do serviço do atendimento.
         data_type: integer
 
@@ -96,9 +96,9 @@ models:
         description: Raça/cor referenciada pelo paciente.
         data_type: string
 
-      - name: paciente_genero_id
+      - name: id_paciente_genero
         description: Identificador do gênero referenciado pelo paciente.
-        data_type: string
+        data_type: integer
 
       - name: paciente_genero
         description: Gênero referenciado pelo paciente.
@@ -112,7 +112,7 @@ models:
 
       - name: paciente_idade
         description: Idade do paciente.
-        data_type: string
+        data_type: integer
 
       - name: faixa_etaria_id
         description: Identificador da faixa etária do paciente.

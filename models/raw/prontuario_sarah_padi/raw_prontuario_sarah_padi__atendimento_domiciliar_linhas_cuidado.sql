@@ -66,7 +66,7 @@ renomeado as (
         safe_cast(unidade as string) as unidade,
         safe_cast(unidade_id as string) as unidade_id,
         safe_cast(servico as string) as servico,
-        safe_cast(servico_id as int64) as servico_id,
+        safe_cast(servico_id as int64) as id_servico,
         safe_cast(rota as string) as rota,
         safe_cast(rota_id as string) as rota_id,
         safe_cast(bairro as string) as bairro,

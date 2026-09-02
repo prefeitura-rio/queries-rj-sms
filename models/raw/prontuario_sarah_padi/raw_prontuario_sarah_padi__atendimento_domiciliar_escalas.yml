@@ -133,7 +133,7 @@ models:
 
       - name: id_prestador
         description: Identificador do profissional que realizou a escala assistencial.
-        data_type: string
+        data_type: integer
 
       - name: prestador_nome
         description: Nome do profissional que realizou a escala assistencial.
@@ -149,7 +149,7 @@ models:
 
       - name: id_avaliacao
         description: Identificador da avaliação da escala aplicada no paciente.
-        data_type: string
+        data_type: integer
 
       - name: pontuacao
         description: Pontuação do paciente na escala assistencial.
@@ -162,15 +162,15 @@ models:
       # Metadados
       - name: extracted_at
         description: Data e hora de extração do dado na origem.
-        data_type: string
+        data_type: datetime
 
       - name: ano_particao
         description: Ano de particionamento do dado.
-        data_type: string
+        data_type: integer
 
       - name: mes_particao
         description: Mês de particionamento do dado.
-        data_type: string
+        data_type: integer
 
       - name: data_particao
         description: Data de particionamento do dado.
