@@ -1,0 +1,122 @@
+version: 2
+
+models:
+  - name: raw_prontuario_sarah_padi__pesquisas_periodo
+    description: Dados referentes a pesquisas de satisfação aplicadas a pacientes no período.
+    columns:
+      - name: pesquisa
+        description: Nome da pesquisa aplicada pelo entrevistador.
+        data_type: string
+
+      - name: id_pesquisa
+        description: Identificador da pesquisa aplicada pelo entrevistador.
+        data_type: integer
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__pesquisas_periodo__id_pesquisa__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - unique:
+              name: raw_prontuario_sarah_padi__pesquisas_periodo__id_pesquisa__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: entrevistador
+        description: Nome do entrevistador responsável pela realização da pesquisa.
+        data_type: string
+
+      - name: id_cnes
+        description: CNES da unidade de atendimento.
+        data_type: string
+
+      - name: unidade
+        description: Unidade de atendimento.
+        data_type: string
+
+      - name: data
+        description: Data da análise da pesquisa.
+        data_type: date
+
+      - name: hora
+        description: Hora da realização da pesquisa.
+        data_type: time
+
+      - name: mes
+        description: Nome do mês da realização da pesquisa.
+        data_type: string
+
+      # Dados do Entrevistado
+      - name: escolaridade
+        description: Escolaridade do entrevistado.
+        data_type: string
+
+      - name: tipo_documento
+        description: Tipo de documento apresentado na pesquisa.
+        data_type: string
+
+      - name: raca_cor
+        description: Raça/cor do paciente.
+        data_type: string
+
+      - name: informou_idade
+        description: Indicador se o entrevistado informou a idade.
+        data_type: string
+
+      - name: idade
+        description: Idade do paciente.
+        data_type: integer
+
+      - name: estado_civil
+        description: Estado civil do paciente.
+        data_type: string
+
+      - name: renda_familiar
+        description: Nome da renda familiar do paciente.
+        data_type: string
+
+      - name: sexo
+        description: Sexo do paciente.
+        data_type: string
+
+      - name: genero
+        description: Nome do gênero referenciado pelo paciente.
+        data_type: string
+
+      - name: grau_parentesco
+        description: Grau de parentesco do responsável com o paciente.
+        data_type: string
+
+      - name: exclusao
+        description: Indicador se o entrevistado foi excluído.
+        data_type: string
+
+      - name: criterio_exclusao
+        description: Critério de exclusão do entrevistado.
+        data_type: string
+
+      - name: pontuacao
+        description: Pontuação do entrevistado na pesquisa.
+        data_type: integer
+
+      - name: quantidade
+        description: Quantidade de fatos.
+        data_type: integer
+
+      # Metadados
+      - name: extracted_at
+        description: Data e hora de extração do dado na origem.
+        data_type: string
+
+      - name: ano_particao
+        description: Ano de particionamento do dado.
+        data_type: string
+
+      - name: mes_particao
+        description: Mês de particionamento do dado.
+        data_type: string
+
+      - name: data_particao
+        description: Data de particionamento do dado.
+        data_type: date

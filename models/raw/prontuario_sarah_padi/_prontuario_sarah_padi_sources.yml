@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_sarah_padi_staging
+    database: rj-sms
+    schema: brutos_prontuario_sarah_padi_staging
+    tables:
+      - name: atendimento_domiciliar_entradas
+      - name: atendimento_domiciliar_escalas
+      - name: atendimento_domiciliar_linhas_cuidado
+      - name: atendimento_domiciliar_pacientes
+      - name: atendimento_domiciliar_saidas
+      - name: captacoes_ad_encerradas
+      - name: captacoes_ad_iniciadas
+      - name: escalas_assistenciais
+      - name: log_acessos
+      - name: pesquisas_periodo
+      - name: prescricao_medica_itens
+      - name: procedimentos_realizados
+

@@ -1,0 +1,209 @@
+version: 2
+
+models:
+  - name: raw_prontuario_sarah_padi__captacoes_ad_iniciadas
+    description: Dados referentes a captações de pacientes para atendimento domiciliar iniciadas no período.
+    columns:
+      - name: id_captacao
+        description: Identificador da captação do paciente.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__captacoes_ad_iniciadas__id_captacao__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - unique:
+              name: raw_prontuario_sarah_padi__captacoes_ad_iniciadas__id_captacao__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: captacao_inicio
+        description: Data de início da captação do paciente.
+        data_type: date
+
+      - name: captacao_fim
+        description: Data de encerramento da captação do paciente.
+        data_type: date
+
+      - name: situacao
+        description: Situação da captação.
+        data_type: string
+
+      - name: id_situacao
+        description: Identificador da situação da captação do paciente.
+        data_type: integer
+
+      - name: tipo
+        description: Tipo de captação do paciente.
+        data_type: string
+
+      - name: id_tipo
+        description: Identificador do tipo de captação do paciente.
+        data_type: integer
+
+      # Dados do Paciente
+      - name: cpf
+        description: Número do CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: sexo
+        description: Sexo do paciente.
+        data_type: string
+
+      - name: id_genero
+        description: Identificador do gênero referenciado pelo paciente.
+        data_type: integer
+
+      - name: genero
+        description: Nome do gênero referenciado pelo paciente.
+        data_type: string
+
+      - name: nome
+        description: Nome do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: nome_social
+        description: Nome social do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: idade
+        description: Idade do paciente.
+        data_type: integer
+
+      - name: raca_cor
+        description: Raça/cor do paciente.
+        data_type: string
+
+      - name: id_raca_cor
+        description: Identificador da raça/cor do paciente.
+        data_type: integer
+
+      - name: etnia
+        description: Nome da etnia indígena do paciente.
+        data_type: string
+
+      - name: id_etnia
+        description: Identificador da etnia indígena do paciente.
+        data_type: integer
+
+      # Unidades
+      - name: unidade_origem
+        description: Unidade de origem do paciente na captação.
+        data_type: string
+
+      - name: unidade_origem_cnes
+        description: CNES da unidade de origem do paciente na captação.
+        data_type: string
+
+      - name: unidade_destino
+        description: Nome da unidade de destino do atendimento do paciente.
+        data_type: string
+
+      - name: unidade_destino_cnes
+        description: CNES da unidade de destino do atendimento do paciente.
+        data_type: string
+
+      # Responsáveis
+      - name: responsavel_inicio
+        description: Nome do responsável pelo início da captação.
+        data_type: string
+
+      - name: responsavel_fim
+        description: Nome do responsável pelo encerramento da captação.
+        data_type: string
+
+      # Encaminhamento
+      - name: origem
+        description: Local de origem do paciente na captação.
+        data_type: string
+
+      - name: id_origem
+        description: Identificador da origem do paciente para a captação.
+        data_type: integer
+
+      - name: destino
+        description: Destino do paciente após a captação.
+        data_type: string
+
+      - name: id_destino
+        description: Identificador do destino do paciente após a captação.
+        data_type: integer
+
+      - name: motivo
+        description: Motivo do encerramento da captação do paciente.
+        data_type: string
+
+      - name: id_motivo
+        description: Identificador do motivo de encerramento da captação do paciente.
+        data_type: integer
+
+      - name: clinica
+        description: Nome da clínica de atendimento do paciente.
+        data_type: string
+
+      - name: id_clinica
+        description: Identificador da clínica de atendimento do paciente.
+        data_type: integer
+
+      - name: especialidade
+        description: Especialidade do paciente na captação.
+        data_type: string
+
+      - name: id_especialidade
+        description: Identificador da especialidade do paciente na captação.
+        data_type: integer
+
+      - name: municipio_naturalidade
+        description: Município de naturalidade do paciente.
+        data_type: string
+
+      - name: id_municipio_naturalidade
+        description: Identificador do município de naturalidade do paciente.
+        data_type: integer
+
+      - name: municipio_residencia
+        description: Município de residência do paciente.
+        data_type: string
+
+      - name: id_municipio_residencia
+        description: Identificador do município de residência do paciente.
+        data_type: integer
+
+      - name: bairro
+        description: Nome do bairro do paciente.
+        data_type: string
+
+      - name: quantidade
+        description: Quantidade de fatos.
+        data_type: integer
+
+      # Metadados
+      - name: extracted_at
+        description: Data e hora de extração do dado na origem.
+        data_type: string
+
+      - name: ano_particao
+        description: Ano de particionamento do dado.
+        data_type: string
+
+      - name: mes_particao
+        description: Mês de particionamento do dado.
+        data_type: string
+
+      - name: data_particao
+        description: Data de particionamento do dado.
+        data_type: date

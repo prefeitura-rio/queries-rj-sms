@@ -1,0 +1,177 @@
+version: 2
+
+models:
+  - name: raw_prontuario_sarah_padi__atendimento_domiciliar_escalas
+    description: Dados referentes a escalas assistenciais aplicadas em pacientes durante o atendimento domiciliar no período.
+    columns:
+      - name: id_atendimento
+        description: Identificador do atendimento.
+        data_type: string
+        data_tests:
+          - not_null:
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_escalas__id_atendimento__not_null
+              config:
+                severity: warn
+                warn_if: ">1000"
+          - unique:
+              name: raw_prontuario_sarah_padi__atendimento_domiciliar_escalas__id_atendimento__unique
+              config:
+                severity: warn
+                warn_if: ">1000"
+
+      - name: atendimento_admissao
+        description: Data de admissão do paciente.
+        data_type: date
+
+      - name: atendimento_alta
+        description: Data da alta do paciente.
+        data_type: date
+
+      - name: alta_periodo
+        description: Indicador se o paciente teve alta no período.
+        data_type: string
+
+      - name: admitido_periodo
+        description: Indicador se o paciente foi admitido no período.
+        data_type: string
+
+      - name: unidade
+        description: Nome da unidade de atendimento do paciente.
+        data_type: string
+
+      - name: id_unidade
+        description: Identificador da unidade de atendimento do paciente.
+        data_type: string
+
+      - name: servico
+        description: Nome do serviço do atendimento.
+        data_type: string
+
+      - name: id_servico
+        description: Identificador do serviço do atendimento.
+        data_type: integer
+
+      - name: rota
+        description: Nome da rota de atendimento.
+        data_type: string
+
+      - name: id_rota
+        description: Identificador da rota de atendimento.
+        data_type: string
+
+      # Dados do Paciente
+      - name: id_paciente
+        description: Identificador do paciente.
+        data_type: string
+
+      - name: paciente_cpf
+        description: Número do CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: paciente_nome
+        description: Nome do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: paciente_sexo
+        description: Sexo do paciente.
+        data_type: string
+
+      - name: paciente_raca_cor
+        description: Raça/cor referenciada pelo paciente.
+        data_type: string
+
+      - name: id_paciente_genero
+        description: Identificador do gênero referenciado pelo paciente.
+        data_type: integer
+
+      - name: paciente_genero
+        description: Gênero referenciado pelo paciente.
+        data_type: string
+
+      - name: paciente_data_nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags:
+          - '{{ var("TAG_DATA_NASCIMENTO") }}'
+
+      - name: paciente_idade
+        description: Idade do paciente.
+        data_type: integer
+
+      - name: paciente_bairro
+        description: Nome do bairro do paciente.
+        data_type: string
+
+      - name: paciente_municipio_uf
+        description: Município e UF do paciente.
+        data_type: string
+
+      # Escala
+      - name: data
+        description: Data da realização da escala assistencial.
+        data_type: date
+
+      - name: escala_ordem
+        description: Ordem da escala assistencial.
+        data_type: integer
+
+      - name: id_escala
+        description: Identificador da escala assistencial.
+        data_type: integer
+
+      - name: escala_nome
+        description: Nome da escala assistencial.
+        data_type: string
+
+      - name: escala_sigla
+        description: Sigla da escala assistencial.
+        data_type: string
+
+      - name: id_prestador
+        description: Identificador do profissional que realizou a escala assistencial.
+        data_type: integer
+
+      - name: prestador_nome
+        description: Nome do profissional que realizou a escala assistencial.
+        data_type: string
+
+      - name: prestador_cargo
+        description: Cargo do profissional que realizou a escala assistencial.
+        data_type: string
+
+      - name: avaliacao
+        description: Avaliação da escala aplicada no paciente.
+        data_type: string
+
+      - name: id_avaliacao
+        description: Identificador da avaliação da escala aplicada no paciente.
+        data_type: integer
+
+      - name: pontuacao
+        description: Pontuação do paciente na escala assistencial.
+        data_type: integer
+
+      - name: quantidade
+        description: Quantidade de fatos.
+        data_type: integer
+
+      # Metadados
+      - name: extracted_at
+        description: Data e hora de extração do dado na origem.
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano de particionamento do dado.
+        data_type: integer
+
+      - name: mes_particao
+        description: Mês de particionamento do dado.
+        data_type: integer
+
+      - name: data_particao
+        description: Data de particionamento do dado.
+        data_type: date

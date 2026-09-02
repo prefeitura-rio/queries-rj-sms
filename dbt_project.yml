@@ -470,6 +470,17 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      prontuario_sarah_padi:
+        +schema: brutos_prontuario_sarah_padi
+        +tags: ["padi", "daily"]
+        +meta:
+          owner: herian
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
       prontuario_mv:
         +schema: brutos_prontuario_mv
         +tags: ["mv", "daily"]
@@ -823,7 +834,7 @@ models:
           +schema: dashboard_datalake
           +tags: ["daily", "datalake"]
           +meta:
-            owner: ['herian', 'daniel']
+            owner: 'herian'
             team: ['cit']
           +labels:
             dado_publico: nao
