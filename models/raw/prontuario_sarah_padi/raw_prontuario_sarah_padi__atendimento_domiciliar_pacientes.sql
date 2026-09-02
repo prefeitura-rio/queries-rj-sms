@@ -104,18 +104,18 @@ renomeado as (
         safe_cast(admitido_no_periodo as string) as admitido_periodo,
 
         safe_cast(unidade as string) as unidade_nome,
-        safe_cast(unidade_id as string) as unidade_id,
+        safe_cast(unidade_id as string) as id_unidade,
         date(data_transferencia) as transferencia_data,
         safe_cast(unidade_origem as string) as unidade_origem_nome,
         
         safe_cast(servico_id as int64) as id_servico,
         safe_cast(servico as string) as servico_tipo, 
 
-        safe_cast(rota_id as string) as rota_id,
+        safe_cast(rota_id as string) as id_rota,
         safe_cast(rota as string) as rota,
 
         -- Dados do Paciente
-        safe_cast(paciente_id as string) as paciente_id,
+        safe_cast(paciente_id as string) as id_paciente,
         safe_cast(paciente_cpf as string) as paciente_cpf,
         safe_cast(paciente_nome as string) as paciente_nome,
         safe_cast(paciente_sexo as string) as paciente_sexo,
@@ -124,16 +124,16 @@ renomeado as (
         safe_cast(paciente_genero as string) as paciente_genero,
         date(paciente_dtnasc) as paciente_nascimento_data,
         safe_cast(paciente_idade as int64) as paciente_idade,
-        safe_cast(faixa_etaria_id as string) as faixa_etaria_id,
+        safe_cast(faixa_etaria_id as int64) as id_faixa_etaria,
         safe_cast(faixa_etaria as string) as faixa_etaria, 
         safe_cast(cids as string) as cids,
         safe_cast(municipio_uf as string) as paciente_endereco_municipio_uf,
         safe_cast(bairro as string) as paciente_endereco_bairro,
         safe_cast(endereco as string) as paciente_endereco,
         safe_cast(contato as string) as contato,
-        safe_cast(origem_id as string) as origem_id,
+        safe_cast(origem_id as string) as id_origem,
         safe_cast(origem as string) as origem, 
-        safe_cast(tipo_origem_id as string) as id_tipo_origem,
+        safe_cast(tipo_origem_id as int64) as id_tipo_origem,
         safe_cast(tipo_origem as string) as origem_tipo,
         
         -- Dados do Cuidador

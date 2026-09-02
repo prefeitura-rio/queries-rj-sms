@@ -43,7 +43,7 @@ models:
         description: Nome da unidade de atendimento do paciente.
         data_type: string
 
-      - name: unidade_id
+      - name: id_unidade
         description: Identificador da unidade de atendimento do paciente.
         data_type: string
 
@@ -63,7 +63,7 @@ models:
         description: Nome do serviço do atendimento.
         data_type: string
 
-      - name: rota_id
+      - name: id_rota
         description: Identificador da rota de atendimento.
         data_type: string
 
@@ -72,7 +72,7 @@ models:
         data_type: string
 
       # Dados do Paciente
-      - name: paciente_id
+      - name: id_paciente
         description: Identificador do paciente.
         data_type: string
 
@@ -114,9 +114,9 @@ models:
         description: Idade do paciente.
         data_type: integer
 
-      - name: faixa_etaria_id
+      - name: id_faixa_etaria
         description: Identificador da faixa etária do paciente.
-        data_type: string
+        data_type: integer
 
       - name: faixa_etaria
         description: Nome da faixa etária do paciente.
@@ -144,9 +144,9 @@ models:
         description: Nome do contato com o paciente.
         data_type: string
 
-      - name: origem_id
+      - name: id_origem
         description: Identificador da origem do paciente para o atendimento.
-        data_type: integer
+        data_type: string
 
       - name: origem
         description: Origem do paciente para o atendimento.
@@ -162,7 +162,7 @@ models:
 
       # Dados do Cuidador
       - name: cuidador
-        description: Nome do cuidador.
+        description: Indica se o paciente tem cuidador.
         data_type: string
 
       - name: cuidador_nome
