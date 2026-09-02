@@ -1,6 +1,6 @@
 {{
     config(
-        alias="funcionarios",
+        alias="funcionarios_sms",
         materialized="table",
         partition_by={
             "field": "cpf_particao",
@@ -13,8 +13,10 @@
 with
     source as (
         select
-            *
-        from {{ source("brutos_ergon_staging", "funcionarios") }}
+            lpad(cpf, 11, '0') as cpf,
+            * except(cpf, cpf_particao),
+            cpf_particao
+        from {{ source("brutos_ergon_staging", "funcionarios_sms") }}
     )
 select *
 from source

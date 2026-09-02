@@ -43,19 +43,19 @@ with
             cbo_datasus.descricao as cbo_nome,
             case 
                 when regexp_contains(lower(cbo_datasus.descricao), '^medic')
-                    then 'MÉDICOS'
+                    then 'MEDICOS'
                 when regexp_contains(lower(cbo_datasus.descricao), r'^cirurgiao[\s\-]*dentista')
                     then 'DENTISTAS'
                 when regexp_contains(lower(cbo_datasus.descricao), 'psic')
-                    then 'PSICÓLOGOS'
+                    then 'PSICOLOGOS'
                 when regexp_contains(lower(cbo_datasus.descricao), 'fisioterap')
                     then 'FISIOTERAPEUTAS'
                 when regexp_contains(lower(cbo_datasus.descricao), 'nutri[çc]')
                     then 'NUTRICIONISTAS'
                 when regexp_contains(lower(cbo_datasus.descricao), 'fonoaudio')
-                    then 'FONOAUDIÓLOGOS'
+                    then 'FONOAUDIOLOGOS'
                 when regexp_contains(lower(cbo_datasus.descricao), 'farm')
-                    then 'FARMACÊUTICOS'
+                    then 'FARMACEUTICOS'
                 when (
                         (regexp_contains(lower(cbo_datasus.descricao),'enferm')) and 
                         (lower(cbo_datasus.descricao) !='socorrista (exceto medicos e enfermeiros)') and
@@ -136,9 +136,9 @@ with
     ergon_ativos as (
         select distinct
             cpf
-        from {{ ref("raw_ergon_funcionarios_sheets")}}--, unnest(dados) as dados
-        -- Planilha temporária do Ergon, só constam os ativos
-        -- where dados.status_ativo = true
+        from {{ ref("raw_ergon__funcionarios_sms")}},
+            unnest(vinculos) as vinculo
+        where vinculo.status_ativo = true
     ),
     funcionarios_ativos_enriquecido_autorizados as (
         select
