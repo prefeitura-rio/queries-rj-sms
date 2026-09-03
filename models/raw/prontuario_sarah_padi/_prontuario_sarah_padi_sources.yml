@@ -6,15 +6,51 @@ sources:
     schema: brutos_prontuario_sarah_padi_staging
     tables:
       - name: atendimento_domiciliar_entradas
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: atendimento_domiciliar_escalas
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: atendimento_domiciliar_linhas_cuidado
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: atendimento_domiciliar_pacientes
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}  
       - name: atendimento_domiciliar_saidas
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: captacoes_ad_encerradas
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: captacoes_ad_iniciadas
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: escalas_assistenciais
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}  
       - name: log_acessos
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: pesquisas_periodo
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: prescricao_medica_itens
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
       - name: procedimentos_realizados
+        freshness:
+            warn_after: {count: 12, period: hour}
+            error_after: {count: 24, period: hour}
 
