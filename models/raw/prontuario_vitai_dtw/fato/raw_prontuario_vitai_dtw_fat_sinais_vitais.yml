@@ -1,0 +1,129 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai_dtw_fat_sinais_vitais
+    description: >
+      Registros de sinais vitais de pacientes provenientes do sistema Vitai DTW.
+      Contém as medições clínicas realizadas durante o atendimento, incluindo
+      pressão arterial, frequência cardíaca e respiratória, saturação de oxigênio,
+      temperatura corporal, peso, altura, escala de dor e índice de Glasgow.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [sinais_vitais_gid]
+          where: "data_particao = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: asv_saturacao
+        description: Saturação de oxigênio (SpO2) do paciente, em percentual.
+        data_type: numeric
+
+      - name: fat_paciente_rede_id
+        description: Identificador do paciente na rede Vitai.
+        data_type: int64
+
+      - name: asv_freq_respiratoria
+        description: Frequência respiratória do paciente (movimentos por minuto).
+        data_type: numeric
+
+      - name: estabelecimento_gid
+        description: Identificador global do estabelecimento de saúde.
+        data_type: string
+
+      - name: asv_pa_sistolica
+        description: Pressão arterial sistólica do paciente (mmHg).
+        data_type: numeric
+
+      - name: asv_temp_corporal
+        description: Temperatura corporal do paciente (graus Celsius).
+        data_type: numeric
+
+      - name: asv_escala_dor
+        description: Escala de dor do paciente (0 a 10).
+        data_type: int64
+
+      - name: asv_freq_cardiaca
+        description: Frequência cardíaca do paciente (batimentos por minuto).
+        data_type: numeric
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: data_afericao
+        description: Data e hora em que os sinais vitais foram aferidos.
+        data_type: datetime
+
+      - name: asv_indice_glasgow
+        description: Índice de Glasgow do paciente (escala de coma, 3 a 15).
+        data_type: int64
+
+      - name: asv_hemoglicoteste
+        description: Resultado do hemoglicoteste (glicemia capilar), em mg/dL.
+        data_type: numeric
+
+      - name: asv_pa_diastolica
+        description: Pressão arterial diastólica do paciente (mmHg).
+        data_type: numeric
+
+      - name: cor_pele
+        description: Cor/perfusão da pele do paciente observada na avaliação.
+        data_type: string
+
+      - name: asv_peso
+        description: Peso do paciente em quilogramas.
+        data_type: numeric
+
+      - name: datahora_cadastro
+        description: Data e hora de cadastro dos sinais vitais no sistema.
+        data_type: datetime
+
+      - name: asv_altura
+        description: Altura do paciente em centímetros.
+        data_type: int64
+
+      - name: boletim_gid
+        description: Identificador global do boletim de atendimento associado.
+        data_type: string
+
+      - name: paciente_gid
+        description: Identificador global do paciente.
+        data_type: string
+
+      - name: sinais_vitais_gid
+        description: Identificador global único do registro de sinais vitais.
+        data_type: string
+        data_tests:
+          - not_null
+
+      - name: codigo
+        description: Código interno do registro de sinais vitais.
+        data_type: int64
+
+      - name: datahora
+        description: Data e hora de referência do registro de sinais vitais.
+        data_type: datetime
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: prf_id
+        description: Identificador do profissional que realizou a aferição.
+        data_type: int64
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano da partição do dado.
+        data_type: int64
+
+      - name: mes_particao
+        description: Mês da partição do dado.
+        data_type: int64
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

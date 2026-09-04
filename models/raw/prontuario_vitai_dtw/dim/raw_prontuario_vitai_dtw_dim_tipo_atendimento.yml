@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai_dtw_dim_tipo_atendimento
+    description: >
+      Dimensão de tipos de atendimento proveniente do sistema Vitai DTW.
+      Classifica a natureza do atendimento prestado ao paciente
+      (ex: consulta, urgência, emergência, eletivo).
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [tpa_id]
+          where: "data_particao = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: tpa_id
+        description: Identificador único do tipo de atendimento no sistema.
+        data_type: int64
+        data_tests:
+          - not_null
+
+      - name: tpa_descricao
+        description: Descrição do tipo de atendimento.
+        data_type: string
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: timestamp
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: timestamp
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano da partição do dado.
+        data_type: int64
+
+      - name: mes_particao
+        description: Mês da partição do dado.
+        data_type: int64
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

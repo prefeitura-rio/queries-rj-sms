@@ -1,0 +1,52 @@
+version: 2
+
+sources:
+  - name: brutos_prontuario_vitai_dtw_staging
+    database: rj-sms-dev
+    schema: brutos_prontuario_vitai_dtw_staging
+    tables:
+    # Dimensões
+      - name: dim_cid
+      - name: dim_momento_atendimento
+      - name: dim_especialidade
+      - name: dim_via_administracao
+      - name: dim_unidade_medida
+      - name: dim_secao
+      - name: dim_cbo
+      - name: dim_risco
+      - name: dim_faixa_etaria
+      - name: dim_tipo_unidade_entrada
+      - name: dim_tipo_entrada
+      - name: dim_prioridade
+      - name: dim_tipo_atendimento
+      - name: dim_municipio
+      - name: dim_bairro
+      - name: dim_raca
+      - name: dim_severidade
+      - name: dim_tipo_alergia
+      - name: dim_motivo_alta
+      - name: dim_status_pedido_exame
+      - name: dim_tipo_exame
+      - name: dim_procedimento
+      - name: dim_tipo_internacao
+      - name: dim_tipo_diagnostico
+      - name: dim_tipo_item_prescricao
+
+    # Fatos
+      - name: fat_alergia
+      - name: fat_alta
+      - name: fat_atendimento
+      - name: fat_boletim
+      - name: fat_classificacao
+      - name: fat_diagnostico
+      - name: fat_exame_item
+      - name: fat_exame_pedido
+      - name: fat_internacao
+      - name: fat_item_prescricao
+      - name: fat_paciente_rede
+      - name: fat_paciente_rede_new
+      - name: fat_paciente_regulado
+      - name: fat_prescricao
+      - name: fat_profissional
+      - name: fat_sinais_vitais
+

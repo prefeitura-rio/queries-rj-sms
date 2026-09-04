@@ -1,0 +1,132 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai_dtw_fat_boletim
+    description: >
+      Boletins de atendimento/emergência provenientes do sistema Vitai DTW.
+      Representa a unidade central de registro de passagem do paciente pelo
+      estabelecimento, agregando dados de entrada, saída, internação e alta.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [boletim_gid]
+          where: "data_particao = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: tpu_id
+        description: Identificador do tipo de unidade/leito.
+        data_type: int64
+
+      - name: data_internacao
+        description: Data e hora de internação do paciente.
+        data_type: datetime
+
+      - name: idade
+        description: Idade do paciente no momento do atendimento.
+        data_type: int64
+
+      - name: ris_id
+        description: Identificador do risco/triagem do paciente.
+        data_type: int64
+
+      - name: interno
+        description: Indicador se o paciente está internado.
+        data_type: string
+
+      - name: boletim_gid
+        description: Identificador global único do boletim de atendimento.
+        data_type: string
+        data_tests:
+          - not_null
+
+      - name: dea_id
+        description: Identificador do desfecho do atendimento.
+        data_type: int64
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: fae_id
+        description: Identificador da fase/etapa do atendimento.
+        data_type: int64
+
+      - name: estabelecimento_gid
+        description: Identificador global do estabelecimento de saúde.
+        data_type: string
+
+      - name: mob_id
+        description: Identificador do motivo de busca/origem do paciente.
+        data_type: int64
+
+      - name: pri_id
+        description: Identificador da prioridade do atendimento.
+        data_type: int64
+
+      - name: numero_be
+        description: Número do boletim de emergência.
+        data_type: int64
+
+      - name: data_alta
+        description: Data e hora de alta do paciente.
+        data_type: datetime
+
+      - name: orp_id
+        description: Identificador da origem do paciente/procedência.
+        data_type: int64
+
+      - name: tpe_id
+        description: Identificador do tipo de encaminhamento.
+        data_type: int64
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: esp_id
+        description: Identificador da especialidade médica.
+        data_type: int64
+
+      - name: cbo_id
+        description: Identificador do CBO (Classificação Brasileira de Ocupações) do profissional.
+        data_type: int64
+
+      - name: fat_paciente_rede_id
+        description: Identificador do paciente na rede Vitai.
+        data_type: int64
+
+      - name: tpa_id
+        description: Identificador do tipo de atendimento.
+        data_type: int64
+
+      - name: datahora
+        description: Data e hora de referência do boletim.
+        data_type: datetime
+
+      - name: met_id
+        description: Identificador do meio de transporte/chegada.
+        data_type: int64
+
+      - name: data_entrada
+        description: Data e hora de entrada do paciente no estabelecimento.
+        data_type: datetime
+
+      - name: paciente_gid
+        description: Identificador global do paciente.
+        data_type: string
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano da partição do dado.
+        data_type: int64
+
+      - name: mes_particao
+        description: Mês da partição do dado.
+        data_type: int64
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

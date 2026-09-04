@@ -1,0 +1,84 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai_dtw_fat_exame_item
+    description: >
+      Itens de exame laboratorial/complementar provenientes do sistema Vitai DTW.
+      Representa os exames individuais dentro de um pedido, incluindo informações
+      sobre o exame, datas de realização, liberação e exclusão.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [exi_id]
+          where: "data_particao = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: exi_id
+        description: Identificador único do item de exame.
+        data_type: int64
+        data_tests:
+          - not_null
+
+      - name: exame_id
+        description: Identificador do exame associado ao pedido.
+        data_type: int64
+
+      - name: exame_gid
+        description: Identificador global do exame.
+        data_type: string
+
+      - name: data_exclusao
+        description: Data e hora de exclusão do item de exame, quando aplicável.
+        data_type: datetime
+
+      - name: data_realizacao
+        description: Data e hora de realização do exame.
+        data_type: datetime
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: exame_mneumonico
+        description: Código mnemônico (abreviação) do exame.
+        data_type: string
+
+      - name: data_liberacao
+        description: Data e hora de liberação/validação do resultado do exame.
+        data_type: datetime
+
+      - name: prc_id
+        description: Identificador do procedimento associado ao exame.
+        data_type: int64
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: sie_id
+        description: Identificador da situação do item de exame.
+        data_type: int64
+
+      - name: exame_descricao
+        description: Descrição completa do exame.
+        data_type: string
+
+      - name: codigo_interno
+        description: Código interno do exame no sistema.
+        data_type: int64
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano da partição do dado.
+        data_type: int64
+
+      - name: mes_particao
+        description: Mês da partição do dado.
+        data_type: int64
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

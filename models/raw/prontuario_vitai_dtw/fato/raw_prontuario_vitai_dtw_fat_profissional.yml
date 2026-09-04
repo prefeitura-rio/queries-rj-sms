@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai_dtw_fat_profissional
+    description: >
+      Cadastro de profissionais de saúde proveniente do sistema Vitai DTW.
+      Contém dados de identificação dos profissionais, incluindo CPF, CNS,
+      número de conselho profissional e situação de atividade.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [prf_id]
+          where: "data_particao = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: datahora
+        description: Data e hora de referência do registro do profissional.
+        data_type: datetime
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: situacao
+        description: Situação atual do profissional no sistema (ativo, inativo, etc.).
+        data_type: string
+
+      - name: cpf
+        description: CPF do profissional de saúde.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CPF") }}']
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: prf_id
+        description: Identificador único do profissional de saúde no sistema.
+        data_type: int64
+        data_tests:
+          - not_null
+
+      - name: uf_conselho
+        description: UF do conselho profissional do profissional de saúde.
+        data_type: string
+
+      - name: cns
+        description: Cartão Nacional de Saúde do profissional.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CNS") }}']
+
+      - name: numero_conselho
+        description: Número de registro no conselho profissional (CRM, COREN, CRO, etc.).
+        data_type: string
+        policy_tags: ['{{ var("TAG_CONSELHO_DE_CLASSE") }}']
+
+      - name: nome
+        description: Nome completo do profissional de saúde.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: cre_id
+        description: Identificador do tipo de conselho de classe/credencial do profissional.
+        data_type: int64
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano da partição do dado.
+        data_type: int64
+
+      - name: mes_particao
+        description: Mês da partição do dado.
+        data_type: int64
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

@@ -1,0 +1,146 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai_dtw_fat_paciente_rede
+    description: >
+      Cadastro de pacientes da rede Vitai provenientes do sistema Vitai DTW.
+      Contém dados demográficos, de identificação e de contato dos pacientes
+      atendidos nos estabelecimentos integrados ao sistema Vitai.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [fat_paciente_rede_id]
+          where: "data_particao = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: tipologradouro
+        description: Tipo do logradouro do endereço do paciente.
+        data_type: string
+
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags: ['{{ var("TAG_DATA_NASCIMENTO") }}']
+
+      - name: nome
+        description: Nome completo do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: nome_alternativo
+        description: Nome alternativo ou social do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: fat_paciente_rede_id
+        description: Identificador único do paciente na rede Vitai.
+        data_type: int64
+        data_tests:
+          - not_null
+
+      - name: transex
+        description: Indicador de transexualidade do paciente.
+        data_type: string
+
+      - name: nomemae
+        description: Nome da mãe do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME_MAE") }}']
+
+      - name: mun_id
+        description: Identificador do município de residência do paciente.
+        data_type: int64
+
+      - name: cep
+        description: CEP do endereço de residência do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: nomepai
+        description: Nome do pai do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME_PAI") }}']
+
+      - name: bai_id
+        description: Identificador do bairro de residência do paciente.
+        data_type: int64
+
+      - name: telefone_extra_dois
+        description: Segundo telefone adicional de contato do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: cns
+        description: Cartão Nacional de Saúde do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CNS") }}']
+
+      - name: naturalidade
+        description: Naturalidade (município/estado de nascimento) do paciente.
+        data_type: string
+
+      - name: email
+        description: Endereço de e-mail do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_EMAIL") }}']
+
+      - name: nomelogradouro
+        description: Nome do logradouro do endereço do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: celular
+        description: Número de celular do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: sexo
+        description: Sexo biológico do paciente.
+        data_type: string
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CPF") }}']
+
+      - name: telefone_extra_um
+        description: Primeiro telefone adicional de contato do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: raca_id
+        description: Identificador da raça/cor do paciente.
+        data_type: int64
+
+      - name: telefone
+        description: Telefone principal de contato do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: datahora
+        description: Data e hora de referência do registro.
+        data_type: datetime
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano da partição do dado.
+        data_type: int64
+
+      - name: mes_particao
+        description: Mês da partição do dado.
+        data_type: int64
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

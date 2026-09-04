@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai_dtw_fat_internacao
+    description: >
+      Registros de internação hospitalar provenientes do sistema Vitai DTW.
+      Contém dados sobre a internação do paciente, incluindo datas de entrada
+      e saída, especialidade, tipo de internação e CID de internação.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [internacao_gid]
+          where: "data_particao = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: fat_paciente_rede_id
+        description: Identificador do paciente na rede Vitai.
+        data_type: int64
+
+      - name: paciente_gid
+        description: Identificador global do paciente.
+        data_type: string
+
+      - name: data_saida
+        description: Data e hora de saída do paciente da internação.
+        data_type: datetime
+
+      - name: esp_id
+        description: Identificador da especialidade médica da internação.
+        data_type: int64
+
+      - name: tin_id
+        description: Identificador do tipo de internação.
+        data_type: int64
+
+      - name: cid_id_internacao
+        description: Identificador do CID principal da internação.
+        data_type: int64
+
+      - name: data_entrada
+        description: Data e hora de entrada do paciente na internação.
+        data_type: datetime
+
+      - name: estabelecimento_gid
+        description: Identificador global do estabelecimento de saúde.
+        data_type: string
+
+      - name: prc_id
+        description: Identificador do procedimento associado à internação.
+        data_type: int64
+
+      - name: boletim_gid
+        description: Identificador global do boletim de atendimento associado.
+        data_type: string
+
+      - name: prf_id
+        description: Identificador do profissional de saúde responsável pela internação.
+        data_type: int64
+
+      - name: internacao_gid
+        description: Identificador global único do registro de internação.
+        data_type: string
+        data_tests:
+          - not_null
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano da partição do dado.
+        data_type: int64
+
+      - name: mes_particao
+        description: Mês da partição do dado.
+        data_type: int64
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

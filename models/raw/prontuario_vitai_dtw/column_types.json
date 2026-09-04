@@ -1,0 +1,651 @@
+{
+"SELECT \n    column_name, \n    data_type, \n    is_nullable,\n    column_default\nFROM \n    information_schema.columns\nWHERE \n    lower(table_name) in\n\t(\n\t\t'dim_via_administracao',\n        'dim_unidade_medida',\n        'dim_secao',\n        'dim_cbo',\n        'dim_risco',\n        'dim_faixa_etaria',\n        'dim_tipo_unidade_entrada',\n        'dim_tipo_entrada',\n        'dim_especialidade',\n        'dim_prioridade',\n        'dim_tipo_atendimento',\n        'dim_municipio',\n        'dim_bairro',\n        'dim_raca',\n        'dim_severidade',\n        'dim_tipo_alergia',\n        'dim_motivo_alta',\n        'dim_cid',\n        'dim_momento_atendimento',\n        'dim_status_pedido_exame',\n        'dim_tipo_exame',\n        'dim_procedimento',\n        'dim_tipo_internacao',\n        'dim_tipo_diagnostico',\n        'dim_tipo_item_prescricao'\n\t)\nORDER BY \n    ordinal_position": [
+	{
+		"column_name" : "tpa_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "matd_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "mun_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "prc_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "spe_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "raca_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "ris_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tpd_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tpe_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tpu_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tal_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "sev_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "mal_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tin_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "sec_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "via_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "unm_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tip_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "pri_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tex_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "bai_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "cbo_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "cid_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "esp_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "fae_id",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "ris_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "prc_codigo",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "unm_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "via_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "mun_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "cid_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "sev_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "matd_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tpu_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "spe_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "mal_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tpe_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tin_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "raca_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "mun_id",
+		"data_type" : "integer",
+		"is_nullable" : "YES",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tip_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tal_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tpa_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "esp_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "pri_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "fae_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "sec_descricao",
+		"data_type" : "text",
+		"is_nullable" : "YES",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tex_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "tpd_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "cbo_descricao",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "prc_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "bai_descricao",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "mun_uf",
+		"data_type" : "character varying",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "fae_idade_inicial",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "secao_gid",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "cbo_codigo",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "cid_codigo",
+		"data_type" : "text",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "fae_idade_final",
+		"data_type" : "integer",
+		"is_nullable" : "NO",
+		"column_default" : null
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "created_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	},
+	{
+		"column_name" : "updated_at",
+		"data_type" : "timestamp without time zone",
+		"is_nullable" : "NO",
+		"column_default" : "(now() AT TIME ZONE 'America\/Sao_Paulo'::text)"
+	}
+]}

@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitai_dtw_fat_alta
+    description: >
+      Registros de alta de pacientes provenientes do sistema Vitai DTW.
+      Contém informações sobre o tipo de alta, datas de alta médica e administrativa,
+      motivo de saída e dados de óbito quando aplicável.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [alta_gid]
+          where: "data_particao = current_date('America/Sao_Paulo')"
+
+    columns:
+      - name: tipo_alta_detalhada
+        description: Descrição detalhada do tipo de alta do paciente.
+        data_type: string
+
+      - name: mal_id
+        description: Identificador do motivo de alta/leito.
+        data_type: int64
+
+      - name: data_obito
+        description: Data e hora do óbito do paciente, quando aplicável.
+        data_type: datetime
+
+      - name: boletim_gid
+        description: Identificador global do boletim de atendimento associado.
+        data_type: string
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: alta_gid
+        description: Identificador global único do registro de alta.
+        data_type: string
+        data_tests:
+          - not_null
+
+      - name: abe_obs
+        description: Observações sobre a abertura/encerramento do atendimento.
+        data_type: string
+
+      - name: alta_administrativa
+        description: Data e hora da alta administrativa do paciente.
+        data_type: datetime
+
+      - name: status
+        description: Status do registro de alta.
+        data_type: string
+
+      - name: estabelecimento_gid
+        description: Identificador global do estabelecimento de saúde.
+        data_type: string
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: data_alta
+        description: Data e hora de alta do paciente.
+        data_type: datetime
+
+      - name: alta_medica
+        description: Data e hora da alta médica do paciente.
+        data_type: datetime
+
+      - name: motivo_saida
+        description: Motivo de saída do paciente do estabelecimento.
+        data_type: string
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: ano_particao
+        description: Ano da partição do dado.
+        data_type: int64
+
+      - name: mes_particao
+        description: Mês da partição do dado.
+        data_type: int64
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date
