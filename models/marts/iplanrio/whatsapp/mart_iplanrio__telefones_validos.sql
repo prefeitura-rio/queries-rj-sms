@@ -19,6 +19,10 @@ WITH ddds_validos AS (
   ]) AS ddd
 ),
 
+-- Consolida cada ocorrência de telefone encontrada nas fontes cadastrais.
+-- O UNION ALL é intencional: nesta etapa preservamos registros repetidos, datas
+-- de atualização e a origem para que cada ocorrência possa ser avaliada antes
+-- do agrupamento por CPF.
 base_telefones AS (
   SELECT
     TRIM(cpf) AS cpf,
@@ -62,6 +66,8 @@ base_telefones AS (
   WHERE telefone IS NOT NULL AND telefone != ''
 ),
 
+-- Remove caracteres não numéricos e o zero de operadora quando o telefone foi
+-- registrado no padrão 0 + DDD + número.
 limpa_telefone AS (
   SELECT
     *,
@@ -73,6 +79,9 @@ limpa_telefone AS (
   FROM base_telefones
 ),
 
+-- Converte celulares brasileiros para o formato canônico 55 + DDD + 9 dígitos.
+-- Telefones antigos com 8 dígitos recebem o nono dígito; valores que não se
+-- encaixam nos formatos aceitos permanecem com telefone_formatado nulo.
 formatacao AS (
   SELECT
     f.*,
@@ -146,6 +155,9 @@ telefones_clinicas AS (
   WHERE telefone_limpo IS NOT NULL AND telefone_limpo != ''
 ),
 
+-- Conta o compartilhamento pelo número já formatado. A contagem não deve usar
+-- telefone_limpo, pois representações com e sem o nono dígito podem resultar no
+-- mesmo telefone_formatado.
 frequencia AS (
   SELECT
     *,
@@ -157,6 +169,9 @@ frequencia AS (
   FROM formatacao
 ),
 
+-- Um número associado a 10 ou mais CPFs é tratado como compartilhado e será
+-- invalidado junto com números institucionais, telefones de clínicas e demais
+-- padrões considerados inadequados para contato pessoal.
 avaliacoes AS (
   SELECT
     *,
@@ -213,6 +228,10 @@ final_avaliacoes AS (
 final as (
   SELECT
     cpf,
+    -- Mantém todas as ocorrências no array, inclusive as invalidadas, para
+    -- preservar rastreabilidade. Nesses casos, telefone_formatado recebe nulo e
+    -- o motivo permanece disponível em status. A ordenação coloca os cadastros
+    -- mais recentes primeiro, mas não escolhe automaticamente um telefone único.
     ARRAY_AGG(STRUCT(
       telefone AS telefone_raw,
       origem,
