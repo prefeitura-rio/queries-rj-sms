@@ -150,8 +150,8 @@ frequencia AS (
   SELECT
     *,
     CASE
-      WHEN telefone_limpo IS NOT NULL
-        THEN COUNT(DISTINCT cpf) OVER (PARTITION BY telefone_limpo)
+      WHEN telefone_formatado IS NOT NULL
+        THEN COUNT(DISTINCT cpf) OVER (PARTITION BY telefone_formatado)
       ELSE NULL
     END AS total_cpfs_com_mesmo_telefone
   FROM formatacao
@@ -162,7 +162,7 @@ avaliacoes AS (
     *,
     telefone_formatado IS NULL AS flag_telefone_formatado_nulo,
     CASE 
-      WHEN telefone_limpo IS NULL THEN FALSE
+      WHEN telefone_formatado IS NULL THEN FALSE
       ELSE total_cpfs_com_mesmo_telefone >= 10
     END AS flag_numero_compartilhado,
     UPPER(TRIM(telefone)) IN (
@@ -215,6 +215,7 @@ final as (
     cpf,
     ARRAY_AGG(STRUCT(
       telefone AS telefone_raw,
+      origem,
       telefone_limpo,
       if(flag_numero_invalidado is true, null, telefone_formatado) as telefone_formatado,
       data_ultima_atualizacao_cadastral,
