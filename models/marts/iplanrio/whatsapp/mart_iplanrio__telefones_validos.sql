@@ -215,6 +215,7 @@ final as (
     cpf,
     ARRAY_AGG(STRUCT(
       telefone AS telefone_raw,
+      origem,
       telefone_limpo,
       if(flag_numero_invalidado is true, null, telefone_formatado) as telefone_formatado,
       data_ultima_atualizacao_cadastral,
