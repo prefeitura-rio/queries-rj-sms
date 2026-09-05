@@ -1,0 +1,221 @@
+version: 2
+
+models:
+  - name: int_prontuario_vitai_dtw__fat_atendimento
+    description: >
+      Atendimentos do sistema Vitai DTW enriquecidos com dados do paciente e descrições
+      das dimensões (especialidade, CID e momento de atendimento). Uma linha por atendimento.
+
+    columns:
+      - name: atendimento_gid
+        description: Identificador global único do atendimento.
+        data_type: string
+        data_tests:
+          - unique
+          - not_null
+
+      - name: boletim_gid
+        description: Identificador do boletim ao qual o atendimento pertence (FK fat_boletim).
+        data_type: string
+        data_tests:
+          - not_null
+
+      - name: fat_paciente_rede_id
+        description: Identificador do paciente na rede Vitai (FK fat_paciente_rede).
+        data_type: int64
+
+      - name: estabelecimento_gid
+        description: Identificador global do estabelecimento de saúde.
+        data_type: string
+
+      - name: esp_id
+        description: Identificador da especialidade médica (FK dim_especialidade).
+        data_type: int64
+
+      - name: cid_id
+        description: Identificador do diagnóstico CID (FK dim_cid).
+        data_type: int64
+
+      - name: prf_id
+        description: Identificador do profissional responsável (FK fat_profissional).
+        data_type: int64
+
+      - name: matd_id
+        description: Identificador do momento de atendimento (FK dim_momento_atendimento).
+        data_type: int64
+
+      - name: queixa
+        description: Queixa principal relatada no atendimento.
+        data_type: string
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: primeiro_atendimento
+        description: Indicador se é o primeiro atendimento do paciente.
+        data_type: string
+
+      - name: ultimo_atendimento
+        description: Indicador se é o último atendimento do paciente.
+        data_type: string
+
+      - name: esp_descricao
+        description: Descrição da especialidade médica.
+        data_type: string
+
+      - name: cid_codigo
+        description: Código CID do diagnóstico.
+        data_type: string
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: cid_descricao
+        description: Descrição do diagnóstico CID.
+        data_type: string
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: matd_descricao
+        description: Descrição do momento de atendimento.
+        data_type: string
+
+      - name: paciente_gid
+        description: Identificador global do paciente na origem.
+        data_type: string
+
+      - name: paciente_cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CPF") }}']
+
+      - name: paciente_cns
+        description: CNS do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CNS") }}']
+
+      - name: paciente_nome
+        description: Nome completo do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: paciente_nome_alternativo
+        description: Nome alternativo ou social do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: paciente_nomemae
+        description: Nome da mãe do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME_MAE") }}']
+
+      - name: paciente_nomepai
+        description: Nome do pai do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME_PAI") }}']
+
+      - name: paciente_data_nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags: ['{{ var("TAG_DATA_NASCIMENTO") }}']
+
+      - name: paciente_sexo
+        description: Sexo biológico do paciente.
+        data_type: string
+
+      - name: paciente_transex
+        description: Indicador de transexualidade do paciente.
+        data_type: string
+
+      - name: paciente_naturalidade
+        description: Naturalidade do paciente.
+        data_type: string
+
+      - name: paciente_raca_id
+        description: Identificador da raça/cor do paciente.
+        data_type: int64
+
+      - name: paciente_raca_descricao
+        description: Descrição da raça/cor do paciente.
+        data_type: string
+
+      - name: paciente_telefone
+        description: Telefone principal do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: paciente_celular
+        description: Celular do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: paciente_telefone_extra_um
+        description: Primeiro telefone adicional do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: paciente_telefone_extra_dois
+        description: Segundo telefone adicional do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: paciente_email
+        description: E-mail do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_EMAIL") }}']
+
+      - name: paciente_cep
+        description: CEP do endereço do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: paciente_tipologradouro
+        description: Tipo do logradouro do endereço do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: paciente_nomelogradouro
+        description: Nome do logradouro do endereço do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: paciente_bai_id
+        description: Identificador do bairro do paciente.
+        data_type: int64
+
+      - name: paciente_bai_descricao
+        description: Nome do bairro do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: paciente_mun_id
+        description: Identificador do município do paciente.
+        data_type: int64
+
+      - name: paciente_mun_descricao
+        description: Nome do município do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: paciente_mun_uf
+        description: UF do município do paciente.
+        data_type: string
+
+      - name: data_inicio
+        description: Data e hora de início do atendimento.
+        data_type: datetime
+
+      - name: data_fim
+        description: Data e hora de fim do atendimento.
+        data_type: datetime
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

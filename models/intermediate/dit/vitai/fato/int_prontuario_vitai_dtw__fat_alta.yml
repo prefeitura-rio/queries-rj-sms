@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: int_prontuario_vitai_dtw__fat_alta
+    description: >
+      Registros de alta do sistema Vitai DTW, enriquecidos com a descrição do motivo
+      de alta. Uma linha por alta registrada.
+
+    columns:
+      - name: alta_gid
+        description: Identificador global único da alta.
+        data_type: string
+        data_tests:
+          - unique
+          - not_null
+
+      - name: boletim_gid
+        description: Identificador do boletim associado (FK fat_boletim).
+        data_type: string
+        data_tests:
+          - not_null
+
+      - name: estabelecimento_gid
+        description: Identificador global do estabelecimento de saúde.
+        data_type: string
+
+      - name: mal_id
+        description: Identificador do motivo de alta (FK dim_motivo_alta).
+        data_type: int64
+
+      - name: status
+        description: Status da alta (ex. ATIVO, CANCELADO).
+        data_type: string
+
+      - name: tipo_alta_detalhada
+        description: Descrição detalhada do tipo de alta.
+        data_type: string
+
+      - name: motivo_saida
+        description: Motivo de saída registrado na alta.
+        data_type: string
+
+      - name: abe_obs
+        description: Observações adicionais da alta.
+        data_type: string
+
+      - name: mal_descricao
+        description: Descrição do motivo de alta.
+        data_type: string
+
+      - name: data_alta
+        description: Data e hora da alta do paciente.
+        data_type: datetime
+
+      - name: alta_medica
+        description: Data e hora da alta médica.
+        data_type: datetime
+
+      - name: alta_administrativa
+        description: Data e hora da alta administrativa.
+        data_type: datetime
+
+      - name: data_obito
+        description: Data e hora do óbito, quando aplicável.
+        data_type: datetime
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

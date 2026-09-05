@@ -1,0 +1,153 @@
+version: 2
+
+models:
+  - name: int_prontuario_vitai_dtw__fat_paciente_rede_new
+    description: >
+      Versão atualizada do cadastro de pacientes da rede Vitai (fat_paciente_rede_new),
+      enriquecida com descrições de município, bairro e raça/cor. Segue o mesmo
+      esquema de fat_paciente_rede, representando a carga mais recente dos dados cadastrais.
+
+    columns:
+      - name: fat_paciente_rede_id
+        description: Identificador único do paciente na rede Vitai.
+        data_type: int64
+        data_tests:
+          - unique
+          - not_null
+
+      - name: cpf
+        description: CPF do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CPF") }}']
+
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CNS") }}']
+
+      - name: nome
+        description: Nome completo do paciente (formatado com initcap).
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: nome_alternativo
+        description: Nome alternativo ou social do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: nomemae
+        description: Nome da mãe do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME_MAE") }}']
+
+      - name: nomepai
+        description: Nome do pai do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME_PAI") }}']
+
+      - name: data_nascimento
+        description: Data de nascimento do paciente.
+        data_type: date
+        policy_tags: ['{{ var("TAG_DATA_NASCIMENTO") }}']
+
+      - name: sexo
+        description: Sexo biológico do paciente.
+        data_type: string
+
+      - name: transex
+        description: Indicador de transexualidade do paciente.
+        data_type: string
+
+      - name: naturalidade
+        description: Naturalidade (município/estado de nascimento) do paciente.
+        data_type: string
+
+      - name: raca_id
+        description: Identificador da raça/cor do paciente (FK dim_raca).
+        data_type: int64
+
+      - name: raca_descricao
+        description: Descrição da raça/cor do paciente.
+        data_type: string
+
+      - name: telefone
+        description: Telefone principal de contato do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: celular
+        description: Número de celular do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: telefone_extra_um
+        description: Primeiro telefone adicional de contato do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: telefone_extra_dois
+        description: Segundo telefone adicional de contato do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_TELEFONE") }}']
+
+      - name: email
+        description: Endereço de e-mail do paciente (em minúsculas).
+        data_type: string
+        policy_tags: ['{{ var("TAG_EMAIL") }}']
+
+      - name: cep
+        description: CEP do endereço de residência do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: tipologradouro
+        description: Tipo do logradouro do endereço do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: nomelogradouro
+        description: Nome do logradouro do endereço do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: bai_id
+        description: Identificador do bairro de residência do paciente (FK dim_bairro).
+        data_type: int64
+
+      - name: bai_descricao
+        description: Nome do bairro de residência do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: mun_id
+        description: Identificador do município de residência do paciente (FK dim_municipio).
+        data_type: int64
+
+      - name: mun_descricao
+        description: Nome do município de residência do paciente.
+        data_type: string
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: mun_uf
+        description: UF do município de residência do paciente.
+        data_type: string
+
+      - name: datahora
+        description: Data e hora de referência do registro.
+        data_type: datetime
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

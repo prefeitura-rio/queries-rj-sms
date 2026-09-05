@@ -1,0 +1,101 @@
+version: 2
+
+models:
+  - name: int_prontuario_vitai_dtw__fat_item_prescricao
+    description: >
+      Itens de prescrição médica do sistema Vitai DTW, enriquecidos com descrições
+      do tipo de item, via de administração e unidade de medida. Uma linha por item prescrito.
+
+    columns:
+      - name: item_prescricao_gid
+        description: Identificador global único do item de prescrição.
+        data_type: string
+        data_tests:
+          - unique
+          - not_null
+
+      - name: prescricao_gid
+        description: Identificador da prescrição à qual o item pertence (FK fat_prescricao).
+        data_type: string
+        data_tests:
+          - not_null
+
+      - name: boletim_gid
+        description: Identificador do boletim associado (FK fat_boletim).
+        data_type: string
+
+      - name: estabelecimento_gid
+        description: Identificador global do estabelecimento de saúde.
+        data_type: string
+
+      - name: tip_id
+        description: Identificador do tipo de item de prescrição (FK dim_tipo_item_prescricao).
+        data_type: int64
+
+      - name: via_id
+        description: Identificador da via de administração (FK dim_via_administracao).
+        data_type: int64
+
+      - name: unm_id
+        description: Identificador da unidade de medida (FK dim_unidade_medida).
+        data_type: int64
+
+      - name: item_prescrito
+        description: Nome/descrição do item prescrito.
+        data_type: string
+
+      - name: pri_descricaoitem
+        description: Descrição do item conforme tabela de referência interna.
+        data_type: string
+
+      - name: produto_associado
+        description: Produto associado ao item prescrito.
+        data_type: string
+
+      - name: orientacao_uso
+        description: Orientações de uso do item prescrito.
+        data_type: string
+
+      - name: observacao
+        description: Observações adicionais sobre o item prescrito.
+        data_type: string
+
+      - name: is_antibiotico
+        description: Indicador se o item prescrito é um antibiótico.
+        data_type: string
+
+      - name: quantidade
+        description: Quantidade prescrita do item.
+        data_type: numeric
+
+      - name: tip_descricao
+        description: Descrição do tipo de item de prescrição.
+        data_type: string
+
+      - name: via_descricao
+        description: Descrição da via de administração.
+        data_type: string
+
+      - name: unm_descricao
+        description: Descrição da unidade de medida.
+        data_type: string
+
+      - name: datahora_cadastro
+        description: Data e hora de cadastro do item de prescrição.
+        data_type: datetime
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date

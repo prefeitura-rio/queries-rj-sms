@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: int_prontuario_vitai_dtw__fat_profissional
+    description: >
+      Cadastro de profissionais de saúde do sistema Vitai DTW, com limpeza e
+      padronização de campos. Uma linha por profissional cadastrado.
+
+    columns:
+      - name: prf_id
+        description: Identificador único do profissional no sistema Vitai.
+        data_type: int64
+        data_tests:
+          - unique
+          - not_null
+
+      - name: cpf
+        description: CPF do profissional.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CPF") }}']
+
+      - name: cns
+        description: Cartão Nacional de Saúde (CNS) do profissional.
+        data_type: string
+        policy_tags: ['{{ var("TAG_CNS") }}']
+
+      - name: cre_id
+        description: Identificador do conselho de classe do profissional.
+        data_type: int64
+        policy_tags: ['{{ var("TAG_CONSELHO_DE_CLASSE") }}']
+
+      - name: numero_conselho
+        description: Número de registro no conselho de classe (CRM, COREN, etc.).
+        data_type: string
+        policy_tags: ['{{ var("TAG_CONSELHO_DE_CLASSE") }}']
+
+      - name: uf_conselho
+        description: UF do conselho de classe onde o profissional está registrado.
+        data_type: string
+
+      - name: nome
+        description: Nome completo do profissional (formatado com initcap).
+        data_type: string
+        policy_tags: ['{{ var("TAG_NOME") }}']
+
+      - name: situacao
+        description: Situação do cadastro do profissional (ativo, inativo, etc.).
+        data_type: string
+
+      - name: datahora
+        description: Data e hora de referência do registro.
+        data_type: datetime
+
+      - name: created_at
+        description: Data e hora de criação do registro na origem.
+        data_type: datetime
+
+      - name: updated_at
+        description: Data e hora da última atualização do registro na origem.
+        data_type: datetime
+
+      - name: loaded_at
+        description: Data e hora de carga no Data Lake (fuso America/Sao_Paulo).
+        data_type: datetime
+
+      - name: data_particao
+        description: Data da partição do dado.
+        data_type: date
