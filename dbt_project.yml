@@ -437,6 +437,17 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      prontuario_vitai_dtw:
+        +schema: brutos_prontuario_vitai_dtw
+        +tags: ["vitai", "daily", "vitai_dtw"]
+        +meta:
+          owner: herian
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: historico_clinico
       prontuario_carioca_saude_mental:
         +schema: brutos_prontuario_carioca_saude_mental
         +meta:

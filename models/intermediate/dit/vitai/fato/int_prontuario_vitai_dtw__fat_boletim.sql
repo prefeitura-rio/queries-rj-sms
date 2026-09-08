@@ -2,7 +2,7 @@
     config(
         alias="fat_boletim",
         materialized="table",
-        schema="intermediario_prontuario_vitai_dtw",
+        schema="intermediario_prontuario_vitai",
         tags=["intermediate", "vitai"]
     )
 }}

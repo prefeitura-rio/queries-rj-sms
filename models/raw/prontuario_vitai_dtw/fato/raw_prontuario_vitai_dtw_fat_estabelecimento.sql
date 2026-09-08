@@ -9,7 +9,7 @@
 with
 source as (
     select *
-    from {{ source("brutos_prontuario_vitai_dtw_staging", "fato_estabelecimento") }}
+    from {{ source("brutos_prontuario_vitai_dtw_staging", "fat_estabelecimento") }}
 ),
 
 renomeado as (

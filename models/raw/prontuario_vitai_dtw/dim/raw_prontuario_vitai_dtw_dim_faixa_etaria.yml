@@ -20,7 +20,8 @@ models:
           - not_null
 
       - name: fae_descricao
-        description: Descrição da faixa etária (ex: "0 a 2 anos", "60 anos ou mais").
+        description: >
+          Descrição da faixa etária (ex: "0 a 2 anos", "60 anos ou mais").
         data_type: string
 
       - name: fae_idade_inicial

@@ -39,6 +39,7 @@ sources:
       - name: fat_boletim
       - name: fat_classificacao
       - name: fat_diagnostico
+      - name: fat_estabelecimento
       - name: fat_exame_item
       - name: fat_exame_pedido
       - name: fat_internacao
