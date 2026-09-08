@@ -1174,17 +1174,16 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: subgeral
-      central_estrategica:
-        +schema: projeto_central_estrategica
-        +tags: ["daily", "central_estrategica", "sisreg_v2"]
+      subhue:
+        +schema: projeto_subhue
+        +tags: ["weekly", "subhue", "projeto_subhue"]
         +meta:
-          team: cit
+          team: subhue
         +labels:
           dado_publico: nao
-          dado_pessoal: nao
-          dado_sensivel: nao
-          dominio: central_estrategica
-
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: subhue
       ipp:
         +schema: projeto_ipp
         +tags: ['monthly', 'ipp']
@@ -1196,6 +1195,7 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: ipp
+      
 
 data_tests:
   rj_sms:
