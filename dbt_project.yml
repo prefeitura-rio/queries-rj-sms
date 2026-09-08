@@ -1180,10 +1180,10 @@ models:
         +meta:
           team: subhue
         +labels:
-            dado_publico: nao
-            dado_pessoal: sim
-            dado_sensivel: sim
-            dominio: subhue
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
+          dominio: subhue
       ipp:
         +schema: projeto_ipp
         +tags: ['monthly', 'ipp']
