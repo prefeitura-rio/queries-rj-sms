@@ -87,7 +87,6 @@ with
             ) as vinculo,
 
             data_ultima_atualizacao as atualizado_em,
-            data_particao as carregado_em,
             current_datetime('America/Sao_Paulo') as processado_em,
             safe_cast(profissional.cpf as int64) as cpf_particao
         from {{ref("int_gdb_cnes__vinculo")}} v
