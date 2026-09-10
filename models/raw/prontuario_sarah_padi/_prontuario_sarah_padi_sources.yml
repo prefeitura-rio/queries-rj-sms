@@ -6,51 +6,63 @@ sources:
     schema: brutos_prontuario_sarah_padi_staging
     tables:
       - name: atendimento_domiciliar_entradas
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: atendimento_domiciliar_escalas
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: atendimento_domiciliar_linhas_cuidado
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: atendimento_domiciliar_pacientes
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}  
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}  
       - name: atendimento_domiciliar_saidas
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: captacoes_ad_encerradas
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: captacoes_ad_iniciadas
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: escalas_assistenciais
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}  
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}  
       - name: log_acessos
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: pesquisas_periodo
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: prescricao_medica_itens
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
       - name: procedimentos_realizados
+        loaded_at_field: "CAST(extracted_at as datetime)"
         freshness:
-            warn_after: {count: 12, period: hour}
-            error_after: {count: 24, period: hour}
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 72, period: hour}
 
