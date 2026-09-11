@@ -854,6 +854,13 @@ models:
             dado_publico: nao
             dado_pessoal: nao
             dado_sensivel: nao
+        visitare_app:
+          +schema: app_visitare
+          +tags: ["daily", "visitare"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
         dengue:
           +schema: projeto_dengue
           +tags: "daily"
