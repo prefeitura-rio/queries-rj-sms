@@ -21,19 +21,19 @@ elegiveis as (
 -- Buscar todas as visitas domiciliares no período
 visitas_brutas as (
   select
-    a.id_global as visita_id,
-    a.profissional_cpf,
-    a.patient_cpf,
-    a.datahora_fim_atendimento as datahora_visita
-  from {{ ref('raw_prontuario_vitacare_historico__acto') }} a
-    inner join elegiveis e on a.patient_cpf = e.paciente_cpf
+    a.id_prontuario_global as visita_id,
+    a.cpf_profissional as profissional_cpf,
+    a.cpf as paciente_cpf,
+    a.datahora_fim as datahora_visita
+  from {{ ref('raw_prontuario_vitacare__atendimento') }} a
+    inner join elegiveis e on a.cpf = e.paciente_cpf
     cross join constantes
   where
     a.tipo_consulta = 'Visita Domiciliar'
-    and a.profissional_cbo_descricao in ('Agente comunitário de saúde', 'Técnico em Agente Comunitário de Saúde')
-    and a.patient_cpf is not null
-    and a.profissional_cpf is not null
-    and date(a.datahora_fim_atendimento) between (select data_minima from constantes) and (select data_maxima from constantes)
+    and a.cbo_descricao_profissional in ('Agente comunitário de saúde', 'Técnico em Agente Comunitário de Saúde')
+    and a.cpf is not null
+    and a.cpf_profissional is not null
+    and date(a.datahora_fim) between (select data_minima from constantes) and (select data_maxima from constantes)
 ),
 
 -- Remover duplicatas por profissional + paciente + data
@@ -42,7 +42,7 @@ visitas_deduplicadas as (
   select
     visita_id,
     profissional_cpf,
-    patient_cpf,
+    paciente_cpf,
     datahora_visita
   from visitas_brutas
   qualify row_number() over (
@@ -54,6 +54,6 @@ visitas_deduplicadas as (
 select
   visita_id,
   profissional_cpf,
-  patient_cpf as paciente_cpf,
+  paciente_cpf,
   datahora_visita as registrados_em
 from visitas_deduplicadas
