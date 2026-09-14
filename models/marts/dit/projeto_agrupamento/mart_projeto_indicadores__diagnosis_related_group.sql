@@ -150,30 +150,42 @@ diagnosticos as (
 
 -- Agrega diagnósticos secundários em string pipe-separated
 -- e computa o indicador de presença na admissão por CID secundário:
---   S = CID secundário coincide com o CID registrado na admissão (internacao.id_diagnostico)
---   N = CID secundário NÃO coincide com o CID da admissão
---   U = não havia CID registrado na admissão (internacao.id_diagnostico IS NULL)
+--   S = CID secundário coincide com o CID_Principal efetivo do episódio
+--   N = CID secundário NÃO coincide com o CID_Principal efetivo
+--   U = nenhuma fonte de CID principal disponível para o episódio
 -- Nota: W (clinicamente indeterminado) não é derivável automaticamente — fica como null.
+-- O CID_Principal efetivo segue a mesma prioridade do SELECT final:
+--   resumo_alta.cid_codigo_alta > internacao.id_diagnostico > cid_principal_fallback
 -- A ordem dos indicadores respeita a mesma sequência de cid_secundarios.
 diagnosticos_agregados as (
     select
         d.gid_boletim,
-        -- CID de maior rank para referenciar como "principal" (fallback se resumo_alta não tiver)
-        max(case when d.rank_diagnostico = 1 then d.codigo end) as cid_principal_fallback,
-        -- CIDs secundários: todos exceto rank 1, limitados a 10
-        string_agg(
-            case when d.rank_diagnostico > 1 then d.codigo end,
-            ' | '
-            order by d.rank_diagnostico
-            limit 10
-        ) as cid_secundarios,
-        -- Indicador de presença na admissão para cada CID secundário, na mesma sequência
+        -- CID de maior rank como fallback de principal (sem ponto)
+        replace(max(case when d.rank_diagnostico = 1 then d.codigo end), '.', '') as cid_principal_fallback,
+        -- CIDs secundários: todos exceto rank 1, sem ponto, sem "None", limitados a 10
         string_agg(
             case
                 when d.rank_diagnostico > 1
+                    and d.codigo is not null
+                    and upper(d.codigo) != 'NONE'
+                then replace(d.codigo, '.', '')
+            end,
+            '|'
+            order by d.rank_diagnostico
+            limit 10
+        ) as cid_secundarios,
+        -- Indicador de presença na admissão, na mesma sequência dos CIDs secundários.
+        -- Compara contra o CID_Principal efetivo (mesma prioridade do SELECT final),
+        -- sem ponto nos dois lados para uniformidade.
+        string_agg(
+            case
+                when d.rank_diagnostico > 1
+                    and d.codigo is not null
+                    and upper(d.codigo) != 'NONE'
                 then case
-                    when i.id_diagnostico is null then 'U'
-                    when d.codigo = i.id_diagnostico then 'S'
+                    when coalesce(ra.cid_codigo_alta, i.id_diagnostico) is null then 'U'
+                    when replace(d.codigo, '.', '') =
+                         replace(coalesce(ra.cid_codigo_alta, i.id_diagnostico), '.', '') then 'S'
                     else 'N'
                 end
             end,
@@ -182,7 +194,8 @@ diagnosticos_agregados as (
             limit 10
         ) as presenca_cid_secundario_admissao
     from diagnosticos d
-    left join internacao i on i.gid_boletim = d.gid_boletim
+    left join internacao   i  on i.gid_boletim  = d.gid_boletim
+    left join resumo_alta  ra on ra.gid_boletim = d.gid_boletim
     group by d.gid_boletim
 ),
 
@@ -194,12 +207,13 @@ cirurgias as (
         c.gid_boletim,
         string_agg(
             c.procedimento_codigo,
-            ' | '
+            '|'
             order by c.cirurgia_data
         ) as codigos_cirurgia
     from {{ ref('raw_prontuario_vitai__cirurgia') }} c
     inner join boletim b on b.gid = c.gid_boletim
     where c.procedimento_codigo is not null
+      and upper(c.procedimento_codigo) != 'NONE'
     group by c.gid_boletim
 ),
 
@@ -211,12 +225,13 @@ exames as (
         e.gid_boletim,
         string_agg(
             e.procedimento_codigo,
-            ' | '
+            '|'
             order by e.pedido_data
         ) as codigos_exame
     from {{ ref('raw_prontuario_vitai__exame') }} e
     inner join boletim b on b.gid = e.gid_boletim
     where e.procedimento_codigo is not null
+      and upper(e.procedimento_codigo) != 'NONE'
     group by e.gid_boletim
 ),
 
@@ -398,11 +413,15 @@ internacoes as (
 
         -- ── CID Principal ─────────────────────────────────────────────────────
         -- Prioridade: CID do resumo de alta (mais confiável) > CID da internação
-        -- > CID com maior rank na tabela de diagnósticos
-        coalesce(
-            ra.cid_codigo_alta,
-            i.id_diagnostico,
-            da.cid_principal_fallback
+        -- > CID com maior rank na tabela de diagnósticos.
+        -- Ponto removido para uniformidade com CIDs secundários.
+        replace(
+            coalesce(
+                ra.cid_codigo_alta,
+                i.id_diagnostico,
+                da.cid_principal_fallback
+            ),
+            '.', ''
         )                                                   as CID_Principal,
 
         -- ── CIDs Secundários ──────────────────────────────────────────────────
@@ -424,9 +443,9 @@ internacoes as (
         trim(
             concat(
                 coalesce(i.id_procedimento, ''),
-                case when i.id_procedimento is not null and (cir.codigos_cirurgia is not null or ex.codigos_exame is not null) then ' | ' else '' end,
+                case when i.id_procedimento is not null and (cir.codigos_cirurgia is not null or ex.codigos_exame is not null) then '|' else '' end,
                 coalesce(cir.codigos_cirurgia, ''),
-                case when cir.codigos_cirurgia is not null and ex.codigos_exame is not null then ' | ' else '' end,
+                case when cir.codigos_cirurgia is not null and ex.codigos_exame is not null then '|' else '' end,
                 coalesce(ex.codigos_exame, '')
             )
         )                                                   as Codigos_Procedimento_SUS,
