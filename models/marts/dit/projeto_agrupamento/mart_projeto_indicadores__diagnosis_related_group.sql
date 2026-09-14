@@ -84,6 +84,7 @@ internacao as (
         i.gid_boletim,
         i.id_procedimento,        -- código SUS do procedimento de internação
         i.id_diagnostico,         -- CID principal informado na internação
+        i.gid_profissional,       -- FK para o médico responsável pela internação
         i.saida_data,
         i.internacao_data
     from {{ ref('raw_prontuario_vitai__internacao') }} i
@@ -148,20 +149,41 @@ diagnosticos as (
 ),
 
 -- Agrega diagnósticos secundários em string pipe-separated
+-- e computa o indicador de presença na admissão por CID secundário:
+--   S = CID secundário coincide com o CID registrado na admissão (internacao.id_diagnostico)
+--   N = CID secundário NÃO coincide com o CID da admissão
+--   U = não havia CID registrado na admissão (internacao.id_diagnostico IS NULL)
+-- Nota: W (clinicamente indeterminado) não é derivável automaticamente — fica como null.
+-- A ordem dos indicadores respeita a mesma sequência de cid_secundarios.
 diagnosticos_agregados as (
     select
-        gid_boletim,
+        d.gid_boletim,
         -- CID de maior rank para referenciar como "principal" (fallback se resumo_alta não tiver)
-        max(case when rank_diagnostico = 1 then codigo end) as cid_principal_fallback,
+        max(case when d.rank_diagnostico = 1 then d.codigo end) as cid_principal_fallback,
         -- CIDs secundários: todos exceto rank 1, limitados a 10
         string_agg(
-            case when rank_diagnostico > 1 then codigo end,
+            case when d.rank_diagnostico > 1 then d.codigo end,
             ' | '
-            order by rank_diagnostico
+            order by d.rank_diagnostico
             limit 10
-        ) as cid_secundarios
-    from diagnosticos
-    group by gid_boletim
+        ) as cid_secundarios,
+        -- Indicador de presença na admissão para cada CID secundário, na mesma sequência
+        string_agg(
+            case
+                when d.rank_diagnostico > 1
+                then case
+                    when i.id_diagnostico is null then 'U'
+                    when d.codigo = i.id_diagnostico then 'S'
+                    else 'N'
+                end
+            end,
+            '|'
+            order by d.rank_diagnostico
+            limit 10
+        ) as presenca_cid_secundario_admissao
+    from diagnosticos d
+    left join internacao i on i.gid_boletim = d.gid_boletim
+    group by d.gid_boletim
 ),
 
 -- ---------------------------------------------------------------------------
@@ -213,11 +235,13 @@ recem_nascido as (
 ),
 
 -- ---------------------------------------------------------------------------
--- Numeração sequencial de pacientes e internações
+-- Numeração sequencial de pacientes, internações e médicos
 -- Codigo_Paciente: número sequencial único por gid_paciente (denso, estável
 --   dentro do período — ordenado pela primeira internação do paciente)
 -- Codigo_Internacao: sequência de internações de um paciente, ordenada por
 --   internacao_data (1ª internação = 1, 2ª = 2, etc.)
+-- Codigo_Medico_Responsavel: número sequencial único por gid_profissional
+--   (denso, estável — ordenado pela primeira internação atendida pelo médico)
 -- ---------------------------------------------------------------------------
 
 -- Passo 1: pré-calcula a primeira internação por paciente (necessário porque
@@ -228,6 +252,17 @@ primeira_internacao_por_paciente as (
         min(internacao_data) as primeira_internacao_data
     from boletim
     group by gid_paciente
+),
+
+-- Passo 2: pré-calcula a primeira internação atendida por cada médico
+primeira_internacao_por_medico as (
+    select
+        i.gid_profissional,
+        min(b.internacao_data) as primeira_internacao_data
+    from internacao i
+    inner join boletim b on b.gid = i.gid_boletim
+    where i.gid_profissional is not null
+    group by i.gid_profissional
 ),
 
 sequencias as (
@@ -243,10 +278,24 @@ sequencias as (
         row_number() over (
             partition by b.gid_paciente
             order by b.internacao_data, b.gid  -- desempate determinístico por gid
-        )                                                              as Codigo_Internacao
+        )                                                              as Codigo_Internacao,
+        -- Número único por médico responsável: dense_rank pela primeira internação atendida
+        -- Médicos sem gid_profissional (internações sem médico vinculado) recebem null
+        case
+            when i.gid_profissional is not null
+            then dense_rank() over (
+                order by
+                    pim.primeira_internacao_data,
+                    i.gid_profissional  -- desempate determinístico
+            )
+        end                                                            as Codigo_Medico_Responsavel
     from boletim b
     inner join primeira_internacao_por_paciente pip
         on pip.gid_paciente = b.gid_paciente
+    left join internacao i
+        on i.gid_boletim = b.gid
+    left join primeira_internacao_por_medico pim
+        on pim.gid_profissional = i.gid_profissional
 ),
 
 -- ---------------------------------------------------------------------------
@@ -354,6 +403,15 @@ internacoes as (
         -- Todos os CIDs registrados exceto o principal, separados por " | "
         da.cid_secundarios                                  as CID_Secundario,
 
+        -- ── Presença do CID Secundário na Admissão ────────────────────────────
+        -- Indica por CID secundário se estava presente na admissão:
+        --   S = coincide com o CID de admissão (internacao.id_diagnostico)
+        --   N = não coincide com o CID de admissão
+        --   U = CID de admissão não foi registrado (id_diagnostico IS NULL)
+        --   W = clinicamente indeterminado (não derivável automaticamente — null)
+        -- Separador: "|", na mesma sequência de CID_Secundario.
+        da.presenca_cid_secundario_admissao                 as Presenca_CID_Secundario_Admissao,
+
         -- ── Procedimentos SUS ─────────────────────────────────────────────────
         -- Consolida: procedimento da internação + cirurgias + exames com código SUS
         -- Separador: " | "
@@ -368,7 +426,15 @@ internacoes as (
         )                                                   as Codigos_Procedimento_SUS,
 
         -- Tabela de procedimentos: sempre SUS (3) neste contexto
-        '3'                                                 as Tipo_Tabela
+        '3'                                                 as Tipo_Tabela,
+        'SUS'                                               as Fonte_Pagadora,
+
+        -- ── Código do Médico Responsável ──────────────────────────────────────
+        -- Número sequencial denso e estável gerado pelo modelo, seguindo o mesmo
+        -- padrão de Codigo_Paciente: mesmo médico → mesmo código em todas as
+        -- internações do período; ordenado pela primeira internação atendida.
+        -- Null para internações sem médico responsável vinculado.
+        seq.Codigo_Medico_Responsavel                       as Codigo_Medico_Responsavel
 
     from boletim b
     inner join estabelecimento e          on e.gid = b.gid_estabelecimento
@@ -387,8 +453,9 @@ com_dados_basicos as (
     select *
     from internacoes
     where 
-        Sexo is not null and
-        (Idade_Anos is not null or Idade_Dias is not null)
+        (Sexo is not null) and
+        (Idade_Anos is not null or Idade_Dias is not null) and
+        (Codigo_Medico_Responsavel is not null)
 )
 
 select *
