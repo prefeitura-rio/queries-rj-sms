@@ -82,9 +82,9 @@ paciente as (
 internacao as (
     select
         i.gid_boletim,
-        i.id_procedimento,        -- código SUS do procedimento de internação
-        i.id_diagnostico,         -- CID principal informado na internação
-        i.gid_profissional,       -- FK para o médico responsável pela internação
+        nullif(upper(i.id_procedimento), 'NONE') as id_procedimento,  -- código SUS do procedimento de internação
+        nullif(upper(i.id_diagnostico),  'NONE') as id_diagnostico,   -- CID principal informado na internação
+        i.gid_profissional,                                            -- FK para o médico responsável pela internação
         i.saida_data,
         i.internacao_data
     from {{ ref('raw_prontuario_vitai__internacao') }} i
@@ -99,7 +99,7 @@ internacao as (
 resumo_alta as (
     select
         ra.gid_boletim,
-        ra.cid_codigo_alta,
+        nullif(upper(ra.cid_codigo_alta), 'NONE') as cid_codigo_alta,
         ra.cid_descricao_alta,
         ra.desfecho_internacao,
         ra.alta_tipo,
@@ -429,14 +429,17 @@ internacoes as (
         -- ── Procedimentos SUS ─────────────────────────────────────────────────
         -- Consolida: procedimento da internação + cirurgias + exames com código SUS
         -- Separador: " | "
-        trim(
-            concat(
-                coalesce(i.id_procedimento, ''),
-                case when i.id_procedimento is not null and (cir.codigos_cirurgia is not null or ex.codigos_exame is not null) then '|' else '' end,
-                coalesce(cir.codigos_cirurgia, ''),
-                case when cir.codigos_cirurgia is not null and ex.codigos_exame is not null then '|' else '' end,
-                coalesce(ex.codigos_exame, '')
-            )
+        nullif(
+            trim(
+                concat(
+                    coalesce(i.id_procedimento, ''),
+                    case when i.id_procedimento is not null and (cir.codigos_cirurgia is not null or ex.codigos_exame is not null) then '|' else '' end,
+                    coalesce(cir.codigos_cirurgia, ''),
+                    case when cir.codigos_cirurgia is not null and ex.codigos_exame is not null then '|' else '' end,
+                    coalesce(ex.codigos_exame, '')
+                )
+            ),
+            ''
         )                                                   as Codigos_Procedimento_SUS,
 
         -- Tabela de procedimentos: sempre SUS (3) neste contexto
