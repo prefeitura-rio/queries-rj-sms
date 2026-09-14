@@ -18,6 +18,9 @@ sources:
     - name: TB_HAIH
       # TB_HAIH -> histórico AIH
 
+    - name: TB_HAIH_STATUS
+      # TB_HAIH_STATUS -> ?
+
     - name: TB_HERR
       # TB_HERR -> "erros" mas não exatamente?
 
@@ -29,6 +32,9 @@ sources:
 
     - name: TB_HALP
       # TB_HALP -> histórico AIH longa permanência
+
+    - name: TB_FAIXA_AIH
+      # TB_FAIXA_AIH -> faixa de uso de numeração de AIH
 
     - name: TB_PR
       # TB_PR -> números de processamento

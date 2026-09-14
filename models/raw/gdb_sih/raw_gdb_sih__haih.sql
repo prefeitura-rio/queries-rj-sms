@@ -172,12 +172,13 @@ extracted as (
 renamed as (
     select
 
-        cast({{ process_null("AH_SEQ") }} as string) as seq,
+        cast({{ process_null("AH_SEQ") }} as string) as id_sequencial,
+        cast({{ process_null("AH_SEQ_AIH5") }} as string) as id_sequencial_longa_permanencia,
         cast({{ process_null("AH_SITUACAO") }} as string) as situacao,
         cast({{ process_null("AH_LOTE") }} as string) as lote,
-        cast({{ process_null("AH_LOTE_APRES") }} as string) as lote_apres,
-        cast({{ process_null("AH_IDENT") }} as string) as ident,
-        cast({{ process_null("AH_ESPECIALIDADE") }} as string) as especialidade,
+        cast({{ process_null("AH_LOTE_APRES") }} as string) as lote_apresentacao,
+        cast({{ process_null("AH_IDENT") }} as string) as tipo_identificador_aih,
+        cast({{ process_null("AH_ESPECIALIDADE") }} as string) as codigo_especialidade,  -- "ver TB_C_D TABELA 62"
         cast({{ process_null("AH_NUM_AIH") }} as string) as numero_aih,
         case
             when REGEXP_CONTAINS(trim(AH_NUM_AIH_ANT), r"^0+$")
@@ -189,11 +190,10 @@ renamed as (
                 then null
             else cast({{ process_null("AH_NUM_AIH_PROX") }} as string)
         end as numero_aih_proximo,
-        cast({{ process_null("AH_SEQ_AIH5") }} as string) as numero_seq_aih5,
         cast({{ process_null("AH_CMPT") }} as string) as competencia,
-        cast({{ process_null("AH_OE_AIH") }} as string) as oe_aih,
-        cast({{ process_null("AH_OE_GESTOR") }} as string) as oe_gestor,
-        cast({{ process_null("AH_OE_REGIONAL") }} as string) as oe_regional,
+        cast({{ process_null("AH_OE_AIH") }} as string) as emissor_aih,
+        cast({{ process_null("AH_OE_GESTOR") }} as string) as emissor_gestor,
+        cast({{ process_null("AH_OE_REGIONAL") }} as string) as emissor_regional,
         cast({{ process_null("AH_CNES") }} as string) as id_cnes,
         cast({{ process_null("AH_MUN_HOSP") }} as string) as municipio_hospital,
         cast({{ process_null("AH_DT_EMISSAO") }} as string) as data_emissao,  -- data de emissão da RH, meio "inventado"
@@ -201,15 +201,15 @@ renamed as (
         cast({{ process_null("AH_DT_SAIDA") }} as string) as data_saida,
         cast({{ process_null("AH_PROC_SOLICITADO") }} as string) as procedimento_solicitado,
         cast({{ process_null("AH_PROC_REALIZADO") }} as string) as procedimento_realizado,
-        cast({{ process_null("AH_CAR_INTERNACAO") }} as string) as car_internacao,
+        cast({{ process_null("AH_CAR_INTERNACAO") }} as string) as carater_internacao,  -- "ver TB_C_D onde C_D_COD_ITEM = 00000002"
         cast({{ process_null("AH_MODALIDADE_INTERNACAO") }} as string) as modalidade_internacao,
         cast({{ process_null("AH_MOT_SAIDA") }} as string) as motivo_saida,
         cast({{ process_null("AH_MED_SOL_IDENT") }} as string) as medico_solicitante_ident,
         cast({{ process_null("AH_MED_SOL_DOC") }} as string) as medico_solicitante_doc,
         cast({{ process_null("AH_MED_RESP_IDENT") }} as string) as medico_responsavel_ident,
         cast({{ process_null("AH_MED_RESP_DOC") }} as string) as medico_responsavel_doc,
-        cast({{ process_null("AH_DIR_CLINICO_IDENT") }} as string) as dir_clinico_ident,
-        cast({{ process_null("AH_DIR_CLINICO_DOC") }} as string) as dir_clinico_doc,
+        cast({{ process_null("AH_DIR_CLINICO_IDENT") }} as string) as diretor_clinico_ident,
+        cast({{ process_null("AH_DIR_CLINICO_DOC") }} as string) as diretor_clinico_doc,
         cast({{ process_null("AH_AUTORIZADOR_IDENT") }} as string) as autorizador_ident,
         cast({{ process_null("AH_AUTORIZADOR_DOC") }} as string) as autorizador_doc,
 
@@ -221,8 +221,8 @@ renamed as (
         cast({{ process_null("AH_PACIENTE_RACA_COR") }} as string) as paciente_raca,
         cast({{ process_null("trim(AH_PACIENTE_NOME_RESP)") }} as string) as paciente_nome_responsavel,
         cast({{ process_null("trim(AH_PACIENTE_NOME_MAE)") }} as string) as paciente_nome_mae,
-        cast({{ process_null("AH_PACIENTE_IDENT_DOC") }} as string) as paciente_ident_doc,
-        cast({{ process_null("AH_PACIENTE_NUMERO_DOC") }} as string) as paciente_numero_doc,
+        cast({{ process_null("AH_PACIENTE_IDENT_DOC") }} as string) as paciente_ident,
+        cast({{ process_null("AH_PACIENTE_NUMERO_DOC") }} as string) as paciente_doc,
         cast({{ process_null("AH_PACIENTE_ETNIA") }} as string) as paciente_etnia,
         cast({{ process_null("AH_PACIENTE_TEL_DDD") }} as string) as paciente_tel_ddd,
         cast({{ process_null("AH_PACIENTE_TEL_NUM") }} as string) as paciente_tel_numero,
@@ -293,28 +293,29 @@ renamed as (
 
         -- Parto
         cast({{ process_null("AH_PARTO_QTD_NASC_VIVOS") }} as string) as parto_quantidade_nascidos_vivos,
-        cast({{ process_null("AH_PARTO_QTD_NASC_MORTOS") }} as string) as partio_quantidade_nascidos_mortos,
+        cast({{ process_null("AH_PARTO_QTD_NASC_MORTOS") }} as string) as parto_quantidade_nascidos_mortos,
         cast({{ process_null("AH_PARTO_QTD_ALTA") }} as string) as parto_quantidade_alta,
-        cast({{ process_null("AH_PARTO_QTD_TRAN") }} as string) as parto_quantidade_tran,
+        cast({{ process_null("AH_PARTO_QTD_TRAN") }} as string) as parto_quantidade_transferidos,
         cast({{ process_null("AH_PARTO_QTD_OBITO") }} as string) as parto_quantidade_obito,
-        cast({{ process_null("AH_PARTO_NUM_PRENATAL") }} as string) as parto_numero_prenatal,
 
-        -- UTINEO
+        cast({{ process_null("AH_PARTO_NUM_PRENATAL") }} as string) as gestante_numero_prenatal,
+
+        -- UTI neonatal
         cast({{ process_null("AH_UTINEO_MOT_SAIDA") }} as string) as utineo_motivo_saida,
         cast({{ process_null("AH_UTINEO_PESO") }} as string) as utineo_peso,
         cast({{ process_null("AH_UTINEO_MESES_GESTACAO") }} as string) as utineo_meses_gestacao,
 
-        -- ACDTRAB
+        -- Acidente de Trabalho
         case
             when REGEXP_CONTAINS(trim(AH_ACDTRAB_CNPJ_EMP), r"^0+$")
                 then null
             else cast({{ process_null("AH_ACDTRAB_CNPJ_EMP") }} as string)
-        end as acdtrab_cnpj_emp,
-        cast({{ process_null("AH_ACDTRAB_CBOR") }} as string) as acdtrab_cbor,
-        cast({{ process_null("AH_ACDTRAB_CNAER") }} as string) as acdtrab_cnaer,
-        cast({{ process_null("AH_ACDTRAB_VINC_PREV") }} as string) as acdtrab_vinc_prev,
+        end as cnpj_empresa,
+        cast({{ process_null("AH_ACDTRAB_CBOR") }} as string) as id_cbo_paciente,
+        cast({{ process_null("AH_ACDTRAB_CNAER") }} as string) as id_cnae,
+        cast({{ process_null("AH_ACDTRAB_VINC_PREV") }} as string) as possui_vinculo_previdencia,
 
-        -- LAQVAS
+        -- LAQVAS? "laqueadura/vasectomia"?
         cast({{ process_null("AH_LAQVAS_QTD_FILHOS") }} as string) as laqvas_quantidade_filhos,
         cast({{ process_null("AH_LAQVAS_GRAU_INSTRUC") }} as string) as laqvas_grau_instrucao,
         cast({{ process_null("AH_LAQVAS_CID_INDICACAO") }} as string) as laqvas_cid_indicacao,
@@ -322,22 +323,22 @@ renamed as (
         cast({{ process_null("AH_LAQVAS_MET_CONTRACEP2") }} as string) as laqvas_metodo_contraceptivo_2,
         cast({{ process_null("AH_LAQVAS_GESTACAO_RISCO") }} as string) as laqvas_gestacao_risco,
 
-        -- ST?
+        -- ST = status?
         cast({{ process_null("AH_ST_MUDA_PROC") }} as string) as st_muda_proc,
         cast({{ process_null("AH_ST_DUPLICIDADE") }} as string) as st_duplicidade,
         cast({{ process_null("AH_ST_DUPLICIDADE_CPF") }} as string) as st_duplicidade_cpf,
         cast({{ process_null("AH_ST_DUPLICIDADE_CNS") }} as string) as st_duplicidade_cns,
         cast({{ process_null("AH_ST_BLOQUEIO") }} as string) as st_bloqueio,
         cast({{ process_null("AH_ST_AGRAVO") }} as string) as st_agravo,
-        cast({{ process_null("AH_ST_INTO") }} as string) as st_into,
+        cast({{ process_null("AH_ST_INTO") }} as string) as st_inst_traumato_ortopedia,
         cast({{ process_null("AH_ST_CATETERISMO_ANEST") }} as string) as st_cateterismo_anest,
         cast({{ process_null("AH_ST_MENTAL") }} as string) as st_mental,
-        cast({{ process_null("AH_ST_ORTO") }} as string) as st_orto,
-        cast({{ process_null("AH_ST_NEURO") }} as string) as st_neuro,
-        cast({{ process_null("AH_ST_ONCO") }} as string) as st_onco,
+        cast({{ process_null("AH_ST_ORTO") }} as string) as st_ortopedia,
+        cast({{ process_null("AH_ST_NEURO") }} as string) as st_neurologia,
+        cast({{ process_null("AH_ST_ONCO") }} as string) as st_oncologia,
         cast({{ process_null("AH_ST_INTERNACAO_CONCOM") }} as string) as st_internacao_concom,
         cast({{ process_null("AH_ST_INTERNACAO_CONCOM_BDNAIH") }} as string) as st_internacao_concom_bdnaih,
-        -- ST = status?
+
         cast({{ process_null("AH_STATUS_PR") }} as string) as status_pr,
         cast({{ process_null("AH_STATUS_PR1") }} as string) as status_pr1,
         cast({{ process_null("AH_STATUS_PR2") }} as string) as status_pr2,
@@ -354,19 +355,19 @@ renamed as (
         cast({{ process_null("AH_GESTOR_DOC") }} as string) as gestor_doc,
 
         -- ?
-        cast({{ process_null("AH_MOT_BLOQ") }} as string) as motivo_bloqueio,
+        cast({{ process_null("AH_MOT_BLOQ") }} as string) as motivo_bloqueio,  -- "ver TB_C_D TABELA 64"
         cast({{ process_null("AH_IN_GER_INF") }} as string) as in_ger_inf,
-        cast({{ process_null("AH_COD_SOL_LIB") }} as string) as codigo_sol_lib,
+        cast({{ process_null("AH_COD_SOL_LIB") }} as string) as codigo_sol_lib, -- liberação de solicitação?
         cast({{ process_null("AH_CONTRATO") }} as string) as contrato,
-        cast({{ process_null("AH_IVD_SH") }} as string) as ivd_sh,
-        cast({{ process_null("AH_IVD_SP") }} as string) as ivd_sp,
+        cast({{ process_null("AH_IVD_SH") }} as string) as ivd_servicos_hospitalares,
+        cast({{ process_null("AH_IVD_SP") }} as string) as ivd_servicos_profissionais,
         cast({{ process_null("AH_COMPLEXIDADE") }} as string) as complexidade,
         cast({{ process_null("AH_FINANCIAMENTO") }} as string) as financiamento,
         cast({{ process_null("AH_TIPO_FAEC") }} as string) as tipo_faec,
         cast({{ process_null("AH_VERSAO_SISAIH01") }} as string) as versao_sisaih01,
         cast({{ process_null("AH_AUDIT_JUST") }} as string) as audit_just,
         cast({{ process_null("AH_AUDIT_SISAIH01_JUST") }} as string) as audit_sisaih01_just,
-        cast({{ process_null("AH_PACIENTE_DADOS_VALIDADOS_CNS") }} as string) as paciente_dados_vaidados_cns,
+        cast({{ process_null("AH_PACIENTE_DADOS_VALIDADOS_CNS") }} as string) as paciente_dados_validados_cns,
 
         -- Podem ser usados posteriormente para deduplicação
         safe_cast(data_particao as date) as data_particao,
