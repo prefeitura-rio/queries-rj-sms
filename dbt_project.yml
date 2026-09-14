@@ -861,6 +861,13 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+        projeto_agrupamento:
+          +schema: projeto_agrupamento
+          +tags: ["daily", "agrupamento", "crg-drg"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
         dengue:
           +schema: projeto_dengue
           +tags: "daily"
