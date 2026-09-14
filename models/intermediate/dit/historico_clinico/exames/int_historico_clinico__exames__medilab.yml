@@ -14,7 +14,7 @@ models:
         description: endereço do arquivo pdf armazenado no gcs
       - name: id_exame
         description: Código único da solicitação de exame, que permite integrar com SISREG
-      - name: laudo_data_atualizacao
+      - name: laudo_datahora_atualizacao
         description: Data e hora que o laudo é finalizado ou atualizado (incluindo atualizações referentes a inclusão de adendo)
       - name: medico_requisitante
         description: Nome do(a) médico(a) que prescreveu o exame ao paciente
@@ -42,7 +42,7 @@ models:
         description: Data de Nascimento do Paciente
         policy_tags:
           - '{{ var ("TAG_DATA_NASCIMENTO") }}'
-      - name: exame_data
+      - name: exame_datahora
         description: Data e Hora da Realização do Exame
       - name: exame_nome
         description: Nome Detalhado do Exame

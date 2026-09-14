@@ -29,9 +29,9 @@ with
             id_laudo as id_laudo,
             exame_nome as exame_nome,
             exame_codigo_sigtap as exame_codigo_sigtap,
-            exame_data as exame_data,
+            exame_datahora as exame_datahora,
             laudo_bucket as laudo_bucket,
-            laudo_data_atualizacao as laudo_data_atualizacao,
+            laudo_datahora_atualizacao as laudo_datahora_atualizacao,
 
             medico_requisitante as medico_requisitante,
             medico_responsavel as medico_responsavel,

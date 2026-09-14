@@ -28,7 +28,7 @@ with
 
             {{ process_null("json_extract_scalar(data, '$.numExam')") }} as id_exame,
 
-            safe_cast(safe_cast({{ process_null("json_extract_scalar(data, '$.dateTimeReport')") }} as timestamp) as datetime) as laudo_data_atualizacao,
+            datetime(safe_cast({{ process_null("json_extract_scalar(data, '$.dateTimeReport')") }} as timestamp), 'America/Sao_Paulo') as laudo_datahora_atualizacao,
             
             case
                 when lower({{ process_null("trim(json_extract_scalar(data, '$.doctorNameRequesting'))") }}) = 'ilegivel'  then null
@@ -44,7 +44,7 @@ with
             {{ process_null("trim(json_extract_scalar(data, '$.patientMother'))") }} as paciente_mae_nome,
             safe_cast(safe_cast({{ process_null("json_extract_scalar(data, '$.patientDateOfBirth')") }} as timestamp) as date) as paciente_data_nascimento,
             {{ process_null("json_extract_scalar(data, '$.cnes')") }} as id_cnes,
-            safe_cast(safe_cast({{ process_null("json_extract_scalar(data, '$.dateTimeExam')") }} as timestamp) as date) as exame_data,
+            datetime(safe_cast({{ process_null("json_extract_scalar(data, '$.dateTimeExam')") }} as timestamp), 'America/Sao_Paulo') as exame_datahora,
             {{ process_null("json_extract_scalar(data, '$.examName')") }} as exame_nome,
             {{ process_null("json_extract_scalar(data, '$.codExamSigtap')") }} as exame_codigo_sigtap,
             safe_cast(safe_cast({{ process_null("json_extract_scalar(data, '$.dateTimeExam')") }} as timestamp) as date) as exame_data_particao
@@ -55,7 +55,7 @@ with
         select 
             * 
         from exams
-        qualify row_number() over(partition by id_exame, id_laudo order by laudo_data_atualizacao desc) = 1
+        qualify row_number() over(partition by id_exame, id_laudo order by laudo_datahora_atualizacao desc) = 1
     )
 
 select * from dedup_exames
