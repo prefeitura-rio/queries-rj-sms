@@ -321,9 +321,6 @@ internacoes as (
         -- ── Hospital ──────────────────────────────────────────────────────────
         e.nome_estabelecimento                             as Hospital,
 
-        -- INCERTEZA: O campo "Código do Hospital" do DRG é um código de 4 chars
-        -- definido pelo fornecedor do sistema de agrupamento, não o CNES.
-        -- Deve ser obtido diretamente com o fornecedor do DRG.
         right(e.cnes, 4)                                   as Codigo_Hospital,
 
         -- ── Paciente e Internação ─────────────────────────────────────────────
@@ -373,22 +370,17 @@ internacoes as (
 
         -- ── Peso ao Nascer ────────────────────────────────────────────────────
         -- Disponível apenas para RNs via tabela dtw__recem_nascido.
-        -- INCERTEZA: Nem todos os RNs terão registro nessa tabela.
         safe_cast(rn.peso as int64)                        as Peso_ao_Nascer,
 
         -- ── Sexo ──────────────────────────────────────────────────────────────
         -- DRG: 1=Masculino, 2=Feminino
-        -- INCERTEZA: valores exatos no Vitai podem variar (ex: 'M'/'F', 'MASCULINO', etc.)
         case
             when upper(p.sexo) in ('M', 'MASC', 'MASCULINO', '1') then '1'
             when upper(p.sexo) in ('F', 'FEM', 'FEMININO', '2')   then '2'
-            else null  -- sexo desconhecido ou não binário: verificar padrão real do Vitai
+            else null
         end                                                 as Sexo,
 
         -- ── Status da Alta ────────────────────────────────────────────────────
-        -- Mapeamento baseado nos valores exatos de desfecho_internacao (resumo_alta).
-        -- trim() absorve espaços extras presentes nos valores da fonte.
-        -- Fallback para alta_tipo quando resumo_alta não existe.
         case
             when trim(ra.desfecho_internacao) = 'ÓBITO'          then '20'
             when trim(ra.desfecho_internacao) = 'TRANSFERÊNCIA'  then '02'
@@ -406,7 +398,6 @@ internacoes as (
         end                                                 as Status_Alta,
 
         -- ── Ventilação Mecânica ───────────────────────────────────────────────
-        -- INCERTEZA: Não há campo explícito de ventilação mecânica no PEP
         null                                                as DVM,
 
         -- ── CID Principal ─────────────────────────────────────────────────────
@@ -453,10 +444,6 @@ internacoes as (
         'SUS'                                               as Fonte_Pagadora,
 
         -- ── Código do Médico Responsável ──────────────────────────────────────
-        -- Número sequencial denso e estável gerado pelo modelo, seguindo o mesmo
-        -- padrão de Codigo_Paciente: mesmo médico → mesmo código em todas as
-        -- internações do período; ordenado pela primeira internação atendida.
-        -- Null para internações sem médico responsável vinculado.
         seq.Codigo_Medico_Responsavel                       as Codigo_Medico_Responsavel
 
     from boletim b
