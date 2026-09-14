@@ -213,6 +213,43 @@ recem_nascido as (
 ),
 
 -- ---------------------------------------------------------------------------
+-- Numeração sequencial de pacientes e internações
+-- Codigo_Paciente: número sequencial único por gid_paciente (denso, estável
+--   dentro do período — ordenado pela primeira internação do paciente)
+-- Codigo_Internacao: sequência de internações de um paciente, ordenada por
+--   internacao_data (1ª internação = 1, 2ª = 2, etc.)
+-- ---------------------------------------------------------------------------
+
+-- Passo 1: pré-calcula a primeira internação por paciente (necessário porque
+-- o BigQuery não permite window function dentro de ORDER BY de outra window function)
+primeira_internacao_por_paciente as (
+    select
+        gid_paciente,
+        min(internacao_data) as primeira_internacao_data
+    from boletim
+    group by gid_paciente
+),
+
+sequencias as (
+    select
+        b.gid                                                          as gid_boletim,
+        -- Número único por paciente: dense_rank pela primeira internação do paciente
+        dense_rank() over (
+            order by
+                pip.primeira_internacao_data,
+                b.gid_paciente  -- desempate determinístico
+        )                                                              as Codigo_Paciente,
+        -- Sequência de internações dentro do paciente, ordem cronológica
+        row_number() over (
+            partition by b.gid_paciente
+            order by b.internacao_data, b.gid  -- desempate determinístico por gid
+        )                                                              as Codigo_Internacao
+    from boletim b
+    inner join primeira_internacao_por_paciente pip
+        on pip.gid_paciente = b.gid_paciente
+),
+
+-- ---------------------------------------------------------------------------
 -- Consolidação final do modelo
 -- ---------------------------------------------------------------------------
 internacoes as (
@@ -227,14 +264,11 @@ internacoes as (
         -- Deve ser obtido diretamente com o fornecedor do DRG.
         right(e.cnes, 4)                                   as Codigo_Hospital,
 
-        -- ── Paciente ──────────────────────────────────────────────────────────
-        -- Usando os últimos 6 chars do gid_paciente como identificador interno
-        right(b.gid_paciente, 6)                           as Codigo_Paciente,
-
-        -- Código da internação = últimos 2 chars do gid do boletim
-        -- INCERTEZA: O dicionário indica 2 chars mas isso parece muito pequeno
-        -- para um identificador único; pode ser necessais caracteres.
-        right(b.gid, 2)                                    as Codigo_Internacao,
+        -- ── Paciente e Internação ─────────────────────────────────────────────
+        -- Sequenciais densos e consistentes: mesmo paciente → mesmo código;
+        -- internações de um paciente numeradas cronologicamente a partir de 1.
+        seq.Codigo_Paciente                                as Codigo_Paciente,
+        seq.Codigo_Internacao                              as Codigo_Internacao,
 
         -- ── Datas ─────────────────────────────────────────────────────────────
         format_date('%d/%m/%Y', date(b.internacao_data))     as Dt_Admissao,
@@ -338,6 +372,7 @@ internacoes as (
 
     from boletim b
     inner join estabelecimento e          on e.gid = b.gid_estabelecimento
+    inner join sequencias seq             on seq.gid_boletim = b.gid
     left  join paciente p                 on p.gid = b.gid_paciente
     left  join internacao i               on i.gid_boletim = b.gid
     left  join resumo_alta ra             on ra.gid_boletim = b.gid
