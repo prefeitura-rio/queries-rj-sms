@@ -373,17 +373,23 @@ internacoes as (
         end                                                 as Sexo,
 
         -- ── Status da Alta ────────────────────────────────────────────────────
-        -- Mapeamento: desfecho_internacao e alta_tipo -> código DRG
-        -- INCERTEZA: Os valores exatos dos campos tipo_alta e desfecho_internacao
-        -- no Vitai precisam ser validados com os dados reais.
+        -- Mapeamento baseado nos valores exatos de desfecho_internacao (resumo_alta).
+        -- trim() absorve espaços extras presentes nos valores da fonte.
+        -- Fallback para alta_tipo quando resumo_alta não existe.
         case
-            when upper(coalesce(ra.desfecho_internacao, alt.alta_tipo)) like '%ÓBITO%'        then '20'
-            when upper(coalesce(ra.desfecho_internacao, alt.alta_tipo)) like '%OBITO%'        then '20'
-            when upper(coalesce(ra.desfecho_internacao, alt.alta_tipo)) like '%TRANSFER%'     then '02'
-            when upper(coalesce(ra.desfecho_internacao, alt.alta_tipo)) like '%EVASÃO%'       then '07'
-            when upper(coalesce(ra.desfecho_internacao, alt.alta_tipo)) like '%EVASAO%'       then '07'
-            when upper(coalesce(ra.desfecho_internacao, alt.alta_tipo)) like '%ALTA%'         then '01'
-            else null  -- status de alta não mapeado; verificar valores reais
+            when trim(ra.desfecho_internacao) = 'ÓBITO'          then '20'
+            when trim(ra.desfecho_internacao) = 'TRANSFERÊNCIA'  then '02'
+            when trim(ra.desfecho_internacao) = 'ENCAMINHAMENTO' then '02'
+            when trim(ra.desfecho_internacao) = 'EVASÃO'         then '07'
+            when trim(ra.desfecho_internacao) = 'ALTA CLÍNICA'   then '01'
+            -- Fallback: alta_tipo da tabela alta (valores ainda não validados)
+            when upper(alt.alta_tipo) like '%ÓBITO%'             then '20'
+            when upper(alt.alta_tipo) like '%OBITO%'             then '20'
+            when upper(alt.alta_tipo) like '%TRANSFER%'          then '02'
+            when upper(alt.alta_tipo) like '%EVASÃO%'            then '07'
+            when upper(alt.alta_tipo) like '%EVASAO%'            then '07'
+            when upper(alt.alta_tipo) like '%ALTA%'              then '01'
+            else null
         end                                                 as Status_Alta,
 
         -- ── Ventilação Mecânica ───────────────────────────────────────────────
