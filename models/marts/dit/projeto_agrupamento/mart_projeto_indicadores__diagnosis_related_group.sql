@@ -318,8 +318,6 @@ sequencias as (
 -- ---------------------------------------------------------------------------
 internacoes as (
     select
-        b.gid                                              as gid_boletim,
-
         -- ── Hospital ──────────────────────────────────────────────────────────
         e.nome_estabelecimento                             as Hospital,
 
