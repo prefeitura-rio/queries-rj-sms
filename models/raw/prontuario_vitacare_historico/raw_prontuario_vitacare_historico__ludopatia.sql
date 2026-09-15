@@ -44,7 +44,11 @@ with
             id_prontuario_global,
             replace(acto_id, '.0', '') as id_prontuario_local,
             id_cnes,
-            {{ process_null('ut_id') }} as ut_id,
+            concat(
+                {{ process_null ('cnes')}},
+                '.',
+                replace({{ process_null('ut_id') }}, '.0', '') 
+            ) as id_paciente_global,
             {{ process_null('prof_id') }} as id_profissional,
 
             -- Dados do questionário
