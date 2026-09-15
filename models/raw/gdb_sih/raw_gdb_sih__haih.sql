@@ -315,7 +315,7 @@ renamed as (
         cast({{ process_null("AH_ACDTRAB_CNAER") }} as string) as id_cnae,
         cast({{ process_null("AH_ACDTRAB_VINC_PREV") }} as string) as possui_vinculo_previdencia,
 
-        -- LAQVAS? "laqueadura/vasectomia"?
+        -- Laqueadura/Vasectomia
         cast({{ process_null("AH_LAQVAS_QTD_FILHOS") }} as string) as laqvas_quantidade_filhos,
         cast({{ process_null("AH_LAQVAS_GRAU_INSTRUC") }} as string) as laqvas_grau_instrucao,
         cast({{ process_null("AH_LAQVAS_CID_INDICACAO") }} as string) as laqvas_cid_indicacao,

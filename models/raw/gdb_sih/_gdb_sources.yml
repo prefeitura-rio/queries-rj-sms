@@ -45,5 +45,11 @@ sources:
     - name: TB_TC
       # TB_TC -> cadastro de terceiros
 
+    - name: TU_CID
+      # TU_CID -> mapeamento de CIDs
+
     - name: TU_PROCEDIMENTO
       # TU_PROCEDIMENTO -> tipos de procedimentos?
+
+    - name: TU_PROCEDIMENTO_CID
+      # TU_PROCEDIMENTO -> CIDs que justificam procedimentos?
