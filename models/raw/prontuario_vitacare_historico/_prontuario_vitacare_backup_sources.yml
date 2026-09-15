@@ -28,6 +28,7 @@ sources:
       - name: saudemulher
       - name: sifilis
       - name: solicitacao_exames
+      - name: ludopatia
       - name: tabagismo
       - name: testesrapidos
       - name: tuberculose

@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: raw_prontuario_vitacare_historico__ludopatia
+    description: Tabela contendo dados de avaliação de ludopatia (jogo patológico) de pacientes, incluindo respostas ao questionário de rastreio e classificação de risco.
+    columns:
+      - name: id_prontuario_global
+        description: Identificador global único do prontuário do paciente, composto pelo CNES e o ID do atendimento.
+
+      - name: id_prontuario_local
+        description: Identificador local do prontuário do paciente, específico da unidade de saúde.
+
+      - name: id_cnes
+        description: Código CNES da unidade de saúde onde a avaliação de ludopatia foi realizada.
+
+      - name: ut_id
+        description: Identificador do paciente no sistema Vitacare.
+
+      - name: id_profissional
+        description: Identificador do profissional de saúde responsável pelo registro da avaliação.
+
+      - name: classificacao
+        description: Classificação do paciente quanto ao grau de ludopatia com base no questionário aplicado.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: ludopatia_pontuacao
+        description: Pontuação total obtida no questionário de rastreio de ludopatia.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: alguem_criticou_apostas
+        description: Indica se alguém próximo ao paciente já criticou seus hábitos de apostas.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: apostar_causou_conflitos
+        description: Indica se o hábito de apostar causou conflitos interpessoais ao paciente.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: apostar_causou_dificuldades_financeiras
+        description: Indica se o hábito de apostar causou dificuldades financeiras ao paciente.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: apostar_causou_problemas_saude
+        description: Indica se o hábito de apostar causou problemas de saúde ao paciente.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: apostou_mais_que_podia
+        description: Indica se o paciente já apostou mais dinheiro do que podia perder.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: mentiu_familia_tempo_jogos
+        description: Indica se o paciente já mentiu para familiares sobre o tempo ou dinheiro gasto em jogos.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: necessidade_apostar_mais
+        description: Indica se o paciente sente necessidade de apostar quantias cada vez maiores para obter a mesma emoção.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: pediu_dinheiro_emprestado
+        description: Indica se o paciente já pediu dinheiro emprestado para financiar apostas.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: perseguiu_perdas
+        description: Indica se o paciente já voltou a apostar para tentar recuperar dinheiro perdido anteriormente.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: precisou_apostar_mais
+        description: Indica se o paciente precisou apostar com frequência crescente para alcançar o mesmo nível de excitação.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: sentiu_culpa
+        description: Indica se o paciente já sentiu culpa ou remorso após apostar.
+        policy_tags: ['{{ var("TAG_DADO_CLINICO") }}']
+
+      - name: loaded_at
+        description: Timestamp de quando o registro foi carregado no sistema.
+
+      - name: data_particao
+        description: Data de partição dos dados, baseada no campo loaded_at.
