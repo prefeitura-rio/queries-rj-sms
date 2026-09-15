@@ -39,10 +39,10 @@ with
             id_laudo,
             exame_nome,
             exame_codigo_sigtap,
-            {{ parse_and_filter_future_date('exame_data') }} as exame_data,
+            {{ parse_and_filter_future_datetime('exame_datahora') }} as exame_datahora,
 
             laudo_bucket,
-            {{ parse_and_filter_future_date('laudo_data_atualizacao') }} as laudo_data_atualizacao,
+            {{ parse_and_filter_future_datetime('laudo_datahora_atualizacao') }} as laudo_datahora_atualizacao,
 
             {{ proper_br('medico_requisitante') }} as medico_requisitante,
             {{ proper_br('medico_responsavel') }} as medico_responsavel,
