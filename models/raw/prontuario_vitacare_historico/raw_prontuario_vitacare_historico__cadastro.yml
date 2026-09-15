@@ -189,6 +189,14 @@ models:
         description: Logradouro da residência.
         policy_tags: ['{{ var("TAG_ENDERECO") }}']
 
+      - name: num_logradouro
+        description: Número do logradouro da residência.
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
+      - name: complemento_logradouro
+        description: Complemento do logradouro da residência.
+        policy_tags: ['{{ var("TAG_ENDERECO") }}']
+
       - name: luz_eletrica
         description: Indica se o domicílio possui energia elétrica.
 

@@ -159,6 +159,8 @@ WITH
                 ELSE NULL
             END AS familia_beneficiaria_cfc, 
             {{ process_null('logradouro') }} AS logradouro,
+            {{ process_null('numlogradouro') }} AS num_logradouro,
+            {{ process_null('complementologradouro') }} AS complemento_logradouro,
             CASE
                 WHEN luzeletrica = '1' THEN TRUE
                 WHEN luzeletrica = '0' THEN FALSE
