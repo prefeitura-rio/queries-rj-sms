@@ -501,14 +501,10 @@ WITH
 -- Dicionario de procedimentos para interpretar codigos do ProntuaRio
     procedimentos AS (
         SELECT
-            LPAD(CAST(codigo_procedimento AS STRING), 10, '0') AS codigo_procedimento,
-            nome_procedimento
-        FROM {{ ref("raw_gdb_sih__tu_procedimento") }}
-        WHERE codigo_procedimento IS NOT NULL
-        QUALIFY ROW_NUMBER() OVER (
-            PARTITION BY LPAD(CAST(codigo_procedimento AS STRING), 10, '0')
-            ORDER BY data_particao DESC, data_carga DESC
-        ) = 1
+            LPAD(CAST(procedimento_codigo AS STRING), 10, '0') AS codigo_procedimento,
+            procedimento_nome as nome_procedimento
+        FROM {{ ref("int_gdb_sih__tu_procedimento") }}
+        WHERE procedimento_codigo IS NOT NULL
     ),
 
 -- Normaliza os quatro campos de procedimento do ProntuaRio em linhas
