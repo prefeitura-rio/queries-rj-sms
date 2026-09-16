@@ -16,6 +16,8 @@ select
   struct(
     tipo_logradouro,
     logradouro,
+    num_logradouro,
+    complemento_logradouro,
     cep,
     bairro
   ) as endereco,

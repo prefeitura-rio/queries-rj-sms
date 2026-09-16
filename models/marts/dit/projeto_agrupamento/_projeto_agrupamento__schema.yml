@@ -1,0 +1,206 @@
+version: 2
+
+models:
+  - name: mart_projeto_indicadores__diagnosis_related_group
+    description: >
+      Episódios de internação do Hospital Municipal Souza Aguiar (CNES 2298120)
+      formatados para envio ao sistema de agrupamento DRG (Diagnosis Related Group).
+      Fonte: Prontuário Vitai. Escopo: internações entre 2024-09-01 e 2026-09-01.
+    columns:
+
+      - name: Hospital
+        description: Nome do estabelecimento de saúde.
+        data_type: string
+
+      - name: Codigo_Hospital
+        description: >
+          Código do hospital para o sistema DRG (4 últimos dígitos do CNES).
+          O código definitivo deve ser confirmado com o fornecedor do sistema de agrupamento.
+        data_type: string
+
+      - name: Codigo_Paciente
+        description: >
+          Número sequencial denso e estável gerado pelo modelo, único por paciente.
+          Mesmo paciente recebe o mesmo código em todas as internações do período.
+          Ordenado pela data da primeira internação do paciente.
+        data_type: int64
+
+      - name: Codigo_Internacao
+        description: >
+          Sequência de internações de um paciente, ordenada cronologicamente.
+          Primeira internação = 1, segunda = 2, etc.
+        data_type: int64
+
+      - name: Dt_Admissao
+        description: Data de admissão/internação no formato DD/MM/YYYY.
+        data_type: string
+
+      - name: Dt_Saida
+        description: >
+          Data de saída/alta no formato DD/MM/YYYY.
+          Prioridade: resumo de alta > data de saída da internação > data de alta do boletim.
+        data_type: string
+
+      - name: Idade_Anos
+        description: >
+          Idade do paciente em anos completos na data de saída.
+          Preenchido apenas quando a idade é maior ou igual a 1 ano.
+          Nulo para pacientes com menos de 1 ano (ver Idade_Dias).
+        data_type: int64
+
+      - name: Idade_Dias
+        description: >
+          Idade do paciente em dias na data de saída.
+          Preenchido apenas quando a idade é menor que 1 ano.
+          Nulo para pacientes com 1 ano ou mais (ver Idade_Anos).
+        data_type: int64
+
+      - name: Peso_ao_Nascer
+        description: >
+          Peso ao nascer em gramas, disponível apenas para recém-nascidos
+          registrados na tabela de recém-nascidos do Vitai (faixa válida: 150–9000 g).
+        data_type: int64
+
+      - name: Sexo
+        description: >
+          Sexo do paciente no padrão DRG: 1 = Masculino, 2 = Feminino.
+          Nulo quando não informado ou não mapeável.
+        data_type: string
+
+      - name: Status_Alta
+        description: >
+          Código de desfecho da internação no padrão DRG, derivado de desfecho_internacao
+          do resumo de alta (valores exatos) com fallback para alta_tipo.
+          01 = Alta clínica, 02 = Transferência/Encaminhamento, 07 = Evasão, 20 = Óbito.
+          Nulo quando o desfecho não é mapeável.
+        data_type: string
+
+      - name: DVM
+        description: >
+          Dias de ventilação mecânica. Não disponível na fonte atual (Vitai
+          não possui campo explícito de ventilação mecânica).
+        data_type: int64
+
+      - name: CID_Principal
+        description: >
+          CID principal da internação sem ponto (ex.: O821).
+          Prioridade: CID do resumo de alta > CID da internação > CID de maior rank
+          na tabela de diagnósticos.
+        data_type: string
+
+      - name: CID_Secundario
+        description: >
+          CIDs secundários da internação separados por "|", sem ponto (ex.: O41|R102).
+          Limitado a 10 diagnósticos secundários, ordenados por relevância clínica.
+          Nulo quando não há diagnósticos secundários registrados.
+        data_type: string
+
+      - name: Presenca_CID_Secundario_Admissao
+        description: >
+          Indicador de presença na admissão para cada CID secundário, separados por "|",
+          na mesma sequência de CID_Secundario.
+          S = CID coincide com o CID_Principal efetivo do episódio,
+          N = CID não coincide com o CID_Principal efetivo,
+          U = nenhuma fonte de CID principal disponível para o episódio.
+          W (clinicamente indeterminado) não é derivável automaticamente da fonte.
+        data_type: string
+
+      - name: Codigos_Procedimento_SUS
+        description: >
+          Códigos SUS de procedimentos realizados na internação separados por "|".
+          Consolida: procedimento da internação + cirurgias + exames com código SUS.
+          Nulo quando nenhum procedimento com código SUS foi registrado.
+        data_type: string
+
+      - name: Tipo_Tabela
+        description: Tabela de procedimentos. Sempre "3" (SUS) neste contexto.
+        data_type: string
+
+      - name: Fonte_Pagadora
+        description: Fonte pagadora da internação. Sempre "SUS" neste contexto.
+        data_type: string
+
+      - name: Codigo_Medico_Responsavel
+        description: >
+          Número sequencial denso e estável gerado pelo modelo, único por médico responsável.
+          Mesmo médico recebe o mesmo código em todas as internações do período.
+          Ordenado pela data da primeira internação atendida pelo médico.
+          Nulo para internações sem médico responsável vinculado.
+        data_type: int64
+
+  - name: mart_projeto_indicadores__clinical_risk_group
+    description: >
+      Atendimentos ambulatoriais formatados para envio ao sistema de agrupamento CRG
+      (Clinical Risk Group). Fonte: Prontuário Vitacare.
+      Escopo: atendimentos SOAP na AP 22 entre 2024-09-01 e 2026-09-01.
+    columns:
+      - name: Hospital
+        description: Nome do estabelecimento de saúde.
+        data_type: string
+
+      - name: Codigo_Hospital
+        description: Código CNES do estabelecimento.
+        data_type: string
+
+      - name: Codigo_Paciente
+        description: CPF do paciente.
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: Dt_Admissao
+        description: Data de início do atendimento.
+        data_type: date
+
+      - name: Dt_Saida
+        description: Data de fim do atendimento.
+        data_type: date
+
+      - name: Sexo
+        description: Sexo do paciente conforme cadastro Vitacare.
+        data_type: string
+
+      - name: Idade_Dias
+        description: >
+          Idade em dias na data de fim do atendimento.
+          Preenchido apenas quando a idade é menor que 1 ano.
+        data_type: int64
+
+      - name: Idade_Anos
+        description: >
+          Idade em anos completos na data de fim do atendimento.
+          Preenchido apenas quando a idade é maior ou igual a 1 ano.
+        data_type: int64
+
+      - name: Peso_ao_Nascer
+        description: Peso ao nascer em gramas. Não disponível na fonte atual.
+        data_type: int64
+
+      - name: Status_Alta
+        description: >
+          Código de desfecho do atendimento. Não disponível na fonte atual.
+        data_type: string
+
+      - name: CID_Principal
+        description: CID principal do atendimento. Não disponível na fonte atual.
+        data_type: string
+
+      - name: CID_Secundario
+        description: CIDs secundários do atendimento separados por "|". Não disponível na fonte atual.
+        data_type: string
+
+      - name: Tipo_de_Tabela
+        description: Tabela de procedimentos. Sempre "SUS" neste contexto.
+        data_type: string
+
+      - name: Codigo_Internacao
+        description: Sequência de internações do paciente. Não disponível na fonte atual.
+        data_type: int64
+
+      - name: DVM
+        description: Dias de ventilação mecânica. Não disponível na fonte atual.
+        data_type: int64
+
+      - name: Procedimento
+        description: Código SUS do procedimento. Não disponível na fonte atual.
+        data_type: string
