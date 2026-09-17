@@ -93,4 +93,7 @@ renomeado as (
         order by extracted_at desc) = 1
 )
 
-select * from renomeado
+select 
+    {{ dbt_utils.generate_surrogate_key(["id_atendimento", "unidade"]) }} as id_hci, 
+    *
+from renomeado
