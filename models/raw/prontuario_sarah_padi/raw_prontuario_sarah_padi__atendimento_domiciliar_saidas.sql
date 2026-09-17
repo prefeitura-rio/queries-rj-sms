@@ -195,6 +195,6 @@ renomeado as (
 )
 
 select 
-    {{ dbt_utils.generate_surrogate_key(["id_atendimento", "unidade_nome"]) }} as id_hci, 
+    {{ dbt_utils.generate_surrogate_key(["id_registro", "unidade_nome"]) }} as id_hci, 
     *
 from renomeado

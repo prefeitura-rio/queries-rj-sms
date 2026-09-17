@@ -32,6 +32,8 @@ pacientes as (
     admissao_data,
     alta_data,
     cids,
+    avd_modalidade,
+    linha_cuidado,
     servico_tipo,
     origem_tipo,
     unidade_nome,
@@ -75,8 +77,6 @@ cid_array as (
     split(cids, ";") as cids
   from pacientes
   where cids is not null
-  union all
-
 ),
 
 cid_explode as (
@@ -121,7 +121,7 @@ profissional as (
       cbo[OFFSET(0)].cbo as especialidade
     ) as profissional_saude_responsavel
   --from `rj-sms.brutos_prontuario_sarah_padi.procedimentos_realizados` pr
-  from {{ ref('raw_prontuario_sarah_padi__procedimentos_realizados') }}
+  from {{ ref('raw_prontuario_sarah_padi__procedimentos_realizados') }} pr
   left join {{ ref('dim_profissional_saude') }} ps on ps.cpf = pr.cpf_profissional
   where pr.cargo in (
     "MÉDICO CLÍNICO GERAL",
@@ -167,7 +167,7 @@ estabelecimentos as (
     id_cnes,
     struct(
       id_cnes,
-      nome_acentuado as estabelecimento,
+      {{ proper_estabelecimento('nome_acentuado') }} as estabelecimento,
       tipo_sms as estabelecimento_tipo
     ) as estabelecimento
   from paciente_estabelecimento
@@ -184,7 +184,7 @@ select
   "Programa de Atenção Domiciliar à Pessoa Idosa" as tipo,
 
 -- subtipo
-  initcap(servico_tipo) as subtipo
+  initcap(servico_tipo) as subtipo,
 
 -- entrada_data
   coalesce(admissao_data, registro_data) as entrada_data,
@@ -223,7 +223,7 @@ select
     cast(null as string) as id,
     cast(null as string) as cpf,
     cast(null as string) as cns,
-    avd_profissional_nome as nome,
+    {{ proper_br('avd_profissional_nome') }} as nome,
     avd_profissional_cargo as especialidade
   ) profissional_saude_responsavel,
 
@@ -238,10 +238,10 @@ select
   struct (
       cast(extracted_at as datetime) as imported_at,
       cast(null as datetime) as updated_at,
-      cast(current_timestamp('America/Sao_Paulo') as datetime) as processed_at
+      cast(current_timestamp() as datetime) as processed_at
   ) as metadados,
   cast(paciente_cpf as int64) as cpf_particao,
-  cast( as date) as data_particao
+  cast(coalesce(admissao_data, registro_data) as date) as data_particao
 from pacientes
 left join condicoes_agregado ca using (id_atendimento)
 left join procedimentos_realizados pr using(id_atendimento)
