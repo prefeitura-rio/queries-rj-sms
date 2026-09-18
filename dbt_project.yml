@@ -492,6 +492,16 @@ models:
           dado_pessoal: sim
           dado_sensivel: sim
           dominio: historico_clinico
+      faturamento_nuvem:
+        +schema: brutos_faturamento_nuvem
+        +tags: ["nuvem", "daily"]
+        +meta: 
+          owner: pedro
+          team: cit
+        +labels:
+          dado_publico: nao
+          dado_pessoal: nao
+          dado_sensivel: sim
 
       bcadastro:
         +schema: brutos_bcadastro

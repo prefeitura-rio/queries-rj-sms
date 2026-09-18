@@ -1,0 +1,13 @@
+
+version: 2
+
+sources:
+  - name: brutos_faturamento_nuvem_staging
+    database: rj-sms
+    schema: brutos_faturamento_nuvem_staging
+    tables:
+    - name: gcp_billing_export_resource_v1_01BAED_6E64B4_606041
+      loaded_at_field: "export_time"
+      freshness:
+        warn_after: {count: 24, period: hour}
+        error_after: {count: 48, period: hour}
