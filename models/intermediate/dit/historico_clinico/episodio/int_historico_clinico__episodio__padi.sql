@@ -18,7 +18,7 @@ with
 /*
  Como não há uma documentação descrevendo o caminho do paciente dentro do prontuário
  utilizei a tabela `atendimento_domiciliar_pacientes` como base do episódio assistencial
- por conter campos relevantes e que já aparecem em outras tabelas mais "nichadas" mas também
+ por conter campos relevantes e que já aparecem em outras tabelas mais "nichadas". Também
  por ter mais registro que as outras tabelas até o momento da criação deste modelo (17/09/2026).
  Pode ser que futuramente, com a aquisição do histórico do paciente, isso mude.
 */
@@ -41,7 +41,6 @@ pacientes as (
     avd_profissional_cargo,
     extracted_at
   from {{ref('raw_prontuario_sarah_padi__atendimento_domiciliar_pacientes')}}
-  --from `rj-sms.brutos_prontuario_sarah_padi.atendimento_domiciliar_pacientes` 
 ),
 
   -- =============================
@@ -52,7 +51,6 @@ saidas as (
     id_registro as id_atendimento,
     motivo,
     registro_alta
- -- from `rj-sms.brutos_prontuario_sarah_padi.atendimento_domiciliar_saidas`
   from {{ ref('raw_prontuario_sarah_padi__atendimento_domiciliar_saidas') }}
 ),
 
@@ -63,7 +61,6 @@ procedimentos_realizados as (
   select
     id_atendimento, 
     array_to_string(array_agg(procedimento), "\n") as procedimentos
-  --from `rj-sms.brutos_prontuario_sarah_padi.procedimentos_realizados`
   from {{ ref('raw_prontuario_sarah_padi__procedimentos_realizados') }}
   group by id_atendimento
 ),
@@ -91,7 +88,6 @@ cid_detalhes as (
   -- Gambiarra porque dim_condicao não tá padronizado
     rpad(id,4, "0") as cid, 
     descricao
- -- from `rj-sms.saude_dados_mestres.condicao_cid10`
   from {{ ref('dim_condicao_cid10') }}
 
 ),
@@ -100,7 +96,11 @@ condicoes_agregado as (
   select
     id_atendimento,
     array_agg(
-      struct(ce.cid, descricao, cast(null as string) as situacao, cast(null as string) as data_diagnostico)
+      struct(
+        ce.cid, 
+        descricao, 
+        cast(null as string) as situacao, 
+        cast(null as string) as data_diagnostico)
     ) as condicoes
   from cid_explode as ce
   left join cid_detalhes cd using (cid)
@@ -111,25 +111,46 @@ condicoes_agregado as (
   -- =============================
   -- Profissional 
   -- =============================
+profissional_pr AS (
+  select
+    id_atendimento,
+    procedimento,
+    id_profissional,
+    cpf_profissional,
+    cargo,
+    -- Um atendimento pode ter múltiplos procedimentos e múltiplos profissionais
+    -- Foi necessária estabelecer uma ordem de prioridade para o HCI
+    row_number() over (
+      partition by id_atendimento 
+      order by 
+        case upper(cargo)
+          when 'MÉDICO CLÍNICO GERAL' then 1
+          when 'MÉDICO PEDIATRA' then 2
+          when 'ENFERMEIRO' then 3
+          when 'FISIOTERAPEUTA' then 4
+          when 'NUTRICIONISTA' then 5
+          when 'PSICOLOGO' then 6
+          when 'TÉCNICO DE ENFERMAGEM' then 7
+          when 'FONOAUDIOLOGO' then 8
+          when 'ASSISTENTE SOCIAL' then 9
+          when 'TERAPEUTA OCUPACIONAL' then 10 
+          ELSE 4
+        end asc
+    ) as rn
+  from {{ ref('raw_prontuario_sarah_padi__procedimentos_realizados') }}
+),
+
 profissional as (
   select distinct
     id_atendimento,
-    struct (
-      cpf_profissional as cpf,
-      cns,
-      nome,
-      cbo[OFFSET(0)].cbo as especialidade
-    ) as profissional_saude_responsavel
-  --from `rj-sms.brutos_prontuario_sarah_padi.procedimentos_realizados` pr
-  from {{ ref('raw_prontuario_sarah_padi__procedimentos_realizados') }} pr
+    cast(id_profissional as string) as id,
+    cpf_profissional as cpf,
+    cns,
+    {{ proper_br('nome') }} as nome,
+    cbo[OFFSET(0)].cbo as especialidade
+  from profissional_pr pr
   left join {{ ref('dim_profissional_saude') }} ps on ps.cpf = pr.cpf_profissional
-  where pr.cargo in (
-    "MÉDICO CLÍNICO GERAL",
-    "MÉDICO PEDIATRA",
-    "ENFERMEIRO",
-    "TÉCNICO DE ENFERMAGEM",
-    "FISIOTERAPEUTA"
-    )
+  where rn = 1
 ),
 
   -- =============================
@@ -139,6 +160,7 @@ paciente_estabelecimento as (
   select
     id_atendimento,
     unidade_nome,
+    -- Necessário pois não há id_cnes nas tabelas do prontuário
     case unidade_nome
       when "SMS PADI LOURENCO JORGE AP 40" then "7063679"
       when "SMS PADI SOUZA AGUIAR AP 10" then  "8205590"
@@ -219,12 +241,14 @@ select
   estabelecimento,
 
 -- profissional
+  -- Tenta pegar informações de profissionais da tabela procedimentos_realizados (porque contém mais informação)
+  -- Se não, pega as informações (nome e cargo) da tabela do cadastro do paciente
   struct(
-    cast(null as string) as id,
-    cast(null as string) as cpf,
-    cast(null as string) as cns,
-    {{ proper_br('avd_profissional_nome') }} as nome,
-    avd_profissional_cargo as especialidade
+    coalesce(p.id, cast(null as string)) as id,
+    coalesce(p.cpf, cast(null as string)) as cpf,
+    coalesce(p.cns, cast(null as string)) as cns,
+    coalesce(p.nome, {{ proper_br('avd_profissional_nome') }}) as nome,
+    coalesce(p.especialidade, {{proper_br('avd_profissional_cargo')}}) as especialidade
   ) profissional_saude_responsavel,
 
 -- prontuario
@@ -248,6 +272,3 @@ left join procedimentos_realizados pr using(id_atendimento)
 left join saidas s using(id_atendimento)
 left join estabelecimentos using(id_atendimento)
 left join profissional p using(id_atendimento)
-where 
-  paciente_cpf is not null
-  and coalesce(registro_alta, alta_data) is not null
