@@ -41,7 +41,7 @@ atendimentos as (
     a.id_cnes as Codigo_Hospital,
     a.patient_cpf as Codigo_Paciente,
 
-    date(a.datahora_inicio_atendimento as Dt_Admissao,
+    date(a.datahora_inicio_atendimento) as Dt_Admissao,
     date(a.datahora_fim_atendimento) as Dt_Saida,
 
     c.sexo,
