@@ -72,7 +72,7 @@ atendimentos as (
 
     null as Codigo_Internacao,
     null as DVM,
-    null as Procedimento,
+    null as Procedimento
 
   from {{ ref('raw_prontuario_vitacare_historico__acto') }} a
     inner join cadastros c on c.cpf = a.patient_cpf
