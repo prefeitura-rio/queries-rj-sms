@@ -3,15 +3,29 @@
     schema="brutos_sisreg_api_v2",
     alias="solicitacao_ambulatorial",
     materialized="incremental",
-    incremental_strategy="insert_overwrite",
+    incremental_strategy="merge",
+    unique_key="_key",
     partition_by={
       "field": "data_particao",
       "data_type": "date",
-      "granularity": "month"
+      "granularity": "day"
     },
     meta={"owner": "avellar", "team": "cit"},
   )
 }}
+
+-- [2026-09-21] Problema: `data_particao` em _staging é a data de solicitação,
+-- mas a nova extração pega dados via data_atualizacao, então novos registros
+-- podem ser de partições antigas. Assim, não podemos usar incremental com
+-- filtro via data_particao. Uma alternativa seria uma chave única por registro
+-- e incremental_strategy="merge" (como nessa tabela fazemos `unnest` de laudo
+-- e procedimento, unique_key não pode ser somente `solicitacao_id`). Contudo,
+-- testando isso obtive:
+--   CREATE TABLE (29.8m rows, 46.2 GiB processed) in 44.27s  (--full-refresh)
+--          MERGE ( 3.3m rows, 84.8 GiB processed) in 37.52s  (incremental)
+-- Isto é, 2x o gasto em processamento pra processar 10% das linhas
+-- BigQuery só possui merge, insert_overwrite e microbatch:
+-- [Ref] https://docs.getdbt.com/reference/resource-configs/bigquery-configs?version=2#merge-behavior-incremental-models
 
 
 with
@@ -19,10 +33,20 @@ with
     select *
     from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_ambulatorial_rj") }}
     {% if is_incremental() %}
-      -- Só partições dos últimos 13 meses; extração é último ano
-      where date(data_particao) >= date_sub(
-        current_date("America/Sao_Paulo"),
-        interval 13 month
+      -- (2) Agora filtrando por partições, é muito mais eficiente fazer SELECT *
+      where data_particao in (
+        -- (1) Seleciona somente partições em que há dados recentes
+        --     SELECT de uma única coluna é muito menos custoso
+        select distinct data_particao 
+        from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_ambulatorial_rj") }}
+        where timestamp(_extracted_at) > timestamp_sub(
+          current_timestamp(),
+          interval 5 day
+        )
+      )
+      and timestamp(_extracted_at) >= timestamp_sub(
+        current_timestamp(),
+        interval 5 day
       )
     {% endif %}
     qualify row_number() over (
@@ -35,9 +59,11 @@ with
     select
       src.* except(laudo, procedimentos),
       ld as laudo,
+      laudo_indice,
       pd as procedimento
     from dedup_source as src,
-      unnest(json_query_array(laudo)) as ld,
+      unnest(json_query_array(laudo)) as ld
+        with offset as laudo_indice,
       unnest(json_query_array(procedimentos)) as pd
   ),
 
@@ -162,6 +188,7 @@ with
 
 
       -- Laudo
+      laudo_indice,  -- 0, 1, 2, ...
       json_value(laudo, "$.codigo_cnes_operador") as laudo_operador_id_cnes,
       json_value(laudo, "$.nome_cnes_operador") as laudo_operador_unidade_nome,
       json_value(laudo, "$.operador") as laudo_operador,
@@ -183,11 +210,28 @@ with
       -- Metadados internos
       _run_id,
       timestamp(_extracted_at) as _extracted_at,
-      date(data_particao) as data_particao
+      -- Na extração, a data de partição é a de criação da solicitação
+      -- Aqui, é o dia da extração, porque pro dbt vai ser mais ecônomico
+      date(
+        timestamp(_extracted_at),
+        "America/Sao_Paulo"
+      ) as data_particao
 
     from unnested
   )
 
 
-select distinct *
+select distinct
+  *,
+
+  {{
+    dbt_utils.generate_surrogate_key(
+        [
+          "solicitacao_id",
+          "coalesce(procedimento_id, procedimento_sigtap_id)",
+          "laudo_indice",
+        ]
+    )
+  }} as _key
+
 from sisreg

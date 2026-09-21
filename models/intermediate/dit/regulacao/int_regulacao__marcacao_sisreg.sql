@@ -7,7 +7,7 @@
     partition_by={
       "field": "data_particao",
       "data_type": "date",
-      "granularity": "month"
+      "granularity": "day"
     },
     meta={"owner": "avellar", "team": "cit"},
   )
@@ -160,10 +160,9 @@ with
 
     from {{ ref("raw_sisreg_api_v2__marcacao_ambulatorial") }}
     {% if is_incremental() %}
-      -- Só partições dos últimos 13 meses; extração é último ano
       where data_particao >= date_sub(
         current_date("America/Sao_Paulo"),
-        interval 13 month
+        interval 5 day
       )
     {% endif %}
   )
