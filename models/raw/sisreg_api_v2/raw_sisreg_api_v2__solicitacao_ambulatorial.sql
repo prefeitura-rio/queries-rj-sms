@@ -2,9 +2,6 @@
   config(
     schema="brutos_sisreg_api_v2",
     alias="solicitacao_ambulatorial",
-    materialized="incremental",
-    incremental_strategy="merge",
-    unique_key="_key",
     partition_by={
       "field": "data_particao",
       "data_type": "date",
@@ -16,39 +13,28 @@
 
 -- [2026-09-21] Problema: `data_particao` em _staging é a data de solicitação,
 -- mas a nova extração pega dados via data_atualizacao, então novos registros
--- podem ser de partições antigas. Assim, não podemos usar incremental com
--- filtro via data_particao. Uma alternativa seria uma chave única por registro
--- e incremental_strategy="merge" (como nessa tabela fazemos `unnest` de laudo
--- e procedimento, unique_key não pode ser somente `solicitacao_id`). Contudo,
--- testando isso obtive:
+-- podem estar em partições "antigas". Assim, não podemos usar incremental com
+-- filtro via data_particao >= (p.ex. 1 mês atrás).
+-- (1) Uma alternativa é primeiro obter todas as partições com dados modificados,
+-- e filtrar por elas. Por exemplo, WHERE data_particao IN
+--   (SELECT DISTINCT data_particao WHERE _extracted_at >= ...)
+-- (1.1) Testei usando o Jinja também, com run_query()
+-- (2) Outra alternativa é usar o WHERE _extracted_at >= ... diretamente.
+-- (3) Por fim, outra opção seria criar uma chave única por registro, e usar
+-- e incremental_strategy="merge". Como nessa tabela fazemos `unnest` de laudo
+-- e procedimento, unique_key não pode ser somente `solicitacao_id`.
+-- Contudo, testando essas opções, obtive:
 --   CREATE TABLE (29.8m rows, 46.2 GiB processed) in 44.27s  (--full-refresh)
---          MERGE ( 3.3m rows, 84.8 GiB processed) in 37.52s  (incremental)
--- Isto é, 2x o gasto em processamento pra processar 10% das linhas
--- BigQuery só possui merge, insert_overwrite e microbatch:
--- [Ref] https://docs.getdbt.com/reference/resource-configs/bigquery-configs?version=2#merge-behavior-incremental-models
-
+--   (2)   SCRIPT (            55.0 GiB processed) in 60.28s
+--   (1)   SCRIPT (            55.7 GiB processed) in 55.08s
+--   (3)    MERGE ( 3.3m rows, 84.8 GiB processed) in 37.52s
+--   (1.1) SCRIPT (           123.7 GiB processed) ...
+-- Ou seja, o método mais eficiente é só recriar a tabela do zero.
 
 with
   dedup_source as (
     select *
     from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_ambulatorial_rj") }}
-    {% if is_incremental() %}
-      -- (2) Agora filtrando por partições, é muito mais eficiente fazer SELECT *
-      where data_particao in (
-        -- (1) Seleciona somente partições em que há dados recentes
-        --     SELECT de uma única coluna é muito menos custoso
-        select distinct data_particao 
-        from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_ambulatorial_rj") }}
-        where timestamp(_extracted_at) > timestamp_sub(
-          current_timestamp(),
-          interval 5 day
-        )
-      )
-      and timestamp(_extracted_at) >= timestamp_sub(
-        current_timestamp(),
-        interval 5 day
-      )
-    {% endif %}
     qualify row_number() over (
       partition by codigo_solicitacao
       order by _extracted_at desc nulls last
@@ -211,7 +197,7 @@ with
       _run_id,
       timestamp(_extracted_at) as _extracted_at,
       -- Na extração, a data de partição é a de criação da solicitação
-      -- Aqui, é o dia da extração, porque pro dbt vai ser mais ecônomico
+      -- Aqui, é o dia da extração, porque pro int vai ser mais ecônomico
       date(
         timestamp(_extracted_at),
         "America/Sao_Paulo"
@@ -221,17 +207,5 @@ with
   )
 
 
-select distinct
-  *,
-
-  {{
-    dbt_utils.generate_surrogate_key(
-        [
-          "solicitacao_id",
-          "coalesce(procedimento_id, procedimento_sigtap_id)",
-          "laudo_indice",
-        ]
-    )
-  }} as _key
-
+select distinct *
 from sisreg

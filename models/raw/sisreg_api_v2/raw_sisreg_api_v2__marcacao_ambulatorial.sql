@@ -2,8 +2,6 @@
   config(
     schema="brutos_sisreg_api_v2",
     alias="marcacao_ambulatorial",
-    materialized="incremental",
-    incremental_strategy="merge",
     unique_key="solicitacao_id",
     partition_by={
       "field": "data_particao",
@@ -19,13 +17,6 @@ with
   dedup_source as (
     select *
     from {{ source("brutos_sisreg_api_v2_staging", "marcacao_ambulatorial_rj") }}
-    {% if is_incremental() %}
-      -- Só extrações dos últimos 5 dias
-      where timestamp(_extracted_at) >= timestamp_sub(
-        current_timestamp(),
-        interval 5 day
-      )
-    {% endif %}
     qualify row_number() over (
       partition by codigo_solicitacao
       order by _extracted_at desc nulls last
@@ -235,7 +226,7 @@ with
       _run_id,
       timestamp(_extracted_at) as _extracted_at,
       -- Na extração, a data de partição é a de criação da solicitação
-      -- Aqui, é o dia da extração, porque pro dbt vai ser mais ecônomico
+      -- Aqui, é o dia da extração, porque pro int vai ser mais ecônomico
       date(
         timestamp(_extracted_at),
         "America/Sao_Paulo"
