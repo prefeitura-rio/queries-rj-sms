@@ -2,29 +2,39 @@
   config(
     schema="brutos_sisreg_api_v2",
     alias="solicitacao_ambulatorial",
-    materialized="incremental",
-    incremental_strategy="insert_overwrite",
     partition_by={
       "field": "data_particao",
       "data_type": "date",
-      "granularity": "month"
+      "granularity": "day"
     },
     meta={"owner": "avellar", "team": "cit"},
   )
 }}
 
+-- [2026-09-21] Problema: `data_particao` em _staging é a data de solicitação,
+-- mas a nova extração pega dados via data_atualizacao, então novos registros
+-- podem estar em partições "antigas". Assim, não podemos usar incremental com
+-- filtro via data_particao >= (p.ex. 1 mês atrás).
+-- (1) Uma alternativa é primeiro obter todas as partições com dados modificados,
+-- e filtrar por elas. Por exemplo, WHERE data_particao IN
+--   (SELECT DISTINCT data_particao WHERE _extracted_at >= ...)
+-- (1.1) Testei usando o Jinja também, com run_query()
+-- (2) Outra alternativa é usar o WHERE _extracted_at >= ... diretamente.
+-- (3) Por fim, outra opção seria criar uma chave única por registro, e usar
+-- e incremental_strategy="merge". Como nessa tabela fazemos `unnest` de laudo
+-- e procedimento, unique_key não pode ser somente `solicitacao_id`.
+-- Contudo, testando essas opções, obtive:
+--   CREATE TABLE (29.8m rows, 46.2 GiB processed) in 44.27s  (--full-refresh)
+--   (2)   SCRIPT (            55.0 GiB processed) in 60.28s
+--   (1)   SCRIPT (            55.7 GiB processed) in 55.08s
+--   (3)    MERGE ( 3.3m rows, 84.8 GiB processed) in 37.52s
+--   (1.1) SCRIPT (           123.7 GiB processed) ...
+-- Ou seja, o método mais eficiente é só recriar a tabela do zero.
 
 with
   dedup_source as (
     select *
     from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_ambulatorial_rj") }}
-    {% if is_incremental() %}
-      -- Só partições dos últimos 13 meses; extração é último ano
-      where date(data_particao) >= date_sub(
-        current_date("America/Sao_Paulo"),
-        interval 13 month
-      )
-    {% endif %}
     qualify row_number() over (
       partition by codigo_solicitacao
       order by _extracted_at desc nulls last
@@ -35,9 +45,11 @@ with
     select
       src.* except(laudo, procedimentos),
       ld as laudo,
+      laudo_indice,
       pd as procedimento
     from dedup_source as src,
-      unnest(json_query_array(laudo)) as ld,
+      unnest(json_query_array(laudo)) as ld
+        with offset as laudo_indice,
       unnest(json_query_array(procedimentos)) as pd
   ),
 
@@ -162,6 +174,7 @@ with
 
 
       -- Laudo
+      laudo_indice,  -- 0, 1, 2, ...
       json_value(laudo, "$.codigo_cnes_operador") as laudo_operador_id_cnes,
       json_value(laudo, "$.nome_cnes_operador") as laudo_operador_unidade_nome,
       json_value(laudo, "$.operador") as laudo_operador,
@@ -183,7 +196,12 @@ with
       -- Metadados internos
       _run_id,
       timestamp(_extracted_at) as _extracted_at,
-      date(data_particao) as data_particao
+      -- Na extração, a data de partição é a de criação da solicitação
+      -- Aqui, é o dia da extração, porque pro int vai ser mais ecônomico
+      date(
+        timestamp(_extracted_at),
+        "America/Sao_Paulo"
+      ) as data_particao
 
     from unnested
   )

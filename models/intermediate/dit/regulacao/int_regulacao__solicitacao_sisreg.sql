@@ -7,7 +7,7 @@
     partition_by={
       "field": "data_particao",
       "data_type": "date",
-      "granularity": "month"
+      "granularity": "day"
     },
     meta={"owner": "avellar", "team": "cit"},
   )
@@ -53,7 +53,7 @@ with
         --     às 10:00 vai ser convertido 1x (07:00 UTC-3), depois de novo (04:00 UTC-6),
         --     e no final recebemos uma data_cancelamento "04:00:00Z".
         --     Calma que piora!! Porque a conversão não só "subtrai 3", mas sim converte
-        --     fuso, durante horário de verão (durma em paz), vulgo UTC-2, o horário é
+        --     fuso; durante horário de verão (durma em paz), vulgo UTC-2, o horário é
         --     convertido 2x subtraindo 2 e não 3, então o resultado é UTC-4 e não UTC-6!
         --     Pra resolver, calculamos o offset ao UTC dessa data/hora pra descobrir se
         --     era horário de verão ou não, e somamos esse offset de volta na hora pra
@@ -161,10 +161,9 @@ with
 
     from {{ ref("raw_sisreg_api_v2__solicitacao_ambulatorial") }}
     {% if is_incremental() %}
-      -- Só partições dos últimos 13 meses; extração é último ano
       where data_particao >= date_sub(
         current_date("America/Sao_Paulo"),
-        interval 13 month
+        interval 5 day
       )
     {% endif %}
 
@@ -271,10 +270,9 @@ with
 
     from {{ ref("raw_sisreg_api_v2__solicitacao_hospitalar") }}
     {% if is_incremental() %}
-      -- Só partições dos últimos 13 meses; extração é último ano
       where data_particao >= date_sub(
         current_date("America/Sao_Paulo"),
-        interval 13 month
+        interval 5 day
       )
     {% endif %}
   )

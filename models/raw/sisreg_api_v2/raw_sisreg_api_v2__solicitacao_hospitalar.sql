@@ -2,12 +2,10 @@
   config(
     schema="brutos_sisreg_api_v2",
     alias="solicitacao_hospitalar",
-    materialized="incremental",
-    incremental_strategy="insert_overwrite",
     partition_by={
       "field": "data_particao",
       "data_type": "date",
-      "granularity": "month"
+      "granularity": "day"
     },
     meta={"owner": "avellar", "team": "cit"},
   )
@@ -18,13 +16,6 @@ with
   dedup_source as (
     select *
     from {{ source("brutos_sisreg_api_v2_staging", "solicitacao_hospitalar_rj") }}
-    {% if is_incremental() %}
-      -- Só partições dos últimos 13 meses; extração é último ano
-      where date(data_particao) >= date_sub(
-        current_date("America/Sao_Paulo"),
-        interval 13 month
-      )
-    {% endif %}
     qualify row_number() over (
       partition by codigo_solicitacao
       order by _extracted_at desc nulls last
@@ -186,7 +177,12 @@ with
       -- Metadados internos
       _run_id,
       timestamp(_extracted_at) as _extracted_at,
-      date(data_particao) as data_particao
+      -- Na extração, a data de partição é a de criação da solicitação
+      -- Aqui, é o dia da extração, porque pro int vai ser mais ecônomico
+      date(
+        timestamp(_extracted_at),
+        "America/Sao_Paulo"
+      ) as data_particao
 
     from dedup_source
   )
