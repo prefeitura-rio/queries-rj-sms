@@ -223,5 +223,6 @@ with
 select
     cpf,
     nome_completo,
-    {{ dedup_array_of_struct('vinculos')}} as vinculos
+    {{ dedup_array_of_struct('vinculos')}} as vinculos,
+    false as tem_acesso_homologacao
 from funcionario_vinculos

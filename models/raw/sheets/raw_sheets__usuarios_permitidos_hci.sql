@@ -17,7 +17,8 @@ with
             * except(cpf, unidade, nivel_de_acesso),
             lpad(safe_cast(cpf as string), 11, "0") as cpf,
             lpad(trim(unidade),7,"0") as unidade,
-            {{ process_null('nivel_de_acesso') }} as nivel_de_acesso
+            {{ process_null('nivel_de_acesso') }} as nivel_de_acesso,
+            acesso_homologacao = 'TRUE' as tem_acesso_homologacao
         from source
     ),
 

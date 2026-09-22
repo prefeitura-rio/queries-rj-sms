@@ -42,7 +42,12 @@ with
             'full_permission' as nivel_acesso,
             'full_permission' as granularidade_acesso
           )
-        ) as vinculos
+        ) as vinculos,
+        struct(
+          false as production,
+          false as staging,
+          cpf in (select cpf from acessos_manual) as training
+        ) as ambientes
       from uniao as p, unnest(p.vinculos) as v
       where v.nivel_acesso is not null
       group by 1,2,3

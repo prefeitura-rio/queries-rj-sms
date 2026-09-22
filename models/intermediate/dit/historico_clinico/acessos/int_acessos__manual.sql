@@ -27,6 +27,7 @@ with
                 when {{ remove_accents_upper('funcao') }} like '%ANALISTA DE VIGIL%' then 'ANALISTA DE VIGILANCIA'
                 else 'OUTROS'
             end as funcao_grupo,
+            acesso_homologacao
         from usuarios_permitidos_sheets
     ),
 
@@ -53,7 +54,8 @@ with
             funcao_detalhada,
             funcao_grupo,
             nivel_de_acesso as nivel_acesso,
-            granularidade_de_acesso as granularidade_acesso
+            granularidade_de_acesso as granularidade_acesso,
+            tem_acesso_homologacao
         from categorizados
         left join unidades_de_saude
             on categorizados.unidade_cnes = unidades_de_saude.cnes
@@ -74,12 +76,14 @@ with
                     nivel_acesso,
                     granularidade_acesso
                 )
-            ) as vinculos
+            ) as vinculos,
+            LOGICAL_OR(tem_acesso_homologacao) as tem_acesso_homologacao
         from categorizados_enriquecidos
         group by 1,2
     )
 select
     cpf,
     nome_completo,
-    vinculos
+    vinculos,
+    tem_acesso_homologacao
 from agrupa_vinculos

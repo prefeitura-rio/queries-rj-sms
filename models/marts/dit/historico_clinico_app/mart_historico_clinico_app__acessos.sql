@@ -50,7 +50,12 @@ with
             nivel_acesso,
             granularidade_acesso
           )
-        ) as vinculos
+        ) as vinculos,
+        struct(
+          true as production,
+          LOGICAL_OR(tem_acesso_homologacao) as staging,
+          cpf in (select cpf from acessos_manual) as training
+        ) as ambientes
       from uniao as p, unnest(p.vinculos) as v
       where v.nivel_acesso is not null
       group by 1,2,3
