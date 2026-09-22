@@ -2,7 +2,6 @@
   config(
     schema="brutos_sisreg_api_v2",
     alias="marcacao_ambulatorial",
-    unique_key="solicitacao_id",
     partition_by={
       "field": "data_particao",
       "data_type": "date",
