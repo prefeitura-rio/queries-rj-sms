@@ -952,6 +952,14 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: ivisa
+      integra_oci:
+        +enabled: true
+        +schema: projeto_integra_oci
+        +tags: ["daily", "integra_oci"]
+        +labels:
+          dado_publico: nao
+          dado_pessoal: sim
+          dado_sensivel: sim
 
       minha_saude:
         +meta:
