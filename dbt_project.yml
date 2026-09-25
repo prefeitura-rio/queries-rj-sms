@@ -261,7 +261,7 @@ models:
       # Planilhas
       cdi:
         +schema: brutos_cdi
-        +tags: ["daily", "cdi", "cdi-4hours"]
+        +tags: ["daily", "cdi"]
         +meta:
           owner: karen
           team: cit
