@@ -1,0 +1,55 @@
+$ dbt run --select raw_exemplo__3_ref
+...
+13:20:54  Concurrency: 10 threads (target='dev')
+13:20:54  
+13:21:13  1 of 1 START sql table model avellar__exemplo.municipios_por_uf ................ [RUN]
+13:21:14  BigQuery adapter: https://console.cloud.google.com/bigquery?project=rj-sms-dev&j=bq:US:f80481c6-308b-4338-8a8b-8485ca97abf0&page=queryresults
+13:21:15  1 of 1 ERROR creating sql table model avellar__exemplo.municipios_por_uf ....... [ERROR in 1.56s]
+13:21:15  
+13:21:15  Finished running 1 table model in 0 hours 0 minutes and 20.71 seconds (20.71s).
+13:21:17  
+13:21:17  Completed with 1 error, 0 partial successes, and 0 warnings:
+13:21:17  
+13:21:17  [ERROR]: in model raw_exemplo__3_ref (models/raw/exemplo/raw_exemplo__3_ref.sql)
+13:21:17    Database Error in model raw_exemplo__3_ref (models/raw/exemplo/raw_exemplo__3_ref.sql)
+  Not found: Table rj-sms-dev:avellar__brutos_sheets.municipios_brasil was not found in location US
+  compiled code at target/run/rj_sms/models/raw/exemplo/raw_exemplo__3_ref.sql
+13:21:17  
+13:21:17    compiled code at target/compiled/rj_sms/models/raw/exemplo/raw_exemplo__3_ref.sql
+13:21:17  
+13:21:17  Done. PASS=0 WARN=0 ERROR=1 SKIP=0 NO-OP=0 REUSED=0 TOTAL=1
+
+
+
+
+
+
+
+
+
+######################
+
+
+
+
+
+
+
+
+
+$ dbt run --select raw_sheets__municipios_brasil raw_exemplo__3_ref
+...
+13:23:59  Concurrency: 10 threads (target='dev')
+13:23:59  
+13:24:14  1 of 2 START sql table model avellar__brutos_sheets.municipios_brasil .......... [RUN]
+13:24:24  1 of 2 OK created sql table model avellar__brutos_sheets.municipios_brasil ..... [CREATE TABLE (5.6k rows, 306.3 KiB processed) in 9.61s]
+13:24:24  2 of 2 START sql table model avellar__exemplo.municipios_por_uf ................ [RUN]
+13:24:27  2 of 2 OK created sql table model avellar__exemplo.municipios_por_uf ........... [CREATE TABLE (27.0 rows, 115.3 KiB processed) in 3.05s]
+13:24:27  
+13:24:27  Finished running 2 table models in 0 hours 0 minutes and 27.76 seconds (27.76s).
+13:24:29  
+13:24:29  Completed successfully
+13:24:29  
+13:24:29  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+
+https://console.cloud.google.com/bigquery?ws=!1m5!1m4!4m3!1srj-sms-dev!2savellar__exemplo!3smunicipios_por_uf

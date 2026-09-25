@@ -1,0 +1,50 @@
+$ dbt run --select tag:tag_de_exemplo
+...
+14:25:05  Concurrency: 10 threads (target='dev')
+14:25:05  
+14:25:20  1 of 1 START sql table model avellar__exemplo.ultimo_exemplo_iei ............... [RUN]
+14:25:27  1 of 1 OK created sql table model avellar__exemplo.ultimo_exemplo_iei .......... [CREATE TABLE (1.0 rows, 0 processed) in 6.99s]
+14:25:27  
+14:25:27  Finished running 1 table model in 0 hours 0 minutes and 22.03 seconds (22.03s).
+14:25:29  
+14:25:29  Completed successfully
+14:25:29  
+14:25:29  Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=1
+
+https://console.cloud.google.com/bigquery?ws=!1m5!1m4!4m3!1srj-sms-dev!2savellar__exemplo!3sultimo_exemplo_iei
+
+
+
+
+
+$ dbt build --select raw_exemplo__7_misc
+...
+14:26:44  Concurrency: 10 threads (target='dev')
+14:26:44  
+14:27:09  1 of 3 START sql table model avellar__exemplo.ultimo_exemplo_iei ............... [RUN]
+14:27:14  1 of 3 OK created sql table model avellar__exemplo.ultimo_exemplo_iei .......... [CREATE TABLE (1.0 rows, 0 processed) in 5.21s]
+14:27:14  2 of 3 START test not_null_raw_exemplo__7_misc_campo1 .......................... [RUN]
+14:27:14  3 of 3 START test not_null_raw_exemplo__7_misc_campo2 .......................... [RUN]
+14:27:19  3 of 3 PASS not_null_raw_exemplo__7_misc_campo2 ................................ [PASS in 4.57s]
+14:27:19  2 of 3 FAIL 1 not_null_raw_exemplo__7_misc_campo1 .............................. [FAIL 1 in 4.67s]
+14:27:19  
+14:27:19  Finished running 1 table model, 2 data tests in 0 hours 0 minutes and 34.35 seconds (34.35s).
+14:27:21  
+14:27:21  Completed with 1 error, 0 partial successes, and 0 warnings:
+14:27:21  
+14:27:21  [ERROR]: in test not_null_raw_exemplo__7_misc_campo1 (models/raw/exemplo/raw_exemplo__7_misc.yml)
+14:27:21    Got 1 result, configured to fail if != 0
+14:27:21  
+14:27:21    compiled code at target/compiled/rj_sms/models/raw/exemplo/raw_exemplo__7_misc.yml/not_null_raw_exemplo__7_misc_campo1.sql
+14:27:21  
+14:27:21    See test failures:
+  ---------------------------------------------------------------------------------------------------------
+  select * from `rj-sms-dev`.`avellar__gerenciamento__dbt_test_audit`.`not_null_raw_exemplo__7_misc_campo1`
+  ---------------------------------------------------------------------------------------------------------
+14:27:21  
+14:27:21  Done. PASS=2 WARN=0 ERROR=1 SKIP=0 NO-OP=0 REUSED=0 TOTAL=3
+
+
+
+
++ dbt compile, dbt ls, ...
