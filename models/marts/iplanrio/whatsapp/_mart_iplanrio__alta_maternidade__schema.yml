@@ -49,7 +49,12 @@ models:
 
       - name: municipio
         description: >
-          Município de residência da gestante.
+          Município de residência confirmado da gestante. O modelo mantém somente registros do
+          município do Rio de Janeiro, identificado pelo nome ou pelo código IBGE 3304557. O
+          endereço do prontuário de origem é priorizado no SISARE, ProntuaRio e Vitai, e o
+          Histórico Clínico Integrado é usado como fallback. Como o MV não possui município
+          modelado, utiliza-se apenas o endereço do HCI. Municípios ausentes não são preenchidos
+          artificialmente.
         policy_tags:
           - '{{ var("TAG_ENDERECO") }}'
 
