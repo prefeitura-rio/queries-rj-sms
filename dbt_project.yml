@@ -722,6 +722,14 @@ models:
             dado_publico: nao
             dado_pessoal: sim
             dado_sensivel: sim
+      riosaude:
+        integra_oci:
+          +schema: intermediario_integra_oci
+          +tags: ["daily", "integra_oci"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
 
       subgeral:
         monitora_cancer:
@@ -952,14 +960,6 @@ models:
             dado_pessoal: sim
             dado_sensivel: sim
             dominio: ivisa
-      integra_oci:
-        +enabled: true
-        +schema: projeto_integra_oci
-        +tags: ["daily", "integra_oci"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: sim
-          dado_sensivel: sim
 
       minha_saude:
         +meta:
@@ -994,13 +994,21 @@ models:
           dado_sensivel: sim
 
       riosaude:
-        +schema: projeto_riosaude
-        +tags: ["daily", "riosaude"]
-        +labels:
-          dado_publico: nao
-          dado_pessoal: sim
-          dado_sensivel: sim
-          dominio: riosaude
+        exames_laboratoriais:
+          +schema: projeto_riosaude
+          +tags: ["daily", "riosaude"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
+            dominio: riosaude
+        integra_oci:
+          +schema: projeto_integra_oci
+          +tags: ["daily", "integra_oci"]
+          +labels:
+            dado_publico: nao
+            dado_pessoal: sim
+            dado_sensivel: sim
 
       iplanrio:
         whatsapp:

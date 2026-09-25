@@ -1,6 +1,6 @@
 {{
     config(
-        alias="procedimentos",
+        alias="procedimentos_vitai",
         materialized="table",
     )
 }}
@@ -77,8 +77,7 @@ cids_agrupados as (
 estabelecimentos as (
     select 
         gid,
-        cnes,
-        nome_estabelecimento
+        cnes
     from {{ ref('raw_prontuario_vitai__m_estabelecimento') }}
 ),
 
@@ -104,11 +103,10 @@ pacientes as (
 
 integracao as (
     select
-        exames.procedimento_codigo as codigo_procedimento,
         cids_agrupados.condicoes as condicoes,
+        exames.procedimento_codigo as codigo_procedimento,
         exames.momento as momento,
         estabelecimentos.cnes as cnes_estabelecimento,
-        estabelecimentos.nome_estabelecimento as nome_estabelecimento,
         profissionais.cbo as cbo_profissional,
         profissionais.nome as nome_profissional,
         pacientes.cpf as cpf_paciente,
@@ -118,8 +116,8 @@ integracao as (
         pacientes.data_nascimento as data_nascimento_paciente,
         pacientes.sexo as sexo_paciente,
         struct(
-            exames.gid_boletim,
-            exames.gid_paciente
+            exames.gid_boletim as id_boletim,
+            exames.gid_paciente as id_paciente
         ) as metadados
     from exames
         left join estabelecimentos on exames.gid_estabelecimento = estabelecimentos.gid
