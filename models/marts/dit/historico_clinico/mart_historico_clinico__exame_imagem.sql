@@ -31,7 +31,10 @@ with
             exame_codigo_sigtap as exame_codigo_sigtap,
             exame_datahora as exame_datahora,
             laudo_bucket as laudo_bucket,
-            laudo_datahora_atualizacao as laudo_datahora_atualizacao,
+            datetime_trunc(
+                laudo_datahora_atualizacao,
+                second
+            ) as laudo_datahora_atualizacao,
 
             medico_requisitante as medico_requisitante,
             medico_responsavel as medico_responsavel,
