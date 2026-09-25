@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: raw_exemplo__6_incremental
+    description: >
+      Descrição da tabela de exemplo super legal uau incrível
+    columns:
+      - name: qtd_agendamentos
+        description: Número de agendamentos
+        data_type: int64
+
+      - name: data_particao
+        description: Data de partição dos dados
+        data_type: date

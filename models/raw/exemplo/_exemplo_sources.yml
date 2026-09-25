@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: basedosdados_ibge_pop
+    # Projeto fonte:
+    database: basedosdados
+    # Dataset fonte:
+    schema: br_ibge_populacao
+    # Lista de tabelas:
+    tables:
+      - name: municipio
+        description: >
+          População residente por município (IBGE).
+      # - name: uf
+      #   description: >
+      #     População residente por unidade federativa (IBGE).
+
+
+# ref() é para tabelas que o dbt materializa, aponta para modelos
+# source() é para tabelas que ele não cuida (ex.: staging, externas, ...)

@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: raw_exemplo__7_misc
+    description: >
+      Descrição da tabela de exemplo super legal uau incrível
+    columns:
+      - name: nome1
+        description: Nome 1
+
+      - name: nome2
+        description: Nome 2
+
+      - name: campo1
+        description: Campo 1
+        data_tests:
+          - not_null
+  
+      - name: campo2
+        description: Campo 2
+        data_tests:
+          - not_null
+
+      - name: data1
+        description: Data 1
+  
+      - name: data2
+        description: Data 2
+

@@ -1,0 +1,14 @@
+$ dbt run --select raw_exemplo__1_simples
+...
+18:46:30  Concurrency: 10 threads (target='dev')
+18:46:30  
+18:46:53  1 of 1 START sql table model avellar__gerenciamento__dbt.raw_exemplo__1_simples  [RUN]
+18:46:56  1 of 1 OK created sql table model avellar__gerenciamento__dbt.raw_exemplo__1_simples  [CREATE TABLE (1.0 rows, 0 processed) in 2.73s]
+18:46:56  
+18:46:56  Finished running 1 table model in 0 hours 0 minutes and 26.68 seconds (26.68s).
+18:46:58  
+18:46:58  Completed successfully
+18:46:58  
+18:46:58  Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=1
+
+https://console.cloud.google.com/bigquery?ws=!1m5!1m4!4m3!1srj-sms-dev!2savellar__gerenciamento__dbt!3sraw_exemplo__1_simples

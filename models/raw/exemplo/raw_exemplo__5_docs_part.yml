@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: raw_exemplo__5_docs_part
+    description: >
+      Descrição da tabela de exemplo super legal uau incrível
+    columns:
+      - name: paciente_cpf
+        description: CPF do paciente
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CPF") }}'
+
+      - name: paciente_cns
+        description: CNS do paciente
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_CNS") }}'
+
+      - name: paciente_nome
+        description: Nome completo do paciente
+        data_type: string
+        policy_tags:
+          - '{{ var("TAG_NOME") }}'
+
+      - name: paciente_data_nascimento
+        description: Data de nascimento do paciente
+        data_type: date
+        policy_tags:
+          - '{{ var ("TAG_DATA_NASCIMENTO") }}'
+
+      - name: atendimento_datahora_inicio
+        description: Data e hora do início do atendimento
+        data_type: datetime
+
+      - name: data_particao
+        description: Data de partição dos dados
+        data_type: date
+
+        # TAG_CPF
+        # TAG_CNS
+        # TAG_OUTRO_DOC
+        # TAG_DATA_NASCIMENTO
+        # TAG_IDENTIDADE
+        # TAG_IDENTIFICADOR_SISTEMA
+        # TAG_NOME
+        # TAG_NOME_MAE
+        # TAG_NOME_PAI
+        # TAG_CONTATO
+        # TAG_EMAIL
+        # TAG_ENDERECO
+        # TAG_TELEFONE
+        # TAG_DADO_BANCARIO
+        # TAG_DADO_CLINICO
+        # TAG_DADO_ESTOQUE

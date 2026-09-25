@@ -1,0 +1,45 @@
+$ dbt run --select raw_exemplo__6_incremental --full-refresh
+...
+13:40:55  Concurrency: 10 threads (target='dev')
+13:40:55  
+13:41:14  1 of 1 START sql incremental model avellar__exemplo.num_agendamentos_vitacare .. [RUN]
+13:41:28  1 of 1 OK created sql incremental model avellar__exemplo.num_agendamentos_vitacare  [CREATE TABLE (318.0 rows, 83.3 MiB processed) in 14.00s]
+13:41:28  
+13:41:28  Finished running 1 incremental model in 0 hours 0 minutes and 32.95 seconds (32.95s).
+13:41:32  
+13:41:32  Completed successfully
+13:41:32  
+13:41:32  Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=1
+
+https://console.cloud.google.com/bigquery?ws=!1m5!1m4!4m3!1srj-sms-dev!2savellar__exemplo!3snum_agendamentos_vitacare
+
+
+
+
+
+$ dbt run --select raw_exemplo__6_incremental
+...
+13:42:59  Concurrency: 10 threads (target='dev')
+13:42:59  
+13:43:15  1 of 1 START sql incremental model avellar__exemplo.num_agendamentos_vitacare .. [RUN]
+13:43:26  1 of 1 OK created sql incremental model avellar__exemplo.num_agendamentos_vitacare  [SCRIPT (3.7 MiB processed) in 11.15s]
+13:43:26  
+13:43:26  Finished running 1 incremental model in 0 hours 0 minutes and 27.60 seconds (27.60s).
+13:43:29  
+13:43:29  Completed successfully
+13:43:29  
+13:43:29  Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=1
+
+
+
+
+
+
+
+
+######################
+
+
+/!\ Importante de ter em mente:
+Se precisar mudar nome, quantidade ou tipo de colunas,
+vai precisar re-materializar a tabela com um --full-refresh
