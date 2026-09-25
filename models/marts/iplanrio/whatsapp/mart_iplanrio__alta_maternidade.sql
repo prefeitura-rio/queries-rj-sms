@@ -103,6 +103,7 @@ enderecos_historico as (
     from {{ ref('mart_historico_clinico__paciente') }} p,
     unnest(p.endereco) as e
     where p.cpf is not null
+      and nullif(trim(e.cidade), '') is not null
 
 ),
 
@@ -113,18 +114,6 @@ enderecos_historico_deduplicado as (
     qualify row_number() over (
         partition by cpf
         order by
-            case
-                when upper(trim(municipio_historico)) = 'RIO DE JANEIRO'
-                  and upper(trim(uf_historico)) = 'RJ'
-                    then 1
-                when upper(trim(uf_historico)) = 'RJ'
-                  and (municipio_historico is null or trim(municipio_historico) = '')
-                    then 2
-                when municipio_historico is not null
-                  or uf_historico is not null
-                    then 3
-                else 4
-            end,
             datahora_ultima_atualizacao desc,
             rank
     ) = 1
@@ -137,12 +126,12 @@ pacientes_com_municipio as (
         ps.id_paciente,
         ps.nome_sisare,
         coalesce(
-            nullif(trim(h.municipio_historico), ''),
-            nullif(trim(ps.municipio_sisare), '')
+            nullif(trim(ps.municipio_sisare), ''),
+            nullif(trim(h.municipio_historico), '')
         ) as municipio,
         coalesce(
-            nullif(trim(h.uf_historico), ''),
-            nullif(trim(ps.uf_sisare), '')
+            nullif(trim(ps.uf_sisare), ''),
+            nullif(trim(h.uf_historico), '')
         ) as uf
     from pacientes_sisare ps
     left join enderecos_historico_deduplicado h
@@ -159,23 +148,9 @@ pacientes as (
         uf
     from pacientes_com_municipio
     where
-        -- Regra:
-        -- A fonte principal para município e UF é o HCI.
-        -- Quando município ou UF não estiverem preenchidos no HCI, utiliza-se o SISARE como fallback.
-        -- Entram na tabela final:
-        -- 1) pacientes com município final igual a Rio de Janeiro;
-        -- 2) pacientes com município final vazio e UF final igual a RJ;
-        -- 3) pacientes com município e UF finais vazios, para evitar perda por ausência completa de endereço nas duas fontes.
-        -- Não entram pacientes de fora da cidade do Rio, com município preenchido diferente de Rio de Janeiro.
-        upper(trim(municipio)) = 'RIO DE JANEIRO'
-        or (
-            upper(trim(uf)) = 'RJ'
-            and (municipio is null or trim(municipio) = '')
-        )
-        or (
-            (municipio is null or trim(municipio) = '')
-            and (uf is null or trim(uf) = '')
-        )
+        -- O SISARE e a fonte principal; o HCI e usado como fallback. Registros sem
+        -- municipio confirmado nao sao considerados moradores do municipio do Rio.
+        upper(trim(municipio)) in ('RIO DE JANEIRO', '3304557')
 
 ),
 
@@ -304,14 +279,22 @@ prontuario_altas as (
         ep.cnes_estabelecimento as cnes_prontuario,
         ep.cpf,
         coalesce(ph.nome_hci, nullif(trim(cad.paciente_nome), '')) as nome,
-        coalesce(nullif(trim(cad.endereco_municipio), ''), 'Rio de Janeiro') as municipio,
-        coalesce(nullif(trim(cad.endereco_uf), ''), 'RJ') as uf,
+        coalesce(
+            nullif(trim(cad.endereco_municipio), ''),
+            nullif(trim(h.municipio_historico), '')
+        ) as municipio,
+        coalesce(
+            nullif(trim(cad.endereco_uf), ''),
+            nullif(trim(h.uf_historico), '')
+        ) as uf,
         ep.loaded_at as datalake_loaded_at
     from eventos_obstetricos ep
     left join prontuario_cadastro_dedup cad on cad.gid_prontuario = ep.id_hci
     left join pacientes_hci ph on ph.cpf = ep.cpf
+    left join enderecos_historico_deduplicado h on h.cpf = ep.cpf
     where ep.fonte = 'prontuaRio'
       and ep.cpf is not null
+      and ep.data_alta_internacao >= date('2026-01-01')
 ),
 
 base_prontuario as (
@@ -341,6 +324,7 @@ base_prontuario as (
     left join cegonha_tel cg on cg.cpf = pa.cpf
     left join vitacare_tel vt on vt.cpf = pa.cpf
     left join vitai_tel vi on vi.cpf = pa.cpf
+    where upper(trim(pa.municipio)) in ('RIO DE JANEIRO', '3304557')
 ),
 
 mv_admissao_dedup as (
@@ -392,8 +376,8 @@ mv_altas as (
             nullif(trim(ges.paciente_nome_social), ''),
             nullif(trim(ges.paciente_nome), '')
         ) as nome,
-        'Rio de Janeiro' as municipio,
-        'RJ' as uf,
+        h.municipio_historico as municipio,
+        h.uf_historico as uf,
         ep.data_parto,
         ep.data_alta_internacao,
         ep.cnes_estabelecimento as cnes_mv,
@@ -404,8 +388,10 @@ mv_altas as (
     left join mv_atendimento_dedup ate on ate.id_hci = ep.id_hci
     left join mv_gestante_dedup ges on ges.id_hci = ep.id_hci
     left join pacientes_hci ph on ph.cpf = ep.cpf
+    left join enderecos_historico_deduplicado h on h.cpf = ep.cpf
     where ep.fonte = 'mv'
       and ep.cpf is not null
+      and ep.data_alta_internacao >= date('2026-01-01')
 ),
 
 base_mv as (
@@ -435,6 +421,7 @@ base_mv as (
     left join cegonha_tel cg on cg.cpf = ma.cpf
     left join vitacare_tel vt on vt.cpf = ma.cpf
     left join vitai_tel vi on vi.cpf = ma.cpf
+    where upper(trim(ma.municipio)) in ('RIO DE JANEIRO', '3304557')
 ),
 
 vitai_boletim_dedup as (
@@ -447,7 +434,7 @@ vitai_boletim_dedup as (
 ),
 
 vitai_paciente_dedup as (
-    select gid, nome, cpf
+    select gid, nome, cpf, municipio, uf
     from {{ ref('raw_prontuario_vitai__paciente') }}
     qualify row_number() over (partition by gid order by updated_at desc) = 1
 ),
@@ -459,8 +446,14 @@ vitai_altas as (
         ep.origem_data_alta,
         ep.cpf,
         coalesce(ph.nome_hci, nullif(trim(pac.nome), '')) as nome,
-        'Rio de Janeiro' as municipio,
-        'RJ' as uf,
+        coalesce(
+            nullif(trim(pac.municipio), ''),
+            nullif(trim(h.municipio_historico), '')
+        ) as municipio,
+        coalesce(
+            nullif(trim(pac.uf), ''),
+            nullif(trim(h.uf_historico), '')
+        ) as uf,
         ep.data_parto,
         ep.data_alta_internacao,
         ep.cnes_estabelecimento as cnes_vitai,
@@ -469,8 +462,10 @@ vitai_altas as (
     left join vitai_boletim_dedup b on b.gid = ep.id_hci
     left join vitai_paciente_dedup pac on pac.gid = b.gid_paciente
     left join pacientes_hci ph on ph.cpf = ep.cpf
+    left join enderecos_historico_deduplicado h on h.cpf = ep.cpf
     where ep.fonte = 'vitai'
       and ep.cpf is not null
+      and ep.data_alta_internacao >= date('2026-01-01')
 ),
 
 base_vitai as (
@@ -500,6 +495,7 @@ base_vitai as (
     left join cegonha_tel cg on cg.cpf = va.cpf
     left join vitacare_tel vt on vt.cpf = va.cpf
     left join vitai_tel vi on vi.cpf = va.cpf
+    where upper(trim(va.municipio)) in ('RIO DE JANEIRO', '3304557')
 ),
 
 base_unificada as (
@@ -611,6 +607,7 @@ excecao_disparo_puerperas as (
         cast(null as datetime) as datalake_loaded_at,
         telefones_gestante
     from {{ source("projeto_whatsapp", "excecao_disparo_puerperas") }}
+    where upper(trim(municipio)) in ('RIO DE JANEIRO', '3304557')
 
 )
 
